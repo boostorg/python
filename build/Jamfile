@@ -1,0 +1,36 @@
+subproject libs/python/build ;
+
+SOURCES = classes.cpp conversions.cpp extension_class.cpp functions.cpp 
+    init_function.cpp module_builder.cpp 
+    objects.cpp types.cpp cross_module.cpp ;
+
+PYTHON_ROOT ?= c:/tools/python ;
+
+PYTHON_INCLUDES = $(BOOST_ROOT) $(PYTHON_ROOT)$(SLASH)include ;
+
+lib libboost_python : ../src/$(SOURCES) : <include>$(PYTHON_INCLUDES) <shared-linkable>true ;
+
+rule boost-python
+{
+    dll $(<) : $(>) :
+        $(3) <include>$(PYTHON_INCLUDES)
+        <msvc><library-path>$(PYTHON_ROOT)/libs
+        <gcc><*><library-file>$(PYTHON_ROOT)/libs/python20.lib
+        : $(4) ;
+}
+
+boost-python boost_python_test : <lib>libboost_python ../test/comprehensive.cpp ;
+
+boost-python abstract : <lib>libboost_python ../example/abstract.cpp ;
+boost-python getting_started1 : <lib>libboost_python ../example/getting_started1.cpp ;
+boost-python getting_started2 : <lib>libboost_python ../example/getting_started2.cpp ;
+boost-python simple_vector : <lib>libboost_python ../example/simple_vector.cpp ;
+boost-python do_it_yourself_converters : <lib>libboost_python ../example/do_it_yourself_converters.cpp ;
+boost-python pickle1 : <lib>libboost_python ../example/pickle1.cpp ;
+boost-python pickle2 : <lib>libboost_python ../example/pickle2.cpp ; 
+boost-python pickle3 : <lib>libboost_python ../example/pickle3.cpp ;
+boost-python noncopyable_export : <lib>libboost_python ../example/noncopyable_export.cpp ; 
+boost-python noncopyable_import : <lib>libboost_python ../example/noncopyable_import.cpp ; 
+boost-python ivect : <lib>libboost_python ../example/ivect.cpp ; 
+boost-python dvect : <lib>libboost_python ../example/dvect.cpp ;
+
