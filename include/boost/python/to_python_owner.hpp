@@ -85,7 +85,7 @@ inline PyObject* to_python_owner<T>::operator()(T x) const
 template <class T>
 inline PyTypeObject* to_python_owner<T>::type()
 {
-    return detail::unwind_type<detail::get_pointer_class>(T(0));
+    return detail::unwind_type<detail::get_pointer_class,T>();
 }
 
 }} // namespace boost::python
