@@ -636,8 +636,6 @@ const Record* get_record()
     return &v;
 }
 
-template class py::ExtensionClass<Record>; // explicitly instantiate
-
 } // namespace extclass_demo
 
 #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
