@@ -79,13 +79,13 @@ struct hello_callback : hello
 
     // Override greet to call back into Python
     std::string greet() const // <a href="#derived_4">4</a>
-        { return boost::python::callback&lt;std::string&gt;::call_method(m_self, "greet"); }
+        { return boost::python::callback&lt;std::string&gt;::call_method(self, "greet"); }
 
     // Supplies the default implementation of greet
     static std::string <a name= "default_implementation">default_greet</a>(const hello& self) const // <a href="#derived_5">5</a>
         { return self.hello::greet(); }
  private:
-    PyObject* m_self; // <a href="#derived_1">1</a>
+    PyObject* self; // <a href="#derived_1">1</a>
 };
 </pre></blockquote>
 
