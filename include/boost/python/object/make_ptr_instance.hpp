@@ -34,6 +34,9 @@ struct make_ptr_instance
     template <class U>
     static inline PyTypeObject* get_class_object_impl(U const volatile* p)
     {
+		if (p == 0)
+			return 0;
+
         PyTypeObject* derived = get_derived_class_object(is_polymorphic<U>::type(), p);
         if (derived)
             return derived;
