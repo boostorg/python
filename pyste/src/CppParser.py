@@ -59,7 +59,7 @@ class CppParser:
         if tail:
             tempfilename = tempfile.mktemp('.h') 
             infilename = tempfilename
-            shutil.copy(filename, infilename)
+            shutil.copyfile(filename, infilename)
             f = file(infilename, 'a')
             f.write('\n\n'+tail)
             f.close()  
