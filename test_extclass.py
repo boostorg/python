@@ -878,6 +878,118 @@ test inheritB2
     >>> raw2()
     0
     
+========= test export of operators ==========
+
+    >>> i = Int(2)
+    >>> j = i+i
+    >>> j.i()
+    4
+    >>> j = i-i
+    >>> j.i()
+    0
+    >>> j = i*i
+    >>> j.i()
+    4
+    >>> i<i
+    0
+    >>> cmp(i,i)
+    0
+    >>> k = Int(5)
+    >>> j = divmod(k, i)
+    >>> j[0].i()
+    2
+    >>> j[1].i()
+    1
+    >>> j = pow(i, k)
+    >>> j.i()
+    32
+    >>> j = pow(i, k, k)
+    >>> j.i()
+    2
+    >>> j = -i
+    >>> j.i()
+    -2
+    >>> str(i)
+    '2'
+    >>> j = i/i
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for /
+    >>> j = abs(i)
+    Traceback (innermost last):
+    TypeError: bad operand type for abs()
+    >>> j = i+1
+    >>> j.i()
+    3
+    >>> j = i-1
+    >>> j.i()
+    1
+    >>> j = i*1
+    >>> j.i()
+    2
+    >>> i<1
+    0
+    >>> cmp(i,1)
+    1
+    >>> j = pow(i, 5)
+    >>> j.i()
+    32
+    >>> j = pow(i, 5, k)
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for pow()
+    >>> j = pow(i, 5, 5)
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for pow()
+    >>> j = i/1
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for /
+    >>> j = 1+i
+    >>> j.i()
+    3
+    >>> j = 1-i
+    >>> j.i()
+    -1
+    >>> j = 1*i
+    >>> j.i()
+    2
+    >>> 1<i
+    1
+    >>> cmp(1,i)
+    -1
+    >>> j = 1/i
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for /
+    >>> pow(1,i)
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for pow()
+
+Test operator export to a subclass
+    >>> class Foo(Int):
+    ...     def __init__(self, i):
+    ...             Int.__init__(self, i)
+    ...     def __str__(self):
+    ...             return 'Foo: ' + str(self.i())
+    ...     def __coerce__(self, other):
+    ...             return Int.__coerce__(self, other)
+    ... 
+    >>> f = Foo(3)
+    >>> str(f)
+    'Foo: 3'
+    >>> j = f * f
+    >>> j.i()
+    9
+    >>> j = f * i
+    >>> j.i()
+    6
+    >>> j = f * 5
+    >>> j.i()
+    15
+    >>> j = i * f
+    >>> j.i()
+    6
+    >>> j = 5 * f
+    >>> j.i()
+    15
+
 
 ========= Prove that the "phantom base class" issue is resolved ==========
 

@@ -8,6 +8,7 @@
 #include "extclass_demo.h"
 #include "class_wrapper.h"
 #include <stdio.h> // used for portability on broken compilers
+#include <math.h>  // for pow()
 #include <boost/rational.hpp>
 
 namespace extclass_demo {
@@ -635,6 +636,49 @@ struct Fubar {
 
 /************************************************************/
 /*                                                          */
+/*                          Int                             */
+/*              this class tests operator export            */
+/*                                                          */
+/************************************************************/
+
+struct Int
+{
+    explicit Int(int i) : i_(i) { }
+    
+    int i() const { return i_; }
+    
+    int i_;
+};
+
+Int operator+(Int const & l, Int const & r) { return Int(l.i_ + r.i_); }
+Int operator+(Int const & l, int const & r) { return Int(l.i_ + r); }
+Int operator+(int const & l, Int const & r) { return Int(l + r.i_); }
+
+Int operator-(Int const & l, Int const & r) { return Int(l.i_ - r.i_); }
+Int operator-(Int const & l, int const & r) { return Int(l.i_ - r); }
+Int operator-(int const & l, Int const & r) { return Int(l - r.i_); }
+Int operator-(Int const & r) { return Int(- r.i_); }
+
+Int mul(Int const & l, Int const & r) { return Int(l.i_ * r.i_); }
+Int imul(Int const & l, int const & r) { return Int(l.i_ * r); }
+Int rmul(Int const & r, int const & l) { return Int(l * r.i_); }
+
+Int operator/(Int const & l, Int const & r) { return Int(l.i_ / r.i_); }
+
+Int operator%(Int const & l, Int const & r) { return Int(l.i_ % r.i_); }
+
+bool operator<(Int const & l, Int const & r) { return l.i_ < r.i_; }
+bool operator<(Int const & l, int const & r) { return l.i_ < r; }
+bool operator<(int const & l, Int const & r) { return l < r.i_; }
+
+Int pow(Int const & l, Int const & r) { return Int(::pow(l.i_, r.i_)); }
+Int powmod(Int const & l, Int const & r, Int const & m) { return Int((int)::pow(l.i_, r.i_) % m.i_); }
+Int pow(Int const & l, int const & r) { return Int(::pow(l.i_, r)); }
+
+std::ostream & operator<<(std::ostream & o, Int const & r) { return (o << r.i_); }
+
+/************************************************************/
+/*                                                          */
 /* double tests from Mark Evans(<mark.evans@clarisay.com>)  */
 /*                                                          */
 /************************************************************/
@@ -704,6 +748,8 @@ struct EnumOwner
 
 namespace py {
 template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
+
+using extclass_demo::pow;
 }
 
 // This is just a way of getting the converters instantiated
@@ -883,6 +929,30 @@ void init_module(py::Module& m)
     m.def_raw(&raw, "raw");
     m.def_raw(&raw1, "raw1");
     m.def_raw(&raw2, "raw2");
+    
+    py::ClassWrapper<Int> int_class(m, "Int");
+    int_class.def(py::Constructor<int>());
+    int_class.def(&Int::i, "i");
+
+    // wrap homogeneous operators
+    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_neg | 
+          py::op_cmp | py::op_str | py::op_divmod | py::op_pow )>());
+    // export non-operator functions as homogeneous operators
+    int_class.def(&mul, "__mul__");
+    int_class.def(&powmod, "__pow__");
+
+    // wrap heterogeneous operators (lhs: Int const &, rhs: int const &)
+    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_cmp | py::op_pow)>(), 
+                  py::right_operand<int const & >());
+    // export non-operator function as heterogeneous operator
+    int_class.def(&imul, "__mul__");
+
+    // wrap heterogeneous operators (lhs: int const &, rhs: Int const &)
+    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_cmp)>(), 
+                  py::left_operand<int const & >());
+    // export non-operator function as heterogeneous reverse-argument operator
+    int_class.def(&rmul, "__rmul__");
+    
 
     py::ClassWrapper<EnumOwner> enum_owner(m, "EnumOwner");
     enum_owner.def(py::Constructor<EnumOwner::enum_type, const EnumOwner::enum_type&>());

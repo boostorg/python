@@ -123,6 +123,41 @@ class ClassRegistry
     static std::vector<py::detail::DerivedClassInfo> static_derived_class_info;
 };
 
+namespace detail
+{
+    struct operator_dispatcher
+    : public PyObject
+    {
+        static PyTypeObject type_object;
+        static PyNumberMethods number_methods;
+
+        operator_dispatcher(PyObject * o, PyObject * s);
+        static void dealloc(PyObject *self);
+        static int coerce(PyObject ** l, PyObject ** r);
+        static PyObject * call_add(PyObject *, PyObject *);
+        static PyObject * call_sub(PyObject *, PyObject *);
+        static PyObject * call_mul(PyObject *, PyObject *);
+        static PyObject * call_div(PyObject *, PyObject *);
+        static PyObject * call_mod(PyObject *, PyObject *);
+        static PyObject * call_divmod(PyObject *, PyObject *);
+        static PyObject * call_lshift(PyObject *, PyObject *);
+        static PyObject * call_rshift(PyObject *, PyObject *);
+        static PyObject * call_and(PyObject *, PyObject *);
+        static PyObject * call_xor(PyObject *, PyObject *);
+        static PyObject * call_or(PyObject *, PyObject *);
+        static PyObject * call_pow(PyObject *, PyObject *, PyObject *);
+        static int call_cmp(PyObject *, PyObject *);
+
+        static bool unwrap_args(PyObject *  left, PyObject * right, 
+                                PyObject * & self, PyObject * & other);
+        static int unwrap_pow_args(PyObject *, PyObject *, PyObject *,
+                                    PyObject * &, PyObject * &, PyObject * &);
+
+        PyObject * object;
+        PyObject * self;
+    };
+}
+
 }
 
 PY_BEGIN_CONVERSION_NAMESPACE
@@ -289,6 +324,9 @@ PyObject* to_python(const T& x)
     return py_extension_class_converters(py::Type<T>()).to_python(x);
 }
 
+inline PyObject * to_python(py::detail::operator_dispatcher * n) { return n; }
+
+
 PY_END_CONVERSION_NAMESPACE
 
 namespace py {
@@ -307,22 +345,66 @@ class ReadOnlySetattrFunction : public Function
     String m_name;
 };
 
+enum operator_id
+{ 
+    op_add = 0x1, 
+    op_sub = 0x2, 
+    op_mul = 0x4, 
+    op_div = 0x8, 
+    op_mod = 0x10, 
+    op_divmod =0x20, 
+    op_pow = 0x40, 
+    op_lshift = 0x80, 
+    op_rshift = 0x100, 
+    op_and = 0x200, 
+    op_xor = 0x400, 
+    op_or = 0x800, 
+    op_neg = 0x1000, 
+    op_pos = 0x2000, 
+    op_abs = 0x4000, 
+    op_invert = 0x8000, 
+    op_int = 0x10000, 
+    op_long = 0x20000, 
+    op_float = 0x40000, 
+    op_str = 0x80000,
+    op_cmp = 0x100000 
+};
+
 namespace detail
 {
 
-  template <class From, class To>
-  struct DefineConversion
-  {
-      static void * upcast_ptr(void * v)
-      {
-          return static_cast<To *>(static_cast<From *>(v));
-      }
+    struct auto_operand {};
 
-      static void * downcast_ptr(void * v)
-      {
-          return dynamic_cast<To *>(static_cast<From *>(v));
-      }
-  };
+    template <int i>
+    struct define_operator;
+
+}
+
+template <int which, class operand = py::detail::auto_operand>
+struct operators {};
+
+template <class T>
+struct left_operand {};
+
+template <class T>
+struct right_operand {};
+
+namespace detail
+{
+
+    template <class From, class To>
+    struct DefineConversion
+    {
+        static void * upcast_ptr(void * v)
+        {
+            return static_cast<To *>(static_cast<From *>(v));
+        }
+
+        static void * downcast_ptr(void * v)
+        {
+            return dynamic_cast<To *>(static_cast<From *>(v));
+        }
+    };
 
 }
 
@@ -371,6 +453,299 @@ class ExtensionClass
 """, args)
         +
 """
+
+    // export homogeneous operators (type of both lhs and rhs is 'operator')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>());
+    template <int which, class operand>
+    void def(operators<which, operand>)
+    {
+        register_coerce();
+        
+        if(which & py::op_add)
+            add_method(new typename detail::define_operator<(which & py::op_add)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_add)>::name());
+                
+        if(which & py::op_sub)
+            add_method(new typename detail::define_operator<(which & py::op_sub)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_sub)>::name());
+                
+        if(which & py::op_mul)
+            add_method(new typename detail::define_operator<(which & py::op_mul)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_mul)>::name());
+                
+        if(which & py::op_div)
+            add_method(new typename detail::define_operator<(which & py::op_div)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_div)>::name());
+                
+        if(which & py::op_mod)
+            add_method(new typename detail::define_operator<(which & py::op_mod)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_mod)>::name());
+                
+        if(which & py::op_divmod)
+            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_divmod)>::name());
+                
+        if(which & py::op_pow)
+            add_method(new typename detail::define_operator<(which & py::op_pow)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_pow)>::name());
+                
+        if(which & py::op_lshift)
+            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_lshift)>::name());
+                
+        if(which & py::op_rshift)
+            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_rshift)>::name());
+                
+        if(which & py::op_and)
+            add_method(new typename detail::define_operator<(which & py::op_and)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_and)>::name());
+                
+        if(which & py::op_xor)
+            add_method(new typename detail::define_operator<(which & py::op_xor)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_xor)>::name());
+                
+        if(which & py::op_or)
+            add_method(new typename detail::define_operator<(which & py::op_or)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_or)>::name());
+                
+        if(which & py::op_neg)
+            add_method(new typename detail::define_operator<(which & py::op_neg)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_neg)>::name());
+                
+        if(which & py::op_pos)
+            add_method(new typename detail::define_operator<(which & py::op_pos)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_pos)>::name());
+                
+        if(which & py::op_abs)
+            add_method(new typename detail::define_operator<(which & py::op_abs)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_abs)>::name());
+                
+        if(which & py::op_invert)
+            add_method(new typename detail::define_operator<(which & py::op_invert)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_invert)>::name());
+                
+        if(which & py::op_int)
+            add_method(new typename detail::define_operator<(which & py::op_int)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_int)>::name());
+                
+        if(which & py::op_long)
+            add_method(new typename detail::define_operator<(which & py::op_long)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_long)>::name());
+                
+        if(which & py::op_float)
+            add_method(new typename detail::define_operator<(which & py::op_float)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_float)>::name());
+                
+        if(which & py::op_cmp)
+            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_cmp)>::name());
+                
+        if(which & py::op_str)
+            add_method(new typename detail::define_operator<(which & py::op_str)>::
+                operator_function<operand>(),
+                detail::define_operator<(which & py::op_str)>::name());
+                
+    }
+
+    // export homogeneous operators (type of both lhs and rhs is 'T const &')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>());
+    template <int which>
+    void def(operators<which, py::detail::auto_operand>)
+    {
+        def(operators<which, T const &>());
+    }   
+
+    // export heterogeneous operators (type of lhs: 'left', of rhs: 'right')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
+    //                       py::right_operand<int const &>());
+    template <int which, class left, class right>
+    void def(operators<which, left>, right_operand<right>)
+    {
+        register_coerce();
+        
+        if(which & py::op_add)
+            add_method(new typename detail::define_operator<(which & py::op_add)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_add)>::name());
+                
+        if(which & py::op_sub)
+            add_method(new typename detail::define_operator<(which & py::op_sub)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_sub)>::name());
+                
+        if(which & py::op_mul)
+            add_method(new typename detail::define_operator<(which & py::op_mul)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_mul)>::name());
+                
+        if(which & py::op_div)
+            add_method(new typename detail::define_operator<(which & py::op_div)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_div)>::name());
+                
+        if(which & py::op_mod)
+            add_method(new typename detail::define_operator<(which & py::op_mod)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_mod)>::name());
+                
+        if(which & py::op_divmod)
+            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_divmod)>::name());
+                
+        if(which & py::op_pow)
+            add_method(new typename detail::define_operator<(which & py::op_pow)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_pow)>::name());
+                
+        if(which & py::op_lshift)
+            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_lshift)>::name());
+                
+        if(which & py::op_rshift)
+            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_rshift)>::name());
+                
+        if(which & py::op_and)
+            add_method(new typename detail::define_operator<(which & py::op_and)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_and)>::name());
+                
+        if(which & py::op_xor)
+            add_method(new typename detail::define_operator<(which & py::op_xor)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_xor)>::name());
+                
+        if(which & py::op_or)
+            add_method(new typename detail::define_operator<(which & py::op_or)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_or)>::name());
+                
+        if(which & py::op_cmp)
+            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
+                operator_function<left, right>(),
+                detail::define_operator<(which & py::op_cmp)>::name());
+                
+    }
+    
+    // export heterogeneous operators (type of lhs: 'T const &', of rhs: 'right')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
+    //                       py::right_operand<int const &>());
+    template <int which, class right>
+    void def(operators<which, py::detail::auto_operand>, right_operand<right> r)
+    {
+        def(operators<which, T const &>(), r);
+    }
+
+    // export heterogeneous reverse-argument operators 
+    // (type of lhs: 'left', of rhs: 'right')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
+    //                       py::left_operand<int const &>());
+    template <int which, class left, class right>
+    void def(operators<which, right>, left_operand<left>)
+    {
+        register_coerce();
+        
+        if(which & py::op_add)
+            add_method(new typename detail::define_operator<(which & py::op_add)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_add)>::rname());
+                
+        if(which & py::op_sub)
+            add_method(new typename detail::define_operator<(which & py::op_sub)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_sub)>::rname());
+                
+        if(which & py::op_mul)
+            add_method(new typename detail::define_operator<(which & py::op_mul)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_mul)>::rname());
+                
+        if(which & py::op_div)
+            add_method(new typename detail::define_operator<(which & py::op_div)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_div)>::rname());
+                
+        if(which & py::op_mod)
+            add_method(new typename detail::define_operator<(which & py::op_mod)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_mod)>::rname());
+                
+        if(which & py::op_divmod)
+            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_divmod)>::rname());
+                
+        if(which & py::op_pow)
+            add_method(new typename detail::define_operator<(which & py::op_pow)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_pow)>::rname());
+                
+        if(which & py::op_lshift)
+            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_lshift)>::rname());
+                
+        if(which & py::op_rshift)
+            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_rshift)>::rname());
+                
+        if(which & py::op_and)
+            add_method(new typename detail::define_operator<(which & py::op_and)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_and)>::rname());
+                
+        if(which & py::op_xor)
+            add_method(new typename detail::define_operator<(which & py::op_xor)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_xor)>::rname());
+                
+        if(which & py::op_or)
+            add_method(new typename detail::define_operator<(which & py::op_or)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_or)>::rname());
+                
+        if(which & py::op_cmp)
+            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
+                roperator_function<right, left>(),
+                detail::define_operator<(which & py::op_cmp)>::rname());
+                
+    }
+    
+    // export heterogeneous reverse-argument operators 
+    // (type of lhs: 'left', of rhs: 'T const &')
+    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
+    //                       py::left_operand<int const &>());
+    template <int which, class left>
+    void def(operators<which, py::detail::auto_operand>, left_operand<left> l)
+    {
+        def(operators<which, T const &>(), l);
+    }
+
     // define a function that passes Python arguments and keywords
     // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
     // respectively). This is useful for manual argument passing.
@@ -481,6 +856,8 @@ class ExtensionClass
     {
         this->add_constructor_object(InitFunction<Holder>::create(sig));
     }
+    
+    void register_coerce();
 };
 
 // A simple wrapper over a T which allows us to use ExtensionClass<T> with a
@@ -579,6 +956,11 @@ class ExtensionInstance : public Instance
 // Template function implementations
 //
 
+namespace detail
+{
+    Tuple extension_class_coerce(PyObject * l, PyObject * r);
+}
+
 template <class T, class U>
 ExtensionClass<T, U>::ExtensionClass()
     : ExtensionClassBase(typeid(T).name())
@@ -591,6 +973,15 @@ ExtensionClass<T, U>::ExtensionClass(const char* name)
     : ExtensionClassBase(name)
 {
     ClassRegistry<T>::register_class(this);
+}
+
+template <class T, class U>
+void ExtensionClass<T, U>::register_coerce()
+{
+    Ptr coerce_fct = dict().get_item(String("__coerce__"));
+    
+    if(coerce_fct.get() == 0) // not yet defined
+        this->def(&py::detail::extension_class_coerce, "__coerce__");
 }
 
 template <class T, class U>
