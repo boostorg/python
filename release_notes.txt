@@ -1,7 +1,15 @@
-2000-11-02 23:25
+2000-11-03 10:58
+
+    Fix friend function instantiation bug caught by Metrowerks (thanks
+    Metrowerks!)
+
+    Add proof-of-concept for one technique of wrapping function that return a
+    pointer
 
     Worked around MSVC optimizer bug by writing to_python(double) and
     to_python(float) out-of-line
+
+2000-11-02 23:25
 
     Add /Zm200 option to vc6_prj to deal with MSVC resource limitations
     
