@@ -38,7 +38,7 @@ struct IntWrapper {
 
   inline operator boost::shared_ptr<IntWrapper> () const;
 
-  inline static void setTrace (int onoff);
+  inline static void setTrace (bool onoff);
 };
 
 inline bool operator== (IntWrapper const &lhs, IntWrapper const &rhs);
@@ -134,7 +134,7 @@ IntWrapper::operator boost::shared_ptr<IntWrapper> () const
   return boost::shared_ptr<IntWrapper> (new IntWrapper (*this));
 }
 
-void IntWrapper::setTrace (int onoff)
+void IntWrapper::setTrace (bool onoff)
 {
   gIntWrapperTrace = onoff;
 }
