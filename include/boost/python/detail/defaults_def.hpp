@@ -66,10 +66,10 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 //
 //  define_with_defaults_helper<N>
 //
-//  This helper template struct does the actual recursive definition
+//  This helper template struct does the actual recursive definition.
 //  There's a generic version define_with_defaults_helper<N> and a
 //  terminal case define_with_defaults_helper<0>. The struct and its
-//  specialization has a sole static member function def that expect:
+//  specialization has a sole static member function def that expects:
 //
 //      1. char const* name:    a python function name
 //      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
@@ -109,6 +109,20 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
         }
     };
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  define_with_defaults
+//
+//  This is the main entry point. This function recursively defines all
+//  stub functions of StubT (see defaults_gen.hpp) in HolderT holder which
+//  can be either a python::class_ or a python::module. The sig argument
+//  is a typelist that specifies the return type, the class (for member
+//  functions, and the arguments. Here are some SigT examples:
+//
+//      int foo(int)        mpl::type_list<int, int>
+//      void bar(int, int)  mpl::type_list<void, int, int>
+//      void C::foo(int)    mpl::type_list<void, C, int>
+//
 ///////////////////////////////////////////////////////////////////////////////
     template <typename StubsT, typename HolderT, typename SigT>
     inline void

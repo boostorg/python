@@ -20,6 +20,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  signature
+//
+//  This template struct acts as a type holder for the signature of a
+//  function or member function. This struct is used to pass in the
+//  return type, class (for member functions) and arguments of a
+//  function or member function. Examples:
+//
+//      signature<int(*)(int)>          int foo(int)
+//      signature<void(*)(int, int)>    void foo(int, int)
+//      signature<void(C::*)(int)>      void C::foo(int, int)
+//
+///////////////////////////////////////////////////////////////////////////////
 template <typename T>
 struct signature {};
 
@@ -34,6 +48,27 @@ namespace detail {
     /**/
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  The following macros generate expansions for:
+//
+//      template <typename RT, typename T0... typename TN>
+//      inline boost::mpl::type_list<RT, T0...TN>
+//      get_signature(signature<RT(*)(T0...TN)>)
+//      {
+//          return boost::mpl::type_list<RT, T0...TN>();
+//      }
+//
+//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      get_signature(signature<RT(ClassT::*)(T0...TN))>)
+//      {
+//          return boost::mpl::type_list<RT, ClassT, T0...TN>();
+//      }
+//
+//  These functions extract the return type, class (for member functions)
+//  and arguments of the input signature and stuffs them in an mpl::type_list.
+//
 ///////////////////////////////////////////////////////////////////////////////
 #define BPL_IMPL_TEMPLATE_GEN(INDEX, DATA)  typename BOOST_PP_CAT(T, INDEX)
 

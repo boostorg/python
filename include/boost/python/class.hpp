@@ -135,20 +135,12 @@ class class_ : public objects::class_base
     template <typename DerivedT, typename SigT>
     self& def(detail::func_stubs_base<DerivedT> const& stubs, signature<SigT> sig)
     {
-        //  JDG 8-12-2002
+        //  convert sig to a type_list (see signature.hpp) and call
+        //  detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
+        //  this instance, and the converted sig type_list.
         detail::define_with_defaults(stubs.derived(), *this, detail::get_signature(sig));
         return *this;
     }
-
-/*
-    template <typename DerivedT, typename ArgsT>
-    self& def(detail::func_stubs_base<DerivedT> const& stubs, ArgsT args)
-    {
-        //  JDG 8-12-2002
-        detail::define_with_defaults(stubs.derived(), *this, args);
-        return *this;
-    }
-*/
 
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.
