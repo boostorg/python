@@ -25,8 +25,9 @@ import exporterutils
 import settings
 from policies import *
 from CppParser import CppParser, CppParserError
+import time
 
-__VERSION__ = '0.6.2'
+__VERSION__ = '0.6.3'
 
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:
@@ -150,20 +151,16 @@ def Main():
 
 
 def UsePsyco():
-    'Tries to use psyco if it is installed'
+    'Tries to use psyco if possible'
     try:
         import psyco
-        import elementtree.XMLTreeBuilder as XMLTreeBuilder
-        import GCCXMLParser
-
-        psyco.bind(XMLTreeBuilder.fixtext)
-        psyco.bind(XMLTreeBuilder.fixname)
-        psyco.bind(XMLTreeBuilder.TreeBuilder)
-        psyco.bind(GCCXMLParser.GCCXMLParser) 
-    except ImportError: pass         
+        psyco.profile()
+    except: pass         
 
     
 if __name__ == '__main__':
+    start = time.clock()
     UsePsyco()
     status = Main()
+    print '%0.2f seconds' % (time.clock()-start)
     sys.exit(status)
