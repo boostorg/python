@@ -11,12 +11,14 @@ __ ../../index.htm
 
 .. _`Boost.Python`: index.html
 
-:copyright: Copyright David Abrahams 2003. See accompanying
-            license_ for terms of use.
+:copyright: Copyright David Abrahams 2003. Use, modification, and
+    distribution are subject to the Boost Software License, Version
+    1.0. (See accompanying file `LICENSE_1_0.txt`_ or copy at
+    http://www.boost.org/LICENSE_1_0.txt) 
 
 .. contents:: Outline
 
-.. _license: ../../LICENSE_1_0.txt
+.. _`LICENSE_1_0.txt`: ../../LICENSE_1_0.txt
 
 Class Support
 =============
@@ -31,6 +33,20 @@ Base Class for Virtual Function Callback Wrappers
   (search for ``VirtualDispatcher``) describes how callback classes
   can swap ownership relationship with their Python wrappers.
 
+* http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1860301
+  describes how this can also be used to considerably simplify
+  callback classes, solve some "dangling reference" problems, and
+  optimize the calling of non-overridden virtual functions.
+
+Miscellaneous
+=============
+
+Support for Enums with Duplicate Values
+---------------------------------------
+
+  Scott Snyder provided a patch; Dave was dissatisfied for some
+  reason, but maybe it should just be applied if no further action
+  occurs http://aspn.activestate.com/ASPN/Mail/Message/1824616.
 
 
 Functions
@@ -56,21 +72,6 @@ Wrapping Function Objects
 
   .. _Luabind: http://luabind.sf.net
 
-Injected Constructors
----------------------
-
-  Enabling the addition of new constructor functors or factory
-  constructors which aren't in the underlying C++ interface.
-  Interface still to be decided.  Here is a discussion of it:
-
-    http://aspn.activestate.com/ASPN/Mail/Message/1744280
-
-  However, I'm pretty sure we can't use the init<>(f) interface here
-  because it will have to instantiate the code for the wrapped
-  class' default constructor, which may not exist.
-
-
-
 Type Converters
 ===============
 
@@ -89,10 +90,16 @@ Converter Scoping
 
   __ Langbinding_
 
-``FILE* conversions``
+``FILE*`` conversions
 ---------------------
 
   http://aspn.activestate.com/ASPN/Mail/Message/1411366
+
+``void*`` conversions
+---------------------
+
+  Pointers to *cv* ``void`` should be able to be passed and
+  returned as opaque values.
 
 Post-Call Actions
 -----------------
@@ -109,6 +116,17 @@ Post-Call Actions
   http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1771145
 
   .. _`Lijun Qin`: mailto:qinlj-at-solidshare.com
+
+Ownership Metadata
+------------------
+
+  In the thread at
+  http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1860301,
+  Niall Douglas describes an idea for solving some "false"
+  dangling pointer/reference return errors by attaching data about
+  objects which lets the framework determine that the reference
+  count on an object doesn't tell us anything about the lifetime
+  of its data.
 
 Documentation
 =============
@@ -133,6 +151,17 @@ Internals
 
 Large Scale
 ===========
+
+Full Threading Support
+----------------------
+
+  Various people have proposed patches to improve threading support
+  in Boost.Python: see the thread at
+  http://aspn.activestate.com/ASPN/Mail/Message/1826544 and
+  http://aspn.activestate.com/ASPN/Mail/Message/1865842 for some
+  examples.  The only problem is that these are incomplete
+  solutions and verifying that we *do* have a complete solution is
+  going to take some time and attention.
 
 Langbinding
 -----------
