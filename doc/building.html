@@ -57,6 +57,27 @@
         <td>path to Python standard library modules
         <td>Autoconfigured from <code>PYTHON_ROOT</code>
 
+   <tr>
+        <td><code>CYGWIN_ROOT</code>
+        <td>path to the user's Cygwin installation
+        <td>
+        <td><a href="http://www.cygwin.com">Cygwin</a> only. This and the following two settings are
+        useful when building with multiple toolsets on Windows, since
+        Cygwin requires a different build of Python.
+
+   <tr>
+        <td><code>GCC_PYTHON_ROOT</code>
+        <td>path to the user's Cygwin Python installation
+        <td><code>$(CYGWIN_ROOT)/usr/local</code>
+        <td><a href="http://www.cygwin.com">Cygwin</a> only
+
+   <tr>
+        <td><code>GCC_DEBUG_PYTHON_ROOT</code>
+        <td>path to the user's Cygwin <code><a
+        href="#variants">pydebug</a></code> build
+        <td><code>$(CYGWIN_ROOT)/usr/local/pydebug</code>
+        <td><a href="http://www.cygwin.com">Cygwin</a> only
+
 </table>
 
 <h3>Results</h3>
@@ -126,7 +147,7 @@ it passes.
       project. Note that automatic testing of extension modules is not
       available in this configuration.
 
-<h2>Build Variants</h2>
+<h2><a name="variants">Build Variants</a></h2>
 
       Three <a
       href="../../../tools/build/build_system.htm#variants">variant</a>
