@@ -27,7 +27,7 @@
 #include <functional>
 
 #define ICE_AND(a, b) ::boost::type_traits::ice_and <(a), (b)>::value
-#define ICE_NOT(a) ::boost::type_traits::ice_not <static_cast<bool>(a)>::value
+#define ICE_NOT(a) ::boost::type_traits::ice_not <(a)>::value
 // undef'd at end of header
 
 namespace boost { namespace python { namespace indexing {
