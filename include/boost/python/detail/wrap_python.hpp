@@ -47,7 +47,7 @@ typedef int pid_t;
 #    define HAVE_STRERROR
 #   endif
 #   define NT_THREADS
-#   if __GNUC__ < 3 || __GNUC__ == 3 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ < 3
+#   if !defined(__CYGWIN__) && (__GNUC__ < 3 || __GNUC__ == 3 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ < 3)
 #    define WITH_THREAD
 #   endif 
 #   ifndef NETSCAPE_PI
