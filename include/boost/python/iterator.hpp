@@ -69,43 +69,28 @@ struct iterators
 // accessors. Deduce the Target type from the accessors. The iterator
 // returns copies of the inderlying elements.
 template <class Accessor1, class Accessor2>
-handle<> range(Accessor1 start, Accessor2 finish)
+object range(Accessor1 start, Accessor2 finish)
 {
-    return handle<>(
-        borrowed(allow_null(
-            detail::make_iterator<objects::default_iterator_call_policies>(
+    return detail::make_iterator<objects::default_iterator_call_policies>(
                 start, finish
-                , detail::target(start))
-            .ptr()
-            ))
-        );
+                , detail::target(start));
 }
 
 // Create an iterator-building function which uses the given accessors
 // and next() policies. Deduce the Target type.
 template <class NextPolicies, class Accessor1, class Accessor2>
-handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
+object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 {
-    return handle<>(
-        borrowed(
-            allow_null(
-                detail::make_iterator<NextPolicies>(start, finish, detail::target(start))
-                .ptr()
-                )));
+    return detail::make_iterator<NextPolicies>(start, finish, detail::target(start));
 }
 
 // Create an iterator-building function which uses the given accessors
 // and next() policies, operating on the given Target type
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
+object range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
 {
     typedef typename add_reference<Target>::type target;
-    return handle<>(
-        borrowed(
-            allow_null(
-                detail::make_iterator<NextPolicies, target>(start, finish)
-                .ptr()
-                )));
+    return detail::make_iterator<NextPolicies, target>(start, finish);
 }
 
 // A Python callable object which produces an iterator traversing
@@ -114,11 +99,11 @@ handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type
 // next() function.
 template <class Container
           , class NextPolicies = objects::default_iterator_call_policies>
-struct iterator : handle<>
+struct iterator : object
 {
     iterator()
-        : handle<>(
-            range<NextPolicies>(
+        : object(
+            python::range<NextPolicies>(
                 &iterators<Container>::begin, &iterators<Container>::end
                 ))
     {

@@ -296,15 +296,15 @@ namespace objects
       extern DL_IMPORT(PyTypeObject) PyProperty_Type;
   }
 
-  void class_base::add_property(char const* name, handle<> const& fget)
+  void class_base::add_property(char const* name, object const& fget)
   {
-      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
+      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr()));
       setattr(name, property);
   }
 
-  void class_base::add_property(char const* name, handle<> const& fget, handle<> const& fset)
+  void class_base::add_property(char const* name, object const& fget, object const& fset)
   {
-      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
+      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr()));
       setattr(name, property);
   }
 

@@ -181,22 +181,19 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readonly(char const* name, D T::*pm)
     {
-        handle<> fget(make_getter(pm));
-        this->add_property(name, fget);
+        this->add_property(name, make_getter(pm));
         return *this;
     }
 
     template <class D>
     self& def_readwrite(char const* name, D T::*pm)
     {
-        handle<> fget(make_getter(pm));
-        handle<> fset(make_setter(pm));
-        return this->add_property(name, fget, fset);
+        return this->add_property(name, make_getter(pm), make_setter(pm));
     }
 
     // Property creation
-    self& add_property(char const* name, handle<> const& fget);
-    self& add_property(char const* name, handle<> const& fget, handle<> const& fset);
+    self& add_property(char const* name, object const& fget);
+    self& add_property(char const* name, object const& fget, object const& fset);
 
     self& setattr(char const* name, handle<> const&);
 
@@ -277,14 +274,14 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
 
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, handle<> const& fget)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, object const& fget)
 {
     base::add_property(name, fget);
     return *this;
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, handle<> const& fget, handle<> const& fset)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, object const& fget, object const& fset)
 {
     base::add_property(name, fget, fset);
     return *this;

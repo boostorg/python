@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/object/function.hpp>
+#include <boost/python/object/function_object.hpp>
 #include <numeric>
 #include <boost/python/errors.hpp>
 #include <boost/python/str.hpp>
@@ -148,10 +148,8 @@ namespace
   
   function* not_implemented_function()
   {
-      static function* result = new function(py_function(&not_implemented_impl), 2, 3);
-      static handle<> keeper(result);
-      
-      return result;
+      static object keeper(function_object(&not_implemented_impl, 2, 3));
+      return (function*)keeper.ptr();
   }
 }
 

@@ -12,6 +12,8 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/select_type.hpp>
+# include <boost/python/object_core.hpp>
+# include <boost/python/refcount.hpp>
 
 namespace boost { namespace python {
 
@@ -28,13 +30,16 @@ namespace detail {
 // object.
 
 template <class F>
-inline PyObject* wrap_function_aux(F f, PyObject*) { return f; }
+inline PyObject* wrap_function_aux(F const& f, PyObject*) { return f; }
 
 template <class F, class T>
-inline PyObject* wrap_function_aux(F f, boost::python::handle<T> x) { return x.release(); }
+inline PyObject* wrap_function_aux(F const&, boost::python::handle<T> x) { return x.release(); }
 
 template <class F>
-inline PyObject* wrap_function_aux(F f, ...) { return make_function(f); }
+inline PyObject* wrap_function_aux(F const&, object const& x) { return python::incref(x.ptr()); }
+
+template <class F>
+inline PyObject* wrap_function_aux(F const& f, ...) { return make_function(f); }
 
 template <class F>
 PyObject* wrap_function(F f)

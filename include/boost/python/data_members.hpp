@@ -13,6 +13,7 @@
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_non_const_reference.hpp>
+# include <boost/python/object/function_object.hpp>
 
 namespace boost { namespace python { 
 
@@ -61,47 +62,45 @@ namespace detail
 }
 
 template <class C, class D>
-objects::function* make_getter(D C::*pm)
+object make_getter(D C::*pm)
 {
     typedef return_value_policy<copy_non_const_reference> default_policy;
-    return new objects::function(
-        objects::py_function(
-            ::boost::bind(
-                &detail::member<D,C,default_policy>::get, pm, _1, _2
-                , default_policy()))
+    
+    return objects::function_object(
+        ::boost::bind(
+            &detail::member<D,C,default_policy>::get, pm, _1, _2
+            , default_policy())
         , 1);
+        
 }
 
 template <class C, class D, class Policies>
-objects::function* make_getter(D C::*pm, Policies const& policies)
+object make_getter(D C::*pm, Policies const& policies)
 {
-    return new objects::function(
-        objects::py_function(
+    return objects::function_object(
             ::boost::bind(
                 &detail::member<D,C,Policies>::get, pm, _1, _2
-                , policies))
+                , policies)
         , 1);
 }
 
 template <class C, class D>
-objects::function* make_setter(D C::*pm)
+object make_setter(D C::*pm)
 {
-    return new objects::function(
-        objects::py_function(
-            ::boost::bind(
-                &detail::member<D,C,default_call_policies>::set, pm, _1, _2
-                , default_call_policies()))
+    return objects::function_object(
+        ::boost::bind(
+            &detail::member<D,C,default_call_policies>::set, pm, _1, _2
+            , default_call_policies())
         , 2);
 }
 
 template <class C, class D, class Policies>
-objects::function* make_setter(D C::*pm, Policies const& policies)
+object make_setter(D C::*pm, Policies const& policies)
 {
-    return new objects::function(
-        objects::py_function(
-            ::boost::bind(
-                &detail::member<D,C,Policies>::set, pm, _1, _2
-                , policies))
+    return objects::function_object(
+        ::boost::bind(
+            &detail::member<D,C,Policies>::set, pm, _1, _2
+            , policies)
         , 2);
 }
 

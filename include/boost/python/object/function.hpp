@@ -41,10 +41,6 @@ struct BOOST_PYTHON_DECL function : PyObject
     function* m_overloads;
 };
 
-//
-// implementations
-//
-
 }}} // namespace boost::python::objects
 
 #endif // FUNCTION_DWA20011214_HPP
