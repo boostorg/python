@@ -22,7 +22,7 @@ struct make_holder<0>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         static void execute(
             PyObject* p)
         {
@@ -38,7 +38,7 @@ struct make_holder<1>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         
@@ -57,7 +57,7 @@ struct make_holder<2>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -77,7 +77,7 @@ struct make_holder<3>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -99,7 +99,7 @@ struct make_holder<4>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -123,7 +123,7 @@ struct make_holder<5>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -149,7 +149,7 @@ struct make_holder<6>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename detail::eval<Generator,T>::type holder;
+        typedef typename python::detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;

@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 #ifndef CLASS_FWD_DWA200222_HPP
 # define CLASS_FWD_DWA200222_HPP
+# include <boost/python/object/value_holder_fwd.hpp>
 
 namespace boost { namespace python { 
 
@@ -13,15 +14,10 @@ namespace detail
   struct empty_list;
 }
 
-namespace objects
-{
-  struct value_holder_generator;
-}
-
 template <
     class T // class being wrapped
     , class Bases = detail::empty_list
-    , class HolderGenerator = objects::value_holder_generator
+    , class HolderGenerator = objects::value_holder_generator<>
     >
 class class_;
 

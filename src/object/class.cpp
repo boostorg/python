@@ -169,9 +169,9 @@ find_instance_impl(PyObject* inst, converter::undecorated_type_id_t type)
     
     instance* self = reinterpret_cast<instance*>(inst);
 
-    for (instance_holder::iterator match(self->objects), end(0); match != end; ++match)
+    for (instance_holder* match = self->objects; match != 0; match = match->next())
     {
-        void* const found = (*match).holds(type);
+        void* const found = match->holds(type);
         if (found)
             return found;
     }

@@ -9,6 +9,7 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/object/class.hpp>
+# include <boost/python/object/value_holder_fwd.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
 # include <boost/mpl/type_list.hpp>
@@ -31,12 +32,6 @@ namespace // put some convenience classes into the unnamed namespace for the use
 }
 
 namespace boost { namespace python { 
-
-// Forward declarations
-namespace objects
-{
-  struct value_holder_generator;
-}
 
 namespace detail
 {

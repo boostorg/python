@@ -11,7 +11,6 @@
 # include <boost/utility.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/reference.hpp>
-# include <boost/iterator_adaptors.hpp>
 # include <cstddef>
 
 namespace boost { namespace python {
@@ -55,24 +54,6 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
     virtual void* holds(converter::undecorated_type_id_t) = 0;
 
     void install(PyObject* inst) throw();
-    
-    struct iterator_policies : default_iterator_policies
-    {
-        template <class Iterator>
-        void increment(Iterator& p)
-        {
-            p.base() = p.base()->next();
-        }
-    };
-    
-    typedef iterator_adaptor<
-        instance_holder*
-        , iterator_policies
-        , value_type_is<noncopyable>
-        , reference_is<instance_holder&>
-        , pointer_is<instance_holder*>
-        , iterator_category_is<std::input_iterator_tag> > iterator;
-    
  private:
     instance_holder* m_next;
 };
