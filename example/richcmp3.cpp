@@ -1,200 +1,127 @@
-// Example by Nicholas K. Sauter & Ralf W. Grosse-Kunstleve.
+// Example by Ralf W. Grosse-Kunstleve & Nicholas K. Sauter.
 // Comprehensive operator overloading for two vector types and scalars.
 
+#include <boost/python/class_builder.hpp>
+#include "vector_wrapper.h"
 #include "dvect.h"
 #include "ivect.h"
-#include <boost/python/class_builder.hpp>
 
-//------------------ Overload DVECT --------------------------------
-
-#define DVECT_BINARY_OPERATORS( oper ) \
+#define VECT_VECT_OPERATORS(result_type, vect_type1, oper, vect_type2) \
 namespace vects { \
-  dvect operator##oper (const dvect& a, const dvect& b) {                  \
-    if (a.size()!=b.size()){throw boost::python::argument_error();}        \
-    dvect result(a.size());                                                \
-    dvect::const_iterator a_it = a.begin();                                \
-    dvect::const_iterator b_it = b.begin();                                \
-    dvect::iterator r_it = result.begin();                                 \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b_it[i]); } \
-    return result;                                                         \
+  result_type \
+  operator##oper (const vect_type1& lhs, const vect_type2& rhs) { \
+    if (lhs.size() != rhs.size()) { \
+      PyErr_SetString(PyExc_ValueError, "vectors have different sizes"); \
+      throw boost::python::error_already_set(); \
+    } \
+    result_type result(lhs.size()); \
+    for (std::size_t i=0; i<lhs.size(); i++) { \
+      result[i] = (lhs[i] ##oper rhs[i]); \
+    } \
+    return result; \
   } \
 }
-DVECT_BINARY_OPERATORS( + )
-DVECT_BINARY_OPERATORS( - )
-DVECT_BINARY_OPERATORS( * )
-DVECT_BINARY_OPERATORS( / )
-DVECT_BINARY_OPERATORS( > )
-DVECT_BINARY_OPERATORS( >= )
-DVECT_BINARY_OPERATORS( < )
-DVECT_BINARY_OPERATORS( <= )
-DVECT_BINARY_OPERATORS( == )
-DVECT_BINARY_OPERATORS( != )
-#undef DVECT_BINARY_OPERATORS
 
-#define DVECT_SCALAR_BINARY_OPERATORS( scalar_type, oper ) \
+#define VECT_SCALAR_OPERATORS(result_type, vect_type, oper, scalar_type) \
 namespace vects { \
-  dvect operator##oper (const dvect& a, const scalar_type& b) {       \
-    dvect result(a.size());                                           \
-    dvect::const_iterator a_it = a.begin();                           \
-    dvect::iterator r_it = result.begin();                            \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b ); } \
-    return result;                                                    \
+  result_type \
+  operator##oper (const vect_type& lhs, const scalar_type& rhs) { \
+    result_type result(lhs.size()); \
+    for (std::size_t i=0; i<lhs.size(); i++) { \
+      result[i] = (lhs[i] ##oper rhs ); \
+    } \
+    return result; \
   } \
 }
-DVECT_SCALAR_BINARY_OPERATORS( double, + )
-DVECT_SCALAR_BINARY_OPERATORS( double, - )
-DVECT_SCALAR_BINARY_OPERATORS( double, * )
-DVECT_SCALAR_BINARY_OPERATORS( double, / )
-DVECT_SCALAR_BINARY_OPERATORS( double, > )
-DVECT_SCALAR_BINARY_OPERATORS( double, >= )
-DVECT_SCALAR_BINARY_OPERATORS( double, < )
-DVECT_SCALAR_BINARY_OPERATORS( double, <= )
-DVECT_SCALAR_BINARY_OPERATORS( double, == )
-DVECT_SCALAR_BINARY_OPERATORS( double, != )
-#undef DVECT_SCALAR_BINARY_OPERATORS
 
-#define SCALAR_DVECT_BINARY_OPERATORS( scalar_type, oper ) \
+#define SCALAR_VECT_OPERATORS(result_type, scalar_type, oper, vect_type) \
 namespace vects { \
-  dvect operator##oper (const scalar_type& a, const dvect& b) {       \
-    dvect result(b.size());                                           \
-    dvect::const_iterator b_it = b.begin();                           \
-    dvect::iterator r_it = result.begin();                            \
-    for (int i=0; i<b.size(); i++) { r_it[i] = (a ##oper b_it[i] ); } \
-    return result;                                                    \
+  result_type \
+  operator##oper (const scalar_type& lhs, const vect_type& rhs) { \
+    result_type result(rhs.size()); \
+    for (std::size_t i=0; i<rhs.size(); i++) { \
+      result[i] = (lhs ##oper rhs[i]); \
+    } \
+    return result; \
   } \
 }
-SCALAR_DVECT_BINARY_OPERATORS( double, + )
-SCALAR_DVECT_BINARY_OPERATORS( double, - )
-SCALAR_DVECT_BINARY_OPERATORS( double, * )
-SCALAR_DVECT_BINARY_OPERATORS( double, / )
-#undef SCALAR_DVECT_BINARY_OPERATORS
 
-//------------------ Overload IVECT --------------------------------
+#define MATH_VECT_VECT_OPERATORS(result_type, vect_type1, vect_type2) \
+  VECT_VECT_OPERATORS(result_type, vect_type1, +, vect_type2) \
+  VECT_VECT_OPERATORS(result_type, vect_type1, -, vect_type2) \
+  VECT_VECT_OPERATORS(result_type, vect_type1, *, vect_type2) \
+  VECT_VECT_OPERATORS(result_type, vect_type1, /, vect_type2)
 
-#define IVECT_BINARY_OPERATORS( oper ) \
-namespace vects { \
-  ivect operator##oper (const ivect& a, const ivect& b) {\
-    if (a.size()!=b.size()){throw boost::python::argument_error();}        \
-    ivect result(a.size());                                                \
-    ivect::const_iterator a_it = a.begin();                                \
-    ivect::const_iterator b_it = b.begin();                                \
-    ivect::iterator r_it = result.begin();                                 \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b_it[i]); } \
-    return result;                                                         \
-  } \
-}
-IVECT_BINARY_OPERATORS( + )
-IVECT_BINARY_OPERATORS( - )
-IVECT_BINARY_OPERATORS( * )
-IVECT_BINARY_OPERATORS( / )
-IVECT_BINARY_OPERATORS( > )
-IVECT_BINARY_OPERATORS( >= )
-IVECT_BINARY_OPERATORS( < )
-IVECT_BINARY_OPERATORS( <= )
-IVECT_BINARY_OPERATORS( == )
-IVECT_BINARY_OPERATORS( != )
-#undef IVECT_BINARY_OPERATORS
+#define COMP_VECT_VECT_OPERATORS(vect_type1, vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, <,  vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, <=, vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, ==, vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, !=, vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, >,  vect_type2) \
+  VECT_VECT_OPERATORS(std::vector<bool>, vect_type1, >=, vect_type2)
 
-#define IVECT_SCALAR_BINARY_OPERATORS( scalar_type, oper ) \
-namespace vects { \
-  ivect operator##oper (const ivect& a, const scalar_type& b) {       \
-    ivect result(a.size());                                           \
-    ivect::const_iterator a_it = a.begin();                           \
-    ivect::iterator r_it = result.begin();                            \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b ); } \
-    return result;                                                    \
-  } \
-}
-IVECT_SCALAR_BINARY_OPERATORS( int, + )
-IVECT_SCALAR_BINARY_OPERATORS( int, - )
-IVECT_SCALAR_BINARY_OPERATORS( int, * )
-IVECT_SCALAR_BINARY_OPERATORS( int, / )
-IVECT_SCALAR_BINARY_OPERATORS( int, > )
-IVECT_SCALAR_BINARY_OPERATORS( int, >= )
-IVECT_SCALAR_BINARY_OPERATORS( int, < )
-IVECT_SCALAR_BINARY_OPERATORS( int, <= )
-IVECT_SCALAR_BINARY_OPERATORS( int, == )
-IVECT_SCALAR_BINARY_OPERATORS( int, != )
-#undef IVECT_SCALAR_BINARY_OPERATORS
+#define MATH_VECT_SCALAR_OPERATORS(result_type, vect_type, scalar_type) \
+  VECT_SCALAR_OPERATORS(result_type, vect_type, +, scalar_type) \
+  VECT_SCALAR_OPERATORS(result_type, vect_type, -, scalar_type) \
+  VECT_SCALAR_OPERATORS(result_type, vect_type, *, scalar_type) \
+  VECT_SCALAR_OPERATORS(result_type, vect_type, /, scalar_type)
 
-#define SCALAR_IVECT_BINARY_OPERATORS( scalar_type, oper ) \
-namespace vects { \
-  ivect operator##oper (const scalar_type& a, const ivect& b) {       \
-    ivect result(b.size());                                           \
-    ivect::const_iterator b_it = b.begin();                           \
-    ivect::iterator r_it = result.begin();                            \
-    for (int i=0; i<b.size(); i++) { r_it[i] = (a ##oper b_it[i] ); } \
-    return result;                                                    \
-  } \
-}
-SCALAR_IVECT_BINARY_OPERATORS( int, + )
-SCALAR_IVECT_BINARY_OPERATORS( int, - )
-SCALAR_IVECT_BINARY_OPERATORS( int, * )
-SCALAR_IVECT_BINARY_OPERATORS( int, / )
-#undef SCALAR_IVECT_BINARY_OPERATORS
+#define COMP_VECT_SCALAR_OPERATORS(vect_type, scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, <,  scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, <=, scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, ==, scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, !=, scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, >,  scalar_type) \
+  VECT_SCALAR_OPERATORS(std::vector<bool>, vect_type, >=, scalar_type)
 
-//------------------ IVECT & DVECT Binary ops ---------------------------
+#define MATH_SCALAR_VECT_OPERATORS(result_type, scalar_type, vect_type) \
+  SCALAR_VECT_OPERATORS(result_type, scalar_type, +, vect_type) \
+  SCALAR_VECT_OPERATORS(result_type, scalar_type, -, vect_type) \
+  SCALAR_VECT_OPERATORS(result_type, scalar_type, *, vect_type) \
+  SCALAR_VECT_OPERATORS(result_type, scalar_type, /, vect_type)
 
-#define DI_BINARY_OPERATORS( oper ) \
-namespace vects { \
-  dvect operator##oper (const dvect& a, const ivect& b) {\
-    if (a.size()!=b.size()){throw boost::python::argument_error();}        \
-    dvect result(a.size());                                                \
-    dvect::const_iterator a_it = a.begin();                                \
-    ivect::const_iterator b_it = b.begin();                                \
-    dvect::iterator r_it = result.begin();                                 \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b_it[i]); } \
-    return result;                                                         \
-  } \
-}
-DI_BINARY_OPERATORS( + )
-DI_BINARY_OPERATORS( - )
-DI_BINARY_OPERATORS( * )
-DI_BINARY_OPERATORS( / )
-DI_BINARY_OPERATORS( > )
-DI_BINARY_OPERATORS( >= )
-DI_BINARY_OPERATORS( < )
-DI_BINARY_OPERATORS( <= )
-DI_BINARY_OPERATORS( == )
-DI_BINARY_OPERATORS( != )
-#undef DI_BINARY_OPERATORS
+MATH_VECT_VECT_OPERATORS(dvect, dvect, dvect)
+COMP_VECT_VECT_OPERATORS(       dvect, dvect)
+MATH_VECT_SCALAR_OPERATORS(dvect, dvect, double)
+COMP_VECT_SCALAR_OPERATORS(       dvect, double)
+MATH_SCALAR_VECT_OPERATORS(dvect, double, dvect)
+// comparison operators not needed since Python uses reflection
 
-#define ID_BINARY_OPERATORS( oper ) \
-namespace vects { \
-  dvect operator##oper (const ivect& a, const dvect& b) { \
-    if (a.size()!=b.size()){throw boost::python::argument_error();}        \
-    dvect result(a.size());                                                \
-    ivect::const_iterator a_it = a.begin();                                \
-    dvect::const_iterator b_it = b.begin();                                \
-    dvect::iterator r_it = result.begin();                                 \
-    for (int i=0; i<a.size(); i++) { r_it[i] = (a_it[i] ##oper b_it[i]); } \
-    return result;                                                         \
-  } \
-}
-ID_BINARY_OPERATORS( + )
-ID_BINARY_OPERATORS( - )
-ID_BINARY_OPERATORS( * )
-ID_BINARY_OPERATORS( / )
-ID_BINARY_OPERATORS( > )
-ID_BINARY_OPERATORS( >= )
-ID_BINARY_OPERATORS( < )
-ID_BINARY_OPERATORS( <= )
-ID_BINARY_OPERATORS( == )
-ID_BINARY_OPERATORS( != )
-#undef ID_BINARY_OPERATORS
+MATH_VECT_VECT_OPERATORS(ivect, ivect, ivect)
+COMP_VECT_VECT_OPERATORS(       ivect, ivect)
+MATH_VECT_SCALAR_OPERATORS(ivect, ivect, int)
+COMP_VECT_SCALAR_OPERATORS(       ivect, int)
+MATH_SCALAR_VECT_OPERATORS(ivect, int, ivect)
+// comparison operators not needed since Python uses reflection
 
-//-------------------- Module ---------------------------------------
-#define all_operators (boost::python::op_mul | boost::python::op_add |\
-                       boost::python::op_div | boost::python::op_sub )
+MATH_VECT_VECT_OPERATORS(dvect, dvect, ivect)
+COMP_VECT_VECT_OPERATORS(       dvect, ivect)
+MATH_VECT_VECT_OPERATORS(dvect, ivect, dvect)
+COMP_VECT_VECT_OPERATORS(       ivect, dvect)
 
-#define comp_operators (boost::python::op_gt | boost::python::op_ge  |\
-                        boost::python::op_lt | boost::python::op_le  |\
-                        boost::python::op_eq | boost::python::op_ne)
+#undef VECT_VECT_OPERATORS
+#undef SCALAR_VECT_OPERATORS
+#undef VECT_SCALAR_OPERATORS
+#undef MATH_VECT_VECT_OPERATORS
+#undef COMP_VECT_VECT_OPERATORS
+#undef MATH_VECT_SCALAR_OPERATORS
+#undef COMP_VECT_SCALAR_OPERATORS
+#undef MATH_SCALAR_VECT_OPERATORS
 
 namespace {
 
   void init_module(boost::python::module_builder& this_module)
   {
+    (void) example::wrap_vector(this_module, "vector_of_bool", bool());
+
+    const long
+    math_operators (  boost::python::op_mul | boost::python::op_add
+                    | boost::python::op_div | boost::python::op_sub);
+    const long
+    comp_operators = (  boost::python::op_lt | boost::python::op_le
+                      | boost::python::op_eq | boost::python::op_ne
+                      | boost::python::op_gt | boost::python::op_ge);
+
     boost::python::class_builder<vects::dvect>
       dvect_class(this_module, "dvect");
     boost::python::class_builder<vects::ivect>
@@ -203,12 +130,12 @@ namespace {
     dvect_class.def(boost::python::constructor<boost::python::tuple>());
     dvect_class.def(&vects::dvect::as_tuple,"as_tuple");
 
-    dvect_class.def(boost::python::operators<all_operators>());
-    dvect_class.def(boost::python::operators<all_operators>(),
+    dvect_class.def(boost::python::operators<math_operators>());
+    dvect_class.def(boost::python::operators<math_operators>(),
       boost::python::right_operand<double>() );
-    dvect_class.def(boost::python::operators<all_operators>(),
+    dvect_class.def(boost::python::operators<math_operators>(),
       boost::python::left_operand<double>() );
-    dvect_class.def(boost::python::operators<all_operators>(),
+    dvect_class.def(boost::python::operators<math_operators>(),
       boost::python::right_operand<vects::ivect>() );
 
     dvect_class.def(boost::python::operators<comp_operators>());
@@ -221,12 +148,12 @@ namespace {
     ivect_class.def(boost::python::constructor<boost::python::tuple>());
     ivect_class.def(&vects::ivect::as_tuple,"as_tuple");
 
-    ivect_class.def(boost::python::operators<all_operators>());
-    ivect_class.def(boost::python::operators<all_operators>(),
+    ivect_class.def(boost::python::operators<math_operators>());
+    ivect_class.def(boost::python::operators<math_operators>(),
       boost::python::right_operand<int>() );
-    ivect_class.def(boost::python::operators<all_operators>(),
+    ivect_class.def(boost::python::operators<math_operators>(),
       boost::python::left_operand<int>() );
-    ivect_class.def(boost::python::operators<all_operators>(),
+    ivect_class.def(boost::python::operators<math_operators>(),
       boost::python::right_operand<vects::dvect>() );
 
     ivect_class.def(boost::python::operators<comp_operators>());
@@ -247,5 +174,5 @@ BOOST_PYTHON_MODULE_INIT(richcmp3)
     // to suppress a bogus VC60 warning.
     init_module(this_module);
   }
-  catch(...){boost::python::handle_exception();}
+  catch (...) { boost::python::handle_exception(); }
 }

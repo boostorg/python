@@ -57,5 +57,5 @@ BOOST_PYTHON_MODULE_INIT(richcmp2)
     // to suppress a bogus VC60 warning.
     init_module(this_module);
   }
-  catch(...){boost::python::handle_exception();}
+  catch (...) { boost::python::handle_exception(); }
 }
