@@ -91,11 +91,10 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          return numeric_cast<T>(
-              PyFloat_Check(intermediate)
-              ? PyFloat_AS_DOUBLE(intermediate)
-              : PyInt_AS_LONG(intermediate)
-              );
+          return PyFloat_Check(intermediate)
+              ? numeric_cast<T>(PyFloat_AS_DOUBLE(intermediate))
+              : numeric_cast<T>(PyInt_AS_LONG(intermediate))
+              ;
       }
   };
 
