@@ -1,89 +1,106 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-    <meta name="generator" content="HTML Tidy, see www.w3.org">
+
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../boost.css">
 
-    <title>Boost.Python - &lt;boost/python/return_value_policy.hpp&gt;</title>
+    <title>Boost.Python -
+    &lt;boost/python/return_value_policy.hpp&gt;</title>
+  </head>
 
+  <body>
     <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
     "header">
       <tr>
         <td valign="top" width="300">
-          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
-          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
+          <h3><a href="../../../../index.htm"><img height="86" width="277"
+          alt="C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
+        </td>
 
         <td valign="top">
           <h1 align="center">Boost.Python</h1>
 
-          <h2 align="center">Header &lt;boost/python/return_value_policy.hpp&gt;</h2>
+          <h2 align="center">Header
+          &lt;boost/python/return_value_policy.hpp&gt;</h2>
+        </td>
+      </tr>
     </table>
     <hr>
 
     <h2>Contents</h2>
 
     <dl class="page-index">
-      <dt><a href="#introduction">Introduction</a>
+      <dt><a href="#introduction">Introduction</a></dt>
 
-
-      <dt><a href="#classes">Classes</a>
+      <dt><a href="#classes">Classes</a></dt>
 
       <dd>
         <dl class="page-index">
-          <dt><a href="#return_value_policy-spec">Class Template <code>return_value_policy</code></a>
+          <dt><a href="#return_value_policy-spec">Class Template
+          <code>return_value_policy</code></a></dt>
 
           <dd>
             <dl class="page-index">
-
               <dt><a href="#return_value_policy-spec-synopsis">Class Template
-              <code>return_value_policy</code> synopsis</a>
+              <code>return_value_policy</code> synopsis</a></dt>
             </dl>
+          </dd>
         </dl>
+      </dd>
 
-
-      <dt><a href="#examples">Example</a>
+      <dt><a href="#examples">Example</a></dt>
     </dl>
     <hr>
 
     <h2><a name="introduction"></a>Introduction</h2>
-
-    <code>return_value_policy</code> instantiations are simply models
-    of <a href=
-    "CallPolicies.html">CallPolicies</a> which are composed of a <a href=
-    "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a> and optional <code>Base</code> <a href=
-    "CallPolicies.html">CallPolicies</a>.
+    <code>return_value_policy</code> instantiations are simply models of <a
+    href="CallPolicies.html">CallPolicies</a> which are composed of a <a
+    href=
+    "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a>
+    and optional <code>Base</code> <a href=
+    "CallPolicies.html">CallPolicies</a>. 
 
     <h2><a name="classes"></a>Classes</h2>
 
-    <h3><a name="return_value_policy-spec"></a>Class template <code>return_value_policy</code></h3>
-
+    <h3><a name="return_value_policy-spec"></a>Class template
+    <code>return_value_policy</code></h3>
 
     <table border="1" summary="return_value_policy template parameters">
       <caption>
         <b><code>return_value_policy</code> template parameters</b>
       </caption>
-      <tr>
-        <th>Parameter
-        
-        <th>Requirements
-
-        <th>Default
 
       <tr>
-        <td><a href="ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a>
+        <th>Parameter</th>
+
+        <th>Requirements</th>
+
+        <th>Default</th>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a></td>
 
         <td>A model of <a href=
-    "ResultConverterGenerator.html">ResultConverterGenerator</a>.
+        "ResultConverterGenerator.html">ResultConverterGenerator</a>.</td>
+      </tr>
 
       <tr>
-        <td><code>Base</code> 
+        <td><code>Base</code></td>
 
-        <td>A model of <a href="CallPolicies.html">CallPolicies</a>
+        <td>A model of <a href="CallPolicies.html">CallPolicies</a></td>
 
-        <td><code><a href="default_call_policies.html#default_call_policies-spec">default_call_policies</a></code>
-
+        <td><code><a href=
+        "default_call_policies.html#default_call_policies-spec">default_call_policies</a></code></td>
+      </tr>
     </table>
 
-    <h4><a name="return_value_policy-spec-synopsis"></a>Class template <code>return_value_policy</code> synopsis</h4>
+    <h4><a name="return_value_policy-spec-synopsis"></a>Class template
+    <code>return_value_policy</code> synopsis</h4>
 <pre>
 namespace boost { namespace python
 {
@@ -97,9 +114,9 @@ namespace boost { namespace python
 
     <h2><a name="examples"></a>Example</h2>
 
-<h3>C++ Module Definition</h3>
+    <h3>C++ Module Definition</h3>
 <pre>
-#include &lt;boost/python/module.hpp&gt;
+#include &lt;boost/python/module_init.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/copy_const_reference.hpp&gt;
 #include &lt;boost/python/return_value_policy.hpp&gt;
@@ -118,20 +135,16 @@ struct Foo {
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
-   module("my_module")
-      .add(
-         class_&lt;Bar&gt;()
-         )
-      .add(
-         class_&lt;Foo&gt;()
-            .def_init(args&lt;int&gt;())
-            .def("get_bar", &amp;Foo::get_bar
-                , return_value_policy&lt;copy_const_reference&gt;())
-         )
-       ;
+   class_&lt;Bar&gt;("Bar");
+
+   class_&lt;Foo&gt;("Foo", init&lt;int&gt;())
+      .def("get_bar", &amp;Foo::get_bar
+          , return_value_policy&lt;copy_const_reference&gt;())
+      ;
 }
 </pre>
-<h3>Python Code</h3>
+
+    <h3>Python Code</h3>
 <pre>
 &gt;&gt;&gt; from my_module import *
 &gt;&gt;&gt; f = Foo(3)         # create a Foo object
@@ -140,9 +153,13 @@ BOOST_PYTHON_MODULE_INIT(my_module)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-    15 February, 2002
+     15 February, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
 
-    <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
-    Abrahams</a> 2002. All Rights Reserved.</i>
+    <p><i>&copy; Copyright <a href=
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All Rights
+    Reserved.</i></p>
+  </body>
+</html>
 

@@ -116,7 +116,7 @@ using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
     def("make_foo", make_foo, return_value_policy&lt;manage_new_object&gt;())
-    class_&lt;Foo&gt;()
+    class_&lt;Foo&gt;("Foo")
         .def("get_x", &amp;Foo::get_x)
         ;
 }

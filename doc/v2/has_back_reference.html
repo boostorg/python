@@ -13,7 +13,7 @@
  p.c3 {font-style: italic}
  h2.c2 {text-align: center}
  h1.c1 {text-align: center}
-        </style>
+            </style>
   </head>
 
   <body>
@@ -97,8 +97,8 @@ namespace boost { namespace python
 
       <dt>Specializations may substitute a value convertible to
       <code>true</code> for <code>value</code> iff for each invocation of
-      <code>class_&lt;WrappedClass&gt;::def_init(args&lt;</code><i>type-sequence...</i>
-      <code>&gt;())</code>, there exists a corresponding constructor
+      <code>class_&lt;WrappedClass&gt;::def(init&lt;</code><i>type-sequence...</i><code>
+      &gt;())</code>, there exists a corresponding constructor
       <code>WrappedClass::WrappedClass(PyObject*,&nbsp;</code><i>type-sequence...</i>
       <code>)</code>. If such a specialization exists, the
       <code>WrappedClass</code> constructors will be called with a "back

@@ -186,13 +186,12 @@ class Foo
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(internal_refs)
 {
-   class_&lt;Bar&gt;()
+   class_&lt;Bar&gt;("Bar")
       .def("get_x", &amp;Bar::get_x)
       .def("set_x", &amp;Bar::set_x)
       ;
 
-   class_&lt;Foo&gt;()
-      .def_init(args&lt;int&gt;())
+   class_&lt;Foo&gt;("Foo", init&lt;int&gt;())
       .def("get_bar", &amp;Foo::get_bar
           , return_internal_reference&lt;&gt;())
       ;

@@ -144,7 +144,7 @@ using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(singleton)
 {
     def("get_it", get_it, reference_existing_object());
-    class_&lt;Singleton&gt;()
+    class_&lt;Singleton&gt;("Singleton")
        .def("exchange", &amp;Singleton::exchange)
        ;
 }
