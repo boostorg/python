@@ -6,38 +6,48 @@
 #ifndef MAKE_KEYWORD_RANGE_FN_DWA2002927_HPP
 # define MAKE_KEYWORD_RANGE_FN_DWA2002927_HPP
 
+# include <boost/python/make_function.hpp>
 # include <boost/python/args_fwd.hpp>
-# include <boost/python/detail/caller.hpp>
-# include <boost/python/object/function_object.hpp>
+
 # include <boost/python/object/make_holder.hpp>
+
+# include <boost/mpl/size.hpp>
+
 
 namespace boost { namespace python { namespace detail { 
 
+// Think of this as a version of make_function without a compile-time
+// check that the size of kw is no greater than the expected arity of
+// F. This version is needed when defining functions with default
+// arguments, because compile-time information about the number of
+// keywords is missing for all but the initial function definition.
 template <class F, class Policies>
 object make_keyword_range_function(F f, Policies const& policies, keyword_range const& kw)
 {
-    enum { n_arguments = detail::arg_tuple_size<F>::value };
-    return objects::function_object(
-        ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, policies)
-        , n_arguments
-        , kw);
+    return detail::make_function_aux(
+        f, policies, args_from_python(), detail::get_signature(f), kw, mpl::int_c<0>());
 }
 
-template <class ArgList, class HolderGenerator, class Policies>
+// Builds an '__init__' function which inserts the given Holder type
+// in a wrapped C++ class instance. ArgList is an MPL type sequence
+// describing the C++ argument types to be passed to Holder's
+// constructor.
+//
+// Holder and ArgList are intended to be explicitly specified. 
+template <class ArgList, class Holder, class CallPolicies>
 object make_keyword_range_constructor(
-    Policies const& policies
-    , detail::keyword_range const& kw
-    , HolderGenerator* = 0
+    CallPolicies const& policies        // The CallPolicies with which to invoke the Holder's constructor
+    , detail::keyword_range const& kw   // The (possibly empty) set of associated argument keywords
+    , Holder* = 0                       
     , ArgList* = 0)
 {
-    enum { nargs = mpl::size<ArgList>::value };
+    BOOST_STATIC_CONSTANT(unsigned, arity = mpl::size<ArgList>::value);
     
-    return objects::function_object(
-            ::boost::bind<PyObject*>(detail::caller(),
-                 objects::make_holder<nargs>
-                            ::template apply<HolderGenerator,ArgList>::execute
-                 , _1, _2, policies)
-        , nargs + 1, kw);
+    return detail::make_keyword_range_function(
+        objects::make_holder<arity>
+            ::template apply<Holder,ArgList>::execute
+        , policies
+        , kw);
 }
 
 }}} // namespace boost::python::detail

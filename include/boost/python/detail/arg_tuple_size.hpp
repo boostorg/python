@@ -1,3 +1,4 @@
+#error obsolete
 #if !defined(BOOST_PP_IS_ITERATING)
 
 //  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and

@@ -3,6 +3,17 @@
 
 >>> from m2 import *
 
+   Prove that we get an appropriate error from trying to return a type
+   for which we have no registered to_python converter
+
+>>> try:
+...     make_unregistered(1)
+... except TypeError, x:
+...     if not str(x).startswith('No to_python (by-value) converter found for C++ type'):
+...         print str(x)
+... else:
+...     print 'expected a TypeError'
+
 >>> n = new_noddy()
 >>> s = new_simple()
 >>> unwrap_int(n)

@@ -107,12 +107,8 @@ namespace detail
   };
 }
 
-//
-// class_<T,Bases,HolderGenerator>
-//
-//      This is the primary mechanism through which users will expose
-//      C++ classes to Python. The three template arguments are:
-//
+// This is the primary mechanism through which users will expose
+// C++ classes to Python.
 template <
     class T // class being wrapped
     , class X1 // = detail::not_specified

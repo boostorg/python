@@ -27,10 +27,15 @@ struct rvalue_from_python_chain
     rvalue_from_python_chain* next;
 };
 
-struct registration
+struct BOOST_PYTHON_DECL registration
 {
+ public: // member functions
     explicit registration(type_info);
     
+    // Convert the appropriately-typed data to Python
+    PyObject* to_python(void const volatile*) const;
+
+ public: // data members. So sue me.
     const python::type_info target_type;
 
     // The chain of eligible from_python converters when an lvalue is required
@@ -39,11 +44,11 @@ struct registration
     // The chain of eligible from_python converters when an rvalue is acceptable
     rvalue_from_python_chain* rvalue_chain;
     
-    // The unique to_python converter for the associated C++ type.
-    to_python_function_t to_python;
-
     // The class object associated with this type
     PyTypeObject* class_object;
+
+    // The unique to_python converter for the associated C++ type.
+    to_python_function_t m_to_python;
 };
 
 //
@@ -53,7 +58,7 @@ inline registration::registration(type_info target_type)
     : target_type(target_type)
       , lvalue_chain(0)
       , rvalue_chain(0)
-      , to_python(0)
+      , m_to_python(0)
       , class_object(0)
 {}
 

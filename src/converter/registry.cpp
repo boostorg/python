@@ -69,7 +69,7 @@ namespace registry
 #  ifdef BOOST_PYTHON_TRACE_REGISTRY
       std::cout << "inserting to_python " << source_t << "\n";
 #  endif 
-      to_python_function_t& slot = get(source_t)->to_python;
+      to_python_function_t& slot = get(source_t)->m_to_python;
       
       assert(slot == 0); // we have a problem otherwise
       if (slot != 0)

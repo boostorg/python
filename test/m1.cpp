@@ -199,6 +199,9 @@ D take_d_shared_ptr(boost::shared_ptr<D> d) { return *d; }
 
 boost::shared_ptr<A> d_factory() { return boost::shared_ptr<B>(new D); }
 
+struct Unregistered {};
+Unregistered make_unregistered(int) { return Unregistered(); }
+
 BOOST_PYTHON_MODULE(m1)
 {
     using namespace boost::python;
@@ -221,6 +224,8 @@ BOOST_PYTHON_MODULE(m1)
     
     def("new_noddy", new_noddy);
     def("new_simple", new_simple);
+
+    def("make_unregistered", make_unregistered);
 
       // Expose f() in all its variations
     def("f", f);

@@ -7,10 +7,9 @@
 # define FUNCTION_HANDLE_DWA2002725_HPP
 # include <boost/python/handle.hpp>
 # include <boost/python/detail/caller.hpp>
-# include <boost/python/detail/arg_tuple_size.hpp>
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/object/py_function.hpp>
-# include <boost/bind.hpp>
+# include <boost/python/signature.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -19,10 +18,16 @@ BOOST_PYTHON_DECL handle<> function_handle_impl(py_function const& f, unsigned m
 // Just like function_object, but returns a handle<> instead. Using
 // this for arg_to_python<> allows us to break a circular dependency
 // between object and arg_to_python.
-template <class F>
-inline handle<> function_handle(F const& f, unsigned min_args, unsigned max_args = 0)
+template <class F, class Signature>
+inline handle<> function_handle(F const& f, Signature)
 {
-    return objects::function_handle_impl(objects::py_function(f), min_args, max_args);
+    enum { n_arguments = mpl::size<Signature>::value - 1 };
+
+    return objects::function_handle_impl(
+        python::detail::caller<
+        F,python::detail::args_from_python,default_call_policies,Signature>(
+            f, default_call_policies())
+        , n_arguments, n_arguments);
 }
 
 // Just like make_function, but returns a handle<> intead. Same
@@ -30,9 +35,7 @@ inline handle<> function_handle(F const& f, unsigned min_args, unsigned max_args
 template <class F>
 handle<> make_function_handle(F f)
 {
-    return objects::function_handle(
-        ::boost::bind<PyObject*>(python::detail::caller(), f, _1, _2, default_call_policies())
-        , python::detail::arg_tuple_size<F>::value);
+    return objects::function_handle(f, python::detail::get_signature(f));
 }
 
 }}} // namespace boost::python::objects
