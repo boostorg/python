@@ -29,6 +29,30 @@
     <hr>
 
     <dl class="page-index">
+      <dt>1 August 2003</dt>
+
+      <dd>Added the new <code>arg</code> class <a href=
+      "mailto:nickm-at-sitius.com">Nikolay Mladenov</a> which supplies
+      the ability to wrap functions that can be called with ommitted
+      arguments in the middle:
+<pre>
+void f(int x = 0, double y = 3.14, std::string z = std::string(&quot;foo&quot;));
+
+BOOST_PYTHON_MODULE(test)
+{
+   def(&quot;f&quot;, f
+       , (arg(&quot;x&quot;, 0), arg(&quot;y&quot;, 3.14), arg(&quot;z&quot;, &quot;foo&quot;)));
+}
+  </pre>
+And in Python:
+<pre>
+&gt;&gt;&gt; import test
+&gt;&gt;&gt; f(0, z = &quot;bar&quot;)
+&gt;&gt;&gt; f(z = &quot;bar&quot;, y = 0.0)
+</pre>
+
+ Thanks, Nikolay!</dd>
+
       <dt>22 July 2003</dt>
 
       <dd>Killed the dreaded "bad argument type for builtin operation" error.
@@ -36,7 +60,9 @@
 
       <dt>19 July 2003</dt>
 
-      <dd>Added the new <code>return_arg</code> policy from <a href=
+      <dd>Added the new <code><a
+      href="v2/return_arg.html">return_arg</a></code> policy from <a
+      href=
       "mailto:nickm-at-sitius.com">Nikolay Mladenov</a>. Thanks,
       Nikolay!</dd>
 
@@ -117,7 +143,7 @@
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     18 March, 2003 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     1 August 2003 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href="../../../people/dave_abrahams.htm">Dave
