@@ -197,6 +197,7 @@ namespace api
 # endif
   };
 
+  
   // VC6 and VC7 require this base class in order to generate the
   // correct copy constructor for object. We can't define it there
   // explicitly or it will complain of ambiguity.
@@ -216,6 +217,47 @@ namespace api
       PyObject* m_ptr;
   };
 
+  template <class T, class U>
+  struct is_derived_impl
+  {
+      static T x;
+      template <class X>
+      static X* to_pointer(X const&);
+      
+      static char test(U const*);
+      typedef char (&no)[2];
+      static no test(...);
+
+      BOOST_STATIC_CONSTANT(bool, value = sizeof(test(to_pointer(x))) == 1);
+  };
+  
+  template <class T, class U>
+  struct is_derived
+    : mpl::bool_<is_derived_impl<T,U>::value>
+  {};
+
+  template <class T>
+  typename objects::unforward_cref<T>::type do_unforward_cref(T const& x)
+  {
+      return x;
+  }
+
+  class object;
+  
+  template <class T>
+  PyObject* object_base_initializer(T const& x)
+  {
+      return object_initializer<
+          BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
+      >::get(
+            api::do_unforward_cref(x)
+          , is_derived<
+               BOOST_DEDUCED_TYPENAME objects::unforward_cref<T>::type
+             , object
+          >()
+      );
+  }
+  
   class object : public object_base
   {
    public:
@@ -225,13 +267,7 @@ namespace api
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
-        : object_base(
-            object_initializer<
-                BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
-            >::get(
-                object::do_unforward(x)
-              , is_convertible<T*, object const*>()
-          ))
+        : object_base(object_base_initializer(x))
       {
       }
 
@@ -239,12 +275,6 @@ namespace api
       BOOST_PYTHON_DECL explicit object(handle<> const&);
    private:
       
-      template <class T>
-      typename objects::unforward_cref<T>::type do_unforward(T const& x)
-      {
-          return x;
-      }
-
    public: // implementation detail -- for internal use only
       explicit object(detail::borrowed_reference);
       explicit object(detail::new_reference);
