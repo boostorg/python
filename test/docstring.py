@@ -34,7 +34,8 @@ def run(args = None):
     result = doctest.testmod(sys.modules.get(__name__))
     
     import pydoc
-    docmodule = pydoc.TextDoc().docmodule
+    import re
+    docmodule = lambda m: re.sub(".\10", "", pydoc.text.docmodule(m))
     try:
         print 'printing module help:'
         print docmodule(docstring_ext)
