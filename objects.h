@@ -170,7 +170,7 @@ class String
     friend String operator+(String x, const char* y);
     friend String operator+(const char* x, String y);
 
-    void intern(); // UNTESTED!!
+    void intern();
 
     friend String operator%(const String& format, const Tuple& args);
 };
