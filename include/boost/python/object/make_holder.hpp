@@ -30,13 +30,6 @@ namespace boost { namespace python { namespace objects {
 
 template <int nargs> struct make_holder;
 
-// Temporary workaround for vc6 bug. Hopefully Aleksey will work
-// around it in the MPL source somehow... is this an example of ETI?
-template <class T> struct delay
-{
-    typedef typename T::type type;
-};
-
 #  define BOOST_PYTHON_FORWARD_ARG(z, index, _)             \
     typedef typename iter##index::type t##index;        \
     typedef typename forward<t##index>::type f##index;  \
@@ -67,7 +60,7 @@ struct make_holder<N>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename delay<mpl::begin<ArgList> >::type iter0;
+        typedef typename mpl::begin<ArgList>::type iter0;
         BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FORWARD_ARG, nil)
         static void execute(
             PyObject* p
