@@ -18,22 +18,26 @@ namespace boost { namespace python {
 	
 class slice : public object
 {
+ private:
+    // Helper function to work around bugs in MSVC 6
+    BOOST_PYTHON_DECL
+    static object new_slice(PyObject*, PyObject*, PyObject*);
+
  public:
 	// Equivalent to slice(::)
+	BOOST_PYTHON_DECL
 	slice();
 
 	// Each argument must be int, slice_nil, or implicitly convertable to int
 	template<typename Integer1, typename Integer2>
 	slice( Integer1 start, Integer2 stop)
-		: object( boost::python::detail::new_reference( 
-		 PySlice_New( object(start).ptr(), object(stop).ptr(), NULL)))
+		: object( new_slice( object(start).ptr(), object(stop).ptr(), NULL))
 	{}
 	
 	template<typename Integer1, typename Integer2, typename Integer3>
 	slice( Integer1 start, Integer2 stop, Integer3 stride)
-		: object( boost::python::detail::new_reference( 
-			PySlice_New( object(start).ptr(), object(stop).ptr(), 
-			object(stride).ptr())))
+		: object( 
+         new_slice( object(start).ptr(), object(stop).ptr(), object(stride).ptr()))
 	{}
 		
 	// Get the Python objects associated with the slice.  In principle, these 

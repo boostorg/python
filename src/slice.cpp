@@ -8,6 +8,12 @@
 
 namespace boost { namespace python {
 
+object
+slice::new_slice(PyObject* start, PyObject* stop, PyObject* step)
+{
+    return object(detail::new_reference( PySlice_New(start, stop, step)));
+}
+
 slice::slice()
 	: object( boost::python::detail::new_reference( 
 		PySlice_New( NULL, NULL, NULL)))

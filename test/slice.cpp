@@ -37,17 +37,17 @@ bool check_string_rich_slice()
 bool check_numeric_array_rich_slice()
 {
     using numeric::array;
-    object original = array( make_tuple( make_tuple( 11, 12, 13, 14),
+    array original = array( make_tuple( make_tuple( 11, 12, 13, 14),
                                         make_tuple( 21, 22, 23, 24),
                                         make_tuple( 31, 32, 33, 34),
                                         make_tuple( 41, 42, 43, 44)));
-    object upper_left_quadrant = array( make_tuple( make_tuple( 11, 12),
+    array upper_left_quadrant = array( make_tuple( make_tuple( 11, 12),
                                                    make_tuple( 21, 22)));
-    object odd_cells = array( make_tuple( make_tuple( 11, 13),
+    array odd_cells = array( make_tuple( make_tuple( 11, 13),
                                           make_tuple( 31, 33)));
-    object even_cells = array( make_tuple( make_tuple( 22, 24),
+    array even_cells = array( make_tuple( make_tuple( 22, 24),
                                            make_tuple( 42, 44)));
-    object lower_right_quadrant_reversed = array(
+    array lower_right_quadrant_reversed = array(
         make_tuple( make_tuple(44, 43),
                     make_tuple(34, 33)));
 
