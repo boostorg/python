@@ -1216,7 +1216,7 @@ struct returning<void>
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
     template <class P>
-    static PyObject* call(R (*pf)(), PyObject*, PyObject*, P const& policies)
+    static PyObject* call(R (*pf)(), PyObject* args, PyObject*, P const& policies)
     {
         (*pf)();
         
