@@ -24,7 +24,9 @@
 #include <algorithm>
 #include <cstring>
 
-#include <stdio.h>
+#if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
+# include <cstdio>
+#endif
 
 namespace boost { namespace python { namespace objects { 
 
@@ -224,7 +226,9 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
 
     message += str("\n    ").join(signatures);
 
-    printf("\n--------\n%s\n--------\n", extract<const char*>(message)());
+#if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
+    std::printf("\n--------\n%s\n--------\n", extract<const char*>(message)());
+#endif 
     PyErr_SetObject(exception.get(), message.ptr());
     throw_error_already_set();
 }
