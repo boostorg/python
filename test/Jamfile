@@ -51,10 +51,6 @@ rule bpl-test ( name ? : files * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
-bpl-test bienstman1 ;
-bpl-test bienstman2 ;
-bpl-test bienstman3 ;
-bpl-test bienstman4 ;
 bpl-test try : newtest.py m1.cpp m2.cpp ;
 bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters.cpp ;
 bpl-test test_pointer_adoption ;
@@ -63,6 +59,15 @@ bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;
 bpl-test data_members ;
+
+bpl-test bienstman1 ;
+bpl-test bienstman2 ;
+bpl-test bienstman3 ;
+if $(TEST_BIENSTMAN_NON_BUGS)
+{
+    bpl-test bienstman4 ;
+    bpl-test bienstman5 ;
+}
 
 # --- unit tests of library components ---
 unit-test indirect_traits_test
