@@ -61,7 +61,9 @@ run ../test/embedding.cpp <dll>../build/boost_python
   : # requirements
   $(PYTHON_PROPERTIES)
     <library-path>$(PYTHON_LIB_PATH)
-    <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
+      <$(gcc-compilers)><debug-python><library-path>$(CYGWIN_PYTHON_DEBUG_DLL_PATH)
+        <$(gcc-compilers)><*><library-path>$(CYGWIN_PYTHON_DLL_PATH)
+          <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
 
 bpl-test staticmethod ;
 bpl-test shared_ptr ;
