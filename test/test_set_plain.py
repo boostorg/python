@@ -21,11 +21,11 @@
 '''>>> from testnonlinear import *
 >>> setTrace(0)
 >>> s = Set()                            # std::set<std::string>
->>> s["hello"] = None                    # Insert entry (weird interface)
+>>> s.insert("hello")                    # Insert entry
 >>> print s["hello"]                     # Lookup entry
 hello
->>> s.insert ("Barnaby")                 # Insert entry (sensible interface)
->>> print s["Barnaby"]
+>>> s.insert ("Barnaby")                 # Insert another entry
+>>> print s["Barnaby"]                   # Lookup entry
 Barnaby
 >>> assert s.has_key ("Barnaby")
 >>> assert not s.has_key ("Rudge")
