@@ -157,7 +157,7 @@ void report_missing_instance_data(
     }
     else    
     {
-        two_string_error(PyExc_TypeError, "extension class '%.*s' is not derived from '%.*s'.",
+        two_string_error(PyExc_TypeError, "extension class '%.*s' is not convertible into '%.*s'.",
                          instance->ob_type->tp_name, target_class->tp_name);
     }
 }
@@ -216,6 +216,66 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
     : Class<ExtensionInstance>(
         extension_meta_class(), String(name), Tuple(), Dict())
 {
+}
+
+//  This function is used in from_python() to convert wrapped classes that are 
+//  related by inheritance. The problem is this: although C++ provides all necessary 
+//  conversion operators, source and target of a conversion must be known at compile
+//  time. However, in Python we want to convert classes at runtime. The solution is to
+//  generate conversion functions at compile time, register them within the appropriate 
+//  class objects and call them when a particular runtime conversion is required.
+
+//  If functions for any possible conversion have to be stored, their number will grow 
+//  qudratically. To reduce this number, we actually store only conversion functions
+//  between adjacent levels in the inheritance tree. By traversing the tree recursively,
+//  we can build any allowed conversion as a concatenation of simple conversions. This
+//  traversal is done in the functions try_base_class_conversions() and 
+//  try_derived_class_conversions(). If a particular conversion is impossible, all
+//  conversion functions will return a NULL pointer.
+
+//  The function extract_object_from_holder() attempts to actually extract the pointer 
+//  to the contained object from an InstanceHolderBase (a wrapper class). A conversion
+//  of the held object to 'T *' is allowed when the conversion 
+//  'dynamic_cast<InstanceHolder<T> *>(an_instance_holder_base)' succeeds.
+void* ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) const
+{
+    void* result = try_derived_class_conversions(object);
+    if(result) 
+        return result;
+    
+    return try_base_class_conversions(object);
+}
+
+void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object) const
+{
+    for (std::size_t i = 0; i < base_classes().size(); ++i)
+    {
+        if(base_classes()[i].convert == 0) 
+            continue;
+        void* result1 = base_classes()[i].class_object->extract_object_from_holder(object);
+        if (result1)
+            return (*base_classes()[i].convert)(result1);
+        
+        void* result2 = base_classes()[i].class_object->try_base_class_conversions(object);
+        if (result2)
+            return (*base_classes()[i].convert)(result2);
+    }
+    return 0;
+}
+
+void* ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase* object) const
+{
+    for (std::size_t i = 0; i < derived_classes().size(); ++i)
+    {
+        void* result1 = derived_classes()[i].class_object->extract_object_from_holder(object);
+        if (result1) 
+            return (*derived_classes()[i].convert)(result1);
+        
+        void* result2 = derived_classes()[i].class_object->try_derived_class_conversions(object);
+        if (result2) 
+            return (*derived_classes()[i].convert)(result2);
+    }
+    return 0;
 }
 
 void ExtensionClassBase::add_method(Function* method, const char* name)

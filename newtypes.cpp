@@ -86,21 +86,13 @@ static MethodStruct* enable_method(const MethodStruct* base, MemberPtr p, Fn f)
     return const_cast<MethodStruct*>(detail::UniquePodSet::instance().get(new_value));
 }
 
-// TODO: is there a problem with calling convention here, or can I really pass a
-// pointer to a C++ linkage function as a C-linkage function pointer? The
-// compilers seem to swallow it, but is it legal? Symantec C++ for Mac didn't
-// behave this way, FWIW.
-// Using C++ linkage allows us to keep the virtual function members of
-// TypeObjectBase private and use friendship to get them called.
+namespace {
 
-extern "C" {
-
-static PyObject* do_instance_repr(PyObject* instance)
+PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*) const)
 {
     try
     {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_repr(instance);
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
     }
     catch(...)
     {
@@ -109,12 +101,14 @@ static PyObject* do_instance_repr(PyObject* instance)
     }
 }
 
-static int do_instance_compare(PyObject* instance, PyObject* other)
+// Naming this differently allows us to use it for functions returning long on
+// compilers without partial ordering
+template <class R>
+R int_call(PyObject* instance, R (TypeObjectBase::*f)(PyObject*) const)
 {
     try
     {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_compare(instance, other);
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
     }
     catch(...)
     {
@@ -123,12 +117,18 @@ static int do_instance_compare(PyObject* instance, PyObject* other)
     }
 }
 
-static PyObject* do_instance_str(PyObject* instance)
+// Implemented in terms of int_call, above
+int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
+{
+    return int_call(instance, f);
+}
+
+template <class A1>
+PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
 {
     try
     {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_str(instance);
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
     }
     catch(...)
     {
@@ -137,12 +137,40 @@ static PyObject* do_instance_str(PyObject* instance)
     }
 }
 
-static long do_instance_hash(PyObject* instance)
+template <class A1>
+int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
 {
     try
     {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_hash(instance);
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
+    }
+    catch(...)
+    {
+        handle_exception();
+        return -1;
+    }
+}
+
+template <class A1, class A2>
+PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
+{
+    try
+    {
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
+    }
+    catch(...)
+    {
+        handle_exception();
+        return 0;
+    }
+}
+    
+template <class A1, class A2>
+int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
+{
+    try
+    {
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
     }
     catch(...)
     {
@@ -151,18 +179,68 @@ static long do_instance_hash(PyObject* instance)
     }
 }
     
-static PyObject* do_instance_call(PyObject* instance, PyObject* args, PyObject* keywords)
+template <class A1, class A2, class A3>
+int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2, A3) const, A1 a1, A2 a2, A3 a3)
 {
     try
     {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_call(instance, args, keywords);
+        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2, a3);
     }
     catch(...)
     {
         handle_exception();
-        return 0;
+        return -1;
     }
+}
+
+int call_length_function(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
+{
+    try
+    {
+        const int outcome =
+            (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
+        
+        if (outcome < 0)
+        {
+            PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
+            return -1;
+        }
+        return outcome;
+    }
+    catch(...)
+    {
+        handle_exception();
+        return -1;
+    }
+}
+
+}
+
+extern "C" {
+
+static PyObject* do_instance_repr(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_repr);
+}
+
+static int do_instance_compare(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_compare, other);
+}
+
+static PyObject* do_instance_str(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_str);
+}
+
+static long do_instance_hash(PyObject* instance)
+{
+    return int_call(instance, &TypeObjectBase::instance_hash);
+}
+    
+static PyObject* do_instance_call(PyObject* instance, PyObject* args, PyObject* keywords)
+{
+    return call(instance, &TypeObjectBase::instance_call, args, keywords);
 }
 
 static void do_instance_dealloc(PyObject* instance)
@@ -181,88 +259,29 @@ static void do_instance_dealloc(PyObject* instance)
 
 static PyObject* do_instance_getattr(PyObject* instance, char* name)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_getattr(instance, name);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
+    const char* name_ = name;
+    return call(instance, &TypeObjectBase::instance_getattr, name_);
 }
 
 static int do_instance_setattr(PyObject* instance, char* name, PyObject* value)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_setattr(instance, name, value);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    const char* name_ = name;
+    return call(instance, &TypeObjectBase::instance_setattr, name_, value);
 }
 
 static int do_instance_mp_length(PyObject* instance)
 {
-    try
-    {
-        const int outcome =
-            static_cast<TypeObjectBase*>(instance->ob_type)
-                ->instance_mapping_length(instance);
-        
-        if (outcome < 0)
-        {
-            PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
-            return -1;
-        }
-        return outcome;
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    return call_length_function(instance, &TypeObjectBase::instance_mapping_length);
 }
 
 static int do_instance_sq_length(PyObject* instance)
 {
-    try
-    {
-        const int outcome =
-            static_cast<TypeObjectBase*>(instance->ob_type)
-                ->instance_sequence_length(instance);
-        
-        if (outcome < 0)
-        {
-            PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
-            return -1;
-        }
-        return outcome;
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    return call_length_function(instance, &TypeObjectBase::instance_sequence_length);
 }
 
 static PyObject* do_instance_mp_subscript(PyObject* instance, PyObject* index)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_mapping_subscript(instance, index);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
+    return call(instance, &TypeObjectBase::instance_mapping_subscript, index);
 }
 
 static PyObject* do_instance_sq_item(PyObject* instance, int index)
@@ -293,88 +312,149 @@ static PyObject* do_instance_sq_item(PyObject* instance, int index)
 
 static int do_instance_mp_ass_subscript(PyObject* instance, PyObject* index, PyObject* value)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_mapping_ass_subscript(instance, index, value);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    return call(instance, &TypeObjectBase::instance_mapping_ass_subscript, index, value);
 }
 
 static int do_instance_sq_ass_item(PyObject* instance, int index, PyObject* value)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_sequence_ass_item(instance, index, value);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    return call(instance, &TypeObjectBase::instance_sequence_ass_item, index, value);
 }
 
 static PyObject* do_instance_sq_concat(PyObject* instance, PyObject* other)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_sequence_concat(instance, other);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
+    return call(instance, &TypeObjectBase::instance_sequence_concat, other);
 }
 
 static PyObject* do_instance_sq_repeat(PyObject* instance, int n)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_sequence_repeat(instance, n);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
+    return call(instance, &TypeObjectBase::instance_sequence_repeat, n);
 }
 
 static PyObject* do_instance_sq_slice(
     PyObject* instance, int start, int finish)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_sequence_slice(instance, start, finish);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
+    return call(instance, &TypeObjectBase::instance_sequence_slice, start, finish);
 }
 
 static int do_instance_sq_ass_slice(
     PyObject* instance, int start, int finish, PyObject* value)
 {
-    try
-    {
-        return static_cast<TypeObjectBase*>(instance->ob_type)
-            ->instance_sequence_ass_slice(instance, start, finish, value);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
+    return call(instance, &TypeObjectBase::instance_sequence_ass_slice, start, finish, value);
+}
+
+static PyObject* do_instance_nb_add(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_add, other);
+}
+
+static PyObject* do_instance_nb_subtract(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_subtract, other);
+}
+
+static PyObject* do_instance_nb_multiply(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_multiply, other);
+}
+
+static PyObject* do_instance_nb_divide(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_divide, other);
+}
+
+static PyObject* do_instance_nb_remainder(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_remainder, other);
+}
+
+static PyObject* do_instance_nb_divmod(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_divmod, other);
+}
+
+static PyObject* do_instance_nb_power(PyObject* instance, PyObject* exponent, PyObject* modulus)
+{
+    return call(instance, &TypeObjectBase::instance_number_power, exponent, modulus);
+}
+
+static PyObject* do_instance_nb_negative(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_negative);
+}
+
+static PyObject* do_instance_nb_positive(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_positive);
+}
+
+static PyObject* do_instance_nb_absolute(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_absolute);
+}
+
+static int do_instance_nb_nonzero(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_nonzero);
+}
+
+static PyObject* do_instance_nb_invert(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_invert);
+}
+
+    
+static PyObject* do_instance_nb_lshift(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_lshift, other);
+}
+
+static PyObject* do_instance_nb_rshift(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_rshift, other);
+}
+
+static PyObject* do_instance_nb_and(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_and, other);
+}
+
+static PyObject* do_instance_nb_xor(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_xor, other);
+}
+
+static PyObject* do_instance_nb_or(PyObject* instance, PyObject* other)
+{
+    return call(instance, &TypeObjectBase::instance_number_or, other);
+}
+
+static int do_instance_nb_coerce(PyObject**instance, PyObject**other)
+{
+    return call(*instance, &TypeObjectBase::instance_number_coerce, instance, other);
+}
+static PyObject* do_instance_nb_int(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_int);
+}
+
+static PyObject* do_instance_nb_long(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_long);
+}
+
+static PyObject* do_instance_nb_float(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_float);
+}
+
+static PyObject* do_instance_nb_oct(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_oct);
+}
+
+static PyObject* do_instance_nb_hex(PyObject* instance)
+{
+    return call(instance, &TypeObjectBase::instance_number_hex);
 }
 
 }
@@ -402,6 +482,7 @@ template <std::size_t> struct category_type;
 
 DECLARE_CAPABILITY_TYPE(mapping, PyMappingMethods);
 DECLARE_CAPABILITY_TYPE(sequence, PySequenceMethods);
+DECLARE_CAPABILITY_TYPE(number, PyNumberMethods);
 
 const CapabilityEntry capabilities[] = {
     CAPABILITY(hash),
@@ -422,7 +503,31 @@ const CapabilityEntry capabilities[] = {
     CAPABILITY2(sequence, sq_concat),
     CAPABILITY2(sequence, sq_repeat),
     CAPABILITY2(sequence, sq_slice),
-    CAPABILITY2(sequence, sq_ass_slice)
+    CAPABILITY2(sequence, sq_ass_slice),
+
+    CAPABILITY2(number, nb_add),
+    CAPABILITY2(number, nb_subtract),
+    CAPABILITY2(number, nb_multiply),
+    CAPABILITY2(number, nb_divide),
+    CAPABILITY2(number, nb_remainder),
+    CAPABILITY2(number, nb_divmod),
+    CAPABILITY2(number, nb_power),
+    CAPABILITY2(number, nb_negative),
+    CAPABILITY2(number, nb_positive),
+    CAPABILITY2(number, nb_absolute),
+    CAPABILITY2(number, nb_nonzero),
+    CAPABILITY2(number, nb_invert),
+    CAPABILITY2(number, nb_lshift),
+    CAPABILITY2(number, nb_rshift),
+    CAPABILITY2(number, nb_and),
+    CAPABILITY2(number, nb_xor),
+    CAPABILITY2(number, nb_or),
+    CAPABILITY2(number, nb_coerce),
+    CAPABILITY2(number, nb_int),
+    CAPABILITY2(number, nb_long),
+    CAPABILITY2(number, nb_float),
+    CAPABILITY2(number, nb_oct),
+    CAPABILITY2(number, nb_hex)
 };
 
   const std::size_t num_capabilities = PY_ARRAY_LENGTH(capabilities);
@@ -619,6 +724,121 @@ PyObject* TypeObjectBase::instance_sequence_slice(PyObject*, int, int) const
 int TypeObjectBase::instance_sequence_ass_slice(PyObject*, int, int, PyObject*) const
 {
     return unimplemented("instance_sequence_ass_slice");
+}
+
+PyObject* TypeObjectBase::instance_number_add(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_add");
+}
+
+PyObject* TypeObjectBase::instance_number_subtract(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_subtract");
+}
+
+PyObject* TypeObjectBase::instance_number_multiply(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_multiply");
+}
+
+PyObject* TypeObjectBase::instance_number_divide(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_divide");
+}
+
+PyObject* TypeObjectBase::instance_number_remainder(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_remainder");
+}
+
+PyObject* TypeObjectBase::instance_number_divmod(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_divmod");
+}
+
+PyObject* TypeObjectBase::instance_number_power(PyObject*, PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_divmod");
+}
+
+PyObject* TypeObjectBase::instance_number_negative(PyObject*) const
+{
+    return unimplemented("instance_number_negative");
+}
+
+PyObject* TypeObjectBase::instance_number_positive(PyObject*) const
+{
+    return unimplemented("instance_number_positive");
+}
+
+PyObject* TypeObjectBase::instance_number_absolute(PyObject*) const
+{
+    return unimplemented("instance_number_absolute");
+}
+
+int TypeObjectBase::instance_number_nonzero(PyObject*) const
+{
+    return unimplemented("instance_number_nonzero");
+}
+
+PyObject* TypeObjectBase::instance_number_invert(PyObject*) const
+{
+    return unimplemented("instance_number_invert");
+}
+
+PyObject* TypeObjectBase::instance_number_lshift(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_lshift");
+}
+
+PyObject* TypeObjectBase::instance_number_rshift(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_rshift");
+}
+
+PyObject* TypeObjectBase::instance_number_and(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_and");
+}
+
+PyObject* TypeObjectBase::instance_number_xor(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_xor");
+}
+
+PyObject* TypeObjectBase::instance_number_or(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_or");
+}
+
+int TypeObjectBase::instance_number_coerce(PyObject*, PyObject**, PyObject**) const
+{
+    return unimplemented("instance_number_coerce");
+}
+
+PyObject* TypeObjectBase::instance_number_int(PyObject*) const
+{
+    return unimplemented("instance_number_int");
+}
+
+PyObject* TypeObjectBase::instance_number_long(PyObject*) const
+{
+    return unimplemented("instance_number_long");
+}
+
+PyObject* TypeObjectBase::instance_number_float(PyObject*) const
+{
+    return unimplemented("instance_number_float");
+}
+
+PyObject* TypeObjectBase::instance_number_oct(PyObject*) const
+{
+    return unimplemented("instance_number_oct");
+}
+
+PyObject* TypeObjectBase::instance_number_hex(PyObject*) const
+{
+    return unimplemented("instance_number_hex");
 }
 
 TypeObjectBase::~TypeObjectBase()

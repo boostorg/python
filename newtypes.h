@@ -30,6 +30,8 @@
 
 namespace py {
 
+class InstanceHolderBase;
+
 class TypeObjectBase : public PythonType
 {
  public:
@@ -42,7 +44,14 @@ class TypeObjectBase : public PythonType
         hash, call, str, getattr, setattr, compare, repr,
         mapping_length, mapping_subscript, mapping_ass_subscript,
         sequence_length, sequence_item, sequence_ass_item,
-        sequence_concat, sequence_repeat, sequence_slice, sequence_ass_slice
+        sequence_concat, sequence_repeat, sequence_slice, sequence_ass_slice,
+
+        number_add, number_subtract, number_multiply, number_divide,
+        number_remainder, number_divmod, number_power, number_negative,
+        number_positive, number_absolute, number_nonzero, number_invert,
+        number_lshift, number_rshift, number_and, number_xor, number_or,
+        number_coerce, number_int, number_long, number_float, number_oct,
+        number_hex
     };
     
     void enable(Capability);
@@ -75,7 +84,31 @@ class TypeObjectBase : public PythonType
     virtual PyObject* instance_sequence_slice(PyObject* instance, int start, int finish) const;
     virtual int instance_sequence_ass_item(PyObject* instance, int n, PyObject* value) const;
     virtual int instance_sequence_ass_slice(PyObject* instance, int start, int finish, PyObject* value) const;
-
+    
+ public: // Callbacks for number methods
+    virtual PyObject* instance_number_add(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_subtract(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_multiply(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_divide(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_remainder(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_divmod(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_power(PyObject*, PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_negative(PyObject*) const;
+    virtual PyObject* instance_number_positive(PyObject*) const;
+    virtual PyObject* instance_number_absolute(PyObject*) const;
+    virtual int instance_number_nonzero(PyObject*) const;
+    virtual PyObject* instance_number_invert(PyObject*) const;
+    virtual PyObject* instance_number_lshift(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_rshift(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_and(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_xor(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_or(PyObject*, PyObject*) const;
+    virtual int instance_number_coerce(PyObject*, PyObject**, PyObject**) const;
+    virtual PyObject* instance_number_int(PyObject*) const;
+    virtual PyObject* instance_number_long(PyObject*) const;
+    virtual PyObject* instance_number_float(PyObject*) const;
+    virtual PyObject* instance_number_oct(PyObject*) const;
+    virtual PyObject* instance_number_hex(PyObject*) const;
 };
 
 template <class T>
