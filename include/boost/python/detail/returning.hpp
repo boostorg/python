@@ -96,7 +96,7 @@ struct returning<void>
         , PyObject*, P const* policies)
     {
         // check that each of the arguments is convertible
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
 
         // find the result converter
         typedef typename P::result_converter result_converter;
@@ -104,7 +104,7 @@ struct returning<void>
         if (!cr.convertible() || !policies->precall(args_))
             return 0;
         PyObject* result = cr(
-            (*pf)(BOOST_PP_REPEAT(N, BOOST_PYTHON_CALL_ARGS, nil))
+            (*pf)(BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CALL_ARGS, nil))
         );
         return policies->postcall(args_, result);
     }
@@ -117,11 +117,11 @@ struct returning<void>
         , PyObject*, P const* policies)
     {
         // check that each of the arguments is convertible
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
 
         if (!policies->precall(args_))
             return 0;
-        (*pf)(BOOST_PP_REPEAT(N, BOOST_PYTHON_CALL_ARGS, nil));
+        (*pf)(BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CALL_ARGS, nil));
         return policies->postcall(args_, detail::none());
     }
 # endif // returning void / non-void
@@ -168,7 +168,7 @@ struct returning<void>
             return 0;
         
         // unroll a loop for the rest of them
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
 
         // find the result converter
         typedef typename P::result_converter result_converter;
@@ -177,7 +177,7 @@ struct returning<void>
             return 0;
         PyObject* result = cr(
             ((ct(PyTuple_GET_ITEM(args_, 0))).*pmf)(
-                BOOST_PP_REPEAT(N, BOOST_PYTHON_CALL_ARGS, nil))
+                BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CALL_ARGS, nil))
         );
         return policies->postcall(args_, result);
     }
@@ -196,13 +196,13 @@ struct returning<void>
             return 0;
 
         // unroll a loop for the rest of them
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CHECK_CONVERSION, nil)
 
         if (!policies->precall(args_))
             return 0;
 
         ((ct(PyTuple_GET_ITEM(args_, 0))).*pmf)(
-            BOOST_PP_REPEAT(N, BOOST_PYTHON_CALL_ARGS, nil));
+            BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_CALL_ARGS, nil));
         return policies->postcall(args_, detail::none());
     }
 # endif

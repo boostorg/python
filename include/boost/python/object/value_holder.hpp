@@ -101,7 +101,7 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
     value_holder(
       PyObject* BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
         : m_held(
-            BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
     {}
 
@@ -121,7 +121,7 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
         PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
         : m_held(
             p BOOST_PP_COMMA_IF(N)
-            BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
     {
     }

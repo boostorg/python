@@ -54,8 +54,8 @@ call_method(PyObject* self, char const* name
         PyEval_CallMethod(
             self
             , const_cast<char*>(name)
-            , const_cast<char*>("(" BOOST_PP_REPEAT(N, BOOST_PYTHON_FIXED, "O") ")")
-            BOOST_PP_REPEAT(N, BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET, nil)
+            , const_cast<char*>("(" BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FIXED, "O") ")")
+            BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET, nil)
             ));
 }
 

@@ -56,7 +56,7 @@ struct make_holder<N>
     template <class Holder, class ArgList>
     struct apply
     {
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_FORWARD_ARG, nil)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FORWARD_ARG, nil)
         static void execute(
             PyObject* p
             BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, t, a))
@@ -66,7 +66,7 @@ struct make_holder<N>
             void* memory = Holder::allocate(p, offsetof(instance_t, storage), sizeof(Holder));
             try {
                 (new (memory) Holder(
-                    p BOOST_PP_REPEAT(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
+                    p BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
             }
             catch(...) {
                 Holder::deallocate(p, memory);
