@@ -26,6 +26,13 @@ class ClassWrapper
     void def(const Signature& signature)
         { m_class->def(signature); }
 
+    // define a function that passes Python arguments and keywords
+    // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
+    // respectively). This is useful for manual argument passing.
+    // It's also the only possibility to pass keyword arguments to C++.
+    void def_raw(RawArgumentsFunction::PtrFun fn, const char* name)
+        { m_class->def_raw(fn, name); }
+
     // define member functions. In fact this works for free functions, too -
     // they act like static member functions, or if they start with the
     // appropriate self argument (as a pointer or reference), they can be used

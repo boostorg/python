@@ -19,6 +19,8 @@ class ExtensionType;
 
 class Module
 {
+    typedef PyObject * (*RawFunctionPtr)(py::Tuple const &, py::Dict const &);
+    
 public:
     Module(const char* name);
 
@@ -28,6 +30,8 @@ public:
     
     void add(Ptr x, const char*name);
 
+    void def_raw(RawFunctionPtr fn, const char* name);
+    
     template <class Fn>
     void def(Fn fn, const char* name)
     {

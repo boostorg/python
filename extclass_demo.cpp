@@ -551,6 +551,39 @@ struct A_callback : A1 {
 
 /************************************************************/
 /*                                                          */
+/*                         RawTest                          */
+/*          (test passing of raw arguments to C++)          */
+/*                                                          */
+/************************************************************/
+
+struct RawTest
+{
+    RawTest(int i) : i_(i) {}
+    
+    int i_;
+};
+
+template class py::ExtensionClass<RawTest>;
+
+PyObject * raw(py::Tuple const & args, py::Dict const & keywords)
+{
+    if(args.size() != 2 || keywords.size() != 2)
+    {
+        PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
+        throw py::ArgumentError();
+    }
+    
+    RawTest * first = from_python(args[0].get(), py::Type<RawTest *>());
+    int second = from_python(args[1].get(), py::Type<int>());
+    
+    int third = from_python(keywords[py::String("third")].get(), py::Type<int>());
+    int fourth = from_python(keywords[py::String("fourth")].get(), py::Type<int>());
+    
+    return to_python(first->i_ + second + third + fourth);
+}
+
+/************************************************************/
+/*                                                          */
 /*                           Ratio                          */
 /*                                                          */
 /************************************************************/
@@ -635,6 +668,8 @@ const Record* get_record()
     static Record v(1234);
     return &v;
 }
+
+template class py::ExtensionClass<Record>; // explicitly instantiate
 
 } // namespace extclass_demo
 
@@ -799,7 +834,7 @@ void init_module(py::Module& m)
     b2_class.def(py::Constructor<>());
     b2_class.def(&B2::overrideA1, "overrideA1"); 
     b2_class.def(&B2::inheritB2, "inheritB2"); 
-
+    
     m.def(call_overrideA1, "call_overrideA1");    
     m.def(call_overrideB1, "call_overrideB1");    
     m.def(call_inheritA1, "call_inheritA1");    
@@ -812,6 +847,12 @@ void init_module(py::Module& m)
     m.def(factoryB1asA2, "factoryB1asA2");    
     m.def(factoryB1asB1, "factoryB1asB1");    
     m.def(factoryCasB1, "factoryCasB1");    
+    
+    py::ClassWrapper<RawTest> rawtest_class(m, "RawTest");
+    rawtest_class.def(py::Constructor<int>());
+    rawtest_class.def_raw(&raw, "raw");
+    
+    m.def_raw(&raw, "raw");
 }
 
 void init_module()

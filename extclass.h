@@ -74,9 +74,7 @@ class ExtensionClassBase : public Class<ExtensionInstance>
 {
  public:
     ExtensionClassBase(const char* name);
-    void set_attribute(const char* name, PyObject* x);
-    void set_attribute(const char* name, Ptr x);
-                  
+    
  public:
     // the purpose of try_class_conversions() and its related functions 
     // is explained in extclass.cpp
@@ -84,6 +82,9 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void* try_base_class_conversions(InstanceHolderBase*) const;
     void* try_derived_class_conversions(InstanceHolderBase*) const;
 
+    void set_attribute(const char* name, PyObject* x_);
+    void set_attribute(const char* name, Ptr x);
+    
  private:
     virtual void* extract_object_from_holder(InstanceHolderBase* v) const = 0;
     virtual std::vector<py::detail::BaseClassInfo> const& base_classes() const = 0;
@@ -137,7 +138,7 @@ class PyExtensionClassConverters
     // Get an object which can be used to convert T to/from python. This is used
     // as a kind of concept check by the global template
     //
-    //     from_python(PyObject*,  py::Type<const T&>)
+    //     PyObject* to_python(const T& x)
     //
     // below this class, to prevent the confusing messages that would otherwise
     // pop up. Now, if T hasn't been wrapped as an extension class, the user
@@ -149,12 +150,12 @@ class PyExtensionClassConverters
     }
 
     // This is a member function because in a conforming implementation, friend
-    // functions defined inline in the class body are all instantiated as soon
+    // funcitons defined inline in the class body are all instantiated as soon
     // as the enclosing class is instantiated. If T is not copyable, that causes
     // a compiler error. Instead, we access this function through the global
     // template 
     //
-    //     from_python(PyObject*,  py::Type<const T&>)
+    //     PyObject* to_python(const T& x)
     //
     // defined below this class. Since template functions are instantiated only
     // on demand, errors will be avoided unless T is noncopyable and the user
@@ -233,15 +234,7 @@ class PyExtensionClassConverters
     friend const T* from_python(PyObject* p, py::Type<const T*>)
         { return from_python(p, py::Type<T*>()); }
 
-    // Convert to const T* const&
-    friend const T* from_python(PyObject* p, py::Type<const T *const&>)
-        { return from_python(p, py::Type<const T*>()); }
- 
-    // Convert to T* const&
-    friend T* from_python(PyObject* p, py::Type<T* const&>)
-        { return from_python(p, py::Type<T*>()); }
-
-   // Convert to T&
+    // Convert to T&
     friend T& from_python(PyObject* p, py::Type<T&>)
         { return *py::check_non_null(from_python(p, py::Type<T*>())); }
 
@@ -367,6 +360,15 @@ class ExtensionClass
         prepend(Type<A4>::Id(),
         prepend(Type<A5>::Id(),
                 Signature0()))))));
+    }
+
+    // define a function that passes Python arguments and keywords
+    // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
+    // respectively). This is useful for manual argument passing.
+    // It's also the only possibility to pass keyword arguments to C++.
+    void def_raw(RawArgumentsFunction::PtrFun fn, const char* name)
+    {
+        this->add_method(new RawArgumentsFunction(fn), name);
     }
 
     // define member functions. In fact this works for free functions, too -
@@ -683,3 +685,4 @@ std::vector<py::detail::DerivedClassInfo> ClassRegistry<T>::static_derived_class
 } // namespace py
 
 #endif // EXTENSION_CLASS_DWA052000_H_
+

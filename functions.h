@@ -75,6 +75,33 @@ struct WrappedFunctionPointer : Function
 	const PtrFun m_pf;
 };
 
+// RawArgumentsFunction
+//      A function that passes the Python argument tuple and keyword dictionary 
+//      verbatim to C++ (useful for customized argument parsing and variable
+//      argument lists)
+struct RawArgumentsFunction : Function
+{
+	typedef PyObject * (*PtrFun)(Tuple const &, Dict const &); 
+	
+	RawArgumentsFunction(PtrFun pf)
+        : m_pf(pf) {}
+
+ private:
+	PyObject* do_call(PyObject* args, PyObject* keywords) const
+        { 
+            return (*m_pf)(Tuple(Ptr(args, Ptr::new_ref)),
+                           keywords ? 
+                                Dict(Ptr(keywords, Ptr::new_ref)) : 
+                                Dict()); 
+        }
+    
+    const char* description() const
+        { return typeid(PtrFun).name(); }
+    
+ private:
+	const PtrFun m_pf;
+};
+
 // virtual_function<> --
 //      A virtual function with a default implementation wrapped and presented
 //      to Python as a callable object.

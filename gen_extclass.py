@@ -367,6 +367,15 @@ class ExtensionClass
 """, args)
         +
 """
+    // define a function that passes Python arguments and keywords
+    // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
+    // respectively). This is useful for manual argument passing.
+    // It's also the only possibility to pass keyword arguments to C++.
+    void def_raw(RawArgumentsFunction::PtrFun fn, const char* name)
+    {
+        this->add_method(new RawArgumentsFunction(fn), name);
+    }
+
     // define member functions. In fact this works for free functions, too -
     // they act like static member functions, or if they start with the
     // appropriate self argument (as a pointer), they can be used just like

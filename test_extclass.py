@@ -842,6 +842,24 @@ test inheritB2
     >>> db2.inheritB2()
     'B2::inheritB2'
 
+========= test the new def_raw() feature ==========
+
+    >>> r = RawTest(1)
+    >>> raw(r,1,third=1,fourth=1)
+    4
+    >>> r.raw(1,third=1,fourth=1)
+    4
+    >>> raw(r,1,third=1,f=1)
+    Traceback (innermost last):
+    KeyError: fourth
+    >>> raw(r,1,third=1)
+    Traceback (innermost last):
+    TypeError: wrong number of arguments
+    >>> raw(r,1)
+    Traceback (innermost last):
+    TypeError: wrong number of arguments
+    
+
 ========= Prove that the "phantom base class" issue is resolved ==========
 
     >>> assert pa1_a1.__class__ == A1
