@@ -52,6 +52,8 @@ if [ check-python-config ]
     object/iterator.cpp
     object_protocol.cpp
     object_operators.cpp
+    indexing/slice.cpp
+    indexing/python_iterator.cpp
     ;
   
   dll boost_python
