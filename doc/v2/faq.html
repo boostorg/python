@@ -495,8 +495,30 @@ make frameworkinstall</pre>
     <pre>limit stacksize 8192k</pre>
     If the <tt>stacksize</tt> is too small the build might crash with
     internal compiler errors.
-    <hr>
+    <p>
+    Sometimes Apple's compiler exhibits a bug by printing an error
+    like the following while compiling a
+    <tt>boost::python::class_&lt;your_type&gt;</tt>
+    template instantiation:
+    <pre>.../inheritance.hpp:44: error: cannot
+ dynamic_cast `p' (of type `struct cctbx::boost_python::&lt;unnamed&gt;::add_pair*
+   ') to type `void*' (source type is not polymorphic)</pre>
 
+    We do not know a general workaround, but if the definition of
+    <tt>your_type</tt> can be modified the following was found
+    to work in all cases encountered so far:<pre>struct your_type
+{
+  // before defining any member data
+#if defined(__MACH__) &amp;&amp; defined(__APPLE_CC__) &amp;&amp; __APPLE_CC__ == 1493
+  bool dummy_;
+#endif
+  // now your member data, e.g.
+  double x;
+  int j;
+  // etc.
+};</pre>
+
+    <hr>
     <h2><a name="xref">How can I find the existing PyObject that holds a C++
     object?</a></h2>
 
