@@ -352,14 +352,14 @@ inline object make_setter(D const& x, Policies const& policies)
 template <class D>
 inline object make_setter(D& x)
 {
-    return detail::make_setter(x, default_call_policies(), 0);
+    return detail::make_setter(x, default_call_policies(), is_member_pointer<D>(), 0);
 }
 
 # if !(BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(__EDG_VERSION__, <= 238))
 template <class D>
 inline object make_setter(D const& x)
 {
-    return detail::make_setter(x, default_call_policies(), 0);
+    return detail::make_setter(x, default_call_policies(), is_member_pointer<D>(), 0);
 }
 # endif
 
