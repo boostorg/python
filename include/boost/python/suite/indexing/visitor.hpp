@@ -436,7 +436,7 @@ namespace boost { namespace python { namespace indexing {
         Policy const &policy)
     {
       pyClass.def ("count", Algorithms::count, policy);
-      pyClass.def ("contains", Algorithms::contains, policy);
+      pyClass.def ("__contains__", Algorithms::contains, policy);
     }
   };
 
