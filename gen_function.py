@@ -35,6 +35,8 @@ def _gen_arg(template, n, args, delimiter = '%'):
 
         if key == 'n':
             result = result + `n`
+        elif key == 'N':
+            result = result + `n-1`
         else:
             result = result + _gen_common_key(key, n, args)
 
@@ -55,8 +57,13 @@ def gen_function(template, n, *args, **keywords):
     %n is transformed into the string representation of 1..n for each repetition
     of n.
 
-    %x, where x is a digit, is transformed into the corresponding additional
+    %N is transformed into the string representation of 0..(n-1) for each repetition
+    of n.
+
+    %i, where i is a digit, is transformed into the corresponding additional
     argument.
+    
+    %x is transformed into the number of the current repetition
 
     for example,
     

@@ -329,9 +329,9 @@ PyObject* read_only_setattr_function::do_call(PyObject* /*args*/, PyObject* /*ke
     return 0;
 }
 
-const char* read_only_setattr_function::description() const
+PyObject* read_only_setattr_function::description() const
 {
-    return "uncallable";
+    return BOOST_PYTHON_CONVERSION::to_python("uncallable");
 }
 
 extension_class_base::extension_class_base(const char* name)
@@ -469,6 +469,19 @@ operator_dispatcher::create(const ref& object, const ref& self)
     return result;
 }
 
+namespace {
+
+void set_attribute_error(const char* oper, tuple args)
+{
+    PyErr_Clear();                                                                     
+    string message(oper);                          
+    message += argument_tuple_as_string(args);                                         
+    message += " undefined.";
+    PyErr_SetObject(PyExc_TypeError, message.get());                                   
+}
+
+} // anonymous namespace
+
 extern "C"
 {
 
@@ -498,7 +511,7 @@ int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 
 
 #define PY_DEFINE_OPERATOR(id, symbol) \
-    PyObject* operator_dispatcher_call_##id(PyObject* left, PyObject* right)                   \
+    PyObject* operator_dispatcher_call_##id(PyObject* left, PyObject* right)                    \
     {                                                                                           \
         /* unwrap the arguments from their OperatorDispatcher */                                \
         PyObject* self;                                                                         \
@@ -506,17 +519,20 @@ int operator_dispatcher_coerce(PyObject** l, PyObject** r)
         int reverse = unwrap_args(left, right, self, other);                                    \
         if (reverse == unwrap_exception_code)                                                   \
             return 0;                                                                           \
+        const char * oper = reverse                                                             \
+                               ? "__r" #id "__"                                                 \
+                               : "__" #id "__";                                                 \
                                                                                                 \
         /* call the function */                                                                 \
         PyObject* result =                                                                      \
            PyEval_CallMethod(self,                                                              \
-                             const_cast<char*>(reverse ? "__r" #id "__" : "__" #id "__"),       \
+                             const_cast<char*>(oper),                                           \
                              const_cast<char*>("(O)"),                                          \
                              other);                                                            \
         if (result == 0 && PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)) \
         {                                                                                       \
-            PyErr_Clear();                                                                      \
-            PyErr_SetString(PyExc_TypeError, "bad operand type(s) for " #symbol);               \
+            tuple args(ref(self, ref::increment_count), ref(other, ref::increment_count));      \
+            set_attribute_error(oper , args);               \
         }                                                                                       \
         return result;                                                                          \
     }
@@ -562,24 +578,34 @@ PyObject* operator_dispatcher_call_pow(PyObject* left, PyObject* right, PyObject
     
     if (reverse == unwrap_exception_code) 
         return 0;                         
-                                              
+    
+    const char * oper = (reverse == 0)
+                            ? "__pow__"
+                            : (reverse == 1)
+                              ? "__rpow__"
+                              : "__rrpow__";
     // call the function
     PyObject* result = 
         PyEval_CallMethod(self,
-                          const_cast<char*>((reverse == 0)
-                                            ? "__pow__"
-                                            : (reverse == 1)
-                                              ? "__rpow__"
-                                              : "__rrpow__"),
+                          const_cast<char*>(oper),
                           const_cast<char*>("(OO)"),
                           first, second);
-    if (result == 0 && 
-        (PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_TypeError) ||
-         PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)))
-    {
-        PyErr_Clear();
-        PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
-    }
+
+    if (result == 0 && PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError))
+    {                                                                                      
+        if(m == Py_None)
+        {
+            tuple args(ref(self, ref::increment_count), ref(first, ref::increment_count));     
+            set_attribute_error(oper , args);              
+        }
+        else
+        {
+            tuple args(ref(self, ref::increment_count), 
+                       ref(first, ref::increment_count), 
+                       ref(second, ref::increment_count));     
+            set_attribute_error(oper , args);              
+        }
+    }                                                                                      
     return result;
 }
 
@@ -592,16 +618,23 @@ int operator_dispatcher_call_cmp(PyObject* left, PyObject* right)
     if (reverse == unwrap_exception_code)
         return -1;
     
+    const char * oper = reverse 
+                           ? "__rcmp__" 
+                           : "__cmp__";
     // call the function
     PyObject* result = 
         PyEval_CallMethod(self,
-                          const_cast<char*>(reverse ? "__rcmp__" : "__cmp__"),
+                          const_cast<char*>(oper),
                           const_cast<char*>("(O)"),
                           other);
+    if (result == 0 && PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError))
+    {                                                                                      
+        tuple args(ref(self, ref::increment_count), ref(other, ref::increment_count));     
+        set_attribute_error(oper , args);              
+    }
+    
     if (result == 0)
     {
-        PyErr_Clear();
-        PyErr_SetString(PyExc_TypeError, "bad operand type(s) for cmp() or <");
         return -1;
     }
     else

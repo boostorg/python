@@ -25,6 +25,8 @@ namespace python { namespace detail {
 // forward declaration
 class extension_instance;
 
+string argument_tuple_as_string(tuple args);
+
 
 // function --
 //      the common base class for all overloadable function and method objects
@@ -38,15 +40,34 @@ class function : public python_object
     virtual ~function() {}
 
     PyObject* call(PyObject* args, PyObject* keywords) const;
+    PyObject* getattr(const char * name) const;
     static void add_to_namespace(reference<function> f, const char* name, PyObject* dict);
-    
+ 
+ protected:   
+    virtual PyObject* description() const = 0;
  private:
     virtual PyObject* do_call(PyObject* args, PyObject* keywords) const = 0;
-    virtual const char* description() const = 0;
+    virtual string description_as_string() const;
+    virtual string argument_types_as_string(tuple args) const;
+    virtual string function_name() const = 0;
+    virtual bool rephrase_argument_error() const 
+        { return true; }
  private:
     struct type_object;
  private:
     reference<function> m_overloads;
+};
+
+struct named_function : function
+{
+    named_function(const char * name)
+    : m_name(name)
+    {}
+    
+    string function_name() const 
+        { return m_name; }
+    
+    string m_name;
 };
 
 // wrapped_function_pointer<> --
@@ -57,19 +78,19 @@ class function : public python_object
 //      R - the return type of the function pointer
 //      F - the complete type of the wrapped function pointer
 template <class R, class F>
-struct wrapped_function_pointer : function
+struct wrapped_function_pointer : named_function
 {
 	typedef F ptr_fun; // pointer-to--function or pointer-to-member-function
 	
-	wrapped_function_pointer(ptr_fun pf)
-        : m_pf(pf) {}
+	wrapped_function_pointer(ptr_fun pf, const char * name)
+        : named_function(name), m_pf(pf) {}
 
  private:
 	PyObject* do_call(PyObject* args, PyObject* keywords) const
         { return caller<R>::call(m_pf, args, keywords); }
     
-    const char* description() const
-        { return typeid(F).name(); }
+    PyObject* description() const
+        { return function_signature(m_pf); }
     
  private:
 	const ptr_fun m_pf;
@@ -80,15 +101,15 @@ struct wrapped_function_pointer : function
 //      verbatim to C++ (useful for customized argument parsing and variable
 //      argument lists)
 template <class Ret, class Args, class Keywords>
-struct raw_arguments_function : function
+struct raw_arguments_function : named_function
 {
 	typedef Ret (*ptr_fun)(Args, Keywords); 
 	
-	raw_arguments_function(ptr_fun pf)
-        : m_pf(pf) {}
+	raw_arguments_function(ptr_fun pf, const char * name)
+        : named_function(name), m_pf(pf) {}
 
  private:
-	PyObject* do_call(PyObject* args, PyObject* keywords) const
+    PyObject* do_call(PyObject* args, PyObject* keywords) const
     { 
         ref dict(keywords ? 
                  ref(keywords, ref::increment_count) :
@@ -99,9 +120,17 @@ struct raw_arguments_function : function
                     from_python(dict.get(), python::type<Keywords>()))); 
     }
     
-    const char* description() const
-        { return typeid(ptr_fun).name(); }
+    PyObject* description() const
+    { 
+        tuple result(1);
+        result.set_item(0, string("..."));
+        
+        return result.reference().release(); 
+    }
     
+    virtual bool rephrase_argument_error() const 
+        { return false; }
+
  private:
 	const ptr_fun m_pf;
 };
@@ -119,19 +148,20 @@ struct raw_arguments_function : function
 //          parameter and calls T::f on it /non-virtually/, where V
 //          approximates &T::f.
 template <class T, class R, class V, class D>
-class virtual_function : public function
+class virtual_function : public named_function
 {
  public:
-	virtual_function(V virtual_function_ptr, D default_implementation)
-        : m_virtual_function_ptr(virtual_function_ptr),
+	virtual_function(V virtual_function_ptr, D default_implementation, const char * name)
+        : named_function(name), 
+          m_virtual_function_ptr(virtual_function_ptr),
           m_default_implementation(default_implementation)
         {}
 
  private:
 	PyObject* do_call(PyObject* args, PyObject* keywords) const;
     
-    const char* description() const
-        { return typeid(V).name(); }
+    PyObject* description() const
+        { return function_signature(m_virtual_function_ptr); }
     
  private:
 	const V m_virtual_function_ptr;
@@ -142,26 +172,26 @@ class virtual_function : public function
 // functionality once the return type has already been deduced. R is expected to
 // be type<X>, where X is the actual return type of pmf.
 template <class F, class R>
-function* new_wrapped_function_aux(R, F pmf)
+function* new_wrapped_function_aux(R, F pmf, const char * name)
 {
     // We can't just use "typename R::Type" below because MSVC (incorrectly) pukes.
     typedef typename R::type return_type;
-    return new wrapped_function_pointer<return_type, F>(pmf);
+    return new wrapped_function_pointer<return_type, F>(pmf, name);
 }
 
 // Create and return a new member function object wrapping the given
 // pointer-to-member function
 template <class F>
-inline function* new_wrapped_function(F pmf)
+inline function* new_wrapped_function(F pmf, const char * name)
 {
     // Deduce the return type and pass it off to the helper function above
-	return new_wrapped_function_aux(return_value(pmf), pmf);
+	return new_wrapped_function_aux(return_value(pmf), pmf, name);
 }
 
 template <class R, class Args, class keywords>
-function* new_raw_arguments_function(R (*pmf)(Args, keywords))
+function* new_raw_arguments_function(R (*pmf)(Args, keywords), const char * name)
 {
-    return new raw_arguments_function<R, Args, keywords>(pmf);
+    return new raw_arguments_function<R, Args, keywords>(pmf, name);
 }
 
 
@@ -170,26 +200,26 @@ function* new_raw_arguments_function(R (*pmf)(Args, keywords))
 // be type<X>, where X is the actual return type of V.
 template <class T, class R, class V, class D>
 inline function* new_virtual_function_aux(
-    type<T>, R, V virtual_function_ptr, D default_implementation
-    )
+    type<T>, R, V virtual_function_ptr, D default_implementation,
+    const char * name)
 {
     // We can't just use "typename R::Type" below because MSVC (incorrectly) pukes.
     typedef typename R::type return_type;
     return new virtual_function<T, return_type, V, D>(
-        virtual_function_ptr, default_implementation);
+        virtual_function_ptr, default_implementation, name);
 }
 
 // Create and return a new virtual_function object wrapping the given
 // virtual_function_ptr and default_implementation
 template <class T, class V, class D>
 inline function* new_virtual_function(
-    type<T>, V virtual_function_ptr, D default_implementation
-    )
+    type<T>, V virtual_function_ptr, D default_implementation,
+    const char * name)
 {
     // Deduce the return type and pass it off to the helper function above
     return new_virtual_function_aux(
         type<T>(), return_value(virtual_function_ptr),
-        virtual_function_ptr, default_implementation);
+        virtual_function_ptr, default_implementation, name);
 }
 
 // A function with a bundled "bound target" object. This is what is produced by
@@ -220,37 +250,37 @@ class bound_function : public python_object
 
 // Special functions designed to access data members of a wrapped C++ object.
 template <class ClassType, class MemberType>
-class getter_function : public function
+class getter_function : public named_function
 {
  public:
     typedef MemberType ClassType::* pointer_to_member;
     
-    getter_function(pointer_to_member pm)
-        : m_pm(pm) {}
+    getter_function(pointer_to_member pm, const char * name)
+        : named_function(name), m_pm(pm) {}
 
  private:
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
     
-    const char* description() const
-        { return typeid(MemberType (*)(const ClassType&)).name(); }
+    PyObject* description() const
+        { return function_signature((MemberType (*)(const ClassType&))0); }
  private:
     pointer_to_member m_pm;
 };
 
 template <class ClassType, class MemberType>
-class setter_function : public function
+class setter_function : public named_function
 {
  public:
     typedef MemberType ClassType::* pointer_to_member;
     
-    setter_function(pointer_to_member pm)
-        : m_pm(pm) {}
+    setter_function(pointer_to_member pm, const char * name)
+        : named_function(name), m_pm(pm) {}
 
  private:
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
     
-    const char* description() const
-        { return typeid(void (*)(const ClassType&, const MemberType&)).name(); }
+    PyObject* description() const
+        { return function_signature((void (*)(const ClassType&, const MemberType&))0); }
  private:
     pointer_to_member m_pm;
 };

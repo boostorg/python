@@ -293,6 +293,152 @@ struct list::slice_proxy
     int m_low, m_high;
 };
 
+namespace detail
+{
+#define BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(T, name) \
+    inline string python_type_name(python::type<T >) \
+        { return string(#name); }
+        
+#if 0
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(long, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned long, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(int, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned int, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(short, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned short, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(signed char, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned char, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(bool, types.IntType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(float, types.FloatType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(double, types.FloatType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(void, types.NoneType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(const char *, types.StringType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(std::string, types.StringType);    
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(PyObject, AnyType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(reference<PyObject>, AnyType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(list, types.ListType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(tuple, types.TupleType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(dictionary, types.DictionaryType);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(string, types.StringType);
+#endif /* #if 0 */
+
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(long, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned long, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(int, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned int, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(short, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned short, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(signed char, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(unsigned char, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(bool, int);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(float, float);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(double, float);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(void, None);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(const char *, string);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(std::string, string);    
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(PyObject, any);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(reference<PyObject>, any);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(list, list);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(tuple, tuple);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(dictionary, dictionary);
+    BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(string, string);
+
+    typedef char no_t[1];
+    typedef char yes_t[2];
+
+    yes_t* is_plain_aux(...);
+
+    template <class T>
+    no_t* is_plain_aux(type<T *>);
+
+    template <class T>
+    no_t* is_plain_aux(type<T const *>);
+
+    template <class T>
+    no_t* is_plain_aux(type<T &>);
+
+    template <class T>
+    no_t* is_plain_aux(type<T const &>);
+
+    template <class T>
+    no_t* is_plain_aux(type<std::auto_ptr<T> >);
+
+    template <class T>
+    no_t* is_plain_aux(type<boost::shared_ptr<T> >);
+    
+    template <class T>
+    no_t* is_plain_aux(type<reference<T> >);
+    
+#define BOOST_PYTHON_IS_PLAIN(T) \
+    (sizeof(*python::detail::is_plain_aux(python::type<T>())) == \
+     sizeof(python::detail::yes_t))
+        
+    template <bool is_plain>
+    struct python_type_name_selector
+    {
+        template <class T>
+        static string get(python::type<T> t)
+            { return python_type_name(t); }
+    };
+    
+    template <class T>
+    string forward_python_type_name(python::type<T&>)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+
+    template <class T>
+    string forward_python_type_name(python::type<const T&>)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+
+    template <class T>
+    string forward_python_type_name(python::type<T*>)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+
+    template <class T>
+    string forward_python_type_name(python::type<const T*>)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+      
+    template <class T>
+    string forward_python_type_name(python::type<std::auto_ptr<T> >)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+
+    template <class T>
+    string forward_python_type_name(python::type<boost::shared_ptr<T> >)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+    
+    template <class T>
+    string forward_python_type_name(python::type<reference<T> >)
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    }
+    
+    template <>
+    struct python_type_name_selector<false>
+    {
+        template <class T>
+        static string get(python::type<T> t)
+          { return forward_python_type_name(t); }
+    };    
+} // namespace detail
+
 } // namespace python
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE

@@ -130,6 +130,8 @@ private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
+    string description_as_string() const;
+    string argument_types_as_string(tuple args) const;
 };
 """ + gen_functions("""
 
@@ -145,8 +147,20 @@ struct init%x : init
             python::detail::reference_parameter<A%n>(from_python(a%n, type<A%n>()))%)
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&%(, A%n%%))).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>()%(, 
+                                  python::type<A%n>()%)); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };""", args) + """
 
 }} // namespace python::detail
