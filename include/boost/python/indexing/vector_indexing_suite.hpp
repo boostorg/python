@@ -29,7 +29,7 @@ namespace boost { namespace python {
     // all the policies required by the indexing_suite (see indexing_suite).
     // Example usage:
     //
-    //  class X {...}
+    //  class X {...};
     //
     //  ...
     //
