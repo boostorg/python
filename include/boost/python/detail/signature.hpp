@@ -10,26 +10,14 @@
 #  define SIGNATURE_DWA20021121_HPP
 
 #  include <boost/mpl/at.hpp>
-#  include <boost/type_traits/is_same.hpp>
 
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/iteration/local.hpp>
-#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
-#  include <boost/preprocessor/repetition/repeat.hpp>
-#  include <boost/preprocessor/cat.hpp>
-#  include <boost/preprocessor/dec.hpp>
-#  include <boost/preprocessor/if.hpp>
 
 #  include <boost/python/type_id.hpp>
 
-#  include <boost/python/detail/invoke.hpp>
-#  include <boost/python/detail/type_name.hpp>
 #  include <boost/python/detail/indirect_traits.hpp>
-
-#  include <boost/type_traits/is_reference.hpp>
-#  include <boost/type_traits/is_const.hpp>
-#  include <boost/type_traits/is_volatile.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
