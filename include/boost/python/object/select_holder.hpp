@@ -12,7 +12,7 @@
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
-# include <boost/python/object/make_instance.hpp>
+# include <boost/python/object/make_ptr_instance.hpp>
 # include <boost/python/object/instance.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
 # include <boost/type.hpp>
@@ -142,7 +142,7 @@ namespace detail
       static inline void register_(mpl::false_c)
       {
           python::detail::force_instantiate(
-              objects::class_value_wrapper<Ptr, make_instance<T,type> >());
+              objects::class_value_wrapper<Ptr, make_ptr_instance<T,type> >());
       }
   };
 }

@@ -17,17 +17,31 @@ class PolymorphTest(unittest.TestCase):
       self.failUnlessEqual ('B::f()', a.f())
       self.failUnlessEqual ('B::f()', call_f(a))
       self.failUnlessEqual ('A::f()', call_f(A()))
+
+   def test_references(self):
+      # B is not exposed to Python
+      a = getBCppObj()
+      self.failUnlessEqual(type(a), A)
+
+      # C is exposed to Python
+      c = getCCppObj()
+      self.failUnlessEqual(type(c), C)
       
+   def test_factory(self):
+      self.failUnlessEqual(type(factory(0)), A)
+      self.failUnlessEqual(type(factory(1)), A)
+      self.failUnlessEqual(type(factory(2)), C)
+
    def testReturnPy(self):
 
-      class C(A):
+      class D(A):
          def f(self):
-            return 'C.f'
+            return 'D.f'
 
-      c = C()
+      d = D()
       
-      self.failUnlessEqual ('C.f', c.f())
-      self.failUnlessEqual ('C.f', call_f(c))
+      self.failUnlessEqual ('D.f', d.f())
+      self.failUnlessEqual ('D.f', call_f(d))
 
 if __name__ == "__main__":
    

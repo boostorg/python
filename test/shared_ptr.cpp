@@ -82,6 +82,16 @@ struct ZWrap : Z
     PyObject* m_self;
 };
 
+struct YY : Y
+{
+    YY(int n) : Y(n) {}
+};
+
+shared_ptr<Y> factory(int n)
+{
+    return shared_ptr<Y>(n < 42 ? new Y(n) : new YY(n));
+}
+
 static int stored_v() { return functions<Z>::get()->v(); }
 
 BOOST_PYTHON_MODULE(shared_ptr_ext)
@@ -90,6 +100,8 @@ BOOST_PYTHON_MODULE(shared_ptr_ext)
         .def("value", &X::value)
         ;
 
+    def("factory", factory);
+    
     functions<X>::expose();
     def("x_count", &X::count);
     def("x_release", &functions<X>::release_store);
@@ -99,6 +111,9 @@ BOOST_PYTHON_MODULE(shared_ptr_ext)
         .def("value", &Y::value)
         ;
     
+    class_<YY, bases<Y>, boost::noncopyable>("YY", init<int>())
+        ;
+
     functions<Y>::expose();
     def("y_count", &Y::count);
     def("y_release", &functions<Y>::release_store);

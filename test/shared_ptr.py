@@ -1,5 +1,11 @@
 '''
 >>> from shared_ptr_ext import *
+
+>>> type(factory(3))
+<class 'shared_ptr_ext.Y'>
+>>> type(factory(42))
+<class 'shared_ptr_ext.YY'>
+
 >>> class P(Z):
 ...     def v(self):
 ...         return -Z.v(self);
