@@ -158,7 +158,7 @@ wrap_<T>::wrap_()
 template <class T>
 wrap_<T>::~wrap_()
 {
-    destroy();
+    this->destroy();
 }
 
 }}} // namespace boost::python::converter

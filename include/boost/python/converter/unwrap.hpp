@@ -162,7 +162,7 @@ T unwrap_more_<T>::operator*()
 template <class T>
 unwrap_<T>::~unwrap_()
 {
-    destroy();
+    this->destroy();
 }
     
 }}} // namespace boost::python::converter
