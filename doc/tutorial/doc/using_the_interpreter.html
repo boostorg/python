@@ -145,15 +145,13 @@ previous section</a>: the aptly named <tt>object</tt>
 class and it's derivatives. What we haven't seen, is that they can be
 constructed from a <tt>handle</tt>. The following examples should illustrate this
 fact:</p>
-<code> 
-<pre>
+<code><pre>
     <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_module</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>) ));
     </span><span class=identifier>dict </span><span class=identifier>main_namespace</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>get</span><span class=special>()) )));
     </span><span class=identifier>handle</span><span class=special>&lt;&gt;( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;result = 5 ** 2&quot;</span><span class=special>, </span><span class=identifier>Py_file_input</span><span class=special>,
                            </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()) );
     </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;( </span><span class=identifier>main_namespace</span><span class=special>[</span><span class=string>&quot;result&quot;</span><span class=special>] );
-</span></pre>
-</code> 
+</span></pre></code>
 <p>
 Here we create a dictionary object for the <tt>__main__</tt> module's namespace.
 Then we assign 5 squared to the result variable and read this variable from
@@ -229,7 +227,7 @@ allow_null</a> function in the same way you'd use borrowed:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 Dirk Gerrits<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with
