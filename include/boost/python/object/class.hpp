@@ -39,9 +39,12 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
     ref object() const { return m_object; }
     void add_property(char const* name, ref const& fget);
     void add_property(char const* name, ref const& fget, ref const& fset);
+    void setattr(char const* name, ref const&);
  private:
     ref m_object;
 };
+
+BOOST_PYTHON_DECL ref registered_class_object(class_id id);
 
 // Base class for all holders
 struct BOOST_PYTHON_DECL instance_holder : private noncopyable

@@ -223,7 +223,7 @@ namespace boost { namespace python
     class_&amp; def_init(Args const&amp; = Args());
 
     template &lt;class Args, class CallPolicy&gt;
-    self&amp; def_init(Args const&amp;, CallPolicy policy);
+    class_&amp; def_init(Args const&amp;, CallPolicy policy);
 
     // exposing member functions
     template &lt;class F&gt;
@@ -234,10 +234,13 @@ namespace boost { namespace python
 
     // exposing data members
     template &lt;class D&gt;
-    self&amp; def_readonly(char const* name, D T::*pm);
+    class_&amp; def_readonly(char const* name, D T::*pm);
 
     template &lt;class D&gt;
-    self&amp; def_readwrite(char const* name, D T::*pm);
+    class_&amp; def_readwrite(char const* name, D T::*pm);
+
+    // Raw attribute modification
+    class_& setattr(char const* name, ref const&);
 
     // property creation
     void add_property(char const* name, ref const&amp; fget);
@@ -339,9 +342,11 @@ class_&amp; def(char const* name, Fn f, CallPolicies policies);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>f</code> is a non-null pointer-to-function or
-      pointer-to-member-function. <code>name</code> is a ntbs which conforms to
-      Python's <a href=
+      <dt><b>Requires:</b> <code>f</code> is a non-null
+      pointer-to-function or pointer-to-member-function, or a callable
+      Python object passed as a <code>PyObject*</code> or <a
+      href="reference_hpp.html#ref-spec"><code>ref</code></a>. <code>name</code>
+      is a ntbs which conforms to Python's <a href=
       "http://www.python.org/doc/2.2/ref/identifiers.html">identifier
       naming rules</a>. In the first form, the return type of
       <code>f</code> is not a reference and is not a pointer other
@@ -350,7 +355,8 @@ class_&amp; def(char const* name, Fn f, CallPolicies policies);
       href="CallPolicies.html">CallPolicies</a>.
 
       <dt><b>Effects:</b> Adds the result of <code><a href=
-      "make_function.html#make_function-spec">make_function</a>(f)</code> to
+      "make_function.html#make_function-spec">make_function</a>(f)</code> or <code><a href=
+      "make_function.html#make_function-spec">make_function</a>(f,&nbsp;policies)</code> to
       the Boost.Python extension class being defined, with the given
       <code>name</code>. If the extension class already has an attribute named
       <code><i>name</i></code>, the usual <a href=
@@ -359,11 +365,27 @@ class_&amp; def(char const* name, Fn f, CallPolicies policies);
       <dt><b>Returns:</b> <code>*this</code>
     </dl>
 
+<pre>
+template &lt;class F&gt;
+class_&amp; setattr(char const* name, ref x);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
+      Python's <a href=
+      "http://www.python.org/doc/2.2/ref/identifiers.html">identifier
+      naming rules</a>. 
+
+      <dt><b>Effects:</b> <code><a href="http://www.python.org/doc/current/api/object.html#l2h-166">PyObject_SetAttrString</a>(this->object(),&nbsp;name,&nbsp;x.get());</code>
+
+      <dt><b>Returns:</b> <code>*this</code>
+    </dl>
+
 <br>
 
 <pre>
-void add_property(char const* name, ref const&amp;amp; fget);
-void add_property(char const* name, ref const&amp;amp; fget, ref const&amp;amp; fset);
+void add_property(char const* name, ref const&amp; fget);
+void add_property(char const* name, ref const&amp; fget, ref const&amp; fset);
 </pre>
     <dl class="function-semantics">
 
@@ -389,7 +411,7 @@ void add_property(char const* name, ref const&amp;amp; fget, ref const&amp;amp; 
 <br>
 <pre>
     template &lt;class D&gt;
-    self&amp; def_readonly(char const* name, D T::*pm);
+    class_&amp; def_readonly(char const* name, D T::*pm);
 </pre>
 
     <dl class="function-semantics">
@@ -415,7 +437,7 @@ this-&gt;add_property(name, ref(<a href="data_members.html#make_getter-spec">mak
 
 <pre>
 template &lt;class D&gt;
-self&amp; def_readwrite(char const* name, D T::*pm);
+class_&amp; def_readwrite(char const* name, D T::*pm);
 </pre>
 
     <dl class="function-semantics">
