@@ -125,7 +125,7 @@ Case studies
         x.f() -> 'C'
         call_f(x) -> 'C'
 
-   Implies: nothing new
+   Implies: nothing new.
 
 ------
 
@@ -163,12 +163,26 @@ dispatch callable Python object.
 Pseudocode:
 
      Get first argument from Python arg tuple
-     if it contains /only/ dispatch_type
+     if it contains dispatch_type
         call default_impl
      else
         call through pvmf
 
 
+Open questions:
 
+   1. What about Python multiple inheritance? Do we have the right
+      check in the if clause above?
+      
+      A: Not quite. The correct test looks like:
+
+      Deduce target type of pvmf, i.e. T in R(T::*)(A1...AN).
+      Find holder in first argument which holds T
+      if it holds dispatch_type...
+      
+   2. Can we make this more efficient?
      
+     The current "returning" mechanism will look up a holder for T
+     again. I don't know if we know how to avoid that.
+
 
