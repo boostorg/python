@@ -613,33 +613,33 @@ class extension_class
 
 // A simple wrapper over a T which allows us to use extension_class<T> with a
 // single template parameter only. See extension_class<T>, above.
-template <class TemplateT>
-class held_instance : public TemplateT
+template <class Held>
+class held_instance : public Held
 {
     // There are no member functions: we want to avoid inadvertently overriding
     // any virtual functions in T.
 public:
-    held_instance(PyObject*) : TemplateT() {}
+    held_instance(PyObject*) : Held() {}
     template <class A1>
-    held_instance(PyObject*, A1 a1) : TemplateT(a1) {}
+    held_instance(PyObject*, A1 a1) : Held(a1) {}
     template <class A1, class A2>
-    held_instance(PyObject*, A1 a1, A2 a2) : TemplateT(a1, a2) {}
+    held_instance(PyObject*, A1 a1, A2 a2) : Held(a1, a2) {}
     template <class A1, class A2, class A3>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3) : TemplateT(a1, a2, a3) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3) : Held(a1, a2, a3) {}
     template <class A1, class A2, class A3, class A4>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : TemplateT(a1, a2, a3, a4) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : Held(a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : TemplateT(a1, a2, a3, a4, a5) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : Held(a1, a2, a3, a4, a5) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : TemplateT(a1, a2, a3, a4, a5, a6) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : Held(a1, a2, a3, a4, a5, a6) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : TemplateT(a1, a2, a3, a4, a5, a6, a7) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : Held(a1, a2, a3, a4, a5, a6, a7) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : TemplateT(a1, a2, a3, a4, a5, a6, a7, a8) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : Held(a1, a2, a3, a4, a5, a6, a7, a8) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : TemplateT(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : Held(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : TemplateT(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : Held(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 };
 
 // Abstract base class for all obj holders. Base for template class
