@@ -2,6 +2,11 @@
 #include <boost/python/slice.hpp>
 #include <vector>
 
+// Copyright (c) 2004 Jonathan Brandmeyer
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 using namespace boost::python;
 
 // These checks are only valid under Python 2.3
