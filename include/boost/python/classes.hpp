@@ -128,6 +128,10 @@ namespace detail {
 
    private: // boost::python::type_object_base required interface implementation
       void instance_dealloc(PyObject*) const; // subclasses should not override this
+    
+   private: // noncopyable, without the size bloat
+      class_base(const class_base&);
+      void operator=(const class_base&);
       
    private:
       string m_name;
@@ -141,11 +145,12 @@ namespace detail {
 // A type which acts a lot like a built-in Python class. T is the obj type,
 // so class_t<instance> is a very simple "class-alike".
 template <class T>
-class class_t
+class BOOST_PYTHON_DECL_TEMPLATE class_t
     : public boost::python::detail::class_base
 {
  public:
     class_t(meta_class<T>* meta_class_obj, string name, tuple bases, const dictionary& name_space);
+    ~class_t();
     
     // Standard Python functions.
     PyObject* call(PyObject* args, PyObject* keywords);
@@ -218,15 +223,11 @@ class class_t
 
  private: // Implementation of boost::python::detail::class_base required interface
     void delete_instance(PyObject*) const;
-    
- private: // noncopyable, without the size bloat
-    class_t(const class_t<T>&);
-    void operator=(const class_t&);
 };
 
 // The type of a class_t<T> object.
 template <class T>
-class meta_class
+class BOOST_PYTHON_DECL_TEMPLATE meta_class
     : public boost::python::detail::reprable<
                 boost::python::detail::callable<
                    boost::python::detail::getattrable<
@@ -261,6 +262,11 @@ meta_class<T>::meta_class()
 template <class T>
 class_t<T>::class_t(meta_class<T>* meta_class_obj, string name, tuple bases, const dictionary& name_space)
     : boost::python::detail::class_base(meta_class_obj, name, bases, name_space)
+{
+}
+
+template <class T>
+class_t<T>::~class_t()
 {
 }
 
