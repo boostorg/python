@@ -32,7 +32,10 @@
 #   define BOOST_MSVC6_OR_EARLIER 1
 #  endif
 
-#  pragma warning (disable : 4786)
+# pragma warning (disable : 4786) // disable truncated debug symbols
+# pragma warning (disable : 4251) // disable exported dll function
+# pragma warning (disable : 4800) //'int' : forcing value to bool 'true' or 'false'
+# pragma warning (disable : 4275) // non dll-interface class
 
 # elif defined(__ICL) && __ICL < 600 // Intel C++ 5
 
