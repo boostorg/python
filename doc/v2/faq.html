@@ -34,7 +34,11 @@
 
       <dt><a href="#question2">How can I wrap containers which take C++
       containers as arguments?</a></dt>
+
+      <dt><a href="#c1204">fatal error C1204:Compiler limit:internal
+      structure overflow</a></dt>
     </dl>
+
 
     <h2><a name="question1"></a>Is return_internal reference efficient?</h2>
 
@@ -150,12 +154,73 @@ void foo(std::vector&lt;double&gt;&amp; array)
 cvs -d:pserver:anonymous@cvs.cctbx.sourceforge.net:/cvsroot/cctbx login
 cvs -d:pserver:anonymous@cvs.cctbx.sourceforge.net:/cvsroot/cctbx co scitbx
 </pre>
+
+
+    <h2><a name="c1204"></a>fatal error C1204:Compiler limit:internal
+    structure overflow</h2>
+
+    <blockquote>
+      <b>Q:</b> <i>I get this error message when compiling a large source
+      file. What can I do?</i> 
+
+      <p><b>A:</b> You have two choices:</p>
+
+      <ol>
+        <li>Upgrade your compiler (preferred)</li>
+
+        <li>
+          Break your source file up into multiple translation units. 
+
+          <p><code><b>my_module.cpp</b></code>:</p>
+<pre>
+...
+void more_of_my_module();
+BOOST_PYTHON_MODULE(my_module)
+{
+   def("foo", foo);
+   def("bar", bar);
+   ...
+   more_of_my_module();
+}
+</pre>
+          <code><b>more_of_my_module.cpp</b></code>: 
+<pre>
+void more_of_my_module()
+{
+   def("baz", baz);
+   ...
+}
+</pre>
+          If you find that a <code><a href=
+          "class.html#class_-spec">class_</a>&lt;...&gt;</code> declaration
+          can't fit in a single source file without triggering the error, you
+          can always pass a reference to the <code>class_</code> object to a
+          function in another source file, and call some of its member
+          functions (e.g. <code>.def(...)</code>) in the auxilliary source
+          file: <code>
+
+          <p><b>more_of_my_class.cpp</b></code>: 
+<pre>
+void more_of_my_class(class&lt;my_class&gt;&amp; x)
+{
+   x
+     .def("baz", baz)
+     .add_property("xx", &amp;my_class::get_xx, &amp;my_class::set_xx)
+     ;
+
+   ...
+}
+</pre>
+        </li>
+      </ol>
+    </blockquote>
+
     <hr>
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     13 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
