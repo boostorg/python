@@ -90,7 +90,7 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
 
   PyObject* to_python(const Foo* p)
   {
-      return to_python(const_cast<Foo*>(p));
+      return to_python(const_cast&lt;Foo*&gt;(p));
   }
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 </pre></blockquote>
