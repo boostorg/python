@@ -18,8 +18,8 @@ struct decorated_type_info : totally_ordered<decorated_type_info>
     
     decorated_type_info(type_info, decoration = decoration());
 
-    bool operator<(decorated_type_info const& rhs) const;
-    bool operator==(decorated_type_info const& rhs) const;
+    inline bool operator<(decorated_type_info const& rhs) const;
+    inline bool operator==(decorated_type_info const& rhs) const;
 
     friend BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, decorated_type_info const&);
 

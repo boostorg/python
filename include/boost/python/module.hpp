@@ -19,6 +19,10 @@ namespace boost { namespace python {
 class module : public detail::module_base
 {
  public:
+#if defined(__EDG_VERSION__) && (__EDG_VERSION__ <= 238)
+    typedef detail::module_base module_base;
+#endif
+
     module(const char* name)
         : module_base(name) {}
 

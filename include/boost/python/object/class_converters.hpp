@@ -69,17 +69,16 @@ struct register_base_of
     };
 };
 
+template <class T>
+inline void force_instantiate(T const&) {}
 
 // Brings into existence all converters associated with a class Bases
 // is expected to be an mpl sequence of base types.
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
-    // cause the static registration to be instantiated. Can't just
-    // cast it to void on all compilers; some will skip its
-    // initialization.
-    void const* ignored = &instance_finder<Derived>::registration;
-    (void)ignored;
+    // cause the static registration to be instantiated.
+    force_instantiate(instance_finder<Derived>::registration);
     
     // register all up/downcasts here
     register_dynamic_id<Derived>();

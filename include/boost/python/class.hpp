@@ -72,6 +72,10 @@ template <
     >
 class class_ : public objects::class_base
 {
+#if defined(__EDG_VERSION__) && (__EDG_VERSION__ <= 238)
+    typedef objects::class_base class_base;
+#endif
+
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
     

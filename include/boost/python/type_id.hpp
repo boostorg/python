@@ -30,8 +30,8 @@ struct type_info : private totally_ordered<type_info>
 {
     type_info(std::type_info const& = typeid(void));
     
-    bool operator<(type_info const& rhs) const;
-    bool operator==(type_info const& rhs) const;
+    inline bool operator<(type_info const& rhs) const;
+    inline bool operator==(type_info const& rhs) const;
 
     char const* name() const;
     friend BOOST_PYTHON_DECL std::ostream& operator<<(
