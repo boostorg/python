@@ -74,8 +74,7 @@ bpl-test exception_translator ;
 bpl-test pearu1 : test_cltree.py cltree.cpp ;
 bpl-test try : newtest.py m1.cpp m2.cpp ;
 
-# Had to break this up into two files for MSVC6
-extension builtin_converters : test_builtin_converters.cpp test_builtin_converters2.cpp <dll>../build/boost_python ;
+extension builtin_converters : test_builtin_converters.cpp <dll>../build/boost_python ;
 boost-python-runtest builtin_converters : test_builtin_converters.py <pyd>builtin_converters  ;
 
 bpl-test test_pointer_adoption ;

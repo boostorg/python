@@ -22,7 +22,9 @@
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/iterator_range.hpp>
 #include <boost/mpl/logical/not.hpp>
-#include <boost/mpl/aux_/lambda_support.hpp>
+
+# include <boost/python/detail/mpl_lambda.hpp>
+
 #include <boost/mpl/lambda.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/find_if.hpp>
@@ -104,7 +106,7 @@ namespace detail
                 sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
         typedef mpl::bool_c<value> type;
 
-        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T))
+        BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
     };
 
     ///////////////////////////////////////
@@ -126,7 +128,7 @@ namespace detail
     struct is_optional : is_optional_impl<T>
     {
         typedef mpl::bool_c<is_optional_impl<T>::value> type;
-        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T))
+        BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
     };
     #endif // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 

@@ -44,10 +44,6 @@ using boost::python::handle;
 using boost::python::object;
 using boost::python::borrowed;
 
-// MSVC6 can't process this whole file at once, so we break it up into
-// two parts. See test_builtin_converters2.cpp
-#ifndef BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS
-
 // Used to test that arbitrary handle<>s can be returned
 handle<PyTypeObject> get_type(handle<> x)
 {
@@ -61,10 +57,8 @@ handle<> return_null_handle()
 
 char const* rewrap_value_mutable_cstring(char* x) { return x; }
 
-void wrap_more();
-
 BOOST_PYTHON_MODULE(builtin_converters)
-{
+{    
     def("get_type", get_type);
     def("return_null_handle", return_null_handle);
         
@@ -80,7 +74,7 @@ BOOST_PYTHON_MODULE(builtin_converters)
     def("rewrap_value_unsigned_long", by_value<unsigned long>::rewrap);
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
-# ifdef HAVE_LONG_LONG
+#ifdef HAVE_LONG_LONG
     def("rewrap_value_long_long", by_value<LONG_LONG>::rewrap);
     def("rewrap_value_unsigned_long_long", by_value<unsigned LONG_LONG>::rewrap);
 # endif 
@@ -98,14 +92,6 @@ BOOST_PYTHON_MODULE(builtin_converters)
         // Expose this to illustrate our failings ;-). See test_builtin_converters.py
     def("rewrap_value_mutable_cstring", rewrap_value_mutable_cstring);
 
-    wrap_more();
-}
-
-#else // BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS -- this part
-      // compiled into test_builtin_converters2.cpp
-
-void wrap_more()
-{
 
     def("rewrap_const_reference_bool", by_const_reference<bool>::rewrap);
     def("rewrap_const_reference_char", by_const_reference<char>::rewrap);
@@ -133,10 +119,6 @@ void wrap_more()
     def("rewrap_const_reference_cstring", by_const_reference<char const*>::rewrap);
     def("rewrap_const_reference_handle", by_const_reference<handle<> >::rewrap);
     def("rewrap_const_reference_object", by_const_reference<object>::rewrap);
-
-
     def("rewrap_reference_object", by_reference<object>::rewrap);
 }
-
-#endif // BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS
 

@@ -8,12 +8,39 @@
 
 # include <boost/mpl/aux_/lambda_support.hpp>
 
-# if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
+# if 0 // defined(BOOST_MSVC) && BOOST_MSVC <= 1300
+   // This approach fails, unfortunately
+
+#  include <boost/preprocessor/enum_params.hpp>
+#  include <boost/preprocessor/comma_if.hpp>
+
+#   define BOOST_PYTHON_LAMBDA_SUPPORT_FORMAL_ARG(R,class_,i,param)     \
+    BOOST_PP_COMMA_IF(i) class_ param                                   \
+    /**/
+
+#   define BOOST_PYTHON_LAMBDA_SUPPORT_ACTUAL_ARG(R,_,i,param)          \
+    BOOST_PP_COMMA_IF(i) param                                          \
+    /**/
+
 #   define BOOST_PYTHON_MPL_LAMBDA_SUPPORT(i,name,params)               \
             struct rebind;                                              \
         };                                                              \
-    template <BOOST_PP_ENUM_PARAMS_Z(1, i, class X)>                    \
-    struct name < BOOST_PP_ENUM_PARAMS_Z(1, i, X) >::rebind             \
+    template <                                                          \
+        BOOST_PP_LIST_FOR_EACH_I_R(                                     \
+              1                                                         \
+            , BOOST_PYTHON_LAMBDA_SUPPORT_FORMAL_ARG                    \
+            , class                                                     \
+            , BOOST_PP_TUPLE_TO_LIST(i,params)                          \
+            )                                                           \
+        >                                                               \
+    struct name <                                                       \
+        BOOST_PP_LIST_FOR_EACH_I_R(                                     \
+              1                                                         \
+            , BOOST_PYTHON_LAMBDA_SUPPORT_ACTUAL_ARG                    \
+            , class                                                     \
+            , BOOST_PP_TUPLE_TO_LIST(i,params)                          \
+            )                                                           \
+    >::rebind                                                           \
     {                                                                   \
         BOOST_STATIC_CONSTANT(int, arity = i);                          \
         BOOST_PP_LIST_FOR_EACH_I_R(                                     \

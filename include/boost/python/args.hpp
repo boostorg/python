@@ -20,7 +20,7 @@
 # include <boost/preprocessor/facilities/intercept.hpp>
 # include <boost/preprocessor/iteration/local.hpp>
 
-# include <boost/mpl/aux_/lambda_support.hpp>
+# include <boost/python/detail/mpl_lambda.hpp>
 # include <boost/mpl/bool_c.hpp>
 
 # include <boost/type.hpp>
@@ -66,7 +66,7 @@ namespace detail
       BOOST_STATIC_CONSTANT(bool, value = (is_ref & is_key));
       
       typedef mpl::bool_c<value> type;
-      BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
+      BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
   };
 # else 
   typedef char (&yes_keywords_t)[1];
@@ -90,7 +90,7 @@ namespace detail
               == sizeof(detail::yes_keywords_t)));
 
       typedef mpl::bool_c<value> type;
-      BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
+      BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
   };
 # endif 
 }

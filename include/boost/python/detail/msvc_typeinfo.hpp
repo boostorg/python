@@ -6,12 +6,10 @@
 #ifndef MSVC_TYPEINFO_DWA200222_HPP
 # define MSVC_TYPEINFO_DWA200222_HPP
 
-#include <boost/type.hpp>
 #include <typeinfo>
-#include <boost/type_traits/is_array.hpp>
-#include <boost/type_traits/is_reference.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/type_traits/is_volatile.hpp>
+#include <boost/type.hpp>
+#include <boost/type_traits/config.hpp>
+
 //
 // Fix for MSVC's broken typeid() implementation which doesn't strip
 // decoration. This fix doesn't handle cv-qualified array types. It
@@ -24,77 +22,61 @@ namespace boost { namespace python { namespace detail {
 
 typedef std::type_info const& typeinfo;
 
-template<int>struct value_id_accessor;
-
-template<>
-struct value_id_accessor<0>
-{
-    template <class T>
-    static typeinfo get(T*) { return typeid(T); }
-};
-
-template<>
-struct value_id_accessor<1>
-{
-    template <class T>
-    static typeinfo get(T const*) { return typeid(T); }
-};
-
-template<>
-struct value_id_accessor<2>
-{
-    template <class T>
-    static typeinfo get(T volatile*) { return typeid(T); }
-};
-
-template<>
-struct value_id_accessor<3>
-{
-    template <class T>
-    static typeinfo get(T const volatile*) { return typeid(T); }
-};
-
-template <bool> struct bool_t{};
+template <class T>
+static typeinfo typeid_nonref(T*, ...) { return typeid(T); }
 
 template <class T>
-inline typeinfo typeid_nonref(boost::type<T>* = 0)
-{
-    bool const c = is_const<T>::value;
-    bool const v = is_volatile<T>::value;
-    return value_id_accessor<(2 * v + c)>::get((T*)0);
-}
+static typeinfo typeid_nonref(T const*, int) { return typeid(T); }
 
 template <class T>
-inline typeinfo typeid_ref(T&(*)()) 
-{
-    return typeid_nonref<T>();
-}
+static typeinfo typeid_nonref(T volatile*, int) { return typeid(T); }
 
 template <class T>
-inline typeinfo array_ref_typeid(bool_t<true>, bool_t<false>, boost::type<T>* = 0)
-{
-    return typeid_ref((T&(*)())0);
-}
+static typeinfo typeid_nonref(T const volatile*, long) { return typeid(T); }
+
+#  ifdef BOOST_INTEL_CXX_VERSION
+// The const volatile overload above confuses Intel when dealing with arrays
+template <class T, unsigned N>
+static typeinfo typeid_nonref(T(*)[N], long) { return typeid(T[N]); }
+#  endif
 
 template <class T>
-inline typeinfo array_ref_typeid(bool_t<false>, bool_t<true>, boost::type<T>* = 0)
+inline typeinfo typeid_ref_1(T&(*)())
 {
-    return typeid_ref((T(*)())0);
+    return detail::typeid_nonref((T*)0,0L);
 }
 
+// A non-reference
 template <class T>
-inline typeinfo array_ref_typeid(bool_t<false>, bool_t<false>, boost::type<T>* = 0)
+inline typeinfo typeid_ref(type<T>*, T&(*)(type<T>))
 {
-    return typeid_ref((T&(*)())0);
+    return detail::typeid_nonref((T*)0,0L);
 }
+
+// A reference
+template <class T>
+inline typeinfo typeid_ref(type<T>*, ...)
+{
+    return detail::typeid_ref_1((T(*)())0);
+}
+
+template< typename T > T&(* is_ref_tester1(type<T>) )(type<T>) { return 0; }
+inline char BOOST_TT_DECL is_ref_tester1(...) { return 0; }
 
 template <class T>
 inline typeinfo msvc_typeid(boost::type<T>* = 0)
 {
-    typedef bool_t<is_array<T>::value> array_tag;
-    typedef bool_t<is_reference<T>::value> ref_tag;
-    return array_ref_typeid(array_tag(), ref_tag(), (boost::type<T>*)0);
+    return detail::typeid_ref(
+        (boost::type<T>*)0, detail::is_ref_tester1(type<T>())
+        );
 }
+
+#  ifndef NDEBUG
+inline typeinfo assert_array_typeid_compiles()
+{
+    return msvc_typeid<char const[3]>(), msvc_typeid<char[3]>();
+}
+#  endif
 
 }}} // namespace boost::python::detail
 

@@ -18,7 +18,7 @@
 # include <boost/type_traits/remove_pointer.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/mpl/bool_c.hpp>
-# include <boost/mpl/aux_/lambda_support.hpp>
+# include <boost/python/detail/mpl_lambda.hpp>
 
 #  ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 #   include <boost/python/detail/is_function_ref_tester.hpp>
@@ -86,7 +86,7 @@ template <class T>
 struct is_reference_to_member_function_pointer
     : is_reference_to_member_function_pointer_impl<T>
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
 };
 
 template <class T>
@@ -192,7 +192,7 @@ struct is_reference_to_class
          >::value)
         );
     typedef mpl::bool_c<value> type;
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
 };
 
 template <class T>
@@ -285,7 +285,7 @@ template <class T>
 struct is_pointer_to_function
     : mpl::if_<is_pointer<T>, is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_pointer_to_function,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_pointer_to_function,(T))
 };
 
 struct false_helper1
@@ -422,7 +422,7 @@ struct is_reference_to_function_pointer
         , mpl::bool_c<false>
      >::type
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_function_pointer,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_function_pointer,(T))
 };
 
 
@@ -453,7 +453,7 @@ struct is_reference_to_member_function_pointer
         , mpl::bool_c<false>
      >::type
 {
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
 };
 
 template <typename V>
@@ -470,7 +470,7 @@ struct is_reference_to_class
            & (sizeof(reference_to_class_helper(t)) == sizeof(inner_yes_type)))
         );
     typedef mpl::bool_c<value> type;
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
+    BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
 };
 
 template <typename V>
