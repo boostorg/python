@@ -11,7 +11,7 @@
 namespace boost { namespace python { namespace converter { 
 
 BOOST_PYTHON_DECL python::detail::new_reference
-pytype_result_from_python(PyTypeObject* type, PyObject* source);
+pytype_result_from_python(PyTypeObject*, PyObject* source);
 
 }}} // namespace boost::python::converter
 
