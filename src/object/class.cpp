@@ -6,8 +6,8 @@
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/find_instance.hpp>
-#include <boost/python/objects2.hpp>
 #include <boost/python/detail/map_entry.hpp>
+#include <boost/python/object.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
 #include <boost/bind.hpp>
@@ -238,9 +238,9 @@ namespace objects
 
         if (result.get() == 0)
         {
-            string report("extension class wrapper for base class ");
-            (report += id.name()) += " has not been created yet";
-            PyErr_SetObject(PyExc_RuntimeError, report.get());
+            object report("extension class wrapper for base class ");
+            report = report + id.name() + " has not been created yet";
+            PyErr_SetObject(PyExc_RuntimeError, report.ptr());
             throw_error_already_set();
         }
         return result;
@@ -262,21 +262,26 @@ namespace objects
   {
       class_registry& r = registry();
       assert(num_types >= 1);
-      tuple bases(std::max(num_types - 1, static_cast<std::size_t>(1)));
+      
+      handle<> bases(
+          PyTuple_New(std::max(num_types - 1, static_cast<std::size_t>(1)))
+          );
+      
       if (num_types > 1)
       {
           for (std::size_t i = 1; i < num_types; ++i)
-              bases.set_item(i - 1, r.get(types[i]));
+              PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(r.get(types[i]).release()));
       }
       else
       {
-          bases.set_item(0, class_type());
+          PyTuple_SET_ITEM(bases.get(), 0, upcast<PyObject>(class_type().release()));
       }
     
-      tuple args(3);
-      args.set_item(0, string(name).reference());
-      args.set_item(1, bases.reference());
-      args.set_item(2, dictionary().reference());
+      handle<> args(PyTuple_New(3));
+      PyTuple_SET_ITEM(args.get(), 0, incref(python::object(name).ptr()));
+      PyTuple_SET_ITEM(args.get(), 1, bases.release());
+      handle<> d(PyDict_New());
+      PyTuple_SET_ITEM(args.get(), 2, d.release());
 
       PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
       assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
