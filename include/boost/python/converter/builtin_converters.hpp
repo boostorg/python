@@ -90,10 +90,12 @@ BOOST_PYTHON_TO_INT(char)
 BOOST_PYTHON_TO_INT(short)
 BOOST_PYTHON_TO_INT(int)
 BOOST_PYTHON_TO_INT(long)
-    
-# ifdef BOOST_HAS_LONG_LONG
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed long long, PyLong_FromLongLong(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned long long, PyLong_FromUnsignedLongLong(x))
+
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+# ifdef HAVE_LONG_LONG 
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed LONG_LONG, PyLong_FromLongLong(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned LONG_LONG, PyLong_FromUnsignedLongLong(x))
 # endif
     
 # undef BOOST_TO_PYTHON_INT

@@ -82,38 +82,38 @@ if $(TEST_BIENSTMAN_NON_BUGS)
 }
 
 # --- unit tests of library components ---
+
+local UNIT_TEST_PROPERTIES = [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB ;
+
 run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
-run pointer_type_id_test.cpp ;
+run pointer_type_id_test.cpp : : : $(UNIT_TEST_PROPERTIES) ;
 run member_function_cast.cpp ;
 run bases.cpp ;
 run if_else.cpp ;
 run pointee.cpp ;
 run result.cpp ;
 compile string_literal.cpp ;
-compile borrowed.cpp : $(PYTHON_PROPERTIES) ;
-compile object_manager.cpp : $(PYTHON_PROPERTIES) ;
+compile borrowed.cpp : $(UNIT_TEST_PROPERTIES) ;
+compile object_manager.cpp : $(UNIT_TEST_PROPERTIES) ;
 
 run upcast.cpp
   : # command-line args
   : # input files
-  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
-    <define>BOOST_PYTHON_STATIC_LIB
+  : $(UNIT_TEST_PROPERTIES)
     ;
 
 run select_holder.cpp
   : # command-line args
   : # input files
-  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
-    <define>BOOST_PYTHON_STATIC_LIB
+  : $(UNIT_TEST_PROPERTIES)
     ;
 
 
 run select_from_python_test.cpp ../src/converter/type_id.cpp
   : # command-line args
   : # input files
-  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
-    <define>BOOST_PYTHON_STATIC_LIB
+  : $(UNIT_TEST_PROPERTIES)
     ;
 
 if $(TEST_EXPECTED_FAILURES)

@@ -9,6 +9,7 @@
 #include <boost/python/handle.hpp>
 #include <boost/python/cast.hpp>
 #include <boost/python/object.hpp>
+#include <boost/python/detail/wrap_python.hpp>
 
 template <class T>
 struct by_value
@@ -70,9 +71,11 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters)
         .def("rewrap_value_unsigned_short", by_value<unsigned short>::rewrap)
         .def("rewrap_value_long", by_value<long>::rewrap)
         .def("rewrap_value_unsigned_long", by_value<unsigned long>::rewrap)
-#ifdef BOOST_HAS_LONG_LONG
-        .def("rewrap_value_long_long", by_value<long long>::rewrap)
-        .def("rewrap_value_unsigned_long_long", by_value<unsigned long long>::rewrap)
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+#ifdef HAVE_LONG_LONG
+        .def("rewrap_value_long_long", by_value<LONG_LONG>::rewrap)
+        .def("rewrap_value_unsigned_long_long", by_value<unsigned LONG_LONG>::rewrap)
 #endif 
         .def("rewrap_value_float", by_value<float>::rewrap)
         .def("rewrap_value_double", by_value<double>::rewrap)
@@ -99,9 +102,11 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters)
         .def("rewrap_const_reference_unsigned_short", by_const_reference<unsigned short>::rewrap)
         .def("rewrap_const_reference_long", by_const_reference<long>::rewrap)
         .def("rewrap_const_reference_unsigned_long", by_const_reference<unsigned long>::rewrap)
-#ifdef BOOST_HAS_LONG_LONG
-        .def("rewrap_const_reference_long_long", by_const_reference<long long>::rewrap)
-        .def("rewrap_const_reference_unsigned_long_long", by_const_reference<unsigned long long>::rewrap)
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+#ifdef HAVE_LONG_LONG
+        .def("rewrap_const_reference_long_long", by_const_reference<LONG_LONG>::rewrap)
+        .def("rewrap_const_reference_unsigned_long_long", by_const_reference<unsigned LONG_LONG>::rewrap)
 #endif
         .def("rewrap_const_reference_float", by_const_reference<float>::rewrap)
         .def("rewrap_const_reference_double", by_const_reference<double>::rewrap)

@@ -98,7 +98,9 @@ namespace
       }
   };
 
-#ifdef BOOST_HAS_LONG_LONG
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+#ifdef HAVE_LONG_LONG
   // A SlotPolicy for extracting long long types from Python objects
   struct long_long_rvalue_from_python_base
   {
@@ -126,7 +128,7 @@ namespace
 
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
-      static long long extract(PyObject* intermediate)
+      static LONG_LONG extract(PyObject* intermediate)
       {
           if (PyInt_Check(intermediate))
           {
@@ -134,11 +136,11 @@ namespace
           }
           if (PyFloat_Check(intermediate))
           {
-              return numeric_cast<long long>(PyFloat_AS_DOUBLE(intermediate));
+              return numeric_cast<LONG_LONG>(PyFloat_AS_DOUBLE(intermediate));
           }
           else
           {
-              long long result = PyLong_AsLongLong(intermediate);
+              LONG_LONG result = PyLong_AsLongLong(intermediate);
               
               if (PyErr_Occurred())
                   throw_error_already_set();
@@ -150,19 +152,19 @@ namespace
 
   struct unsigned_long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
-      static unsigned long long extract(PyObject* intermediate)
+      static unsigned LONG_LONG extract(PyObject* intermediate)
       {
           if (PyInt_Check(intermediate))
           {
-              return numeric_cast<unsigned long long>(PyInt_AS_LONG(intermediate));
+              return numeric_cast<unsigned LONG_LONG>(PyInt_AS_LONG(intermediate));
           }
           if (PyFloat_Check(intermediate))
           {
-              return numeric_cast<unsigned long long>(PyFloat_AS_DOUBLE(intermediate));
+              return numeric_cast<unsigned LONG_LONG>(PyFloat_AS_DOUBLE(intermediate));
           }
           else
           {
-              unsigned long long result = PyLong_AsUnsignedLongLong(intermediate);
+              unsigned LONG_LONG result = PyLong_AsUnsignedLongLong(intermediate);
               
               if (PyErr_Occurred())
                   throw_error_already_set();
@@ -347,9 +349,11 @@ void initialize_builtin_converters()
     REGISTER_INT_CONVERTERS2(int);
     REGISTER_INT_CONVERTERS2(long);
     
-# ifdef BOOST_HAS_LONG_LONG
-    slot_rvalue_from_python<signed long long,long_long_rvalue_from_python>();
-    slot_rvalue_from_python<unsigned long long,unsigned_long_long_rvalue_from_python>();
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+# ifdef HAVE_LONG_LONG
+    slot_rvalue_from_python<signed LONG_LONG,long_long_rvalue_from_python>();
+    slot_rvalue_from_python<unsigned LONG_LONG,unsigned_long_long_rvalue_from_python>();
 # endif
         
     // floating types

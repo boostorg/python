@@ -6,6 +6,7 @@
 #ifndef TYPE_ID_DWA2002517_HPP
 # define TYPE_ID_DWA2002517_HPP
 
+# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/msvc_typeinfo.hpp>
 # include <boost/operators.hpp>
@@ -78,7 +79,9 @@ inline type_info type_id<T>(boost::type<T>*)            \
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(short)
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(int)
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long)
-#   ifdef BOOST_HAS_LONG_LONG
+// using Python's macro instead of Boost's - we don't seem to get the
+// config right all the time.
+#   ifdef HAVE_LONG_LONG
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long long)
 #   endif
 #   undef BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID
