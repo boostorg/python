@@ -9,7 +9,7 @@ __ ../../../index.htm
 
 .. _`Boost.Python`: index.html
 
-.. _license: ../../../LICENSE
+.. _license: ../../../LICENSE_1_0.txt
 
 
 -------------------------------------------------------
