@@ -285,110 +285,11 @@ void ExtensionClassBase::add_method(Function* method, const char* name)
     
 void ExtensionClassBase::add_method(PyPtr<Function> method, const char* name)
 {
-    // If we have created a special Python base class which wraps C++ classes
-    // derived from T, the method should really be added there. Target will be
-    // that Python class object.
-    Class<ExtensionInstance>* target = (bases().size() == 0)
-        ? this
-        : Downcast<Class<ExtensionInstance> >(bases()[0].get()).get();
-
     // Add the attribute to the computed target
-    Function::add_to_namespace(method, name, target->dict().get());
+    Function::add_to_namespace(method, name, this->dict().get());
 
     // If it is a special member function it should be enabled both here and there.
     detail::enable_named_method(this, name);
-}
-
-void ExtensionClassBase::add_default_method(Function* method, const char* name)
-{
-    add_default_method(PyPtr<Function>(method), name);
-}
-
-// A rather complicated thing is going on here in order to make a very specific
-// class of cases work. When wrapping the following C++:
-//
-// struct Base {
-//     Base();                  // will be constructed from Python
-//     virtual int f() const    // might be called from C++
-//         { return 1; }        // default implementation
-// };
-//
-// struct Derived : Base {
-//     int f() const { return 0; } // overridden in C++
-// };
-//
-// boost::shared_ptr<Base> factory(bool selector) {
-//     return boost::shared_ptr<Base>(selector ? new Base : new Derived);
-// }
-//
-// Normally we would use the same Python ExtensionClass object to represent both
-// Base and boost::shared_ptr<Base>, since they have essentially the same
-// operations (see the comment on InstanceHolder in extclass_pygen.h for
-// details). If there was no need to override Base::f() in Python, that would
-// work fine. In this case, since f() is virtual, the programmer must provide a
-// subclass of Base which calls back into Python:
-//
-// struct BaseCallback : Base {
-//     BaseCallback(PyObject* self) : m_self(self) {}
-//     int f() const { return py::Callback<int>::call_method(m_self, "f"); }
-//     static int default_f(const Base* self) const { self->Base::f(); }
-// };
-//
-// default_f() is what gets registered under the name "f" in the "Base"
-// ExtensionClass' attribute dict. When C++ calls f() on a wrapped instance of
-// Base, we call back into Python to find the "f" attribute, which calls
-// default_f() (unless it has been overridden in Python) and in turn the default
-// implementation (Base::f()) is called.
-//
-// Now consider what happens when the Python programmer writes
-//    >>> factory(0).f()
-//
-// The shared_ptr<Derived> which is created on the C++ side is converted by
-// to_python() into a Python instance of the "Base" ExtensionClass. Then Python
-// looks up the "f" attribute, and finds the wrapper for default_f(), which it
-// calls. That calls Base::f(), returning 1. What we really wanted was a call to
-// Derived::f(), returning 0.
-//
-// In this case we actually need a different Python ExtensionClass to represent
-// C++ subclasses of Base. When the first default method implementation is added
-// to an ExtensionClass, we "push" all of the non-default methods up into a
-// newly-created base class of the "Base" ExtensionClass, called
-// "Base_base". "Base's" attribute dict contains only default method
-// implementations.
-// 
-// A Python call to factory() then results in an object of class "Base_base",
-// whose "f" method is bound to Base::f() - since this is a virtual function
-// pointer, the member function actually called is determined by the
-// most-derived class that implements f().
-//
-// A Python call to Base() results in an object of class "Base" wrapping a
-// BaseCallback object, whose "f" method is bound to BaseCallback::default_f()
-// ...which calls Base::f() explicitly.
-void ExtensionClassBase::add_default_method(PyPtr<Function> method, const char* name)
-{
-    if (bases().size() == 0)
-    {
-        Class<ExtensionInstance>* new_base
-            = new Class<ExtensionInstance>(
-                extension_meta_class(), this->name() + String("_base"), Tuple(),
-                dict());
-        
-        add_base(Ptr(as_object(new_base)));
-        
-        // We have transferred everything in our dict into the base class, so
-        // clear our dict now. It will henceforth contain only default method
-        // implementations.
-        dict() = Dict();
-
-        // Copy the "__module__" attribute from the fake base class, if any
-        PyObject *module_name = PyDict_GetItemString(new_base->dict().get(), "__module__");
-        if (module_name != 0 && PyString_Check(module_name))
-        {
-            static String module_key("__module__", String::interned);
-            PyDict_SetItem(dict().get(), module_key.get(), module_name);
-        }
-    }
-    Function::add_to_namespace(method, name, dict().get());
 }
 
 void ExtensionClassBase::add_constructor_object(Function* init_function)
