@@ -123,7 +123,7 @@ libbpl.a: $(OBJ)
 	rm -f libbpl.a.input
 
 test.so: $(OBJ) comprehensive.o
-	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o test.so
+	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o test.so -lm
 
 abstract.so: $(OBJ) abstract.o
 	$(LD) $(LDOPTS) $(OBJ) abstract.o -o abstract.so
