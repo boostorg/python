@@ -54,6 +54,7 @@ rule bpl-test ( name ? : files * )
 bpl-test bienstman1 ;
 bpl-test bienstman2 ;
 bpl-test bienstman3 ;
+bpl-test bienstman4 ;
 bpl-test try : newtest.py m1.cpp m2.cpp ;
 bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters.cpp ;
 bpl-test test_pointer_adoption ;
