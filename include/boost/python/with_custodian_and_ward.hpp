@@ -10,78 +10,94 @@
 
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/object/life_support.hpp>
+# include <algorithm>
 
 namespace boost { namespace python { 
 
-template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
+template <
+    std::size_t custodian
+  , std::size_t ward
+  , class BasePolicy_ = default_call_policies
+>
 struct with_custodian_and_ward : BasePolicy_
 {
-    static PyObject* precall(PyObject* args);
+    BOOST_STATIC_ASSERT(custodian != ward);
+    BOOST_STATIC_ASSERT(custodian > 0);
+    BOOST_STATIC_ASSERT(ward > 0);
+
+    template <class ArgumentPackage>
+    static bool precall(ArgumentPackage const& args_)
+    {
+        unsigned arity_ = detail::arity(args_);
+        if (custodian > arity_ || ward > arity_)
+        {
+            PyErr_SetString(
+                PyExc_IndexError
+              , "boost::python::with_custodian_and_ward: argument index out of range"
+            );
+            return false;
+        }
+
+# if 0 // argpkg
+        PyObject* patient = detail::get(mpl::int_<(ward-1)>(), args_);
+        PyObject* nurse = detail::get(mpl::int_<(custodian-1)>(), args_);
+# else
+        PyObject* patient = detail::get<(ward-1)>(args_);
+        PyObject* nurse = detail::get<(custodian-1)>(args_);
+# endif 
+        PyObject* life_support = python::objects::make_nurse_and_patient(nurse, patient);
+        if (life_support == 0)
+            return false;
+    
+        bool result = BasePolicy_::precall(args_);
+
+        if (!result)
+            Py_DECREF(life_support);
+    
+        return result;
+    }
 };
 
 template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
 struct with_custodian_and_ward_postcall : BasePolicy_
 {
-    static PyObject* postcall(PyObject* args, PyObject* result);
+    BOOST_STATIC_ASSERT(custodian != ward);
+    
+    template <class ArgumentPackage>
+    static PyObject* postcall(ArgumentPackage const& args_, PyObject* result)
+    {
+        unsigned arity_ = detail::arity(args_);
+        if ( custodian > arity_ || ward > arity_ )
+        {
+            PyErr_SetString(
+                PyExc_IndexError
+              , "boost::python::with_custodian_and_ward_postcall: argument index out of range"
+            );
+            return 0;
+        }
+        
+# if 0 // argpkg
+        PyObject* patient = ward > 0 ? detail::get(mpl::int_<(ward-1)>(),args_) : result;
+        PyObject* nurse = custodian > 0 ? detail::get(mpl::int_<(custodian-1)>(),args_) : result;
+# else 
+        PyObject* patient = ward > 0 ? detail::get<(ward-1)>(args_) : result;
+        PyObject* nurse = custodian > 0 ? detail::get<(custodian-1)>(args_) : result;
+# endif 
+        if (nurse == 0) return 0;
+    
+        result = BasePolicy_::postcall(args_, result);
+        if (result == 0)
+            return 0;
+            
+        if (python::objects::make_nurse_and_patient(nurse, patient) == 0)
+        {
+            Py_XDECREF(result);
+            return 0;
+        }
+        return result;
+    }
 };
 
-//
-// implementations
-//
-template <std::size_t custodian, std::size_t ward, class BasePolicy_>
-PyObject*
-with_custodian_and_ward<custodian,ward,BasePolicy_>::precall(
-    PyObject* args_
-)
-{
-    BOOST_STATIC_ASSERT(custodian != ward);
-    BOOST_STATIC_ASSERT(custodian > 0);
-    BOOST_STATIC_ASSERT(ward > 0);
-    
-    PyObject* patient = PyTuple_GetItem(args_, ward - 1);
-    if (patient == 0)
-        return 0;
-    
-    PyObject* nurse = PyTuple_GetItem(args_, custodian - 1);
-    if (nurse == 0)
-        return 0;
-    
-    PyObject* life_support = python::objects::make_nurse_and_patient(nurse, patient);
-    if (life_support == 0)
-        return 0;
-    
-    args_ = BasePolicy_::precall(args_);
-    if (args_ == 0)
-        Py_XDECREF(life_support);
-    
-    return args_;
-}
-
-template <std::size_t custodian, std::size_t ward, class BasePolicy_>
-PyObject*
-with_custodian_and_ward_postcall<custodian,ward,BasePolicy_>::postcall(
-    PyObject* args_
-  , PyObject* result)
-{
-    BOOST_STATIC_ASSERT(custodian != ward);
-    
-    PyObject* patient = ward > 0 ? PyTuple_GetItem(args_, ward - 1) : result;
-    if (patient == 0) return 0;
-    
-    PyObject* nurse = custodian > 0 ? PyTuple_GetItem(args_, custodian - 1) : result;
-    if (nurse == 0) return 0;
-    
-    result = BasePolicy_::postcall(args_, result);
-    if (result == 0)
-        return 0;
-            
-    if (python::objects::make_nurse_and_patient(nurse, patient) == 0)
-    {
-        Py_XDECREF(result);
-        return 0;
-    }
-    return result;
-}
 
 }} // namespace boost::python
 

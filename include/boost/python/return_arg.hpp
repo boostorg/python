@@ -7,10 +7,17 @@
 # define RETURN_ARG_DWA2003719_HPP
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/detail/none.hpp>
+
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
+
+# if 0 // argpkg
+#  include <boost/mpl/int.hpp>
+# endif
+
 # include <boost/static_assert.hpp>
 # include <boost/python/refcount.hpp>
+
 # include <cstddef>
 
 namespace boost { namespace python { 
@@ -67,8 +74,24 @@ struct return_arg : Base
         // think it is better to issue an error instead, cause it can
         // lead to confusions
     >::type result_converter;
-    
-    static PyObject* postcall(PyObject *args, PyObject* result);
+
+    template <class ArgumentPackage>
+    static PyObject* postcall(ArgumentPackage const& args, PyObject* result)
+    {
+        // In case of arg_pos == 0 we could simply return Base::postcall,
+        // but this is redundant
+        BOOST_STATIC_ASSERT(arg_pos > 0);
+
+        result = Base::postcall(args,result);
+        if (!result)
+            return 0;
+        Py_DECREF(result);
+# if 0 // argpkg
+        return incref( detail::get(mpl::int_<arg_pos-1>(),args) );
+# else
+        return incref( detail::get<(arg_pos-1)>(args) );
+# endif 
+    }
 };
 
 template <
@@ -77,23 +100,6 @@ template <
 struct return_self 
   : return_arg<1,Base>
 {};
-
-    
-template <size_t arg_pos, class Base>
-inline PyObject*
-return_arg<arg_pos, Base>::postcall(PyObject *args, PyObject* result)
-{
-    // In case of arg_pos == 0 we could simply return Base::postcall,
-    // but this is redundant
-    BOOST_STATIC_ASSERT(arg_pos > 0);
-
-    handle<> base_result(Base::postcall(args,result));
-         
-    if(!base_result)
-        return 0;
-
-    return incref(PyTuple_GetItem(args,arg_pos-1));
-}
 
 }} // namespace boost::python
 

@@ -9,14 +9,6 @@
 # ifndef CALLER_DWA20021121_HPP
 #  define CALLER_DWA20021121_HPP
 
-#  include <boost/compressed_pair.hpp>
-
-#  include <boost/mpl/apply.hpp>
-#  include <boost/mpl/if.hpp>
-#  include <boost/mpl/size.hpp>
-#  include <boost/mpl/at.hpp>
-#  include <boost/type_traits/is_same.hpp>
-
 #  include <boost/python/type_id.hpp>
 #  include <boost/python/handle.hpp>
 
@@ -25,6 +17,7 @@
 #  include <boost/python/detail/preprocessor.hpp>
 
 #  include <boost/python/arg_from_python.hpp>
+#  include <boost/python/converter/context_result_converter.hpp>
 
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/cat.hpp>
@@ -34,7 +27,38 @@
 #  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 #  include <boost/preprocessor/repetition/repeat.hpp>
 
+#  include <boost/compressed_pair.hpp>
+
+#  include <boost/type_traits/is_same.hpp>
+#  include <boost/type_traits/is_convertible.hpp>
+
+#  include <boost/mpl/apply.hpp>
+#  include <boost/mpl/apply_if.hpp>
+#  include <boost/mpl/identity.hpp>
+#  include <boost/mpl/size.hpp>
+#  include <boost/mpl/at.hpp>
+#  include <boost/mpl/int.hpp>
+
 namespace boost { namespace python { namespace detail { 
+
+#  if 0 // argpkg
+template <class N>
+inline PyObject* get(N, PyObject* const& args_)
+{
+    return PyTuple_GET_ITEM(args_,N::value);
+}
+#  else
+template <unsigned N>
+inline PyObject* get(PyObject* const& args_ BOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(unsigned,N))
+{
+    return PyTuple_GET_ITEM(args_,N);
+}
+#  endif 
+
+inline unsigned arity(PyObject* const& args_)
+{
+    return PyTuple_GET_SIZE(args_);
+}
 
 // This "result converter" is really just used as
 // a dispatch tag to invoke(...), selecting the appropriate
@@ -46,15 +70,34 @@ typedef int void_result_to_python;
 // converting the result to python.
 template <class Policies, class Result>
 struct select_result_converter
-    : mpl::if_<
+  : mpl::apply_if<
         is_same<Result,void>
-        , void_result_to_python
-        , typename mpl::apply1<typename Policies::result_converter,Result>::type*
+      , mpl::identity<void_result_to_python>
+      , mpl::apply1<typename Policies::result_converter,Result>
     >
 {
 };
 
-
+template <class ArgPackage, class ResultConverter>
+inline ResultConverter create_result_converter(
+    ArgPackage const& args_
+  , ResultConverter*
+  , converter::context_result_converter*
+)
+{
+    return ResultConverter(args_);
+}
+    
+template <class ArgPackage, class ResultConverter>
+inline ResultConverter create_result_converter(
+    ArgPackage const& args_
+  , ResultConverter*
+  , ...
+)
+{
+    return ResultConverter();
+}
+    
 template <unsigned> struct caller_arity;
 
 template <class F, class CallPolicies, class Sig>
@@ -63,12 +106,21 @@ struct caller;
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
      typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
 
+#  if 0 // argpkg
 #  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
      BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
      typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
-     c_t##n c##n(PyTuple_GET_ITEM(args_, n));                                   \
+     c_t##n c##n(get(mpl::int_<n>(), inner_args));                              \
      if (!c##n.convertible())                                                   \
           return 0;
+# else
+#  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
+     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
+     typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
+     c_t##n c##n(get<n>(inner_args));                                           \
+     if (!c##n.convertible())                                                   \
+          return 0;
+# endif
 
 #  define BOOST_PP_ITERATION_PARAMS_1                                            \
         (3, (0, BOOST_PYTHON_MAX_ARITY + 1, <boost/python/detail/caller.hpp>))
@@ -142,6 +194,10 @@ struct caller_arity<N>
             typedef typename mpl::begin<Sig>::type first;
             typedef typename first::type result_t;
             typedef typename select_result_converter<Policies, result_t>::type result_converter;
+            typedef typename Policies::argument_package argument_package;
+            
+            argument_package inner_args(args_);
+
 # if N
 #  define BOOST_PP_LOCAL_MACRO(i) BOOST_PYTHON_ARG_CONVERTER(i)
 #  define BOOST_PP_LOCAL_LIMITS (0, N-1)
@@ -149,17 +205,15 @@ struct caller_arity<N>
 # endif 
             // all converters have been checked. Now we can do the
             // precall part of the policy
-            PyObject* inner_args = m_data.second().precall(args_);
-            if (inner_args == 0)
+            if (!m_data.second().precall(inner_args))
                 return 0;
 
-            // manage the inner arguments
-            handle<> keeper(allow_null(inner_args));
-                
-            typedef typename detail::invoke_tag<F>::type tag;
-
             PyObject* result = detail::invoke(
-                tag(), result_converter(), m_data.first() BOOST_PP_ENUM_TRAILING_PARAMS(N, c));
+                detail::invoke_tag<result_t,F>()
+              , create_result_converter(args_, (result_converter*)0, (result_converter*)0)
+              , m_data.first()
+                BOOST_PP_ENUM_TRAILING_PARAMS(N, c)
+            );
             
             return m_data.second().postcall(inner_args, result);
         }

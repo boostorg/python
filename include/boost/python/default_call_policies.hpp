@@ -31,19 +31,21 @@ struct default_call_policies
 {
     // Ownership of this argument tuple will ultimately be adopted by
     // the caller.
-    static PyObject* precall(PyObject* args_)
+    template <class ArgumentPackage>
+    static bool precall(ArgumentPackage const&)
     {
-        Py_INCREF(args_);
-        return args_;
+        return true;
     }
 
     // Pass the result through
-    static PyObject* postcall(PyObject* args_, PyObject* result)
+    template <class ArgumentPackage>
+    static PyObject* postcall(ArgumentPackage const&, PyObject* result)
     {
         return result;
     }
 
     typedef default_result_converter result_converter;
+    typedef PyObject* argument_package;
 };
 
 struct default_result_converter

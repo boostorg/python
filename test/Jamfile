@@ -67,6 +67,7 @@ bpl-test crossmod_exception
   : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
   ;
 
+bpl-test injected ;
 bpl-test properties ;
 bpl-test return_arg ;
 bpl-test staticmethod ;
