@@ -358,12 +358,13 @@ class GCCXMLParser(object):
         name = element.get('name')
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
-        if isinstance(context, Class):
+        if isinstance(context, str):
+            enum = Enumeration(name, context)
+            self.AddDecl(enum) # in this case, is a top level decl 
+        else:
             visib = element.get('access', Scope.public)
             enum = ClassEnumeration(name, context.FullName(), visib)
-        else:
-            enum = Enumeration(name, context)
-            self.AddDecl(enum) # in this case, is a top level decl
+            
         enum.location = location
         for child in element:
             if child.tag == 'EnumValue':
@@ -379,7 +380,18 @@ class GCCXMLParser(object):
         
 
     def ParseUnion(self, id, element):
-        self.Update(id, Declaration(element.get('name'), ''))
+        name = element.get('name')
+        context = self.GetDecl(element.get('context'))
+        location = self.GetLocation(element.get('location'))
+        if isinstance(context, str):
+            # a free union
+            union = Union(name, context)
+            self.AddDecl(union)
+        else:
+            visib = element.get('access', Scope.public)
+            union = ClassUnion(name, context.FullName(), visib)
+        union.location = location
+        self.Update(id, union)
         
 
 
