@@ -169,16 +169,16 @@ namespace detail                                                        \
   };                                                                    \
 } 
 
-# define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)                      \
-BOOST_PYTHON_BINARY_OPERATION(id, rid, l op r)                          \
-namespace self_ns                                                       \
-{                                                                       \
-  template <class L, class R>                                           \
-  inline detail::operator_<detail::op_##id,L,R>                         \
-  operator##op(L const&, R const&)                                      \
-  {                                                                     \
-      return detail::operator_<detail::op_##id,L,R>();                  \
-  }                                                                     \
+# define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)      \
+BOOST_PYTHON_BINARY_OPERATION(id, rid, l op r)          \
+namespace self_ns                                       \
+{                                                       \
+  template <class L, class R>                           \
+  inline detail::operator_<detail::op_##id,L,R>         \
+  operator op(L const&, R const&)                       \
+  {                                                     \
+      return detail::operator_<detail::op_##id,L,R>();  \
+  }                                                     \
 }
   
 BOOST_PYTHON_BINARY_OPERATOR(add, radd, +)
@@ -262,7 +262,7 @@ namespace self_ns                                               \
 {                                                               \
   template <class R>                                            \
   inline detail::operator_<detail::op_##id,self_t,R>            \
-  operator##op(self_t const&, R const&)                         \
+  operator op(self_t const&, R const&)                          \
   {                                                             \
       return detail::operator_<detail::op_##id,self_t,R>();     \
   }                                                             \

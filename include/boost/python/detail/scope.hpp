@@ -6,6 +6,8 @@
 #ifndef SCOPE_DWA2002927_HPP
 # define SCOPE_DWA2002927_HPP
 
+# include <boost/python/detail/config.hpp>
+
 namespace boost { namespace python { namespace detail {
 
 void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& obj, char const* doc);

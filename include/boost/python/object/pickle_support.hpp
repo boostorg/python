@@ -4,7 +4,9 @@
 //  software is provided "as is" without express or implied warranty, and
 //  with no claim as to its suitability for any purpose.
 #ifndef BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
-#define BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
+# define BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
+
+# include <boost/python/detail/config.hpp>
 
 namespace boost { namespace python {
 
