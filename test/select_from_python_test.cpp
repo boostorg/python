@@ -2,7 +2,9 @@
 #include <boost/python/type_id.hpp>
 #include <iostream>
 
-#if defined(__GNUC__) && __GNUC__ < 3 // 2.95.x linker seems to demand this definition
+// gcc 2.95.x and MIPSpro 7.3.1.3 linker seem to demand this definition
+#if ((defined(__GNUC__) && __GNUC__ < 3)) \
+ || (defined(__sgi) && defined(__EDG_VERSION__) && (__EDG_VERSION__ == 238))
 namespace boost { namespace python {
 BOOST_PYTHON_DECL bool handle_exception_impl(function0<void>)
 {
