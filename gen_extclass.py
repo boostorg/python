@@ -542,6 +542,9 @@ class ExtensionClass
         this->def_setter(pm, name);
     }
         
+    // define the standard coercion needed for operator overloading
+    void def_standard_coerce();
+    
     // declare the given class a base class of this one and register 
     // up and down conversion functions
     template <class S, class V>
@@ -587,7 +590,7 @@ class ExtensionClass
     template <long which, class Operand>
     inline void def_operators(operators<which,Operand>)
     {
-        register_coerce();
+        def_standard_coerce();
         
         detail::choose_op<(which & op_add)>::template args<Operand>::add(this);
         detail::choose_op<(which & op_sub)>::template args<Operand>::add(this);
@@ -615,7 +618,7 @@ class ExtensionClass
     template <long which, class Left, class Right>
     inline void def_operators(operators<which,Left>, right_operand<Right>)
     {
-        register_coerce();
+        def_standard_coerce();
         
         detail::choose_op<(which & op_add)>::template args<Left,Right>::add(this);
         detail::choose_op<(which & op_sub)>::template args<Left,Right>::add(this);
@@ -635,7 +638,7 @@ class ExtensionClass
     template <long which, class Left, class Right>
     inline void def_operators(operators<which,Right>, left_operand<Left>)
     {
-        register_coerce();
+        def_standard_coerce();
         
         detail::choose_rop<(which & op_add)>::template args<Left,Right>::add(this);
         detail::choose_rop<(which & op_sub)>::template args<Left,Right>::add(this);
@@ -657,8 +660,6 @@ class ExtensionClass
     {
         this->add_constructor_object(InitFunction<Holder>::create(sig));
     }
-    
-    void register_coerce();
 };
 
 // A simple wrapper over a T which allows us to use ExtensionClass<T> with a

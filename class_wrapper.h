@@ -92,6 +92,10 @@ class ClassWrapper
     void def_read_write(MemberType T::*pm, const char* name)
         { m_class->def_read_write(pm, name); }
         
+    // define the standard coercion needed for operator overloading
+    void def_standard_coerce()
+        { m_class->def_standard_coerce(); }
+    
     // declare the given class a base class of this one and register 
     // conversion functions
     template <class S, class V>

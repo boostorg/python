@@ -1,4 +1,6 @@
 2000-11-20 10:00
+    Ullrich renamed ExtensionClass:register_coerce() into 
+    ExtensionClass:def_standard_coerce() and made it public
     
     Ullrich improved shared_pod_manager.
     

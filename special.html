@@ -13,18 +13,122 @@
          Overview
       </h2>
       <p>
-         Py_cpp supports all of the standard <a href= 
+         Py_cpp is able to wrap suitable C++ functions and C++ operators into Python operators.
+         It supports all of the standard <a href= 
         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
-         special method names</a> supported by real Python class instances <em>
-        except:</em>
-<ul>
-<li>the <code>__r<em>&lt;name&gt;</em>__</code> "reversed operand" <a href= 
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
-         numeric methods</a>, and
-<li><code>__complex__</code>
-</ul>
- 
-       (more on the reasons <a href="#reasons">below</a>). So, for example, we can wrap a
+         special method names</a> supported by real Python class instances <em>except</em> 
+         <code>__complex__</code> (more on the reasons <a href="#reasons">below</a>). 
+
+
+<h2>Numeric Operators</h2>
+
+There are two fundamental ways to define numeric operators within py_cpp: automatic wrapping 
+and manual wrapping. Suppose, C++ defines an addition operator for type <code>Rational</code>, so that we can write:
+
+<pre>
+    Rational a, b, c;
+    ...
+    c = a + b;
+</pre>
+
+To enable the same functionality in Python, we first wrap the Rational class as usual:
+
+<pre>
+    py::ClassWrapper&lt;Rational&gt; rational_class(my_module, "Rational");
+    rational_class.def(py::Constructor&lt;&gt;());
+    ...
+</pre>
+
+Then we export the addition operator like this:
+
+<pre>
+    rational_class.def(py::operators&lt;py::op_add&gt;());
+</pre>
+
+Since Rational also supports subtraction, multiplication, adn division, we want to export those also. This can be done in a single command by 'or'ing the operator identifiers together (a complete list of these identifiers and the corresponding operators can be found in the <a href="#numeric_table">table</a>):
+
+<pre>
+    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;());
+</pre>
+
+Note that the or-expression must be enclosed in parentheses. This form of operator definition will wrap homogeneous operators, that is operators whose left and right operand have the same type. Now, suppose that our C++ library also supports addition of Rationals and integers:
+
+<pre>
+    Rational a, b;
+    int i;
+    ...
+    a = b + i;
+    a = i + b;
+</pre>
+
+To wrap these heterogeneous operators (left and right hand side have different types), we need a possibility to specify a different operand type. This is done using the <code>right_operand</code> and <code>left_operand</code> templates:
+
+<pre>
+    rational_class.def(py::operators&lt;py::op_add&gt;(), py::right_operand&lt;int&gt;());
+    rational_class.def(py::operators&lt;py::op_add&gt;(), py::left_operand&lt;int&gt;());
+</pre>
+
+Py_cpp uses overloading to register several variants of the same operation (more on this in the context of <a href="#coercion">coercion</a>). Again, several operators can be exported at once:
+
+<pre>
+    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(),
+                       py::right_operand&lt;int&gt;());
+    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(), 
+                       py::left_operand&lt;int&gt;());
+</pre>
+
+
+The type of the operand not mentioned is taken from the class object. In our example, the class object is <code>rational_class</code>, and thus the other operand's type is `<code>Rational const &amp;</code>'. You can override this default by explicitly specifying a type in the <code>operators</code> template:
+
+<pre>
+    rational_class.def(py::operators&lt;py::op_add, Rational&gt;(), py::right_operand&lt;int&gt;());
+</pre>
+
+Here, `<code>Rational</code>' would be used instead of `<code>Rational const &amp;</code>'. 
+<p>
+Note that automatic wrapping doesn't need any specific form of <code>operator+()</code> (or any other operator), but rather wraps the <em>expression</em> `<code>left + right</code>'. That is, this mechanism can be used for any definition of <code>operator+()</code>, such as a free function `<code>Rational operator+(Rational, Rational)</code>' or a member function `<code>Rational Rational::operator+(Rational)</code>'.
+
+<p>
+In some cases, automatic wrapping of operators is not possible or not desirable. Suppose, for example, that the power operation for Rationals is defined by a set of functions <code>pow()</code>:
+
+<pre>
+    Rational pow(Rational const &amp; left, Rational const &amp; right);
+    Rational pow(Rational const &amp; left, int right);
+    Rational pow(int left, Rational const &amp; right);
+</pre>
+
+In order to create the Python operator "pow" from these functions, we have to wrap them manually:
+
+<pre>
+    rational_class.def((Rational (*)(Rational const &amp;, Rational const &amp;))&amp;pow, "__pow__");
+    rational_class.def((Rational (*)(Rational const &amp;, int))&amp;pow, "__pow__");
+</pre>
+
+The third form (with <code>int</code> as left operand) cannot be wrapped this way. We must first create a function <code>rpow()</code> with the operands reversed:
+
+<pre>
+    Rational rpow(Rational const &amp; right, int left)
+    {
+        return pow(left, right);
+    }
+</pre>
+
+This function must be wrapped under the name "__rpow__":
+
+<pre>
+    rational_class.def(&amp;rpow,  "__rpow__");
+</pre>
+
+A list of the possible operator names is also found in the <a href="#numeric_table">table</a>.
+Special treatment is necessary to define the <a href="#ternary_pow">ternary pow</a>.
+<p>
+Automatic and manual wrapping can be mixed arbitrarily.
+
+<a name="coercion">
+<h4>Coercion</h4></a>
+
+
+        So, for example, we can wrap a
         <code>std::map&lt;std::size_t,std::string&gt;</code> as follows:
       <h2>
          Example
