@@ -17,6 +17,9 @@ BOOST_UNIX=$(HOME)/boost
 PYEXE="C:\Program files\Python\python.exe"
 PYINC=/I"C:\Program files\Python\include"
 PYLIB="C:\Program files\Python\libs\python15.lib"
+#PYEXE="C:\Python21\python.exe"
+#PYINC=/I"C:\Python21\include"
+#PYLIB="C:\Python21\libs\python21.lib"
 
 STDOPTS=/nologo /MD /GR /GX /Zm200
 WARNOPTS=
