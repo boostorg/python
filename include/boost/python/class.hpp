@@ -144,20 +144,6 @@ class class_ : public objects::class_base
         return *this;
     }
 
-//    template <typename DerivedT, typename F>
-//    self& def(detail::func_stubs_base<DerivedT> const& stubs, F)
-//    {
-//        //  convert signature<F> to a type_list (see signature.hpp) and call
-//        //  detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
-//        //  this class_ instance, and the converted signature<F> type_list.
-//        detail::define_with_defaults(
-//            stubs.derived(),
-//            *this,
-//            detail::get_signature(signature<F>())
-//        );
-//        return *this;
-//    }
-
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.
     template <class Args>
