@@ -29,7 +29,7 @@ object getattr(Target const& target, Key const& key, Default const& default_)
 template <class Key, class Value>
 void setattr(object const& target, Key const& key, Value const& value)
 {
-    return setattr(target, object(key), object(value));
+    setattr(target, object(key), object(value));
 }
 
 template <class Key>
@@ -66,7 +66,7 @@ object getslice(Target const& target, Begin const& begin, End const& end)
 template <class Begin, class End, class Value>
 void setslice(object const& target, Begin const& begin, End const& end, Value const& value)
 {
-    return setslice(target, object(begin), object(end), object(value));
+    setslice(target, object(begin), object(end), object(value));
 }
 
 template <class Begin, class End>
