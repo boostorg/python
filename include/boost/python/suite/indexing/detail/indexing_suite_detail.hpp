@@ -9,8 +9,8 @@
 
 # include <boost/python/extract.hpp>
 # include <boost/scoped_ptr.hpp>
-# include <boost/detail/binary_search.hpp>
 # include <boost/get_pointer.hpp>
+# include <boost/detail/binary_search.hpp>
 # include <vector>
 # include <map>
 
@@ -366,9 +366,9 @@ namespace boost { namespace python { namespace detail {
         }
             
         container_element(container_element const& ce)
-            : ptr(ce.ptr.get() == 0 ? 0 : new element_type(*ce.ptr.get()))
-            , container(ce.container)
-            , index(ce.index)
+          : ptr(ce.ptr.get() == 0 ? 0 : new element_type(*ce.ptr.get()))
+          , container(ce.container)
+          , index(ce.index)
         {
         }
 
@@ -381,14 +381,14 @@ namespace boost { namespace python { namespace detail {
         element_type& operator*() const
         {
             if (is_detached())
-                return *ptr.get();
+                return *get_pointer(ptr);
             return Policies::get_item(get_container(), index);
         }
         
         element_type* get() const
         {
             if (is_detached())
-                return ptr.get();
+                return get_pointer(ptr);
             return &Policies::get_item(get_container(), index);
         }
         
@@ -407,7 +407,7 @@ namespace boost { namespace python { namespace detail {
         bool
         is_detached() const
         {
-            return ptr.get() != 0;
+            return get_pointer(ptr) != 0;
         }
 
         Container& 
@@ -690,7 +690,9 @@ namespace boost { namespace python { namespace detail {
         }  
     };
 
-  }}  // namespace python::detail
+#ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+}} // namespace python::detail
+#endif
 
     template <class Container, class Index, class Policies>
     inline typename Policies::data_type* 
@@ -701,6 +703,11 @@ namespace boost { namespace python { namespace detail {
         return p.get();
     }
 
+#ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+namespace python { namespace detail {
+#endif
+
+}} // namespace python::detail
 } // namespace boost
 
 #endif // INDEXING_SUITE_DETAIL_JDG20036_HPP

@@ -9,6 +9,7 @@
 # ifndef POINTER_HOLDER_DWA20011215_HPP
 #  define POINTER_HOLDER_DWA20011215_HPP 
 
+# include <boost/get_pointer.hpp>
 #  include <boost/type.hpp>
 
 #  include <boost/python/instance_holder.hpp>
@@ -34,7 +35,7 @@ namespace boost { namespace python { namespace objects {
 template <class T>
 bool is_null(T const& p, ...)
 {
-    return p.get() == 0;
+    return get_pointer(p) == 0;
 }
 
 template <class T>

@@ -182,13 +182,7 @@ namespace boost { namespace python {
                 .def("__delitem__", &base_delete_item)
                 .def("__getitem__", &base_get_item)
                 .def("__contains__", &base_contains)
-
-#if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
-// crazy VC6 doesn't like this! perhaps there's a better 
-// fix but this one will do for now. def __iter__ is just 
-// an optimization anyway. 
                 .def("__iter__", def_iterator())
-#endif
             ;
             
             DerivedPolicies::extension_def(cl);

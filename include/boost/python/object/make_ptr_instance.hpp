@@ -10,9 +10,18 @@
 # include <boost/python/converter/registry.hpp>
 # include <boost/type_traits/is_polymorphic.hpp>
 # include <boost/get_pointer.hpp>
+# include <boost/detail/workaround.hpp>
 # include <typeinfo>
 
 namespace boost { namespace python { namespace objects { 
+
+# if BOOST_WORKAROUND(__GNUC__, == 2)
+// A weird ADL bug prevents this being found
+template<class T> T * get_pointer(T * p)
+{
+    return p;
+}
+# endif 
 
 template <class T, class Holder>
 struct make_ptr_instance
@@ -27,6 +36,7 @@ struct make_ptr_instance
     template <class Ptr>
     static inline PyTypeObject* get_class_object(Ptr const& x)
     {
+        using ::boost::get_pointer;
         return get_class_object_impl(get_pointer(x));
     }
 
