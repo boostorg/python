@@ -216,11 +216,11 @@ BOOST_PYTHON_MODULE(extract_ext)
     object x_obj = x_class(3);
 
     // Get a reference to the C++ object out of the Python object
-    X const&amp; x = extract&lt;X&amp;&gt;(x_obj);
+    X&amp; x = extract&lt;X&amp;&gt;(x_obj);
     assert(x.value() == 3);
 }
 </pre>
-    <p>Revised 30 September, 2002</p>
+    <p>Revised 15 November, 2002</p>
 
     <p><i>&copy; Copyright <a href=
     "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All Rights
