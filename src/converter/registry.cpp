@@ -12,7 +12,7 @@
 #include <boost/lexical_cast.hpp>
 
 #if defined(__APPLE__) && defined(__MACH__) && defined(__GNUC__) \
- && __GNUC__ == 3 && __GNUC_MINOR__ == 3 && !defined(__APPLE_CC__)
+ && __GNUC__ == 3 && __GNUC_MINOR__ <= 4 && !defined(__APPLE_CC__)
 # define BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND
 #endif
 
