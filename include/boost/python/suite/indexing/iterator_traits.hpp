@@ -27,6 +27,7 @@
 #include <boost/call_traits.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/iterator/iterator_traits.hpp>
+#include <boost/iterator/iterator_categories.hpp>
 
 namespace boost { namespace python { namespace indexing {
 #if !BOOST_MSVC
@@ -58,10 +59,10 @@ namespace boost { namespace python { namespace indexing {
     typedef ::boost::detail::iterator_traits<Iterator> std_traits;
 
   public:
-    typedef Iterator                              iterator;
-    typedef typename std_traits::value_type       value_type;
-    typedef typename std_traits::reference        reference;
-    typedef typename std_traits::difference_type  difference_type;
+    typedef Iterator                                           iterator;
+    typedef BOOST_DEDUCED_TYPENAME std_traits::value_type      value_type;
+    typedef BOOST_DEDUCED_TYPENAME std_traits::reference       reference;
+    typedef BOOST_DEDUCED_TYPENAME std_traits::difference_type difference_type;
 
     BOOST_STATIC_CONSTANT (bool,   has_copyable_iter = false);
     BOOST_STATIC_CONSTANT (bool,   is_reorderable    = false);
@@ -94,67 +95,10 @@ namespace boost { namespace python { namespace indexing {
   };
 
   namespace iterator_detail {
-    typedef char input_sizer[1];
-    typedef char forward_sizer[2];
-    typedef char bidirectional_sizer[3];
-    typedef char random_access_sizer[4];
-
-#if BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
-    // Fix tested on "MIPSpro Compilers: Version 7.3.1.3m", where the
-    // overload resolution variant causes an "ambiguous by inheritance"
-    // error without even instantiating traits_by_category
-
-    template<typename Category> struct is_random_access {
-      static bool const value = ::boost::is_convertible<
-        Category, std::random_access_iterator_tag>::value;
-    };
-
-    template<typename Category> struct is_bidirectional {
-      static bool const value = ::boost::is_convertible<
-        Category, std::bidirectional_iterator_tag>::value;
-    };
-
-    template<typename Category> struct is_forward {
-      static bool const value = ::boost::is_convertible<
-        Category, std::forward_iterator_tag>::value;
-    };
-
-    template<typename Category> struct is_input {
-      static bool const value = ::boost::is_convertible<
-        Category, std::input_iterator_tag>::value;
-    };
-
-    template<typename Category> struct sizer_struct {
-      BOOST_STATIC_CONSTANT (size_t, value =
-          (is_random_access<Category>::value
-           ? sizeof (random_access_sizer)
-           : (is_bidirectional<Category>::value
-              ? sizeof (bidirectional_sizer)
-              : (is_forward<Category>::value
-                 ? sizeof (forward_sizer)
-                 : (is_input<Category>::value
-                    ? sizeof (input_sizer)
-                    : 0)))));
-    };
-
-#else
-
-    input_sizer &sizer_fn (std::input_iterator_tag const &);
-    forward_sizer &sizer_fn (std::forward_iterator_tag const &);
-    bidirectional_sizer &sizer_fn (std::bidirectional_iterator_tag const &);
-    random_access_sizer &sizer_fn (std::random_access_iterator_tag const &);
-
-    template<typename Category> struct sizer_struct {
-      BOOST_STATIC_CONSTANT (size_t, value =
-          sizeof (sizer_fn (Category())));
-    };
-
-#endif
-
-    template<size_t Size> struct traits_by_size { };
+    template<typename TraversalTag> struct traits_by_category { };
 
     template<>
-    struct traits_by_size<sizeof(input_sizer)> {
+    struct traits_by_category<std::input_iterator_tag> {
       template<typename Iterator>
         struct traits {
           typedef input_iterator_traits<Iterator> type;
@@ -162,7 +106,7 @@ namespace boost { namespace python { namespace indexing {
     };
 
     template<>
-    struct traits_by_size<sizeof(forward_sizer)> {
+    struct traits_by_category<std::forward_iterator_tag> {
       template<typename Iterator>
         struct traits {
           typedef forward_iterator_traits<Iterator> type;
@@ -170,7 +114,7 @@ namespace boost { namespace python { namespace indexing {
     };
 
     template<>
-    struct traits_by_size<sizeof(bidirectional_sizer)> {
+    struct traits_by_category<std::bidirectional_iterator_tag> {
       template<typename Iterator>
         struct traits {
           typedef bidirectional_iterator_traits<Iterator> type;
@@ -178,7 +122,7 @@ namespace boost { namespace python { namespace indexing {
     };
 
     template<>
-    struct traits_by_size<sizeof(random_access_sizer)> {
+    struct traits_by_category<std::random_access_iterator_tag > {
       template<typename Iterator>
         struct traits {
           typedef random_access_iterator_traits<Iterator> type;
@@ -186,21 +130,22 @@ namespace boost { namespace python { namespace indexing {
     };
 
     template<typename Iterator>
-    class traits_by_category {
-      typedef typename BOOST_ITERATOR_CATEGORY<Iterator>::type category;
+    class deduced_traits {
+      typedef BOOST_DEDUCED_TYPENAME BOOST_ITERATOR_CATEGORY<
+          Iterator>::type category;
 
-      BOOST_STATIC_CONSTANT (
-          size_t, size = sizer_struct<category>::value);
+      typedef BOOST_DEDUCED_TYPENAME ::boost::detail::std_category <
+          category>::type max_category;
 
     public:
-      typedef typename traits_by_size<size>
+      typedef typename traits_by_category <max_category>
         ::template traits<Iterator>::type type;
     };
   }
 
   template<typename Iterator>
   struct iterator_traits
-    : public iterator_detail::traits_by_category<Iterator>::type
+    : public iterator_detail::deduced_traits<Iterator>::type
   {
   };
 } } }
