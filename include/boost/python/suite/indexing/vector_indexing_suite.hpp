@@ -67,7 +67,12 @@ namespace boost { namespace python {
             ;
         }
         
-        static data_type& 
+        static 
+        typename mpl::if_<
+            is_class<data_type>
+          , data_type&
+          , data_type
+        >::type
         get_item(Container& container, index_type i)
         { 
             return container[i];

@@ -44,5 +44,10 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
     class_<std::vector<float> >("FloatVec")
         .def(vector_indexing_suite<std::vector<float> >())
     ;
+    
+    // Compile check only...
+    class_<std::vector<bool> >("BoolVec")
+        .def(vector_indexing_suite<std::vector<bool> >())
+    ;
 }
 
