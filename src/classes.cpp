@@ -11,6 +11,8 @@
 // 03 Mar 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
 // 03 Mar 01  bug fix: use bound_function::create() (instead of new bound_function)
 
+#define BOOST_PYTHON_SOURCE
+
 #include <boost/python/classes.hpp>
 #include <boost/python/detail/functions.hpp>
 #include <boost/python/detail/singleton.hpp>

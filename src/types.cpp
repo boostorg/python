@@ -6,6 +6,8 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
+#define BOOST_PYTHON_SOURCE
+
 #include <boost/python/detail/types.hpp>
 #include <boost/python/reference.hpp> // for handle_exception()
 #include <boost/python/conversions.hpp>
