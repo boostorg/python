@@ -92,12 +92,10 @@ struct rvalue_from_python_storage
 template <class T>
 struct rvalue_from_python_data : rvalue_from_python_storage<T>
 {
-# if (!defined(__MWERKS__) || __MWERKS__ >= 0x3000)                                         \
-        && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245)                            \
-        && (!defined(__DECCXX_VER) || __DECCXX_VER > 60590014)                              \
-        && !defined(BOOST_PYTHON_SYNOPSIS) /* Synopsis' OpenCXX has trouble parsing this */ \
-        && !(BOOST_WORKAROUND(__GNUC__, == 3) && BOOST_WORKAROUND(__GNUC_MINOR__, == 4))
-    
+# if (!defined(__MWERKS__) || __MWERKS__ >= 0x3000) \
+        && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245) \
+        && (!defined(__DECCXX_VER) || __DECCXX_VER > 60590014) \
+        && !defined(BOOST_PYTHON_SYNOPSIS) /* Synopsis' OpenCXX has trouble parsing this */
     // This must always be a POD struct with m_data its first member.
     BOOST_STATIC_ASSERT(BOOST_PYTHON_OFFSETOF(rvalue_from_python_storage<T>,stage1) == 0);
 # endif
