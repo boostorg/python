@@ -15,7 +15,6 @@
 # include <boost/python/converter/from_python_stage1_data.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-# include <boost/type_traits/ice.hpp>
 # include <boost/python/detail/destroy.hpp>
 # include <boost/preprocessor/list/for_each_i.hpp>
 # include <boost/preprocessor/tuple/to_list.hpp>
@@ -177,6 +176,8 @@ struct rvalue_data : rvalue_base_data<T>
     rvalue_data(rvalue_stage1_data const&);
     rvalue_data(void*);
     ~rvalue_data();
+ private:
+    typedef typename add_reference<typename add_cv<T>::type>::type ref_type;
 };
 
 //
@@ -197,8 +198,6 @@ inline rvalue_data<T>::rvalue_data(void* convertible)
 template <class T>
 inline rvalue_data<T>::~rvalue_data()
 {
-    typedef typename add_reference<typename add_cv<T>::type>::type ref_type;
-
     if (this->stage1.convertible == this->storage.bytes)
         python::detail::destroy_reference<ref_type>(this->storage.bytes);
 }
