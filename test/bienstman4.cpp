@@ -24,8 +24,10 @@ BOOST_PYTHON_MODULE_INIT(bienstman4_ext)
 
   module("bienstman4_ext")
     .add(class_<Expression>("Expression")
+         .def_init()
          .def("add", &Expression::add))
-    .add(class_<Type1>("T1"))
+    .add(class_<Type1>("T1")
+         .def_init())
     .add(class_<Term>("Term")
          .def_init(type_list<Type1&>()))
     ;
