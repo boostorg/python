@@ -157,16 +157,15 @@ BOOST_PYTHON_DECL PyObject* to_python(unsigned char);
 BOOST_PYTHON_DECL unsigned char from_python(PyObject*, boost::python::type<unsigned char>);
 unsigned char from_python(PyObject*, boost::python::type<const unsigned char&>);
 
+BOOST_PYTHON_DECL float from_python(PyObject*, boost::python::type<float>);
+BOOST_PYTHON_DECL double from_python(PyObject*, boost::python::type<double>);
+
 # ifndef BOOST_MSVC6_OR_EARLIER
 PyObject* to_python(float);
-float from_python(PyObject*, boost::python::type<float>);
 PyObject* to_python(double);
-double from_python(PyObject*, boost::python::type<double>);
 # else
 BOOST_PYTHON_DECL PyObject* to_python(float);
-BOOST_PYTHON_DECL float from_python(PyObject*, boost::python::type<float>);
 BOOST_PYTHON_DECL PyObject* to_python(double);
-BOOST_PYTHON_DECL double from_python(PyObject*, boost::python::type<double>);
 # endif 
 float from_python(PyObject*, boost::python::type<const float&>);
     

@@ -168,6 +168,9 @@ template <class T, class A1, class A2, class A3, class A4, class A5, class A6, c
 template <class T>
 struct init_function
 {
+# ifdef BOOST_MSVC6_OR_EARLIER
+#  define typename
+# endif 
     static init* create(signature0) {
         return new init0<T>;
     }
@@ -276,6 +279,9 @@ struct init_function
                        typename detail::parameter_traits<A9>::const_reference,
                        typename detail::parameter_traits<A10>::const_reference>;
     }
+#ifdef BOOST_MSVC6_OR_EARLIER
+# undef typename
+#endif 
 };
 
 class BOOST_PYTHON_DECL init : public function

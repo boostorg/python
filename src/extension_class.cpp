@@ -12,7 +12,6 @@
 #define BOOST_PYTHON_SOURCE
 
 #include <boost/python/detail/extension_class.hpp>
-#include <boost/python/detail/extension_class.hpp>
 #include <boost/python/detail/call_object.hpp>
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
@@ -178,7 +177,7 @@ extension_instance::~extension_instance()
     }
 }
     
-meta_class<extension_instance>* extension_meta_class()
+BOOST_PYTHON_DECL meta_class<extension_instance>* extension_meta_class()
 {
     static meta_class<extension_instance> result;
     return &result;
