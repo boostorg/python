@@ -26,8 +26,8 @@ struct make_instance_impl
 
         PyTypeObject* type = Derived::get_class_object(x);
 
-		if (type == 0)
-			return python::detail::none();
+        if (type == 0)
+            return python::detail::none();
 
         PyObject* raw_result = type->tp_alloc(
             type, objects::additional_instance_size<Holder>::value);

@@ -35,8 +35,8 @@ struct make_ptr_instance
     template <class U>
     static inline PyTypeObject* get_class_object_impl(U const volatile* p)
     {
-		if (p == 0)
-			return 0; // means "return None".
+        if (p == 0)
+            return 0; // means "return None".
 
         PyTypeObject* derived = get_derived_class_object(
             BOOST_DEDUCED_TYPENAME is_polymorphic<U>::type(), p);

@@ -15,4 +15,4 @@ namespace boost { namespace python { namespace detail {
         }
     }
 }}} // namespace boost::python::detail
-# endif	// BOOST_PYTHON_DETAIL_DEALLOC_HPP_
+# endif    // BOOST_PYTHON_DETAIL_DEALLOC_HPP_

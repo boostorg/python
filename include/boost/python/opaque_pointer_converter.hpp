@@ -133,4 +133,4 @@ PyTypeObject opaque_pointer_converter<Pointer>::type_object =
     }                                                                           \
 }}
 #  endif
-# endif	// OPAQUE_POINTER_CONVERTER_HPP_
+# endif    // OPAQUE_POINTER_CONVERTER_HPP_

@@ -153,7 +153,7 @@ BOOST_PYTHON_MODULE(defaults_ext)
     def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
 
     class_<Y>("Y", init<>("doc of Y init")) // this should work
-	    .def("get_state", &Y::get_state)
+        .def("get_state", &Y::get_state)
         ;
 
     class_<X>("X")

@@ -137,7 +137,7 @@ int test()
     api::run_simple_string("import sm_test");
     if(api::call_statement("_0 = bpl_test('sub modules', sm_test.sm.sm2.test_func, _1)", test_func()))
         return 1;
-	return 0;
+    return 0;
 }
 
 }
@@ -179,7 +179,7 @@ int test()
         return 1;
     if(api::call_statement("_0 = bpl_test('sub classes', lambda : sc_test.c1().t.n, _1.n)", test_func()))
         return 1;
-	return 0;
+    return 0;
 }
 
 }
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
     }
     // clean up
     Py_Finalize();
-	return rtn;
+    return rtn;
 }
 
 char *bpl_test = 
