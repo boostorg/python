@@ -57,7 +57,7 @@ test for extractibility:</p>
 </span></pre></code>
 <p>
 <img src="theme/bulb.gif"></img> The astute reader might have noticed that the <tt>extract&lt;T&gt;</tt>
-facility in fact solves mutable copying problem:</p>
+facility in fact solves the mutable copying problem:</p>
 <code><pre>
     <span class=identifier>dict </span><span class=identifier>d </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=identifier>dict</span><span class=special>&gt;(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>));
     </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>] </span><span class=special>= </span><span class=number>3</span><span class=special>;          </span>#<span class=identifier>modifies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__ </span><span class=special>!
