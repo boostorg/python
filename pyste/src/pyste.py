@@ -1,4 +1,6 @@
 '''
+Pyste version %s
+
 Usage:
     pyste [options] --module=<name> interface-files
 
@@ -9,6 +11,8 @@ where options are:
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
                         default is "pyste"
+    -h, --help          print this help and exit
+    -v, --version       print version information                         
 '''
 
 import sys
@@ -27,6 +31,7 @@ from ClassExporter import ClassExporter
 from IncludeExporter import IncludeExporter
 from HeaderExporter import HeaderExporter
 
+__VERSION__ = '0.5.8'
 
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:
@@ -39,10 +44,18 @@ def GetDefaultIncludes():
 def ParseArguments():
 
     def Usage():
-        print __doc__
+        print __doc__ % __VERSION__
         sys.exit(1)
         
-    options, files = getopt.getopt(sys.argv[1:], 'I:D:', ['module=', 'out=', 'no-using', 'pyste-ns=', 'debug'])
+    try:
+        options, files = getopt.getopt(
+            sys.argv[1:], 
+            'I:D:vh', 
+            ['module=', 'out=', 'no-using', 'pyste-ns=', 'debug', 'version', 'help'])
+    except getopt.GetoptError, e:
+        print
+        print 'ERROR:', e
+        Usage()
     includes = GetDefaultIncludes()
     defines = []
     module = None
@@ -63,6 +76,11 @@ def ParseArguments():
             settings.namespaces.pyste = value + '::'
         elif opt == '--debug':
             settings.DEBUG = True
+        elif opt in ['-h', '--help']:
+            Usage()
+        elif opt in ['-v', '--version']:
+            print 'Pyste version %s' % __VERSION__
+            sys.exit(2)
         else:
             print 'Unknown option:', opt
             Usage()
