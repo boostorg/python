@@ -1,13 +1,23 @@
-========================
- Boost Python Internals 
-========================
+===================================
+ Boost.Python_ Internals |(logo)|__
+===================================
+
+.. |(logo)| image:: ../../../c++boost.gif
+   :alt: Boost
+
+__ ../../../index.htm
+
+.. _`Boost.Python`: index.html
+
+.. _license: ../../../LICENSE
+
 
 -------------------------------------------------------
 A conversation between Brett Calcott and David Abrahams
 -------------------------------------------------------
 
-:copyright: Copyright Brett Calcott and David Abrahams 2003.  All
-     rights reserved.
+:copyright: Copyright David Abrahams and Brett Calcott 2003. See
+            accompanying license_ for terms of use.
 
 In both of these cases, I'm quite capable of reading code - but the
 thing I don't get from scanning the source is a sense of the
@@ -107,8 +117,11 @@ Can you gesture in the general direction where these things are done?
   Also, 
 
         http://mail.python.org/pipermail/c++-sig/2002-May/001023.html
+
         http://mail.python.org/pipermail/c++-sig/2002-December/003115.html
+
         http://aspn.activestate.com/ASPN/Mail/Message/1280898
+
         http://mail.python.org/pipermail/c++-sig/2002-July/001755.html
 
   from c++ to python:
