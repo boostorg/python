@@ -6,6 +6,10 @@
 #ifndef NULLARY_FUNCTION_ADAPTOR_DWA2003824_HPP
 # define NULLARY_FUNCTION_ADAPTOR_DWA2003824_HPP
 
+# include <boost/python/detail/prefix.hpp>
+# include <boost/preprocessor/iteration/local.hpp>
+# include <boost/preprocessor/facilities/intercept.hpp>
+
 namespace boost { namespace python { namespace detail { 
 
 // nullary_function_adaptor -- a class template which ignores its
