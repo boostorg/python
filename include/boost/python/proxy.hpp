@@ -28,7 +28,11 @@ class proxy : public object_operators<proxy<Policies> >
     template <class T>
     inline proxy const& operator=(T const& rhs) const
     {
+# if __GNUC__ != 3
         python::object const& x(rhs);
+# else
+        python::object x(rhs);
+# endif 
         Policies::set(m_target, m_key, x);
         return *this;
     }
