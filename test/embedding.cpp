@@ -8,6 +8,7 @@
 // Dirk Gerrits
 
 #include <iostream>
+#include <stdexcept>
 #include <boost/python.hpp>
 #include <boost/scoped_ptr.hpp>
 
@@ -60,8 +61,8 @@ void test()
 
     // Register the module with the interpreter
     if (PyImport_AppendInittab("embedded_hello", initembedded_hello) == -1)
-        throw std::exception("Failed to add embedded_hello to the interpreters "
-                             "builtin modules");
+        throw std::runtime_error("Failed to add embedded_hello to the interpreter's "
+                                 "builtin modules");
 
     // Initialize the interpreter
     Py_Initialize();
