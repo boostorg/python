@@ -233,6 +233,9 @@ class python_extension_class_converters
         }
         boost::python::detail::report_missing_instance_data(self, boost::python::detail::class_registry<T>::class_object(), typeid(T));
         throw boost::python::argument_error();
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+        return 0;
+#endif
     }
 
     // Convert to T*
@@ -261,6 +264,9 @@ class python_extension_class_converters
         }
         boost::python::detail::report_missing_ptr_data(self, boost::python::detail::class_registry<T>::class_object(), typeid(T));
         throw boost::python::argument_error();
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+        return *(PtrType*)0;
+#endif
     }
 
     // Extract from obj a reference to the PtrType object which is holding a

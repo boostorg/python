@@ -169,6 +169,9 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
         PyErr_SetString(PyExc_RuntimeError,
           "to_python(const T&) converter not exported");
         throw import_error();
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+        return 0;
+#endif
     }
 
     virtual T* from_python_Ts(PyObject* p, boost::python::type<T*> t) {
