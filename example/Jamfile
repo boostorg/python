@@ -22,6 +22,8 @@ subproject libs/python/example ;
 SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
 include python.jam ;
 
+# ----- getting_started1 -------
+
 # Declare a Python extension called getting_started1
 extension getting_started1
 :  # sources
@@ -32,8 +34,28 @@ extension getting_started1
   ;
 
 # Declare a test for the extension module
-boost-python-runtest my-test
+boost-python-runtest test1
     :  # Python test driver
     test_getting_started1.py
     # extension modules to use
     <pyd>getting_started1 ;
+    
+
+    
+# ----- getting_started2 -------
+    
+# Declare a Python extension called getting_started2
+extension getting_started2
+:  # sources
+   getting_started2.cpp
+  
+   # dependencies
+   <dll>../build/boost_python
+  ;
+
+# Declare a test for the extension module
+boost-python-runtest test2
+    :  # Python test driver
+    test_getting_started2.py
+    # extension modules to use
+    <pyd>getting_started2 ;    

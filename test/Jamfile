@@ -1,3 +1,7 @@
+#
+# To run all tests quietly: jam test
+# To run all tests with verbose output: jam -sPYTHON_TEST_ARGS=-v test
+#
 subproject libs/python/test ;
 
 # bring in the rules for python
@@ -6,9 +10,6 @@ include python.jam ;
 # bring in rules for testing
 SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
 include testing.jam ;
-
-local PYTHON_V1_PROPERTIES = $(PYTHON_PROPERTIES) ;
-local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
 
 # Convenience rule makes declaring tests faster
 rule bpl-test ( name ? : files * : requirements * )
@@ -46,7 +47,7 @@ rule bpl-test ( name ? : files * : requirements * )
                     m = $(m)_ext ;
                 }
             }
-            extension $(m) : $(f) <dll>../bpl : $(requirements) ;
+            extension $(m) : $(f) <dll>../build/boost_python : $(requirements) ;
             modules += $(m) ;
         }
     }
