@@ -84,6 +84,13 @@ struct X {
     }
 
     object
+    bar2(int a = 0, char b = 'D', std::string c = "default", double d = 0.0) const
+    {
+         // tests zero arg member function
+        return format % make_tuple(a, b, c, d);
+    }
+
+    object
     foo(int a, bool b=false) const
     {
         return "int(%s); bool(%s); " % make_tuple(a, b);
@@ -111,6 +118,7 @@ struct X {
 };
 
 BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar_stubs, bar, 1, 4)
+BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar2_stubs, bar2, 0, 4) // tests zero arg member function
 BOOST_PYTHON_MEM_FUN_GENERATOR(X_foo_2_stubs, foo, 1, 2)
 BOOST_PYTHON_MEM_FUN_GENERATOR(X_foo_3_stubs, foo, 2, 3)
 

@@ -108,7 +108,8 @@ struct func_stubs_base {};
 #define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(INDEX, DATA)                              \
     static RT BOOST_PP_CAT(func_, INDEX)                                        \
     (                                                                           \
-        ClassT& obj,                                    \
+        ClassT& obj BOOST_PP_COMMA_IF(                                          \
+            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX))               \
         BOOST_PP_ENUM                                                           \
         (                                                                       \
             BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),               \
