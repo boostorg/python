@@ -134,6 +134,9 @@ bool check_string_slice()
     if (s.slice(-3,_) != "rld")
         return false;
     
+    if (s.slice(_,_) != s)
+        return false;
+    
     if (", " != s.slice(5,7))
         return false;
 
