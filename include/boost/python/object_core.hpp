@@ -211,11 +211,13 @@ namespace api
   class object : public object_base
   {
    public:
+      // default constructor creates a None object
+      object();
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
           : object_base(object_initializer<is_proxy<T>::value>::get(
-                      x, detail::convertible<object const*>::check(&x)))
+                      &x, detail::convertible<object const*>::check(&x)))
       {
       }
 
@@ -235,16 +237,16 @@ namespace api
   struct object_initializer
   {
       static PyObject*
-      get(object const& x, detail::yes_convertible)
+      get(object const* x, detail::yes_convertible)
       {
-          return python::incref(x.ptr());
+          return python::incref(x->ptr());
       }
       
       template <class T>
       static PyObject*
-      get(T const& x, detail::no_convertible)
+      get(T const* x, detail::no_convertible)
       {
-          return python::incref(converter::arg_to_python<T>(x).get());
+          return python::incref(converter::arg_to_python<T>(*x).get());
       }
   };
       
@@ -253,9 +255,9 @@ namespace api
   {
       template <class Policies>
       static PyObject* 
-      get(proxy<Policies> const& x, detail::no_convertible)
+      get(proxy<Policies> const* x, detail::no_convertible)
       {
-          return python::incref(x.operator object().ptr());
+          return python::incref(x->operator object().ptr());
       }
   };
 }
@@ -319,12 +321,16 @@ namespace converter
 //
 
 inline object::object(handle<> const& x)
-    : object_base(incref(expect_non_null(x.get())))
+    : object_base(python::incref(python::expect_non_null(x.get())))
+{}
+
+inline object::object()
+    : object_base(python::incref(Py_None))
 {}
 
 // copy constructor without NULL checking, for efficiency
 inline api::object_base::object_base(object_base const& rhs)
-    : m_ptr(incref(rhs.m_ptr))
+    : m_ptr(python::incref(rhs.m_ptr))
 {}
 
 inline api::object_base::object_base(PyObject* p)
@@ -346,7 +352,7 @@ inline api::object_base::~object_base()
 }
 
 inline object::object(detail::borrowed_reference p)
-    : object_base(incref((PyObject*)p))
+    : object_base(python::incref((PyObject*)p))
 {}
 
 
