@@ -65,7 +65,7 @@ namespace detail
   struct tuple_extract_base_select
   {
       typedef typename Tuple::head_type head_type;
-      typedef typename mpl::apply1<Predicate, add_reference<head_type>::type>::type match_t;
+      typedef typename mpl::apply1<Predicate, typename add_reference<head_type>::type>::type match_t;
       BOOST_STATIC_CONSTANT(bool, match = match_t::value);
       typedef typename tuple_extract_impl<match>::template apply<Tuple,Predicate> type;
   };

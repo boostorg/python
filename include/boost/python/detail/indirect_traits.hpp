@@ -47,47 +47,26 @@ struct is_reference_to_const<T const volatile&>
 #   endif 
 
 template <class T>
-struct is_reference_to_function
+struct is_reference_to_function : mpl::bool_c<false>
+{
+};
+
+template <class T>
+struct is_reference_to_function<T&> : is_function<T>
+{
+};
+
+template <class T>
+struct is_pointer_to_function : mpl::bool_c<false>
 {
     BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
+// There's no such thing as a pointer-to-cv-function, so we don't need
+// specializations for those
 template <class T>
-struct is_reference_to_function<T&>
+struct is_pointer_to_function<T*> : is_function<T>
 {
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-#   if 0
-template <class T>
-struct is_reference_to_function<T const&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-template <class T>
-struct is_reference_to_function<T volatile&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-template <class T>
-struct is_reference_to_function<T const volatile&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-#   endif 
-template <class T>
-struct is_pointer_to_function
-{
-    BOOST_STATIC_CONSTANT(bool, value = false);
-};
-
-template <class T>
-struct is_pointer_to_function<T*>
-{
-    // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
 
 template <class T>

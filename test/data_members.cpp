@@ -22,11 +22,18 @@ typedef test_class<1> Y;
 
 double get_fair_value(X const& x) { return x.value(); }
 
-struct Var
+
+struct VarBase
 {
-    Var(std::string name_) : name(name_), value(), name2(name.c_str()), y(6) {}
+    VarBase(std::string name_) : name(name_) {}
+    
     std::string const name;
     std::string get_name1() const { return name; }
+};
+
+struct Var : VarBase
+{
+    Var(std::string name_) : VarBase(name_), value(), name2(name.c_str()), y(6) {}
     std::string const& get_name2() const { return name; }
     float value;
     char const* name2;
@@ -39,7 +46,7 @@ BOOST_PYTHON_MODULE(data_members_ext)
         .def("value", &X::value)
         .def("set", &X::set)
         .def_readonly("x", &X::x)
-        .add_property("fair_value", &get_fair_value)
+        .add_property("fair_value", get_fair_value)
         ;
     
     class_<Y>("Y", init<int>())
@@ -60,6 +67,8 @@ BOOST_PYTHON_MODULE(data_members_ext)
         // sense to add the test here.
         .def("get_name1", &Var::get_name1, return_value_policy<return_by_value>())
         .def("get_name2", &Var::get_name2, return_value_policy<return_by_value>())
+        
+        .add_property("name3", &Var::get_name1)
         ;
 }
 

@@ -273,19 +273,33 @@ class class_ : public objects::class_base
 
     // Property creation
     template <class Get>
-    self& add_property(char const* name, Get const& fget)
+    self& add_property(char const* name, Get fget)
     {
-        base::add_property(name, object(fget));
+        base::add_property(
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            );
+        
         return *this;
     }
 
     template <class Get, class Set>
-    self& add_property(char const* name, Get const& fget, Set const& fset)
+    self& add_property(char const* name, Get fget, Set fset)
     {
-        base::add_property(name, object(fget), object(fset));
+        base::add_property(
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            , object(
+                detail::member_function_cast<T,Set>::stage1(fset).stage2((T*)0).stage3(fset)
+                )
+            );
         return *this;
     }
-
+        
     template <class U>
     self& setattr(char const* name, U const& x)
     {
