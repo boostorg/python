@@ -180,7 +180,7 @@ namespace api
      // there is a confirmed CWPro8 codegen bug here. We prevent the
      // early destruction of a temporary by binding a named object
      // instead.
-# if __MWERKS__ < 0x3000 || __MWERKS__ > 0x3002
+# if __MWERKS__ < 0x3000 || __MWERKS__ > 0x3003
     typedef object const& object_cref2;
 # else
     typedef object const object_cref2;
