@@ -425,11 +425,11 @@ void create_method_table_if_null(T*& table)
 {
     if(table == 0)
     {
-        detail::shared_pod_manager::instance().create(table);
+        detail::shared_pod_manager::create(table);
     }
     else
     {
-        detail::shared_pod_manager::instance().make_unique_copy(table);
+        detail::shared_pod_manager::make_unique_copy(table);
     }
 }
 
@@ -437,6 +437,7 @@ void create_method_table_if_null(T*& table)
     case TypeObjectBase::mapping_##field: \
         create_method_table_if_null(dest); \
         dest->mp_##field = &do_instance_mp_##field; \
+        detail::shared_pod_manager::replace_if_equal(dest); \
         return true
 
 bool add_capability_mapping(TypeObjectBase::Capability capability, PyMappingMethods*& dest)
@@ -455,6 +456,7 @@ bool add_capability_mapping(TypeObjectBase::Capability capability, PyMappingMeth
     case TypeObjectBase::sequence_##field: \
         create_method_table_if_null(dest); \
         dest->sq_##field = &do_instance_sq_##field; \
+        detail::shared_pod_manager::replace_if_equal(dest); \
         return true
 
 bool add_capability_sequence(TypeObjectBase::Capability capability, PySequenceMethods*& dest)
@@ -477,6 +479,7 @@ bool add_capability_sequence(TypeObjectBase::Capability capability, PySequenceMe
     case TypeObjectBase::number_##field: \
         create_method_table_if_null(dest); \
         dest->nb_##field = &do_instance_nb_##field; \
+        detail::shared_pod_manager::replace_if_equal(dest); \
         return true
 
 bool add_capability_number(TypeObjectBase::Capability capability, PyNumberMethods*& dest)
@@ -515,6 +518,7 @@ bool add_capability_number(TypeObjectBase::Capability capability, PyNumberMethod
     case TypeObjectBase::buffer_##field: \
         create_method_table_if_null(dest); \
         dest->bf_##field = &do_instance_bf_##field; \
+        detail::shared_pod_manager::replace_if_equal(dest); \
         return true
 
 bool add_capability_buffer(TypeObjectBase::Capability capability, PyBufferProcs*& dest)
@@ -558,23 +562,15 @@ namespace detail  {
 
 TypeObjectBase::~TypeObjectBase()
 {
-    detail::shared_pod_manager::instance().dispose(tp_as_mapping);
-    detail::shared_pod_manager::instance().dispose(tp_as_sequence);
-    detail::shared_pod_manager::instance().dispose(tp_as_number);
-    detail::shared_pod_manager::instance().dispose(tp_as_buffer);
+    detail::shared_pod_manager::dispose(tp_as_mapping);
+    detail::shared_pod_manager::dispose(tp_as_sequence);
+    detail::shared_pod_manager::dispose(tp_as_number);
+    detail::shared_pod_manager::dispose(tp_as_buffer);
 }
 
 void TypeObjectBase::enable(TypeObjectBase::Capability capability)
 {
     detail::add_capability(capability, this);
-}
-
-void TypeObjectBase::share_method_tables()
-{
-    detail::shared_pod_manager::instance().replace_if_equal(tp_as_mapping);
-    detail::shared_pod_manager::instance().replace_if_equal(tp_as_sequence);
-    detail::shared_pod_manager::instance().replace_if_equal(tp_as_number);
-    detail::shared_pod_manager::instance().replace_if_equal(tp_as_buffer);
 }
 
 TypeObjectBase::TypeObjectBase(PyTypeObject* t)
@@ -707,11 +703,17 @@ namespace detail
       if(pod == 0)
           return 0;
       if(counted_pod_getref(static_cast<char*>(pod), size) == 1)
+      {
+          erase_from_list(pod);
           return pod;
-      void* copy = create(size);
-      memmove(copy, pod, size);
-      dec_ref(pod, size);
-      return copy;
+      }
+      else
+      {
+          void* copy = create(size);
+          memmove(copy, pod, size);
+          dec_ref(pod, size);
+          return copy;
+      }
   }
 
   void* shared_pod_manager::create(std::size_t size)
@@ -733,18 +735,25 @@ namespace detail
       if(pod == 0)
           return;
 
-      if(counted_pod_getref(static_cast<char*>(pod), size) <= 1)
-      {
-          const Storage::iterator found =
-              std::find_if(m_storage.begin(), m_storage.end(), 
-              identical(static_cast<char*>(pod)));
+      int ref_count = counted_pod_decref(static_cast<char*>(pod), size);
+      
+      if(ref_count <= 0) 
+          erase_from_list(pod);
+  }
 
-          if(found != m_storage.end())
-          {
-              m_storage.erase(found);
-          }
+  void shared_pod_manager::erase_from_list(void* pod)
+  {
+      if(pod == 0)
+          return;
+
+      const Storage::iterator found =
+          std::find_if(m_storage.begin(), m_storage.end(), 
+          identical(static_cast<char*>(pod)));
+
+      if(found != m_storage.end())
+      {
+          m_storage.erase(found);
       }
-      counted_pod_decref(static_cast<char*>(pod), size);
   }
 } // namespace detail
 
@@ -978,9 +987,17 @@ struct TestTypeObject : py::TypeObjectBase
     void instance_dealloc(PyObject*) const {}
 };
 
+struct POD1
+{
+    unsigned char data;
+};
+
 int main()
 {
     py::TypeObjectBase *o1, *o2, *o3;
+    
+//    POD1 * pod1;
+//    py::detail::shared_pod_manager::create(pod1);
     
     o1 = new TestTypeObject;
     o2 = new TestTypeObject;
@@ -997,31 +1014,16 @@ int main()
     o3->enable(py::TypeObjectBase::number_add);
     o3->enable(py::TypeObjectBase::sequence_length);
 
-    assert(py::pod_instance_counter == 5);
+    assert(py::pod_instance_counter == 3);
     assert(o1->tp_as_number && !o1->tp_as_mapping && !o1->tp_as_sequence);
     assert(o2->tp_as_number && o2->tp_as_mapping && !o2->tp_as_sequence);
     assert(o3->tp_as_number && !o3->tp_as_mapping && o3->tp_as_sequence);
-    assert(o1->tp_as_number != o2->tp_as_number);
-    assert(o1->tp_as_number != o3->tp_as_number);
-    assert(o2->tp_as_number != o3->tp_as_number);
+    assert(o1->tp_as_number == o2->tp_as_number);
+    assert(o1->tp_as_number == o3->tp_as_number);
     assert((void*)o2->tp_as_number != o2->tp_as_mapping);
     assert((void*)o2->tp_as_mapping != o3->tp_as_sequence);
     
-    o1->share_method_tables();
-    o2->share_method_tables();
-    o3->share_method_tables();
-    
-    assert(py::pod_instance_counter == 3);
-    assert(o1->tp_as_number == o2->tp_as_number);
-    assert(o1->tp_as_number == o3->tp_as_number);
-    
     o1->enable(py::TypeObjectBase::number_subtract);
-    
-    assert(py::pod_instance_counter == 4);
-    assert(o1->tp_as_number != o2->tp_as_number);
-    assert(o2->tp_as_number == o3->tp_as_number);
-    
-    o1->share_method_tables();
     
     assert(py::pod_instance_counter == 4);
     assert(o1->tp_as_number != o2->tp_as_number);
@@ -1032,22 +1034,9 @@ int main()
     assert(py::pod_instance_counter == 5);
     assert(o3->tp_as_number && o3->tp_as_mapping && o3->tp_as_sequence);
     assert(o2->tp_as_mapping != o3->tp_as_mapping);
-
-    o3->share_method_tables();
-
-    assert(py::pod_instance_counter == 5);
-    assert(o3->tp_as_number && o3->tp_as_mapping && o3->tp_as_sequence);
-    assert(o2->tp_as_mapping != o3->tp_as_mapping);
     
     o2->enable(py::TypeObjectBase::mapping_subscript);
     o3->enable(py::TypeObjectBase::mapping_length);
-
-    assert(py::pod_instance_counter == 5);
-    assert(o2->tp_as_number && o2->tp_as_mapping && !o2->tp_as_sequence);
-    assert(o3->tp_as_number && o3->tp_as_mapping && o3->tp_as_sequence);
-    assert(o2->tp_as_mapping != o3->tp_as_mapping);
-
-    o2->share_method_tables();
 
     assert(py::pod_instance_counter == 4);
     assert(o2->tp_as_number && o2->tp_as_mapping && !o2->tp_as_sequence);
@@ -1059,11 +1048,6 @@ int main()
     assert(py::pod_instance_counter == 4);
 
     o4->enable(py::TypeObjectBase::number_add);
-
-    assert(py::pod_instance_counter == 5);
-    assert(o4->tp_as_number && !o4->tp_as_mapping && !o4->tp_as_sequence);
-
-    o4->share_method_tables();
 
     assert(py::pod_instance_counter == 4);
     assert(o4->tp_as_number && !o4->tp_as_mapping && !o4->tp_as_sequence);
@@ -1084,15 +1068,6 @@ int main()
     o3->enable(py::TypeObjectBase::number_add);
     o3->enable(py::TypeObjectBase::sequence_length);
 
-    assert(py::pod_instance_counter == 5);
-    assert(o3->tp_as_number && !o3->tp_as_mapping && o3->tp_as_sequence);
-    assert(o1->tp_as_number != o3->tp_as_number);
-    assert(o2->tp_as_number != o3->tp_as_number);
-    assert((void*)o2->tp_as_number != o3->tp_as_sequence);
-    assert((void*)o2->tp_as_mapping != o3->tp_as_sequence);
-
-    o3->share_method_tables();
-    
     assert(py::pod_instance_counter == 4);
     assert(o3->tp_as_number && !o3->tp_as_mapping && o3->tp_as_sequence);
     assert(o1->tp_as_number != o3->tp_as_number);

@@ -23,9 +23,7 @@ class ClassWrapper
     }
     
     ~ClassWrapper()
-    {
-        m_class->share_method_tables();
-    }
+    {}
     
     // define constructors
     template <class Signature>

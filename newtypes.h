@@ -59,8 +59,6 @@ class TypeObjectBase : public PythonType
     
     void enable(Capability);
     
-    void share_method_tables();
-    
     //
     // Type behaviors
     //
@@ -309,27 +307,27 @@ namespace detail {
       ~shared_pod_manager();
 
       template <class T>
-      void replace_if_equal(T*& t)
+      static void replace_if_equal(T*& t)
       {
-          t = reinterpret_cast<T*>(replace_if_equal(t, sizeof(T)));
+          t = reinterpret_cast<T*>(instance().replace_if_equal(t, sizeof(T)));
       }
 
       template <class T>
-      void make_unique_copy(T*& t)
+      static void make_unique_copy(T*& t)
       {
-          t = reinterpret_cast<T*>(make_unique_copy(t, sizeof(T)));
+          t = reinterpret_cast<T*>(instance().make_unique_copy(t, sizeof(T)));
       }
 
       template <class T>
-      void create(T*& t)
+      static void create(T*& t)
       {
-          t = reinterpret_cast<T*>(create(sizeof(T)));
+          t = reinterpret_cast<T*>(instance().create(sizeof(T)));
       }
 
       template <class T>
-      void dispose(T* t)
+      static void dispose(T* t)
       {
-          dec_ref(t, sizeof(T));
+          instance().dec_ref(t, sizeof(T));
       }
 
    private:
@@ -337,6 +335,7 @@ namespace detail {
       void* make_unique_copy(void* pod, std::size_t size);
       void* create(std::size_t size);
       void dec_ref(void* pod, std::size_t size);
+      void erase_from_list(void* pod);
         
       struct Compare;
       struct identical;
