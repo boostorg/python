@@ -5,6 +5,10 @@
 // to its suitability for any purpose.
 #include <boost/python/module.hpp>
 
+#if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
+# include <iostream> // works around a KCC intermediate code generation bug
+#endif
+
 BOOST_PYTHON_MODULE_INIT(minimal_ext)
 {
     boost::python::module m("minimal_ext");

@@ -7,6 +7,11 @@
 #include <boost/python/module.hpp>
 #include "test_class.hpp"
 
+#if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
+# include <iostream> // works around a KCC intermediate code generation bug
+#endif
+
+
 using namespace boost::python;
 
 typedef test_class<> X;
