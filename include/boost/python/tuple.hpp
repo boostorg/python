@@ -11,7 +11,7 @@ class tuple : public object
  public:
     // tuple() -> an empty tuple
     BOOST_PYTHON_DECL tuple();
-    
+
     // tuple(sequence) -> tuple initialized from sequence's items
     BOOST_PYTHON_DECL tuple(object_cref sequence);
 
@@ -23,20 +23,15 @@ class tuple : public object
 
  public: // implementation detail -- for internal use only
     BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(tuple)
-    
+
  private:
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);
 };
 
-// for completeness
-inline tuple make_tuple() { return tuple(); }
-
-# define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/make_tuple.hpp>))
-# include BOOST_PP_ITERATE()
-
 //
-// Converter Specializations
-//
+// Converter Specializations    // $$$ JDG $$$ moved here to prevent
+//                              // G++ bug complaining specialization
+                                // provided after instantiation
 namespace converter
 {
   template <>
@@ -45,6 +40,12 @@ namespace converter
   {
   };
 }
+
+// for completeness
+inline tuple make_tuple() { return tuple(); }
+
+# define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/make_tuple.hpp>))
+# include BOOST_PP_ITERATE()
 
 }}  // namespace boost::python
 
