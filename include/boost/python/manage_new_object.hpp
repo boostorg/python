@@ -22,8 +22,6 @@ namespace detail
   ;
 }
 
-template <class T> struct to_python_value;
-
 struct manage_new_object
 {
     template <class T>
