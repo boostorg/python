@@ -6,7 +6,7 @@
 #ifndef DEFAULT_CALL_POLICIES_DWA2002131_HPP
 # define DEFAULT_CALL_POLICIES_DWA2002131_HPP
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/python/to_python_value.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 
@@ -50,7 +50,7 @@ struct default_result_converter
     {
         BOOST_STATIC_CONSTANT(bool, is_illegal = is_reference<R>::value || is_pointer<R>::value);
         
-        typedef typename mpl::select_type<
+        typedef typename mpl::select_if_c<
             is_illegal
             , detail::specify_a_result_policy_to_wrap_functions_returning<R>
             , boost::python::to_python_value<
