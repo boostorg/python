@@ -15,6 +15,7 @@
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
+# include <boost/python/refcount.hpp>
 # include <string>
 # include <complex>
 
@@ -251,7 +252,7 @@ namespace detail                                                \
           execute(back_reference<L&> l, R const& r)             \
           {                                                     \
               l.get() op r;                                     \
-              return l.reference().release();                   \
+              return python::incref(l.source().ptr());          \
           }                                                     \
       };                                                        \
       static char const* name() { return "__" #id "__"; }       \

@@ -75,9 +75,9 @@ namespace boost { namespace python
 }}
 
 // prove that back_references get initialized with the right PyObject*
-PyObject* y_identity(back_reference<Y const&> y)
+object y_identity(back_reference<Y const&> y)
 {
-    return y.reference().release();
+    return y.source();
 }
 
 // prove that back_references contain the right value
