@@ -29,8 +29,9 @@ namespace boost { namespace python { namespace converter {
 //      type T. Indicates a successful lvalue conversion
 //
 //   3. where y is of type rvalue_from_python_data<T>,
-//      x.construct(source, y) attempts to construct an object of type T
-//      in y. Indicates an rvalue converter was found
+//      x.construct(source, y) constructs an object of type T
+//      in y.storage.bytes and then sets y.convertible == y.storage.bytes,
+//      or else throws an exception and has no effect.
 BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source
     , registration const& converters)
@@ -231,7 +232,7 @@ pytype_result_from_python(PyTypeObject* type_, PyObject* source)
         handle<> msg(
             ::PyString_FromFormat(
                 "Expecting a Python %s return type, but got an object of type %s instead"
-                , type_
+                , type_->tp_name
                 , source->ob_type->tp_name
                 ));
         PyErr_SetObject(PyExc_TypeError, msg.get());
