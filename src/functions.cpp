@@ -9,8 +9,6 @@
 // Revision History:
 // Mar 01 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/detail/functions.hpp>
 #include <boost/python/detail/types.hpp>
 #include <boost/python/detail/singleton.hpp>

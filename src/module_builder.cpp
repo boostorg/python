@@ -6,8 +6,6 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/module_builder.hpp>
 
 namespace boost { namespace python {

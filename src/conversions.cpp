@@ -13,8 +13,6 @@
 // 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
 // 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/conversions.hpp>
 #include <boost/python/detail/void_adaptor.hpp>
 #include <typeinfo>

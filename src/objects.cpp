@@ -8,8 +8,6 @@
 
 // TODO: Move inline implementations from objects.cpp here
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/objects.hpp>
 #include <boost/python/detail/none.hpp>
 

@@ -8,8 +8,6 @@
      17 Apr 01 merged into boost CVS trunk (Ralf W. Grosse-Kunstleve)
 */
 
-#define BOOST_PYTHON_SOURCE
-
 # include <boost/python/cross_module.hpp>
 namespace python = boost::python;
 # include <stdio.h> // MSVC6.0SP4 does not know std::fprintf

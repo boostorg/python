@@ -6,8 +6,6 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/detail/init_function.hpp>
 #include <boost/python/objects.hpp>
 #include <boost/python/detail/extension_class.hpp>
