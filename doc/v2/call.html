@@ -21,7 +21,6 @@
 <h2>Contents</h2>
 <dl class="page-index"> 
   <dt><a href="#introduction">Introduction</a></dt>
-
   <dt><a href="#functions">Functions</a></dt>
   <dl class="page-index">
     <dt><a href="#call-spec">call</a></dt>
@@ -32,11 +31,15 @@
 </dl>
 <hr>
 <h2><a name="introduction"></a>Introduction</h2>
-<p>{{Introductory text}}</p>
+<p>
+  <code>&lt;boost/python/call.hpp&gt;</code> defines the <a
+  href="#call-spec"><code>call</code></a> family of overloaded function
+  templates, used to invoke Python callable objects from C++.
 
 <h2><a name="functions"></a>Functions</h2>
 <pre>
-<a name="call-spec"></a>call
+<a name="call-spec">template &lt;class R, class A1, class A2, ... class A<i>n</i>&gt;</a>
+<i>result-type</i> call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp;)
 </pre>
 <dl class="function-semantics"> 
   <dt><b>Requires:</b> {{text}}</dt>

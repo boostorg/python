@@ -24,9 +24,11 @@
     <dl class="Reference">
       <dt><a href="#high_level">High Level Components</a>
 
-      <dt><a href="#framework">Framework Elements</a>
+      <dt><a href="#models_of_call_policies">Models of CallPolicies</a>
 
-      <dt><a href="#utilities">Utilities</a>
+      <dt><a href="#return_handler_generators">Models of ReturnHandlerGenerator</a>
+
+      <dt><a href="#type_conversion">To/From Python Type Conversion</a>
 
       <dt><a href="#by_name">Index By Name</a>
     </dl>
@@ -41,6 +43,31 @@
         <h3>General Purpose</h3>
 
         <dl class="index">
+
+          <dt><a href="call.html">call.hpp</a>
+          <dd>
+            <dl class="index">
+              <dt><a href="call.html#functions">Functions</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "call.html#call-spec">call</a>
+                </dl>
+            </dl>
+
+          <dt><a href="call_method.html">call_method.hpp</a>
+          <dd>
+            <dl class="index">
+              <dt><a href="call_method.html#functions">Functions</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "call_method.html#call_method-spec">call_method</a>
+                </dl>
+            </dl>
+
           <dt><a href="class.html">class.hpp/class_fwd.hpp</a>
 
           <dd>
@@ -54,6 +81,22 @@
                   <dt><a href="class.html#bases-spec">bases</a>
 
                   <dt><a href="class.html#args-spec">args</a>
+                </dl>
+            </dl>
+
+          <dt><a href="data_members.html">data_members.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="data_members.html#functions">Functions</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "data_members.html#make_getter-spec">make_getter</a>
+
+                  <dt><a href=
+                  "data_members.html#make_setter-spec">make_setter</a>
                 </dl>
             </dl>
 
@@ -140,89 +183,8 @@
                 </dl>
             </dl>
         </dl>
-        <a name="type_conversion"></a>
 
-        <h3>To/From Python Type Conversion</h3>
 
-        <dl class="index">
-          <dt><a href="from_python.html">from_python.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "from_python.html#from_python-spec">from_python</a>
-                </dl>
-            </dl>
-
-          <dt><a href="to_python_converter.html">to_python_converter.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_converter.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_converter.html#to_python_converter-spec">to_python_converter</a>
-                </dl>
-            </dl>
-
-          <dt><a href="to_python_indirect.html">to_python_indirect.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_indirect.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
-                </dl>
-            </dl>
-
-          <dt><a href="to_python_value.html">to_python_value.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_value.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_value.html#to_python_value-spec">to_python_value</a>
-                </dl>
-            </dl>
-
-          <dt><a href="type_from_python.html">type_from_python.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="type_from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "type_from_python.html#type_from_python-spec">type_from_python</a>
-                </dl>
-            </dl>
-
-          <dt><a href="value_from_python.html">value_from_python.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="value_from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "value_from_python.html#value_from_python-spec">value_from_python</a>
-                </dl>
-            </dl>
-        </dl>
         <a name="models_of_call_policies"></a>
 
         <h3>Models of CallPolicies</h3>
@@ -369,6 +331,129 @@
                 </dl>
             </dl>
         </dl>
+
+        <a name="type_conversion"></a>
+
+        <h3>To/From Python Type Conversion</h3>
+
+        <dl class="index">
+          <dt><a href="from_python.html">from_python.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="from_python.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "from_python.html#from_python-spec">from_python</a>
+                </dl>
+            </dl>
+
+          <dt><a href="has_back_reference.html">has_back_reference.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="has_back_reference.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "has_back_reference.html#has_back_reference-spec">has_back_reference</a>
+                </dl>
+            </dl>
+
+          <dt><a href="implicit.html">implicit.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="implicit.html#classes">Functions</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "implicit.html#implicitly_convertible-spec">implicitly_convertible</a>
+                </dl>
+            </dl>
+
+          <dt><a href="ptr_hpp.html">ptr.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="ptr_hpp.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href="ptr_hpp.html#ptr-spec">ptr</a>
+                </dl>
+            </dl>
+
+          <dt><a href="to_python_converter.html">to_python_converter.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="to_python_converter.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "to_python_converter.html#to_python_converter-spec">to_python_converter</a>
+                </dl>
+            </dl>
+
+          <dt><a href="to_python_indirect.html">to_python_indirect.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="to_python_indirect.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
+                </dl>
+            </dl>
+
+          <dt><a href="to_python_value.html">to_python_value.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="to_python_value.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "to_python_value.html#to_python_value-spec">to_python_value</a>
+                </dl>
+            </dl>
+
+          <dt><a href="type_from_python.html">type_from_python.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="type_from_python.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "type_from_python.html#type_from_python-spec">type_from_python</a>
+                </dl>
+            </dl>
+
+          <dt><a href="value_from_python.html">value_from_python.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="value_from_python.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "value_from_python.html#value_from_python-spec">value_from_python</a>
+                </dl>
+            </dl>
+        </dl>
+
     </dl>
     <hr>
 
