@@ -1,0 +1,182 @@
+subproject libs/python/build ;
+
+# Do some OS-specific setup
+if $(NT)
+{
+    PYTHON_ROOT ?= c:/tools/python ;
+    PYTHON_INCLUDES ?= <include>$(PYTHON_ROOT)/include <gcc><*><include>/usr/include/python2.1 ;
+    PYTHON_LIBS ?= c:/cygnus/lib/python2.1/config/libpython2.1.dll.a ;
+    PYTHON_LIB_PATH = $(PYTHON_ROOT)/libs ;
+
+    # common properties required for compiling any Python module.
+    PYTHON_PROPERTIES ?=
+        <gcc><*><define>SIZEOF_LONG=4
+        <gcc><*><define>USE_DL_IMPORT
+                        
+        # if you don't request multithreading, you can't get the DLL runtime,
+        # which is needed for the python modules to  work right                
+        <msvc><*><threading>multi
+        ;
+                        
+    SHELL_EXPORT ?= set ;
+}
+else if $(UNIX)
+{
+    PYTHON_INCLUDES ?= <include>/usr/include/python1.5  ;
+    PYTHON_LIBS ?=  /usr/lib/python1.5/config/libpython1.5.a ;
+    SHELL_EXPORT ?= export ;
+}
+
+#######################
+
+#
+# Declare the boost python static link library
+#
+BOOST_PYTHON_INCLUDES = <include>$(BOOST_ROOT) $(PYTHON_INCLUDES) ;
+
+SOURCES = classes.cpp conversions.cpp extension_class.cpp functions.cpp 
+    init_function.cpp module_builder.cpp 
+    objects.cpp types.cpp cross_module.cpp ;
+
+SOURCE_DIR = [ join-path $(DOTDOT) src ] ;
+lib libboost_python
+    : $(SOURCE_DIR)$(SLASH)$(SOURCES)
+    : $(BOOST_PYTHON_INCLUDES) <shared-linkable>true $(PYTHON_PROPERTIES) ;
+    
+#######################
+
+# boost-python name : sources : requirements : default-BUILD
+#
+# Declare a boost python module. Return a list of the DLL files generated.
+rule boost-python
+{
+     dll $(<)
+             # Add the boost python library to sources
+            : <lib>libboost_python $(>)
+            
+            # Add some standard requirements
+            : $(3)                      
+                $(BOOST_PYTHON_INCLUDES)
+                <msvc><*><library-path>$(PYTHON_LIB_PATH)
+                <gcc><*><library-file>$(PYTHON_LIBS)
+                $(PYTHON_PROPERTIES)
+                
+        : $(4) ;                      # pass on the default-BUILD, if any
+}
+
+#######################
+
+# boost-python-test target : sources : requirements : local-build : args
+#
+# declare two python module tests: $(<).test which builds when out-of-date, and
+# $(<).run which builds unconditionally.
+rule boost-python-test
+{
+    SEARCH on $(>[1]) = $(SEARCH_SOURCE) ;
+    local gPYTHON_TEST_ARGS = $(5) $(PYTHON_TEST_ARGS) ;
+    declare-local-target $(<:S=.test) : $(2) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_TEST ;
+    declare-local-target $(<:S=.run) : $(2) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_RUNTEST ;
+}
+
+# how do we invoke python?
+PYTHON ?= python ;
+
+# special rules for two new target types: PYTHON_TEST and PYTHON_RUNTEST.
+# These are identical except that PYTHON_TEST runs the test when out-of-date, and
+# PYTHON_RUNTEST runs the test unconditionally. These are used by boost-python-test.
+SUFPYTHON_TEST = .test ;
+gGENERATOR_FUNCTION(PYTHON_TEST) = python-test-target ;
+rule python-test-target # test-target : sources : 
+{
+    python-test-aux $(<) : $(>) ;
+    Clean clean : $(<) ;
+    type-DEPENDS test : $(<) ;
+    MakeLocate $(<) : $(LOCATE_TARGET) ;
+}
+actions python-test-target
+{
+    $(SHELL_EXPORT)PYTHONPATH="$(PYTHONPATH)"
+    $(PYTHON) "$(>)" $(ARGS) > "$(<)"
+}
+
+SUFPYTHON_RUNTEST = .run ;
+gGENERATOR_FUNCTION(PYTHON_RUNTEST) = python-runtest-target ;
+rule python-runtest-target # test-target : sources : 
+{
+    python-test-aux $(<) : $(>) ;
+    NOTFILE $(<) ;
+    ALWAYS $(<) ;
+}
+actions python-runtest-target
+{
+    $(SHELL_EXPORT)PYTHONPATH="$(PYTHONPATH)"
+    $(PYTHON) "$(>)" $(ARGS)
+}
+
+rule python-test-aux # target : sources
+{
+    DEPENDS $(<) : $(>) ;
+    
+    ARGS on $(<) += $(gPYTHON_TEST_ARGS) ;
+    
+    # Some tests need an extra command-line arg if built with
+    # msvc. Checking the target grist is a cheap way to
+    # find out. 
+    switch $(<)
+    {
+        case <*\\\\msvc\\\\*>* : ARGS on $(<) += --broken-auto-ptr ;
+    }
+    
+    PYTHONPATH on $(<) = [ join
+        $(gLOCATE($(>[1])))                     # location of python test file
+        $(gRUN_PATH($(<)))                      # location of module dependencies
+        [ join-path $(TOP) libs python test ]   # location of doctest
+        $(PYTHONPATH)                           # base PYTHONPATH from environment
+        : $(SPLITPATH) ] ;
+}
+
+############# comprehensive module and test ###########
+boost-python boost_python_test : ../test/comprehensive.cpp ;
+boost-python-test comprehensive : [ join-path $(DOTDOT) test comprehensive.py ] <lib>boost_python_test ;
+
+############# simple tests from ../example ############
+
+rule boost-python-example-test
+{
+    boost-python $(<) : ../example/$(<).cpp ;
+    boost-python-test $(<) : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<) ;
+}
+
+
+boost-python-example-test abstract ;
+boost-python-example-test getting_started1 ;
+boost-python-example-test getting_started2 ;
+boost-python-example-test simple_vector ;
+boost-python-example-test do_it_yourself_converters ;
+boost-python-example-test pickle1 ;
+boost-python-example-test pickle2 ;
+boost-python-example-test pickle3 ;
+
+
+boost-python ivect : ../example/ivect.cpp ;
+boost-python dvect : ../example/dvect.cpp ;
+boost-python noncopyable_export : ../example/noncopyable_export.cpp ;
+boost-python noncopyable_import : ../example/noncopyable_import.cpp ;
+
+############## cross-module tests from ../example ##########
+
+# A simple rule to build a test which depends on multiple modules in the PYTHONPATH
+rule boost-python-multi-example-test # test-name : python-file libs
+{
+    boost-python-test $(<) : ../example/tst_$(<).py <lib>$(>) : : : $(PYTHON_VECT_ITERATIONS) ;
+}
+PYTHON_VECT_ITERATIONS ?= 10 ;
+
+boost-python-multi-example-test dvect1 : ivect dvect ;
+boost-python-multi-example-test dvect2 : ivect dvect ;
+
+boost-python-multi-example-test ivect1 : ivect dvect ;
+boost-python-multi-example-test ivect2 : ivect dvect ;
+
+boost-python-multi-example-test noncopyable : noncopyable_import noncopyable_export ;
+
