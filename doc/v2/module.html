@@ -67,11 +67,11 @@
     <p><a name=
     "BOOST_PYTHON_MODULE_INIT-spec"><code>BOOST_PYTHON_MODULE_INIT(name)</code></a>
     is used to declare Python <a href=
-    "http://www.python.org/doc/current/ext/methodTable.html#SECTION003400000000000000000">
+    "http://www.python.org/doc/2.2/ext/methodTable.html#SECTION003400000000000000000">
     module initialization functions</a>. The <code>name</code> argument must
     exactly match the name of the module to be initialized, and must conform to
     Python's <a href=
-    "http://www.python.org/doc/current/ref/identifiers.html">identifier naming
+    "http://www.python.org/doc/2.2/ref/identifiers.html">identifier naming
     rules</a>. Where you would normally write
 <pre>
 void init<i>name</i>()
@@ -150,7 +150,7 @@ module&amp; setattr(const char* name, ref const&amp; r);
     <dl class="function-semantics">
       <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
       Python's <a href=
-      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      "http://www.python.org/doc/2.2/ref/identifiers.html">identifier
       naming rules</a>. In the first two forms, <code>obj</code> is non-null.
       In the third form, <code>r.get()</code> is non-null.
 
@@ -176,7 +176,7 @@ module&amp; add(class_&lt;T,Bases,HolderGenerator&gt; const&amp; c);
       <dt><b>Effects:</b> The first form adds the Python type object named by
       <code>x</code> to the Python module under construction, with the name
       given by the type's <code><a href=
-      "http://www.python.org/doc/current/ext/dnt-type-methods.html">tp_name</a></code>
+      "http://www.python.org/doc/2.2/ext/dnt-type-methods.html">tp_name</a></code>
       field. The second form adds the extension class object being constructed
       by <code>c</code> to the module, with the same name that was passed to
       <code>c</code>'s constructor.
@@ -199,7 +199,7 @@ module&amp; def(char const* name, Fn f, ResultHandler handler);
       <dt><b>Requires:</b> <code>f</code> is a non-null pointer-to-function or
       pointer-to-member-function. <code>name</code> is a ntbs which conforms to
       Python's <a href=
-      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      "http://www.python.org/doc/2.2/ref/identifiers.html">identifier
       naming rules</a>. In the first form, the return type of
       <code>f</code> is not a reference and is not a pointer other
       than <code>char const*</code> or <code>PyObject*</code>. In the

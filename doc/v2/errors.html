@@ -65,7 +65,7 @@
     <p><code>error_already_set</code> is an exception type which can be thrown
     to indicate that a Python error has occurred. If thrown, the precondition
     is that <a href=
-    "http://www.python.org/doc/current/api/exceptionHandling.html#l2h-71">PyErr_Occurred()</a>
+    "http://www.python.org/doc/2.2/api/exceptionHandling.html#l2h-71">PyErr_Occurred()</a>
     returns a value convertible to <code>true</code>.
 
     <h4><a name="class-spec-synopsis"></a>Class error_already_set synopsis</h4>
@@ -131,7 +131,7 @@ template &lt;class T&gt; T* expect_non_null(T* x);
 
       <dt><b>Rationale:</b> Simplifies error-handling when calling many
       functions in the <a href=
-      "http://www.python.org/doc/current/api/api.html">Python/C API</a>, which
+      "http://www.python.org/doc/2.2/api/api.html">Python/C API</a>, which
       return 0 on error.
     </dl>
 
