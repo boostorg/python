@@ -167,5 +167,14 @@ list dict_base::values() const
         return assume_list(this->attr("values")());
     }
 }
+static struct register_dict_pytype_ptr
+{
+    register_dict_pytype_ptr()
+    {
+        const_cast<converter::registration &>(
+            converter::registry::lookup(boost::python::type_id<boost::python::dict>())
+            ).m_class_object = &PyDict_Type;
+    }
+}register_dict_pytype_ptr_;
 
 }}}  // namespace boost::python

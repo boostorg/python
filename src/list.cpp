@@ -4,6 +4,8 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/list.hpp>
+#include <boost/python/converter/registry.hpp>
+#include <boost/python/converter/registrations.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -136,5 +138,13 @@ long list_base::count(object_cref value) const
         throw_error_already_set();
     return result;
 }
-
+static struct register_list_pytype_ptr
+{
+    register_list_pytype_ptr()
+    {
+        const_cast<converter::registration &>(
+            converter::registry::lookup(boost::python::type_id<boost::python::list>())
+            ).m_class_object = &PyList_Type;
+    }
+}register_list_pytype_ptr_;
 }}} // namespace boost::python

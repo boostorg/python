@@ -613,14 +613,15 @@ namespace objects
 
   namespace
   {
-    PyObject* callable_check(PyObject* callable)
+    PyObject* callable_check(PyObject* callable, const char *name)
     {
         if (PyCallable_Check(expect_non_null(callable)))
             return callable;
 
         ::PyErr_Format(
             PyExc_TypeError
-            , "staticmethod expects callable object; got an object of type %s, which is not callable"
+            , "staticmethod expects callable object; got an object \"%s\" of type %s, which is not callable"
+            , name
             , callable->ob_type->tp_name
             );
         
@@ -638,7 +639,7 @@ namespace objects
 
       this->attr(method_name) = object(
           handle<>(
-              PyStaticMethod_New((callable_check)(method.ptr()) )
+              PyStaticMethod_New((callable_check)(method.ptr(), method_name) )
               ));
   }
 

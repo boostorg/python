@@ -16,6 +16,8 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 
+#include <boost/python/converter/python_type.hpp>
+
 #include <boost/python/detail/api_placeholder.hpp>
 #include <boost/python/detail/signature.hpp>
 #include <boost/mpl/vector/vector10.hpp>
@@ -24,6 +26,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 #if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
 # include <cstdio>
@@ -226,6 +229,269 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     return 0;
 }
 
+inline function const * function::overloads() const 
+{
+    return this->m_overloads.get();
+}
+
+
+class function_signature_generator{
+public:
+    static bool arity_cmp( function const *f1, function const *f2 )
+    {
+        return f1->m_fn.max_arity() < f2->m_fn.max_arity();
+    }
+
+    static bool are_seq_overloads( function const *f1, function const *f2 , bool check_docs)
+    {
+        py_function const & impl1 = f1->m_fn;
+        py_function const & impl2  = f2->m_fn;
+        
+        //the number of parameters differs by 1
+        if (impl2.max_arity()-impl1.max_arity() != 1)
+            return false;
+
+        // if check docs then f1 shold not have docstring or have the same docstring as f2
+        if (check_docs && f2->doc() != f1->doc() && f1->doc())
+            return false; 
+
+        python::detail::signature_element const* s1 = impl1.signature();
+        python::detail::signature_element const* s2 = impl2.signature();
+
+        size_t size = impl1.max_arity();
+
+        for (size_t i = 0; i != size; ++i)
+        {
+            //check if the argument types are the same
+            if (s1[i].basename() != s2[i].basename())
+                return false;
+            
+            //return type
+            if (!i) continue;
+            
+            //check if the argument default values are the same
+            if (f1->m_arg_names && f2->m_arg_names && f2->m_arg_names[i-1]!=f1->m_arg_names[i-1]
+                || bool( f1->m_arg_names ) != bool( f2->m_arg_names 
+                ))
+                return false;
+        }
+        return true;
+    }
+
+    static std::vector<function const*> flatten(function const *f)
+    {
+        object name = f->name();
+
+        std::vector<function const*> res;
+
+        while (f) {
+        
+            //this if takes out the not_implemented_function
+            if (f->name() == name) 
+                res.push_back(f);
+
+            f=f->overloads();
+        }
+
+        std::sort(res.begin(),res.end(), &arity_cmp);
+
+        return res;
+    }
+    static std::vector<function const*> split_seq_overloads( const std::vector<function const *> &funcs, bool split_on_doc_change)
+    {
+        std::vector<function const*> res;
+
+        std::vector<function const*>::const_iterator fi = funcs.begin();
+
+        function const * last = *fi;
+
+        while (++fi != funcs.end()){
+
+            //check if fi starts a new chain of overloads
+            if (!are_seq_overloads( last, *fi, split_on_doc_change ))
+                res.push_back(last);
+
+            last = *fi;
+        }
+
+        if (last)
+            res.push_back(last);
+
+        return res;
+    }
+
+    static object raw_function_pretty_signature(function const *f, size_t n_overloads,  bool cpp_types = false)
+    {
+        str res("object");
+
+        res = str("%s %s(%s)" % make_tuple( res, f->m_name, str("tuple args, dict kwds")) );
+
+        return res;
+    }
+
+    static const  char * py_type_str(const python::detail::signature_element &s)
+    {
+        if (s.basename()==std::string("void")){
+            static const char * none = "None";
+            return none;
+        }
+        const converter::registration *r=0;
+
+        if ( (r = converter::registry::query(s.tid) ) && r->m_class_object)
+            return  r->m_class_object->tp_name;
+        else if ( (r = converter::registry::query(converter::detail::strip_type_info::query(s.tid) ) ) && r->m_class_object )
+            return  r->m_class_object->tp_name;
+        else{
+            static const char * object = "object";
+            return object;
+        }
+    }
+
+    static object parameter_string(const python::detail::signature_element *s, size_t n, object arg_names, bool cpp_types)
+    {
+        str param;
+
+        if (cpp_types)
+        {
+            if (s[n].basename() == 0)
+            {
+                return str("...");
+            }
+
+            param = str(s[n].tid.name());
+            
+            if (s[n].lvalue)
+                 param += " {lvalue}";
+
+        }
+        else
+        {
+            if (n) //we are processing an argument and trying to come up with a name for it
+            {
+                object kv;
+                if ( arg_names && (kv = arg_names[n-1]) )
+                    param = str( " (%s)%s" % make_tuple(py_type_str(s[n]),kv[0]) );
+                else
+                    param = str(" (%s)%s%d" % make_tuple(py_type_str(s[n]),"arg", n) );
+            }
+            else //we are processing the return type - how should we handle it???
+                param = py_type_str(s[n]);
+        }
+
+        //an argument - check for default value and append it
+        if(n && arg_names)
+        {
+            object kv(arg_names[n-1]);
+            if (kv && len(kv) == 2)
+            {
+                param = str("%s=%r" % make_tuple(param, kv[1]));
+            }
+        }
+        return param;
+    }
+    
+    static object pretty_signature(function const *f, size_t n_overloads,  bool cpp_types = false)
+    {
+        py_function 
+            const& impl = f->m_fn;
+            ;
+    
+        python::detail::signature_element 
+            const* s = impl.signature()
+            ;
+
+        size_t arity = impl.max_arity();
+
+        if(arity == size_t(-1))// is this the proper raw function test?
+        {
+            return raw_function_pretty_signature(f,n_overloads,cpp_types);
+        }
+
+        list formal_params;
+
+        size_t n_extra_default_args=0;
+
+        for (unsigned n = 0; n <= arity; ++n)
+        {
+            str param;
+
+            formal_params.append(
+                parameter_string(s, n, f->m_arg_names, cpp_types)
+                );
+
+            // find all the arguments with default values preceeding the arity-n_overloads
+            if (n && f->m_arg_names)
+            {
+                object kv(f->m_arg_names[n-1]);
+
+                if (kv && len(kv) == 2)
+                {
+                    //default argument preceeding the arity-n_overloads
+                    if( n <= arity-n_overloads)
+                        ++n_extra_default_args;
+                }
+                else
+                    //argument without default, preceeding the arity-n_overloads
+                    if( n <= arity-n_overloads)
+                        n_extra_default_args = 0;
+            }
+        }
+
+        if (!arity && cpp_types)
+            formal_params.append("void");
+
+        str ret_type (formal_params.pop(0));
+        if ( !cpp_types )
+            ret_type = str("-> "+ret_type);
+
+        n_overloads+=n_extra_default_args;
+
+        return str(
+            "%s %s(%s%s%s%s) %s" 
+            % make_tuple
+            ( cpp_types?ret_type:str("")
+                , f->m_name
+                , str(",").join(formal_params.slice(0,arity-n_overloads))
+                , n_overloads ? (n_overloads!=arity?str(" [,"):str("[ ")) : str()
+                , str(" [,").join(formal_params.slice(arity-n_overloads,arity))
+                , std::string(n_overloads,']')
+                , cpp_types?str(""):ret_type
+                ));
+
+    }
+
+    static list function_signatures( function const * f, bool cpp_types, bool docs)
+    {
+        list signatures;
+        std::vector<function const*> funcs = function_signature_generator::flatten( f);
+        std::vector<function const*> split_funcs = function_signature_generator::split_seq_overloads( funcs, docs);
+        std::vector<function const*>::const_iterator sfi=split_funcs.begin(), fi;
+        size_t n_overloads=0;
+        for (fi=funcs.begin(); fi!=funcs.end(); ++fi)
+        {
+            if(*sfi == *fi){
+                signatures.append(
+                    (*fi)->doc() && docs
+                        ? function_signature_generator::pretty_signature(*fi, n_overloads,cpp_types)+ " : " +(*fi)->doc()
+                        : function_signature_generator::pretty_signature(*fi, n_overloads,cpp_types)
+                    );
+                    ++sfi;
+                    n_overloads = 0;
+            }else
+                ++n_overloads ;
+        }
+        return signatures;
+    }
+};
+
+
+object function::pretty_signature(bool cpp_types, size_t n_optional_trailing_args )const
+{
+    function const *f = this;
+    return function_signature_generator::pretty_signature(this, n_optional_trailing_args, cpp_types);
+
+}
+
 void function::argument_error(PyObject* args, PyObject* keywords) const
 {
     static handle<> exception(
@@ -243,47 +509,7 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
     message += str(", ").join(actual_args);
     message += ")\ndid not match C++ signature:\n    ";
 
-    list signatures;
-    for (function const* f = this; f; f = f->m_overloads.get())
-    {
-        py_function const& impl = f->m_fn;
-        
-        python::detail::signature_element const* s
-            = impl.signature() + 1; // skip over return type
-        
-        list formal_params;
-        if (impl.max_arity() == 0)
-            formal_params.append("void");
-
-        for (unsigned n = 0; n < impl.max_arity(); ++n)
-        {
-            if (s[n].basename == 0)
-            {
-                formal_params.append("...");
-                break;
-            }
-
-            str param(s[n].basename);
-            if (s[n].lvalue)
-                param += " {lvalue}";
-            
-            if (f->m_arg_names) // None or empty tuple will test false
-            {
-                object kv(f->m_arg_names[n]);
-                if (kv)
-                {
-                    char const* const fmt = len(kv) > 1 ? " %s=%r" : " %s";
-                    param += fmt % kv;
-                }
-            }
-            
-            formal_params.append(param);
-        }
-
-        signatures.append(
-            "%s(%s)" % make_tuple(f->m_name, str(", ").join(formal_params))
-            );
-    }
+    list signatures = function_signature_generator::function_signatures(this, true/*cpp types*/, false/*no docs*/);
 
     message += str("\n    ").join(signatures);
 
@@ -302,10 +528,6 @@ void function::add_overload(handle<function> const& overload_)
         parent = parent->m_overloads.get();
 
     parent->m_overloads = overload_;
-
-    // If we have no documentation, get the docs from the overload
-    if (!m_doc)
-        m_doc = overload_->m_doc;
 }
 
 namespace
@@ -545,8 +767,11 @@ extern "C"
     //
     static PyObject* function_get_doc(PyObject* op, void*)
     {
-        function* f = downcast<function>(op);
-        return python::incref(f->doc().ptr());
+        function const * f = downcast<function >(op);
+
+        list signatures = function_signature_generator::function_signatures(f, false/*pythonic args*/, true/*+docs*/);
+
+        return python::incref( str("\n    ").join(signatures).ptr());
     }
     
     static int function_set_doc(PyObject* op, PyObject* doc, void*)
@@ -639,6 +864,7 @@ handle<> function_handle_impl(py_function const& f)
         allow_null(
             new function(f, 0, 0)));
 }
+
 
 } // namespace objects
 

@@ -6,8 +6,10 @@
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/converter/registrations.hpp>
 #include <boost/python/converter/builtin_converters.hpp>
+#include <boost/python/converter/python_type.hpp>
 
 #include <set>
+#include <map>
 #include <stdexcept>
 #include <boost/lexical_cast.hpp>
 
@@ -242,5 +244,75 @@ namespace registry
       return (p == entries().end() || p->target_type != type) ? 0 : &*p;
   }
 } // namespace registry
+
+
+
+namespace detail
+{
+    namespace strip_type_info{
+        struct type_info_map : std::map<boost::python::type_info, boost::python::type_info> 
+        {
+            type_info_map(){
+                (*this)[boost::python::type_id<bool*>()] = boost::python::type_id<bool>(); 
+                (*this)[boost::python::type_id<bool const*>()] = boost::python::type_id<bool>(); 
+
+                (*this)[boost::python::type_id<char*>()] = boost::python::type_id<char>(); 
+                (*this)[boost::python::type_id<unsigned char*>()] = boost::python::type_id<unsigned char>(); 
+
+                (*this)[boost::python::type_id<short*>()] = boost::python::type_id<short>(); 
+                (*this)[boost::python::type_id<short const*>()] = boost::python::type_id<short>(); 
+                (*this)[boost::python::type_id<unsigned short*>()] = boost::python::type_id<unsigned short>(); 
+                (*this)[boost::python::type_id<unsigned short const*>()] = boost::python::type_id<unsigned short>(); 
+
+                (*this)[boost::python::type_id<int*>()] = boost::python::type_id<int>(); 
+                (*this)[boost::python::type_id<int const*>()] = boost::python::type_id<int>(); 
+                (*this)[boost::python::type_id<unsigned int*>()] = boost::python::type_id<unsigned int>(); 
+                (*this)[boost::python::type_id<unsigned int const*>()] = boost::python::type_id<unsigned int>(); 
+
+                (*this)[boost::python::type_id<long*>()] = boost::python::type_id<long>(); 
+                (*this)[boost::python::type_id<long const*>()] = boost::python::type_id<long>(); 
+                (*this)[boost::python::type_id<unsigned long*>()] = boost::python::type_id<unsigned long>(); 
+                (*this)[boost::python::type_id<unsigned long const*>()] = boost::python::type_id<unsigned long>(); 
+
+                (*this)[boost::python::type_id<long double*>()] = boost::python::type_id<long double>(); 
+                (*this)[boost::python::type_id<long double const*>()] = boost::python::type_id<long double>(); 
+
+                (*this)[boost::python::type_id<double*>()] = boost::python::type_id<double>(); 
+                (*this)[boost::python::type_id<double const*>()] = boost::python::type_id<double>(); 
+
+                (*this)[boost::python::type_id<float*>()] = boost::python::type_id<float>(); 
+                (*this)[boost::python::type_id<float const*>()] = boost::python::type_id<float>(); 
+
+                (*this)[boost::python::type_id<std::string*>()] = boost::python::type_id<std::string>(); 
+                (*this)[boost::python::type_id<std::string const*>()] = boost::python::type_id<std::string>(); 
+
+# ifndef BOOST_NO_STD_WSTRING
+                (*this)[boost::python::type_id<std::wstring*>()] = boost::python::type_id<std::wstring>(); 
+                (*this)[boost::python::type_id<std::wstring const*>()] = boost::python::type_id<std::wstring>(); 
+# endif
+            }
+        };
+
+        static std::map<boost::python::type_info, boost::python::type_info> &type_info_remap_registry()
+        {
+            static type_info_map res;
+            return res;
+        }
+        BOOST_PYTHON_DECL void insert(boost::python::type_info t, boost::python::type_info pt)
+        {
+            if(t==pt)
+                return;
+            type_info_remap_registry()[pt] = t;
+        }
+
+        BOOST_PYTHON_DECL type_info query(boost::python::type_info pt)
+        {
+            std::map<boost::python::type_info, boost::python::type_info> :: iterator i
+                = type_info_remap_registry().find(pt);
+            return i == type_info_remap_registry().end()? pt : (*i).second;
+        }
+    }
+}
+
 
 }}} // namespace boost::python::converter

@@ -58,6 +58,7 @@ namespace
               , &slot_rvalue_from_python<T,SlotPolicy>::construct
               , type_id<T>()
               );
+          const_cast<registration*>(registry::query(type_id<T>()))->m_class_object = SlotPolicy::get_class_object();
       }
       
    private:
@@ -94,6 +95,7 @@ namespace
           return (PyInt_Check(obj) || PyLong_Check(obj))
               ? &number_methods->nb_int : 0;
       }
+      static PyTypeObject * get_class_object() { return &PyInt_Type;}
   };
 
   template <class T>
@@ -129,6 +131,7 @@ namespace
           return (PyInt_Check(obj) || PyLong_Check(obj))
               ? &py_object_identity : 0;
       }
+      static PyTypeObject * get_class_object() { return &PyInt_Type;}
   };
 
   template <class T>
@@ -167,6 +170,7 @@ namespace
           else
               return 0;
       }
+      static PyTypeObject * get_class_object() { return &PyInt_Type;}
   };
   
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
@@ -222,6 +226,7 @@ namespace
       {
           return PyObject_IsTrue(intermediate);
       }
+      static PyTypeObject * get_class_object() { return &PyInt_Type;}
   };
 
   // A SlotPolicy for extracting floating types from Python objects.
@@ -253,6 +258,7 @@ namespace
               return PyFloat_AS_DOUBLE(intermediate);
           }
       }
+      static PyTypeObject * get_class_object() { return &PyFloat_Type;}
   };
 
   // A SlotPolicy for extracting C++ strings from Python objects.
@@ -270,6 +276,7 @@ namespace
       {
           return std::string(PyString_AsString(intermediate),PyString_Size(intermediate));
       }
+      static PyTypeObject * get_class_object() { return &PyString_Type;}
   };
 
   // encode_string_unaryfunc/py_encode_string -- manufacture a unaryfunc
@@ -308,6 +315,8 @@ namespace
               throw_error_already_set();
           return result;
       }
+      
+      static PyTypeObject * get_class_object() { return &PyUnicode_Type;}
   };
 #endif 
 
@@ -404,6 +413,7 @@ void initialize_builtin_converters()
     
     // Add an lvalue converter for char which gets us char const*
     registry::insert(convert_to_cstring,type_id<char>());
+    const_cast<registration&>(registry::lookup(type_id<char const*>())).m_class_object = &PyString_Type;
 
 # ifndef BOOST_NO_STD_WSTRING
     // Register by-value converters to std::string, std::wstring

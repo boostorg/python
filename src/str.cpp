@@ -328,5 +328,15 @@ BOOST_PYTHON_DEFINE_STR_METHOD(title, 0)
 BOOST_PYTHON_DEFINE_STR_METHOD(translate, 1)
 BOOST_PYTHON_DEFINE_STR_METHOD(translate, 2)
 BOOST_PYTHON_DEFINE_STR_METHOD(upper, 0)
+
+static struct register_str_pytype_ptr
+{
+    register_str_pytype_ptr()
+    {
+        const_cast<converter::registration &>(
+            converter::registry::lookup(boost::python::type_id<boost::python::str>())
+            ).m_class_object = &PyString_Type;
+    }
+}register_str_pytype_ptr_;
     
 }}}  // namespace boost::python

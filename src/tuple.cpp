@@ -17,4 +17,15 @@ tuple_base::tuple_base(object_cref sequence)
     : object(call(sequence))
 {}
 
+static struct register_tuple_pytype_ptr
+{
+    register_tuple_pytype_ptr()
+    {
+        const_cast<converter::registration &>(
+            converter::registry::lookup(boost::python::type_id<boost::python::tuple>())
+            ).m_class_object = &PyTuple_Type;
+    }
+}register_tuple_pytype_ptr_;
+
+
 }}}  // namespace boost::python
