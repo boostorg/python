@@ -39,7 +39,10 @@ namespace boost { namespace python {
 # endif // CALL_METHOD_DWA2002411_HPP
 
 #elif BOOST_PP_ITERATION_DEPTH() == 1
-# line BOOST_PP_LINE(__LINE__, call_method.hpp)
+# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
+        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
+#  line BOOST_PP_LINE(__LINE__, call_method.hpp)
+# endif 
 
 # define N BOOST_PP_ITERATION()
 
