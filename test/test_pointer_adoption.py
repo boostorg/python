@@ -11,6 +11,12 @@
 >>> a.content()
 'dynamically allocated'
 
+>>> innards = a.get_inner()
+>>> innards.change('with an exposed reference')
+>>> a.content()
+'with an exposed reference'
+
+>>> innards = None
 >>> a = None
 >>> num_a_instances()
 0

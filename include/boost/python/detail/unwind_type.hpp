@@ -55,16 +55,6 @@ struct unwind_helper
     {
         return unwind_ptr_type(p, (Generator*)0);
     }
-
-    template <class Generator, class U>
-    struct apply
-    {
-        static typename Generator::result_type
-        execute()
-        {
-            return unwind_ptr_type(U(0),(Generator*)0);
-        }
-    };
 };
 
 template <>
@@ -76,16 +66,6 @@ struct unwind_helper<false>
     {
         return unwind_ptr_type(&p, (Generator*)0);
     }
-
-    template <class Generator, class U>
-    struct apply
-    {
-        static typename Generator::result_type
-        execute()
-        {
-            return unwind_ptr_type((U*)0,(Generator*)0);
-        }
-    };
 };
 
 template <class Generator, class U>
@@ -102,16 +82,70 @@ unwind_type(U const& p, Generator* = 0)
     return unwind_helper<is_pointer<U>::value>::execute(p, (Generator*)0);
 }
 
+enum { direct_ = 0, pointer_ = 1, reference_ = 2, reference_to_pointer_ = 3 };
+template <int indirection> struct unwind_helper2;
+
+template <>
+struct unwind_helper2<direct_>
+{
+    template <class Generator, class U>
+    static typename Generator::result_type
+    execute(U(*)(), Generator* = 0)
+    {
+        return unwind_ptr_type((U*)0, (Generator*)0);
+    }
+};
+
+template <>
+struct unwind_helper2<pointer_>
+{
+    template <class Generator, class U>
+    static typename Generator::result_type
+    execute(U*(*)(), Generator* = 0)
+    {
+        return unwind_ptr_type((U*)0, (Generator*)0);
+    }
+};
+
+template <>
+struct unwind_helper2<reference_>
+{
+    template <class Generator, class U>
+    static typename Generator::result_type
+    execute(U&(*)(), Generator* = 0)
+    {
+        return unwind_ptr_type((U*)0, (Generator*)0);
+    }
+};
+
+template <>
+struct unwind_helper2<reference_to_pointer_>
+{
+    template <class Generator, class U>
+    static typename Generator::result_type
+    execute(U&(*)(), Generator* = 0)
+    {
+        return unwind_ptr_type(U(0), (Generator*)0);
+    }
+};
+
 // Call this one with both template parameters explicitly specified
 // and no function arguments:
 //
 //      return unwind_type<my_generator,T>();
 //
+// Doesn't work if T is an array type; we could handle that case, but
+// why bother?
 template <class Generator, class U>
 inline typename Generator::result_type
 unwind_type(type<U>*p = 0, Generator* = 0)
 {
-    return unwind_helper<is_pointer<U>::value>::template apply<Generator,U>::execute();
+    BOOST_STATIC_CONSTANT(int, indirection
+                          = (pointer_ * is_pointer<U>::value)
+                          | (reference_ * is_reference<U>::value)
+                          | (reference_to_pointer_ * is_reference_to_pointer<U>::value));
+        
+    return unwind_helper2<indirection>::execute((U(*)())0,(Generator*)0);
 }
 
 }}} // namespace boost::python::detail

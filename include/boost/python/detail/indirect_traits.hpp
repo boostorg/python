@@ -47,6 +47,36 @@ struct is_reference_to_volatile<T volatile&>
 {
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
+
+template <class T>
+struct is_reference_to_pointer
+{
+    BOOST_STATIC_CONSTANT(bool, value = false);
+};
+
+template <class T>
+struct is_reference_to_pointer<T*&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+template <class T>
+struct is_reference_to_pointer<T* const&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+template <class T>
+struct is_reference_to_pointer<T* volatile&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+template <class T>
+struct is_reference_to_pointer<T* const volatile&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
 #  else
 
 typedef char (&inner_yes_type)[3];
@@ -74,8 +104,17 @@ struct is_volatile_help
 };
 
 template <typename V>
-typename is_const_help<V>::type reference_to_const_helper(V&);
-    
+struct is_pointer_help
+{
+    typedef typename mpl::select_type<
+        is_pointer<V>::value
+        , inner_yes_type
+        , inner_no_type
+        >::type type;
+};
+
+template <typename V>
+typename is_const_help<V>::type reference_to_const_helper(V&);    
 outer_no_type
 reference_to_const_helper(...);
 
@@ -85,7 +124,8 @@ struct is_reference_to_const
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
-        = sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type));
+        = (is_reference<T>::value
+           && sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type)));
 };
 
 template <class T>
@@ -94,7 +134,8 @@ struct is_reference_to_non_const
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
-        = sizeof(reference_to_const_helper(t)) == sizeof(inner_no_type));
+        = (is_reference<T>::value
+           && sizeof(reference_to_const_helper(t)) == sizeof(inner_no_type)));
 };
 
 template <typename V>
@@ -107,7 +148,24 @@ struct is_reference_to_volatile
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
-        = sizeof(reference_to_volatile_helper(t)) == sizeof(inner_yes_type));
+        = (is_reference<T>::value
+           && sizeof(reference_to_volatile_helper(t)) == sizeof(inner_yes_type)));
+};
+
+
+template <typename V>
+typename is_pointer_help<V>::type reference_to_pointer_helper(V&);
+outer_no_type reference_to_pointer_helper(...);
+
+template <class T>
+struct is_reference_to_pointer
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = (is_reference<T>::value
+           && sizeof(reference_to_pointer_helper(t)) == sizeof(inner_yes_type))
+        );
 };
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION 
 

@@ -112,6 +112,13 @@ class class_ : private objects::class_base
         return *this;
     }
 
+    template <class Fn, class CallPolicy>
+    self& def(char const* name, Fn fn, CallPolicy policy)
+    {
+        this->def(name, boost::python::make_function(fn, policy));
+        return *this;
+    }
+    
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.
     template <class Args>

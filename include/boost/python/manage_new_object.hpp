@@ -7,7 +7,7 @@
 # define MANAGE_NEW_OBJECT_DWA200222_HPP
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/select_type.hpp>
-# include <boost/python/to_python_owner.hpp>
+# include <boost/python/to_python_indirect.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 
 namespace boost { namespace python { 
@@ -31,7 +31,7 @@ struct manage_new_object
     {
         typedef typename mpl::select_type<
             boost::is_pointer<T>::value
-            , to_python_owner<T>
+            , to_python_indirect<T, detail::make_owning_holder>
             , detail::manage_new_object_requires_a_pointer_return_type<T>
         >::type type;
     };
