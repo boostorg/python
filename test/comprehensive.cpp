@@ -165,7 +165,7 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(boost::python::search_namespace, key));
+		PyErr_SetObject(PyExc_KeyError, to_python(boost::python::search_namespace, key));
         throw boost::python::error_already_set();
     }
 }

@@ -61,7 +61,7 @@ boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python:
 
 PyObject* to_python(boost::python::semantics, const boost::python::list& x)
 {
-    return object_to_python(x);
+    return boost::python::object_to_python(x);
 }
 
 boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list> type)
@@ -71,7 +71,7 @@ boost::python::list from_python(PyObject* p, boost::python::type<boost::python::
 
 PyObject* to_python(boost::python::semantics, const boost::python::dictionary& x)
 {
-    return object_to_python(x);
+    return boost::python::object_to_python(x);
 }
 
 boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary> type)
@@ -81,7 +81,7 @@ boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::py
 
 PyObject* to_python(boost::python::semantics, const boost::python::string& x)
 {
-    return object_to_python(x);
+    return boost::python::object_to_python(x);
 }
 
 boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string> type)

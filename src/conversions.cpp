@@ -22,8 +22,6 @@
 
 namespace boost { namespace python {
 
-enum semantics { search_namespace }; // Used to find to_python functions via koenig lookup.
-
 // IMPORTANT: this function may only be called from within a catch block!
 void handle_exception()
 {

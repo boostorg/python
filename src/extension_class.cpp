@@ -608,7 +608,7 @@ int operator_dispatcher_call_cmp(PyObject* left, PyObject* right)
     {
         try
         {
-            return BOOST_PYTHON_CONVERSION::from_python(result, type<int>());
+            return from_python(result, type<int>());
         }
         catch(...)
         {
