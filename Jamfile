@@ -31,39 +31,39 @@ PYTHON_PROPERTIES
         ;
 
     # -------- general test -------
-    extension m1 : test/m1.cpp <lib>bpl
+    extension m1 : test/m1.cpp <dll>bpl
       : 
       : debug-python
       ;
 
-    extension m2 : test/m2.cpp <lib>bpl
+    extension m2 : test/m2.cpp <dll>bpl
       : 
       : debug-python ;
 
-    boost-python-runtest try : test/newtest.py <lib>m1 <lib>m2 : : debug-python ;
+    boost-python-runtest try : test/newtest.py <pyd>m1 <pyd>m2 : : debug-python ;
 
     # ----------- builtin converters -----------
     
-    extension builtin_converters_ext : test/test_builtin_converters.cpp <lib>bpl
+    extension builtin_converters_ext : test/test_builtin_converters.cpp <dll>bpl
       :
       : debug-python
       ;
 
     boost-python-runtest test_builtin_converters : test/test_builtin_converters.py
-      <lib>builtin_converters_ext
+      <pyd>builtin_converters_ext
       :
       : debug-python
       ;
     
     # ----------- pointer adoption -----------
     
-    extension test_pointer_adoption_ext : test/test_pointer_adoption.cpp <lib>bpl
+    extension test_pointer_adoption_ext : test/test_pointer_adoption.cpp <dll>bpl
       :
       : debug-python
       ;
 
     boost-python-runtest test_pointer_adoption : test/test_pointer_adoption.py
-      <lib>test_pointer_adoption_ext
+      <pyd>test_pointer_adoption_ext
       :
       : debug-python
       ;
