@@ -119,6 +119,18 @@ public:
     
 	T* get() const { return m_p; }
 
+        template <class U>
+        inline U get(type<U> = type<U>()) const {
+            return BOOST_PYTHON_CONVERSION::from_python(get(), type<U>());
+        }
+
+        inline reference getattr(const std::string& attr_name) {
+            return reference(PyObject_GetAttrString(get(), const_cast<char*>(attr_name.c_str())));
+        }
+        inline reference getattr(const std::string& attr_name, allow_null) {
+            return reference(PyObject_GetAttrString(get(), const_cast<char*>(attr_name.c_str())), null_ok);
+        }
+
 	T* release()
 	{
 		T* p = m_p;
