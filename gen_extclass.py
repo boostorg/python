@@ -4,11 +4,11 @@ import string
 def gen_extclass(args):
     held_instance = """%{
     template <%(class A%n%:, %)>%}
-    HeldInstance(PyObject* p%(, const A%n%& a%n%)) : T(%(a%n%:, %)), m_self(p) {}"""
+    HeldInstance(PyObject* p%(, A%n% a%n%)) : T(%(a%n%:, %)), m_self(p) {}"""
 
     instance_value_holder = """%{
     template <%(class A%n%:, %)>%}
-    InstanceValueHolder(ExtensionInstance* p%(, const A%n& a%n%)) :
+    InstanceValueHolder(ExtensionInstance* p%(, A%n a%n%)) :
         m_held(p%(, a%n%)) {}"""
     
     return (
