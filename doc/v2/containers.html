@@ -72,13 +72,23 @@
             </dl>
           </dd>
           <dt>
-            <a href="#container_proxy">container_proxy</a>
+            <a href="#extending">Container adapters</a>
+          </dt>
+          <dd>
+            <dl class="page-index">
+              <dt>
+                <a href="#container_proxy">container_proxy</a>
+              </dt>
+              <dt>
+                <a href="#iterator_pair">iterator_pair</a>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <a href="#workarounds">Compiler workarounds</a>
           </dt>
           <dt>
             <a href="#limitations">Known limitations</a>
-          </dt>
-          <dt>
-            <a href="#workarounds">Compiler workarounds</a>
           </dt>
         </dl>
       </dd>
@@ -1001,6 +1011,97 @@ namespace our_namespace {
 
     </p>
 
+    <h3><a name="simple_ctraits">Simplistic ContainerTraits example</a></h3>
+
+    <p>
+
+      The following block of code shows a simplistic implementation of
+      <code>ContainerTraits</code> for the container
+      <code>std::set&lt;std::string, int&gt;</code>. The actual
+      implementation used by the suite relies on template
+      metaprogramming techniques, whereas this example is designed to
+      show only the essential elements of a
+      <code>ContainerTraits</code> implementation.
+
+    </p>
+
+    <p>
+<pre>
+#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;boost/python/suite/indexing/iterator_traits.hpp&gt;
+// Include iterator_traits to get IndexStyle
+
+struct simple_map_traits {
+  // Traits information for std::map&lt;std::string, int&gt;
+
+  typedef std::map&lt;std::string, int&gt; container;
+  typedef container::size_type       size_type;
+  typedef container::iterator        iterator;
+
+  typedef int                        value_type;
+  typedef int &amp;                      reference;
+  typedef std::string                key_type;
+  typedef std::string                index_type;
+
+  typedef int                        value_param;
+  typedef std::string const &amp;        key_param;
+  typedef std::string const &amp;        index_param;
+
+  static bool const has_copyable_iter = true;
+  static bool const has_mutable_ref   = true;
+  static bool const has_find          = true;
+  static bool const has_insert        = true;
+  static bool const has_erase         = true;
+  static bool const has_pop_back      = false;
+  static bool const has_push_back     = false;
+  static bool const is_reorderable    = false;
+
+  static boost::python::indexing::IndexStyle const index_style
+    = boost::python::indexing::index_style_nonlinear;
+
+  struct value_traits_ {
+    // Traits information for our value_type
+    static bool const equality_comparable = true;
+    static bool const lessthan_comparable = true;
+  };
+
+  template&lt;typename PythonClass, typename Policy&gt;
+  static void visitor_helper (PythonClass &amp;, Policy const &amp;)
+  {
+    // Empty
+  }
+};
+</pre>
+    </p>
+
+    <p>
+
+      Example usage of the <code>simple_map_traits</code>:
+
+    </p>
+
+    <p>
+<pre>
+#include "simple_map_traits.hpp"
+
+#include &lt;boost/python/suite/indexing/container_suite.hpp&gt;
+
+#include &lt;boost/python/module.hpp&gt;
+#include &lt;boost/python/class.hpp&gt;
+
+BOOST_PYTHON_MODULE(test_simple) {
+  using namespace boost::python;
+
+  typedef std::map&lt;std::string, int&gt; Container;
+  typedef indexing::map_algorithms&lt;simple_map_traits&gt; Algorithms;
+
+  class_&lt;Container&gt; ("map")
+    .def (indexing::container_suite&lt;Container, Algorithms&gt;());
+}
+</pre>
+    </p>
+
     <h2><a name="Algorithms">Algorithms</a></h2>
 
     <p>
@@ -1463,6 +1564,67 @@ template&lt;typename P&gt; struct deref {
       </tr>
     </table>
 
+    <h2><a name="iterator_pair">iterator_pair</a></h2>
+
+    <p>
+
+      The <code>iterator_pair</code> template provides a
+      container-like interface to a range defined by two iterators.
+      The interface is complete enough to allow the container suite to
+      expose an iterator-defined range as a Python sequence type, with
+      support for operations that do not require insertion or
+      deletion.  This can be used to expose a C++ array to Python, or
+      with the result of an <code>equal_range</code> function, or any
+      other source of two iterators marking out a range of values. See
+      the <code>getArray</code> function in
+      libs/python/test/testarray.cpp for an example usage.
+
+    </p>
+    <p>
+
+      <code>iterator_pair</code> should work with any
+      <code>ForwardIterator</code> type.
+
+    </p>
+
+    <p>
+<pre>
+namespace boost { namespace python { namespace indexing {
+  template&lt;typename Iterator&gt;
+  class iterator_pair
+  {
+  private:
+    typedef typename boost::call_traits&lt;Iterator&gt;::param_type iterator_param;
+    typedef std::iterator_traits&lt;Iterator&gt; std_traits;
+
+  public:
+    typedef typename std_traits::reference       reference;
+    typedef Iterator                             iterator;
+    typedef typename std_traits::difference_type size_type;
+    typedef typename std_traits::difference_type difference_type;
+    typedef typename std_traits::value_type      value_type;
+    typedef typename std_traits::pointer         pointer;
+
+    iterator_pair (iterator_param, iterator_param);
+    iterator_pair (std::pair&lt;iterator, iterator&gt; const &amp;);
+
+    iterator begin() const;
+    iterator end() const;
+
+    size_type size () const;
+    reference operator[] (size_type) const;
+    reference at (size_type) const;
+
+  private:
+    // Member variables
+  };
+
+  template&lt;typename T, std::size_t N&gt; T *begin (T (&amp;array)[N]);
+  template&lt;typename T, std::size_t N&gt; T *end   (T (&amp;array)[N]);
+
+} } }
+</pre>
+    </p>
 
     <h2><a name="workarounds">Compiler workarounds</a></h2>
 
