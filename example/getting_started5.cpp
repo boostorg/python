@@ -70,7 +70,8 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
   //
   MillerIndex from_python(PyObject* p, python::type<const MillerIndex&>)
   {
-    python::tuple tup = python::tuple(python::ref(p, ref::increment_count));
+    python::tuple tup
+      = python::tuple(python::ref(p, python::ref::increment_count));
     if (tup.size() != 3) {
       PyErr_SetString(PyExc_ValueError,
         "expecting exactly 3 values in tuple.");
