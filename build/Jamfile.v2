@@ -39,7 +39,7 @@ project boost/python
           $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
             <link>shared:<library>$(PYTHON_LIB)
             <define>$(defines)
-        : use-requirements # requirement that will be propageted to *users* of this library
+        : usage-requirements # requirement that will be propageted to *users* of this library
           <include>$(PYTHON_PATH)/include/python2.2       
 
 # We have a bug which causes us to conclude that conditionalized
