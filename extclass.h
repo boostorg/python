@@ -123,9 +123,9 @@ class ClassRegistry
     static std::vector<py::detail::DerivedClassInfo> static_derived_class_info;
 };
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // back to global namespace for this GCC bug
 }
-#endif
+
+PY_BEGIN_CONVERSION_NAMESPACE
 
 // This class' only job is to define from_python and to_python converters for T
 // and U. T is the class the user really intends to wrap. U is a class derived
@@ -289,10 +289,11 @@ PyObject* to_python(const T& x)
     return py_extension_class_converters(py::Type<T>()).to_python(x);
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // back from global namespace for this GCC bug
+PY_END_CONVERSION_NAMESPACE
+
 namespace py {
-using ::PyExtensionClassConverters;
-#endif
+
+PY_IMPORT_CONVERSION(PyExtensionClassConverters);
 
 template <class T> class InstanceHolder;
 
