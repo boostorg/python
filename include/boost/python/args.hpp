@@ -49,7 +49,7 @@ namespace detail
       keyword elements[nkeywords];
 
       keywords<nkeywords+1>
-      operator,(arg const &k) const;
+      operator,(python::arg const &k) const;
 
       keywords<nkeywords + 1>
       operator,(char const *name) const;
@@ -69,7 +69,7 @@ namespace detail
       }
     
       template <class T>
-      arg& operator=(T const& value)
+      python::arg& operator=(T const& value)
       {
           object z(value);
           elements[0].default_value = handle<>(python::borrowed(object(value).ptr()));
@@ -85,7 +85,7 @@ namespace detail
   template <std::size_t nkeywords>
   inline
   keywords<nkeywords+1>
-  keywords_base<nkeywords>::operator,(arg const &k) const
+  keywords_base<nkeywords>::operator,(python::arg const &k) const
   {
       keywords<nkeywords> const& l = *static_cast<keywords<nkeywords> const*>(this);
       python::detail::keywords<nkeywords+1> res;
