@@ -130,7 +130,7 @@ inline from_python_base::from_python_base(void* result)
 }
 
 inline from_python_base::from_python_base(
-    PyObject* const source
+    PyObject* source
     , lvalue_from_python_registration const* chain)
     : m_result(find(source, chain))
 {
