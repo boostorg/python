@@ -7,7 +7,7 @@
 // When STLport is used with native streams, _STL::ostringstream().str() is not
 // _STL::string, but std::string. This confuses to_python(), so we'll use
 // strstream instead. Also, GCC 2.95.2 doesn't have sstream.
-# if defined(__SGI_STL_PORT) ? __SGI_STL_OWN_IOSTREAMS : !defined(__GNUC__) || __GNUC__ > 2
+# if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
 #  include <sstream>
 # else
 #  include <strstream>
@@ -482,7 +482,7 @@ namespace detail
 
 // When STLport is used with native streams, _STL::ostringstream().str() is not
 // _STL::string, but std::string.
-#if defined(__SGI_STL_PORT) ? __SGI_STL_OWN_IOSTREAMS : !defined(__GNUC__)
+#if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
               std::ostringstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>());
               return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
