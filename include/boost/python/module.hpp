@@ -14,6 +14,7 @@
 # include <boost/python/module_init.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/detail/def_helper.hpp>
+# include <boost/python/detail/defaults_def.hpp>
 
 namespace boost { namespace python {
 
@@ -32,33 +33,41 @@ class module : public detail::module_base
         this->module_base::setattr_doc(name, python::object(x), 0);
         return *this;
     }
-    
+
     module& add(type_handle x); // just use the type's name
-    
+
     template <class T1, class T2 , class T3, class T4>
     module& add(class_<T1,T2,T3,T4> const& c)
     {
         this->add_class(type_handle(borrowed((PyTypeObject*)c.ptr())));
         return *this;
     }
-    
+
     template <class Fn>
     module& def(char const* name, Fn fn)
     {
         this->setattr_doc(
             name, boost::python::make_function(fn), 0);
-        
+
         return *this;
     }
     template <class Fn, class CallPolicyOrDoc>
     module& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
         typedef detail::def_helper<CallPolicyOrDoc> helper;
-        
+
         this->setattr_doc(
             name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
             helper::get_doc(policy_or_doc, doc));
-        
+
+        return *this;
+    }
+
+    template <typename DerivedT, typename ArgsT>
+    module& def(detail::func_stubs_base<DerivedT> const& stubs, ArgsT args)
+    {
+        //  JDG 8-12-2002
+        detail::define_with_defaults(stubs.derived(), *this, args);
         return *this;
     }
 };

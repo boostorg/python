@@ -28,16 +28,17 @@
 # include <boost/python/make_function.hpp>
 # include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/detail/def_helper.hpp>
+# include <boost/python/detail/defaults_def.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python {
 
 namespace detail
 {
   struct write_type_id;
-  
+
   template <class T, class Prev = detail::not_specified>
   struct select_held_type;
-  
+
   template <class T1, class T2, class T3>
   struct has_noncopyable;
 
@@ -58,7 +59,11 @@ namespace detail
   template <class T, class Holder>
   static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, object const&, T* = 0)
   {
-  }  
+  }
+
+    // Forward declaration (detail/defaults_def.hpp)
+    template <typename DerivedT>
+    struct func_stubs_base;
 }
 
 //
@@ -79,18 +84,18 @@ class class_ : public objects::class_base
 
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
-    
+
     typedef typename detail::select_held_type<
         X1, typename detail::select_held_type<
         X2, typename detail::select_held_type<
         X3
     >::type>::type>::type held_type;
-    
+
  public:
     // Automatically derive the class name - only works on some
     // compilers because type_info::name is sometimes mangled (gcc)
     class_();
-    
+
     // Construct with the class name.  [ Would have used a default
     // argument but gcc-2.95.2 choked on typeid(T).name() as a default
     // parameter value]
@@ -111,7 +116,7 @@ class class_ : public objects::class_base
     self& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
         typedef detail::def_helper<CallPolicyOrDoc> helper;
-        
+
         this->def_impl(
             name, fn, helper::get_policy(policy_or_doc), helper::get_doc(policy_or_doc, doc), &fn);
 
@@ -124,7 +129,15 @@ class class_ : public objects::class_base
         typedef detail::operator_<id,L,R> op_t;
         return this->def(op.name(), &op_t::template apply<T>::execute);
     }
-    
+
+    template <typename DerivedT, typename ArgsT>
+    self& def(detail::func_stubs_base<DerivedT> const& stubs, ArgsT args)
+    {
+        //  JDG 8-12-2002
+        detail::define_with_defaults(stubs.derived(), *this, args);
+        return *this;
+    }
+
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.
     template <class Args>
@@ -142,7 +155,7 @@ class class_ : public objects::class_base
     self& def_init(Args const&, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
         typedef detail::def_helper<CallPolicyOrDoc> helper;
-        
+
         return this->def(
             "__init__",
             python::make_constructor<Args>(
@@ -211,7 +224,7 @@ class class_ : public objects::class_base
         objects::add_to_namespace(
             *this, name,
             make_function(
-                    // This bit of nastiness casts F to a member function of T if possible. 
+                    // This bit of nastiness casts F to a member function of T if possible.
                 detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
                 , policies)
             , doc);
@@ -226,13 +239,13 @@ class class_ : public objects::class_base
 
  private: // types
     typedef objects::class_id class_id;
-    
+
     typedef typename detail::select_bases<X1
             , typename detail::select_bases<X2
               , typename boost::python::detail::select_bases<X3>::type
               >::type
             >::type bases;
-    
+
     // A helper class which will contain an array of id objects to be
     // passed to the base class constructor
     struct id_vector
@@ -242,12 +255,12 @@ class class_ : public objects::class_base
         {
             // Stick the derived class id into the first element of the array
             ids[0] = type_id<T>();
-    
+
             // Write the rest of the elements into succeeding positions.
             class_id* p = ids + 1;
             mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
         }
-        
+
         BOOST_STATIC_CONSTANT(
             std::size_t, size = mpl::size<bases>::value + 1);
         class_id ids[size];
@@ -265,7 +278,7 @@ inline class_<T,X1,X2,X3>::class_()
 {
     // register converters
     objects::register_class_from_python<T,bases>();
-    
+
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
@@ -278,7 +291,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
 {
     // register converters
     objects::register_class_from_python<T,bases>();
-    
+
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
