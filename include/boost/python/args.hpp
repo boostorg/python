@@ -5,13 +5,15 @@
 // to its suitability for any purpose.
 #ifndef ARGS_DWA2002323_HPP
 # define ARGS_DWA2002323_HPP
-# include <boost/mpl/type_list.hpp>
+# include <boost/mpl/list.hpp>
+# include <boost/preprocessor/enum_params_with_a_default.hpp>
+# include <boost/preprocessor/enum_params.hpp>
 
 namespace boost { namespace python { 
 
 // A type list for specifying arguments
-template < BOOST_MPL_LIST_DEFAULT_PARAMETERS(typename A, ::boost::mpl::null_argument) >
-struct args : ::boost::mpl::type_list< BOOST_MPL_LIST_PARAMETERS(A) >::type
+template < BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(BOOST_MPL_LIMIT_LIST_SIZE, typename A, ::boost::mpl::aux::none) >
+struct args : ::boost::mpl::list< BOOST_PP_ENUM_PARAMS(BOOST_MPL_LIMIT_LIST_SIZE,A) >::type
 {};
 
 }} // namespace boost::python
