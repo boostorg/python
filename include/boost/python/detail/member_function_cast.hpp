@@ -65,13 +65,13 @@ struct member_function_cast_impl
     template <class S, class R, class A0, class A1>
     static cast_helper<S,R(T::*)(A0,A1) > stage1(R (S::*)(A0,A1))
     {
-        return cast_helper<R(S::*)(A0,A1),R(T::*)(A0,A1) >();
+        return cast_helper<S,R(T::*)(A0,A1) >();
     }
 
     template <class S, class R, class A0, class A1,class A2>
     static cast_helper<S,R(T::*)(A0,A1,A2) > stage1(R (S::*)(A0,A1,A2))
     {
-        return cast_helper<R(S::*)(A0,A1,A2),R(T::*)(A0,A1,A2) >();
+        return cast_helper<S,R(T::*)(A0,A1,A2) >();
     }
 
     template <class S, class R, class A0, class A1, class A2, class A3>
@@ -85,6 +85,7 @@ struct member_function_cast_impl
     {
         return cast_helper<S,R(T::*)(A0,A1,A2,A3,A4)>();
     }
+
 
     template <class S, class R, class A0, class A1, class A2, class A3, class A4, class A5>
     static cast_helper<S,R(T::*)(A0,A1,A2,A3,A4,A5)> stage1(R (S::*)(A0,A1,A2,A3,A4,A5))
