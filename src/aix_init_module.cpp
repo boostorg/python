@@ -98,6 +98,7 @@ namespace
 
 void aix_init_module(
     so_load_function load_dynamic_module
+    , char const* module_name
     , void (*init_module)())
 {
     static bool initialized;
@@ -133,7 +134,7 @@ void aix_init_module(
 
         initialized = true;
     }
-    python::handle_exception(init_module);
+    python::detail::init_module(module_name, init_module);
 }
 
 }}} // namespace boost::python

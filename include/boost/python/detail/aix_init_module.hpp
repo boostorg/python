@@ -16,7 +16,7 @@ extern "C"
     typedef PyObject* (*so_load_function)(char*,char*,FILE*);
 }
 
-void aix_init_module(so_load_function, void (*init_module)());
+void aix_init_module(so_load_function, char const* name, void (*init_module)());
 
 }}} // namespace boost::python::detail
 # endif
