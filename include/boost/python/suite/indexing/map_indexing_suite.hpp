@@ -9,6 +9,8 @@
 
 # include <boost/python/suite/indexing/indexing_suite.hpp>
 # include <boost/python/iterator.hpp>
+# include <boost/python/call_method.hpp>
+# include <boost/python/tuple.hpp>
 
 namespace boost { namespace python {
             
@@ -55,7 +57,7 @@ namespace boost { namespace python {
           , typename Container::key_type
           , typename Container::key_type
         >
-    {
+    {      
     public:
     
         typedef typename Container::mapped_type data_type;
@@ -63,17 +65,52 @@ namespace boost { namespace python {
         typedef typename Container::key_type index_type;
         typedef typename Container::size_type size_type;
         typedef typename Container::difference_type difference_type;
-        
+
         template <class Class>
         static void 
         extension_def(Class& cl)
         {
-//             cl
-//                 .def("append", &base_append)
-//                 .def("extend", &base_extend)
-//             ;
+            //  Wrap the map's element (value_type)
+            std::string elem_name = "map_indexing_suite_";
+            elem_name += cl.ptr()->ob_type->tp_name; // the class name
+            elem_name += "_entry";
+
+            typedef typename mpl::if_<
+                is_class<typename Container::mapped_type>
+              , return_internal_reference<>
+              , default_call_policies
+            >::type get_data_return_policy;
+           
+            class_<typename Container::value_type>(elem_name.c_str())
+                .def("__repr__", &DerivedPolicies::print_elem)
+                .def("data", &DerivedPolicies::get_data, get_data_return_policy())
+                .def("key", &DerivedPolicies::get_key)
+            ;
         }
         
+        static object
+        print_elem(typename Container::value_type const& e)
+        {
+            return "(%s, %s)" % make_tuple(e.first, e.second);
+        }
+
+        static 
+        typename mpl::if_<
+            is_class<typename Container::mapped_type>
+          , typename Container::mapped_type&
+          , typename Container::mapped_type
+        >::type
+        get_data(typename Container::value_type& e)
+        {
+            return e.second;
+        }
+
+        static typename Container::key_type
+        get_key(typename Container::value_type& e)
+        {
+            return e.first;
+        }
+
         static data_type& 
         get_item(Container& container, index_type i_)
         { 
