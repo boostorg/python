@@ -471,22 +471,30 @@ bjam -sTOOLS=gcc -sPYTHON_LAUNCH=gdb test
 
     <h2><a name="macosx"></a>Does Boost.Python work with Mac OS X?</h2>
 
-    <blockquote>
-      <p>The short answer: as of January 2003, unfortunately not.</p>
-
-      <p>The longer answer: using Mac OS 10.2.3 with the December Developer's
-      Kit, Python 2.3a1, and bjam's darwin-tools.jam, Boost.Python compiles
-      fine, including the examples. However, there are problems at runtime
-      (see <a href=
-      "http://mail.python.org/pipermail/c++-sig/2003-January/003267.html">http://mail.python.org/pipermail/c++-sig/2003-January/003267.html</a>).
-      Solutions are currently unknown.</p>
-
-      <p>It is known that under certain circumstances objects are
-      double-destructed. See <a href=
-      "http://mail.python.org/pipermail/c++-sig/2003-January/003278.html">http://mail.python.org/pipermail/c++-sig/2003-January/003278.html</a>
-      for details. It is not clear however if this problem is related to the
-      Boost.Python runtime issues.</p>
-    </blockquote>
+    It is known to work under 10.2.8 and 10.3 using
+    Apple's gcc 3.3 compiler:
+    <pre>gcc (GCC) 3.3 20030304 (Apple Computer, Inc. build 1493)</pre>
+    Under 10.2.8 get the August 2003 gcc update (free at
+    <a href="http://connect.apple.com/">http://connect.apple.com/</a>).
+    Under 10.3 get the Xcode Tools v1.0 (also free).
+    <p>
+    Python 2.3 is required. The Python that ships with 10.3 is
+    fine. Under 10.2.8 use these commands to install Python
+    as a framework:
+    <pre>./configure --enable-framework
+make
+make frameworkinstall</pre>
+    The last command requires root privileges because the target
+    directory is
+    <tt>/Library/Frameworks/Python.framework/Versions/2.3</tt>.
+    However, the installation does not interfere with the Python
+    version that ships with 10.2.8.
+    <p>
+    It is also crucial to increase the <tt>stacksize</tt> before
+    starting compilations, e.g.:
+    <pre>limit stacksize 8192k</pre>
+    If the <tt>stacksize</tt> is too small the build might crash with
+    internal compiler errors.
     <hr>
 
     <h2><a name="xref">How can I find the existing PyObject that holds a C++
