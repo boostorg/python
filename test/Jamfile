@@ -4,12 +4,8 @@
 #
 subproject libs/python/test ;
 
-# bring in the rules for python
-SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-include python.jam ;
-# bring in rules for testing
-SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
-include testing.jam ;
+# bring in the rules for python and testing
+import python testing ;
 
 # Convenience rule makes declaring tests faster
 rule bpl-test ( name ? : files * : requirements * )

@@ -19,8 +19,7 @@ subproject libs/python/example ;
 #
 
 # Include definitions needed for Python modules
-SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-include python.jam ;
+import python ;
 
 # ----- getting_started1 -------
 

@@ -5,8 +5,7 @@
 subproject libs/python/example/tutorial ;
 
 #   Include definitions needed for Python modules
-SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-include python.jam ;
+import python ;
 
 extension hello                     # Declare a Python extension called hello
 :   hello.cpp                       # source

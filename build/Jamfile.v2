@@ -1,8 +1,11 @@
 import os ;
+import modules ;
 
 # Use a very crude way to sense there python is locatted
 
-local PYTHON_PATH ;
+
+local PYTHON_PATH = [ modules.peek : PYTHON_PATH ] ;
+ECHO "XXX" $(PYTHON_PATH) ;
 
 if [ GLOB /usr/local/include/python2.2 : * ]
 {
@@ -19,7 +22,7 @@ if [ os.name ] in CYGWIN NT
     defines = USE_DL_IMPORT ;
    
     # Declare a target for the python interpreter library
-    lib python : : <name>python2.2.dll ;
+    lib python : : <name>python22 <search>$(PYTHON_PATH)/libs ;
     PYTHON_LIB = python ;    
 } 
 else 
@@ -35,12 +38,12 @@ if $(PYTHON_PATH) {
 
 project boost/python
     : source-location ../src
-        : requirements <include>$(PYTHON_PATH)/include/python2.2  
-          $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
+        : requirements <include>$(PYTHON_PATH)/include
+          $(lib_condition)<library-path>$(PYTHON_PATH)/libs
             <link>shared:<library>$(PYTHON_LIB)
             <define>$(defines)
         : usage-requirements # requirement that will be propageted to *users* of this library
-          <include>$(PYTHON_PATH)/include/python2.2       
+          <include>$(PYTHON_PATH)/include
 
 # We have a bug which causes us to conclude that conditionalized
 # properties in this section are not free.

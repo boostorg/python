@@ -10,8 +10,7 @@
 subproject libs/python/build ;
 
 # bring in the rules for python
-SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
-include <module@>python.jam ;
+import python ;
 
 if [ check-python-config ]
 {
