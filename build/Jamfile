@@ -64,7 +64,7 @@ include <module@>python.jam ;
 local PYTHON_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_DYNAMIC_LIB ;
 
 #######################
-local rule bpl-test ( test-name : sources + )
+rule bpl-test ( test-name : sources + )
 {
     boost-python-test $(test-name) : $(sources) <lib>libboost_python ;
 }
@@ -108,7 +108,7 @@ boost-python-runtest comprehensive
 
 ############# simple tests from ../example ############
 
-local rule boost-python-example-runtest ( name )
+rule boost-python-example-runtest ( name )
 {
     bpl-test $(name)
       : ../example/$(name).cpp ;
