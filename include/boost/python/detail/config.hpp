@@ -6,6 +6,9 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
+//  Revision History:
+//  04 Mar 01  Some fixes so it will compile with Intel C++ (Dave Abrahams)
+
 #ifndef CONFIG_DWA052200_H_
 # define CONFIG_DWA052200_H_
 
@@ -46,8 +49,9 @@
 # endif
 
 // The STLport puts all of the standard 'C' library names in std (as far as the
-// user is concerned), but without it you need a fix if you're using MSVC.
-# if defined(BOOST_MSVC6_OR_EARLIER) && !defined(__STLPORT)
+// user is concerned), but without it you need a fix if you're using MSVC or
+// Intel C++
+# if defined(BOOST_MSVC_STD_ITERATOR)
 #  define BOOST_CSTD_
 # else
 #  define BOOST_CSTD_ std
