@@ -8,6 +8,7 @@
 #include "extclass_demo.h"
 #include "class_wrapper.h"
 #include <stdio.h> // used for portability on broken compilers
+#include <boost/rational.hpp>
 
 namespace extclass_demo {
 
@@ -476,6 +477,50 @@ int testCallback(CallbackTestBase * b, int i)
     return b->testCallback(i);
 }
 
+typedef boost::rational<int> Ratio;
+
+py::String ratio_str(const Ratio& r)
+{
+    char buf[200];
+    
+    if (r.denominator() == 1)
+        sprintf(buf, "%d", r.numerator());
+    else
+        sprintf(buf, "%d/%d", r.numerator(), r.denominator());
+    
+    return py::String(buf);
+}
+
+py::String ratio_repr(const Ratio& r)
+{
+    char buf[200];
+    sprintf(buf, "Rational(%d, %d)", r.numerator(), r.denominator());
+    return py::String(buf);
+}
+
+py::Tuple ratio_coerce(const Ratio& r1, int r2)
+{
+    return py::Tuple(r1, Ratio(r2));
+}
+
+// The most reliable way, across compilers, to grab the particular abs function
+// we're interested in.
+Ratio ratio_abs(const Ratio& r)
+{
+    return boost::abs(r);
+}
+
+// An experiment, to be integrated into the py_cpp library at some point.
+template <class T>
+struct StandardOps
+{
+    static T add(const T& x, const T& y) { return x + y; }
+    static T sub(const T& x, const T& y) { return x - y; }
+    static T mul(const T& x, const T& y) { return x * y; }
+    static T div(const T& x, const T& y) { return x / y; }
+    static T cmp(const T& x, const T& y) { return std::less<T>()(x, y) ? -1 : std::less<T>()(y, x) ? 1 : 0; }
+};
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -501,6 +546,21 @@ void init_module(py::Module& m)
     m.def(first_string, "first_string");
     m.def(second_string, "second_string");
 
+    // This shows the wrapping of a 3rd-party numeric type.
+    py::ClassWrapper<boost::rational<int> > rational(m, "Rational");
+    rational.def(py::Constructor<int, int>());
+    rational.def(py::Constructor<int>());
+    rational.def(py::Constructor<>());
+    rational.def(StandardOps<Ratio>::add, "__add__");
+    rational.def(StandardOps<Ratio>::sub, "__sub__");
+    rational.def(StandardOps<Ratio>::mul, "__mul__");
+    rational.def(StandardOps<Ratio>::div, "__div__");
+    rational.def(StandardOps<Ratio>::cmp, "__cmp__");
+    rational.def(ratio_coerce, "__coerce__");
+    rational.def(ratio_str, "__str__");
+    rational.def(ratio_repr, "__repr__");
+    rational.def(ratio_abs, "__abs__");
+    
     py::ClassWrapper<Range> range(m, "Range");
     range.def(py::Constructor<int>());
     range.def(py::Constructor<int, int>());

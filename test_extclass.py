@@ -264,6 +264,22 @@ Sequence tests:
     >>> map(lambda x:x, Range(3, 10)[0:4])
     [3, 4, 5, 6]
 
+Numeric tests:
+    >>> x = Rational(2,3)
+    >>> y = Rational(1,4)
+    >>> print x + y
+    11/12
+    >>> print x - y
+    5/12
+    >>> print x * y
+    1/6
+    >>> print x / y
+    8/3
+    >>> print x + 1 # testing coercion
+    5/3
+    >>> print 1 + x # coercion the other way
+    5/3
+    
 delete non-existent attribute:
     del m.foobar
     Traceback (innermost last):

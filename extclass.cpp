@@ -239,43 +239,44 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
     of the held object to 'T *' is allowed when the conversion 
     'dynamic_cast<InstanceHolde<T> *>(an_instance_holder_base)' succeeds.
 */
-void * ExtensionClassBase::try_class_conversions(InstanceHolderBase * object) const
+void * ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) const
 {
-    void * result = try_derived_class_conversions(object);
+    void* result = try_derived_class_conversions(object);
     if(result) 
         return result;
-    result = try_base_class_conversions(object);
-    return result;
+    
+    return try_base_class_conversions(object);
 }
 
-void * ExtensionClassBase::try_base_class_conversions(InstanceHolderBase * object) const
+void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object) const
 {
-    void * result = 0;
-    for(int i=0; i<base_classes().size(); ++i)
+    for (std::size_t i = 0; i < base_classes().size(); ++i)
     {
         if(base_classes()[i].convert == 0) 
             continue;
-        result = base_classes()[i].class_object->convert_from_holder(object);
-        if(result) 
-            return (*base_classes()[i].convert)(result);
-        result = base_classes()[i].class_object->try_base_class_conversions(object);
-        if(result) 
-            return (*base_classes()[i].convert)(result);
+        
+        void* result1 = base_classes()[i].class_object->convert_from_holder(object);
+        if (result1)
+            return (*base_classes()[i].convert)(result1);
+        
+        void* result2 = base_classes()[i].class_object->try_base_class_conversions(object);
+        if (result2)
+            return (*base_classes()[i].convert)(result2);
     }
     return 0;
 }
 
-void * ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase * object) const
+void* ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase* object) const
 {
-    void * result = 0;
-    for(int i=0; i<derived_classes().size(); ++i)
+    for (std::size_t i = 0; i < derived_classes().size(); ++i)
     {
-        result = derived_classes()[i].class_object->convert_from_holder(object);
-        if(result) 
-            return (*derived_classes()[i].convert)(result);
-        result = derived_classes()[i].class_object->try_derived_class_conversions(object);
-        if(result) 
-            return (*derived_classes()[i].convert)(result);
+        void* result1 = derived_classes()[i].class_object->convert_from_holder(object);
+        if (result1) 
+            return (*derived_classes()[i].convert)(result1);
+        
+        void* result2 = derived_classes()[i].class_object->try_derived_class_conversions(object);
+        if (result2) 
+            return (*derived_classes()[i].convert)(result2);
     }
     return 0;
 }

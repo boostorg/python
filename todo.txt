@@ -7,14 +7,15 @@ Report Cygwin linker memory issues
 handle more arguments
 MI from both ExtensionClasses and Python classes, or at least don't crash(!)
 Remove one level of indirection on type objects (no vtbl?).
-Much more testing, especially of things in objects.h
 Make multiple inheritance from real Python classes work - I don't think this is possible
 Handle polymorphism (passing a Wrapped<Derived> as a Base*).
 Specializations of Caller<> for commmon combinations of argument types (?)
 special member functions for numeric types
 pickling support
 testing with Python 2.0
-Make abstract classes non-instantiable
+Make abstract classes non-instantiable (?)
+Much more testing, especially of things in objects.h
+Support for Python LONG types in Objects.h
 
 Documentation:
     building
@@ -31,6 +32,7 @@ Documentation:
 
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
+        slice adjustment
 
     exception handling
 

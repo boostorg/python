@@ -13,6 +13,7 @@
 # include "pyconfig.h"
 # include "pyptr.h"
 # include "boost/operators.hpp"
+# include <utility>
 
 namespace py {
 
@@ -36,8 +37,31 @@ class Tuple : public Object
  public:
     Tuple(std::size_t n = 0);
     explicit Tuple(Ptr p);
+
+    template <class First, class Second>
+    Tuple(const std::pair<First,Second>& x)
+        : Object(Ptr(PyTuple_New(2)))
+    {
+        set_item(0, Ptr(to_python(x.first)));
+        set_item(1, Ptr(to_python(x.second)));
+    }
     
-    Tuple(const Ptr* start, const Ptr* finish); // not yet implemented.
+    template <class First, class Second>
+    Tuple(const First& first, const Second& second)
+        : Object(Ptr(PyTuple_New(2)))
+    {
+        set_item(0, Ptr(to_python(first)));
+        set_item(1, Ptr(to_python(second)));
+    }
+    
+    template <class First, class Second, class Third>
+    Tuple(const First& first, const Second& second, const Third& third)
+        : Object(Ptr(PyTuple_New(3)))
+    {
+        set_item(0, Ptr(to_python(first)));
+        set_item(1, Ptr(to_python(second)));
+        set_item(2, Ptr(to_python(third)));
+    }
     
     static PyTypeObject* type_object();
     static bool accepts(Ptr p);

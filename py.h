@@ -165,6 +165,11 @@ PyObject* to_python(boost::shared_ptr<T> p)
 // inline implementations
 //
 
+inline PyObject* to_python(double d)
+{
+    return PyFloat_FromDouble(d);
+}
+
 inline PyObject* to_python(long l)
 {
 	return PyInt_FromLong(l);
