@@ -11,6 +11,7 @@
 # include <boost/python/object_items.hpp>
 # include <boost/python/object_slices.hpp>
 # include <boost/python/object_operators.hpp>
+# include <boost/python/converter/arg_to_python.hpp>
 
 namespace boost { namespace python {
     

@@ -21,6 +21,7 @@
 # include <boost/mpl/bool_t.hpp>
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
+# include <boost/python/object/make_instance.hpp>
 # include <boost/python/data_members.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/detail/operator_id.hpp>
@@ -56,7 +57,7 @@ namespace detail
   static inline void register_copy_constructor(mpl::bool_t<true> const&, SelectHolder const& , T* = 0)
   {
       typedef typename SelectHolder::type holder;
-      force_instantiate(objects::class_wrapper<T,holder>());
+      force_instantiate(objects::class_wrapper<T,holder, objects::make_instance<T,holder> >());
       SelectHolder::register_();
   }
 
@@ -96,7 +97,7 @@ class class_ : public objects::class_base
         X3
     >::type>::type>::type held_type;
 
-     typedef objects::class_id class_id;
+    typedef objects::select_holder<T,held_type> holder_selector;
 
     typedef typename detail::select_bases<X1
             , typename detail::select_bases<X2
@@ -108,20 +109,19 @@ class class_ : public objects::class_base
     // passed to the base class constructor
     struct id_vector
     {
-        typedef objects::class_id class_id;
         id_vector()
         {
             // Stick the derived class id into the first element of the array
             ids[0] = type_id<T>();
 
             // Write the rest of the elements into succeeding positions.
-            class_id* p = ids + 1;
+            type_info* p = ids + 1;
             mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
         }
 
         BOOST_STATIC_CONSTANT(
             std::size_t, size = mpl::size<bases>::value + 1);
-        class_id ids[size];
+        type_info ids[size];
     };
     friend struct id_vector;
 
@@ -146,6 +146,7 @@ class class_ : public objects::class_base
     {
         this->register_();
         this->def_init(InitArgs());
+        this->set_instance_size(holder_selector::additional_size());
     }
 
 
@@ -155,6 +156,7 @@ class class_ : public objects::class_base
     {
         this->register_();
         this->def_init(InitArgs(), initdoc);
+        this->set_instance_size(holder_selector::additional_size());
     }
 
     // Wrap a member function or a non-member function which can take
@@ -237,7 +239,7 @@ class class_ : public objects::class_base
         return this->def("__init__",
             python::make_constructor<Args>(
                 // Using runtime type selection works around a CWPro7 bug.
-                objects::select_holder<T,held_type>((held_type*)0).get()
+                holder_selector::execute((held_type*)0).get()
                 )
             );
     }
@@ -252,7 +254,7 @@ class class_ : public objects::class_base
             python::make_constructor<Args>(
                 helper::get_policy(policy_or_doc)
                 // Using runtime type selection works around a CWPro7 bug.
-                , objects::select_holder<T,held_type>((held_type*)0).get()
+                , holder_selector::execute((held_type*)0).get()
                 )
             , helper::get_doc(policy_or_doc, doc)
             );
@@ -389,7 +391,7 @@ inline void class_<T,X1,X2,X3>::register_() const
 
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
-        , objects::select_holder<T,held_type>((held_type*)0)
+        , holder_selector::execute((held_type*)0)
         );
 }
 
@@ -402,6 +404,7 @@ inline class_<T,X1,X2,X3>::class_()
     this->register_();
     detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
+    this->set_instance_size(holder_selector::additional_size());
 }
 
 template <class T, class X1, class X2, class X3>
@@ -419,6 +422,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     this->register_();
     detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
+    this->set_instance_size(holder_selector::additional_size());
 }
 
 template <class T, class X1, class X2, class X3>

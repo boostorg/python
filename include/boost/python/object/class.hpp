@@ -9,20 +9,13 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
-# include <boost/python/type_id.hpp>
-# include <boost/python/handle.hpp>
 # include <boost/python/instance_holder.hpp>
 # include <boost/python/object_core.hpp>
 # include <cstddef>
 
 namespace boost { namespace python {
 
-class module;
-
 namespace objects { 
-
-// To identify a class, we don't need cv/reference decorations
-typedef type_info class_id;
 
 struct BOOST_PYTHON_DECL class_base : python::api::object
 {
@@ -33,6 +26,7 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
         , std::size_t num_types         // A list of class_ids. The first is the type
         , class_id const*const types    // this is wrapping. The rest are the types of
                                         // any bases.
+        
         , char const* doc = 0           // Docstring, if any.
         );
 
@@ -41,20 +35,16 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     void add_property(char const* name, object const& fget, object const& fset);
     void setattr(char const* name, object const&);
     void enable_pickling(bool getstate_manages_dict);
+
+    // Set a special attribute in the class which tells Boost.Python
+    // to allocate extra bytes for embedded C++ objects in Python
+    // instances.
+    void set_instance_size(std::size_t bytes);
+
+    // Set an __init__ function which throws an appropriate exception
+    // for abstract classes.
     void def_no_init();
 };
-
-BOOST_PYTHON_DECL type_handle registered_class_object(class_id id);
-
-// Each extension instance will be one of these
-struct instance
-{
-    PyObject_HEAD
-    instance_holder* objects;
-};
-
-BOOST_PYTHON_DECL type_handle class_metatype();
-BOOST_PYTHON_DECL type_handle class_type();
 
 }}} // namespace boost::python::objects
 

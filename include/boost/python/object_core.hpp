@@ -9,7 +9,6 @@
 # include <boost/type.hpp>
 
 # include <boost/python/handle.hpp>
-# include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/call.hpp>
 # include <boost/python/slice_nil.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
@@ -21,6 +20,11 @@
 # include <boost/preprocessor/iterate.hpp>
 
 namespace boost { namespace python { 
+
+namespace converter
+{
+  template <class T> struct arg_to_python;
+}
 
 // Put this in an inner namespace so that the generalized operators won't take over
 namespace api

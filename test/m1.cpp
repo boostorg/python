@@ -216,12 +216,6 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
     lvalue_from_pytype<extract_identity<SimpleObject>,&SimpleType>();
     
-    // Insert the metaclass for all extension classes
-    scope().attr("xclass") = boost::python::objects::class_metatype();
-    
-      // Insert the base class for all extension classes
-    scope().attr("xinst") = boost::python::objects::class_type();
-
     def("new_noddy", new_noddy);
     def("new_simple", new_simple);
 

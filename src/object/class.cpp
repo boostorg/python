@@ -3,9 +3,11 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
+#include <boost/python/object/class.hpp>
+#include <boost/python/object/instance.hpp>
+#include <boost/python/object/class_detail.hpp>
 #include <boost/python/scope.hpp>
 #include <boost/python/converter/registry.hpp>
-#include <boost/python/object/class.hpp>
 #include <boost/python/object/find_instance.hpp>
 #include <boost/python/object/pickle_support.hpp>
 #include <boost/python/detail/map_entry.hpp>
@@ -17,6 +19,9 @@
 #include <boost/bind.hpp>
 #include <functional>
 #include <vector>
+#include <cstddef>
+#include <new>
+#include <structmember.h>
 
 namespace boost { namespace python {
 
@@ -98,8 +103,8 @@ static PyTypeObject class_metatype_object = {
 void instance_holder::install(PyObject* self) throw()
 {
     assert(self->ob_type->ob_type == &class_metatype_object);
-    m_next = ((objects::instance*)self)->objects;
-    ((objects::instance*)self)->objects = this;
+    m_next = ((objects::instance<>*)self)->objects;
+    ((objects::instance<>*)self)->objects = this;
 }
 
 
@@ -121,25 +126,89 @@ namespace objects
   {
       static void instance_dealloc(PyObject* inst)
       {
-          instance* kill_me = (instance*)inst;
+          instance<>* kill_me = (instance<>*)inst;
 
           for (instance_holder* p = kill_me->objects, *next; p != 0; p = next)
           {
               next = p->next();
-              delete p;
+              p->~instance_holder();
+              instance_holder::deallocate(inst, dynamic_cast<void*>(p));
           }
         
+          // Python 2.2.1 won't add weak references automatically when
+          // tp_itemsize > 0, so we need to manage that
+          // ourselves. Accordingly, we also have to clean up the
+          // weakrefs ourselves.
+          if (kill_me->weakrefs != NULL)
+            PyObject_ClearWeakRefs(inst);
+
+          Py_XDECREF(kill_me->dict);
+          
           inst->ob_type->tp_free(inst);
+      }
+
+      static PyObject *
+      instance_new(PyTypeObject* type_, PyObject* args, PyObject *kw)
+      {
+          // Attempt to find the __instance_size__ attribute. If not present, no problem.
+          PyObject* d = type_->tp_dict;
+          PyObject* instance_size_obj = PyObject_GetAttrString(d, "__instance_size__");
+
+          long instance_size = 0;
+          if (instance_size != 0)
+              instance_size = PyInt_AsLong(instance_size_obj);
+          
+          if (instance_size < 0)
+              instance_size = 0;
+          PyErr_Clear(); // Clear any errors that may have occurred.
+
+          instance<>* result = (instance<>*)type_->tp_alloc(type_, instance_size);
+          if (result)
+          {
+              // Guido says we can use ob_size for any purpose we
+              // like, so we'll store the total size of the object
+              // there. A negative number indicates that the extra
+              // instance memory is not yet allocated to any holders.
+              result->ob_size = -(offsetof(instance<>,storage) + instance_size);
+          }
+          return (PyObject*)result;
+      }
+
+      static PyObject* instance_get_dict(PyObject* op, void*)
+      {
+          instance<>* inst = downcast<instance<> >(op);
+          if (inst->dict == 0)
+              inst->dict = PyDict_New();
+          return python::xincref(inst->dict);
+      }
+    
+      static int instance_set_dict(PyObject* op, PyObject* dict, void*)
+      {
+          instance<>* inst = downcast<instance<> >(op);
+          python::xdecref(inst->dict);
+          inst->dict = python::incref(dict);
+          return 0;
       }
   }
 
+
+static PyGetSetDef instance_getsets[] = {
+	{"__dict__",  instance_get_dict,  instance_set_dict, NULL},
+	{0}
+};
+
+  
+static PyMemberDef instance_members[] = {
+	{"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0},
+	{0}
+};
 
   static PyTypeObject class_type_object = {
       PyObject_HEAD_INIT(0) //&class_metatype_object)
       0,
       "Boost.Python.instance",
-      sizeof(instance),
-      0,
+      offsetof(instance<>,storage),           /* tp_basicsize */
+      1,                                      /* tp_itemsize */
       instance_dealloc,                       /* tp_dealloc */
       0,                                      /* tp_print */
       0,                                      /* tp_getattr */
@@ -161,20 +230,20 @@ namespace objects
       0,                                      /* tp_traverse */
       0,                                      /* tp_clear */
       0,                                      /* tp_richcompare */
-      0,                                      /* tp_weaklistoffset */
+      offsetof(instance<>,weakrefs),          /* tp_weaklistoffset */
       0,                                      /* tp_iter */
       0,                                      /* tp_iternext */
       0,                                      /* tp_methods */
-      0,                                      /* tp_members */
-      0,                                      /* tp_getset */
-      0, //&PyBaseObject_Type,                     /* tp_base */
+      instance_members,                       /* tp_members */
+      instance_getsets,                       /* tp_getset */
+      0, //&PyBaseObject_Type,                /* tp_base */
       0,                                      /* tp_dict */
       0,                                      /* tp_descr_get */
       0,                                      /* tp_descr_set */
-      0,                                      /* tp_dictoffset */
+      offsetof(instance<>,dict),              /* tp_dictoffset */
       0,                                      /* tp_init */
       PyType_GenericAlloc,                    /* tp_alloc */
-      PyType_GenericNew
+      instance_new                            /* tp_new */
   };
 
   BOOST_PYTHON_DECL type_handle class_type()
@@ -195,7 +264,7 @@ namespace objects
       if (inst->ob_type->ob_type != &class_metatype_object)
           return 0;
     
-      instance* self = reinterpret_cast<instance*>(inst);
+      instance<>* self = reinterpret_cast<instance<>*>(inst);
 
       for (instance_holder* match = self->objects; match != 0; match = match->next())
       {
@@ -302,6 +371,11 @@ namespace objects
           this->attr("__doc__") = doc;
   }
 
+  void class_base::set_instance_size(std::size_t instance_size)
+  {
+      this->attr("__instance_size__") = instance_size;
+  }
+  
   extern "C"
   {
       // This declaration needed due to broken Python 2.2 headers
@@ -368,5 +442,41 @@ namespace objects
       return query_class(id);
   }
 } // namespace objects
+
+
+void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std::size_t holder_size)
+{
+    assert(self_->ob_type->ob_type == &class_metatype_object);
+    objects::instance<>* self = (objects::instance<>*)self_;
+    
+    int total_size_needed = holder_offset + holder_size;
+    
+    if (-self->ob_size >= total_size_needed)
+    {
+        // holder_offset should at least point into the variable-sized part
+        assert(holder_offset >= offsetof(objects::instance<>,storage));
+
+        // Record the fact that the storage is occupied, noting where it starts
+        self->ob_size = holder_offset;
+        return (char*)self + holder_offset;
+    }
+    else
+    {
+        void* const result = PyMem_Malloc(holder_size);
+        if (result == 0)
+            throw std::bad_alloc();
+        return result;
+    }
+}
+
+void instance_holder::deallocate(PyObject* self_, void* storage) throw()
+{
+    assert(self_->ob_type->ob_type == &class_metatype_object);
+    objects::instance<>* self = (objects::instance<>*)self_;
+    if (storage != (char*)self + self->ob_size)
+    {
+        PyMem_Free(storage);
+    }
+}
 
 }} // namespace boost::python

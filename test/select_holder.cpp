@@ -8,6 +8,7 @@
 #include <boost/python/object/select_holder.hpp>
 #include <boost/python/has_back_reference.hpp>
 #include <boost/python/detail/not_specified.hpp>
+#include <boost/function/function0.hpp>
 #include <memory>
 
 #define BOOST_INCLUDE_MAIN
@@ -39,7 +40,7 @@ void assert_same(U* = 0, T* = 0)
 template <class T, class Held, class Holder>
 void assert_holder(T* = 0, Held* = 0, Holder* = 0)
 {
-    assert_same<Holder>(boost::python::objects::select_holder<T,Held>((Held*)0).get());
+    assert_same<Holder>(boost::python::objects::select_holder<T,Held>::execute((Held*)0).get());
 }
 
 int test_main(int, char * [])

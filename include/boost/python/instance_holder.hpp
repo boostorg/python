@@ -8,6 +8,8 @@
 
 # include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
+# include <boost/python/type_id.hpp>
+# include <cstddef>
 
 namespace boost { namespace python { 
 
@@ -25,6 +27,16 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
 
     void install(PyObject* inst) throw();
 
+    // These functions should probably be located elsewhere.
+    
+    // Allocate storage for an object of the given size at the given
+    // offset in the Python instance<> object if bytes are available
+    // there. Otherwise allocate size bytes of heap memory.
+    static void* allocate(PyObject*, std::size_t offset, std::size_t size);
+
+    // Deallocate storage from the heap if it was not carved out of
+    // the given Python object by allocate(), above.
+    static void deallocate(PyObject*, void* storage) throw();
  private:
     instance_holder* m_next;
 };

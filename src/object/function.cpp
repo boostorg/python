@@ -301,11 +301,11 @@ extern "C"
     }
 }
     
-    static PyGetSetDef function_getsetlist[] = {
-        {"__name__", (getter)function_get_name, 0 },
-        {"__doc__", (getter)function_get_doc, (setter)function_set_doc},
-	{NULL} /* Sentinel */
-    };
+static PyGetSetDef function_getsetlist[] = {
+    {"__name__", (getter)function_get_name, 0 },
+    {"__doc__", (getter)function_get_doc, (setter)function_set_doc},
+    {NULL} /* Sentinel */
+};
 
 PyTypeObject function_type = {
     PyObject_HEAD_INIT(0)

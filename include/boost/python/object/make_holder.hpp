@@ -10,7 +10,6 @@
 #  define MAKE_HOLDER_DWA20011215_HPP
 
 #  include <boost/python/object/forward.hpp>
-#  include <boost/python/object/class.hpp>
 #  include <boost/python/detail/wrap_python.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 
@@ -19,6 +18,8 @@
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
+
+#  include <cstddef>
 
 namespace boost { namespace python { namespace objects {
 
@@ -57,8 +58,17 @@ struct make_holder<N>
             PyObject* p
             BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, t, a))
         {
-            (new Holder(
-                p BOOST_PP_REPEAT(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
+            typedef instance<Holder> instance_t;
+            
+            void* memory = Holder::allocate(p, offsetof(instance_t, storage), sizeof(Holder));
+            try {
+                (new (memory) Holder(
+                    p BOOST_PP_REPEAT(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
+            }
+            catch(...) {
+                Holder::deallocate(p, memory);
+                throw;
+            }
         }
     };
 };

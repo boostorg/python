@@ -17,7 +17,6 @@
 #endif
 
 using namespace boost::python;
-using namespace std;
 
 char const* const format = "int(%s); char(%s); string(%s); double(%s); ";
 
@@ -169,7 +168,7 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
         .def_init(args<int, char, std::string>())
         .def_init(args<int, char, std::string, double>())
 # endif
-	    .def("get_state", &X::get_state)
+        .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
         .def("bar2", &X::bar2, X_bar_stubs2(), return_internal_reference<>())
         .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())

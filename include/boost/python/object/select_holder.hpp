@@ -12,10 +12,14 @@
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/python/object/find_instance.hpp>
+# include <boost/python/object/make_instance.hpp>
+# include <boost/python/object/instance.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/same_traits.hpp>
+# include <boost/type_traits/alignment_traits.hpp>
 # include <boost/mpl/bool_t.hpp>
+# include <cstddef>
 
 namespace boost { namespace python { namespace objects {
 
@@ -96,7 +100,7 @@ namespace detail
               objects::class_wrapper<
                 Ptr
                 , type
-                , construct_from_pointer>());
+                , make_instance<T,type> >());
     
           python::detail::force_instantiate(
               instance_finder<Ptr>::registration);
@@ -104,24 +108,40 @@ namespace detail
   };
 }
 
-template <class T, class NotSpecified>
-inline detail::select_value_holder<T,T> select_holder(python::detail::not_specified*, T* = 0, NotSpecified* = 0)
-{
-    return detail::select_value_holder<T,T>();
-}
-
 template <class T, class Held>
-inline detail::select_value_holder<T, Held> select_holder(T*, Held* = 0)
+struct select_holder
 {
-    return detail::select_value_holder<T, Held>();
-}
+    static inline std::size_t additional_size()
+    {
+        return additional_size_helper(execute((Held*)0));
+    }
+        
+    static inline detail::select_value_holder<T,T>
+    execute(python::detail::not_specified*)
+    {
+        return detail::select_value_holder<T,T>();
+    }
 
+    static inline detail::select_value_holder<T, Held>
+    execute(T*)
+    {
+        return detail::select_value_holder<T, Held>();
+    }
 
-template <class T, class Ptr>
-detail::select_pointer_holder<T,Ptr> select_holder(void*, Ptr* = 0, T* = 0)
-{
-    return detail::select_pointer_holder<T,Ptr>();
-}
+    static inline detail::select_pointer_holder<T,Held>
+    execute(void*)
+    {
+        return detail::select_pointer_holder<T,Held>();
+    }
+    
+ private:
+    template <class Selector>
+    static inline std::size_t additional_size_helper(Selector const&)
+    {
+        typedef typename Selector::type holder;
+        return additional_instance_size<holder>::value;
+    }
+};
 
 }}} // namespace boost::python::objects
 

@@ -8,6 +8,7 @@
 
 # include <boost/python/object/iterator_core.hpp>
 # include <boost/python/class_fwd.hpp>
+# include <boost/python/object/class_detail.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_const_reference.hpp>
 # include <boost/python/object/function_object.hpp>

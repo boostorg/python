@@ -52,7 +52,7 @@ public:
 BOOST_PYTHON_MODULE_INIT(cltree)
 {
     boost::python::class_<basic>("basic")
-	.def("__repr__",&basic::repr)
+        .def("__repr__",&basic::repr)
         ;
 
     boost::python::class_<constant, boost::python::bases<basic>, boost::noncopyable>("constant")
@@ -60,7 +60,7 @@ BOOST_PYTHON_MODULE_INIT(cltree)
 
 
     boost::python::class_<symbol, symbol_wrapper, boost::noncopyable>("symbol")
-	;
+        ;
 
     boost::python::class_<variable, boost::python::bases<basic>, variable_wrapper>("variable")
         ;
