@@ -23,11 +23,12 @@
 # include <boost/preprocessor/iteration/local.hpp>
 
 # include <boost/python/detail/mpl_lambda.hpp>
+# include <boost/python/object_core.hpp>
 
 # include <boost/mpl/bool.hpp>
 
 # include <cstddef>
-
+# include <algorithm>
 
 namespace boost { namespace python {
 
@@ -42,6 +43,16 @@ namespace detail
       {
           return keyword_range(elements, elements + nkeywords);
       }
+
+      keywords<nkeywords+1> operator,(const keywords<1> &k) const
+      {
+          python::detail::keywords<size+1> res;
+          std::copy(elements, elements+size, res.elements);
+          res.elements[size] = k.elements[0];
+          return res;
+      }
+      
+      keywords<nkeywords+1> operator,(const char *name) const;
       
       keyword elements[nkeywords];
   };
@@ -95,6 +106,37 @@ namespace detail
       BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
   };
 # endif 
+}
+
+struct arg : detail::keywords<1>
+{
+    explicit arg(char const *name)
+    {
+        elements[0].name = name;
+    }
+    
+    template <class T>
+    arg& operator=(T const& value)
+    {
+        object z(value);
+        elements[0].default_value = handle<>(python::borrowed(object(value).ptr()));
+        return *this;
+    }
+    
+    operator detail::keyword const&() const
+    {
+        return elements[0];
+    }
+};
+
+namespace detail
+{
+  template <std::size_t nkeywords>
+  inline keywords<nkeywords + 1>
+  keywords<nkeywords>::operator,(const char *name) const
+  {
+      return this->operator,(arg(name));
+  }
 }
 
 #  define BOOST_PYTHON_ASSIGN_NAME(z, n, _) result.elements[n].name = name##n;

@@ -19,6 +19,10 @@ namespace detail
 {
   struct keyword
   {
+      keyword(char const* name_=0)
+       : name(name_)
+      {}
+      
       char const* name;
       handle<> default_value;
   };

@@ -51,6 +51,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     object m_namespace;
     object m_doc;
     object m_arg_names;
+    unsigned m_nkeyword_values;
 };
 
 //
