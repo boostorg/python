@@ -23,6 +23,18 @@ instance_holder::~instance_holder()
 {
 }
 
+// This is copied from typeobject.c in the Python sources. Even though
+// class_metatype_object doesn't set Py_TPFLAGS_HAVE_GC, that bit gets
+// filled in by the base class initialization process in
+// PyType_Ready(). However, tp_is_gc is *not* copied from the base
+// type, making it assume that classes are GC-able even if (like
+// class_type_object) they're statically allocated.
+static int
+type_is_gc(PyTypeObject *python_type)
+{
+    return python_type->tp_flags & Py_TPFLAGS_HEAPTYPE;
+}
+
 PyTypeObject class_metatype_object = {
     PyObject_HEAD_INIT(0)//&PyType_Type)
         0,
@@ -63,8 +75,9 @@ PyTypeObject class_metatype_object = {
         0,                                      /* tp_dictoffset */
         0,                                      /* tp_init */
         0,                                      /* tp_alloc */
-        0,
-        // PyType_GenericNew                       /* tp_new */
+        0, // filled in with type_new           /* tp_new */
+        0, // filled in with __PyObject_GC_Del  /* tp_free */
+	(inquiry)type_is_gc,			/* tp_is_gc */
 };
 
 // Get the metatype object for all extension classes.
