@@ -1,0 +1,54 @@
+import glob
+import sys
+import os
+
+# constants
+if sys.platform == 'win32':
+    BOOST_ROOT = 'D:/Programming/Libraries/boost-cvs'
+    STLPORT_ROOT = 'D:/Programming/Libraries/stlport-4.5.3'
+    PYTHON_ROOT = 'C:/Python'
+
+if BOOST_ROOT:
+    BOOST_INCLUDE = BOOST_ROOT + '/boost'
+    BOOST_LIB = BOOST_ROOT + '/lib'
+
+if STLPORT_ROOT:
+    STLPORT_INCLUDE = STLPORT_ROOT + '/stlport'
+    STLPORT_LIB = STLPORT_ROOT + '/lib'
+
+if PYTHON_ROOT:
+    PYTHON_INCLUDE = PYTHON_ROOT + '/include'
+    PYTHON_LIB = PYTHON_ROOT + '/libs'
+
+LIBS = ['boost_python', 'python22']
+
+INCLUDES = ['../example']
+if sys.platform == 'win32':
+    CXX = 'icl'
+    CXXFLAGS='/GR /GX /MD /nologo'
+    INCLUDES += [BOOST_INCLUDE, STLPORT_INCLUDE, PYTHON_INCLUDE]
+    LIBPATH = [STLPORT_LIB, PYTHON_LIB, BOOST_LIB]
+else:
+    CXX = 'g++'
+    CXXFLAGS = ''
+    LIBPATH = []
+    #INCLUDES = ['..']
+
+# Create the environment
+env = Environment(
+    CXX=CXX,
+    CXXFLAGS=CXXFLAGS,
+    CPPPATH=INCLUDES,
+    LIBS=LIBS, 
+    LIBPATH=LIBPATH)
+
+
+# Build all the cpp files
+modules = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob('../example/*.pyste')]
+for module in modules:
+    multiple = ARGUMENTS.get('multiple', '')
+    if multiple:
+        env.SharedLibrary(target=module, source=glob.glob(module+'/*.cpp'))
+    else:
+        env.SharedLibrary(target=module, source=module + '.cpp')
+

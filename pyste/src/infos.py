@@ -7,7 +7,7 @@ from IncludeExporter import IncludeExporter
 from EnumExporter import EnumExporter
 from HeaderExporter import HeaderExporter
 from exporterutils import FunctionWrapper
-from makeid import makeid
+from utils import makeid
 
 
 #==============================================================================

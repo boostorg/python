@@ -60,10 +60,12 @@ class Exporter:
         return decls[0]
 
 
-    def Order(self):
-        '''Returns a number that indicates to which order this exporter
-        belongs.  The exporters will be called from the lowest order to the
-        highest order.
-        This function will only be called after Parse has been called. 
+    def ID(self):
+        '''Returns a string that uniquely identifies this instance. All
+        exporters will be sorted by ID before being exported.
         '''
-        return None # don't care
+        raise NotImplementedError
+
+
+    def Unit(self):
+        return self.info.include

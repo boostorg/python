@@ -4,6 +4,7 @@
 #==============================================================================
 
 DEBUG = False
+USING_BOOST_NS = True
 
 class namespaces:
     boost = 'boost::'

@@ -1,11 +1,10 @@
 import exporters
 from Exporter import Exporter
 from declarations import *
-from enumerate import enumerate
 from settings import *
-from CodeUnit import CodeUnit
+from SingleCodeUnit import SingleCodeUnit
 from EnumExporter import EnumExporter
-from makeid import makeid
+from utils import makeid, enumerate
 from copy import deepcopy
 import exporterutils
 import re
@@ -77,15 +76,16 @@ class ClassExporter(Exporter):
         return bases
 
     
-    def Order(self):
+    def ID(self):
         '''Return the TOTAL number of bases that this class has, including the
         bases' bases.  Do this because base classes must be instantialized
         before the derived classes in the module definition.  
         '''
-        return len(self.ClassBases())
+        return '%s_%s' % (len(self.ClassBases()), self.class_.FullName())
         
     
     def Export(self, codeunit, exported_names):
+        self.CheckForwardDeclarations()
         self.ExportBasics()
         self.ExportBases(exported_names)
         self.ExportConstructors()
@@ -99,6 +99,12 @@ class ClassExporter(Exporter):
         self.Write(codeunit)
 
 
+    def CheckForwardDeclarations(self):
+        for m in self.public_members:
+            if isinstance(m, Function):
+                exporterutils.WarnForwardDeclarations(m)
+
+    
     def Write(self, codeunit):
         indent = self.INDENT
         boost_ns = namespaces.python
@@ -522,7 +528,7 @@ class ClassExporter(Exporter):
             nested_info.name = nested_class.FullName()
             exporter = ClassExporter(nested_info)
             exporter.SetDeclarations(self.declarations + [nested_class])
-            codeunit = CodeUnit(None)
+            codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, exported_names)
             self.nested_codeunits.append(codeunit)
 
@@ -535,7 +541,7 @@ class ClassExporter(Exporter):
             enum_info.name = enum.FullName()
             exporter = EnumExporter(enum_info)
             exporter.SetDeclarations(self.declarations + [enum])
-            codeunit = CodeUnit(None)
+            codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, None)
             self.nested_codeunits.append(codeunit)
 

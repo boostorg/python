@@ -1,18 +1,13 @@
-from settings import *
-
-#==============================================================================
-# RemoveDuplicatedLines
-#==============================================================================
-def RemoveDuplicatedLines(text):
-    includes = text.splitlines()
-    d = dict([(include, 0) for include in includes])
-    return '\n'.join(d.keys())
+from settings import namespaces
+import settings
+from utils import remove_duplicated_lines, left_equals
+from SmartFile import SmartFile
 
 
 #==============================================================================
-# CodeUnit
+# SingleCodeUnit
 #==============================================================================
-class CodeUnit:
+class SingleCodeUnit:
     '''
     Represents a cpp file, where other objects can write in one of the     
     predefined sections.
@@ -22,15 +17,16 @@ class CodeUnit:
         module - Inside the BOOST_PYTHON_MODULE macro
     '''
     
-    USING_BOOST_NS = True
-    
-    def __init__(self, modulename):
+    def __init__(self, modulename, filename):
         self.modulename = modulename
+        self.filename = filename
         # define the avaiable sections
         self.code = {}
         self.code['include'] = ''
         self.code['declaration'] = ''
         self.code['module'] = ''
+        # create the default module definition
+        self.module_definition = 'BOOST_PYTHON_MODULE(%s)' % modulename
 
 
     def Write(self, section, code):
@@ -39,36 +35,42 @@ class CodeUnit:
             raise RuntimeError, 'Invalid CodeUnit section: %s' % section
         self.code[section] += code
         
+
+    def Merge(self, other):
+        for section in ('include', 'declaration', 'module'):
+            self.code[section] = self.code[section] + other.code[section]    
+
         
     def Section(self, section):
         return self.code[section]
 
     
-    def Save(self, filename):
+    def Save(self):
         'Writes this code unit to the filename'
         space = '\n\n'
-        fout = file(filename, 'w')
+        fout = SmartFile(self.filename, 'w')
         # includes
-        includes = RemoveDuplicatedLines(self.code['include'])
-        fout.write('\n' + self._leftEquals('Includes'))        
+        includes = remove_duplicated_lines(self.code['include'])
+        fout.write('\n' + left_equals('Includes'))        
         fout.write('#include <boost/python.hpp>\n')
         fout.write(includes)
         fout.write(space)
         # using
-        if self.USING_BOOST_NS:
-            fout.write(self._leftEquals('Using'))
+        if settings.USING_BOOST_NS:
+            fout.write(left_equals('Using'))
             fout.write('using namespace boost::python;\n\n')
         # declarations
         if self.code['declaration']:
             pyste_namespace = namespaces.pyste[:-2]
-            fout.write(self._leftEquals('Declarations'))
+            fout.write(left_equals('Declarations'))
             fout.write('namespace %s {\n\n\n' % pyste_namespace)
             fout.write(self.code['declaration']) 
             fout.write('\n\n}// namespace %s\n' % pyste_namespace)
             fout.write(space)
         # module
-        fout.write(self._leftEquals('Module'))
-        fout.write('BOOST_PYTHON_MODULE(%s)\n{\n' % self.modulename)
+        fout.write(left_equals('Module'))
+        fout.write(self.module_definition + '\n')
+        fout.write('{\n')
         fout.write(self.code['module']) 
         fout.write('}\n')
 

@@ -28,3 +28,7 @@ class EnumExporter(Exporter):
             code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
         code += indent + ';\n\n'
         codeunit.Write('module', code)
+
+
+    def ID(self):
+        return self.info.name

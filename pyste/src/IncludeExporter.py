@@ -17,3 +17,8 @@ class IncludeExporter(Exporter):
     def Parse(self, parser):
         pass
 
+    def ID(self):
+        return self.info.include
+
+    def Unit(self):
+        return '__all__'    # include it in all generated cpps (multiple mode)

@@ -15,6 +15,9 @@ class Declaration(object):
         self.namespace = namespace
         # tuple (filename, line)
         self.location = '', -1
+        # if a declaration is incomplete it means that it was
+        # forward declared
+        self.incomplete = False 
 
 
     def FullName(self):
@@ -265,13 +268,14 @@ class ConverterOperator(ClassOperator):
 class Type(Declaration):
     'Represents a type.'
 
-    def __init__(self, name, const=False, default=None):
+    def __init__(self, name, const=False, default=None, incomplete=False):
         Declaration.__init__(self, name, None)
         # whatever the type is constant or not
         self.const = const
         # used when the Type is a function argument
         self.default = default
         self.volatile = False
+        self.incomplete = incomplete
 
     def __repr__(self):
         if self.const:
@@ -304,8 +308,8 @@ class ArrayType(Type):
 class ReferenceType(Type): 
     'A reference type.'    
 
-    def __init__(self, name, const=False, default=None, expandRef=True):
-        Type.__init__(self, name, const, default)
+    def __init__(self, name, const=False, default=None, incomplete=False, expandRef=True):
+        Type.__init__(self, name, const, default, incomplete)
         self.expand = expandRef
         
         
@@ -321,8 +325,8 @@ class ReferenceType(Type):
 class PointerType(Type):
     'A pointer type.'
     
-    def __init__(self, name, const=False, default=None, expandPointer=False):
-        Type.__init__(self, name, const, default)
+    def __init__(self, name, const=False, default=None, incomplete=False, expandPointer=False):
+        Type.__init__(self, name, const, default, incomplete)
         self.expand = expandPointer
 
    

@@ -72,25 +72,43 @@ Well, now let's fire it up:
 '''
 >python pyste.py
 
+Pyste version 0.6.5
+
 Usage:
     pyste [options] --module=<name> interface-files
 
 where options are:
-    -I <path>           add an include path
-    -D <symbol>         define symbol
+    -I <path>           add an include path    
+    -D <symbol>         define symbol    
+    --multiple          create various cpps, instead of only one 
+                        (useful during development)                        
+    --out               specify output filename (default: <module>.cpp)
+                        in --multiple mode, this will be a directory
     --no-using          do not declare "using namespace boost";
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
                         default is "pyste"
+    --debug             writes the xml for each file parsed in the current
+                        directory
     -h, --help          print this help and exit
-    -v, --version       print version information
+    -v, --version       print version information      
 '''                        
 ]
 
 Options explained:
 
-The [^-I] and [^-D] are preprocessor flags, which are needed by gccxml to parse the header files correctly and by pyste to find the header files declared in the
+The [^-I] and [^-D] are preprocessor flags, which are needed by gccxml to parse
+the header files correctly and by pyste to find the header files declared in the
 interface files.
+
+[^--multiple] tells pyste to generate multiple cpps for this module (one for
+each header parsed) in the directory named by [^--out], instead of the usual
+single cpp file. This mode is useful during development of a binding, because
+you are constantly changing source files, re-generating the bindings and
+recompiling. This saves a lot of time in compiling.
+
+[^--out] names the output file (default: [^<module>.cpp]), or in multiple mode,
+names a output directory for the files (default: [^<module>]).
 
 [^--no-using] tells pyste to don't declare "[^using namespace boost;]" in the
 generated cpp, using the namespace boost::python explicitly in all declarations.
@@ -100,13 +118,24 @@ Use [^--pyste-ns] to change the namespace where new types are declared (for
 instance, the virtual wrappers). Use only if you are having any problems. By
 default, Pyste uses the empty namespace.
 
+[^--debug] will write in the current directory a xml file as outputted by gccxml
+for each header parsed. Useful for bug reports.
+
+[^-h, --help, -v, --version] are self-explaining, I believe. ;)
+
 So, the usage is simple enough:
 
 [pre >python pyste.py --module=mymodule file.pyste file2.pyste ...]
 
 will generate a file [^mymodule.cpp] in the same dir where the command was
 executed. Now you can compile the file using the same instructions of the
-[@../../doc/tutorial/doc/building_hello_world.html tutorial]. 
+[@../../doc/tutorial/doc/building_hello_world.html tutorial]. Or, if you prefer:
+
+[pre >python pyste.py --module=mymodule --multiple file.pyste file2.pyste ...]
+
+will create a directory named "mymodule" in the current directory, and will
+generate a bunch of cpp files, one for each header exported. You can then
+compile them all into a single shared library (or dll).
 
 [h2 Wait... how do I set those I and D flags?]
 

@@ -5,12 +5,18 @@ Usage:
     pyste [options] --module=<name> interface-files
 
 where options are:
-    -I <path>           add an include path
-    -D <symbol>         define symbol
+    -I <path>           add an include path    
+    -D <symbol>         define symbol    
+    --multiple          create various cpps, instead of only one 
+                        (useful during development)                        
+    --out               specify output filename (default: <module>.cpp)
+                        in --multiple mode, this will be a directory
     --no-using          do not declare "using namespace boost";
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
                         default is "pyste"
+    --debug             writes the xml for each file parsed in the current
+                        directory
     -h, --help          print this help and exit
     -v, --version       print version information                         
 '''
@@ -19,7 +25,8 @@ import sys
 import os
 import getopt
 import exporters
-import CodeUnit
+import SingleCodeUnit
+import MultipleCodeUnit
 import infos
 import exporterutils
 import settings
@@ -27,7 +34,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.6.4'
+__VERSION__ = '0.6.5'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -58,7 +65,7 @@ def ParseArguments():
         options, files = getopt.getopt(
             sys.argv[1:], 
             'R:I:D:vh', 
-            ['module=', 'out=', 'no-using', 'pyste-ns=', 'debug', 'version', 'help'])
+            ['module=', 'multiple', 'out=', 'no-using', 'pyste-ns=', 'debug', 'version', 'help'])
     except getopt.GetoptError, e:
         print
         print 'ERROR:', e
@@ -67,6 +74,7 @@ def ParseArguments():
     defines = []
     module = None
     out = None
+    multiple = False
     for opt, value in options:
         if opt == '-I':
             includes.append(value)
@@ -80,11 +88,13 @@ def ParseArguments():
             out = value 
         elif opt == '--no-using':
             settings.namespaces.python = 'boost::python::'
-            CodeUnit.CodeUnit.USING_BOOST_NS = False
+            settings.USING_BOOST_NS = False
         elif opt == '--pyste-ns':
             settings.namespaces.pyste = value + '::'
         elif opt == '--debug':
             settings.DEBUG = True
+        elif opt == '--multiple':
+            multiple = True
         elif opt in ['-h', '--help']:
             Usage()
         elif opt in ['-v', '--version']:
@@ -95,10 +105,12 @@ def ParseArguments():
             Usage()
 
     if not files or not module:
-        Usage()
+        Usage()    
     if not out:
-        out = module + '.cpp'
-    return includes, defines, module, out, files
+        out = module
+        if not multiple:
+            out += '.cpp'
+    return includes, defines, module, out, files, multiple
 
     
 def CreateContext():
@@ -132,7 +144,7 @@ def CreateContext():
 
     
 def Main():
-    includes, defines, module, out, interfaces = ParseArguments()
+    includes, defines, module, out, interfaces, multiple = ParseArguments()
     # execute the interface files
     for interface in interfaces:
         context = CreateContext()
@@ -148,17 +160,22 @@ def Main():
             print '***', e, ': exitting'
             return 2
     print 
-    # sort the exporters by its order
-    exports = [(x.Order(), x) for x in exporters.exporters]
+    # sort the exporters by its ids
+    exports = [(x.ID(), x) for x in exporters.exporters]
     exports.sort()
     exports = [x for _, x in exports]
     # now generate the wrapper code
-    codeunit = CodeUnit.CodeUnit(module)
+    if multiple:
+        codeunit = MultipleCodeUnit.MultipleCodeUnit(module, out)
+    else:
+        codeunit = SingleCodeUnit.SingleCodeUnit(module, out)
     exported_names = []
     for export in exports:
+        if multiple:
+            codeunit.SetCurrent(export.Unit())
         export.GenerateCode(codeunit, exported_names)    
         exported_names.append(export.Name())
-    codeunit.Save(out)                
+    codeunit.Save()                
     print 'Module %s generated' % module
     return 0
 

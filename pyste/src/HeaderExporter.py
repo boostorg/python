@@ -63,5 +63,8 @@ class HeaderExporter(Exporter):
         exporter.SetDeclarations(self.declarations)
         exporters.exporters.append(exporter)
 
+    
+    def ID(self):
+        return self.info.include
 
         

@@ -28,6 +28,8 @@ class FunctionWrapper(object):
             return self.name
 
 
+_printed_warnings = {} # used to avoid double-prints of warnings
+
 #==============================================================================
 # HandlePolicy
 #==============================================================================
@@ -65,4 +67,23 @@ def HandlePolicy(function, policy):
             _printed_warnings[warning] = 1
     return policy
             
-_printed_warnings = {} # used to avoid double-prints in HandlePolicy
+
+
+#==============================================================================
+# WarnForwardDeclarations
+#==============================================================================
+def WarnForwardDeclarations(function):
+    '''Checks if any of the parameters or the result of the function are
+    incomplete types.'''
+
+    types = [function.result] + function.parameters
+    types = [x for x in types if x]
+    for type in types:
+        if type.incomplete:
+            msg = '---> Error: %s is forward declared. Please include the ' \
+                'appropriate header with its definition' % type.name
+            if msg not in _printed_warnings:
+                print msg
+                print 
+                _printed_warnings[msg] = 1
+    

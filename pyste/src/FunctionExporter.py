@@ -19,6 +19,7 @@ class FunctionExporter(Exporter):
         decls = self.GetDeclarations(self.info.name)
         for decl in decls:
             self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
+            exporterutils.WarnForwardDeclarations(decl)
             self.ExportDeclaration(decl, len(decls) == 1, codeunit)
         self.GenerateOverloads(decls, codeunit)            
 
@@ -76,3 +77,6 @@ class FunctionExporter(Exporter):
         else:
             return ''
 
+
+    def ID(self):
+        return self.info.name

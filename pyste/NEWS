@@ -1,3 +1,9 @@
+05 Apr 2003
+New option for generating the bindings: --multiple.
+
+02 Apr 2003
+Forward declarations are now detected and a warning is generated.
+
 24 Mar 2003
 Default policy for functions/methods that return const T& is now
 return_value_policy<copy_const_reference>().
