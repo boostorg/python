@@ -10,6 +10,7 @@
 # include <boost/python/class.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/indexing/detail/indexing_suite_detail.hpp>
+# include <boost/python/indexing/py_container_utils.hpp>
 # include <boost/python/return_internal_reference.hpp>
 # include <boost/python/iterator.hpp>
 # include <boost/mpl/or.hpp>
@@ -303,37 +304,10 @@ namespace boost { namespace python {
         static void
         base_extend(Container& container, PyObject* v)
         {
-            //  v must be a list or some container
+            std::vector<Element> temp;
             handle<> l_(borrowed(v));
             object l(l_);
-
-            std::vector<Element> temp;
-            for (int i = 0; i < l.attr("__len__")(); i++)
-            {
-                object elem(l[i]);
-                extract<Element const&> x(elem);
-                //  try if elem is an exact Element type
-                if (x.check())
-                {
-                    temp.push_back(x());
-                }
-                else
-                {
-                    //  try to convert elem to Element type
-                    extract<Element> x(elem);
-                    if (x.check())
-                    {
-                        temp.push_back(x());
-                    }
-                    else
-                    {
-                        PyErr_SetString(PyExc_TypeError, 
-                            "Invalid list element");
-                        throw_error_already_set();
-                    }
-                }
-            }          
-          
+            container_utils::extend_container(temp, l);
             DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
     };
