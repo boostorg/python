@@ -1,3 +1,7 @@
+#ifndef SMART_PTR_H
+#define SMART_PTR_H
+
+
 #include <memory>
 #include <boost/shared_ptr.hpp>
 
@@ -8,7 +12,7 @@ struct C
     int value;
 };
 
-boost::shared_ptr<C> NewC() { return boost::shared_ptr<C>( new C() ); }
+inline boost::shared_ptr<C> NewC() { return boost::shared_ptr<C>( new C() ); }
 
 struct D
 {
@@ -18,5 +22,8 @@ private:
     boost::shared_ptr<C> ptr;
 };
 
-std::auto_ptr<D> NewD() { return std::auto_ptr<D>( new D() ); }
+inline std::auto_ptr<D> NewD() { return std::auto_ptr<D>( new D() ); }
+
 }
+
+#endif

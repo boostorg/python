@@ -22,8 +22,13 @@ class SingleCodeUnit:
         self.filename = filename
         # define the avaiable sections
         self.code = {}
+        # include section
         self.code['include'] = ''
+        # declaration section (inside namespace)        
         self.code['declaration'] = ''
+        # declaration (outside namespace)
+        self.code['declaration-outside'] = ''
+        # inside BOOST_PYTHON_MACRO
         self.code['module'] = ''
         # create the default module definition
         self.module_definition = 'BOOST_PYTHON_MODULE(%s)' % modulename
@@ -37,7 +42,7 @@ class SingleCodeUnit:
         
 
     def Merge(self, other):
-        for section in ('include', 'declaration', 'module'):
+        for section in ('include', 'declaration', 'declaration-outside', 'module'):
             self.code[section] = self.code[section] + other.code[section]    
 
         
@@ -60,21 +65,20 @@ class SingleCodeUnit:
             fout.write(left_equals('Using'))
             fout.write('using namespace boost::python;\n\n')
         # declarations
-        if self.code['declaration']:
-            pyste_namespace = namespaces.pyste[:-2]
+        declaration = self.code['declaration']
+        declaration_outside = self.code['declaration-outside']
+        if declaration_outside or declaration:
             fout.write(left_equals('Declarations'))
-            fout.write('namespace %s {\n\n\n' % pyste_namespace)
-            fout.write(self.code['declaration']) 
-            fout.write('\n\n}// namespace %s\n' % pyste_namespace)
-            fout.write(space)
+            fout.write(declaration_outside + '\n\n')
+            if declaration:
+                pyste_namespace = namespaces.pyste[:-2]            
+                fout.write('namespace %s {\n\n\n' % pyste_namespace)
+                fout.write(declaration) 
+                fout.write('\n\n}// namespace %s\n' % pyste_namespace)
+                fout.write(space)
         # module
         fout.write(left_equals('Module'))
         fout.write(self.module_definition + '\n')
         fout.write('{\n')
         fout.write(self.code['module']) 
         fout.write('}\n')
-
-        
-    def _leftEquals(self, s):
-        s = '// %s ' % s
-        return s + ('='*(80-len(s))) + '\n'

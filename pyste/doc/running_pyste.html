@@ -25,19 +25,19 @@
    </tr>
 </table>
 <p>
-To run pyste, you will need:</p>
-<ul><li>Python 2.2, avaiable at <a href="http://www.python.org">
+To run Pyste, you will need:</p>
+<ul><li>Python 2.2, available at <a href="http://www.python.org">
 python's website</a>.</li><li>The great <a href="http://effbot.org">
 elementtree</a> library, from Fredrik Lundh.</li><li>The excellent <a href="http://www.gccxml.org">
 GCCXML</a>, from Brad King.</li></ul><p>
-Installation for the tools is avaiable in their respective webpages.</p>
+Installation for the tools is available in their respective webpages.</p>
 <table width="80%" border="0" align="center">
   <tr>
     <td class="note_box">
 
 <img src="theme/note.gif"></img> <a href="http://www.gccxml.org">
 GCCXML</a> must be accessible in the PATH environment variable, so
-that pyste can call it. How to do this varies from platform to platform.
+that Pyste can call it. How to do this varies from platform to platform.
     </td>
   </tr>
 </table>
@@ -62,7 +62,7 @@ where options are:
     --no-using          do not declare &quot;using namespace boost&quot;;
                         use explicit declarations instead
     --pyste-ns=&lt;name&gt;   set the namespace where new types will be declared;
-                        default is &quot;pyste&quot;
+                        default is the empty namespace
     --debug             writes the xml for each file parsed in the current
                         directory
     -h, --help          print this help and exit
@@ -71,11 +71,12 @@ where options are:
 </pre></code><p>
 Options explained:</p>
 <p>
-The <tt>-I</tt> and <tt>-D</tt> are preprocessor flags, which are needed by gccxml to parse
-the header files correctly and by pyste to find the header files declared in the
+The <tt>-I</tt> and <tt>-D</tt> are preprocessor flags, which are needed by <a href="http://www.gccxml.org">
+GCCXML</a> to parse
+the header files correctly and by Pyste to find the header files declared in the
 interface files.</p>
 <p>
-<tt>--multiple</tt> tells pyste to generate multiple cpps for this module (one for
+<tt>--multiple</tt> tells Pyste to generate multiple cpps for this module (one for
 each header parsed) in the directory named by <tt>--out</tt>, instead of the usual
 single cpp file. This mode is useful during development of a binding, because
 you are constantly changing source files, re-generating the bindings and
@@ -84,7 +85,7 @@ recompiling. This saves a lot of time in compiling.</p>
 <tt>--out</tt> names the output file (default: <tt>&lt;module&gt;.cpp</tt>), or in multiple mode,
 names a output directory for the files (default: <tt>&lt;module&gt;</tt>).</p>
 <p>
-<tt>--no-using</tt> tells pyste to don't declare &quot;<tt>using namespace boost;</tt>&quot; in the
+<tt>--no-using</tt> tells Pyste to don't declare &quot;<tt>using namespace boost;</tt>&quot; in the
 generated cpp, using the namespace boost::python explicitly in all declarations.
 Use only if you're having a name conflict in one of the files.</p>
 <p>
@@ -92,7 +93,8 @@ Use <tt>--pyste-ns</tt> to change the namespace where new types are declared (fo
 instance, the virtual wrappers). Use only if you are having any problems. By
 default, Pyste uses the empty namespace.</p>
 <p>
-<tt>--debug</tt> will write in the current directory a xml file as outputted by gccxml
+<tt>--debug</tt> will write in the current directory a xml file as outputted by <a href="http://www.gccxml.org">
+GCCXML</a>
 for each header parsed. Useful for bug reports.</p>
 <p>
 <tt>-h, --help, -v, --version</tt> are self-explaining, I believe. ;)</p>

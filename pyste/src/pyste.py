@@ -14,7 +14,7 @@ where options are:
     --no-using          do not declare "using namespace boost";
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
-                        default is "pyste"
+                        default is the empty namespace
     --debug             writes the xml for each file parsed in the current
                         directory
     -h, --help          print this help and exit
@@ -34,7 +34,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.7.1'
+__VERSION__ = '0.7.2'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'

@@ -65,7 +65,7 @@ class HeaderExporter(Exporter):
 
     
     def Unit(self):
-        return self.info.include
+        return None # doesn't write anything by himself
 
 
     def Order(self):

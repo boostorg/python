@@ -19,6 +19,13 @@ class Policy:
             return ' >'
 
 
+    def __eq__(self, other):
+        try:
+            return self.Code() == other.Code()
+        except AttributeError:
+            return False
+
+
 
 class return_internal_reference(Policy):
     'Ties the return value to one of the parameters.'

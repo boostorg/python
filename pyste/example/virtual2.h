@@ -13,14 +13,14 @@ struct B: A
     virtual int f2() { return 20; }
 };
 
-int call_fs(A*a)
+inline int call_fs(A*a)
 {
     int r = a->f1();
     B* b = dynamic_cast<B*>(a);
     return r + b->f2();
 }
     
-int call_f(A* a)
+inline int call_f(A* a)
 {
     return a->f();
 }

@@ -1,6 +1,12 @@
 07 Apr 2003
-Removed the warnings about forward declarations: it was not accurate enough.
-Another strategy must be thought of.
+- Removed the warnings about forward declarations: it was not accurate enough.
+  Another strategy must be thought of.
+- Fixed bug in the --multiple mode, where the order of the class instantiations
+  could end up wrong.
+- Lots of fixes in the documentation, pointed out by Dirk Gerrits. Thanks Dirk!
+- Fixed support for the return_opaque_pointer policy (the support macro was not
+  being declared).
+
 
 06 Apr 2003
 Support for the improved static data members support of Boost.Python.

@@ -34,7 +34,10 @@ class MultipleCodeUnit(object):
     def SetCurrent(self, code_unit_name):
         'Changes the current code unit'
         try:
-            codeunit = self.codeunits[code_unit_name]
+            if code_unit_name is not None:
+                codeunit = self.codeunits[code_unit_name]
+            else:
+                codeunit = None
         except KeyError:
             filename = self._FileName(code_unit_name)
             function_name = self._FunctionName(code_unit_name)
@@ -52,19 +55,14 @@ class MultipleCodeUnit(object):
     current = property(Current, SetCurrent)
         
             
-    def _CheckCurrent(self):
-        if self.current is None:
-            raise RuntimeError, "No current code unit to write to!" 
-        
-        
     def Write(self, section, code):
-        self._CheckCurrent()
-        self.current.Write(section, code)
+        if self._current is not None:
+            self.current.Write(section, code)
 
 
     def Section(self, section):
-        self._CheckCurrent()
-        return self.current.Section(section)
+        if self._current is not None: 
+            return self.current.Section(section)
 
 
     def _CreateOutputDir(self):

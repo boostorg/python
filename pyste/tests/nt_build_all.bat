@@ -11,3 +11,4 @@ call nt_build_pyste.bat unions %1
 call nt_build_pyste.bat virtual %1 
 call nt_build_pyste.bat virtual2 %1 
 call nt_build_pyste.bat wrappertest %1 
+call nt_build_pyste.bat opaque %1 

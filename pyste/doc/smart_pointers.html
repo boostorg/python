@@ -45,7 +45,7 @@ Pyste for now has manual support for smart pointers. Suppose:</p>
 </span></pre></code>
 <p>
 To make <tt>newC</tt> and <tt>printC</tt> work correctly, you have to tell Pyste that a
-conversor for <tt>boost::shared_ptr&lt;C&gt;</tt> is needed.</p>
+convertor for <tt>boost::shared_ptr&lt;C&gt;</tt> is needed.</p>
 <code><pre>
     <span class=identifier>C </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=literal>'C'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>)
     </span><span class=identifier>use_shared_ptr</span><span class=special>(</span><span class=identifier>C</span><span class=special>)
@@ -55,7 +55,7 @@ conversor for <tt>boost::shared_ptr&lt;C&gt;</tt> is needed.</p>
 <p>
 For <tt>std::auto_ptr</tt>'s, use the function <tt>use_auto_ptr</tt>.</p>
 <p>
-This system is temporary, and in the future the conversors will automatically be
+This system is temporary, and in the future the converters will automatically be
 exported if needed, without the need to tell Pyste about them explicitly.</p>
 <table border="0">
   <tr>

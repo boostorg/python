@@ -1,3 +1,7 @@
+#ifndef BASIC_H
+#define BASIC_H
+
+
 #include <string>
 
 namespace basic {
@@ -24,27 +28,26 @@ struct C
     const int const_value;
 };
 
-int C::static_value = 3;
-const int C::const_static_value = 100;
-
-int call_f(C& c)
+inline int call_f(C& c)
 {
     return c.f();
 }
 
-int call_f(C& c, int x)
+inline int call_f(C& c, int x)
 {
     return c.f(x);
 } 
 
-int get_static()
+inline int get_static()
 {
     return C::static_value;
 }
 
-int get_value(C& c)
+inline int get_value(C& c)
 {
     return c.value;
 }
 
 }
+
+#endif

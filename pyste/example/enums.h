@@ -1,3 +1,6 @@
+#ifndef ENUMS_H
+#define ENUMS_H
+
 namespace enums {
     
 enum color { red, blue };
@@ -17,3 +20,5 @@ struct X
 };
 
 }
+
+#endif

@@ -19,10 +19,10 @@ list VectorToList(const std::vector<T> & v)
     return res;
 }
 
-list RangeWrapper(int count){
+inline list RangeWrapper(int count){
     return VectorToList(wrappertest::Range(count));
 }
 
-int f_wrapper(wrappertest::A*) { return 10; } 
+inline int f_wrapper(wrappertest::A*) { return 10; } 
 
 #endif

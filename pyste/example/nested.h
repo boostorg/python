@@ -1,3 +1,6 @@
+#ifndef NESTED_H
+#define NESTED_H
+
 namespace nested {
     
 struct X
@@ -16,9 +19,8 @@ struct X
     int valueX;
 };
 
-int X::staticXValue = 10;
-int X::Y::staticYValue = 20;
-
 typedef X Root;
 
 }
+
+#endif

@@ -25,7 +25,7 @@
    </tr>
 </table>
 <p>
-Template Classes can easily exported too, but you can't export the &quot;Template&quot;
+Template classes can easily be exported too, but you can't export the template
 itself... you have to export instantiations of it! So, if you want to export a
 <tt>std::vector</tt>, you will have to export vectors of int, doubles, etc.</p>
 <p>
@@ -55,7 +55,7 @@ rename the instantiations:</p>
     </span><span class=identifier>rename</span><span class=special>(</span><span class=identifier>double_inst</span><span class=special>, </span><span class=string>&quot;DPoint&quot;</span><span class=special>)
 </span></pre></code>
 <p>
-Note that you can rename, exclude, set policies, etc, in the <tt>Template</tt> class
+Note that you can rename, exclude, set policies, etc, in the <tt>Template</tt> object
 like you would do with a <tt>Function</tt> or a <tt>Class</tt>. This changes affect all
 <b>future</b> instantiations:</p>
 <code><pre>
@@ -80,7 +80,7 @@ If you want to change a option of a particular instantiation, you can do so:</p>
     <td class="note_box">
 <img src="theme/note.gif"></img> <b>What if my template accepts more than one type?</b>
 <br><br>
-When you want to instantiate a Template with more than one type, you can pass
+When you want to instantiate a template with more than one type, you can pass
 either a string with the types separated by whitespace, or a list of strings
 (&quot;int double&quot; or [&quot;int&quot;, &quot;double&quot;] would both work).
     </td>

@@ -1,3 +1,7 @@
+#ifndef OPERATORS_H
+#define OPERATORS_H
+
+
 #include <iostream>
 
 namespace operators {
@@ -31,9 +35,7 @@ struct C
     operator const char*() { return "C"; }
 };
 
-double C::x = 10;
-
-const C operator*(const C& lhs, const C& rhs)
+inline const C operator*(const C& lhs, const C& rhs)
 {
     C c;
     c.value = lhs.value * rhs.value;
@@ -42,3 +44,6 @@ const C operator*(const C& lhs, const C& rhs)
 
 
 }
+
+
+#endif

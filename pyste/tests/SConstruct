@@ -47,8 +47,13 @@ env = Environment(
 modules = [os.path.splitext(os.path.basename(x))[0] for x in glob.glob('../example/*.pyste')]
 for module in modules:
     multiple = ARGUMENTS.get('multiple', '')
-    if multiple:
-        env.SharedLibrary(target=module, source=glob.glob(module+'/*.cpp'))
+    example_cpp = '../example/%s.cpp' % module
+    if os.path.isfile(example_cpp):
+        sources = [example_cpp]
     else:
-        env.SharedLibrary(target=module, source=module + '.cpp')
+        sources = []
+    if multiple:
+        env.SharedLibrary(target=module, source=sources + glob.glob('_%s/*.cpp'%module))
+    else:
+        env.SharedLibrary(target=module, source=sources + ['_%s.cpp' % module])
 
