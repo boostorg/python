@@ -63,5 +63,6 @@
 # include <boost/python/tuple.hpp>
 # include <boost/python/type_id.hpp>
 # include <boost/python/with_custodian_and_ward.hpp>
+# include <boost/python/converter/register_ptr_to_python.hpp>
 
 #endif // PYTHON_DWA2002810_HPP
