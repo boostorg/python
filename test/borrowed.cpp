@@ -3,6 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
+#include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/borrowed.hpp>
 #include <boost/static_assert.hpp>
 

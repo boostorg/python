@@ -7,7 +7,10 @@
 // to its suitability for any purpose.
 
 # include <boost/config.hpp>
-#include <boost/type.hpp>
+# include <boost/type.hpp>
+# include <boost/mpl/select_type.hpp>
+# include <boost/type_traits/object_traits.hpp>
+# include <boost/type_traits/cv_traits.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -23,6 +26,7 @@ struct is_borrowed_ptr
     BOOST_STATIC_CONSTANT(bool, value = false); 
 };
 
+#  if !defined(__MWERKS__) || __MWERKS__ > 0x3000
 template<typename T>
 struct is_borrowed_ptr<borrowed<T>*>
 {
@@ -46,16 +50,41 @@ struct is_borrowed_ptr<borrowed<T> const volatile*>
 {
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
+#  else
+template<typename T>
+struct is_borrowed
+{
+    BOOST_STATIC_CONSTANT(bool, value = false);
+};
+template<typename T>
+struct is_borrowed<borrowed<T> >
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+template<typename T>
+struct is_borrowed_ptr<T*>
+    : is_borrowed<typename remove_cv<T>::type>
+{
+};
+#  endif 
 
 # else // no partial specialization
 
 typedef char (&yes_borrowed_ptr_t)[1];
 typedef char (&no_borrowed_ptr_t)[2];
-      
+
 no_borrowed_ptr_t is_borrowed_ptr_test(...);
 
+template <class T>
+typename mpl::select_type<
+    is_pointer<T>::value
+    , T
+    , int
+    >::type
+is_borrowed_ptr_test1(boost::type<T>);
+
 template<typename T>
-yes_borrowed_ptr_t is_borrowed_ptr_test(boost::type< borrowed<T>* >);
+yes_borrowed_ptr_t is_borrowed_ptr_test(borrowed<T> const volatile*);
 
 template<typename T>
 class is_borrowed_ptr
@@ -63,7 +92,7 @@ class is_borrowed_ptr
  public:
     BOOST_STATIC_CONSTANT(
         bool, value = (
-            sizeof(detail::is_borrowed_ptr_test(boost::type<T>()))
+            sizeof(detail::is_borrowed_ptr_test(is_borrowed_ptr_test1(boost::type<T>())))
             == sizeof(detail::yes_borrowed_ptr_t)));
 };
 
