@@ -101,6 +101,7 @@ struct is_reference_to_function_pointer_aux
                                  typename remove_reference<T>::type
                               >::type
                               >::value));
+    typedef mpl::bool_c<value> type;
 };
 
 template <class T>
@@ -274,12 +275,14 @@ struct is_pointer_to_function_aux
     BOOST_STATIC_CONSTANT(
         bool, value
         = sizeof(::boost::type_traits::is_function_ptr_tester(t)) == sizeof(::boost::type_traits::yes_type));
+    typedef mpl::bool_c<value> type;
 };
 
 template <class T>
 struct is_pointer_to_function
     : mpl::if_<is_pointer<T>, is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
 {
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_pointer_to_function,(T))
 };
 
 struct false_helper1
@@ -399,6 +402,7 @@ struct is_reference_to_function_pointer
     : mpl::if_<is_reference<T>
         , is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
 {
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_function_pointer,(T))
 };
 
 template <typename V>

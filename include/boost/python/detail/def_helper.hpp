@@ -65,7 +65,7 @@ namespace detail
   struct tuple_extract_base_select
   {
       typedef typename Tuple::head_type head_type;
-      typedef typename mpl::apply1<Predicate,head_type>::type match_t;
+      typedef typename mpl::apply1<Predicate, add_reference<head_type>::type>::type match_t;
       BOOST_STATIC_CONSTANT(bool, match = match_t::value);
       typedef typename tuple_extract_impl<match>::template apply<Tuple,Predicate> type;
   };
@@ -85,7 +85,7 @@ namespace detail
       Tuple,
       mpl::logical_not<
         is_reference_to_class<
-          add_reference<mpl::_1>
+          mpl::_1
         >
       > >
   {
@@ -93,7 +93,7 @@ namespace detail
   
   template <class Tuple>
   struct keyword_extract
-      : tuple_extract<Tuple, is_reference_to_keywords<add_reference<mpl::_1> > >
+      : tuple_extract<Tuple, is_reference_to_keywords<mpl::_1 > >
   {
   };
 
@@ -103,8 +103,8 @@ namespace detail
           Tuple,
           mpl::logical_and<
              mpl::logical_not<is_same<not_specified const&,mpl::_1> >
-             , is_reference_to_class<add_reference<mpl::_> >
-             , mpl::logical_not<is_reference_to_keywords<add_reference<mpl::_1> > >
+               , is_reference_to_class<mpl::_1 >
+               , mpl::logical_not<is_reference_to_keywords<mpl::_1 > >
           >
         >
   {
@@ -115,20 +115,18 @@ namespace detail
       : tuple_extract<
           Tuple,
           mpl::logical_or<
-             is_reference_to_function_pointer<mpl::_1>
-             , is_reference_to_function<mpl::_1>
-             , is_same<mpl::_1,tuples::null_type>
+             is_reference_to_function_pointer<mpl::_1 >
+             , is_reference_to_function<mpl::_1 >
           >
         >
   {
   };
 
-# define BOOST_PYTHON_DEF_HELPER_TAIL default_call_policies, keywords<0>, char const*
   template <class T1, class T2 = not_specified, class T3 = not_specified>
   struct def_helper
   {
       typedef boost::tuples::tuple<
-          T1 const&, T2 const&, T3 const&, default_call_policies, keywords<0>, char const*
+          T1 const&, T2 const&, T3 const&, default_call_policies, keywords<0>, char const*, void(*)()
           > all_t;
 
       def_helper(T1 const& a1) : m_all(a1,m_nil,m_nil) {}
@@ -150,8 +148,14 @@ namespace detail
           return policy_extract<all_t>::extract(m_all);
       }
 
-      typedef 
-      typename default_implementation_extract<all_t>::result_type default_implementation() const
+   private:
+      typedef typename default_implementation_extract<all_t>::result_type default_implementation_t;
+   public:
+      BOOST_STATIC_CONSTANT(
+          bool, has_default_implementation = (
+              !is_same<default_implementation_t, tuples::null_type>::value));
+      
+      default_implementation_t default_implementation() const
       {
           return policy_extract<all_t>::extract(m_all);
       }
