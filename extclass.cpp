@@ -296,7 +296,7 @@ void ExtensionClassBase::add_method(PyPtr<Function> method, const char* name)
     Function::add_to_namespace(method, name, target->dict().get());
 
     // If it is a special member function it should be enabled both here and there.
-    enable_named_method(this, name);
+    detail::enable_named_method(this, name);
 }
 
 void ExtensionClassBase::add_default_method(Function* method, const char* name)
