@@ -1,4 +1,0 @@
-TargetName=py_cpp_d
-TargetType=lib
-SourceFiles=extclass_d.cpp init_function_d.cpp subclass_d.cpp functions_d.cpp objects_d.cpp
-SourceFiles+=module_d.cpp newtypes_d.cpp py_d.cpp

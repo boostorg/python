@@ -445,7 +445,7 @@ const CapabilityEntry capabilities[] = {
       if (c.substructure_size == 0)
       {
           if (src == 0 || 
-#if defined(__MWERKS__) && __MWERKS__ <= 0x4000
+#if defined(__MWERKS__) && __MWERKS__ <= 0x4000 || defined(__alpha) && defined(__osf__)
           ((const Dispatch*)src)
 #else
           reinterpret_cast<const Dispatch*>(src)
