@@ -98,10 +98,10 @@ unit-test select_holder
 unit-test select_from_python_test
   : select_from_python_test.cpp 
     ../src/converter/type_id.cpp
-    # ../src/converter/registry.cpp # MWerks needs this for some reason
 
-  : <include>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB
-    $(PYTHON_V1_PROPERTIES)
+  : <include>$(BOOST_ROOT) 
+    [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
+    <define>BOOST_PYTHON_STATIC_LIB
     ;
 
 
