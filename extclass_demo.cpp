@@ -524,6 +524,12 @@ struct StandardOps
     static T cmp(const T& x, const T& y) { return std::less<T>()(x, y) ? -1 : std::less<T>()(y, x) ? 1 : 0; }
 };
 
+// This helps us prove that we can now pass non-const reference parameters to constructors
+struct Fubar {
+    Fubar(Foo&) {}
+    Fubar(int) {}
+};
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -532,6 +538,10 @@ struct StandardOps
 
 void init_module(py::Module& m)
 {
+    py::ClassWrapper<Fubar> fubar(m, "Fubar");
+    fubar.def(py::Constructor<Foo&>());
+    fubar.def(py::Constructor<int>());
+    
     m.add(new Foo::PythonClass);
     m.add(new BarPythonClass);
     m.add(new BazPythonClass);
