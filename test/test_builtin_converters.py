@@ -197,9 +197,8 @@ Check that classic classes also work
 >>> get_type(1) is type(1)
 1
 
->>> try: return_null_handle()
-... except: pass
-... else: print 'expectd an exception'
+>>> return_null_handle() is None
+1
 """
 
 def run(args = None):
