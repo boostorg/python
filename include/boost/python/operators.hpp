@@ -237,11 +237,11 @@ namespace detail
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              tuple args(ref(arguments, ref::increment_count));                                 \
+              tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return BOOST_PYTHON_CONVERSION::to_python(                                          \
-                  BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>()) oper      \
-                  BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>()));        \
+              return to_python(search_namespace                                         \
+                  from_python(args[0].get(), type<Left>()) oper                         \
+                  from_python(args[1].get(), type<Right>()));                           \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -253,11 +253,11 @@ namespace detail
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              tuple args(ref(arguments, ref::increment_count));                                 \
+              tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return BOOST_PYTHON_CONVERSION::to_python(                                          \
-                  BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>()) oper      \
-                  BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>()));        \
+              return to_python(search_namespace                                         \
+                  from_python(args[1].get(), type<Left>()) oper                         \
+                  from_python(args[0].get(), type<Right>()));                           \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -278,10 +278,10 @@ namespace detail
       {                                                                                         \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
           {                                                                                     \
-              tuple args(ref(arguments, ref::increment_count));                                         \
+              tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                                 \
-              return BOOST_PYTHON_CONVERSION::to_python(                                                  \
-                  oper(BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>())));        \
+              return to_python(search_namespace,                                                \
+                  oper(from_python(args[0].get(), type<operand>())));                           \
           }                                                                                     \
                                                                                                 \
           const char* description() const                                                       \
@@ -335,9 +335,9 @@ namespace detail
                   throw argument_error();
               }
 
-              return BOOST_PYTHON_CONVERSION::to_python(
-                  pow(BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>()),
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>()))); 
+              return to_python(search_namespace,
+                  pow(from_python(args[0].get(), type<Left>()),
+                   from_python(args[1].get(), type<Right>()))); 
           }
 
           const char* description() const
@@ -358,9 +358,9 @@ namespace detail
                   throw argument_error();
               }
 
-              return BOOST_PYTHON_CONVERSION::to_python(
-                  pow(BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>()),
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>()))); 
+              return to_python(search_namespace,
+                  pow(from_python(args[1].get(), type<Left>()),
+                   from_python(args[0].get(), type<Right>()))); 
           }
 
           const char* description() const
@@ -386,13 +386,13 @@ namespace detail
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                BOOST_PYTHON_CONVERSION::to_python(
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>()) /
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>()))); 
+                               to_python(search_namespace,
+                                         from_python(args[0].get(), type<Left>()) /
+                                         from_python(args[1].get(), type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
-                BOOST_PYTHON_CONVERSION::to_python(
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>()) %
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>())));
+                               to_python(search_namespace,
+                                         from_python(args[0].get(), type<Left>()) %
+                                         from_python(args[1].get(), type<Right>())));
 
               return res; 
           }
@@ -411,13 +411,13 @@ namespace detail
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                BOOST_PYTHON_CONVERSION::to_python(
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>()) /
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>()))); 
+                               to_python(search_namespace,
+                                         from_python(args[1].get(), type<Left>()) /
+                                         from_python(args[0].get(), type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
-                BOOST_PYTHON_CONVERSION::to_python(
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>()) %
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>())));
+                               to_python(search_namespace,
+                                         from_python(args[1].get(), type<Left>()) %
+                                         from_python(args[0].get(), type<Right>())));
 
               return res; 
           }
@@ -443,12 +443,12 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-              return BOOST_PYTHON_CONVERSION::to_python(
-                  (BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>()) <
-                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>())) ?
+              return to_python(search_namespace,
+                  (from_python(args[0].get(), type<Left>()) <
+                   from_python(args[1].get(), type<Right>())) ?
                        - 1 :
-                       (BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Right>()) <
-                       BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Left>())) ?
+                       (from_python(args[1].get(), type<Right>()) <
+                       from_python(args[0].get(), type<Left>())) ?
                            1 :
                            0) ; 
           }
@@ -465,12 +465,12 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-              return BOOST_PYTHON_CONVERSION::to_python(
-                  (BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>()) <
-                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>())) ?
+              return to_python(search_namespace,
+                  (from_python(args[1].get(), type<Left>()) <
+                   from_python(args[0].get(), type<Right>())) ?
                        - 1 :
-                       (BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<Right>()) <
-                       BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<Left>())) ?
+                       (from_python(args[0].get(), type<Right>()) <
+                       from_python(args[1].get(), type<Left>())) ?
                            1 :
                            0) ; 
           }
@@ -510,13 +510,13 @@ namespace detail
 // _STL::string, but std::string.
 # ifdef BOOST_PYTHON_USE_SSTREAM
               std::ostringstream s;
-              s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>());
-              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
+              s << from_python(args[0].get(), type<operand>());
+              return to_python(search_namespace, s.str()); 
 # else
               std::ostrstream s;
-              s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>()) << char();
+              s << from_python(args[0].get(), type<operand>()) << char();
               auto unfreezer unfreeze(s);
-              return BOOST_PYTHON_CONVERSION::to_python(const_cast<char const *>(s.str())); 
+              return to_python(search_namespace, const_cast<char const *>(s.str())); 
 # endif
           }
 

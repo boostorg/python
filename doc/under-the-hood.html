@@ -27,7 +27,7 @@
       <a href="example1.html#Constructor_example">provide an argument list</a>
       because they can't be named in C++). Then, it calls the appropriate
       overloaded functions <code>PyObject*
-      to_python(</code><em>S</em><code>)</code> and <em>
+      to_python(boost::python::semantics, </code><em>S</em><code>)</code> and <em>
       S'</em><code>from_python(PyObject*,
       type&lt;</code><em>S</em><code>&gt;)</code> which convert between any C++
       type <em>S</em> and a <code>PyObject*</code>, the type which represents a

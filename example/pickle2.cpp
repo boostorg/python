@@ -45,8 +45,6 @@ namespace { // Avoid cluttering the global namespace.
 
   // Support for pickle.
 
-  using BOOST_PYTHON_CONVERSION::from_python;
-
   python::ref world_getinitargs(const world& w) {
       python::tuple result(1);
       result.set_item(0, w.get_country());

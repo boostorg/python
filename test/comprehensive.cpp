@@ -165,7 +165,7 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(key));
+		PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(boost::python::search_namespace, key));
         throw boost::python::error_already_set();
     }
 }
@@ -746,9 +746,9 @@ namespace boost { namespace python {
 }} // namespace boost::python
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
-inline PyObject* to_python(const bpl_test::Record* p)
+inline PyObject* to_python(boost::python::semantics, const bpl_test::Record* p)
 {
-    return to_python(*p);
+    return to_python(boost::python::search_namespace, *p);
 }
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
@@ -835,7 +835,7 @@ namespace bpl_test {
           throw boost::python::error_already_set();
       }
     
-      const int number = BOOST_PYTHON_CONVERSION::from_python(state[0].get(), boost::python::type<int>());
+      const int number = from_python(state[0].get(), boost::python::type<int>());
       if (number != 42)
           w.set_secret_number(number);
   }
@@ -1117,13 +1117,13 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
         throw boost::python::argument_error();
     }
     
-    RawTest* first = BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<RawTest*>());
-    int second = BOOST_PYTHON_CONVERSION::from_python(args[1].get(), boost::python::type<int>());
+    RawTest* first = from_python(args[0].get(), boost::python::type<RawTest*>());
+    int second = from_python(args[1].get(), boost::python::type<int>());
     
-    int third = BOOST_PYTHON_CONVERSION::from_python(keywords[boost::python::string("third")].get(), boost::python::type<int>());
-    int fourth = BOOST_PYTHON_CONVERSION::from_python(keywords[boost::python::string("fourth")].get(), boost::python::type<int>());
+    int third = from_python(keywords[boost::python::string("third")].get(), boost::python::type<int>());
+    int fourth = from_python(keywords[boost::python::string("fourth")].get(), boost::python::type<int>());
     
-    return BOOST_PYTHON_CONVERSION::to_python(first->i_ + second + third + fourth);
+    return to_python(boost::python::search_namespace, first->i_ + second + third + fourth);
 }
 
 void init_module()

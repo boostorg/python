@@ -94,7 +94,6 @@ BOOST_PYTHON_MODULE_INIT(pickle3)
 
 namespace {
 
-  using BOOST_PYTHON_CONVERSION::from_python;
   using boost::python::type;
   using boost::python::ref;
   using boost::python::tuple;

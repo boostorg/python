@@ -22,6 +22,8 @@
 
 namespace boost { namespace python {
 
+enum semantics { search_namespace }; // Used to find to_python functions via koenig lookup.
+
 // IMPORTANT: this function may only be called from within a catch block!
 void handle_exception()
 {
@@ -142,7 +144,7 @@ PyObject* integer_to_python(T value)
         throw boost::python::error_already_set();
     }
     
-    return to_python(value_as_long);
+    return to_python(boost::python::search_namespace, value_as_long);
 }
 
 int from_python(PyObject* p, boost::python::type<int> type)
@@ -150,7 +152,7 @@ int from_python(PyObject* p, boost::python::type<int> type)
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(unsigned int i)
+PyObject* to_python(boost::python::semantics, unsigned int i)
 {
     return integer_to_python(i);
 }
@@ -170,7 +172,7 @@ float from_python(PyObject* p, boost::python::type<float>)
     return static_cast<float>(from_python(p, boost::python::type<double>()));
 }
 
-PyObject* to_python(unsigned short i)
+PyObject* to_python(boost::python::semantics, unsigned short i)
 {
     return integer_to_python(i);
 }
@@ -180,7 +182,7 @@ unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(char c)
+PyObject* to_python(boost::python::semantics, char c)
 {
     if (c == '\0') return PyString_FromString("");
     return PyString_FromStringAndSize(&c, 1);
@@ -198,7 +200,7 @@ char from_python(PyObject* p, boost::python::type<char>)
     return PyString_AsString(p)[0];
 }
 
-PyObject* to_python(unsigned char i)
+PyObject* to_python(boost::python::semantics, unsigned char i)
 {
     return integer_to_python(i);
 }
@@ -208,7 +210,7 @@ unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(signed char i)
+PyObject* to_python(boost::python::semantics, signed char i)
 {
     return integer_to_python(i);
 }
@@ -218,7 +220,7 @@ signed char from_python(PyObject* p, boost::python::type<signed char> type)
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(unsigned long x)
+PyObject* to_python(boost::python::semantics, unsigned long x)
 {
     return integer_to_python(x);
 }
@@ -244,7 +246,7 @@ const char* from_python(PyObject* p, boost::python::type<const char*>)
     return s;
 }
 
-PyObject* to_python(const std::string& s)
+PyObject* to_python(boost::python::semantics, const std::string& s)
 {
     return PyString_FromStringAndSize(s.data(), s.size());
 }
@@ -268,12 +270,12 @@ bool from_python(PyObject* p, boost::python::type<bool>)
 
 #ifdef BOOST_MSVC6_OR_EARLIER
 // An optimizer bug prevents these from being inlined.
-PyObject* to_python(double d)
+PyObject* to_python(boost::python::semantics, double d)
 {
     return PyFloat_FromDouble(d);
 }
 
-PyObject* to_python(float f)
+PyObject* to_python(boost::python::semantics, float f)
 {
     return PyFloat_FromDouble(f);
 }

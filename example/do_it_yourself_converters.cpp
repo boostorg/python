@@ -95,11 +95,11 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
   // Convert a MillerIndex object to a Python tuple.
   //
-  PyObject* to_python(const MillerIndex& hkl)
+  PyObject* to_python(python::semantics, const MillerIndex& hkl)
   {
     python::tuple result(3);
     for (int i = 0; i < 3; i++)
-      result.set_item(i, python::ref(to_python(hkl.v[i])));
+      result.set_item(i, hkl.v[i]);
     return result.reference().release();
   }
 

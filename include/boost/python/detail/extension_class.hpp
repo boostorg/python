@@ -179,31 +179,32 @@ template <class T, class U = boost::python::detail::held_instance<T> >
 class python_extension_class_converters
 {
  public:
-    // Get an object which can be used to convert T to/from python. This is used
-    // as a kind of concept check by the global template
-    //
-    //     PyObject* to_python(const T& x)
-    //
-    // below this class, to prevent the confusing messages that would otherwise
-    // pop up. Now, if T hasn't been wrapped as an extension class, the user
-    // will see an error message about the lack of an eligible
-    // py_extension_class_converters() function.
-    friend python_extension_class_converters py_extension_class_converters(boost::python::type<T>)
+    /// Get an object which can be used to convert T to/from python. This is used
+    /// as a kind of concept check by the free template function
+    ///
+    ///     PyObject* to_python(boost::python::semantics, const T& x)
+    ///
+    /// below this class, to prevent the confusing messages that would otherwise
+    /// pop up. Now, if T hasn't been wrapped as an extension class, the user
+    /// will see an error message about the lack of an eligible
+    /// py_extension_class_converters() function.
+    friend python_extension_class_converters py_extension_class_converters(
+        boost::python::type<T>)
     { 
         return python_extension_class_converters();
     }
 
-    // This is a member function because in a conforming implementation, friend
-    // funcitons defined inline in the class body are all instantiated as soon
-    // as the enclosing class is instantiated. If T is not copyable, that causes
-    // a compiler error. Instead, we access this function through the global
-    // template 
-    //
-    //     PyObject* to_python(const T& x)
-    //
-    // defined below this class. Since template functions are instantiated only
-    // on demand, errors will be avoided unless T is noncopyable and the user
-    // writes code which causes us to try to copy a T.
+    /// This is a member function because in a conforming implementation, friend
+    /// funcitons defined inline in the class body are all instantiated as soon
+    /// as the enclosing class is instantiated. If T is not copyable, that causes
+    /// a compiler error. Instead, we access this function through the global
+    /// template 
+    ///
+    ///     PyObject* to_python(boost::python::semantics, const T& x)
+    ///
+    /// defined below this class. Since template functions are instantiated only
+    /// on demand, errors will be avoided unless T is noncopyable and the user
+    /// writes code which causes us to try to copy a T.
     PyObject* to_python(const T& x) const
     {
         boost::python::reference<boost::python::detail::extension_instance> result(create_instance());
@@ -213,6 +214,7 @@ class python_extension_class_converters
         return result.release();
     }
 
+    /// Extract a pointer to T from the given PyObject. Will throw argument_error if obj == None.
     friend
     T* non_null_from_python(PyObject* obj, boost::python::type<T*>)
     {
@@ -235,16 +237,19 @@ class python_extension_class_converters
         throw boost::python::argument_error();
     }
 
-    // Convert to T*
+    /// Convert obj to T*. If obj == None, returns 0.
     friend T* from_python(PyObject* obj, boost::python::type<T*>)
     {
+        // forward declaration needed for ordinary lookup.
+        T* non_null_from_python(PyObject*, boost::python::type<T*>);
+        
         if (obj == Py_None)
             return 0;
         else
             return non_null_from_python(obj, boost::python::type<T*>());
     }
 
-    // Extract from obj a mutable reference to the PtrType object which is holding a T.
+    /// Extract from obj a mutable reference to the PtrType object which is holding a T.
     template <class PtrType>
     static PtrType& smart_ptr_reference(PyObject* obj, boost::python::type<PtrType>)
     {
@@ -263,10 +268,10 @@ class python_extension_class_converters
         throw boost::python::argument_error();
     }
 
-    // Extract from obj a reference to the PtrType object which is holding a
-    // T. If it weren't for auto_ptr, it would be a constant reference. Do not
-    // modify the referent except by copying an auto_ptr! If obj is None, the
-    // reference denotes a default-constructed PtrType
+    /// Extract from obj a reference to the PtrType object which is holding a
+    /// T. If it weren't for auto_ptr, it would be a constant reference. Do not
+    /// modify the referent except by copying an auto_ptr! If obj is None, the
+    /// reference denotes a default-constructed PtrType
     template <class PtrType>
     static PtrType& smart_ptr_value(PyObject* obj, boost::python::type<PtrType>)
     {
@@ -277,7 +282,9 @@ class python_extension_class_converters
         }
         return smart_ptr_reference(obj, boost::python::type<PtrType>());
     }
-        
+
+    /// Wrap x in a Python object which implements the functionality of a
+    /// regular wrapped T by dereferencing a copy of x.
     template <class PtrType>
     static PyObject* smart_ptr_to_python(PtrType x)
     {
@@ -293,6 +300,9 @@ class python_extension_class_converters
         return result.release();
     }
 
+    /// Create a Python object which is an instance of the Python type wrapper
+    /// for T.  The result does not actually contain the neccessary instance of
+    /// T. This function is an implementation detail.
     static boost::python::reference<boost::python::detail::extension_instance> create_instance()
     {
         PyTypeObject* class_object = boost::python::detail::class_registry<T>::class_object();
@@ -303,15 +313,15 @@ class python_extension_class_converters
             new boost::python::detail::extension_instance(class_object));
     }
 
-    // Convert to const T*
+    /// Convert p to const T*
     friend const T* from_python(PyObject* p, boost::python::type<const T*>)
         { return from_python(p, boost::python::type<T*>()); }
 
-    // Convert to const T* const&
+    /// Convert p to const T* const&
     friend const T* from_python(PyObject* p, boost::python::type<const T*const&>)
          { return from_python(p, boost::python::type<const T*>()); }
   
-    // Convert to T* const&
+    /// Convert p to T* const&
     friend T* from_python(PyObject* p, boost::python::type<T* const&>)
          { return from_python(p, boost::python::type<T*>()); }
  
@@ -319,11 +329,11 @@ class python_extension_class_converters
     friend T& from_python(PyObject* p, boost::python::type<T&>)
         { return *boost::python::detail::check_non_null(non_null_from_python(p, boost::python::type<T*>())); }
 
-    // Convert to const T&
+    // Convert p to const T&
     friend const T& from_python(PyObject* p, boost::python::type<const T&>)
         { return from_python(p, boost::python::type<T&>()); }
 
-    // Convert to T
+    /// Convert p to T
     friend const T& from_python(PyObject* p, boost::python::type<T>)
         { return from_python(p, boost::python::type<T&>()); }
 
@@ -336,7 +346,7 @@ class python_extension_class_converters
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>)
         { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
 
-    friend PyObject* to_python(std::auto_ptr<T> x)
+    friend PyObject* to_python(boost::python::semantics, std::auto_ptr<T> x)
         { return smart_ptr_to_python(x); }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&>)
@@ -348,7 +358,7 @@ class python_extension_class_converters
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>)
         { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
 
-    friend PyObject* to_python(boost::shared_ptr<T> x)
+    friend PyObject* to_python(boost::python::semantics, boost::shared_ptr<T> x)
         { return smart_ptr_to_python(x); }
 };
 
@@ -357,7 +367,7 @@ class python_extension_class_converters
 // T is a wrapped class. See the first 2 functions declared in
 // python_extension_class_converters above for more info.
 template <class T>
-PyObject* to_python(const T& x)
+PyObject* to_python(boost::python::semantics, const T& x)
 {
     return py_extension_class_converters(boost::python::type<T>()).to_python(x);
 }

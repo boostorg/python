@@ -38,7 +38,7 @@ struct callback
 %{    template <%(class A%n%:, %)>
 %}    static R call_method(PyObject* self, const char* name%(, const A%n& a%n%))
     {%(
-        ref p%n(to_python(a%n));%)
+        ref p%n(to_python(search_namespace, a%n));%)
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(%(O%))")%(,
                                      p%n.get()%)));
@@ -49,7 +49,7 @@ struct callback
 %{    template <%(class A%n%:, %)>
 %}    static R call(PyObject* self%(, const A%n& a%n%))
     {%(
-        ref p%n(to_python(a%n));%)
+        ref p%n(to_python(search_namespace, a%n));%)
         ref result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
                                        p%n.get()%)));
         detail::callback_adjust_refcount(result.get(), type<R>());
@@ -70,7 +70,7 @@ struct callback<void>
 %{    template <%(class A%n%:, %)>
 %}    static void call_method(PyObject* self, const char* name%(, const A%n& a%n%))
     {%(
-        ref p%n(to_python(a%n));%)
+        ref p%n(to_python(search_namespace, a%n));%)
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(%(O%))")%(,
                                      p%n.get()%)));
@@ -79,7 +79,7 @@ struct callback<void>
 %{    template <%(class A%n%:, %)>
 %}    static void call(PyObject* self%(, const A%n& a%n%))
     {%(
-        ref p%n(to_python(a%n));%)
+        ref p%n(to_python(search_namespace, a%n));%)
         ref result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
                                        p%n.get()%)));
     }

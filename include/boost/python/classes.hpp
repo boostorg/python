@@ -284,14 +284,14 @@ PyObject* class_t<T>::instance_mapping_subscript(PyObject* obj, PyObject* key) c
 template <class T>
 PyObject* class_t<T>::instance_sequence_item(PyObject* obj, int n) const
 {
-    ref key(to_python(n));
+    ref key(to_python(search_namespace, n));
     return downcast<T>(obj)->get_subscript(key.get());
 }
 
 template <class T>
 int class_t<T>::instance_sequence_ass_item(PyObject* obj, int n, PyObject* value) const
 {
-    ref key(to_python(n));
+    ref key(to_python(search_namespace, n));
     downcast<T>(obj)->set_subscript(key.get(), value);
     return 0;
 }

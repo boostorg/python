@@ -94,9 +94,9 @@ struct raw_arguments_function : function
                  ref(keywords, ref::increment_count) :
                  ref(PyDict_New()));
             
-        return to_python(
-            (*m_pf)(from_python(args, boost::python::type<Args>()),
-                    from_python(dict.get(), boost::python::type<Keywords>()))); 
+        return to_python(search_namespace,
+            (*m_pf)(from_python(args, type<Args>()),
+                    from_python(dict.get(), type<Keywords>()))); 
     }
     
     const char* description() const
@@ -263,7 +263,7 @@ PyObject* getter_function<ClassType, MemberType>::do_call(
     if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
         return 0;
 
-    return to_python(
+    return to_python(search_namespace,
         from_python(self, type<const ClassType*>())->*m_pm);
 }
 

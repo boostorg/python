@@ -97,14 +97,14 @@ def gen_caller(member_function_args, free_function_args = None):
     return (header % (member_function_args, free_function_args)
             + body_sections[0]
             + gen_functions(member_function, member_function_args,
-                            'R', '', 'return to_python(', ');')
+                            'R', '', 'return to_python(search_namespace, ', ');')
             + body_sections[1]
             + gen_functions(member_function, member_function_args,
-                            'R', ' const', 'return to_python(', ');')
+                            'R', ' const', 'return to_python(search_namespace, ', ');')
             + body_sections[2]
             
             + gen_functions(free_function, free_function_args,
-                            'R', 'return to_python(', ');')
+                            'R', 'return to_python(search_namespace, ', ');')
             + body_sections[3]
 
             # specialized part for void return values begins here

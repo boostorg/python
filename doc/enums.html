@@ -75,7 +75,7 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
         from_python(x, boost::python::type&lt;long&gt;()));
   }
 
-  PyObject* to_python(MyEnumType x)
+  PyObject* to_python(boost::python::semantics, MyEnumType x)
   {
       return to_python(static_cast&lt;long&gt;(x));
   }
@@ -91,8 +91,8 @@ initialization. These bind the corresponding enum values to the appropriate
 names so they can be used from Python:
 
 <blockquote><pre>
-mymodule.add(boost::python::to_python(enum_value_1), "enum_value_1");
-mymodule.add(boost::python::to_python(enum_value_2), "enum_value_2");
+mymodule.add(boost::python::to_python(boost::python::search_namespace, enum_value_1), "enum_value_1");
+mymodule.add(boost::python::to_python(boost::python::search_namespace, enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
 
@@ -100,8 +100,8 @@ You can also add these to an extension class definition, if your enum happens to
 be local to a class and you want the analogous interface in Python:
 
 <blockquote><pre>
-my_class_builder.add(boost::python::to_python(enum_value_1), "enum_value_1");
-my_class_builder.add(boost::python::to_python(enum_value_2), "enum_value_2");
+my_class_builder.add(boost::python::to_python(boost::python::search_namespace, enum_value_1), "enum_value_1");
+my_class_builder.add(boost::python::to_python(boost::python::search_namespace, enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
                <p>

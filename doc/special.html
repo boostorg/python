@@ -699,7 +699,7 @@ void throw_key_error_if_end(
 {
     if (p == m.end())
     {
-        PyErr_SetObject(PyExc_KeyError, boost::python::converters::to_python(key));
+        PyErr_SetObject(PyExc_KeyError, to_python(boost::python::search_namespace, key));
         throw boost::python::error_already_set();
     }
 }

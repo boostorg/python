@@ -66,8 +66,8 @@ class python_import_extension_class_converters
         return python_import_extension_class_converters();
     }
 
-    PyObject* to_python(const T& x) const {
-        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(x);
+    PyObject* to_python(boost::python::semantics, const T& x) const {
+        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(boost::python::search_namespace, x);
     }
 
     friend T* from_python(PyObject* p, boost::python::type<T*> t, bool sig = false) {
@@ -101,8 +101,8 @@ class python_import_extension_class_converters
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&> t, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_caTr(p, t);
     }
-    friend PyObject* to_python(std::auto_ptr<T> x, bool sig = false) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(x);
+    friend PyObject* to_python(boost::python::semantics, std::auto_ptr<T> x, bool sig = false) {
+        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(boost::python::search_namespace, x);
     }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&> t, bool sig = false) {
@@ -114,7 +114,7 @@ class python_import_extension_class_converters
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&> t, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_csTr(p, t);
     }
-    friend PyObject* to_python(boost::shared_ptr<T> x, bool sig = false) {
+    friend PyObject* to_python(boost::python::semantics, boost::shared_ptr<T> x, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->to_python(x);
     }
 };
@@ -142,22 +142,22 @@ struct export_converter_object_base
 
     virtual PyObject* to_python(const T& x) = 0;
 
-    virtual T* from_python_Ts(PyObject* p, boost::python::type<T*> t) = 0;
-    virtual const T* from_python_cTs(PyObject* p, boost::python::type<const T*> t) = 0;
-    virtual const T* from_python_cTscr(PyObject* p, boost::python::type<const T*const&> t) = 0;
-    virtual T* from_python_Tscr(PyObject* p, boost::python::type<T* const&> t) = 0;
-    virtual T& from_python_Tr(PyObject* p, boost::python::type<T&> t) = 0;
-    virtual const T& from_python_cTr(PyObject* p, boost::python::type<const T&> t) = 0;
-    virtual const T& from_python_T(PyObject* p, boost::python::type<T> t) = 0;
+    virtual T* from_python_Ts(PyObject* p, type<T*> t) = 0;
+    virtual const T* from_python_cTs(PyObject* p, type<const T*> t) = 0;
+    virtual const T* from_python_cTscr(PyObject* p, type<const T*const&> t) = 0;
+    virtual T* from_python_Tscr(PyObject* p, type<T* const&> t) = 0;
+    virtual T& from_python_Tr(PyObject* p, type<T&> t) = 0;
+    virtual const T& from_python_cTr(PyObject* p, type<const T&> t) = 0;
+    virtual const T& from_python_T(PyObject* p, type<T> t) = 0;
 
-    virtual std::auto_ptr<T>& from_python_aTr(PyObject* p, boost::python::type<std::auto_ptr<T>&> t) = 0;
-    virtual std::auto_ptr<T> from_python_aT(PyObject* p, boost::python::type<std::auto_ptr<T> > t) = 0;
-    virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, boost::python::type<const std::auto_ptr<T>&> t) = 0;
+    virtual std::auto_ptr<T>& from_python_aTr(PyObject* p, type<std::auto_ptr<T>&> t) = 0;
+    virtual std::auto_ptr<T> from_python_aT(PyObject* p, type<std::auto_ptr<T> > t) = 0;
+    virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, type<const std::auto_ptr<T>&> t) = 0;
     virtual PyObject* to_python(std::auto_ptr<T> x) = 0;
 
-    virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, boost::python::type<boost::shared_ptr<T>&> t) = 0;
-    virtual const boost::shared_ptr<T>& from_python_sT(PyObject* p, boost::python::type<boost::shared_ptr<T> > t) = 0;
-    virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, boost::python::type<const boost::shared_ptr<T>&> t) = 0;
+    virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, type<boost::shared_ptr<T>&> t) = 0;
+    virtual const boost::shared_ptr<T>& from_python_sT(PyObject* p, type<boost::shared_ptr<T> > t) = 0;
+    virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, type<const boost::shared_ptr<T>&> t) = 0;
     virtual PyObject* to_python(boost::shared_ptr<T> x) = 0;
 };
 
@@ -171,52 +171,52 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
         throw import_error();
     }
 
-    virtual T* from_python_Ts(PyObject* p, boost::python::type<T*> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual T* from_python_Ts(PyObject* p, type<T*> t) {
+        return from_python(p, t);
     }
-    virtual const T* from_python_cTs(PyObject* p, boost::python::type<const T*> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const T* from_python_cTs(PyObject* p, type<const T*> t) {
+        return from_python(p, t);
     }
-    virtual const T* from_python_cTscr(PyObject* p, boost::python::type<const T*const&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const T* from_python_cTscr(PyObject* p, type<const T*const&> t) {
+        return from_python(p, t);
     }
-    virtual T* from_python_Tscr(PyObject* p, boost::python::type<T* const&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual T* from_python_Tscr(PyObject* p, type<T* const&> t) {
+        return from_python(p, t);
     }
-    virtual T& from_python_Tr(PyObject* p, boost::python::type<T&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual T& from_python_Tr(PyObject* p, type<T&> t) {
+        return from_python(p, t);
     }
-    virtual const T& from_python_cTr(PyObject* p, boost::python::type<const T&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const T& from_python_cTr(PyObject* p, type<const T&> t) {
+        return from_python(p, t);
     }
-    virtual const T& from_python_T(PyObject* p, boost::python::type<T> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const T& from_python_T(PyObject* p, type<T> t) {
+        return from_python(p, t);
     }
 
-    virtual std::auto_ptr<T>& from_python_aTr(PyObject* p, boost::python::type<std::auto_ptr<T>&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual std::auto_ptr<T>& from_python_aTr(PyObject* p, type<std::auto_ptr<T>&> t) {
+        return from_python(p, t);
     }
-    virtual std::auto_ptr<T> from_python_aT(PyObject* p, boost::python::type<std::auto_ptr<T> > t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual std::auto_ptr<T> from_python_aT(PyObject* p, type<std::auto_ptr<T> > t) {
+        return from_python(p, t);
     }
-    virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, boost::python::type<const std::auto_ptr<T>&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, type<const std::auto_ptr<T>&> t) {
+        return from_python(p, t);
     }
     virtual PyObject* to_python(std::auto_ptr<T> x) {
-        return BOOST_PYTHON_CONVERSION::to_python(x);
+        return to_python(x);
     }
 
-    virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, boost::python::type<boost::shared_ptr<T>&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, type<boost::shared_ptr<T>&> t) {
+        return from_python(p, t);
     }
-    virtual const boost::shared_ptr<T>& from_python_sT(PyObject* p, boost::python::type<boost::shared_ptr<T> > t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const boost::shared_ptr<T>& from_python_sT(PyObject* p, type<boost::shared_ptr<T> > t) {
+        return from_python(p, t);
     }
-    virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, boost::python::type<const boost::shared_ptr<T>&> t) {
-        return BOOST_PYTHON_CONVERSION::from_python(p, t);
+    virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, type<const boost::shared_ptr<T>&> t) {
+        return from_python(p, t);
     }
     virtual PyObject* to_python(boost::shared_ptr<T> x) {
-        return BOOST_PYTHON_CONVERSION::to_python(x);
+        return to_python(x);
     }
 };
 
@@ -225,7 +225,7 @@ template <class T>
 struct export_converter_object : export_converter_object_noncopyable<T>
 {
     virtual PyObject* to_python(const T& x) {
-        return BOOST_PYTHON_CONVERSION::py_extension_class_converters(boost::python::type<T>()).to_python(x);
+        return BOOST_PYTHON_CONVERSION::py_extension_class_converters(type<T>()).to_python(x);
     }
 };
 
@@ -247,29 +247,29 @@ class import_extension_class
       m_py_class = py_class;
     }
 
-    static boost::python::export_converter_object_base<T>* get_converters();
+    static export_converter_object_base<T>* get_converters();
 
   private:
     static std::string m_module;
     static std::string m_py_class;
-    static boost::python::export_converter_object_base<T>* imported_converters;
+    static export_converter_object_base<T>* imported_converters;
 };
 
 template <class T> std::string import_extension_class<T>::m_module;
 template <class T> std::string import_extension_class<T>::m_py_class;
 template <class T>
-boost::python::export_converter_object_base<T>*
+export_converter_object_base<T>*
 import_extension_class<T>::imported_converters = 0;
 
 template <class T>
-boost::python::export_converter_object_base<T>*
+export_converter_object_base<T>*
 import_extension_class<T>::get_converters() {
   if (imported_converters == 0) {
     void* cobject
       = import_converter_object(m_module, m_py_class,
                                 converters_attribute_name);
     imported_converters
-      = static_cast<boost::python::export_converter_object_base<T>*>(cobject);
+      = static_cast<export_converter_object_base<T>*>(cobject);
     check_export_converters_api(
       export_converters_api_major,
       export_converters_api_minor,

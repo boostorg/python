@@ -52,9 +52,9 @@ class py_enum_as_int_converters
             from_python(x, boost::python::type<long>()));
     }
 
-    friend PyObject* to_python(EnumType x)
+    friend PyObject* to_python(boost::python::semantics, EnumType x)
     {
-        return to_python(static_cast<long>(x));
+        return to_python(boost::python::search_namespace, static_cast<long>(x));
     }
 };
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
@@ -116,70 +116,70 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 //
 // Converters
 //
-PyObject* to_python(long);
+PyObject* to_python(boost::python::search_namespace, long);
 long from_python(PyObject* p, boost::python::type<long>);
 long from_python(PyObject* p, boost::python::type<const long&>);
 
-PyObject* to_python(unsigned long);
+PyObject* to_python(boost::python::search_namespace, unsigned long);
 unsigned long from_python(PyObject* p, boost::python::type<unsigned long>);
 unsigned long from_python(PyObject* p, boost::python::type<const unsigned long&>);
 
-PyObject* to_python(int);
+PyObject* to_python(boost::python::search_namespace, int);
 int from_python(PyObject*, boost::python::type<int>);
 int from_python(PyObject*, boost::python::type<const int&>);
     
-PyObject* to_python(unsigned int);
+PyObject* to_python(boost::python::search_namespace, unsigned int);
 unsigned int from_python(PyObject*, boost::python::type<unsigned int>);
 unsigned int from_python(PyObject*, boost::python::type<const unsigned int&>);
 
-PyObject* to_python(short);
+PyObject* to_python(boost::python::search_namespace, short);
 short from_python(PyObject*, boost::python::type<short>);
 short from_python(PyObject*, boost::python::type<const short&>);
     
-PyObject* to_python(unsigned short);
+PyObject* to_python(boost::python::search_namespace, unsigned short);
 unsigned short from_python(PyObject*, boost::python::type<unsigned short>);
 unsigned short from_python(PyObject*, boost::python::type<const unsigned short&>);
 
-PyObject* to_python(char);
+PyObject* to_python(boost::python::search_namespace, char);
 char from_python(PyObject*, boost::python::type<char>);
 char from_python(PyObject*, boost::python::type<const char&>);
 
-PyObject* to_python(signed char);
+PyObject* to_python(boost::python::search_namespace, signed char);
 signed char from_python(PyObject*, boost::python::type<signed char>);
 signed char from_python(PyObject*, boost::python::type<const signed char&>);
 
-PyObject* to_python(unsigned char);
+PyObject* to_python(boost::python::search_namespace, unsigned char);
 unsigned char from_python(PyObject*, boost::python::type<unsigned char>);
 unsigned char from_python(PyObject*, boost::python::type<const unsigned char&>);
 
-PyObject* to_python(float);
+PyObject* to_python(boost::python::search_namespace, float);
 float from_python(PyObject*, boost::python::type<float>);
 float from_python(PyObject*, boost::python::type<const float&>);
     
-PyObject* to_python(double);
+PyObject* to_python(boost::python::search_namespace, double);
 double from_python(PyObject*, boost::python::type<double>);
 double from_python(PyObject*, boost::python::type<const double&>);
     
-PyObject* to_python(bool);
+PyObject* to_python(boost::python::search_namespace, bool);
 bool from_python(PyObject*, boost::python::type<bool>);
 bool from_python(PyObject*, boost::python::type<const bool&>);
 
-PyObject* to_python(void);
+PyObject* to_python(boost::python::search_namespace, void);
 void from_python(PyObject*, boost::python::type<void>);
 
-PyObject* to_python(const char* s);
+PyObject* to_python(boost::python::search_namespace, const char* s);
 const char* from_python(PyObject*, boost::python::type<const char*>);
 
-PyObject* to_python(const std::string& s);
+PyObject* to_python(boost::python::search_namespace, const std::string& s);
 std::string from_python(PyObject*, boost::python::type<std::string>);
 std::string from_python(PyObject*, boost::python::type<const std::string&>);
 
-inline PyObject* to_python(const std::complex<float>& x)
+inline PyObject* to_python(boost::python::search_namespace, const std::complex<float>& x)
 {
     return boost::python::detail::complex_to_python<float>(x);
 }
 
-inline PyObject* to_python(const std::complex<double>& x)
+inline PyObject* to_python(boost::python::search_namespace, const std::complex<double>& x)
 {
     return boost::python::detail::complex_to_python<double>(x);
 }
@@ -205,7 +205,7 @@ inline std::complex<float> from_python(PyObject* p,
 }
 
 // For when your C++ function really wants to pass/return a PyObject*
-PyObject* to_python(PyObject*);
+PyObject* to_python(boost::python::search_namespace, PyObject*);
 PyObject* from_python(PyObject*, boost::python::type<PyObject*>);
 
 // Some standard conversions to/from smart pointer types. You can add your own
@@ -259,13 +259,13 @@ boost::shared_ptr<T> from_python(PyObject*p, boost::python::type<boost::shared_p
 
 #if 0
 template <class T>
-PyObject* to_python(std::auto_ptr<T> p)
+PyObject* to_python(boost::python::search_namespace, std::auto_ptr<T> p)
 {
     return new boost::python::wrapped_pointer<std::auto_ptr<T>, T>(p);
 }
 
 template <class T>
-PyObject* to_python(boost::shared_ptr<T> p)
+PyObject* to_python(boost::python::search_namespace, boost::shared_ptr<T> p)
 {
     return new boost::python::wrapped_pointer<boost::shared_ptr<T>, T>(p);
 }
@@ -276,43 +276,43 @@ PyObject* to_python(boost::shared_ptr<T> p)
 //
 
 #ifndef BOOST_MSVC6_OR_EARLIER
-inline PyObject* to_python(double d)
+inline PyObject* to_python(boost::python::search_namespace, double d)
 {
     return PyFloat_FromDouble(d);
 }
 
-inline PyObject* to_python(float f)
+inline PyObject* to_python(boost::python::search_namespace, float f)
 {
     return PyFloat_FromDouble(f);
 }
 #endif // BOOST_MSVC6_OR_EARLIER
 
-inline PyObject* to_python(long l)
+inline PyObject* to_python(boost::python::search_namespace, long l)
 {
 	return PyInt_FromLong(l);
 }
 
-inline PyObject* to_python(int x)
+inline PyObject* to_python(boost::python::search_namespace, int x)
 {
 	return PyInt_FromLong(x);
 }
 
-inline PyObject* to_python(short x)
+inline PyObject* to_python(boost::python::search_namespace, short x)
 {
 	return PyInt_FromLong(x);
 }
 
-inline PyObject* to_python(bool b)
+inline PyObject* to_python(boost::python::search_namespace, bool b)
 {
 	return PyInt_FromLong(b);
 }
 
-inline PyObject* to_python(void)
+inline PyObject* to_python(boost::python::search_namespace, void)
 {
     return boost::python::detail::none();
 }
 
-inline PyObject* to_python(const char* s)
+inline PyObject* to_python(boost::python::search_namespace, const char* s)
 {
 	return PyString_FromString(s);
 }
@@ -322,7 +322,7 @@ inline std::string from_python(PyObject* p, boost::python::type<const std::strin
     return from_python(p, boost::python::type<std::string>());
 }
 
-inline PyObject* to_python(PyObject* p)
+inline PyObject* to_python(boost::python::search_namespace, PyObject* p)
 {
     Py_INCREF(p);
     return p;

@@ -25,8 +25,7 @@ namespace { // Avoid cluttering the global namespace.
     {
       std::vector<double>::iterator vd = begin();
       for (int i = 0; i < tuple.size(); i++)
-        vd[i] = BOOST_PYTHON_CONVERSION::from_python(tuple[i].get(),
-          python::type<double>());
+        vd[i] = from_python(tuple[i].get(), python::type<double>());
     }
   };
 
@@ -57,8 +56,8 @@ namespace { // Avoid cluttering the global namespace.
   python::tuple as_tuple(const std::vector<double>& vd)
   {
     python::tuple t(vd.size());
-    for (int i = 0; i < vd.size(); i++) t.set_item(i,
-      python::ref(BOOST_PYTHON_CONVERSION::to_python(vd[i])));
+    for (int i = 0; i < vd.size(); i++)
+        t.set_item(i, vd[i]);
     return t;
   }
 
