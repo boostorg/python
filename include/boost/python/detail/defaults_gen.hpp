@@ -26,164 +26,258 @@
 #include <boost/mpl/at.hpp>
 #include <boost/mpl/front.hpp>
 
-namespace boost { namespace python { namespace detail {
+namespace boost { namespace python {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  func_stubs_base is used as a base class for all function stubs.
 //
 ///////////////////////////////////////////////////////////////////////////////
-struct func_stubs_base {};
+    namespace detail
+    {
+        struct func_stubs_base {};
+    }
 
-}}} // namespace boost::python::detail
+template <class CallPoliciesT, class StubsT>
+struct func_stubs_with_call_policies
+: public detail::func_stubs_base
+{
+    typedef typename StubsT::nv_type    nv_type;
+    typedef typename StubsT::v_type     v_type;
+
+    func_stubs_with_call_policies(CallPoliciesT const& policies_, char const* doc_)
+    : policies(policies_), doc(doc_) {}
+
+    char const* doc_string() const
+    { return doc; }
+
+    CallPoliciesT
+    call_policies() const
+    { return policies; }
+
+    CallPoliciesT policies;
+    char const* doc;
+};
+
+}} // namespace boost::python
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_TYPEDEF_GEN(z, INDEX, DATA)                                    \
-    typedef typename ::boost::mpl::at_c                                                    \
-    <                                                                           \
-        BOOST_PP_ADD_D(1, INDEX, DATA),                                         \
-        SigT                                                                    \
-    >::type BOOST_PP_CAT(T, INDEX);                                             \
+#define BOOST_PYTHON_TYPEDEF_GEN(z, index, data)                                \
+    typedef typename ::boost::mpl::at_c<                                        \
+        BOOST_PP_ADD_D(1, index, data),                                         \
+        SigT>::type BOOST_PP_CAT(T, index);                                     \
 
-#define BPL_IMPL_FUNC_WRAPPER_GEN(z, index, DATA)                                       \
-    static RT BOOST_PP_CAT(func_, index) (                                              \
-        BOOST_PYTHON_BINARY_ENUM(                                                       \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)          \
-        )                                                                               \
-    {                                                                                   \
-        BOOST_PP_TUPLE_ELEM(3, 2, DATA)                                                 \
-        BOOST_PP_TUPLE_ELEM(3, 0, DATA)                                                 \
-        (                                                                               \
-            BOOST_PP_ENUM_PARAMS(                                                       \
-                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index),              \
-                arg                                                                     \
-            )                                                                           \
-        );                                                                              \
+#define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                           \
+    static RT BOOST_PP_CAT(func_, index) (                                      \
+        BOOST_PYTHON_BINARY_ENUM(                                               \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), T, arg)) \
+    {                                                                           \
+        BOOST_PP_TUPLE_ELEM(3, 2, data)                                         \
+        BOOST_PP_TUPLE_ELEM(3, 0, data)(                                        \
+            BOOST_PP_ENUM_PARAMS(                                               \
+                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index),      \
+                arg));                                                          \
     }
 
-#define BPL_IMPL_GEN_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)      \
-    struct FSTUBS_NAME {                                                        \
+#define BOOST_PYTHON_GEN_FUNCTION(fname, fstubs_name, n_args, n_dflts, ret)     \
+    struct fstubs_name {                                                        \
                                                                                 \
-        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));            \
+        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(n_dflts));            \
         BOOST_STATIC_CONSTANT(int, max_args = n_funcs);                         \
                                                                                 \
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename ::boost::mpl::front<SigT>::type RT;  \
+            typedef typename ::boost::mpl::front<SigT>::type RT;                \
                                                                                 \
-            BOOST_PP_REPEAT_2ND                                                 \
-            (                                                                   \
-                N_ARGS,                                                         \
-                BPL_IMPL_TYPEDEF_GEN,                                           \
-                1                                                               \
-            )                                                                   \
+            BOOST_PP_REPEAT_2ND(                                                \
+                n_args,                                                         \
+                BOOST_PYTHON_TYPEDEF_GEN,                                       \
+                1)                                                              \
                                                                                 \
-            BOOST_PP_REPEAT_2ND                                                 \
-            (                                                                   \
-                BOOST_PP_INC(N_DFLTS),                                          \
-                BPL_IMPL_FUNC_WRAPPER_GEN,                                      \
-                (FNAME, BOOST_PP_SUB_D(1, N_ARGS, N_DFLTS), RETURN)             \
-            )                                                                   \
+            BOOST_PP_REPEAT_2ND(                                                \
+                BOOST_PP_INC(n_dflts),                                          \
+                BOOST_PYTHON_FUNC_WRAPPER_GEN,                                  \
+                (fname, BOOST_PP_SUB_D(1, n_args, n_dflts), ret))               \
         };                                                                      \
     };                                                                          \
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(z, index, DATA)                           \
+#define BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN(z, index, data)                       \
     static RT BOOST_PP_CAT(func_, index) (                                      \
         ClassT& obj BOOST_PP_COMMA_IF(                                          \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index))          \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index))          \
         BOOST_PYTHON_BINARY_ENUM(                                               \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)  \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), T, arg)  \
         )                                                                       \
     {                                                                           \
-        BOOST_PP_TUPLE_ELEM(3, 2, DATA) obj.BOOST_PP_TUPLE_ELEM(3, 0, DATA)(    \
+        BOOST_PP_TUPLE_ELEM(3, 2, data) obj.BOOST_PP_TUPLE_ELEM(3, 0, data)(    \
             BOOST_PP_ENUM_PARAMS(                                               \
-                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), arg  \
-            )                                                                   \
+                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), arg) \
         );                                                                      \
     }
 
-#define BPL_IMPL_GEN_MEM_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)          \
-    struct FSTUBS_NAME {                                                                \
-                                                                                        \
-        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));                    \
-        BOOST_STATIC_CONSTANT(int, max_args = n_funcs + 1);                             \
-                                                                                        \
-        template <typename SigT>                                                        \
-        struct gen {                                                                    \
-                                                                                        \
-            typedef typename ::boost::mpl::front<SigT>::type RT;          \
-            typedef typename ::boost::mpl::at_c<1, SigT>::type ClassT;      \
-                                                                                        \
-            BOOST_PP_REPEAT_2ND                                                         \
-            (                                                                           \
-                N_ARGS,                                                                 \
-                BPL_IMPL_TYPEDEF_GEN,                                                   \
-                2                                                                       \
-            )                                                                           \
-                                                                                        \
-            BOOST_PP_REPEAT_2ND                                                         \
-            (                                                                           \
-                BOOST_PP_INC(N_DFLTS),                                                  \
-                BPL_IMPL_MEM_FUNC_WRAPPER_GEN,                                          \
-                (FNAME, BOOST_PP_SUB_D(1, N_ARGS, N_DFLTS), RETURN)                     \
-            )                                                                           \
-        };                                                                              \
+#define BOOST_PYTHON_GEN_MEM_FUNCTION(fname, fstubs_name, n_args, n_dflts, ret) \
+    struct fstubs_name {                                                        \
+                                                                                \
+        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(n_dflts));            \
+        BOOST_STATIC_CONSTANT(int, max_args = n_funcs + 1);                     \
+                                                                                \
+        template <typename SigT>                                                \
+        struct gen {                                                            \
+                                                                                \
+            typedef typename ::boost::mpl::front<SigT>::type RT;                \
+            typedef typename ::boost::mpl::at_c<1, SigT>::type ClassT;          \
+                                                                                \
+            BOOST_PP_REPEAT_2ND(                                                \
+                n_args,                                                         \
+                BOOST_PYTHON_TYPEDEF_GEN,                                       \
+                2)                                                              \
+                                                                                \
+            BOOST_PP_REPEAT_2ND(                                                \
+                BOOST_PP_INC(n_dflts),                                          \
+                BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN,                              \
+                (fname, BOOST_PP_SUB_D(1, n_args, n_dflts), ret))               \
+        };                                                                      \
     };
 
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(BOOST_MSVC)
 
-#define BPL_IMPL_GEN_FUNCTION_STUB(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS)         \
-    BPL_IMPL_GEN_FUNCTION                                                       \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
-    BPL_IMPL_GEN_FUNCTION                                                       \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _V), N_ARGS, N_DFLTS, ;)              \
-    struct FSTUBS_NAME                                                          \
+#define BOOST_PYTHON_GEN_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)     \
+    BOOST_PYTHON_GEN_FUNCTION                                                   \
+        (fname, BOOST_PP_CAT(fstubs_name, _NV), n_args, n_dflts, return)        \
+    BOOST_PYTHON_GEN_FUNCTION                                                   \
+        (fname, BOOST_PP_CAT(fstubs_name, _V), n_args, n_dflts, ;)              \
+    struct fstubs_name                                                          \
     : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _V)   v_type;                         \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  nv_type;                        \
+        typedef BOOST_PP_CAT(fstubs_name, _V)   v_type;                         \
+        typedef fstubs_name self_t;                                             \
+                                                                                \
+        fstubs_name(char const* doc_ = 0)                                       \
+        : doc(doc_) {}                                                          \
+                                                                                \
+        char const* doc_string() const                                          \
+        { return doc; }                                                         \
+                                                                                \
+        default_call_policies                                                   \
+        call_policies() const                                                   \
+        { return default_call_policies(); }                                     \
+                                                                                \
+        template <class CallPoliciesT>                                          \
+        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        operator[](CallPoliciesT const& policies) const                         \
+        {                                                                       \
+            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+                (policies, doc);                                                \
+        }                                                                       \
+                                                                                \
+        char const* doc;                                                        \
     };                                                                          \
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_GEN_MEM_FUNCTION_STUB(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS)     \
-    BPL_IMPL_GEN_MEM_FUNCTION                                                   \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
-    BPL_IMPL_GEN_MEM_FUNCTION                                                   \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _V), N_ARGS, N_DFLTS, ;)              \
-    struct FSTUBS_NAME                                                          \
+#define BOOST_PYTHON_GEN_MEM_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts) \
+    BOOST_PYTHON_GEN_MEM_FUNCTION                                               \
+        (fname, BOOST_PP_CAT(fstubs_name, _NV), n_args, n_dflts, return)        \
+    BOOST_PYTHON_GEN_MEM_FUNCTION                                               \
+        (fname, BOOST_PP_CAT(fstubs_name, _V), n_args, n_dflts, ;)              \
+    struct fstubs_name                                                          \
     : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _V)   v_type;                         \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  nv_type;                        \
+        typedef BOOST_PP_CAT(fstubs_name, _V)   v_type;                         \
+        typedef fstubs_name self_t;                                             \
+                                                                                \
+        fstubs_name(char const* doc_ = 0)                                       \
+        : doc(doc_) {}                                                          \
+                                                                                \
+        char const* doc_string() const                                          \
+        { return doc; }                                                         \
+                                                                                \
+        default_call_policies                                                   \
+        call_policies() const                                                   \
+        { return default_call_policies(); }                                     \
+                                                                                \
+        template <class CallPoliciesT>                                          \
+        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        operator[](CallPoliciesT const& policies) const                         \
+        {                                                                       \
+            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+                (policies, doc);                                                \
+        }                                                                       \
+                                                                                \
+        char const* doc;                                                        \
     };                                                                          \
 
 #else
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_GEN_FUNCTION_STUB(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS)         \
-    BPL_IMPL_GEN_FUNCTION                                                       \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
-    struct FSTUBS_NAME                                                          \
+#define BOOST_PYTHON_GEN_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)     \
+    BOOST_PYTHON_GEN_FUNCTION                                                   \
+        (fname, BOOST_PP_CAT(fstubs_name, _NV), n_args, n_dflts, return)        \
+    struct fstubs_name                                                          \
     : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  v_type;                         \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  nv_type;                        \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  v_type;                         \
+        typedef fstubs_name self_t;                                             \
+                                                                                \
+        fstubs_name(char const* doc_ = 0)                                       \
+        : doc(doc_) {}                                                          \
+                                                                                \
+        char const* doc_string() const                                          \
+        { return doc; }                                                         \
+                                                                                \
+        default_call_policies                                                   \
+        call_policies() const                                                   \
+        { return default_call_policies(); }                                     \
+                                                                                \
+        template <class CallPoliciesT>                                          \
+        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        operator[](CallPoliciesT const& policies) const                         \
+        {                                                                       \
+            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+                (policies, doc);                                                \
+        }                                                                       \
+                                                                                \
+        char const* doc;                                                        \
     };                                                                          \
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_GEN_MEM_FUNCTION_STUB(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS)     \
-    BPL_IMPL_GEN_MEM_FUNCTION                                                   \
-        (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
-    struct FSTUBS_NAME                                                          \
+#define BOOST_PYTHON_GEN_MEM_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts) \
+    BOOST_PYTHON_GEN_MEM_FUNCTION                                               \
+        (fname, BOOST_PP_CAT(fstubs_name, _NV), n_args, n_dflts, return)        \
+    struct fstubs_name                                                          \
     : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
-        typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  v_type;                         \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  nv_type;                        \
+        typedef BOOST_PP_CAT(fstubs_name, _NV)  v_type;                         \
+        typedef fstubs_name self_t;                                             \
+                                                                                \
+        fstubs_name(char const* doc_ = 0)                                       \
+        : doc(doc_) {}                                                          \
+                                                                                \
+        char const* doc_string() const                                          \
+        { return doc; }                                                         \
+                                                                                \
+        default_call_policies                                                   \
+        call_policies() const                                                   \
+        { return default_call_policies(); }                                     \
+                                                                                \
+        template <class CallPoliciesT>                                          \
+        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        operator[](CallPoliciesT const& policies) const                         \
+        {                                                                       \
+            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+                (policies, doc);                                                \
+        }                                                                       \
+                                                                                \
+        char const* doc;                                                        \
     };                                                                          \
 
 #endif // defined(BOOST_MSVC)
@@ -192,11 +286,11 @@ struct func_stubs_base {};
 //
 //  MAIN MACROS
 //
-//      Given GENERATOR_NAME, FNAME, MIN_ARGS and MAX_ARGS, These macros
+//      Given generator_name, fname, min_args and max_args, These macros
 //      generate function stubs that forward to a function or member function
-//      named FNAME. MAX_ARGS is the arity of the function or member function
-//      FNAME. FNAME can have default arguments. MIN_ARGS is the minimum
-//      arity that FNAME can accept.
+//      named fname. max_args is the arity of the function or member function
+//      fname. fname can have default arguments. min_args is the minimum
+//      arity that fname can accept.
 //
 //      There are two versions:
 //
@@ -260,23 +354,19 @@ struct func_stubs_base {};
 //      for the return type (void) and the lack of the return keyword.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)      \
-    BPL_IMPL_GEN_FUNCTION_STUB                                                          \
-    (                                                                                   \
-        FNAME,                                                                          \
-        GENERATOR_NAME,                                                                 \
-        MAX_ARGS,                                                                       \
-        BOOST_PP_SUB_D(1, MAX_ARGS, MIN_ARGS)                                           \
-    )
+#define BOOST_PYTHON_FUNCTION_OVERLOADS(generator_name, fname, min_args, max_args)          \
+    BOOST_PYTHON_GEN_FUNCTION_STUB(                                                         \
+        fname,                                                                              \
+        generator_name,                                                                     \
+        max_args,                                                                           \
+        BOOST_PP_SUB_D(1, max_args, min_args))
 
-#define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)       \
-    BPL_IMPL_GEN_MEM_FUNCTION_STUB                                                              \
-    (                                                                                           \
-        FNAME,                                                                                  \
-        GENERATOR_NAME,                                                                         \
-        MAX_ARGS,                                                                               \
-        BOOST_PP_SUB_D(1, MAX_ARGS, MIN_ARGS)                                                   \
-    )
+#define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(generator_name, fname, min_args, max_args)   \
+    BOOST_PYTHON_GEN_MEM_FUNCTION_STUB(                                                     \
+        fname,                                                                              \
+        generator_name,                                                                     \
+        max_args,                                                                           \
+        BOOST_PP_SUB_D(1, max_args, min_args))
 
 // deprecated macro names (to be removed)
 #define BOOST_PYTHON_FUNCTION_GENERATOR BOOST_PYTHON_FUNCTION_OVERLOADS

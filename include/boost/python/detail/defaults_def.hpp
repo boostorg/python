@@ -191,15 +191,13 @@ struct define_stub_function {};
 //      void C::foo(int)    mpl::list<void, C, int>
 //
 ///////////////////////////////////////////////////////////////////////////////
-    template <class StubsT, class CallPolicies, class NameSpaceT, class SigT>
+    template <class StubsT, class NameSpaceT, class SigT>
     inline void
     define_with_defaults(
         char const* name,
-        StubsT,
-        CallPolicies const& policies,
+        StubsT const& stubs,
         NameSpaceT& name_space,
-        SigT sig,
-        char const* doc)
+        SigT sig)
     {
         typedef typename mpl::front<SigT>::type return_type;
         typedef typename StubsT::v_type v_type;
@@ -216,7 +214,7 @@ struct define_stub_function {};
 
         typedef typename stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def
-            (name, gen_type(), policies, name_space, doc);
+            (name, gen_type(), stubs.call_policies(), name_space, stubs.doc_string());
     }
 
 } // namespace detail
@@ -238,8 +236,7 @@ struct define_stub_function<BOOST_PP_ITERATION()> {
         StubsT,
         CallPolicies const& policies,
         NameSpaceT& name_space,
-        char const* doc
-    )
+        char const* doc)
     {
         detail::name_space_def(name_space,
             name,
