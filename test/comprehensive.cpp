@@ -242,6 +242,23 @@ boost::shared_ptr<Foo> Baz::create_foo()
     return boost::shared_ptr<Foo>(new DerivedFromFoo(0));
 }
 
+// Used to check conversion to None
+boost::shared_ptr<Foo> foo_factory(bool create)
+{
+    return boost::shared_ptr<Foo>(create ? new DerivedFromFoo(0) : 0);
+}
+
+// Used to check conversion from None
+bool foo_ptr_is_null(Foo* p)
+{
+    return p == 0;
+}
+
+bool foo_shared_ptr_is_null(boost::shared_ptr<Foo> p)
+{
+    return p.get() == 0;
+}
+
 // We can accept smart pointer parameters
 int Baz::get_foo_value(boost::shared_ptr<Foo> foo)
 {
@@ -408,7 +425,7 @@ static int testUpcast(Base* b)
 
 static std::auto_ptr<Base> derived1Factory(int i)
 {
-    return std::auto_ptr<Base>(new Derived1(i));
+    return std::auto_ptr<Base>(i < 0 ? 0 : new Derived1(i));
 }
 
 static std::auto_ptr<Base> derived2Factory(int i)
@@ -1081,6 +1098,11 @@ void init_module(boost::python::module_builder& m)
     m.def(fpolar, "fpolar");
     m.def(freal, "freal");
     m.def(fimag, "fimag");
+
+    // Test new null-pointer<->None conversions
+    m.def(foo_factory, "foo_factory");
+    m.def(foo_ptr_is_null, "foo_ptr_is_null");
+    m.def(foo_shared_ptr_is_null, "foo_shared_ptr_is_null");
 }
 
 PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary& keywords)

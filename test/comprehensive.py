@@ -73,6 +73,21 @@ We can subclass Foo.
     >>> b.call_pure()
     'not pure anymore!'
 
+None corresponds to a NULL pointer or smart pointer
+    >>> f = foo_factory(1)
+    >>> f.add_len('xxx')
+    1000
+    >>> foo_factory(0) is None
+    1
+    >>> foo_ptr_is_null(None)
+    1
+    >>> foo_ptr_is_null(f)
+    0
+    >>> foo_shared_ptr_is_null(None)
+    1
+    >>> foo_shared_ptr_is_null(f)
+    0
+    
 If no __init__ function is defined, the one from the base class takes effect, just
 like in a Python class.
 
