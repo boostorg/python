@@ -12,6 +12,7 @@
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/logical/not.hpp>
 # include <boost/mpl/logical/and.hpp>
+# include <boost/mpl/logical/or.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/mpl/lambda.hpp>
 # include <boost/mpl/apply.hpp>
@@ -101,8 +102,22 @@ namespace detail
       : tuple_extract<
           Tuple,
           mpl::logical_and<
-             is_reference_to_class<add_reference<mpl::_> >
+             mpl::logical_not<is_same<not_specified const&,mpl::_1> >
+             , is_reference_to_class<add_reference<mpl::_> >
              , mpl::logical_not<is_reference_to_keywords<add_reference<mpl::_1> > >
+          >
+        >
+  {
+  };
+
+  template <class Tuple>
+  struct default_implementation_extract
+      : tuple_extract<
+          Tuple,
+          mpl::logical_or<
+             is_reference_to_function_pointer<mpl::_1>
+             , is_reference_to_function<mpl::_1>
+             , is_same<mpl::_1,tuples::null_type>
           >
         >
   {
@@ -112,18 +127,12 @@ namespace detail
   template <class T1, class T2 = not_specified, class T3 = not_specified>
   struct def_helper
   {
-      typedef typename mpl::if_<
-          is_same<T2, not_specified>
-          , boost::tuples::tuple<T1 const&, BOOST_PYTHON_DEF_HELPER_TAIL>
-          , typename mpl::if_<
-                is_same<T3, not_specified>
-                , boost::tuples::tuple<T1 const&, T2 const&, BOOST_PYTHON_DEF_HELPER_TAIL>
-                , boost::tuples::tuple<T1 const&, T2 const&, T3 const&>
-            >::type
-         >::type all_t;
+      typedef boost::tuples::tuple<
+          T1 const&, T2 const&, T3 const&, default_call_policies, keywords<0>, char const*
+          > all_t;
 
-      def_helper(T1 const& a1) : m_all(a1) {}
-      def_helper(T1 const& a1, T2 const& a2) : m_all(a1,a2) {}
+      def_helper(T1 const& a1) : m_all(a1,m_nil,m_nil) {}
+      def_helper(T1 const& a1, T2 const& a2) : m_all(a1,a2,m_nil) {}
       def_helper(T1 const& a1, T2 const& a2, T3 const& a3) : m_all(a1,a2,a3) {}
 
       char const* doc() const
@@ -140,8 +149,15 @@ namespace detail
       {
           return policy_extract<all_t>::extract(m_all);
       }
+
+      typedef 
+      typename default_implementation_extract<all_t>::result_type default_implementation() const
+      {
+          return policy_extract<all_t>::extract(m_all);
+      }
       
       all_t m_all;
+      not_specified m_nil;
   };
 # undef BOOST_PYTHON_DEF_HELPER_TAIL
 }

@@ -17,11 +17,23 @@ using namespace boost::python::detail;
     
     assert(!is_pointer_to_function<int (&)()>::value);
     assert(is_pointer_to_function<int (*)()>::value);
+    assert(!is_pointer_to_function<int (*&)()>::value);
+    assert(!is_pointer_to_function<int (*const&)()>::value);
     
+    assert(!is_reference_to_function_pointer<int (&)()>::value);
+    assert(!is_reference_to_function_pointer<int (*)()>::value);
+    assert(!is_reference_to_function_pointer<int&>::value);
+    assert(is_reference_to_function_pointer<int (*&)()>::value);
+    assert(is_reference_to_function_pointer<int (*const&)()>::value);
+
     assert(is_reference_to_pointer<int*&>::value);
     assert(is_reference_to_pointer<int* const&>::value);
     assert(is_reference_to_pointer<int*volatile&>::value);
     assert(is_reference_to_pointer<int*const volatile&>::value);
+    assert(is_reference_to_pointer<int const*&>::value);
+    assert(is_reference_to_pointer<int const* const&>::value);
+    assert(is_reference_to_pointer<int const*volatile&>::value);
+    assert(is_reference_to_pointer<int const*const volatile&>::value);
     
     assert(!is_reference_to_pointer<int const volatile>::value);
     assert(!is_reference_to_pointer<int>::value);

@@ -58,6 +58,7 @@ struct is_reference_to_function<T&>
     BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
 
+#   if 0
 template <class T>
 struct is_reference_to_function<T const&>
 {
@@ -75,7 +76,7 @@ struct is_reference_to_function<T const volatile&>
 {
     BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
-
+#   endif 
 template <class T>
 struct is_pointer_to_function
 {
@@ -87,6 +88,25 @@ struct is_pointer_to_function<T*>
 {
     // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
     BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_reference_to_function_pointer_aux
+{
+    // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
+    BOOST_STATIC_CONSTANT(bool, value = (
+                              is_reference<T>::value
+                              & is_pointer_to_function<
+                              typename remove_cv<
+                                 typename remove_reference<T>::type
+                              >::type
+                              >::value));
+};
+
+template <class T>
+struct is_reference_to_function_pointer
+    : mpl::if_c<is_reference_to_function<T>::value, mpl::bool_c<false>, is_reference_to_function_pointer_aux<T> >::type
+{
 };
 
 template <class T>
@@ -238,7 +258,7 @@ struct is_reference_to_function_aux
 {
     static T t;
     BOOST_STATIC_CONSTANT(
-        bool, value = sizeof(is_function_ref_tester(t,0)) == sizeof(::boost::type_traits::yes_type));
+        bool, value = sizeof(detail::is_function_ref_tester(t,0)) == sizeof(::boost::type_traits::yes_type));
  };
 
 template <class T>
@@ -248,12 +268,18 @@ struct is_reference_to_function
 };
 
 template <class T>
-struct is_pointer_to_function
+struct is_pointer_to_function_aux
 {
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
         = sizeof(::boost::type_traits::is_function_ptr_tester(t)) == sizeof(::boost::type_traits::yes_type));
+};
+
+template <class T>
+struct is_pointer_to_function
+    : mpl::if_<is_pointer<T>, is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
+{
 };
 
 struct false_helper1
@@ -366,6 +392,13 @@ struct is_reference_to_pointer
         = (is_reference<T>::value
            && sizeof(reference_to_pointer_helper(t)) == sizeof(inner_yes_type))
         );
+};
+
+template <class T>
+struct is_reference_to_function_pointer
+    : mpl::if_<is_reference<T>
+        , is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
+{
 };
 
 template <typename V>
