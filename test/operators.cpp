@@ -19,15 +19,6 @@
 // trouble for non-conforming compilers and libraries.
 #include <math.h>
 
-#if BOOST_WORKAROUND(BOOST_MSVC, == 1310)
-// vc7.1 seems to require this (incorrectly) in order to use the "not" keyword
-#include <ciso646>
-#elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300) \
-   || BOOST_WORKAROUND(__GNUC__, <= 2) \
-   || BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
-#define not !
-#endif
-
 using namespace boost::python;
 
 struct X : test_class<>
@@ -94,7 +85,14 @@ BOOST_PYTHON_MODULE(operators_ext)
         .def(pow(self,self))
         .def(pow(self,int()))
         .def(pow(int(),self))
-        .def(not self)
+        .def(
+            !self
+            // "not self" is legal here but causes friction on a few
+            // nonconforming compilers; it's cute because it looks
+            // like python, but doing it here doesn't prove much and
+            // just causes tests to fail or complicated workarounds to
+            // be enacted.
+        )
         ;
 
     class_<test_class<1> >("Z", init<int>())
