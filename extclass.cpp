@@ -309,4 +309,17 @@ void ExtensionClassBase::add_getter_method(Function* getter_, const char* name)
     add_method(getter, (detail::getattr_string() + name + "__").c_str());
 }
 
+void ExtensionClassBase::set_attribute(const char* name, PyObject* x_)
+{
+    Ptr x(x_);
+    set_attribute(name, x);
+}
+
+void ExtensionClassBase::set_attribute(const char* name, Ptr x)
+{
+    dict().set_item(String(name), x);
+    if (PyCallable_Check(x.get()))
+        detail::enable_named_method(this, name);
+}
+
 } // namespace py
