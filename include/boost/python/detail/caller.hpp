@@ -37,7 +37,7 @@ template <                                                                      
     BOOST_PP_COMMA_IF(args_) BOOST_MPL_TEMPLATE_PARAMETERS(0, args_, class A)   \
   >                                                                             \
 PyObject* operator()(                                                           \
-    BOOST_PYTHON_NAMED_PF(f,args_)                                              \
+    BOOST_PYTHON_FN(*f,0,args_)                                                 \
   , PyObject* args, PyObject* keywords                                          \
   , P const& policies                                                           \
   ) const                                                                       \
@@ -51,7 +51,7 @@ BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CALLER_PF, nil)
 # define BOOST_PYTHON_CALLER_PMF(args_, cv)                                     \
 template <class P, class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args_, class A)>   \
 PyObject* operator()(                                                           \
-    BOOST_PYTHON_NAMED_PMF(f,args_,cv)                                          \
+    BOOST_PYTHON_FN(A0::*f,1,args_)cv()                                         \
   , PyObject* args, PyObject* keywords                                          \
   , P const& policies                                                           \
   ) const                                                                       \

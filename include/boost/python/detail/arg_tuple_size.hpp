@@ -34,7 +34,7 @@ template <class F> struct arg_tuple_size;
 // Specializations for function pointers
 #  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
 template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
-struct arg_tuple_size<BOOST_PYTHON_PF(args)>                                                  \
+struct arg_tuple_size<BOOST_PYTHON_FN(*,0,args)>                                                \
 {                                                                                               \
     BOOST_STATIC_CONSTANT(std::size_t, value = args);                                           \
 };
@@ -42,7 +42,7 @@ struct arg_tuple_size<BOOST_PYTHON_PF(args)>                                    
 // Specializations for member function pointers
 #  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                     \
 template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>     \
-struct arg_tuple_size<BOOST_PYTHON_PMF(args,cv)>                      \
+struct arg_tuple_size<BOOST_PYTHON_FN(A0::*,1,args) cv()>                      \
 {                                                                       \
     BOOST_STATIC_CONSTANT(std::size_t, value = args);                   \
 };
@@ -62,11 +62,11 @@ struct arg_tuple_size<BOOST_PYTHON_PMF(args,cv)>                      \
 
 #  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
 template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
-char_array<args> arg_tuple_size_helper(BOOST_PYTHON_PF(args));
+char_array<args> arg_tuple_size_helper(BOOST_PYTHON_FN(*,0,args));
 
 #  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                 \
 template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)> \
-char_array<args> arg_tuple_size_helper(BOOST_PYTHON_PMF(args,cv));
+char_array<args> arg_tuple_size_helper(BOOST_PYTHON_FN(A0::*,1,args)cv());
     
 # endif
 
