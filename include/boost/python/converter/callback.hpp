@@ -165,6 +165,32 @@ namespace detail
   BOOST_PYTHON_DECL void throw_no_class_registered();
 
   template <class T>
+  inline reference_callback_from_python<T>::reference_callback_from_python()
+  {
+      detail::throw_if_not_registered(lvalue_from_python_chain<T,true>::value);
+  }
+  
+  template <class T>
+  inline T reference_callback_from_python<T>::operator()(PyObject* obj) const
+  {
+      return python::detail::void_ptr_to_reference(
+          callback_convert_reference(obj, lvalue_from_python_chain<T,true>::value)
+          , (T(*)())0);
+  }
+
+  template <class T>
+  inline pointer_callback_from_python<T>::pointer_callback_from_python()
+  {
+      detail::throw_if_not_registered(lvalue_from_python_chain<T,true>::value);
+  }
+  
+  template <class T>
+  inline T pointer_callback_from_python<T>::operator()(PyObject* obj) const
+  {
+      return T(callback_convert_pointer(obj, lvalue_from_python_chain<T,true>::value));
+  }
+
+  template <class T>
   inline value_callback_to_python<T>::value_callback_to_python(T const& x)
       : callback_to_python_base(&x, to_python_function<T>::value)
   {
