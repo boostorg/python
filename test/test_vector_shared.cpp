@@ -31,23 +31,6 @@ unsigned int_wrapper::our_object_counter = 0;
 
 BOOST_TT_BROKEN_COMPILER_SPEC (boost::shared_ptr<int_wrapper>)
 
-template <typename Ptr>
-struct indirect_value_traits : boost::python::indexing::value_traits<Ptr> {
-  // Hide the base class versions of the comparisons, using
-  // indirect versions
-  struct less : std::binary_function<Ptr, Ptr, bool> {
-    bool operator() (Ptr const &p1, Ptr const &p2) const {
-      return *p1 < *p2;
-    }
-  };
-
-  struct equal_to : std::binary_function<Ptr, Ptr, bool> {
-    bool operator() (Ptr const &p1, Ptr const &p2) const {
-      return *p1 == *p2;
-    }
-  };
-};
-
 BOOST_PYTHON_MODULE(test_vector_shared_ext)
 {
   namespace indexing = boost::python::indexing;
@@ -66,11 +49,18 @@ BOOST_PYTHON_MODULE(test_vector_shared_ext)
     .def ("__cmp__", compare)
     ;
 
-  typedef indirect_value_traits<int_wrapper_holder> value_traits_;
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  // Partial specialization of value_traits takes care of things
+  // automatically
+  typedef indexing::container_suite<Container1> Suite1;
+#else
+  // Otherwise do it the hard way
+  typedef indexing::indirect_value_traits<int_wrapper_holder> value_traits_;
   typedef indexing::default_sequence_traits<Container1, value_traits_>
     container_traits_;
   typedef indexing::default_algorithms<container_traits_> algorithms_;
   typedef indexing::container_suite<Container1, 0, algorithms_> Suite1;
+#endif
 
   boost::python::class_<Container1>("Vector_shared")
     .def (Suite1())
