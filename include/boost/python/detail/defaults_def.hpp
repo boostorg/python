@@ -48,6 +48,9 @@ namespace detail {
 //      5. char const* name:    doc string
 //
 ///////////////////////////////////////////////////////////////////////////////
+template <int N>
+struct define_stub_function {};
+
 #define BOOST_PP_ITERATION_PARAMS_1                                             \
     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/defaults_def.hpp>))
 
@@ -81,7 +84,7 @@ namespace detail {
         def(char const* name, StubsT stubs, HolderT& holder, char const* doc)
         {
             //  define the NTH stub function of stubs
-            define_stub_function(name, stubs, holder, boost::mpl::int_t<N>(), doc);
+            define_stub_function<N>::define(name, stubs, holder, doc);
             //  call the next define_with_defaults_helper
             define_with_defaults_helper<N-1>::def(name, stubs, holder, doc);
         }
@@ -96,7 +99,7 @@ namespace detail {
         def(char const* name, StubsT stubs, HolderT& holder, char const* doc)
         {
             //  define the Oth stub function of stubs
-            define_stub_function(name, stubs, holder, boost::mpl::int_t<0>(), doc);
+            define_stub_function<0>::define(name, stubs, holder, doc);
             //  return
         }
     };
@@ -134,7 +137,7 @@ namespace detail {
         typedef typename mpl::at<0, SigT>::type nth_type;
         typedef typename StubsT::v_type v_type;
         typedef typename StubsT::nv_type nv_type;
-        
+
         typedef typename mpl::select_type<
             boost::is_same<void, nth_type>::value
             , v_type
@@ -159,14 +162,16 @@ namespace detail {
 #else // defined(BOOST_PP_IS_ITERATING)
 // PP vertical iteration code
 
+template <>
+struct define_stub_function<BOOST_PP_ITERATION()> {
+
     template <typename StubsT, typename HolderT>
-    inline void
-    define_stub_function
+    static void
+    define
     (
         char const* name,
         StubsT,
         HolderT& holder,
-        boost::mpl::int_t<BOOST_PP_ITERATION()>,
         char const* doc
     )
     {
@@ -176,5 +181,6 @@ namespace detail {
             default_call_policies(),
             doc);
     }
+};
 
 #endif // !defined(BOOST_PP_IS_ITERATING)
