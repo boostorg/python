@@ -3,8 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/detail/config.hpp>
-#include <boost/python/detail/wrap_python.hpp>
+#include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/objects.hpp>
 #include <boost/python/detail/map_entry.hpp>

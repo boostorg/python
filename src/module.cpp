@@ -6,9 +6,10 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
-#include <boost/python/module.hpp>
+#include <boost/python/detail/module_base.hpp>
+#include <boost/python/object/function.hpp>
 
-namespace boost { namespace python {
+namespace boost { namespace python { namespace detail {
 
 module_base::module_base(const char* name)
     : m_module(
@@ -46,4 +47,4 @@ void module_base::add_type(ref x)
 
 PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };
 
-}} // namespace boost::python
+}}} // namespace boost::python::detail

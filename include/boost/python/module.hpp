@@ -8,36 +8,14 @@
 
 # include <boost/python/errors.hpp>
 # include <boost/python/detail/config.hpp>
-# include <boost/python/reference.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/objects.hpp>
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/class_fwd.hpp>
+# include <boost/python/detail/module_base.hpp>
 
 namespace boost { namespace python {
 
-class BOOST_PYTHON_DECL module_base
-{
- public:
-    // Create a module. REQUIRES: only one module is created per module.
-    module_base(const char* name);
-    ~module_base();
-
-    // Add elements to the module
-    void setattr(const char* name, PyObject*);
-    void setattr(const char* name, ref const&);
-    void add(PyTypeObject* x); // just use the type's name
-    void add_type(ref);
-    
-    // Return a reference to the Python module object being built
-    ref object() const;
-
- private:
-    ref m_module;
-    static PyMethodDef initial_methods[1];
-};
-
-class module : public module_base
+class module : public detail::module_base
 {
  public:
     module(const char* name)
@@ -76,11 +54,6 @@ class module : public module_base
 //
 // inline implementations
 //
-inline ref module_base::object() const
-{
-    return m_module;
-}
-
 inline module& module::setattr(const char* name, PyObject* x)
 {
     this->module_base::setattr(name, x);
