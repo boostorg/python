@@ -20,7 +20,7 @@ if [ check-python-config ]
 
   if $(UNIX) && ( $(OS) = AIX )
   {
-      bpl-linkflags = <linkflags>"-e initlibbpl" ;
+      bpl-linkflags = <linkflags>"-e initlibboost_python" ;
   }
 
   dll boost_python
