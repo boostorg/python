@@ -8,7 +8,7 @@
 
 # include <boost/python/has_back_reference.hpp>
 # include <boost/python/detail/not_specified.hpp>
-# include <boost/python/detail/pointee.hpp>
+# include <boost/python/pointee.hpp>
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/type.hpp>
@@ -36,7 +36,7 @@ namespace detail
   template <class T,class Ptr>
   struct select_pointer_holder
   {
-      typedef typename python::detail::pointee<Ptr>::type pointee;
+      typedef typename python::pointee<Ptr>::type pointee;
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
       
       typedef typename mpl::select_type<

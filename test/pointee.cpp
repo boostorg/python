@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/detail/pointee.hpp>
+#include <boost/python/pointee.hpp>
 #include <boost/type_traits/same_traits.hpp>
 #include <memory>
 #include <boost/shared_ptr.hpp>
@@ -15,19 +15,19 @@ int main()
 {
     BOOST_STATIC_ASSERT(
         (boost::is_same<
-                boost::python::detail::pointee<std::auto_ptr<char**> >::type
+                boost::python::pointee<std::auto_ptr<char**> >::type
                 , char**
          >::value));
     
     BOOST_STATIC_ASSERT(
         (boost::is_same<
-             boost::python::detail::pointee<boost::shared_ptr<A> >::type
+             boost::python::pointee<boost::shared_ptr<A> >::type
              , A>::value));
 
 #ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     BOOST_STATIC_ASSERT(
         (boost::is_same<
-                boost::python::detail::pointee<char*>::type
+                boost::python::pointee<char*>::type
                 , char
          >::value));
 #endif 

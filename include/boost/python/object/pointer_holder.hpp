@@ -14,7 +14,7 @@
 # include <boost/type.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/mpl/apply.hpp>
-# include <boost/python/detail/pointee.hpp>
+# include <boost/python/pointee.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/preprocessor/enum_params.hpp>
 
@@ -56,7 +56,7 @@ template <class Pointer, class Value>
 struct pointer_holder_back_reference : instance_holder
 {
  private:
-    typedef typename python::detail::pointee<Pointer>::type held_type;
+    typedef typename python::pointee<Pointer>::type held_type;
  public:
     
     pointer_holder_back_reference(Pointer);
