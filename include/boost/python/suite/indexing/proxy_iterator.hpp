@@ -22,10 +22,11 @@
 
 namespace boost { namespace python { namespace indexing {
   template<class ContainerProxy>
-  struct proxy_iterator
+  class proxy_iterator
   {
     template<class C, class H> friend class container_proxy;
 
+  public:
     typedef ContainerProxy container_proxy_;
     typedef typename container_proxy_::raw_iterator_traits raw_iterator_traits;
     typedef typename raw_iterator_traits::difference_type difference_type;
@@ -102,7 +103,7 @@ namespace boost { namespace python { namespace indexing {
     // Extensions to the normal iterator interface
     //    void replace (value_type const &copy) { ptr->replace (index, copy); }
 
-  public:
+  private:
     container_proxy_ *ptr;
     size_type index;
   };
