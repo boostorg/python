@@ -31,7 +31,8 @@ struct is_reference_to_non_const
         bool, value = (
             ::boost::type_traits::ice_and<
             ::boost::is_reference<T>::value
-            , !::boost::python::detail::is_reference_to_const<T>::value
+            , ::boost::type_traits::ice_not<
+                ::boost::python::detail::is_reference_to_const<T>::value>::value
             >::value)
         );
 };
