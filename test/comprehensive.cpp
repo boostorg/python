@@ -15,6 +15,10 @@
 #include <math.h>  // for pow()
 #include <boost/rational.hpp>
 
+#if defined(sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
+inline double pow(int x, int y) { return pow(static_cast<double>(x), y); }
+#endif
+
 namespace bpl_test {
 
 FooCallback::FooCallback(PyObject* self, int x)
