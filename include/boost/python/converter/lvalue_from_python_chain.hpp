@@ -14,7 +14,9 @@ namespace boost { namespace python { namespace converter {
 
 // Given T == U*cv&, T == U*, or T == U&, lvalue_from_python_chain<T>
 // declares a "templated global reference" to the lvalue from_python
-// converter chain for U
+// converter chain for U. The optional bool second argument callback,
+// when true, removes special treatment for T == U*cv& so that the
+// converter for U* is found.
 namespace detail
 {
   template <class T>
@@ -39,12 +41,13 @@ namespace detail
   ref_lvalue_from_python_chain<T>::value
      = registry::lvalue_converters(undecorated_type_id<T>());
 
-  template <class T>
+  template <class T, bool callback>
   struct select_lvalue_from_python_chain
   {
       BOOST_STATIC_CONSTANT(
-          bool, ptr = boost::python::detail::is_reference_to_pointer<T>::value
-                      || is_pointer<T>::value);
+          bool, ptr
+          = !callback && boost::python::detail::is_reference_to_pointer<T>::value
+            || is_pointer<T>::value);
 
       typedef typename add_reference<typename add_cv<T>::type>::type normalized;
 
@@ -56,9 +59,9 @@ namespace detail
   };
 }
 
-template <class T>
+template <class T, bool callback = false>
 struct lvalue_from_python_chain
-    : detail::select_lvalue_from_python_chain<T>::type
+    : detail::select_lvalue_from_python_chain<T,callback>::type
 {
 };
 
