@@ -39,16 +39,22 @@
 <h2><a name="functions"></a>Functions</h2>
 <pre>
 <a name="call-spec">template &lt;class R, class A1, class A2, ... class A<i>n</i>&gt;</a>
-<i>result-type</i> call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp;)
+R call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp;)
 </pre>
 <dl class="function-semantics"> 
-  <dt><b>Requires:</b> {{text}}</dt>
-  <dt><b>Effects:</b> {{text}}</dt>
+  <dt><b>Requires:</b> <code>R</code> is a complete type with an accessible copy constructor</dt>
+
+  <dt><b>Effects:</b> Invokes <code>callable(a1,&nbsp;a2,&nbsp;...a<i>n</i>)</code> in
+  Python, where <code>a1</code>...<code>a<i>n</i></code> are the arguments to
+  <code>call()</code>, converted to Python objects.
   <dt><b>Postconditions:</b> {{text}}</dt>
-  <dt><b>Returns:</b> {{text}}</dt>
-  <dt><b>Throws:</b> {{text}}</dt>
-  <dt><b>Complexity:</b> {{text}}</dt>
-  <dt><b>Rationale:</b> {{text}}</dt>
+  <dt><b>Returns:</b> The result of the Python call, converted to the
+  C++ type <code>R</code>.</dt>
+
+</dt>
+  <dt><b>Rationale:</b> 
+
+</dt>
 </dl>
 
 <h2><a name="examples"></a>Example(s)</h2>

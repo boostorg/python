@@ -3,7 +3,9 @@
 
 struct A
 {
-    A(const double, const double, const double, const double, const double, const double, const double) {}
+    A(const double, const double, const double, const double, const double
+      , const double, const double
+        ) {}
 };
 
 BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
@@ -14,7 +16,9 @@ BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
   module("multi_arg_constructor_ext")
   
     .add(class_<A, shared_ptr<A> >("A")
-         .def_init(args<const double, const double, const double, const double, const double, const double, const double>())
+         .def_init(args<double, double, double, double, double
+                   , double, double
+                   >())
         )
       ;
 
