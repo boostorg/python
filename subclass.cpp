@@ -426,7 +426,7 @@ int Instance::setattr(const char* name, PyObject* value)
     // If we found an appropriate special method, handle the return value.
     if (special_method.get() != 0)
     {
-        expect_and_absorb_non_null(result_object);
+        Ptr manage_result(result_object);
         return 0;
     }
     
