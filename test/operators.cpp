@@ -21,7 +21,13 @@
 
 using namespace boost::python;
 
-typedef test_class<> X;
+struct X : test_class<>
+{
+    typedef test_class<> base_t;
+    
+    X(int x) : base_t(x) {}
+    X const operator+(X const& r) const { return X(value() + r.value()); }
+};
 
 X operator-(X const& l, X const& r) { return X(l.value() - r.value()); }
 X operator-(int l, X const& r) { return X(l - r.value()); }
@@ -39,17 +45,17 @@ X abs(X x) { return X(x.value() < 0 ? -x.value() : x.value()); }
 
 X pow(X x, int y)
 {
-    return X(int(pow(double(x.value()), y)));
+    return X(int(pow(double(x.value()), double(y))));
 }
 
 X pow(X x, X y)
 {
-    return X(int(pow(double(x.value()), y.value())));
+    return X(int(pow(double(x.value()), double(y.value()))));
 }
 
 int pow(int x, X y)
 {
-    return int(pow(double(x), y.value()));
+    return int(pow(double(x), double(y.value())));
 }
 
 std::ostream& operator<<(std::ostream& s, X const& x)
@@ -61,6 +67,7 @@ BOOST_PYTHON_MODULE(operators_ext)
 {
     class_<X>("X", init<int>())
         .def("value", &X::value)
+        .def(self + self)
         .def(self - self)
         .def(self - int())
         .def(other<int>() - self)

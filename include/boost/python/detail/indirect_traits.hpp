@@ -6,7 +6,6 @@
 #ifndef INDIRECT_TRAITS_DWA2002131_HPP
 # define INDIRECT_TRAITS_DWA2002131_HPP
 # include <boost/type_traits/is_function.hpp>
-# include <boost/type_traits/detail/ice_and.hpp>
 # include <boost/type_traits/is_reference.hpp>
 # include <boost/type_traits/is_pointer.hpp>
 # include <boost/type_traits/is_class.hpp>
@@ -16,8 +15,18 @@
 # include <boost/type_traits/remove_cv.hpp>
 # include <boost/type_traits/remove_reference.hpp>
 # include <boost/type_traits/remove_pointer.hpp>
+
+# include <boost/type_traits/detail/ice_and.hpp>
+
+# include <boost/detail/workaround.hpp>
+# if 0 &&  BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+#  include <boost/type_traits/is_enum.hpp>
+# endif 
+
 # include <boost/mpl/if.hpp>
 # include <boost/mpl/bool.hpp>
+# include <boost/mpl/and.hpp>
+# include <boost/mpl/not.hpp>
 # include <boost/mpl/aux_/lambda_support.hpp>
 
 #  ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
@@ -28,27 +37,24 @@ namespace boost { namespace python { namespace detail {
 
 #  ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <class T>
-struct is_reference_to_const
+struct is_reference_to_const : mpl::false_
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
 template <class T>
-struct is_reference_to_const<T const&>
+struct is_reference_to_const<T const&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 #   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13102140 // vc7.01 alpha workaround
 template<class T>
-struct is_reference_to_const<T const volatile&>
+struct is_reference_to_const<T const volatile&> : mpl::true_
 {
-    static const bool value = true;
 };
 #   endif 
 
 template <class T>
-struct is_reference_to_function : mpl::bool_<false>
+struct is_reference_to_function : mpl::false_
 {
 };
 
@@ -58,9 +64,8 @@ struct is_reference_to_function<T&> : is_function<T>
 };
 
 template <class T>
-struct is_pointer_to_function : mpl::bool_<false>
+struct is_pointer_to_function : mpl::false_
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
 // There's no such thing as a pointer-to-cv-function, so we don't need
@@ -71,7 +76,7 @@ struct is_pointer_to_function<T*> : is_function<T>
 };
 
 template <class T>
-struct is_reference_to_member_function_pointer_impl : mpl::bool_<false>
+struct is_reference_to_member_function_pointer_impl : mpl::false_
 {
 };
 
@@ -91,23 +96,23 @@ struct is_reference_to_member_function_pointer
 
 template <class T>
 struct is_reference_to_function_pointer_aux
+    : mpl::and_<
+          is_reference<T>
+        , is_pointer_to_function<
+              typename remove_cv<
+                  typename remove_reference<T>::type
+              >::type
+          >
+      >
 {
     // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
-    BOOST_STATIC_CONSTANT(bool, value = (
-                              is_reference<T>::value
-                              & is_pointer_to_function<
-                              typename remove_cv<
-                                 typename remove_reference<T>::type
-                              >::type
-                              >::value));
-    typedef mpl::bool_<value> type;
 };
 
 template <class T>
 struct is_reference_to_function_pointer
-    : mpl::if_c<
-        is_reference_to_function<T>::value
-        , mpl::bool_<false>
+    : mpl::if_<
+          is_reference_to_function<T>
+        , mpl::false_
         , is_reference_to_function_pointer_aux<T>
      >::type
 {
@@ -115,70 +120,60 @@ struct is_reference_to_function_pointer
 
 template <class T>
 struct is_reference_to_non_const
+    : mpl::and_<
+          is_reference<T>
+        , mpl::not_<
+             is_reference_to_const<T>
+          >
+      >
 {
-    BOOST_STATIC_CONSTANT(
-        bool, value = (
-            ::boost::type_traits::ice_and<
-            ::boost::is_reference<T>::value
-            , ::boost::type_traits::ice_not<
-                ::boost::python::detail::is_reference_to_const<T>::value>::value
-            >::value)
-        );
 };
 
 template <class T>
-struct is_reference_to_volatile
+struct is_reference_to_volatile : mpl::false_
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
 template <class T>
-struct is_reference_to_volatile<T volatile&>
+struct is_reference_to_volatile<T volatile&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 #   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13102140 // vc7.01 alpha workaround
 template <class T>
-struct is_reference_to_volatile<T const volatile&>
+struct is_reference_to_volatile<T const volatile&> : mpl::true_
 {
-    static const bool value = true;
 };
 #   endif 
 
 
 template <class T>
-struct is_reference_to_pointer
+struct is_reference_to_pointer : mpl::false_
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
 template <class T>
-struct is_reference_to_pointer<T*&>
+struct is_reference_to_pointer<T*&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 template <class T>
-struct is_reference_to_pointer<T* const&>
+struct is_reference_to_pointer<T* const&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 template <class T>
-struct is_reference_to_pointer<T* volatile&>
+struct is_reference_to_pointer<T* volatile&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 template <class T>
-struct is_reference_to_pointer<T* const volatile&>
+struct is_reference_to_pointer<T* const volatile&> : mpl::true_
 {
-    BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 template <class T>
-struct is_reference_to_class
+struct is_reference_to_classx
 {
     BOOST_STATIC_CONSTANT(
         bool, value
@@ -196,19 +191,47 @@ struct is_reference_to_class
 };
 
 template <class T>
-struct is_pointer_to_class
+struct is_reference_to_class
+    : mpl::and_<
+          is_reference<T>
+#   if 0 && BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+        , mpl::not_<
+              is_enum<
+                  typename remove_cv<
+                      typename remove_reference<T>::type
+                  >::type
+              >
+          >
+#   endif 
+        , is_class<
+              typename remove_cv<
+                  typename remove_reference<T>::type
+              >::type
+          >
+      >
 {
-    BOOST_STATIC_CONSTANT(
-        bool, value
-        = (boost::type_traits::ice_and<
-           is_pointer<T>::value
-           , is_class<
-                typename remove_cv<
-                    typename remove_pointer<T>::type
-                >::type
-             >::value
-         >::value)
-        );
+};
+
+template <class T>
+struct is_pointer_to_class
+    : mpl::and_<
+          is_pointer<T>
+#   if 0 && BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+        , mpl::not_<
+              is_enum<
+                  typename remove_cv<
+                      typename remove_pointer<T>::type
+                  >::type
+              >
+          >
+#   endif 
+        , is_class<
+              typename remove_cv<
+                  typename remove_pointer<T>::type
+              >::type
+          >
+      >
+{
 };
 
 #  else
@@ -220,8 +243,8 @@ typedef char (&outer_no_type)[1];
 template <typename V>
 struct is_const_help
 {
-    typedef typename mpl::if_c<
-        is_const<V>::value
+    typedef typename mpl::if_<
+          is_const<V>
         , inner_yes_type
         , inner_no_type
         >::type type;
@@ -230,8 +253,8 @@ struct is_const_help
 template <typename V>
 struct is_volatile_help
 {
-    typedef typename mpl::if_c<
-        is_volatile<V>::value
+    typedef typename mpl::if_<
+          is_volatile<V>
         , inner_yes_type
         , inner_no_type
         >::type type;
@@ -240,8 +263,8 @@ struct is_volatile_help
 template <typename V>
 struct is_pointer_help
 {
-    typedef typename mpl::if_c<
-        is_pointer<V>::value
+    typedef typename mpl::if_<
+          is_pointer<V>
         , inner_yes_type
         , inner_no_type
         >::type type;
@@ -250,8 +273,8 @@ struct is_pointer_help
 template <typename V>
 struct is_class_help
 {
-    typedef typename mpl::if_c<
-        is_class<V>::value
+    typedef typename mpl::if_<
+          is_class<V>
         , inner_yes_type
         , inner_no_type
         >::type type;

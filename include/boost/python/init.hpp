@@ -315,7 +315,10 @@ namespace detail
           , mpl::push_front<>
           >::type args;
 
-      typedef typename ClassT::holder_selector::type selector_t;
+      typedef typename ClassT::holder_selector holder_selector_t;
+#    if !BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+      typedef typename holder_selector_t::type selector_t;
+#    endif 
       typedef typename ClassT::held_type held_type_t;
 
       cl.def(

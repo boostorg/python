@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../boost.css">
 
@@ -75,6 +75,12 @@ void def(char const* name, Fn fn, A1 const&amp;, A2 const&amp;, A3 const&amp;);
 
       <dd>
         <ul>
+          <li>If <code>Fn</code> is [derived from] <code><a href=
+          "object.html#object-spec">object</a></code>, it will be added to
+          the current scope as a single overload. To be useful,
+          <code>fn</code> should be <a href=
+          "http://www.python.org/doc/current/lib/built-in-funcs.html#l2h-6">callable</a>.</li>
+
           <li>
             If <code>a1</code> is the result of an <a href=
             "overloads.html#overload-dispatch-expression"><em>overload-dispatch-expression</em></a>,
@@ -104,67 +110,52 @@ void def(char const* name, Fn fn, A1 const&amp;, A2 const&amp;, A3 const&amp;);
             </dl>
           </li>
 
-          <li>
-            Otherwise, a single function overload built around fn (which must
-            not be null) is added to the <a href="scope.html">current
-            scope</a>: 
-
-            <ul>
-              <li>If fn is a function or member function pointer,
-              <code>a1</code>-<code>a3</code> (if supplied) may be selected
-              in any order from the table below.</li>
-
-              <li>Otherwise, <code>Fn</code> must be [derived from] <code><a
-              href="object.html#object-spec">object</a></code>, and
-              <code>a1-a2</code> (if supplied) may be selcted in any order
-              from the first two rows of the table below. To be useful,
-              <code>fn</code> should be <a href=
-              "http://www.python.org/doc/current/lib/built-in-funcs.html#l2h-6">
-              callable</a>.</li>
-            </ul>
-
-            <table border="1" summary="def() optional arguments">
-              <tr>
-                <th>Memnonic Name</th>
-
-                <th>Requirements/Type properties</th>
-
-                <th>Effects</th>
-              </tr>
-
-              <tr>
-                <td>docstring</td>
-
-                <td>Any <a href="definitions.html#ntbs">ntbs</a>.</td>
-
-                <td>Value will be bound to the <code>__doc__</code> attribute
-                of the resulting method overload.</td>
-              </tr>
-
-              <tr>
-                <td>policies</td>
-
-                <td>A model of <a href=
-                "CallPolicies.html">CallPolicies</a></td>
-
-                <td>A copy will be used as the call policies of the resulting
-                method overload.</td>
-              </tr>
-
-              <tr>
-                <td>keywords</td>
-
-                <td>The result of a <a href=
-                "args.html#keyword-expression"><em>keyword-expression</em></a>
-                specifying no more arguments than the <a href=
-                "definitions.html#arity">arity</a> of <code>fn</code>.</td>
-
-                <td>A copy will be used as the call policies of the resulting
-                method overload.</td>
-              </tr>
-            </table>
-          </li>
+          <li>Otherwise, fn must be a non-null function or member function
+          pointer, and a single function overload built around fn is added to
+          the <a href="scope.html">current scope</a>. If any of
+          <code>a1</code>-<code>a3</code> are supplied, they may be selected
+          in any order from the table below.</li>
         </ul>
+
+        <table border="1" summary="def() optional arguments">
+          <tr>
+            <th>Memnonic Name</th>
+
+            <th>Requirements/Type properties</th>
+
+            <th>Effects</th>
+          </tr>
+
+          <tr>
+            <td>docstring</td>
+
+            <td>Any <a href="definitions.html#ntbs">ntbs</a>.</td>
+
+            <td>Value will be bound to the <code>__doc__</code> attribute of
+            the resulting method overload.</td>
+          </tr>
+
+          <tr>
+            <td>policies</td>
+
+            <td>A model of <a href="CallPolicies.html">CallPolicies</a></td>
+
+            <td>A copy will be used as the call policies of the resulting
+            method overload.</td>
+          </tr>
+
+          <tr>
+            <td>keywords</td>
+
+            <td>The result of a <a href=
+            "args.html#keyword-expression"><em>keyword-expression</em></a>
+            specifying no more arguments than the <a href=
+            "definitions.html#arity">arity</a> of <code>fn</code>.</td>
+
+            <td>A copy will be used as the call policies of the resulting
+            method overload.</td>
+          </tr>
+        </table>
       </dd>
     </dl>
 
@@ -173,6 +164,8 @@ void def(char const* name, Fn fn, A1 const&amp;, A2 const&amp;, A3 const&amp;);
 #include &lt;boost/python/def.hpp&gt;
 #include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/args.hpp&gt;
+
+using namespace boost::python;
 
 char const* foo(int x, int y) { return "foo"; }
 
@@ -184,8 +177,8 @@ BOOST_PYTHON_MODULE(def_test)
 
     <p>
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     7 March, 2003
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=

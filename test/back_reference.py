@@ -10,8 +10,7 @@
 >>> z2 = copy_Z(z)
 >>> x_instances()
 4
->>> y_identity(y) is y
-1
+>>> assert y_identity(y) is y
 >>> y_equality(y, y)
 1
 '''

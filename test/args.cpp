@@ -9,6 +9,7 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/overloads.hpp>
+#include <boost/python/raw_function.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include "test_class.hpp"
 
@@ -39,12 +40,20 @@ struct X
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_f_overloads, X::f, 0, 3)
 
+
+tuple raw_func(tuple args, dict kw)
+{
+    return make_tuple(args, kw);
+}
+
 BOOST_PYTHON_MODULE(args_ext)
 {
     def("f", f, args("x", "y", "z")
         , "This is f's docstring"
         );
 
+    def("raw", raw_function(raw_func));
+    
 #if defined(BOOST_MSVC) && BOOST_MSVC <= 1200
     // MSVC6 gives a fatal error LNK1179: invalid or corrupt file:
     // duplicate comdat error if we try to re-use the exact type of f
@@ -57,6 +66,7 @@ BOOST_PYTHON_MODULE(args_ext)
     
     class_<Y>("Y", init<int>(args("value"), "Y's docstring"))
         .def("value", &Y::value)
+        .def("raw", raw_function(raw_func))
         ;
             
     class_<X>("X", "This is X's docstring")

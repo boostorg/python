@@ -11,6 +11,7 @@
 # include <boost/mpl/if.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/type_traits/is_polymorphic.hpp>
+# include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -108,16 +109,20 @@ struct implicit_cast_generator
 template <class Source, class Target>
 struct cast_generator
 {
-    // CWPro7 will return false sometimes, but that's OK since we can
-    // always cast up with dynamic_cast<>
+    // It's OK to return false, since we can always cast up with
+    // dynamic_cast<> if neccessary.
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+    BOOST_STATIC_CONSTANT(bool, is_upcast = false);
+# else 
     BOOST_STATIC_CONSTANT(
         bool, is_upcast = (
             is_base_and_derived<Target,Source>::value
             ));
+# endif 
 
     typedef typename mpl::if_c<
         is_upcast
-# if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
         // grab a few more implicit_cast cases for CodeWarrior
         || !is_polymorphic<Source>::value
         || !is_polymorphic<Target>::value
