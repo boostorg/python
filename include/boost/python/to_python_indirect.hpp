@@ -10,6 +10,7 @@
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/python/object/class_object.hpp>
 # include <boost/python/detail/unwind_type.hpp>
+# include <boost/shared_ptr.hpp>
 # include <memory>
 
 namespace boost { namespace python {
@@ -34,8 +35,15 @@ namespace detail
       template <class T>
       static result_type execute(T* p)
       {
-          return new objects::pointer_holder<std::auto_ptr<T>, T>(
-              std::auto_ptr<T>(p));
+          // can't use auto_ptr with Intel 5 for some reason
+# if defined(__ICL) && __ICL < 600 
+          typedef boost::shared_ptr<T> smart_pointer;
+# else 
+          typedef std::auto_ptr<T> smart_pointer;
+# endif 
+          
+          return new objects::pointer_holder<smart_pointer, T>(
+              smart_pointer(p));
       }
   };
 
