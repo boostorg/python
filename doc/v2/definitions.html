@@ -37,12 +37,23 @@
       <dt><b><a name="ntbs">ntbs</a>:</b> Null-Terminated Byte String, or
       `C'-string. C++ string literals are <strong>ntbs</strong>es. An
       <strong>ntbs</strong> must never be null.</dt>
+
+      <dt><b><a name="raise">raise</a>:</b> Exceptions in Python are
+      &quot;raised&quot;, not &quot;thrown&quot;, as they are in
+      C++. When this documentation says that some Python exception is
+      &quot;raised&quot; in the context of C++ code, it means that the
+      corresponding Python exception is set via the <a
+      href="http://www.python.org/doc/current/api/exceptionHandling.html">Python/'C'
+      API</a>, and <code><a
+      href="errors.html#throw_error_already_set-spec">throw_error_already_set</a>()</code>
+      is called.</dt>
+
     </dl>
     <hr>
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     28 September, 2002 
+     30 September, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 

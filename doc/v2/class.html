@@ -247,7 +247,7 @@
 namespace boost { namespace python
 {
   template &lt;class T
-   <font color="#007F00">         , class Bases = bases&lt;&gt;
+   <font color="#007F00">        , class Bases = bases&lt;&gt;
             , class HeldType = T
             , class NonCopyable = <i>unspecified</i>
            &gt;
@@ -319,7 +319,7 @@ class_(char const* name, char const* docstring, Init init_spec);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a <a href=
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
       "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>. If <code>docstring</code> is supplied, it must be an
@@ -404,7 +404,7 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a <a href=
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
       "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>.</dt>
@@ -414,8 +414,9 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
           <li>
             If <code>a1</code> is the result of an <a href=
             "OverloadDispatch.html"><em>overload-dispatch-expression</em></a>,
-            only the second is allowed and fn must be a pointer to [member]
-            function whose signature is compatible with A1. 
+            only the second is allowed and fn must be a pointer to
+            function or pointer to member function whose signature is
+            compatible with A1.
 
             <dl>
               <dt><b>Effects:</b> For each <a href=
@@ -526,8 +527,8 @@ class_&amp; setattr(char const* name, U const&amp; u);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
-      Python's <a href=
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
+      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>.</dt>
 
@@ -554,8 +555,8 @@ void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
-      Python's <a href=
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
+      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>.</dt>
 
@@ -580,8 +581,8 @@ class_&amp; def_readonly(char const* name, D T::*pm);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
-      Python's <a href=
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
+      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>.</dt>
 
@@ -733,7 +734,7 @@ template &lt;class Policies&gt;
       <dt><b>Effects:</b> Returns a new <a href=
       "#init-expressions"><em>init-expression</em></a> with all the same
       properties as the <code>init</code> object except that its
-      <em>callpolicies</em> are replaced by a reference to
+      <em>call policies</em> are replaced by a reference to
       <code>policies</code>.</dt>
     </dl>
 
@@ -750,8 +751,8 @@ template &lt;class Policies&gt;
 
         <dt><b>keywords:</b> A <a href=
         "args.html#keyword-expression">keyword-expression</a> which will be
-        used to name (a trailing subsequence of) the arguments to the generated
-        <code>__init__</code> function(s).</dt>
+        used to name (a trailing subsequence of) the arguments to the
+        generated <code>__init__</code> function(s).</dt>
 
         <dt><b>call policies:</b> An instance of a model of <a href=
         "CallPolicies.html">CallPolicies</a>.</dt>
