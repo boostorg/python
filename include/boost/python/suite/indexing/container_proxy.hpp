@@ -86,7 +86,7 @@ namespace boost { namespace python { namespace indexing {
     {
       typedef typename raw_iterator_traits::difference_type difference_type;
       typedef std::random_access_iterator_tag iterator_category;
-      typedef container_proxy::value_type value_type;
+      typedef typename container_proxy::value_type value_type;
       typedef value_type *pointer;
       typedef value_type reference;  // Already has reference semantics
 
