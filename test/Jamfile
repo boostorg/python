@@ -140,7 +140,7 @@ local UNIT_TEST_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_
 
 run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
-run pointer_type_id_test.cpp  <lib>../../test/build/test_exec_monitor : : : $(UNIT_TEST_PROPERTIES) ;
+run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor : : : $(UNIT_TEST_PROPERTIES) ;
 run member_function_cast.cpp ;
 run bases.cpp ;
 run if_else.cpp ;
@@ -151,26 +151,26 @@ compile string_literal.cpp ;
 compile borrowed.cpp : $(UNIT_TEST_PROPERTIES) ;
 compile object_manager.cpp : $(UNIT_TEST_PROPERTIES) ;
 
-run upcast.cpp  <lib>../../test/build/test_exec_monitor
+run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor
   : # command-line args
   : # input files
   : $(UNIT_TEST_PROPERTIES)
     ;
 
-run select_holder.cpp  <lib>../../test/build/test_exec_monitor
+run select_holder.cpp  <lib>../../test/build/boost_test_exec_monitor
   : # command-line args
   : # input files
   : $(UNIT_TEST_PROPERTIES)
     ;
 
 
-run select_from_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/test_exec_monitor
+run select_from_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/boost_test_exec_monitor
   : # command-line args
   : # input files
   : $(UNIT_TEST_PROPERTIES)
     ;
 
-run select_arg_to_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/test_exec_monitor
+run select_arg_to_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/boost_test_exec_monitor
   : # command-line args
   : # input files
   : $(UNIT_TEST_PROPERTIES)
