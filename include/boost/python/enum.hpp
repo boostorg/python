@@ -15,6 +15,8 @@ namespace boost { namespace python {
 template <class T>
 struct enum_ : public objects::enum_base
 {
+    typedef objects::enum_base base;
+
     enum_(char const* name);
     inline enum_<T>& value(char const* name, T);
 
@@ -26,7 +28,7 @@ struct enum_ : public objects::enum_base
 
 template <class T>
 inline enum_<T>::enum_(char const* name)
-    : enum_base(
+    : base(
         name
         , &enum_<T>::to_python
         , &enum_<T>::convertible
@@ -39,7 +41,7 @@ inline enum_<T>::enum_(char const* name)
 template <class T>
 PyObject* enum_<T>::to_python(void const* x)
 {
-    return enum_base::to_python(
+    return base::to_python(
         converter::registered<T>::converters.class_object
         , static_cast<long>(*(T const*)x));
 }
