@@ -134,7 +134,7 @@ namespace // <unnamed>
 #  ifdef BOOST_PYTHON_TRACE_REGISTRY
       registry_t::iterator p = entries().find(entry(type));
       
-      std::cout << "looking up " << type
+      std::cout << "looking up " << type << ": "
                 << (p == entries().end() || p->target_type != type
                     ? "...NOT found\n" : "...found\n");
 #  endif
