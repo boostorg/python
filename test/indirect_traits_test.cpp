@@ -12,7 +12,7 @@ struct X {};
 
 int main()
 {
-    using namespace boost::python::detail;
+    using namespace boost::python::indirect_traits;
 
     typedef void (X::*pmf)();
 
