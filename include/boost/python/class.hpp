@@ -198,9 +198,9 @@ class class_ : public objects::class_base
 
     // Pickle support
     template <typename PickleSuiteType>
-    self& def_pickle(PickleSuiteType)
+    self& def_pickle(PickleSuiteType const& x)
     {
-      error_messages::must_be_derived_from_pickle_suite(PickleSuiteType());
+      error_messages::must_be_derived_from_pickle_suite(x);
       detail::pickle_suite_finalize<PickleSuiteType>::register_(
         *this,
         &PickleSuiteType::getinitargs,
