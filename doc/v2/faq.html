@@ -29,36 +29,127 @@
     <hr>
 
     <dl class="page-index">
-      <dt><a href="#question1">{{question}}</a></dt>
+      <dt><a href="#question1">Is return_internal reference
+      efficient?</a></dt>
 
-      <dt><a href="#question2">{{question}}</a></dt>
+      <dt><a href="#question2">How can I which take C++ containers as
+      arguments?</a></dt>
     </dl>
 
     <h2><a name="question1"></a>Is return_internal reference efficient?</h2>
 
     <blockquote>
-      <b>Q:</b> <i>I have an object composed of 12 doubles. A const&amp; to this object is
-      returned by a member function of another class. From the viewpoint of
-      using the returned object in Python I do not care if I get a copy or a
-      reference to the returned object. In Boost.Python Version 2 I have the
-      choice of using copy_const_reference or return_internal_reference. Are
-      there considerations that would lead me to prefer one over the other,
-      such as size of generated code or memory overhead?</i>
+      <b>Q:</b> <i>I have an object composed of 12 doubles. A const&amp; to
+      this object is returned by a member function of another class. From the
+      viewpoint of using the returned object in Python I do not care if I get
+      a copy or a reference to the returned object. In Boost.Python Version 2
+      I have the choice of using copy_const_reference or
+      return_internal_reference. Are there considerations that would lead me
+      to prefer one over the other, such as size of generated code or memory
+      overhead?</i> 
 
-    <p><b>A:</b> copy_const_reference will make an instance with storage for one of
-    your objects, size = base_size + 12 * sizeof(double).
-    return_internal_reference will make an instance with storage for a
-    pointer to one of your objects, size = base_size + sizeof(void*).
-    However, it will also create a weak reference object which goes in the
-    source object's weakreflist and a special callback object to manage the
-    lifetime of the internally-referenced object. My guess?
-    copy_const_reference is your friend here, resulting in less overall
-    memory use and less fragmentation, also probably fewer total cycles.</p>
+      <p><b>A:</b> copy_const_reference will make an instance with storage
+      for one of your objects, size = base_size + 12 * sizeof(double).
+      return_internal_reference will make an instance with storage for a
+      pointer to one of your objects, size = base_size + sizeof(void*).
+      However, it will also create a weak reference object which goes in the
+      source object's weakreflist and a special callback object to manage the
+      lifetime of the internally-referenced object. My guess?
+      copy_const_reference is your friend here, resulting in less overall
+      memory use and less fragmentation, also probably fewer total
+      cycles.</p>
     </blockquote>
 
-    <h2><a name="question2"></a>{{question}}</h2>
+    <h2><a name="question2"></a>How can I wrap functions which take C++
+    containers as arguments?</h2>
 
-    <p>{{answer}}</p>
+    <p>Ralf W. Grosse-Kunstleve provides these notes:</p>
+
+    <ol>
+      <li>
+        Using the regular <code>class_&lt;&gt;</code> wrapper: 
+<pre>
+class_&lt;std::vector&lt;double&gt; &gt;("std_vector_double")
+  .def(...)
+  ...
+  ;
+</pre>
+        This can be moved to a template so that several types (double, int,
+        long, etc.) can be wrapped with the same code. This technique is used
+        in the file 
+
+        <blockquote>
+          scitbx/include/scitbx/array_family/boost_python/flex_wrapper.h
+        </blockquote>
+        in the "scitbx" package. The file could easily be modified for
+        wrapping std::vector&lt;&gt; instantiations. 
+
+        <p>This type of C++/Python binding is most suitable for containers
+        that may contain a large number of elements (&gt;10000).</p>
+      </li>
+
+      <li>
+        Using custom rvalue converters. Boost.Python "rvalue converters"
+        match function signatures such as: 
+<pre>
+void foo(std::vector&lt;double&gt; const&amp; array); // pass by const-reference
+void foo(std::vector&lt;double&gt; array); // pass by value
+</pre>
+        Some custom rvalue converters are implemented in the file 
+
+        <blockquote>
+          scitbx/include/scitbx/boost_python/container_conversions.h
+        </blockquote>
+        This code can be used to convert from C++ container types such as
+        std::vector&lt;&gt; or std::list&lt;&gt; to Python tuples and vice
+        versa. A few simple examples can be found in the file 
+
+        <blockquote>
+          scitbx/array_family/boost_python/regression_test_module.cpp
+        </blockquote>
+        Automatic C++ container &lt;-&gt; Python tuple conversions are most
+        suitable for containers of moderate size. These converters generate
+        significantly less object code compared to alternative 1 above.
+      </li>
+    </ol>
+    A disadvantage of using alternative 2 is that operators such as
+    arithmetic +,-,*,/,% are not available. It would be useful to have custom
+    rvalue converters that convert to a "math_array" type instead of tuples.
+    This is currently not implemented but is possible within the framework of
+    Boost.Python V2 as it will be released in the next couple of weeks. [ed.:
+    this was posted on 2002/03/10] 
+
+    <p>It would also be useful to also have "custom lvalue converters" such
+    as std::vector&lt;&gt; &lt;-&gt; Python list. These converters would
+    support the modification of the Python list from C++. For example:</p>
+
+    <p>C++:</p>
+<pre>
+void foo(std::vector&lt;double&gt;&amp; array)
+{
+  for(std::size_t i=0;i&lt;array.size();i++) {
+    array[i] *= 2;
+  }
+}
+</pre>
+    Python: 
+<pre>
+&gt;&gt;&gt; l = [1, 2, 3]
+&gt;&gt;&gt; foo(l)
+&gt;&gt;&gt; print l
+[2, 4, 6]
+</pre>
+    Custom lvalue converters require changes to the Boost.Python core library
+    and are currently not available. 
+
+    <p>P.S.:</p>
+
+    <p>The "scitbx" files referenced above are available via anonymous
+    CVS:</p>
+<pre>
+cvs -d:pserver:anonymous@cvs.cctbx.sourceforge.net:/cvsroot/cctbx login
+cvs -d:pserver:anonymous@cvs.cctbx.sourceforge.net:/cvsroot/cctbx co scitbx
+</pre>
     <hr>
 
     <p>Revised 
