@@ -5,8 +5,6 @@
 // to its suitability for any purpose.
 #include <string>
 #include <boost/python/module.hpp>
-#include <boost/mpl/type_list.hpp>
-#include <boost/mpl/for_each.hpp>
 
 
 template <class T>

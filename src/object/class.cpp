@@ -81,6 +81,22 @@ BOOST_PYTHON_DECL ref class_metatype()
     return ref((PyObject*)&class_metatype_object, ref::increment_count);
 }
 
+extern "C"
+{
+    static void instance_dealloc(PyObject* inst)
+    {
+        instance* kill_me = (instance*)inst;
+
+        for (instance_holder* p = kill_me->objects, *next; p != 0; p = next)
+        {
+            next = p->next();
+            delete p;
+        }
+        
+        inst->ob_type->tp_free(inst);
+    }
+}
+
 // Do we really need this? I'm beginning to think we don't!
 PyTypeObject class_type_object = {
     PyObject_HEAD_INIT(0) //&class_metatype_object)
@@ -88,7 +104,7 @@ PyTypeObject class_type_object = {
         "Boost.Python.instance",
         sizeof(instance),
         0,
-        0,                                      /* tp_dealloc */
+        instance_dealloc,                       /* tp_dealloc */
         0,                                      /* tp_print */
         0,                                      /* tp_getattr */
         0,                                      /* tp_setattr */
@@ -206,6 +222,7 @@ namespace
       m_impl.insert(
           boost::detail::lower_bound(start, finish, id)
           , entry(id, object));
+      converter::registry::class_object(id) = (PyTypeObject*)object.get();
   }
 }
 
