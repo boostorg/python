@@ -23,6 +23,11 @@ if [ check-python-config ]
       bpl-linkflags = <linkflags>"-e initlibboost_python" ;
   }
 
+  # Enabling intrinsics (/0i) or maximize speed (/02) seem to cause
+  # internal compiler errors with this toolset.
+  local msvc-stlport-workarounds
+    = <optimization>off "<cxxflags>-Ogty -O1 -Gs" ;
+    
   local sources =
     numeric.cpp
     list.cpp
@@ -55,6 +60,7 @@ if [ check-python-config ]
     : $(BOOST_PYTHON_V2_PROPERTIES)
       <define>BOOST_PYTHON_SOURCE
       $(bpl-linkflags)
+        <msvc-stlport><release>$(msvc-stlport-workarounds)
       ;
 
   lib boost_python
@@ -66,6 +72,7 @@ if [ check-python-config ]
       <define>BOOST_PYTHON_SOURCE
       <define>BOOST_STATIC_LIB
       $(bpl-linkflags)
+        <msvc-stlport><release>$(msvc-stlport-workarounds)
       ;
 
   stage bin-stage : <dll>boost_python <lib>boost_python
