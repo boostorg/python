@@ -16,10 +16,13 @@
 extern "C" BOOL WINAPI DllMain ( HINSTANCE hInst, DWORD wDataSeg, LPVOID lpvReserved );
 
 # ifdef BOOST_MSVC
+#  pragma warning(push)
+#  pragma warning(disable:4297)
 extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS*)
 {
     throw;
 }
+#  pragma warning(pop)
 # endif
 
 BOOL WINAPI DllMain(

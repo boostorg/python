@@ -109,7 +109,7 @@ namespace
                               make_iterator_property_map(
                                   to_target
                                   , get(vertex_index, reverse_topology)
-# ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+# ifdef BOOST_NO_STD_ITERATOR_TRAITS
                                   , *to_target
 # endif 
                                   )

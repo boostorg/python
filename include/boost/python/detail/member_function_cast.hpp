@@ -43,6 +43,13 @@ struct non_member_function_cast_impl
 template <class T>
 struct member_function_cast_impl
 {
+# ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+    template <class U>
+    static non_member_function_cast_impl stage1(U)
+    {
+        return non_member_function_cast_impl();
+    }
+# endif 
     template <class S, class R>
     static cast_helper<S,R(T::*)()> stage1(R (S::*)())
     {
@@ -85,7 +92,6 @@ struct member_function_cast_impl
         return cast_helper<S,R(T::*)(A0,A1,A2,A3,A4,A5)>();
     }
 
-# if 1
     template <class S, class R>
     static cast_helper<S,R(T::*)()const> stage1(R (S::*)()const)
     {
@@ -170,7 +176,6 @@ struct member_function_cast_impl
         return cast_helper<S,R(T::*)(A0,A1,A2,A3,A4,A5)volatile>();
     }
 
-// # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     template <class S, class R>
     static cast_helper<S,R(T::*)()const volatile> stage1(R (S::*)()const volatile)
     {
@@ -212,17 +217,20 @@ struct member_function_cast_impl
     {
         return cast_helper<S,R(T::*)(A0,A1,A2,A3,A4,A5)const volatile>();
     }
-# endif 
 };
 
 
 template <class T, class SF>
 struct member_function_cast
+# ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+    : member_function_cast_impl<T>
+# else 
     : mpl::select_type<
         is_member_function_pointer<SF>::value
         , member_function_cast_impl<T>
         , non_member_function_cast_impl
     >::type
+# endif 
 {
 };
 

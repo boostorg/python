@@ -45,9 +45,14 @@ template <class F>
 PyObject* wrap_function(F f)
 {
     return wrap_function_select<
+# if 1
+        type_traits::ice_not<
+                is_pointer<F>::value
+# else 
               type_traits::ice_or<
                  is_function<F>::value
                  , is_member_function_pointer<F>::value
+# endif 
         >::value >::execute(f);
 }
 
