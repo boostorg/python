@@ -318,26 +318,37 @@ Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.
     ...         'Docs for DerivedFromBase.fred'
     ...         pass
 
-    >>> df = DerivedFromFoo()
-    >>> dir(df)
-    []
     >>> dir(DerivedFromFoo)
     ['__del__', '__doc__', '__init__', '__module__', 'fred']
+    
+    >>> df = DerivedFromFoo()
     >>> df.__dict__
     {}
-
     >>> df.fred.__doc__
     'Docs for DerivedFromFoo.fred'
+    
     >>> db = DerivedFromBase()
-    >>> dir(db)
-    []
-    >>> dir(DerivedFromBase)
-    ['__doc__', '__module__', 'fred', 'i_am_derived_from_base']
     >>> db.__dict__
     {}
     >>> db.fred.__doc__
     'Docs for DerivedFromBase.fred'
 
+    >>> import sys
+    >>> if sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and
+    ...                                 sys.version_info[1] < 2 ):
+    ...     assert dir(df) == []
+    ...     assert dir(db) == []
+    ...     assert dir(DerivedFromBase) == [
+    ...             '__doc__', '__module__', 'fred', 'i_am_derived_from_base']
+    ... else:
+    ...     assert dir(df) == [
+    ...         '__del__', '__doc__', '__init__', '__module__', 'add_len',
+    ...         'call_add_len', 'call_pure', 'fred', 'mumble', 'set']
+    ...     assert dir(db) == ['__doc__', '__module__', 'fred'
+    ...                       , 'i_am_base', 'i_am_derived_from_base']
+    ...     assert dir(DerivedFromBase) == [
+    ...          '__doc__', '__module__', 'fred', 'i_am_base', 'i_am_derived_from_base']
+    
 Special member functions in action
     >>> del df
     Deleting DerivedFromFoo
@@ -1057,6 +1068,43 @@ test inheritB2
     >>> pow(1,i)
     Traceback (innermost last):
     TypeError: bad operand type(s) for pow()
+
+    >>> ii = Int(1)
+    >>> ii += Int(2)
+    >>> ii.i()
+    3
+    >>> ii -= Int(1)
+    >>> ii.i()
+    2
+    >>> ii *= Int(3)
+    >>> ii.i()
+    6
+    >>> ii /= Int(2)
+    >>> ii.i()
+    3
+    >>> ii <<= Int(2)
+    >>> ii.i()
+    12
+    >>> ii >>= Int(1)
+    >>> ii.i()
+    6
+    >>> ii &= Int(5)
+    >>> ii.i()
+    4
+    >>> ii |= Int(9)
+    >>> ii.i()
+    13
+    >>> ii ^= Int(7)
+    >>> ii.i()
+    10
+    >>> ii %= Int(4)
+    >>> ii.i()
+    2
+    >>> ii **= Int(3)
+    >>> ii.i()
+    8
+    >>> ii.j()
+    11
 
 Test operator export to a subclass
 
