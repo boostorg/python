@@ -53,11 +53,6 @@ struct type_list_count_args
     };
 };
 
-#  undef BOOST_PYTHON_IS_LIST_ARG
-#  undef BOOST_PYTHON_PLUS
-#  undef BOOST_PYTHON_LIST_FORMAL_PARAMS
-#  undef BOOST_PYTHON_LIST_ACTUAL_PARAMS
-
 template<
     BOOST_PYTHON_LIST_FORMAL_PARAMS
     >
@@ -79,6 +74,11 @@ struct type_list
         >::type type;
 };
 
+#  undef BOOST_PYTHON_IS_LIST_ARG
+#  undef BOOST_PYTHON_PLUS
+#  undef BOOST_PYTHON_LIST_FORMAL_PARAMS
+#  undef BOOST_PYTHON_LIST_ACTUAL_PARAMS
+
 }}} // namespace boost::python::detail
 
 # endif // TYPE_LIST_IMPL_NO_PTS_DWA2002913_HPP
@@ -96,7 +96,7 @@ struct type_list_impl_chooser<N>
     struct result_
     {
         typedef BOOST_PP_CAT(mpl::list,N)<
-            BOOST_PYTHON_LIST_ACTUAL_PARAMS
+            BOOST_PP_ENUM_PARAMS(N, T)
             > type;
     };
 };

@@ -33,7 +33,7 @@ namespace boost { namespace python {
         BOOST_STATIC_CONSTANT(bool, value = true);
     };
 # else
-    template < BOOST_PYTHON_BASE_PARAMS >
+    template < BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, class B) >
     static char is_bases_helper(bases< BOOST_PYTHON_BASE_PARAMS > const&);
     
     static char (& is_bases_helper(...) )[256];
