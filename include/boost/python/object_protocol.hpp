@@ -14,27 +14,27 @@
 namespace boost { namespace python { 
 
 template <class Target, class Key>
-inline object getattr(Target const& target, Key const& key)
+object getattr(Target const& target, Key const& key)
 {
     return getattr(object(target), object(key));
 }
 
 
 template <class Key, class Value>
-inline void setattr(object const& target, Key const& key, Value const& value)
+void setattr(object const& target, Key const& key, Value const& value)
 {
     return setattr(target, object(key), object(value));
 }
 
 template <class Target, class Key>
-inline object getitem(Target const& target, Key const& key)
+object getitem(Target const& target, Key const& key)
 {
     return getitem(object(target), object(key));
 }
 
 
 template <class Key, class Value>
-inline void setitem(object const& target, Key const& key, Value const& value)
+void setitem(object const& target, Key const& key, Value const& value)
 {
     return setitem(target, object(key), object(value));
 }
