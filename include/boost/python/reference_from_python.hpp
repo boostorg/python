@@ -26,23 +26,28 @@ template <
     PyTypeObject const* python_type
     , class Value
     , class PythonObject
-    , Value& (*extract)(PythonObject&)
+    , class Extract
     >
-struct reference_from_python : type_from_python<python_type>
+struct reference_from_python
 {
+    typedef type_from_python<python_type> convertible_t;
+    
     reference_from_python()
-        : m_mutable_converter(convertible, convert_mutable)
-        , m_const_converter(convertible, convert_const)
+        : m_mutable_converter(
+            &convertible_t::convertible, convert_mutable)
+        
+        , m_const_converter(
+            &convertible_t::convertible, convert_const)
     {}
     
     static Value& convert_mutable(PyObject* op, converter::from_python_data&)
     {
-        return extract(*(PythonObject*)op);
+        return Extract::execute(*(PythonObject*)op);
     }
     
     static Value const& convert_const(PyObject* op, converter::from_python_data&)
     {
-        return extract(*(PythonObject*)op);
+        return Extract::execute(*(PythonObject*)op);
     }
     
  private:

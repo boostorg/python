@@ -64,8 +64,11 @@ struct SimpleObject
 {
     PyObject_HEAD
     simple x;
+};
 
-    static simple& extract(SimpleObject& o) { return o.x; }
+struct extract_simple_object
+{
+    static simple& execute(SimpleObject& o) { return o.x; }
 };
 
 PyTypeObject SimpleType = {
@@ -209,12 +212,13 @@ BOOST_PYTHON_MODULE_INIT(m1)
         &SimpleType
         , simple
         , SimpleObject
-        , &SimpleObject::extract
+        , extract_simple_object
         >
         unwrap_simple;
     
     static to_python_converter<simple&> simple_ref_wrapper(simple_ref_to_python);
 
+    
     module m1("m1");
 
     typedef boost::python::objects::pointer_holder_generator<

@@ -9,12 +9,27 @@
 # include <boost/python/converter/from_python.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/mpl/select_type.hpp>
+# include <boost/static_assert.hpp>
 
 namespace boost { namespace python { 
 
 template <typename T, class Derived>
 struct value_from_python
 {
+    typedef converter::from_python_check from_python_check;
+    
+    value_from_python(from_python_check convertible)
+        : m_converter(
+            convertible
+            , &Derived::convert
+            
+            // Change this to a compile-time check later to avoid
+            // generating destroy function
+            , has_trivial_destructor<T>::value ? 0 : &Derived::destroy
+            )
+    {
+    }
+
     value_from_python()
         : m_converter(
             &Derived::convertible
@@ -25,9 +40,6 @@ struct value_from_python
             , has_trivial_destructor<T>::value ? 0 : &Derived::destroy
             )
     {
-        // Scalar types are really converted by-value; the formulation
-        // is much simpler.
-        BOOST_STATIC_ASSERT(!(is_scalar<T>::value));
     }
 
     static void* get_storage(converter::from_python_data& data)

@@ -49,9 +49,6 @@ PyObject* unwrap_int_const_ref(int const& x)
     return PyInt_FromLong(x);
 }
 
-// MSVC6 bug workaround
-template <class T> struct xxxx;
-
 // rewrap<T> extracts a T from the argument, then converts the T back
 // to a PyObject* and returns it.
 template <class T>

@@ -10,8 +10,6 @@
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_DECL handle;
-
 namespace registry
 {
   class entry;
@@ -22,9 +20,6 @@ struct BOOST_PYTHON_DECL body
  public:
     body(type_id_t key);
     virtual ~body() {}
-
-    // default implementation is a no-op
-    virtual void destroy_handle(handle*) const;
 
     type_id_t key() const;
 

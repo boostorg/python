@@ -24,6 +24,7 @@ struct BOOST_PYTHON_DECL handle : boost::noncopyable
     //
     // Constructors taking a handle links this into a chain of
     // handles, for more efficient management in function wrappers
+    handle();
     handle(body* body);
     handle(body* body, handle& prev);
 
@@ -43,6 +44,9 @@ struct BOOST_PYTHON_DECL handle : boost::noncopyable
  protected: // member functions for derived classes
     // Get the body we hold
     inline body* get_body() const;
+
+    inline void set_body(body*);
+    inline void set_prev(handle&);
     
     // Release all bodies in the chain, in reverse order of
     // initialization. Only actually called for the head of the chain.
@@ -59,6 +63,10 @@ struct BOOST_PYTHON_DECL handle : boost::noncopyable
 //
 // implementations
 // 
+inline handle::handle()
+    : m_next(0)
+{}
+
 inline handle::handle(body* body, handle& prev)
     : m_body(body), m_next(0)
 {
@@ -83,6 +91,16 @@ inline handle::safe_bool handle::operator!() const
 inline body* handle::get_body() const
 {
     return m_body;
+}
+
+inline void handle::set_body(body* body)
+{
+    m_body = body;
+}
+
+inline void handle::set_prev(handle& prev)
+{
+    prev.m_next = this;
 }
 
 }}} // namespace boost::python::converter
