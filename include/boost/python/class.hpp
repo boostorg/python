@@ -70,7 +70,15 @@ namespace detail
       SelectHolder::register_();
   }
 
-  template <class T> int assert_default_constructible(T const&);
+  template <class T>
+  struct assert_default_constructible
+  {
+      static int check2(T const*);
+      static int check()
+      {
+          return sizeof(check2(&T()));
+      }
+  };
 }
 
 //
@@ -265,6 +273,7 @@ class class_ : public objects::class_base
     // Define the default constructor.
     self& def_init()
     {
+        detail::assert_default_constructible<T>::check();
         this->def_init(mpl::type_list<>::type());
         return *this;
     }
@@ -404,7 +413,6 @@ inline class_<T,X1,X2,X3>::class_()
     : base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
     this->set_instance_size(holder_selector::additional_size());
 }
@@ -422,7 +430,6 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
     this->set_instance_size(holder_selector::additional_size());
 }
