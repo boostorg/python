@@ -11,8 +11,10 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/convert.hpp>
 #include <boost/python/module.hpp>
+#include <boost/python/class.hpp>
 #include <boost/python/object/value_holder.hpp>
 #include <boost/python/object/class.hpp>
+#include <boost/python/object/inheritance.hpp>
 #include <boost/python/converter/class.hpp>
 #include <boost/python/make_function.hpp>
 #include <boost/python/errors.hpp>
@@ -227,10 +229,47 @@ simple const& g(simple const& x)
     return x;
 }
 
+struct A
+{
+    A() : x(0) {}
+    char const* name() { return "A"; }
+    int x;
+};
+
+struct B : A
+{
+    B() : x(1) {}
+    char const* name() { return "B"; }
+    int x;
+};
+
+
+struct C : A
+{
+    C() : x(2) {}
+    char const* name() { return "C"; }
+    virtual ~C() {}
+    int x;
+};
+
+struct D : B, C
+{
+    D() : x(3) {}
+    char const* name() { return "D"; }
+    int x;
+};
+
+int take_a(A const& a) { return a.x; }
+int take_b(B const& b) { return b.x; }
+int take_c(C const& c) { return c.x; }
+int take_d(D const& d) { return d.x; }
+    
 BOOST_PYTHON_MODULE_INIT(m1)
 {
-    boost::python::module m1("m1");
-
+    using boost::python::module;
+    using boost::python::class_;
+    
+    module m1("m1");
     // Create the converters; they are self-registering/unregistering.
     static int_wrapper wrap_int;
     static simple_wrapper wrap_simple;
@@ -242,13 +281,16 @@ BOOST_PYTHON_MODULE_INIT(m1)
     static simple_ref_wrapper wrap_simple_ref;
 
     // This unwrapper extracts pointers and references to the "complicated" class.
-    static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
+    //    static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
     
     // Insert the extension metaclass object
-    m1.add(boost::python::objects::class_metatype(), "xclass");
+    m1.add(
+        boost::python::objects::class_metatype()
+        , "xclass");
     
     // Insert the base class for all extension classes
-    m1.add(boost::python::objects::class_type(), "xinst");
+    m1.add(boost::python::objects::class_type()
+           , "xinst");
 
     m1.def(new_noddy, "new_noddy");
     m1.def(new_simple, "new_simple");
@@ -259,25 +301,36 @@ BOOST_PYTHON_MODULE_INIT(m1)
     // Expose g()
     m1.def(g, "g");
 
-    // Expose complicated's get_n() member function. See newtest.py
-    // for how it's used to build an extension class.
-    m1.def(&complicated::get_n, "get_n");
+    m1.def(take_a, "take_a");
+    m1.def(take_b, "take_b");
+    m1.def(take_c, "take_c");
+    m1.def(take_d, "take_d");
 
-    // Expose complicated::complicated(simple const&, int) as init1
-    boost::python::objects::function* init = boost::python::make_constructor<
-        complicated
-        , boost::mpl::type_list<simple const&,int>
-        , boost::python::objects::value_holder_generator>();
-    
-    boost::python::ref manager(init);
-    
-    init->add_overload(
-        boost::python::make_constructor<
-        complicated
-        , boost::mpl::type_list<simple const&>
-        , boost::python::objects::value_holder_generator>());
-    
-    m1.add(manager, "init1");
+    class_<A>(m1, "A")
+        .def_init()
+        .def(&A::name, "name")
+        ;
+          
+    class_<B,bases<A> >(m1, "B")
+        .def_init()
+        .def(&B::name, "name")
+        ;
+          
+    class_<C,bases<A> >(m1, "C")
+        .def_init()
+        .def(&C::name, "name")
+        ;
+
+    class_<D,bases<B,C> >(m1, "D")
+        .def_init()
+        .def(&D::name, "name")
+        ;
+
+    class_<complicated>(m1, "complicated")
+        .def_init(args<simple const&,int>())
+        .def_init(args<simple const&>())
+        .def(&complicated::get_n, "get_n")
+        ;
 }
 
 #include "module_tail.cpp"

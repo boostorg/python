@@ -23,7 +23,7 @@ dll bpl
     src/converter/type_id.cpp
     src/object/class.cpp
     src/object/function.cpp
-    # src/object/inheritance.cpp
+    src/object/inheritance.cpp
     src/errors.cpp
     src/module.cpp
     src/objects.cpp
