@@ -35,27 +35,19 @@ struct func_stubs_base {};
 
 }}} // namespace boost::python::detail
 
-///////////////////////////////////////////////////////////////////////////////
-//  Temporary BOOST_PP fix before the CVS stabalizes /*$$$ FIX ME $$$*/
-
-#ifndef BOOST_PP_FIX_REPEAT_2ND
-#define BOOST_PP_FIX_REPEAT_2ND(c, m, d) /* ... */ \
-    BOOST_PP_CAT(BOOST_PP_R2_, c)(m, d)            \
-    /**/
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_TYPEDEF_GEN(INDEX, DATA)                                       \
+#define BPL_IMPL_TYPEDEF_GEN(z, INDEX, DATA)                                    \
     typedef typename boost::python::detail::type_at                             \
     <                                                                           \
         BOOST_PP_ADD(INDEX, DATA),                                              \
         SigT                                                                    \
     >::type BOOST_PP_CAT(T, INDEX);                                             \
 
-#define BPL_IMPL_ARGS_GEN(INDEX, DATA)                                          \
+#define BPL_IMPL_ARGS_GEN(z, INDEX, DATA)                                       \
     BOOST_PP_CAT(T, INDEX) BOOST_PP_CAT(arg, INDEX)                             \
 
-#define BPL_IMPL_FUNC_WRAPPER_GEN(INDEX, DATA)                                  \
+#define BPL_IMPL_FUNC_WRAPPER_GEN(z, INDEX, DATA)                               \
     static RT BOOST_PP_CAT(func_, INDEX)                                        \
     (                                                                           \
         BOOST_PP_ENUM                                                           \
@@ -88,14 +80,14 @@ struct func_stubs_base {};
                                                                                 \
             typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
                                                                                 \
-            BOOST_PP_FIX_REPEAT_2ND                                             \
+            BOOST_PP_REPEAT_2ND                                                 \
             (                                                                   \
                 N_ARGS,                                                         \
                 BPL_IMPL_TYPEDEF_GEN,                                           \
                 1                                                               \
             )                                                                   \
                                                                                 \
-            BOOST_PP_FIX_REPEAT_2ND                                             \
+            BOOST_PP_REPEAT_2ND                                                 \
             (                                                                   \
                 BOOST_PP_INC(N_DFLTS),                                          \
                 BPL_IMPL_FUNC_WRAPPER_GEN,                                      \
@@ -105,7 +97,7 @@ struct func_stubs_base {};
     };                                                                          \
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(INDEX, DATA)                              \
+#define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(z, INDEX, DATA)                           \
     static RT BOOST_PP_CAT(func_, INDEX)                                        \
     (                                                                           \
         ClassT& obj BOOST_PP_COMMA_IF(                                          \
@@ -129,34 +121,34 @@ struct func_stubs_base {};
         );                                                                      \
     }                                                                           \
 
-#define BPL_IMPL_GEN_MEM_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)  \
-    struct FSTUBS_NAME {                                                        \
-                                                                                \
-        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));            \
-        BOOST_STATIC_CONSTANT(int, max_args = n_funcs + 1);                     \
-                                                                                \
-        template <typename SigT>                                                \
-        struct gen {                                                            \
-                                                                                \
-            typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
-            typedef typename boost::python::detail::type_at<1, SigT>::type ClassT;\
-                                                                                \
-            BOOST_PP_FIX_REPEAT_2ND                                             \
-            (                                                                   \
-                N_ARGS,                                                         \
-                BPL_IMPL_TYPEDEF_GEN,                                           \
-                2                                                               \
-            )                                                                   \
-                                                                                \
-            BOOST_PP_FIX_REPEAT_2ND                                             \
-            (                                                                   \
-                BOOST_PP_INC(N_DFLTS),                                          \
-                BPL_IMPL_MEM_FUNC_WRAPPER_GEN,                                  \
-                (FNAME, BOOST_PP_SUB(N_ARGS, N_DFLTS), RETURN)                  \
-            )                                                                   \
-        };                                                                      \
-    };                                                                          \
-                                                                                \
+#define BPL_IMPL_GEN_MEM_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)          \
+    struct FSTUBS_NAME {                                                                \
+                                                                                        \
+        BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));                    \
+        BOOST_STATIC_CONSTANT(int, max_args = n_funcs + 1);                             \
+                                                                                        \
+        template <typename SigT>                                                        \
+        struct gen {                                                                    \
+                                                                                        \
+            typedef typename boost::python::detail::type_at<0, SigT>::type RT;          \
+            typedef typename boost::python::detail::type_at<1, SigT>::type ClassT;      \
+                                                                                        \
+            BOOST_PP_REPEAT_2ND                                                         \
+            (                                                                           \
+                N_ARGS,                                                                 \
+                BPL_IMPL_TYPEDEF_GEN,                                                   \
+                2                                                                       \
+            )                                                                           \
+                                                                                        \
+            BOOST_PP_REPEAT_2ND                                                         \
+            (                                                                           \
+                BOOST_PP_INC(N_DFLTS),                                                  \
+                BPL_IMPL_MEM_FUNC_WRAPPER_GEN,                                          \
+                (FNAME, BOOST_PP_SUB(N_ARGS, N_DFLTS), RETURN)                          \
+            )                                                                           \
+        };                                                                              \
+    };
+
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(BOOST_MSVC)
@@ -284,23 +276,23 @@ struct func_stubs_base {};
 //      for the return type (void) and the lack of the return keyword.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
-    BPL_IMPL_GEN_FUNCTION_STUB                                                  \
-    (                                                                           \
-        FNAME,                                                                  \
-        GENERATOR_NAME,                                                         \
-        MAX_ARGS,                                                               \
-        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                        \
-    )                                                                           \
+#define BOOST_PYTHON_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)      \
+    BPL_IMPL_GEN_FUNCTION_STUB                                                          \
+    (                                                                                   \
+        FNAME,                                                                          \
+        GENERATOR_NAME,                                                                 \
+        MAX_ARGS,                                                                       \
+        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                                \
+    )
 
-#define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
-    BPL_IMPL_GEN_MEM_FUNCTION_STUB                                              \
-    (                                                                           \
-        FNAME,                                                                  \
-        GENERATOR_NAME,                                                         \
-        MAX_ARGS,                                                               \
-        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                        \
-    )                                                                           \
+#define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)       \
+    BPL_IMPL_GEN_MEM_FUNCTION_STUB                                                              \
+    (                                                                                           \
+        FNAME,                                                                                  \
+        GENERATOR_NAME,                                                                         \
+        MAX_ARGS,                                                                               \
+        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                                        \
+    )
 
 // deprecated macro names (to be removed)
 #define BOOST_PYTHON_FUNCTION_GENERATOR BOOST_PYTHON_FUNCTION_OVERLOADS

@@ -74,7 +74,7 @@ struct returning<void>
 # endif // RETURNING_DWA20011201_HPP
 
 // --------------- function pointers --------------- //
-#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_FUNCTION_POINTER
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && (BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_FUNCTION_POINTER)
 # line BOOST_PP_LINE(__LINE__, returning.hpp(function pointers))
 
 # define N BOOST_PP_ITERATION()
@@ -131,7 +131,7 @@ struct returning<void>
 # undef BOOST_PYTHON_CHECK_CONVERSION
 
 // --------------- pointers to members --------------- //
-#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_POINTER_TO_MEMBER
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && (BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_POINTER_TO_MEMBER)
 
     // Outer iteration over cv-qualifications
 # define BOOST_PP_ITERATION_PARAMS_2                                      \
@@ -145,12 +145,12 @@ struct returning<void>
 # define N BOOST_PP_ITERATION()
 # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
 
-# define BOOST_PYTHON_CALL_ARGS(n, _)                                   \
+# define BOOST_PYTHON_CALL_ARGS(z, n, _)                                \
     BOOST_PP_COMMA_IF(n) c##n(PyTuple_GET_ITEM(args_, BOOST_PP_INC(n)))
 
-# define BOOST_PYTHON_CHECK_CONVERSION(n, _)                              \
-    arg_from_python<A##n> c##n(PyTuple_GET_ITEM(args_, BOOST_PP_INC(n))); \
-    if (!c##n.convertible())                                              \
+# define BOOST_PYTHON_CHECK_CONVERSION(z, n, _)                                 \
+    arg_from_python<A##n> c##n(PyTuple_GET_ITEM(args_, BOOST_PP_INC(n)));       \
+    if (!c##n.convertible())                                                    \
         return 0;
 
 # if (BOOST_PP_RELATIVE_FLAGS(1) & BOOST_PYTHON_RETURNING_NON_VOID)

@@ -53,7 +53,7 @@ namespace boost { namespace python { namespace detail {
 //  and arguments of the input signature and stuffs them in an mpl::type_list.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_TEMPLATE_GEN(INDEX, DATA)  class BOOST_PP_CAT(T, INDEX)
+#define BOOST_PYTHON_TEMPLATE_GEN(z, index, data)  class BOOST_PP_CAT(T, index)
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PP_ITERATION_PARAMS_1                                             \
