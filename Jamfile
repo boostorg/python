@@ -4,7 +4,10 @@ subproject libs/python ;
 SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
 include <module@>python.jam ;
 
-PYTHON_PROPERTIES += <metrowerks><*><cxxflags>"-inline deferred" ;
+PYTHON_PROPERTIES 
+  += <metrowerks><*><cxxflags>"-inline deferred" 
+  <cxx><*><include>$(BOOST_ROOT)/boost/compatibility/cpp_c_headers
+  ;
 
 local export-bpl ;
 
