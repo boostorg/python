@@ -15,7 +15,7 @@
 # include <boost/python/converter/from_python_stage1_data.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-//# include <boost/python/detail/eval.hpp>
+# include <boost/type_traits/ice.hpp>
 # include <boost/preprocessor/list/for_each_i.hpp>
 # include <boost/preprocessor/tuple/to_list.hpp>
 # include <boost/preprocessor/cat.hpp>
@@ -129,19 +129,23 @@ namespace detail
 
       BOOST_STATIC_CONSTANT(std::size_t, target = referent_alignment<Reference>::value);
       typedef lower_alignment<target> t1;
+
+      BOOST_STATIC_CONSTANT(bool, t1_aligned =
+                            (alignment_of<t1>::value >= target)
+                            & (alignment_of<t1>::value % target == 0));
+
       typedef lower_size<referent_size<Reference>::value> t2;
 
+      BOOST_STATIC_CONSTANT(bool, t2_aligned =
+                            (alignment_of<t2>::value >= target)
+                            & (alignment_of<t2>::value % target == 0));
+
+
       typedef typename mpl::select_type<
-          ::boost::detail::ice_and<
-              alignment_of<t1>::value >= target
-              , alignment_of<t1>::value % target == 0
-          >::value
+          t1_aligned
           , t1
           , typename mpl::select_type< 
-              ::boost::detail::ice_and<
-                  alignment_of<t2>::value >= target
-                  , alignment_of<t2>::value % target == 0
-              >::value
+              t2_aligned
               , t2
               , max_align
           >::type
