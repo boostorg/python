@@ -11,7 +11,7 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/return_value_policy.hpp>
-# include <boost/python/copy_non_const_reference.hpp>
+# include <boost/python/return_by_value.hpp>
 # include <boost/python/object/function_object.hpp>
 # include <boost/python/arg_from_python.hpp>
 # include <boost/bind.hpp>
@@ -65,7 +65,7 @@ namespace detail
 template <class C, class D>
 object make_getter(D C::*pm)
 {
-    typedef return_value_policy<copy_non_const_reference> default_policy;
+    typedef return_value_policy<return_by_value> default_policy;
     
     return objects::function_object(
         ::boost::bind(

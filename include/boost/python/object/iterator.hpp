@@ -10,7 +10,7 @@
 # include <boost/python/class.hpp>
 # include <boost/python/object/class_detail.hpp>
 # include <boost/python/return_value_policy.hpp>
-# include <boost/python/copy_const_reference.hpp>
+# include <boost/python/return_by_value.hpp>
 # include <boost/python/object/function_object.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/type.hpp>
@@ -29,18 +29,7 @@ namespace boost { namespace python { namespace objects {
 // iterators are copied, so we just replace the result_converter from
 // the default_iterator_call_policies with a permissive one which
 // always copies the result.
-struct default_iterator_call_policies
-    : default_call_policies
-{
-    struct result_converter
-    {
-        template <class R>
-        struct apply
-        {
-            typedef to_python_value<R> type;
-        };
-    };
-};
+typedef return_value_policy<return_by_value> default_iterator_call_policies;
 
 // Instantiations of these are wrapped to produce Python iterators.
 template <class NextPolicies, class Iterator>
