@@ -24,7 +24,9 @@
 // Python's LongObject.h helpfully #defines ULONGLONG_MAX for us,
 // which confuses Boost's config
 //
-#include <pyconfig.h>
+#if !(defined(_WIN32) && defined(__MWERKS__))
+# include <pyconfig.h>
+#endif
 #include <limits.h>
 #ifndef ULONG_MAX
 # define BOOST_PYTHON_ULONG_MAX_UNDEFINED

@@ -14,7 +14,9 @@
 #  pragma once
 # endif
 
+#if !(defined(_WIN32) && defined(__MWERKS__))
 # include <pyconfig.h>
+#endif
 # include <boost/config.hpp>
 # include <boost/mpl/bool.hpp>
 

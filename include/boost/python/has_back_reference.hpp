@@ -6,7 +6,9 @@
 #ifndef HAS_BACK_REFERENCE_DWA2002323_HPP
 # define HAS_BACK_REFERENCE_DWA2002323_HPP
 
-#include <pyconfig.h>
+#if !(defined(_WIN32) && defined(__MWERKS__))
+# include <pyconfig.h>
+#endif
 #include <boost/config.hpp>
 
 namespace boost { namespace python { 
