@@ -28,113 +28,113 @@ struct pointer_holder : instance_holder
     template <class A1>
     pointer_holder(PyObject*, A1 a1)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
+            (typename unwrap_reference<A1>::type&)(a1)
                   ))
     {}
     
     template <class A1, class A2>
     pointer_holder(PyObject*, A1 a1, A2 a2)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
             ))
     {}
     
     template <class A1, class A2, class A3>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
             ))
     {}
     
     template <class A1, class A2, class A3, class A4>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
             ))
     {}
     
     template <class A1, class A2, class A3, class A4, class A5>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
             )) {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
-            , (unwrap_reference<A6>::type&)(a6)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
+            , (typename unwrap_reference<A6>::type&)(a6)
             )) {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
-            , (unwrap_reference<A6>::type&)(a6)
-            , (unwrap_reference<A7>::type&)(a7)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
+            , (typename unwrap_reference<A6>::type&)(a6)
+            , (typename unwrap_reference<A7>::type&)(a7)
             ))
     {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
-            , (unwrap_reference<A6>::type&)(a6)
-            , (unwrap_reference<A7>::type&)(a7)
-            , (unwrap_reference<A8>::type&)(a8)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
+            , (typename unwrap_reference<A6>::type&)(a6)
+            , (typename unwrap_reference<A7>::type&)(a7)
+            , (typename unwrap_reference<A8>::type&)(a8)
             ))
     {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
-            , (unwrap_reference<A6>::type&)(a6)
-            , (unwrap_reference<A7>::type&)(a7)
-            , (unwrap_reference<A8>::type&)(a8)
-            , (unwrap_reference<A9>::type&)(a9)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
+            , (typename unwrap_reference<A6>::type&)(a6)
+            , (typename unwrap_reference<A7>::type&)(a7)
+            , (typename unwrap_reference<A8>::type&)(a8)
+            , (typename unwrap_reference<A9>::type&)(a9)
             ))
     {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     pointer_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10)
         : m_p(new Value(
-            (unwrap_reference<A1>::type&)(a1)
-            , (unwrap_reference<A2>::type&)(a2)
-            , (unwrap_reference<A3>::type&)(a3)
-            , (unwrap_reference<A4>::type&)(a4)
-            , (unwrap_reference<A5>::type&)(a5)
-            , (unwrap_reference<A6>::type&)(a6)
-            , (unwrap_reference<A7>::type&)(a7)
-            , (unwrap_reference<A8>::type&)(a8)
-            , (unwrap_reference<A9>::type&)(a9)
-            , (unwrap_reference<A10>::type&)(a10)
+            (typename unwrap_reference<A1>::type&)(a1)
+            , (typename unwrap_reference<A2>::type&)(a2)
+            , (typename unwrap_reference<A3>::type&)(a3)
+            , (typename unwrap_reference<A4>::type&)(a4)
+            , (typename unwrap_reference<A5>::type&)(a5)
+            , (typename unwrap_reference<A6>::type&)(a6)
+            , (typename unwrap_reference<A7>::type&)(a7)
+            , (typename unwrap_reference<A8>::type&)(a8)
+            , (typename unwrap_reference<A9>::type&)(a9)
+            , (typename unwrap_reference<A10>::type&)(a10)
             ))
     {}
 
