@@ -61,10 +61,7 @@ if $(NT)
     PYTHON_PROPERTIES ?=
         <gcc><*><define>SIZEOF_LONG=4
         <gcc><*><define>USE_DL_IMPORT
-                        
-        # if you don't request multithreading, you can't get the DLL runtime,
-        # which is needed for the python modules to  work right                
-        <msvc><*><threading>multi
+        <runtime-link>dynamic
         ;
                         
     SHELL_SET ?= "set " ;
