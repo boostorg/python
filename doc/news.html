@@ -29,6 +29,18 @@
     <hr>
 
     <dl class="page-index">
+      <dt>24 February 2003</dt>
+
+      <dd>Finished improved support
+      for <code>boost::shared_ptr</code>.  Now any wrapped object of
+      C++ class <code>X</code> can be converted automatically
+      to <code>shared_ptr&lt;X&gt;</code>, regardless of how it was
+      wrapped.  The <code>shared_ptr</code> will manage the lifetime
+      of the Python object which supplied the <code>X</code>, rather
+      than just the <code>X</code> object itself, and when such
+      a <code>shared_ptr</code> is converted back to Python, the
+      original Python object will be returned.</dd>
+      
       <dt>19 January 2003</dt>
 
       <dd>Integrated <code>staticmethod</code> support from <a href=
