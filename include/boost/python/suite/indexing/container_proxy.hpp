@@ -157,9 +157,9 @@ namespace boost { namespace python { namespace indexing {
 
     static void detach_if_shared (MapEntry const &);
 
-    void adjustIndexes (MapIterator start, MapIterator end, long offset);
-    void adjustIndexesReverse (MapIterator start, MapIterator end, long offset);
-    void adjustIndex (MapIterator, long offset);
+    void adjustIndexes (MapIterator, MapIterator, difference_type offset);
+    void adjustIndexesReverse (MapIterator, MapIterator, difference_type offs);
+    void adjustIndex (MapIterator, difference_type offset);
 
   private:
     held_type myHeldObj;
@@ -295,7 +295,9 @@ namespace boost { namespace python { namespace indexing {
     MapIterator iter1 = myMap.find (index1);
     MapIterator iter2 = myMap.find (index2);
 
-    long distance = static_cast<long>(index2) - static_cast<long>(index1);
+    difference_type distance
+      = static_cast<difference_type>(index2)
+      - static_cast<difference_type>(index1);
 
     if ((iter1 == myMap.end()) && (iter2 == myMap.end()))
       {
@@ -342,7 +344,7 @@ namespace boost { namespace python { namespace indexing {
     assert (from.ptr == this);
     assert (to.ptr == this);
 
-    size_type deleting = to.index - from.index;
+    difference_type deleting = to.index - from.index;
     MapIterator erase_begin = myMap.lower_bound (from.index);
     MapIterator erase_end = myMap.lower_bound (to.index);
 
@@ -368,7 +370,8 @@ namespace boost { namespace python { namespace indexing {
   {
     assert (iter.ptr == this);
 
-    // Adjust indexes from iter.index onwards, since insert goes before this element
+    // Adjust indexes from iter.index onwards, since insert goes
+    // before this element
     adjustIndexesReverse (myMap.lower_bound (iter.index)
 			  , myMap.end()
 			  , 1);
@@ -401,7 +404,8 @@ namespace boost { namespace python { namespace indexing {
 
     assert (iter.ptr == this);
 
-    // Adjust indexes from iter.index onwanrds (insert goes before this element)
+    // Adjust indexes from iter.index onwanrds (insert goes before
+    // this element)
     adjustIndexesReverse (myMap.lower_bound (iter.index)
 			  , myMap.end()
 			  , std::distance (from, to));
@@ -475,7 +479,7 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjustIndex (MapIterator iter, long offset)
+  ::adjustIndex (MapIterator iter, difference_type offset)
   {
     pointer_impl ptr (iter->second);  // Copy the shared pointer
     myMap.erase (iter);               // Remove the map copy of it
@@ -493,7 +497,9 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjustIndexes (MapIterator low_bound, MapIterator high_bound, long offset)
+  ::adjustIndexes (MapIterator low_bound
+                   , MapIterator high_bound
+                   , difference_type offset)
   {
     // Adjust indexes in the given range of proxies by the given offset.
     // The adjustment is done by erasing and re-inserting the entries
@@ -520,7 +526,7 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::adjustIndexesReverse (MapIterator low_bound
 			  , MapIterator high_bound
-			  , long offset)
+			  , difference_type offset)
   {
     if (low_bound != high_bound)
       {
