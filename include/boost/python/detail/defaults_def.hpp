@@ -54,7 +54,7 @@ namespace detail
       
       objects::add_to_namespace(
           name_space, name,
-          make_keyword_range_function(
+          detail::make_keyword_range_function(
                 // This bit of nastiness casts F to a member function of T if possible.
                 member_function_cast<wrapped_type,Func>::stage1(f).stage2((wrapped_type*)0).stage3(f)
                 , policies, kw)
