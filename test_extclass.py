@@ -650,6 +650,13 @@ Testing interaction between callbacks, base declarations, and overloading
     -1
     >>> testCallback(r, 1)
     -1
+
+Regression test for a reference-counting bug thanks to Mark Evans
+(<mark.evans@clarisay.com>)
+    >>> sizelist([])
+    0.0
+    >>> sizelist([1, 2, 4])
+    3.0
 '''
 
 from demo import *
