@@ -1,26 +1,36 @@
 High Priority:
 --------------
 
+Finish shared_ptr support:
+    http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023,
+    http://mail.python.org/pipermail/c++-sig/2003-April/003760.html
+    http://article.gmane.org/gmane.comp.python.c%2B%2B/2847
+
+Replace "bad argument type for builtin operation" with better error
+messages.
+
+   Implement type_info streaming for GCC
+   (http://mail.python.org/pipermail/c++-sig/2002-June/001277.html)
+
+Converter scoping: http://article.gmane.org/gmane.comp.python.c++/2044
+
 Document builtin correspondences between builtiin Python types and C++
 types
-
-FILE* conversions: http://aspn.activestate.com/ASPN/Mail/Message/1411366
-
-Finish shared_ptr support:
-http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023,
-http://mail.python.org/pipermail/c++-sig/2003-April/003760.html
 
 Medium Priority:
 ----------------
 
-Implement type_info streaming for GCC
-(http://mail.python.org/pipermail/c++-sig/2002-June/001277.html)
+FILE* conversions: http://aspn.activestate.com/ASPN/Mail/Message/1411366
+
+"Constructor Functors/Factory Constructors" - enabling the addition of
+new construction routines which aren't in the C++ interface
 
 Low Priority:
 ------------
 Write "inside the Python type system", a survey of typeobject.c in
 Python source
 
-Better overload resolution - choose best match
+Better overload resolution - choose best match (maybe never)
 
-
+Detect non-explicit constructors and automatically call
+implicitly_convertible<>.
