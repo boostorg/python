@@ -22,57 +22,63 @@
     <h2>Contents</h2>
 
     <dl class="page-index">
-      <dt><a href="#introduction">Introduction</a>
+      <dt><a href="#introduction">Introduction</a></dt>
 
-      <dt><a href="#classes">Classes</a>
+      <dt><a href="#classes">Classes</a></dt>
 
       <dd>
         <dl class="page-index">
-          <dt><a href="#override-spec">Class template <code>override</code></a>
+          <dt><a href="#override-spec">Class template
+          <code>override</code></a></dt>
 
           <dd>
             <dl class="page-index">
-              <dt><a href="#override-spec-synopsis">Class <code>override</code> synopsis</a>
+              <dt><a href="#override-spec-synopsis">Class
+              <code>override</code> synopsis</a></dt>
 
-              <dt><a href="#override-spec-observers">Class <code>override</code> observer functions</a>
-
+              <dt><a href="#override-spec-observers">Class
+              <code>override</code> observer functions</a></dt>
             </dl>
+          </dd>
 
-          <dt><a href="#wrapper-spec">Class template <code>wrapper</code></a>
+          <dt><a href="#wrapper-spec">Class template
+          <code>wrapper</code></a></dt>
 
           <dd>
             <dl class="page-index">
-              <dt><a href="#wrapper-spec-synopsis">Class <code>wrapper</code> synopsis</a>
+              <dt><a href="#wrapper-spec-synopsis">Class <code>wrapper</code>
+              synopsis</a></dt>
 
-              <dt><a href="#wrapper-spec-observers">Class <code>wrapper</code> observer functions</a>
-
+              <dt><a href="#wrapper-spec-observers">Class
+              <code>wrapper</code> observer functions</a></dt>
             </dl>
-
+          </dd>
         </dl>
+      </dd>
 
-      <dt><a href="#examples">Example(s)</a>
+      <dt><a href="#examples">Example(s)</a></dt>
     </dl>
     <hr>
 
     <h2><a name="introduction"></a>Introduction</h2>
 
-    <p>To wrap a class <code>T</code> such that its virtual functions
-    can be "overridden in Python"&#8212;so that the corresponding
-    method of a Python derived class will be called when the virtual
-    function is invoked from C++&#8212;you must create a C++ wrapper
-    class derived from ``T`` that overrides those virtual functions so
-    that they call into Python.  This header contains classes that can
-    be used to make that job easier.
+    <p>To wrap a class <code>T</code> such that its virtual functions can be
+    "overridden in Python"&mdash;so that the corresponding method of a Python
+    derived class will be called when the virtual function is invoked from
+    C++&mdash;you must create a C++ wrapper class derived from ``T`` that
+    overrides those virtual functions so that they call into Python. This
+    header contains classes that can be used to make that job easier.</p>
 
     <h2><a name="classes"></a>Classes</h2>
 
     <h3><a name="override-spec"></a>Class <code>override</code></h3>
 
-    <p>Encapsulates a Python override of a C++ virtual function.
-    An <code>override</code> object either holds a callable Python
-    object or <code>None</code>.
+    <p>Encapsulates a Python override of a C++ virtual function. An
+    <code>override</code> object either holds a callable Python object or
+    <code>None</code>.</p>
 
-    <h4><a name="override-spec-synopsis"></a>Class <code>override</code> synopsis</h4>
+    <h4><a name="override-spec-synopsis"></a>Class <code>override</code>
+    synopsis</h4>
 <pre>
 namespace boost
 {
@@ -91,8 +97,8 @@ namespace boost
 };
 </pre>
 
-    <h4><a name="override-spec-observers"></a>Class <code>override</code> observer
-    functions</h4>
+    <h4><a name="override-spec-observers"></a>Class <code>override</code>
+    observer functions</h4>
 <pre>
 <i>unspecified</i> operator() const;
 template &lt;class A0&gt;
@@ -105,26 +111,27 @@ template &lt;class A0, class A1, ...class A<i>n</i>&gt;
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> If <code>*this</code> holds a callable
-      Python object, it is invoked with the specified arguments in
-      the manner specified <a href="callbacks.html">here</a>.  Otherwise, throws <code>
-<a href="errors.html#error_already_set-spec">error_already_set</a>
-</code>.
+      <dt><b>Effects:</b> If <code>*this</code> holds a callable Python
+      object, it is invoked with the specified arguments in the manner
+      specified <a href="callbacks.html">here</a>. Otherwise, throws <code><a
+      href="errors.html#error_already_set-spec">error_already_set</a></code>
+      .</dt>
 
-      <dt><b>Returns:</b> An object of unspecified type that holds the
-      Python result of the invocation and, when converted to a C++
-      type <code>R</code>, attempts to convert that result object
-      to <code>R</code>.  If that conversion fails, throws <code>
-<a href="errors.html#error_already_set-spec">error_already_set</a>
-</code>.
+      <dt><b>Returns:</b> An object of unspecified type that holds the Python
+      result of the invocation and, when converted to a C++ type
+      <code>R</code>, attempts to convert that result object to
+      <code>R</code>. If that conversion fails, throws <code><a href=
+      "errors.html#error_already_set-spec">error_already_set</a></code>
+      .</dt>
     </dl>
 
     <h3><a name="wrapper-spec"></a>Class template <code>wrapper</code></h3>
 
     <p>Deriving your wrapper class from both ``T`` <i>and</i>
-    ``wrapper&lt;T&gt; makes writing that derived class easier.
+    ``wrapper&lt;T&gt; makes writing that derived class easier.</p>
 
-    <h4><a name="wrapper-spec-synopsis"></a>Class template <code>wrapper</code> synopsis</h4>
+    <h4><a name="wrapper-spec-synopsis"></a>Class template
+    <code>wrapper</code> synopsis</h4>
 <pre>
 namespace boost
 {
@@ -136,27 +143,24 @@ namespace boost
 };
 </pre>
 
-    <h4><a name="wrapper-spec-observers"></a>Class <code>wrapper</code> observer
-    functions</h4>
+    <h4><a name="wrapper-spec-observers"></a>Class <code>wrapper</code>
+    observer functions</h4>
 <pre>
 override get_override(char const* name) const;
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>name</code> is a <a href="definitions.html#ntbs">ntbs</a>.
+      <dt><b>Requires:</b> <code>name</code> is a <a href=
+      "definitions.html#ntbs">ntbs</a>.</dt>
 
       <dt><b>Returns:</b> If <code>*this</code> is the C++ base class
-         subobject of a Python derived class instance that overrides
-         the named function, returns an <code>override</code> object
-         that delegates to the Python override.  Otherwise,
-         returns an <code>
-override
- </code>
-object that holds <code>None</code>.
+      subobject of a Python derived class instance that overrides the named
+      function, returns an <code>override</code> object that delegates to the
+      Python override. Otherwise, returns an <code>override</code> object
+      that holds <code>None</code>.</dt>
     </dl>
 
     <h2><a name="examples"></a>Example</h2>
-
 <pre>
 #include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
@@ -170,7 +174,7 @@ struct P
 {
     virtual ~P(){}
     virtual char const* f() = 0;
-    char const* g() { return &quot;P::g()&quot;; }
+    char const* g() { return "P::g()"; }
 };
 
 struct PCallback : P, wrapper&lt;P&gt;
@@ -178,9 +182,9 @@ struct PCallback : P, wrapper&lt;P&gt;
     char const* f()
     {
 #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300) // Workaround for vc6/vc7
-        return call&lt;char const*&gt;(this-&gt;get_override(&quot;f&quot;).ptr());
+        return call&lt;char const*&gt;(this-&gt;get_override("f").ptr());
 #else 
-        return this-&gt;get_override(&quot;f&quot;)();
+        return this-&gt;get_override("f")();
 #endif 
     }
 };
@@ -189,14 +193,14 @@ struct PCallback : P, wrapper&lt;P&gt;
 struct A
 {
     virtual ~A(){}
-    virtual char const* f() { return &quot;A::f()&quot;; }
+    virtual char const* f() { return "A::f()"; }
 };
 
 struct ACallback :  A, wrapper&lt;A&gt;
 {
     char const* f()
     {
-        if (override f = this-&gt;get_override(&quot;f&quot;))
+        if (override f = this-&gt;get_override("f"))
 #if BOOST_WORKAROUND(BOOST_MSVC, &lt;= 1300) // Workaround for vc6/vc7
             return call&lt;char const*&gt;(f.ptr());
 #else 
@@ -211,19 +215,20 @@ struct ACallback :  A, wrapper&lt;A&gt;
 
 BOOST_PYTHON_MODULE_INIT(polymorphism)
 {
-    class_&lt;PCallback,boost::noncopyable&gt;(&quot;P&quot;)
-        .def(&quot;f&quot;, pure_virtual(&amp;P::f))
+    class_&lt;PCallback,boost::noncopyable&gt;("P")
+        .def("f", pure_virtual(&amp;P::f))
         ;
 
-    class_&lt;ACallback,boost::noncopyable&gt;(&quot;A&quot;)
-        .def(&quot;f&quot;, &amp;A::f, &amp;ACallback::default_f)
+    class_&lt;ACallback,boost::noncopyable&gt;("A")
+        .def("f", &amp;A::f, &amp;ACallback::default_f)
         ;
 }
 </pre>
+
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  31 October, 2004
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     31 October, 2004 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 
 
     <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
