@@ -8,12 +8,20 @@
 
 namespace boost { namespace python { 
 
-class object;
+namespace api
+{
+  class object;
 
-BOOST_PYTHON_DECL object getattr(object const& target, object const& key);
-BOOST_PYTHON_DECL void setattr(object const& target, object const& key, object const& value);
-BOOST_PYTHON_DECL object getitem(object const& target, object const& key);
-BOOST_PYTHON_DECL void setitem(object const& target, object const& key, object const& value);
+  BOOST_PYTHON_DECL object getattr(object const& target, object const& key);
+  BOOST_PYTHON_DECL void setattr(object const& target, object const& key, object const& value);
+  BOOST_PYTHON_DECL object getitem(object const& target, object const& key);
+  BOOST_PYTHON_DECL void setitem(object const& target, object const& key, object const& value);
+}
+
+using api::getattr;
+using api::setattr;
+using api::getitem;
+using api::setitem;
 
 }} // namespace boost::python
 

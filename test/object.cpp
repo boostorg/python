@@ -25,27 +25,27 @@ object number()
 
 object obj_getattr(object x, char const* name)
 {
-    return x._(name);
+    return x.attr(name);
 }
 
 object obj_const_getattr(object const& x, char const* name)
 {
-    return x._(name);
+    return x.attr(name);
 }
 
 void obj_setattr(object x, char const* name, object value)
 {
-    x._(name) = value;
+    x.attr(name) = value;
 }
 
 void obj_setattr42(object x, char const* name)
 {
-    x._(name) = 42;
+    x.attr(name) = 42;
 }
 
 void obj_moveattr(object& x, char const* src, char const* dst)
 {
-    x._(dst) = x._(src);
+    x.attr(dst) = x.attr(src);
 }
 
 object obj_getitem(object x, object key)
@@ -95,12 +95,12 @@ bool test_not(object y)
 
 bool test_attr(object y, char* name)
 {
-    return y._(name);
+    return y.attr(name);
 }
 
 bool test_not_attr(object y, char* name)
 {
-    return !y._(name);
+    return !y.attr(name);
 }
 
 bool test_item(object y, object key)
@@ -113,20 +113,161 @@ bool test_not_item(object y, object key)
     return !y[key];
 }
 
+bool check_binary_operators()
+{
+    int y;
+    
+    object x(3);
+
+#define TEST_BINARY(op)                         \
+    for (y = 1; y < 6; ++y)                     \
+    {                                           \
+        if ((x op y) != (3 op y))               \
+            return false;                       \
+    }                                           \
+    for (y = 1; y < 6; ++y)                     \
+    {                                           \
+        if ((y op x) != (y op 3))               \
+            return false;                       \
+    }                                           \
+    for (y = 1; y < 6; ++y)                     \
+    {                                           \
+        object oy(y);                           \
+        if ((oy op x) != (oy op 3))             \
+            return false;                       \
+    }
+    TEST_BINARY(>)
+    TEST_BINARY(>=)
+    TEST_BINARY(<)
+    TEST_BINARY(<=)
+    TEST_BINARY(==)
+    TEST_BINARY(!=)
+
+    TEST_BINARY(+)
+    TEST_BINARY(-)
+    TEST_BINARY(*)
+    TEST_BINARY(/)
+    TEST_BINARY(%)
+    TEST_BINARY(<<)
+    TEST_BINARY(>>)
+    TEST_BINARY(&)
+    TEST_BINARY(^)
+    TEST_BINARY(|)
+    return true;
+}
+
+bool check_inplace(object l, object o)
+{
+    int y;
+#define TEST_INPLACE(op)                        \
+    for (y = 1; y < 6; ++y)                     \
+    {                                           \
+        object x(666);                          \
+        x op##= y;                              \
+        if (x != (666 op y))                    \
+            return false;                       \
+    }                                           \
+    for (y = 1; y < 6; ++y)                     \
+    {                                           \
+        object x(666);                          \
+        x op##= object(y);                      \
+        if (!(x == (666 op y)))                 \
+            return false;                       \
+    }
+    TEST_INPLACE(+)
+    TEST_INPLACE(-)
+    TEST_INPLACE(*)
+    TEST_INPLACE(/)
+    TEST_INPLACE(%)
+    TEST_INPLACE(<<)
+    TEST_INPLACE(>>)
+    TEST_INPLACE(&)
+    TEST_INPLACE(^)
+    TEST_INPLACE(|)
+        
+    l += l;
+    for (y = 0; y < 6; ++y)
+    {
+        if (l[y] != y % 3)
+            return false;
+    }
+
+#define TEST_ITEM_INPLACE(index, op, n, r1, r2)         \
+    l[index] op##= n;                                   \
+    if (l[index] != r1)                                 \
+        return false;                                   \
+    l[index] op##= object(n);                           \
+    if (!(l[index] == r2))                              \
+        return false;
+
+    TEST_ITEM_INPLACE(0,+,7,7,14)
+    TEST_ITEM_INPLACE(1,-,2,-1,-3)
+    TEST_ITEM_INPLACE(2,*,3,6,18)
+    TEST_ITEM_INPLACE(2,/,2,9,4)
+    TEST_ITEM_INPLACE(0,%,4,2,2)
+    l[0] += 1;
+    TEST_ITEM_INPLACE(0,<<,2,12,48)
+    TEST_ITEM_INPLACE(0,>>,1,24,12)
+    l[4] = 15;
+    TEST_ITEM_INPLACE(4,&,(16+4+1),5,5)
+    TEST_ITEM_INPLACE(0,^,1,13,12)
+    TEST_ITEM_INPLACE(0,|,1,13,13)
+
+    o.attr("x0") = 0;
+    o.attr("x1") = 1;
+    o.attr("x2") = 2;
+    o.attr("x3") = 0;
+    o.attr("x4") = 1;
+    
+#define TEST_ATTR_INPLACE(index, op, n, r1, r2) \
+    o.attr("x" #index) op##= n;                 \
+    if (o.attr("x" #index) != r1)               \
+        return false;                           \
+    o.attr("x" #index) op##= object(n);         \
+    if (o.attr("x" #index) != r2)               \
+        return false;
+    
+    TEST_ATTR_INPLACE(0,+,7,7,14)
+    TEST_ATTR_INPLACE(1,-,2,-1,-3)
+    TEST_ATTR_INPLACE(2,*,3,6,18)
+    TEST_ATTR_INPLACE(2,/,2,9,4)
+    TEST_ATTR_INPLACE(0,%,4,2,2)
+    o.attr("x0") += 1;
+    TEST_ATTR_INPLACE(0,<<,2,12,48)
+    TEST_ATTR_INPLACE(0,>>,1,24,12)
+    o.attr("x4") = 15;
+    TEST_ATTR_INPLACE(4,&,(16+4+1),5,5)
+    TEST_ATTR_INPLACE(0,^,1,13,12)
+    TEST_ATTR_INPLACE(0,|,1,13,13)
+
+    if (l[0] != o.attr("x0"))
+        return false;
+    if (l[1] != o.attr("x1"))
+        return false;
+    if (l[2] != o.attr("x2"))
+        return false;
+    if (l[3] != o.attr("x3"))
+        return false;
+    if (l[4] != o.attr("x4"))
+        return false;
+
+    return true;
+}
+
 BOOST_PYTHON_MODULE_INIT(object_ext)
 {
     module("object_ext")
         .def("call_object_3", call_object_3)
         .def("message", message)
         .def("number", number)
-        
+
         .def("obj_getattr", obj_getattr)
         .def("obj_const_getattr", obj_const_getattr)
         .def("obj_setattr", obj_setattr)
         .def("obj_setattr42", obj_setattr42)
         .def("obj_moveattr", obj_moveattr)
 
-        
+
         .def("obj_getitem", obj_getitem)
         .def("obj_getitem3", obj_getitem)
         .def("obj_const_getitem", obj_const_getitem)
@@ -134,7 +275,7 @@ BOOST_PYTHON_MODULE_INIT(object_ext)
         .def("obj_setitem42", obj_setitem42)
         .def("obj_moveitem", obj_moveitem)
         .def("obj_moveitem2", obj_moveitem2)
-        
+
         .def("test", test)
         .def("test_not", test_not)
 
@@ -143,6 +284,9 @@ BOOST_PYTHON_MODULE_INIT(object_ext)
 
         .def("test_item", test_item)
         .def("test_not_item", test_not_item)
+
+        .def("check_binary_operators", check_binary_operators)
+        .def("check_inplace", check_inplace)
         ;
 }
 

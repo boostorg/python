@@ -8,28 +8,28 @@
 #include <boost/python/errors.hpp>
 #include <boost/python/object.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python { namespace api {
 
-object getattr(object const& target, object const& key)
+BOOST_PYTHON_DECL object getattr(object const& target, object const& key)
 {
     return object((object::new_pyobject_reference*)PyObject_GetAttr(&*target, &*key));
 }
     
-void setattr(object const& target, object const& key, object const& value)
+BOOST_PYTHON_DECL void setattr(object const& target, object const& key, object const& value)
 {
     if (PyObject_SetAttr(&*target, &*key, &*value) == -1)
         throw_error_already_set();
 }
 
-object getitem(object const& target, object const& key)
+BOOST_PYTHON_DECL object getitem(object const& target, object const& key)
 {
     return object((object::new_pyobject_reference*)PyObject_GetItem(&*target, &*key));
 }
     
-void setitem(object const& target, object const& key, object const& value)
+BOOST_PYTHON_DECL void setitem(object const& target, object const& key, object const& value)
 {
     if (PyObject_SetItem(&*target, &*key, &*value) == -1)
         throw_error_already_set();
 }
 
-}} // namespace boost::python
+}}} // namespace boost::python::api

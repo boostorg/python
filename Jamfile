@@ -28,6 +28,7 @@ dll bpl
   src/converter/callback.cpp
   src/object/iterator.cpp
   src/object_protocol.cpp
+  src/object_operators.cpp
   :
   $(BOOST_PYTHON_V2_PROPERTIES)
     <define>BOOST_PYTHON_SOURCE

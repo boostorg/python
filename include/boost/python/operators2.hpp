@@ -196,9 +196,12 @@ BOOST_PYTHON_BINARY_OPERATOR(lt, gt, <)
 BOOST_PYTHON_BINARY_OPERATOR(le, ge, <=)
 BOOST_PYTHON_BINARY_OPERATOR(eq, eq, ==)
 BOOST_PYTHON_BINARY_OPERATOR(ne, ne, !=)
-
+# undef BOOST_PYTHON_BINARY_OPERATOR
+    
 // pow isn't an operator in C++; handle it specially.
 BOOST_PYTHON_BINARY_OPERATION(pow, rpow, pow(l,r))
+# undef BOOST_PYTHON_BINARY_OPERATION
+    
 namespace self_ns
 {
 # ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
@@ -300,6 +303,7 @@ namespace self_ns                                               \
       return detail::operator_<detail::op_##id>();              \
   }                                                             \
 }
+# undef BOOST_PYTHON_INPLACE_OPERATOR
 
 BOOST_PYTHON_UNARY_OPERATOR(neg, -, operator-)
 BOOST_PYTHON_UNARY_OPERATOR(pos, +, operator+)
@@ -310,7 +314,8 @@ BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)
 BOOST_PYTHON_UNARY_OPERATOR(complex, std::complex<double>, complex_)
 BOOST_PYTHON_UNARY_OPERATOR(str, lexical_cast<std::string>, str)
-    
+# undef BOOST_PYTHON_UNARY_OPERATOR
+
 }} // namespace boost::python
 
 # ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP

@@ -12,122 +12,147 @@
 
 namespace boost { namespace python { 
 
+// Put this in an inner namespace so that the generalized operators won't take over
+namespace api
+{
+  
 // This file contains the definition of the object class and enough to
 // construct/copy it, but not enough to do operations like
 // attribute/item access or addition.
 
-template <class Policies> class proxy;
-namespace detail
-{
+  template <class Policies> class proxy;
+  
   struct const_attribute_policies;
   struct attribute_policies;
   struct const_item_policies;
   struct item_policies;
-}
-typedef proxy<detail::const_attribute_policies> const_object_attribute;
-typedef proxy<detail::attribute_policies> object_attribute;
-typedef proxy<detail::const_item_policies> const_object_item;
-typedef proxy<detail::item_policies> object_item;
 
-class object
-{
+  typedef proxy<const_attribute_policies> const_object_attribute;
+  typedef proxy<attribute_policies> object_attribute;
+  typedef proxy<const_item_policies> const_object_item;
+  typedef proxy<item_policies> object_item;
+
+  // A way to turn a conrete type T into a type dependent on U. This
+  // keeps conforming compilers from complaining about returning an
+  // incomplete T from a template member function (which must be
+  // defined in the class body to keep MSVC happy).
+  template <class T, class U>
+  struct dependent
+  {
+      typedef T type;
+  };
+
+  class object
+  {
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
-    typedef object const& self_cref;
+      typedef object const& self_cref;
 # else 
-    typedef object self_cref;
+      typedef object self_cref;
 # endif 
- public:
+   public:
 # ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-    // copy constructor without NULL checking, for efficiency
-    object(object const&);
+      // copy constructor without NULL checking, for efficiency
+      object(object const&);
 # endif
     
-    // explicit conversion from any C++ object to Python
-    template <class T>
-    explicit object(T const& x)
-        : m_ptr(
-            python::borrowed(
-                python::allow_null( // null check is already done
-                    converter::arg_to_python<T>(x).get())
-                )
-            )
-    {
-    }
+      // explicit conversion from any C++ object to Python
+      template <class T>
+      explicit object(T const& x)
+          : m_ptr(
+              python::borrowed(
+                  python::allow_null( // null check is already done
+                      converter::arg_to_python<T>(x).get())
+                  )
+              )
+      {
+      }
 
-    // capture this case explicitly to handle string
-    // literals. Otherwise, they get deduced as char[N]const& above
-    // and conversion fails at runtime.
-    explicit object(char const* x)
-        : m_ptr(
-            python::borrowed(
-                python::allow_null( // null check is already done
-                    converter::arg_to_python<char const*>(x).get())
-                )
-            )
-    {
+      // capture this case explicitly to handle string
+      // literals. Otherwise, they get deduced as char[N]const& above
+      // and conversion fails at runtime.
+      explicit object(char const* x)
+          : m_ptr(
+              python::borrowed(
+                  python::allow_null( // null check is already done
+                      converter::arg_to_python<char const*>(x).get())
+                  )
+              )
+      {
         
-    }
+      }
     
-    // Throw error_already_set() if the handle is null.
-    explicit object(handle<> const&);
+      // Throw error_already_set() if the handle is null.
+      explicit object(handle<> const&);
     
-    // Attribute access via x._("attribute_name")
-    const_object_attribute _(char const*) const;
-    object_attribute _(char const*);
+      // Attribute access via x.attr("attribute_name")
+      const_object_attribute attr(char const*) const;
+      object_attribute attr(char const*);
 
-    object operator()() const
-    {
-        return object(call<handle<> >(m_ptr.get()));
-    }
+      object operator()() const
+      {
+          return object(call<handle<> >(m_ptr.get()));
+      }
 
 # ifndef BOOST_PYTHON_GENERATE_CODE
 #  include <boost/python/preprocessed/object_call.hpp>
 # endif
 
 # define BOOST_PYTHON_OBJECT_CALL(nargs,ignored)                                        \
-    template <BOOST_PP_ENUM_PARAMS(nargs, class A)>                                     \
-    object operator()(BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))) const             \
-    {                                                                                   \
-        return object(call<handle<> >(&**this, BOOST_PP_ENUM_PARAMS(nargs, a)));        \
-    }
+      template <BOOST_PP_ENUM_PARAMS(nargs, class A)>                                   \
+      object operator()(BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))) const           \
+      {                                                                                 \
+          return object(call<handle<> >(&**this, BOOST_PP_ENUM_PARAMS(nargs, a)));      \
+      }
 
-    BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_OBJECT_CALL, ignored)
+      BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_OBJECT_CALL, ignored)
 
-    // truth value testing
-    typedef handle<> (object::*bool_type);
-    operator bool_type() const;
-    bool operator!() const; // needed for vc6
+      // truth value testing
+      typedef handle<> (object::*bool_type);
+      operator bool_type() const;
+      bool operator!() const; // needed for vc6
 
-    // item access
-    const_object_item operator[](self_cref) const;
-    object_item operator[](self_cref);
+      // item access
+      const_object_item operator[](self_cref) const;
+      object_item operator[](self_cref);
     
-    template <class T>
-    const_object_item operator[](T const& key) const
-    {
-        return (*this)[object(key)];
-    }
+      template <class T>
+# if BOOST_MSVC != 1300
+      typename dependent<const_object_item,T>::type
+# else
+      const_object_item
+# endif 
+      operator[](T const& key) const
+      {
+          return (*this)[object(key)];
+      }
     
-    template <class T>
-    object_item operator[](T const& key)
-    {
-        return (*this)[object(key)];
-    }
+      template <class T>
+# if BOOST_MSVC != 1300
+      typename dependent<object_item,T>::type
+# else
+      object_item
+# endif 
+      operator[](T const& key)
+      {
+          return (*this)[object(key)];
+      }
     
-    // Underlying object access
-    PyObject* operator->() const;
-    PyObject& operator*() const;
+      // Underlying object access
+      PyObject* operator->() const;
+      PyObject& operator*() const;
 
- public: // implementation detail -- for internal use only
-    object(null_ok<detail::borrowed<PyObject> >*);
-    object(detail::borrowed<null_ok<PyObject> >*);
-    object(detail::borrowed<PyObject>*);
-    class new_pyobject_reference;
-    object(new_pyobject_reference*);
+   public: // implementation detail -- for internal use only
+      object(null_ok<detail::borrowed<PyObject> >*);
+      object(detail::borrowed<null_ok<PyObject> >*);
+      object(detail::borrowed<PyObject>*);
+      class new_pyobject_reference;
+      object(new_pyobject_reference*);
     
- private:
-    handle<> m_ptr;
-};
+   private:
+      handle<> m_ptr;
+  };
+}
+using api::object;
 
 //
 // Converter Specializations

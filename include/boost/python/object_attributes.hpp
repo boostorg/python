@@ -10,50 +10,47 @@
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_protocol.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python { namespace api {
 
-namespace detail
+struct const_attribute_policies
 {
-  struct const_attribute_policies
-  {
-      static object get(object const& target, object const& key);
-  };
+    static object get(object const& target, object const& key);
+};
   
-  struct attribute_policies : const_attribute_policies
-  {
-      static object const& set(object const& target, object const& key, object const& value);
-  };
-}
+struct attribute_policies : const_attribute_policies
+{
+    static object const& set(object const& target, object const& key, object const& value);
+};
 
 //
 // implementation
 //
-inline object_attribute object::_(char const* name)
+inline object_attribute object::attr(char const* name)
 {
     return object_attribute(*this, object(name));
 }
 
-inline const_object_attribute object::_(char const* name) const
+inline const_object_attribute object::attr(char const* name) const
 {
     return const_object_attribute(*this, object(name));
 }
 
-namespace detail
-{
-  inline object const_attribute_policies::get(object const& target, object const& key)
-  {
-      return python::getattr(target, key);
-  }
 
-  inline object const& attribute_policies::set(
-      object const& target
-      , object const& key
-      , object const& value)
-  {
-      python::setattr(target, key, value);
-      return value;
-  }
+inline object const_attribute_policies::get(object const& target, object const& key)
+{
+    return python::getattr(target, key);
 }
+
+inline object const& attribute_policies::set(
+    object const& target
+    , object const& key
+    , object const& value)
+{
+    python::setattr(target, key, value);
+    return value;
+}
+
+} // namespace api
 
 namespace converter
 {
@@ -64,13 +61,13 @@ namespace converter
   // actually managing the object during the duration of the
   // conversion.
   template <>
-  struct is_object_manager<object_attribute>
+  struct is_object_manager<api::object_attribute>
   {
       BOOST_STATIC_CONSTANT(bool, value = true);
   };
 
   template <>
-  struct is_object_manager<const_object_attribute>
+  struct is_object_manager<api::const_object_attribute>
   {
       BOOST_STATIC_CONSTANT(bool, value = true);
   };

@@ -12,11 +12,11 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 
-namespace boost { namespace python {
+namespace boost { namespace python { namespace api {
 
 class object;
 
-}}
+}}}
 
 namespace boost { namespace python { namespace converter { 
 
@@ -142,7 +142,7 @@ inline T* get_managed_object(python::detail::borrowed<T> const volatile* p)
 
 // forward declaration needed because name lookup is bound by the
 // definition context.
-PyObject* get_managed_object(python::object const&);
+PyObject* get_managed_object(python::api::object const&);
 
 }}} // namespace boost::python::converter
 

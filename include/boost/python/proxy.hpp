@@ -6,10 +6,9 @@
 #ifndef PROXY_DWA2002615_HPP
 # define PROXY_DWA2002615_HPP
 # include <boost/python/object_core.hpp>
+# include <boost/python/object_operators.hpp>
 
-namespace boost { namespace python { 
-
-class object;
+namespace boost { namespace python { namespace api {
 
 template <class Policies>
 class proxy
@@ -23,36 +22,14 @@ class proxy
     operator object() const;
 
     // to support a[b] = c[d]
-    proxy& operator=(copy_ctor_self);
+    proxy const& operator=(copy_ctor_self) const;
     
     template <class T>
-    inline proxy& operator=(T const& rhs)
+    inline proxy const& operator=(T const& rhs) const
     {
         Policies::set(m_target, m_key, python::object(rhs));
         return *this;
     }
-
-# define BOOST_PYTHON_PROXY_ASSIGN_DECL(op)     \
-    object operator op (object const&);         \
-                                                \
-    template <class T>                          \
-    object operator op (T const& rhs)           \
-    {                                           \
-        return *this op python::object(rhs);    \
-    }
-    
-//    BOOST_PYTHON_PROXY_ASSIGN_DECL(=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(+=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(-=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(*=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(/=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(%=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(<<=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(>>=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(&=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(^=)
-    BOOST_PYTHON_PROXY_ASSIGN_DECL(|=)
-# undef BOOST_PYTHON_PROXY_ASSIGN_DECL
 
     // truth value testing
     operator object::bool_type() const;
@@ -84,33 +61,29 @@ inline proxy<Policies>::operator object() const
 
 // to support a[b] = c[d]
 template <class Policies>
-inline proxy<Policies>& proxy<Policies>::operator=(typename proxy::copy_ctor_self rhs)
+inline proxy<Policies> const& proxy<Policies>::operator=(typename proxy::copy_ctor_self rhs) const
 {
     return *this = python::object(rhs);
 }
 
-# define BOOST_PYTHON_PROXY_ASSIGN_DEF(op)                      \
-template <class Policies>                                       \
-inline object proxy<Policies>::operator op(object const& other) \
-{                                                               \
-    return Policies::set(                                       \
-          m_target, m_key                                       \
-        , Policies::get(m_target,m_key) op other);              \
-}
-
-BOOST_PYTHON_PROXY_ASSIGN_DEF(+=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(-=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(*=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(/=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(%=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(<<=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(>>=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(&=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(^=)
-BOOST_PYTHON_PROXY_ASSIGN_DEF(|=)
-
-# undef BOOST_PYTHON_PROXY_ASSIGN_DEF
-
+# define BOOST_PYTHON_PROXY_INPLACE(op)                                         \
+template <class Policies, class R>                                              \
+proxy<Policies> const& operator op(proxy<Policies> const& lhs, R const& other)  \
+{                                                                               \
+    object old(lhs);                                                            \
+    return lhs = (old op other);                                                \
+} 
+BOOST_PYTHON_PROXY_INPLACE(+=)
+BOOST_PYTHON_PROXY_INPLACE(-=)
+BOOST_PYTHON_PROXY_INPLACE(*=)
+BOOST_PYTHON_PROXY_INPLACE(/=)
+BOOST_PYTHON_PROXY_INPLACE(%=)
+BOOST_PYTHON_PROXY_INPLACE(<<=)
+BOOST_PYTHON_PROXY_INPLACE(>>=)
+BOOST_PYTHON_PROXY_INPLACE(&=)
+BOOST_PYTHON_PROXY_INPLACE(^=)
+BOOST_PYTHON_PROXY_INPLACE(|=)
+# undef BOOST_PYTHON_PROXY_INPLACE
 
 template <class Policies>
 inline proxy<Policies>::operator object::bool_type() const
@@ -124,6 +97,6 @@ inline bool proxy<Policies>::operator!() const
     return !python::object(*this);
 }
     
-}} // namespace boost::python
+}}} // namespace boost::python::api
 
 #endif // PROXY_DWA2002615_HPP
