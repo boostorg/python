@@ -1,17 +1,38 @@
 import os ;
 
+# Use a very crude way to sense there python is locatted
+
+local PYTHON_PATH ;
+
+if [ GLOB /usr/include/python2.2 : * ] 
+{
+    PYTHON_PATH = /usr ;
+}
+else if [ GLOB /usr/local/include/python2.2 : * ]
+{
+    PYTHON_PATH = /usr/local ;
+}
+
+PYTHON_LIB = python2.2 ;
+
 if [ os.name ] in CYGWIN NT
 {
     lib_condition = <shared>true: ;
     defines = USE_DL_IMPORT ;
+    PYTHON_LIB = python2.2.dll ;
 }
+
+if $(PYTHON_PATH) {
+    
 
 project boost/python
     : source-location ../src
-        : requirements <include>/usr/local/include/python2.2 
-          $(lib_condition)<library-path>/usr/local/lib/python2.2/config
-          $(lib_condition)<library>python2.2.dll
+        : requirements <include>$(PYTHON_PATH)/include/python2.2  
+          $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
+            <shared>true:<find-library>$(PYTHON_LIB)
             <define>$(defines)
+        : use-requirements # requirement that will be propageted to *users* of this library
+          <include>$(PYTHON_PATH)/include/python2.2       
     ;
 
 lib boost_python
@@ -45,3 +66,4 @@ lib boost_python
         <define>BOOST_PYTHON_SOURCE
     : <shared>true
       ;
+}
