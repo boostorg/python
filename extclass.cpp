@@ -26,21 +26,6 @@ namespace detail {
 #ifndef NDEBUG
       ~operator_dispatcher();
 #endif
-      static void dealloc(PyObject* self);
-      static int coerce(PyObject** l, PyObject** r);
-      static PyObject* call_add(PyObject*, PyObject*);
-      static PyObject* call_sub(PyObject*, PyObject*);
-      static PyObject* call_mul(PyObject*, PyObject*);
-      static PyObject* call_div(PyObject*, PyObject*);
-      static PyObject* call_mod(PyObject*, PyObject*);
-      static PyObject* call_divmod(PyObject*, PyObject*);
-      static PyObject* call_lshift(PyObject*, PyObject*);
-      static PyObject* call_rshift(PyObject*, PyObject*);
-      static PyObject* call_and(PyObject*, PyObject*);
-      static PyObject* call_xor(PyObject*, PyObject*);
-      static PyObject* call_or(PyObject*, PyObject*);
-      static PyObject* call_pow(PyObject*, PyObject*, PyObject*);
-      static int call_cmp(PyObject*, PyObject*);
 
       Ptr m_object;
       Ptr m_self;
@@ -55,13 +40,24 @@ inline PyObject* to_python(py::detail::operator_dispatcher* n) { return n; }
 PY_END_CONVERSION_NAMESPACE
 
 
-namespace py{ namespace detail {
+namespace py{ 
+
+namespace detail {
 
   Tuple extension_class_coerce(Ptr l, Ptr r)
   {
       // Introduced sequence points for exception-safety.
       Ptr first(new operator_dispatcher(l, l));
-      Ptr second(new operator_dispatcher(r, Ptr()));
+      Ptr second;
+      
+      if(r->ob_type == &operator_dispatcher::type_object)
+      {
+           second = r;
+      }
+      else
+      {
+           second = Ptr(new operator_dispatcher(r, Ptr()));
+      }
       return py::Tuple(first, second);
   }
 
@@ -78,20 +74,21 @@ namespace py{ namespace detail {
           return unwrap_exception_code;
       }
 
-      operator_dispatcher* lwrapper = static_cast<operator_dispatcher*>(left);
-      operator_dispatcher* rwrapper = static_cast<operator_dispatcher*>(right);
+      typedef PyPtr<operator_dispatcher> DPtr;
+      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::new_ref);
+      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::new_ref);
       
       if (lwrapper->m_self.get() != 0)
       {
           self = lwrapper->m_self.get();
           other = rwrapper->m_object.get();
-          return false;
+          return 0;
       }
       else
       {
           self = rwrapper->m_self.get();
           other = lwrapper->m_object.get();
-          return true;
+          return 1;
       }
   }
 
@@ -108,15 +105,12 @@ namespace py{ namespace detail {
           return unwrap_exception_code;
       }
 
-      operator_dispatcher* lwrapper = static_cast<operator_dispatcher*>(left);
-      operator_dispatcher* rwrapper = static_cast<operator_dispatcher*>(right);
-      operator_dispatcher* mwrapper = static_cast<operator_dispatcher*>(m);
 
-      if (mwrapper->m_object->ob_type == &operator_dispatcher::type_object)
-      {
-          mwrapper = static_cast<operator_dispatcher*>(mwrapper->m_object.get());
-      }
-
+      typedef PyPtr<operator_dispatcher> DPtr;
+      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::new_ref);
+      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::new_ref);
+      DPtr mwrapper(static_cast<operator_dispatcher*>(m), DPtr::new_ref);
+      
       if (lwrapper->m_self.get() != 0)
       {
           self = lwrapper->m_self.get();
@@ -457,66 +451,13 @@ void ExtensionClassBase::set_attribute(const char* name, Ptr x)
 
 namespace detail
 {
-PyTypeObject operator_dispatcher::type_object = 
-{ 
-    PyObject_HEAD_INIT(&PyType_Type) 
-    0, 
-    const_cast<char*>("operator_dispatcher"), 
-    sizeof(operator_dispatcher), 
-    0, 
-    (destructor)&operator_dispatcher::dealloc, 
-    0, 
-    0, 
-    0, 
-    &operator_dispatcher::call_cmp, 
-    0, 
-    &operator_dispatcher::number_methods, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0,
-    0,
-    0,
-    0,
-    0
-}; 
-
-PyNumberMethods operator_dispatcher::number_methods = 
-{ 
-    &operator_dispatcher::call_add, 
-    &operator_dispatcher::call_sub, 
-    &operator_dispatcher::call_mul, 
-    &operator_dispatcher::call_div, 
-    &operator_dispatcher::call_mod, 
-    &operator_dispatcher::call_divmod, 
-    &operator_dispatcher::call_pow, 
-    0, 
-    0, 
-    0, 
-    0, 
-    0, 
-    &operator_dispatcher::call_lshift, 
-    &operator_dispatcher::call_rshift, 
-    &operator_dispatcher::call_and, 
-    &operator_dispatcher::call_xor, 
-    &operator_dispatcher::call_or, 
-    &operator_dispatcher::coerce,  
-    0, 
-    0, 
-    0, 
-    0, 
-    0 
-}; 
 
 #ifndef NDEBUG
 int total_Dispatchers = 0;
-operator_dispatcher::~operator_dispatcher() { --total_Dispatchers; }
+operator_dispatcher::~operator_dispatcher() 
+{ 
+    --total_Dispatchers; 
+}
 #endif
 
 operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
@@ -529,12 +470,15 @@ operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
 #endif
 }
 
-void operator_dispatcher::dealloc(PyObject* self) 
+extern "C"
+{
+
+void operator_dispatcher_dealloc(PyObject* self) 
 { 
     delete static_cast<operator_dispatcher*>(self);
 } 
 
-int operator_dispatcher::coerce(PyObject** l, PyObject** r)
+int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
     *r = new operator_dispatcher(Ptr(*r, Ptr::new_ref), Ptr());
@@ -543,7 +487,7 @@ int operator_dispatcher::coerce(PyObject** l, PyObject** r)
 
 
 #define PY_DEFINE_OPERATOR(id, symbol) \
-    PyObject* operator_dispatcher::call_##id(PyObject* left, PyObject* right)                   \
+    PyObject* operator_dispatcher_call_##id(PyObject* left, PyObject* right)                   \
     {                                                                                           \
         /* unwrap the arguments from their OperatorDispatcher */                                \
         PyObject* self;                                                                         \
@@ -588,7 +532,7 @@ PY_DEFINE_OPERATOR(or, |)
     pow(Foo, int, Foo): left, right, m coerced => reverse = 0
     pow(int, Foo, Foo): left, right, m coerced => reverse = 1 
 */
-PyObject* operator_dispatcher::call_pow(PyObject* left, PyObject* right, PyObject* m)
+PyObject* operator_dispatcher_call_pow(PyObject* left, PyObject* right, PyObject* m)
 {
     int reverse;
     PyObject* self;
@@ -628,7 +572,7 @@ PyObject* operator_dispatcher::call_pow(PyObject* left, PyObject* right, PyObjec
     return result;
 }
 
-int operator_dispatcher::call_cmp(PyObject* left, PyObject* right)
+int operator_dispatcher_call_cmp(PyObject* left, PyObject* right)
 {
     // unwrap the arguments from their OperatorDispatcher
     PyObject* self;
@@ -646,16 +590,83 @@ int operator_dispatcher::call_cmp(PyObject* left, PyObject* right)
     if (result == 0)
     {
         PyErr_Clear();
-        PyErr_SetString(PyExc_TypeError, "bad operand type(s) for cmp()");
+        PyErr_SetString(PyExc_TypeError, "bad operand type(s) for cmp() or <");
         return -1;
     }
     else
     {
-        return PY_CONVERSION::from_python(result, Type<int>());
+        try
+        {
+            return PY_CONVERSION::from_python(result, Type<int>());
+        }
+        catch(...)
+        {
+            PyErr_Clear();
+            PyErr_SetString(PyExc_TypeError, "cmp() didn't return int");
+            return -1;
+        }
     }
 }
 
+} // extern "C"
     
+PyTypeObject operator_dispatcher::type_object = 
+{ 
+    PyObject_HEAD_INIT(&PyType_Type) 
+    0, 
+    const_cast<char*>("operator_dispatcher"), 
+    sizeof(operator_dispatcher), 
+    0, 
+    &operator_dispatcher_dealloc, 
+    0, 
+    0, 
+    0, 
+    &operator_dispatcher_call_cmp, 
+    0, 
+    &operator_dispatcher::number_methods, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0,
+    0,
+    0,
+    0,
+    0
+}; 
+
+PyNumberMethods operator_dispatcher::number_methods = 
+{ 
+    &operator_dispatcher_call_add, 
+    &operator_dispatcher_call_sub, 
+    &operator_dispatcher_call_mul, 
+    &operator_dispatcher_call_div, 
+    &operator_dispatcher_call_mod, 
+    &operator_dispatcher_call_divmod, 
+    &operator_dispatcher_call_pow, 
+    0, 
+    0, 
+    0, 
+    0, 
+    0, 
+    &operator_dispatcher_call_lshift, 
+    &operator_dispatcher_call_rshift, 
+    &operator_dispatcher_call_and, 
+    &operator_dispatcher_call_xor, 
+    &operator_dispatcher_call_or, 
+    &operator_dispatcher_coerce,  
+    0, 
+    0, 
+    0, 
+    0, 
+    0 
+}; 
+
 } // namespace detail
 
 } // namespace py
