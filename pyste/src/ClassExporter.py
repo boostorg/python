@@ -90,6 +90,7 @@ class ClassExporter(Exporter):
         self.ExportOperators()
         self.ExportNestedClasses(exported_names)
         self.ExportNestedEnums()
+        self.ExportSmartPointer()
         self.Write(codeunit)
 
 
@@ -540,6 +541,12 @@ class ClassExporter(Exporter):
             codeunit = CodeUnit(None)
             exporter.Export(codeunit, None)
             self.nested_codeunits.append(codeunit)
+
+
+    def ExportSmartPointer(self):
+        smart_ptr = self.info.smart_ptr
+        if smart_ptr:
+            self.Add('template', smart_ptr % self.class_.FullName())
             
 
 #==============================================================================

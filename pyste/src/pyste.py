@@ -89,6 +89,8 @@ def CreateContext():
     context['set_policy'] = infos.set_policy
     context['exclude'] = infos.exclude
     context['set_wrapper'] = infos.set_wrapper
+    context['use_shared_ptr'] = infos.use_shared_ptr
+    context['use_auto_ptr'] = infos.use_auto_ptr
     # policies
     context['return_internal_reference'] = return_internal_reference
     context['with_custodian_and_ward'] = with_custodian_and_ward

@@ -185,4 +185,11 @@ def instantiate(template, types, rename=None):
     if isinstance(types, str):
         types = types.split()
     return template.Instantiate(types, rename)
+
+def use_shared_ptr(option):
+    option._Attribute('smart_ptr', 'boost::shared_ptr< %s >')
+
+def use_auto_ptr(option):
+    option._Attribute('smart_ptr', 'std::auto_ptr< %s >')
+        
     
