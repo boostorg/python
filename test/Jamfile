@@ -68,6 +68,20 @@ unit-test pointer_type_id_test
 unit-test member_function_cast
   : member_function_cast.cpp : <include>$(BOOST_ROOT) ;
 
+unit-test bases
+  : bases.cpp : <include>$(BOOST_ROOT) ;
+
+unit-test if_else
+  : if_else.cpp : <include>$(BOOST_ROOT) ;
+
+unit-test pointee
+  : pointee.cpp : <include>$(BOOST_ROOT) ;
+
+unit-test select_holder
+  : select_holder.cpp
+  : <include>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)
+;
+
 unit-test select_from_python_test
   : select_from_python_test.cpp 
     ../src/converter/type_id.cpp
@@ -76,4 +90,5 @@ unit-test select_from_python_test
   : <include>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB
     $(PYTHON_V1_PROPERTIES)
     ;
+
 

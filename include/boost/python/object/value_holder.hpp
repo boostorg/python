@@ -142,7 +142,7 @@ struct value_holder : instance_holder
     Held m_held;
 };
 
-template <class Held,class BackReferenceType>
+template <class Held, class BackReferenceType>
 struct value_holder_back_reference : instance_holder
 {
     // Forward construction to the held object
@@ -299,27 +299,6 @@ struct value_holder_back_reference : instance_holder
 
  private: // data members
     BackReferenceType m_held;
-};
-
-// A generator metafunction which can be passed to make_holder
-template <>
-struct value_holder_generator<no_back_reference>
-{
-    template <class Held>
-    struct apply
-    {
-        typedef value_holder<Held> type;
-    };
-};
-
-template <class BackReferenceType>
-struct value_holder_generator
-{
-    template <class Held>
-    struct apply
-    {
-        typedef value_holder_back_reference<Held,BackReferenceType> type;
-    };
 };
 
 template <class Held>

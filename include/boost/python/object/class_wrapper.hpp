@@ -6,15 +6,14 @@
 #ifndef CLASS_WRAPPER_DWA20011221_HPP
 # define CLASS_WRAPPER_DWA20011221_HPP
 
-# include <boost/python/object/value_holder.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/to_python_converter.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
-template <class T>
+template <class T, class Holder>
 struct class_wrapper
-    : to_python_converter<T, class_wrapper<T> >
+    : to_python_converter<T,class_wrapper<T,Holder> >
 {
     class_wrapper(ref const& type_)
         : m_class_object_keeper(type_)
@@ -39,7 +38,7 @@ struct class_wrapper
 
         // Build a value_holder to contain the object using the copy
         // constructor
-        value_holder<T>* p = new value_holder<T>(raw_result, cref(x));
+        Holder* p = new Holder(raw_result, cref(x));
 
         // Install it in the instance
         p->install(raw_result);
@@ -53,8 +52,8 @@ struct class_wrapper
     static PyTypeObject* m_class_object;
 };
 
-template <class T>
-PyTypeObject* class_wrapper<T>::m_class_object;
+template <class T, class Holder>
+PyTypeObject* class_wrapper<T,Holder>::m_class_object;
 
 }}} // namespace boost::python::objects
 

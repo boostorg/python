@@ -201,6 +201,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
 {
     using namespace boost::python;
     using boost::mpl::type_list;
+    using boost::shared_ptr;
     
     simple_to_python();
 
@@ -218,10 +219,6 @@ BOOST_PYTHON_MODULE_INIT(m1)
     type_from_python<&SimpleType, identity_extractor<SimpleObject> >();
     
     module m1("m1");
-
-    typedef boost::python::objects::pointer_holder_generator<
-        boost::python::objects::shared_ptr_generator
-    > use_shared_ptr;
 
     m1
       // Insert the metaclass for all extension classes
@@ -251,7 +248,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
       .def("take_d", take_d)
 
       .add(
-          class_<A, bases<>, use_shared_ptr>("A")
+          class_<A, shared_ptr<A> >("A")
           .def_init()
           .def("name", &A::name)
           )
@@ -262,13 +259,13 @@ BOOST_PYTHON_MODULE_INIT(m1)
     // or "C" below if we make them part of the same chain
     m1
         .add(
-            class_<B,bases<A>, use_shared_ptr>("B")
+            class_<B,bases<A>, shared_ptr<B> >("B")
             .def_init()
             .def("name", &B::name)
             )
         
         .add(
-            class_<C,bases<A>, use_shared_ptr>("C")
+            class_<C,bases<A>, shared_ptr<C> >("C")
             .def_init()
             .def("name", &C::name)
             )
@@ -276,7 +273,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
     m1
         .add(
-            class_<D,bases<B,C>, use_shared_ptr>("D")
+            class_<D,shared_ptr<D>, bases<B,C> >("D")
             .def_init()
             .def("name", &D::name)
             )

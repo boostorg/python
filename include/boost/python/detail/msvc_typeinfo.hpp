@@ -8,7 +8,8 @@
 
 #include <boost/type.hpp>
 #include <typeinfo>
-
+#include <boost/type_traits/array_traits.hpp>
+#include <boost/type_traits/reference_traits.hpp>
 //
 // Fix for MSVC's broken typeid() implementation which doesn't strip
 // decoration. This fix doesn't handle cv-qualified array types. It
@@ -62,35 +63,35 @@ inline typeinfo typeid_nonref(boost::type<T>* = 0)
 }
 
 template <class T>
-inline typeinfo typeid_ref(boost::type<T>*, ...) 
-{
-    return typeid_nonref<T>();
-}
-
-template <class U, class T>
-inline typeinfo typeid_ref(boost::type<U>*, T& (*)()) 
+inline typeinfo typeid_ref(T&(*)()) 
 {
     return typeid_nonref<T>();
 }
 
 template <class T>
-inline typeinfo typeid_array(bool_t<false>, boost::type<T>* = 0)
+inline typeinfo array_ref_typeid(bool_t<true>, bool_t<false>, boost::type<T>* = 0)
 {
-    typedef T (*x)();
-    return typeid_ref((boost::type<T>*)0, x(0));
+    return typeid_ref((T&(*)())0);
 }
 
 template <class T>
-inline typeinfo typeid_array(bool_t<true>, boost::type<T>* = 0)
+inline typeinfo array_ref_typeid(bool_t<false>, bool_t<true>, boost::type<T>* = 0)
 {
-    return typeid_nonref<T>();
+    return typeid_ref((T(*)())0);
+}
+
+template <class T>
+inline typeinfo array_ref_typeid(bool_t<false>, bool_t<false>, boost::type<T>* = 0)
+{
+    return typeid_ref((T&(*)())0);
 }
 
 template <class T>
 inline typeinfo msvc_typeid(boost::type<T>* = 0)
 {
-    typedef bool_t<is_array<T>::value> tag;
-    return typeid_array(tag(), (boost::type<T>*)0);
+    typedef bool_t<is_array<T>::value> array_tag;
+    typedef bool_t<is_reference<T>::value> ref_tag;
+    return array_ref_typeid(array_tag(), ref_tag(), (boost::type<T>*)0);
 }
 
 }}} // namespace boost::python::detail

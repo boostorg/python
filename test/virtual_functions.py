@@ -8,13 +8,13 @@
 >>> class C2(concrete):
 ...     pass
 
-<<<>>> class A1(abstract):
-<<<...     def f(self, y):
-<<<...         return abstract.f(self, Y(-y.value()))
-<<<
-<<<>>> class A2(abstract):
-<<<...     pass
-<<<
+>>> class A1(abstract):
+...     def f(self, y):
+...         return y.value() * 2
+
+>>> class A2(abstract):
+...     pass
+
 
 >>> y1 = Y(16)
 >>> y2 = Y(17)
@@ -24,33 +24,35 @@
 #
 # Test abstract with f overridden
 #
-<<<>>> a1 = A1(42)
-<<<>>> a1.value()
-<<<42
-<<<
-<<<# Call f indirectly from C++
-<<<>>> a1.call_f(y1)
-<<<-16
-<<<
-<<<# Call f directly from Python
-<<<>>> a1.f(y2)
-<<<-17
-<<<
-<<<#
-<<<# Test abstract with f not overridden
-<<<#
-<<<>>> a2 = A2(42)
-<<<>>> A2.value()
-<<<42
-<<<
-<<<# Call f indirectly from C++
-<<<>>> c1.call_f(y1)
-<<<16
-<<<
-<<<# Call f directly from Python
-<<<>>> c1.f(y2)
-<<<17
-<<<
+>>> a1 = A1(42)
+>>> a1.value()
+42
+
+# Call f indirectly from C++
+>>> a1.call_f(y1)
+32
+
+# Call f directly from Python
+>>> a1.f(y2)
+34
+
+#
+# Test abstract with f not overridden
+#
+>>> a2 = A2(42)
+>>> a2.value()
+42
+
+# Call f indirectly from C++
+>>> try: a2.call_f(y1)
+... except AttributeError: pass
+... else: print 'no exception'
+
+# Call f directly from Python
+>>> try: a2.call_f(y2)
+... except AttributeError: pass
+... else: print 'no exception'
+
 ############# Concrete Tests ############
 
 #

@@ -10,7 +10,6 @@
 # include <boost/python/object/forward.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/mpl/apply.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -19,14 +18,13 @@ template <int nargs> struct make_holder;
 template <>
 struct make_holder<0>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         static void execute(
             PyObject* p)
         {
-            (new holder(p))->install(p);
+            (new Holder(p))->install(p);
         }
     };
 };
@@ -35,10 +33,9 @@ struct make_holder<0>
 template <>
 struct make_holder<1>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         
@@ -46,7 +43,7 @@ struct make_holder<1>
             PyObject* p
             , t0 a0)
         {
-            (new holder(p, f0(a0)))->install(p);
+            (new Holder(p, f0(a0)))->install(p);
         }
     };
 };
@@ -54,10 +51,9 @@ struct make_holder<1>
 template <>
 struct make_holder<2>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -66,7 +62,7 @@ struct make_holder<2>
         static void execute(
             PyObject* p, t0 a0, t1 a1)
         {
-            (new holder(p, f0(a0), f1(a1)))->install(p);
+            (new Holder(p, f0(a0), f1(a1)))->install(p);
         }
     };
 };
@@ -74,10 +70,9 @@ struct make_holder<2>
 template <>
 struct make_holder<3>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -88,7 +83,7 @@ struct make_holder<3>
         static void execute(
             PyObject* p, t0 a0, t1 a1, t2 a2)
         {
-            (new holder(p, f0(a0), f1(a1), f2(a2)))->install(p);
+            (new Holder(p, f0(a0), f1(a1), f2(a2)))->install(p);
         }
     };
 };
@@ -96,10 +91,9 @@ struct make_holder<3>
 template <>
 struct make_holder<4>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -112,7 +106,7 @@ struct make_holder<4>
         static void execute(
             PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3)
         {
-            (new holder(p, f0(a0), f1(a1), f2(a2), f3(a3)))->install(p);
+            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3)))->install(p);
         }
     };
 };
@@ -120,10 +114,9 @@ struct make_holder<4>
 template <>
 struct make_holder<5>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -138,7 +131,7 @@ struct make_holder<5>
         static void execute(
             PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3, t4 a4)
         {
-            (new holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4)))->install(p);
+            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4)))->install(p);
         }
     };
 };
@@ -146,10 +139,9 @@ struct make_holder<5>
 template <>
 struct make_holder<6>
 {
-    template <class T, class Generator, class ArgList>
+    template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::apply1<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -166,7 +158,7 @@ struct make_holder<6>
         static void execute(
             PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3, t4 a4, t5 a5)
         {
-            (new holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4), f5(a5)))->install(p);
+            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4), f5(a5)))->install(p);
         }
     };
 };

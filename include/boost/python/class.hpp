@@ -7,55 +7,50 @@
 # define CLASS_DWA200216_HPP
 
 # include <boost/python/class_fwd.hpp>
+# include <boost/python/bases.hpp>
+# include <boost/python/args.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/object/class.hpp>
-# include <boost/python/object/value_holder_fwd.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
-# include <boost/mpl/type_list.hpp>
 # include <boost/python/object/class_converters.hpp>
+# include <boost/type_traits/ice.hpp>
+# include <boost/type_traits/same_traits.hpp>
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/python/detail/type_list.hpp>
-
-namespace // put some convenience classes into the unnamed namespace for the user
-{
-  // A type list for specifying bases
-  template < BOOST_MPL_LIST_DEFAULT_PARAMETERS(typename B, ::boost::mpl::null_argument) >
-  struct bases : ::boost::mpl::type_list< BOOST_MPL_LIST_PARAMETERS(B) >::type
-  {};
-
-  // A type list for specifying arguments
-  template < BOOST_MPL_LIST_DEFAULT_PARAMETERS(typename A, ::boost::mpl::null_argument) >
-  struct args : ::boost::mpl::type_list< BOOST_MPL_LIST_PARAMETERS(A) >::type
-  {};
-}
+# include <boost/mpl/bool_t.hpp>
+# include <boost/python/object/select_holder.hpp>
+# include <boost/python/object/class_wrapper.hpp>
+# include <boost/utility.hpp>
 
 namespace boost { namespace python { 
 
 namespace detail
 {
-  // This is an mpl BinaryMetaFunction object with a runtime behavior,
-  // which is to write the id of the type which is passed as its 2nd
-  // compile-time argument into the iterator pointed to by its runtime
-  // argument
-  struct write_type_id
-  {
-      // The first argument is Ignored because mpl::for_each is still
-      // currently an accumulate (reduce) implementation.
-      template <class Ignored, class T> struct apply
-      {
-          // also an artifact of accumulate-based for_each
-          typedef void type;
+  struct write_type_id;
+  
+  template <class T, class Prev = detail::not_specified>
+  struct select_held_type;
+  
+  template <class T1, class T2, class T3>
+  struct has_noncopyable;
 
-          // Here's the runtime behavior
-          static void execute(converter::undecorated_type_id_t** p)
-          {
-              *(*p)++ = converter::undecorated_type_id<T>();
-          }
-      };
-  };
+  // Register a to_python converter for a class T, depending on the
+  // type of the first (tag) argument. The 2nd argument is a pointer
+  // to the type of holder that must be created. The 3rd argument is a
+  // reference to the Python type object to be created.
+  template <class T, class Holder>
+  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, ref const& obj, T* = 0)
+  {
+      objects::class_wrapper<T,Holder> x(obj);
+  }
+
+  // Tag dispatched to have no effect.
+  template <class T, class Holder>
+  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, ref const&, T* = 0)
+  {
+  }
 }
 
 //
@@ -64,27 +59,24 @@ namespace detail
 //      This is the primary mechanism through which users will expose
 //      C++ classes to Python. The three template arguments are:
 //
-//        T - The class being exposed to Python
-//
-//        Bases - An MPL sequence of base classes
-//
-//        HolderGenerator -
-//           An optional type generator for the "holder" which
-//           maintains the C++ object inside the Python instance. The
-//           default just holds the object "by-value", but other
-//           holders can be substituted which will hold the C++ object
-//           by smart pointer, for example.
-//
 template <
     class T // class being wrapped
-    , class Bases
-    , class HolderGenerator
+    , class X1 // = detail::not_specified
+    , class X2 // = detail::not_specified
+    , class X3 // = detail::not_specified
     >
 class class_ : private objects::class_base
 {
-    typedef class_<T,Bases,HolderGenerator> self;
+    typedef class_<T,X1,X2,X3> self;
+    BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
+    
+    typedef typename detail::select_held_type<
+        X1, typename detail::select_held_type<
+        X2, typename detail::select_held_type<
+        X3
+    >::type>::type>::type held_type;
+    
  public:
-
     // Automatically derive the class name - only works on some
     // compilers because type_info::name is sometimes mangled (gcc)
     class_();
@@ -130,7 +122,12 @@ class class_ : private objects::class_base
     template <class Args>
     self& def_init(Args const&)
     {
-        def("__init__", make_constructor<T,Args,HolderGenerator>());
+        def("__init__",
+            make_constructor<Args>(
+                // Using runtime type selection works around a CWPro7 bug.
+                objects::select_holder<T,held_type>((held_type*)0).get()
+                )
+            );
         return *this;
     }
 
@@ -147,6 +144,12 @@ class class_ : private objects::class_base
  private: // types
     typedef objects::class_id class_id;
     
+    typedef typename detail::select_bases<X1
+            , typename detail::select_bases<X2
+              , typename boost::python::detail::select_bases<X3>::type
+              >::type
+            >::type bases;
+    
     // A helper class which will contain an array of id objects to be
     // passed to the base class constructor
     struct id_vector
@@ -159,48 +162,95 @@ class class_ : private objects::class_base
     
             // Write the rest of the elements into succeeding positions.
             class_id* p = ids + 1;
-            mpl::for_each<Bases, void, detail::write_type_id>::execute(&p);
+            mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
         }
         
         BOOST_STATIC_CONSTANT(
-            std::size_t, size = mpl::size<Bases>::value + 1);
+            std::size_t, size = mpl::size<bases>::value + 1);
         class_id ids[size];
     };
-
- private: // helper functions
-    void initialize_converters();
 };
 
 
 //
 // implementations
 //
-template <class T, class Bases, class HolderGenerator>
-inline class_<T, Bases, HolderGenerator>::class_()
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_()
     : class_base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
-    // Bring the class converters into existence. This static object
-    // will survive until the shared library this module lives in is
-    // unloaded (that doesn't happen until Python terminates).
-    static objects::class_converters<T,Bases> converters(object());
+    // register converters
+    objects::register_class_from_python<T,bases>();
+    
+    detail::register_copy_constructor<T>(
+        mpl::bool_t<is_copyable>()
+        , objects::select_holder<T,held_type>((held_type*)0).get()
+        , this->object());
 }
 
-template <class T, class Bases, class HolderGenerator>
-inline class_<T, Bases, HolderGenerator>::class_(char const* name)
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name)
     : class_base(name, id_vector::size, id_vector().ids)
 {
-    // Bring the class converters into existence. This static object
-    // will survive until the shared library this module lives in is
-    // unloaded (that doesn't happen until Python terminates).
-    static objects::class_converters<T,Bases> converters(object());
+    // register converters
+    objects::register_class_from_python<T,bases>();
+    
+    detail::register_copy_constructor<T>(
+        mpl::bool_t<is_copyable>()
+        , objects::select_holder<T,held_type>((held_type*)0).get()
+        , this->object());
 }
 
-template <class T, class Bases, class HolderGenerator>
-inline ref class_<T, Bases, HolderGenerator>::object() const
+template <class T, class X1, class X2, class X3>
+inline ref class_<T,X1,X2,X3>::object() const
 {
     typedef objects::class_base base;
     
     return this->base::object();
+}
+
+namespace detail
+{
+  // This is an mpl BinaryMetaFunction object with a runtime behavior,
+  // which is to write the id of the type which is passed as its 2nd
+  // compile-time argument into the iterator pointed to by its runtime
+  // argument
+  struct write_type_id
+  {
+      // The first argument is Ignored because mpl::for_each is still
+      // currently an accumulate (reduce) implementation.
+      template <class Ignored, class T> struct apply
+      {
+          // also an artifact of accumulate-based for_each
+          typedef void type;
+
+          // Here's the runtime behavior
+          static void execute(converter::undecorated_type_id_t** p)
+          {
+              *(*p)++ = converter::undecorated_type_id<T>();
+          }
+      };
+  };
+
+
+  template <class T1, class T2, class T3>
+  struct has_noncopyable
+      : type_traits::ice_or<
+        is_same<T1,noncopyable>::value
+      , is_same<T2,noncopyable>::value
+      , is_same<T3,noncopyable>::value>
+  {};
+
+
+    template <class T, class Prev>
+    struct select_held_type
+        : mpl::select_type<
+        !(specifies_bases<T>::value  | is_same<T,noncopyable>::value)
+                , T
+                , Prev
+          >
+    {
+    };
 }
 
 }} // namespace boost::python

@@ -103,7 +103,7 @@ struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5)>
 
 
 // Metrowerks thinks this creates ambiguities
-# if !defined(__MWERKS__) || __MWERKS__ > 0x2406
+# if !defined(__MWERKS__) || __MWERKS__ > 0x2407
 
 template <class R, class A0>
 struct arg_tuple_size<R (A0::*)() const>

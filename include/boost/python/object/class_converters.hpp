@@ -11,26 +11,9 @@
 # include <boost/python/reference.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/object/find_instance.hpp>
+# include <boost/python/object/inheritance.hpp>
 
 namespace boost { namespace python { namespace objects { 
-
-// Instantiating this class brings into existence all converters
-// associated with a class Bases is expected to be an mpl sequence of
-// base types.
-template <class Derived, class Bases>
-struct class_converters
-{
- public: // member functions
-    // Constructor takes the python class object associated with T
-    class_converters(ref const& python_class);
-
- private: // data members
-    class_wrapper<Derived> m_wrapper;
-};
-
-//
-// Implementation details
-//
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -86,9 +69,11 @@ struct register_base_of
     };
 };
 
+
+// Brings into existence all converters associated with a class Bases
+// is expected to be an mpl sequence of base types.
 template <class Derived, class Bases>
-class_converters<Derived,Bases>::class_converters(ref const& type_object)
-    : m_wrapper(type_object)
+inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
     (void)instance_finder<Derived>::registration;
     

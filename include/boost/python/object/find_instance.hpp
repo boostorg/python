@@ -6,6 +6,9 @@
 #ifndef FIND_INSTANCE_DWA2002312_HPP
 # define FIND_INSTANCE_DWA2002312_HPP
 
+# include <boost/python/converter/type_id.hpp>
+# include <boost/python/converter/registry.hpp>
+
 namespace boost { namespace python { namespace objects { 
 
 // Given an undecorated type_id, find the instance data which

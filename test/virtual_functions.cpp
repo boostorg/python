@@ -7,6 +7,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/returning.hpp>
 #include <boost/ref.hpp>
+#include <boost/utility.hpp>
 
 using namespace boost::python;
 
@@ -66,6 +67,10 @@ struct concrete_callback : concrete
         : concrete(x), self(p)
     {}
 
+    concrete_callback(PyObject* p, concrete const& x)
+        : concrete(x), self(p)
+    {}
+
     int f(Y const& y)
     {
         return returning<int>::call_method(self, "f", boost::ref(y));
@@ -85,26 +90,21 @@ BOOST_PYTHON_MODULE_INIT(virtual_functions_ext)
 {
     module("virtual_functions_ext")
         .add(
-            class_<concrete, bases<>, objects::value_holder_generator<concrete_callback> >("concrete")
+            class_<concrete, concrete_callback>("concrete")
             .def_init(args<int>())
             .def("value", &concrete::value)
             .def("set", &concrete::set)
             .def("call_f", &concrete::call_f)
             .def("f", &concrete_callback::f_impl))
         
-#if 0
         .add(
-            class_<abstract, bases<>
-            , objects::pointer_holder_generator<
-                boost::python::objects::shared_ptr_generator
-                , abstract_callback>
+            class_<abstract, boost::noncopyable, boost::shared_ptr<abstract_callback>
             >("abstract")
             
             .def_init(args<int>())
             .def("value", &abstract::value)
             .def("call_f", &abstract::call_f)
             .def("set", &abstract::set))
-#endif 
         
         .add(
             class_<Y>("Y")
