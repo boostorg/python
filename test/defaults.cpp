@@ -91,7 +91,7 @@ struct X {
     {}
 
     X(std::string s, bool b)
-    : state("Got exactly two arguments from constructor: string(%s); bool(%s); " % make_tuple(s, b))
+    : state("Got exactly two arguments from constructor: string(%s); bool(%s); " % make_tuple(s, b*1))
     {}
 
     object
@@ -114,19 +114,19 @@ struct X {
     object
     foo(int a, bool b=false) const
     {
-        return "int(%s); bool(%s); " % make_tuple(a, b);
+        return "int(%s); bool(%s); " % make_tuple(a, b*1);
     }
 
     object
     foo(std::string a, bool b=false) const
     {
-        return "string(%s); bool(%s); " % make_tuple(a, b);
+        return "string(%s); bool(%s); " % make_tuple(a, b*1);
     }
 
     object
     foo(list a, list b, bool c=false) const
     {
-        return "list(%s); list(%s); bool(%s); " % make_tuple(a, b, c);
+        return "list(%s); list(%s); bool(%s); " % make_tuple(a, b, c*1);
     }
 
     object

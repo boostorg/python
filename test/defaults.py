@@ -2,8 +2,12 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 """
->>> False = 0 # Python 2.2 needs these
->>> True = 1
+# Use builtin True/False when available:
+>>> try:
+...     assert(True == 1)
+... except:
+...     True = 1
+...     False = 0
 
 >>> from defaults_ext import *
 >>> bar(1)

@@ -67,8 +67,9 @@ void test_templates(object print)
     print(tmp.get(44));
     print(tmp);
     print(tmp.get(2,"default"));
-    print(tmp.has_key(key));
     print(tmp.setdefault(3,"default"));
+
+    assert(!tmp.has_key(key));
     //print(tmp[3]);
 }
     

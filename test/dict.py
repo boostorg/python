@@ -26,7 +26,6 @@ a test string
 None
 {1.5: 13, 1: 'a test string'}
 default
-0
 default
 """
 
