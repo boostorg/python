@@ -751,7 +751,7 @@ class _VirtualWrapperGenerator(object):
                                       
         all_methods = [x for x in self.class_.members if IsVirtual(x)]
         for base in self.bases:
-            base_methods = [x.Copy() for x in self.bases.members if IsVirtual(x)]
+            base_methods = [x.Copy() for x in base if IsVirtual(x)]
             for base_method in base_methods:
                 base_method.class_ = self.class_.FullName()
                 all_methods.append(base_method)

@@ -2,9 +2,12 @@
 Pyste version %s
 
 Usage:
-    pyste [options] --module=<name> interface-files
+    pyste [options] interface-files
 
 where options are:
+    --module=<name>     the name of the module that will be generated.
+                        Defaults to the first interface filename, without
+                        the extension.
     -I <path>           add an include path    
     -D <symbol>         define symbol    
     --multiple          create various cpps, instead of only one 
@@ -34,7 +37,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.7.9'
+__VERSION__ = '0.8.0'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -104,8 +107,10 @@ def ParseArguments():
             print 'Unknown option:', opt
             Usage()
 
-    if not files or not module:
-        Usage()    
+    if not files:
+        Usage() 
+    if not module:
+        module = os.path.splitext(files[0])[0]
     if not out:
         out = module
         if not multiple:
@@ -123,6 +128,7 @@ def CreateContext():
     context['Template'] = infos.ClassTemplateInfo
     context['Enum'] = infos.EnumInfo
     context['AllFromHeader'] = infos.HeaderInfo
+    context['Var'] = infos.VarInfo
     # functions
     context['rename'] = infos.rename
     context['set_policy'] = infos.set_policy

@@ -6,6 +6,7 @@ from FunctionExporter import FunctionExporter
 from IncludeExporter import IncludeExporter
 from EnumExporter import EnumExporter
 from HeaderExporter import HeaderExporter
+from VarExporter import VarExporter
 from exporterutils import FunctionWrapper
 from utils import makeid
 
@@ -86,7 +87,7 @@ class IncludeInfo(DeclarationInfo):
         exporter = IncludeExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)        
 
-    
+
 #==============================================================================
 # templates
 #==============================================================================
@@ -148,6 +149,19 @@ class HeaderInfo(DeclarationInfo):
         exporters.exporters.append(exporter)
 
 
+#==============================================================================
+# VarInfo
+#==============================================================================
+class VarInfo(DeclarationInfo):
+    
+    def __init__(self, name, include):
+        DeclarationInfo.__init__(self)
+        self._Attribute('name', name)
+        self._Attribute('include', include)
+        exporter = VarExporter(InfoWrapper(self))
+        exporters.exporters.append(exporter)
+        
+                                 
 #==============================================================================
 # InfoWrapper
 #==============================================================================

@@ -48,6 +48,7 @@ Pyste supports the following features:
 * Enums (both "free" enums and class enums)
 * Nested Classes
 * Support for [^boost::shared_ptr] and [^std::auto_ptr]
+* Global Variables
 
 [page Running Pyste]
 
@@ -464,4 +465,15 @@ For [^std::auto_ptr]'s, use the function [^use_auto_ptr].
 
 This system is temporary, and in the future the converters will automatically be
 exported if needed, without the need to tell Pyste about them explicitly.
+
+
+[page:1 Global Variables]
+
+To export global variables, use the [^Var] construct:
+
+    Var("myglobal", "foo.h")
+
+Beware of non-const global variables: changes in Python won't reflect in C++!
+If you really must change them in Python, you will have to write some accessor
+functions, and export those.
 

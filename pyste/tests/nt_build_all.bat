@@ -13,3 +13,4 @@ call nt_build_pyste.bat virtual2 %1
 call nt_build_pyste.bat wrappertest %1 
 call nt_build_pyste.bat opaque %1 
 call nt_build_pyste.bat inherit %1 
+call nt_build_pyste.bat vars %1 

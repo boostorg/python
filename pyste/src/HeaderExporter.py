@@ -2,6 +2,7 @@ from Exporter import Exporter
 from ClassExporter import ClassExporter
 from FunctionExporter import FunctionExporter
 from EnumExporter import EnumExporter
+from VarExporter import VarExporter
 from infos import *
 from declarations import *
 import os.path
@@ -47,6 +48,7 @@ class HeaderExporter(Exporter):
             Class : ClassExporter,
             Enumeration : EnumExporter,
             Function : FunctionExporter,
+            Variable : VarExporter,
         }
         
         exporter_class = dispatch_table.get(type(decl))

@@ -1,3 +1,7 @@
+23 May 2003
+Support for global variables added.
+Various bug fixes.
+
 08 May 2003
 Fixed bug where in a certain cases the GCCXMLParser would end up with multiple
 declarations of the same class
