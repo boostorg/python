@@ -27,7 +27,6 @@
 
 # include <boost/mpl/apply_if.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/identity.hpp>
 
 # include <boost/bind.hpp>
 
@@ -220,14 +219,34 @@ inline object make_getter(D& d, Policies const& policies)
     return detail::make_getter(d, policies, 0L);
 }
 
+template <class D, class Policies>
+inline object make_getter(D const& d, Policies const& policies)
+{
+    return detail::make_getter(d, policies, 0L);
+}
+
 template <class D>
 inline object make_getter(D& x)
 {
     return detail::make_getter(x, detail::not_specified(), 0L);
 }
-  
+
+# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+template <class D>
+inline object make_getter(D const& x)
+{
+    return detail::make_getter(x, detail::not_specified(), 0L);
+}
+# endif
+
 template <class D, class Policies>
 inline object make_setter(D& x, Policies const& policies)
+{
+    return detail::make_setter(x, policies, 0L);
+}
+
+template <class D, class Policies>
+inline object make_setter(D const& x, Policies const& policies)
 {
     return detail::make_setter(x, policies, 0L);
 }
@@ -237,6 +256,14 @@ inline object make_setter(D& x)
 {
     return detail::make_setter(x, default_call_policies(), 0L);
 }
+
+# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+template <class D>
+inline object make_setter(D const& x)
+{
+    return detail::make_setter(x, default_call_policies(), 0L);
+}
+# endif
 
 }} // namespace boost::python
 

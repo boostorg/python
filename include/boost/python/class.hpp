@@ -46,7 +46,11 @@
 # include <boost/utility.hpp>
 # include <boost/detail/workaround.hpp>
 
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004) || BOOST_WORKAROUND(__GNUC__, < 3)
+#  define BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING 1
+# endif
+
+# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
 #  include <boost/mpl/and.hpp>
 #  include <boost/type_traits/is_member_pointer.hpp>
 # endif
@@ -102,7 +106,7 @@ namespace detail
       SelectHolder::register_();
   }
 
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
   template <class T>
   struct is_data_member_pointer
       : mpl::and_<
@@ -110,6 +114,17 @@ namespace detail
           , mpl::not_<is_member_function_pointer<T> >
         >
   {};
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER , detail::is_data_member_pointer<D>()
+#  define BOOST_PYTHON_YES_DATA_MEMBER , mpl::true_
+#  define BOOST_PYTHON_NO_DATA_MEMBER , mpl::false_
+# elif defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER , 0
+#  define BOOST_PYTHON_YES_DATA_MEMBER , int
+#  define BOOST_PYTHON_NO_DATA_MEMBER , ...
+# else 
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER
+#  define BOOST_PYTHON_YES_DATA_MEMBER
+#  define BOOST_PYTHON_NO_DATA_MEMBER
 # endif
   
   namespace error
@@ -308,53 +323,25 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readonly(char const* name, D const& d)
     {
-        return this->def_readonly_impl(
-            name, d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-          , detail::is_data_member_pointer<D>()
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-          , 0
-# endif 
-            );
+        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
     }
 
     template <class D>
     self& def_readwrite(char const* name, D const& d)
     {
-        return this->def_readwrite_impl(
-            name, d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-          , detail::is_data_member_pointer<D>()
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-          , 0
-# endif 
-            );
+        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
     }
     
     template <class D>
     self& def_readonly(char const* name, D& d)
     {
-        return this->def_readonly_impl(
-            name, d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-          , detail::is_data_member_pointer<D>()
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-          , 0
-# endif 
-            );
+        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
     }
 
     template <class D>
     self& def_readwrite(char const* name, D& d)
     {
-        return this->def_readwrite_impl(
-            name, d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-          , detail::is_data_member_pointer<D>()
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-          , 0
-# endif 
-            );
+        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
     }
 
     // Property creation
@@ -444,13 +431,7 @@ class class_ : public objects::class_base
 
     template <class D, class B>
     self& def_readonly_impl(
-        char const* name, D B::*pm_
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-        , mpl::true_
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-        , int
-# endif 
-        )
+        char const* name, D B::*pm_ BOOST_PYTHON_YES_DATA_MEMBER)
     {
         D T::*pm = pm_;
         return this->add_property(name, make_getter(pm));
@@ -458,13 +439,7 @@ class class_ : public objects::class_base
 
     template <class D, class B>
     self& def_readwrite_impl(
-        char const* name, D B::*pm_
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-        , mpl::true_
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-        , int
-# endif 
-        )
+        char const* name, D B::*pm_ BOOST_PYTHON_YES_DATA_MEMBER)
     {
         D T::*pm = pm_;
         return this->add_property(name, make_getter(pm), make_setter(pm));
@@ -472,26 +447,14 @@ class class_ : public objects::class_base
 
     template <class D>
     self& def_readonly_impl(
-        char const* name, D& d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-        , mpl::false_
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-        , ...
-# endif 
-        )
+        char const* name, D& d BOOST_PYTHON_NO_DATA_MEMBER)
     {
         return this->add_static_property(name, make_getter(d));
     }
 
     template <class D>
     self& def_readwrite_impl(
-        char const* name, D& d
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
-        , mpl::false_
-# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-        , ...
-# endif 
-        )
+        char const* name, D& d  BOOST_PYTHON_NO_DATA_MEMBER)
     {
         return this->add_static_property(name, make_getter(d), make_setter(d));
     }
@@ -676,5 +639,10 @@ namespace detail
 }
 
 }} // namespace boost::python
+
+# undef BOOST_PYTHON_DATA_MEMBER_HELPER
+# undef BOOST_PYTHON_YES_DATA_MEMBER
+# undef BOOST_PYTHON_NO_DATA_MEMBER
+# undef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
 
 #endif // CLASS_DWA200216_HPP
