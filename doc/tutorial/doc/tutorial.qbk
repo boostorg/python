@@ -509,7 +509,7 @@ functions so that a Python override may be called:
     };
 
 Notice too that in addition to inheriting from `Base`, we also multiply-
-inherited `wrapper<Base>` (See [@../../../v2//wrapper.html Wrapper]). The
+inherited `wrapper<Base>` (See [@../../../v2/wrapper.html Wrapper]). The
 `wrapper` template makes the job of wrapping classes that are meant to
 overridden in Python, easier.
 
@@ -538,7 +538,7 @@ correspond roughly to C++'s [*member functions]]
 [section Virtual Functions with Default Implementations]
 
 We've seen in the previous section how classes with pure virtual functions are 
-wrapped using Boost.Python's [@../../../v2//wrapper.html class wrapper]
+wrapped using Boost.Python's [@../../../v2/wrapper.html class wrapper]
 facilities. If we wish to wrap [*non]-pure-virtual functions instead, the 
 mechanism is a bit different.
 

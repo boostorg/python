@@ -631,7 +631,7 @@ functions so that a Python override may be called:</para>
 </programlisting>
 <para>
 Notice too that in addition to inheriting from <code><phrase role="identifier">Base</phrase></code>, we also multiply-
-inherited <code><phrase role="identifier">wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase></code> (See <ulink url="../../../v2//wrapper.html">Wrapper</ulink>). The
+inherited <code><phrase role="identifier">wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase></code> (See <ulink url="../../../v2/wrapper.html">Wrapper</ulink>). The
 <code><phrase role="identifier">wrapper</phrase></code> template makes the job of wrapping classes that are meant to
 overridden in Python, easier.</para>
 <informaltable frame="all">
@@ -686,7 +686,7 @@ correspond roughly to C++'s <emphasis role="bold">member functions</emphasis></e
 <title>Virtual Functions with Default Implementations</title>
 <para>
 We've seen in the previous section how classes with pure virtual functions are 
-wrapped using Boost.Python's <ulink url="../../../v2//wrapper.html">class wrapper</ulink>
+wrapped using Boost.Python's <ulink url="../../../v2/wrapper.html">class wrapper</ulink>
 facilities. If we wish to wrap <emphasis role="bold">non</emphasis>-pure-virtual functions instead, the 
 mechanism is a bit different.</para>
 <para>
