@@ -219,24 +219,24 @@ class GCCXMLParser(object):
     def ParseClass(self, id, element):
         name = element.get('name')
         abstract = bool(int(element.get('abstract', '0')))
-        bases = self.GetBases(element.get('bases'))        
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
         incomplete = bool(element.get('incomplete', False))
         if isinstance(context, str): 
-            class_ = Class(name, context, [], abstract, bases)
+            class_ = Class(name, context, [], abstract, [])
             self.AddDecl(class_)
         else:
             # a nested class
             visib = element.get('access', Scope.public)
             class_ = NestedClass(
-                name, context.FullName(), visib, [], abstract, bases)
+                name, context.FullName(), visib, [], abstract, [])
         # we have to add the declaration of the class before trying        
-        # to parse its members, to avoid recursion.
+        # to parse its members and bases, to avoid recursion.
         class_.location = location
         class_.incomplete = incomplete
         self.Update(id, class_)       
-        # now we can get the members
+        # now we can get the members and the bases
+        class_.bases = self.GetBases(element.get('bases'))        
         class_.members = self.GetMembers(element.get('members'))
 
 
