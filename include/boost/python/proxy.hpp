@@ -16,16 +16,16 @@ class proxy : public object_operators<proxy<Policies> >
     typedef typename Policies::key_type key_type;
     
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
-    typedef proxy const& copy_ctor_self;
+    typedef proxy const& assignment_self;
 # else
-    typedef proxy copy_ctor_self;
+    typedef proxy assignment_self;
 # endif
  public:
     proxy(object const& target, key_type const& key);
     operator object() const;
 
     // to support a[b] = c[d]
-    proxy const& operator=(copy_ctor_self) const;
+    proxy const& operator=(assignment_self) const;
     
     template <class T>
     inline proxy const& operator=(T const& rhs) const
@@ -66,7 +66,7 @@ inline proxy<Policies>::operator object() const
 
 // to support a[b] = c[d]
 template <class Policies>
-inline proxy<Policies> const& proxy<Policies>::operator=(typename proxy::copy_ctor_self rhs) const
+inline proxy<Policies> const& proxy<Policies>::operator=(typename proxy::assignment_self rhs) const
 {
     return *this = python::object(rhs);
 }
