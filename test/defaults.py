@@ -56,7 +56,16 @@
 >>> x = X(1, 'X', "Phoenix", 3.65)
 >>> x.get_state()
 'int(1); char(X); string(Phoenix); double(3.65); '
-
+>>> x.bar2().get_state()
+'int(0); char(D); string(default); double(0.0); '
+>>> x.bar2(1).get_state()
+'int(1); char(D); string(default); double(0.0); '
+>>> x.bar2(1, 'K').get_state()
+'int(1); char(K); string(default); double(0.0); '
+>>> x.bar2(1, 'K', "Kim").get_state()
+'int(1); char(K); string(Kim); double(0.0); '
+>>> x.bar2(1, 'K', "Kim", 9.9).get_state()
+'int(1); char(K); string(Kim); double(9.9); '
 
 """
 def run(args = None):

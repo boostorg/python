@@ -168,9 +168,22 @@ class class_ : public objects::class_base
     }
 
     template <BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class T)>
-    self& def(init<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, T)> const& i, char const* doc = 0)
+    self& def(init<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, T)> const& i)
     {
-        define_init(*this, i, doc);
+        define_init(*this, i, default_call_policies(), 0);
+        return *this;
+    }
+
+    template <class CallPolicyOrDoc, BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class T)>
+    self& def(
+        init<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, T)> const& i,
+        CallPolicyOrDoc const& policy_or_doc,
+        char const* doc = 0)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        define_init(*this, i,
+            helper::get_policy(policy_or_doc),
+            helper::get_doc(policy_or_doc, doc));
         return *this;
     }
 

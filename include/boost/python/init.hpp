@@ -352,12 +352,12 @@ namespace detail {
     template <int N>
     struct define_class_init_helper {
 
-        template <class ClassT, class ArgsT>
-        static void apply(ClassT& cl, ArgsT const& args, char const* doc)
+        template <class ClassT, class CallPoliciesT, class ArgsT>
+        static void apply(ClassT& cl, CallPoliciesT const& policies, ArgsT const& args, char const* doc)
         {
-            cl.def_init(args, default_call_policies(), doc);
+            cl.def_init(args, policies, doc);
             typename boost::mpl::pop_back<ArgsT>::sequence next;
-            define_class_init_helper<N-1>::apply(cl, next, doc);
+            define_class_init_helper<N-1>::apply(cl, policies, next, doc);
         }
     };
 
@@ -374,10 +374,10 @@ namespace detail {
     template <>
     struct define_class_init_helper<0> {
 
-        template <class ClassT, class ArgsT>
-        static void apply(ClassT& cl, ArgsT const& args, char const* doc)
+        template <class ClassT, class CallPoliciesT, class ArgsT>
+        static void apply(ClassT& cl, CallPoliciesT const& policies, ArgsT const& args, char const* doc)
         {
-            cl.def_init(args, default_call_policies(), doc);
+            cl.def_init(args, policies, doc);
         }
     };
 }
@@ -403,13 +403,13 @@ namespace detail {
 //          __init__(int)
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <class ClassT, class InitT>
+template <class ClassT, class CallPoliciesT, class InitT>
 void
-define_init(ClassT& cl, InitT const& i, char const* doc)
+define_init(ClassT& cl, InitT const& i, CallPoliciesT const& policies, char const* doc)
 {
     enum { n_defaults_plus_1 = InitT::n_defaults + 1 };
     typedef typename InitT::sequence args_t;
-    detail::define_class_init_helper<n_defaults_plus_1>::apply(cl, args_t(), doc);
+    detail::define_class_init_helper<n_defaults_plus_1>::apply(cl, policies, args_t(), doc);
 }
 
 }} // namespace boost::python

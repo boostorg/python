@@ -10,6 +10,7 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/module.hpp>
+#include <boost/python/return_internal_reference.hpp>
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
 # include <iostream> // works around a KCC intermediate code generation bug
@@ -69,6 +70,20 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(foo_stubs, foo, 1, 4)
 //  Overloaded member functions with default arguments
 //
 ///////////////////////////////////////////////////////////////////////////////
+struct Y {
+
+    Y() {}
+
+    object
+    get_state() const
+    {
+        return format % make_tuple(a, b, c, d);
+    }
+
+    int a; char b; std::string c; double d;
+};
+
+
 struct X {
 
     X() {}
@@ -83,11 +98,15 @@ struct X {
         return format % make_tuple(a, b, c, d);
     }
 
-    object
-    bar2(int a = 0, char b = 'D', std::string c = "default", double d = 0.0) const
+    Y const&
+    bar2(int a = 0, char b = 'D', std::string c = "default", double d = 0.0)
     {
-         // tests zero arg member function
-        return format % make_tuple(a, b, c, d);
+        // tests zero arg member function and return_internal_reference policy
+        y.a = a;
+        y.b = b;
+        y.c = c;
+        y.d = d;
+        return y;
     }
 
     object
@@ -114,11 +133,12 @@ struct X {
         return state;
     }
 
+    Y y;
     object state;
 };
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_bar_stubs, bar, 1, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_bar2_stubs, bar2, 0, 4) // tests zero arg member function
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_bar_stubs2, bar2, 0, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_2_stubs, foo, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_3_stubs, foo, 2, 3)
 
@@ -126,13 +146,17 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_3_stubs, foo, 2, 3)
 
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
-    def("foo", foo, foo_stubs(), default_call_policies());
+    def("foo", foo, foo_stubs());
     def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
 
     // Show that this works with the old obsolete module version of def().
     module("defaults_ext")
         .def("foobar", foo, foo_stubs())
         .def("barfoo", (object(*)(int, char, std::string, double))0, bar_stubs())
+        ;
+
+    class_<Y>("Y", no_init)
+	    .def("get_state", &Y::get_state)
         ;
 
     class_<X>("X")
@@ -145,9 +169,10 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
         .def_init(args<int, char, std::string>())
         .def_init(args<int, char, std::string, double>())
 # endif
-	.def("get_state", &X::get_state)
+	    .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
-        .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs(), default_call_policies())
+        .def("bar2", &X::bar2, X_bar_stubs2(), return_internal_reference<>())
+        .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(list, list, bool) const)0, X_foo_3_stubs())
         ;
