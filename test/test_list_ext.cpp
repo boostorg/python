@@ -18,13 +18,7 @@
 #include "int_wrapper.hpp"
 
 #include <boost/python/suite/indexing/container_suite.hpp>
-#include <boost/python/suite/indexing/iterator_pair.hpp>
-#include <boost/python/suite/indexing/container_proxy.hpp>
-
 #include <list>
-#include <string>
-#include <sstream>
-
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -34,13 +28,6 @@
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
 
-std::string repr (int_wrapper const &i)
-{
-  std::stringstream temp;
-  temp << i;
-  return temp.str();
-}
-
 BOOST_PYTHON_MODULE(test_list_ext)
 {
   boost::python::implicitly_convertible <int, int_wrapper>();
@@ -49,7 +36,7 @@ BOOST_PYTHON_MODULE(test_list_ext)
 
   boost::python::class_<int_wrapper>("int_wrapper", boost::python::init<int>())
     .def ("increment", &int_wrapper::increment)
-    .def ("__repr__", repr)
+    .def ("__repr__", &int_wrapper::repr)
     .def ("__cmp__", compare)
     ;
 
