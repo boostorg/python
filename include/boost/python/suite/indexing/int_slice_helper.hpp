@@ -18,20 +18,25 @@
 #ifndef int_slice_helper_rmg_20031013_included
 #define int_slice_helper_rmg_20031013_included
 
-#include <boost/python/suite/indexing/slice.hpp>
 #include <boost/python/errors.hpp>
 
 namespace boost { namespace python { namespace indexing {
-  template<typename Algorithms>
+  template<typename Algorithms, typename SliceType>
   struct int_slice_helper
   {
+    // Works with a SliceType that provides an int-like index_type
+    // that is convertible to the algorithm's index_param
+
     typedef Algorithms algorithms;
+    typedef SliceType slice_type;
+
     typedef typename algorithms::container container;
     typedef typename algorithms::reference reference;
     typedef typename algorithms::value_param value_param;
     typedef typename algorithms::container_traits container_traits;
+    typedef typename slice_type::index_type index_type;
 
-    int_slice_helper (slice const &sl, container &c);
+    int_slice_helper (container &c, slice_type const &);
 
     bool next();
 
@@ -44,23 +49,23 @@ namespace boost { namespace python { namespace indexing {
     void insert (value_param val);
 
   private:
-    integer_slice mSlice;
+    slice_type mSlice;
     container *mPtr;
-    int mPos;
+    index_type mPos;
   };
 
-  template<typename Algorithms>
-  int_slice_helper<Algorithms>::int_slice_helper (slice const &sl
-                                                  , container &c)
-    : mSlice (sl, algorithms::size (c))
+  template<typename Algorithms, typename SliceType>
+  int_slice_helper<Algorithms, SliceType>
+  ::int_slice_helper (container &c, slice_type const &sl)
+    : mSlice (sl)
     , mPtr (&c)
     , mPos (-1)
   {
   }
 
-  template<typename Algorithms>
+  template<typename Algorithms, typename SliceType>
   bool
-  int_slice_helper<Algorithms>::next()
+  int_slice_helper<Algorithms, SliceType>::next()
   {
     bool result = false; // Assume the worst
 
@@ -81,15 +86,15 @@ namespace boost { namespace python { namespace indexing {
     return result;
   }
 
-  template<typename Algorithms>
-  typename int_slice_helper<Algorithms>::reference
-  int_slice_helper<Algorithms>::current () const
+  template<typename Algorithms, typename SliceType>
+  typename int_slice_helper<Algorithms, SliceType>::reference
+  int_slice_helper<Algorithms, SliceType>::current () const
   {
     return algorithms::get (*mPtr, mPos);
   }
 
-  template<typename Algorithms>
-  void int_slice_helper<Algorithms>::write (value_param val)
+  template<typename Algorithms, typename SliceType>
+  void int_slice_helper<Algorithms, SliceType>::write (value_param val)
   {
     if (next())
       {
@@ -102,8 +107,8 @@ namespace boost { namespace python { namespace indexing {
       }
   }
 
-  template<typename Algorithms>
-  void int_slice_helper<Algorithms>::assign (value_param val) const
+  template<typename Algorithms, typename SliceType>
+  void int_slice_helper<Algorithms, SliceType>::assign (value_param val) const
   {
     algorithms::assign (*mPtr, mPos, val);
   }
@@ -133,8 +138,8 @@ namespace boost { namespace python { namespace indexing {
     };
   }
 
-  template<typename Algorithms>
-  void int_slice_helper<Algorithms>::insert (value_param val)
+  template<typename Algorithms, typename SliceType>
+  void int_slice_helper<Algorithms, SliceType>::insert (value_param val)
   {
     if (mSlice.step() != 1)
       {
@@ -178,8 +183,8 @@ namespace boost { namespace python { namespace indexing {
     };
   }
 
-  template<typename Algorithms>
-  void int_slice_helper<Algorithms>::erase_remaining () const
+  template<typename Algorithms, typename SliceType>
+  void int_slice_helper<Algorithms, SliceType>::erase_remaining () const
   {
     if (mSlice.step() != 1)
       {
