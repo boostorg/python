@@ -9,6 +9,10 @@
 #include <set>
 #include <stdexcept>
 
+#ifdef BOOST_PYTHON_TRACE_REGISTRY
+# include <iostream>
+#endif
+
 namespace boost { namespace python { namespace converter { 
 
 namespace // <unnamed>
@@ -48,12 +52,24 @@ namespace // <unnamed>
           
           initialize_builtin_converters();
       }
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "registry: ";
+      for (registry_t::iterator p = registry.begin(); p != registry.end(); ++p)
+      {
+          std::cout << p->m_from_python.target_type << "; ";
+      }
+      std::cout << '\n';
+#  endif 
 # endif 
       return registry;
   }
 
   entry* get(type_info type)
   {
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "looking up " << type
+                << (entries().find(entry(type)) == entries().end() ? ": not found\n" : ": found\n");
+#  endif 
       return const_cast<entry*>(
           &*entries().insert(entry(type)).first
           );
@@ -77,7 +93,11 @@ namespace registry
   
   void insert(to_python_function_t f, type_info source_t)
   {
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "inserting to_python " << source_t << "\n";
+#  endif 
       to_python_function_t& slot = get(source_t)->m_to_python_converter;
+      
       assert(slot == 0); // we have a problem otherwise
       if (slot != 0)
       {
@@ -90,6 +110,9 @@ namespace registry
   // Insert an lvalue from_python converter
   void insert(convertible_function convert, type_info key)
   {
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "inserting lvalue from_python " << key << "\n";
+#  endif 
       entry* found = get(key);
       lvalue_from_python_chain *registration = new lvalue_from_python_chain;
       registration->convert = convert;
@@ -104,6 +127,9 @@ namespace registry
               , constructor_function construct
               , type_info key)
   {
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "inserting rvalue from_python " << key << "\n";
+#  endif 
       entry* found = get(key);
       rvalue_from_python_chain *registration = new rvalue_from_python_chain;
       registration->convertible = convertible;
@@ -117,6 +143,9 @@ namespace registry
               , constructor_function construct
               , type_info key)
   {
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "push_back rvalue from_python " << key << "\n";
+#  endif 
       rvalue_from_python_chain** found = &get(key)->m_from_python.rvalue_chain;
       while (*found != 0)
           found = &(*found)->next;
