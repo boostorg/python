@@ -1,4 +1,10 @@
+2000-11-20 10:00
+    
+    Ullrich improved shared_pod_manager.
+    
 2000-11-17 15:04
+    Changed allocation strategy of shared_pod_manager to make it portable.
+    
     Added pickling support + tests thanks to "Ralf W. Grosse-Kunstleve"
     <rwgk@cci.lbl.gov>
 
@@ -9,9 +15,20 @@
     Removed const char* return values from virtual functions in tests; that
     usage was unsafe.
 
+    Ullrich changed Module::add() so that it steals a reference (fix of refcount bug)
+    
+    Ullrich added operator_dispatcher::create() optimization
+    
+    Ullrich changed design and implementation of TypeObjectBase::enable() (to eliminate low-level
+    code) and added shared_pod_manager optimization.
+
 
 2000-11-15 12:01
-    Fixed Ullrich's refcount bug
+    Fixed refcount bugs in operator calls.
+    
+    Added callback_adjust_refcount(PyObject*, Type<T>) to account for different ownership 
+    semantics of Callback's return types and Caller's arguments (which both use from_python())
+    This bug caused refcount errors during operator calls.
 
     Moved operator_dispatcher into extclass.cpp
     Gave it shared ownership of the objects it wraps
@@ -40,6 +57,10 @@
     Made Ullrich's operators support work with MSVC
     
     Cleaned up operators.h such that invalid define_operator<0> is no longer needed.
+    
+    Ullrich created operators.h to support wrapping of C++ operators (including the "__r*__" forms). 
+    He added several auxiliary classes to extclass.h and extclass.cpp (most importantly, 
+    py::detail::operator_dispatcher and py::operators)
 
 2000-11-13 22:29
 
