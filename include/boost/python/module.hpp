@@ -19,12 +19,10 @@ namespace boost { namespace python {
 class module : public detail::module_base
 {
  public:
-#if defined(__EDG_VERSION__) && (__EDG_VERSION__ <= 238)
-    typedef detail::module_base module_base;
-#endif
+    typedef detail::module_base base;
 
     module(const char* name)
-        : module_base(name) {}
+        : base(name) {}
 
     // Add elements to the module
     module& setattr(const char* name, PyObject*);
@@ -60,25 +58,25 @@ class module : public detail::module_base
 //
 inline module& module::setattr(const char* name, PyObject* x)
 {
-    this->module_base::setattr(name, x);
+    this->base::setattr(name, x);
     return *this;
 }
 
 inline module& module::setattr(const char* name, PyTypeObject* x)
 {
-    this->module_base::setattr(name, (PyObject*)x);
+    this->base::setattr(name, (PyObject*)x);
     return *this;
 }
 
 inline module& module::setattr(const char* name, ref const& x)
 {
-    this->module_base::setattr(name, x);
+    this->base::setattr(name, x);
     return *this;
 }
 
 inline module& module::add(PyTypeObject* x)
 {
-    this->module_base::add(x);
+    this->base::add(x);
     return *this;
 }
 

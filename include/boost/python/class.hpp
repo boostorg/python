@@ -72,9 +72,7 @@ template <
     >
 class class_ : public objects::class_base
 {
-#if defined(__EDG_VERSION__) && (__EDG_VERSION__ <= 238)
-    typedef objects::class_base class_base;
-#endif
+    typedef objects::class_base base;
 
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
@@ -234,7 +232,7 @@ class class_ : public objects::class_base
 //
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>::class_()
-    : class_base(typeid(T).name(), id_vector::size, id_vector().ids)
+    : base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
     // register converters
     objects::register_class_from_python<T,bases>();
@@ -247,7 +245,7 @@ inline class_<T,X1,X2,X3>::class_()
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>::class_(char const* name)
-    : class_base(name, id_vector::size, id_vector().ids)
+    : base(name, id_vector::size, id_vector().ids)
 {
     // register converters
     objects::register_class_from_python<T,bases>();
@@ -262,21 +260,21 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ref const& fget)
 {
-    class_base::add_property(name, fget);
+    base::add_property(name, fget);
     return *this;
 }
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ref const& fget, ref const& fset)
 {
-    class_base::add_property(name, fget, fset);
+    base::add_property(name, fget, fset);
     return *this;
 }
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, ref const& x)
 {
-    class_base::setattr(name, x);
+    base::setattr(name, x);
     return *this;
 }
 
