@@ -59,4 +59,4 @@ inline BaseObject<PythonType>::~BaseObject()
 
 }
 
-#endif BASE_OBJECT_DWA051600_H_
+#endif // BASE_OBJECT_DWA051600_H_
