@@ -906,6 +906,19 @@ test methodologies for wrapping functions that return a pointer
     In this methodology, the referent is copied
     >>> get_record() == get_record()
     0
+
+======== Enums and non-method class attributes ==============
+    >>> eo = EnumOwner(EnumOwner.one, EnumOwner.two)
+    >>> eo.first
+    1
+    >>> eo.second
+    2
+    >>> eo.first = EnumOwner.three
+    >>> eo.second = EnumOwner.one
+    >>> eo.first
+    3
+    >>> eo.second
+    1
 '''
 
 from demo import *
