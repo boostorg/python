@@ -15,6 +15,7 @@
 # include <boost/python/detail/dealloc.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/type_traits/remove_pointer.hpp>
+# include <boost/type_traits/is_pointer.hpp>
 
 // opaque_pointer_converter --
 //
