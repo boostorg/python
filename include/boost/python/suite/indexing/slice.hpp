@@ -30,9 +30,11 @@ namespace boost { namespace python { namespace indexing {
     // A newly constructed slice object is useless until setLength is called
     //
 
-    template<typename T> slice (T const &ref);
+    template<typename T> inline slice (T const &ref);
 
     void setLength (int sequenceLength);
+    // Tell slice object how big the container is (so it can adjust
+    // for negative indexes, etc...)
 
     int start() const { validate(); return mStart; }
     int step() const  { validate(); return mStep; }
