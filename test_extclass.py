@@ -657,6 +657,9 @@ Regression test for a reference-counting bug thanks to Mark Evans
     0.0
     >>> sizelist([1, 2, 4])
     3.0
+    
+And another for doubles
+    >>> vector_double().push_back(3.0)
 
 Tests for method lookup in the context of inheritance
 Set up the tests
@@ -838,7 +841,6 @@ test inheritB2
     'B2::inheritB2'
     >>> db2.inheritB2()
     'B2::inheritB2'
-
 '''
 
 from demo import *
