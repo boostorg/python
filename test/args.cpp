@@ -54,7 +54,7 @@ BOOST_PYTHON_MODULE_INIT(args_ext)
     def("f2", f, f_overloads(args("x", "y", "z")));
     def("f3", f, f_overloads(args("x", "y", "z"), "f3's docstring"));
     
-    class_<Y>("Y", init<int>())
+    class_<Y>("Y", init<int>(args("value"), "Y's docstring"))
         .def("value", &Y::value)
         ;
             

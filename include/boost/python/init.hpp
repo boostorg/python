@@ -217,8 +217,8 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     }
 
     template <class Keywords>
-    init(Keywords const& kw)
-        : base(0, kw.range())
+    init(Keywords const& kw, char const* doc_ = 0)
+        : base(doc_, kw.range())
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
             Keywords::size, n_arguments
@@ -294,18 +294,6 @@ class init<> : public init_base<init<> >
     {
     }
     
-    template <class Keywords>
-    init(char const* doc_, Keywords const& kw)
-        : base(doc_, std::make_pair(kw.base(), kw.base() + Keywords::size))
-    {
-    }
-
-    template <class Keywords>
-    init(Keywords const& kw)
-        : base(0, std::make_pair(kw.base(), kw.base() + Keywords::size))
-    {
-    }
-
     template <class CallPoliciesT>
     init_with_call_policies<CallPoliciesT, self_t>
     operator[](CallPoliciesT const& policies) const
