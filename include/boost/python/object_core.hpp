@@ -27,11 +27,17 @@
 
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/debug/line.hpp>
-# include <boost/python/detail/is_xxx.hpp>
 
-# include <boost/type_traits/is_same.hpp>
+# include <boost/python/detail/is_xxx.hpp>
 # include <boost/python/detail/string_literal.hpp>
 # include <boost/python/detail/def_helper_fwd.hpp>
+
+# include <boost/type_traits/is_same.hpp>
+# include <boost/type_traits/is_convertible.hpp>
+
+# if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+#  include <boost/type_traits/add_pointer.hpp>
+# endif
 
 namespace boost { namespace python { 
 
@@ -69,8 +75,6 @@ namespace api
   //
   BOOST_PYTHON_IS_XXX_DEF(proxy, boost::python::api::proxy, 1)
 
-  template <class T> struct object_initializer;
-  
   class object;
   typedef PyObject* (object::*bool_type)() const;
   
@@ -224,11 +228,7 @@ namespace api
                 BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
             >::get(
                 object::do_unforward(x)
-              , detail::convertible<object const*>::check(
-                    to_ptr(
-                        object::do_unforward(x)
-                    )
-                )
+              , is_convertible<T*, object const*>()
           ))
       {
       }
@@ -236,8 +236,6 @@ namespace api
       // Throw error_already_set() if the handle is null.
       BOOST_PYTHON_DECL explicit object(handle<> const&);
    private:
-      template <class T>
-      static T const* to_ptr(T const&) { return 0; }
       
       template <class T>
       typename objects::unforward_cref<T>::type do_unforward(T const& x)
@@ -287,14 +285,14 @@ namespace api
   struct object_initializer_impl
   {
       static PyObject*
-      get(object const& x, detail::yes_convertible)
+      get(object const& x, mpl::true_)
       {
           return python::incref(x.ptr());
       }
       
       template <class T>
       static PyObject*
-      get(T const& x, detail::no_convertible)
+      get(T const& x, mpl::false_)
       {
           return python::incref(converter::arg_to_python<T>(x).get());
       }
@@ -305,7 +303,7 @@ namespace api
   {
       template <class Policies>
       static PyObject* 
-      get(proxy<Policies> const& x, detail::no_convertible)
+      get(proxy<Policies> const& x, mpl::false_)
       {
           return python::incref(x.operator object().ptr());
       }
