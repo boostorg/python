@@ -8,25 +8,26 @@
 #include <boost/python/iterator.hpp>
 #include <boost/iterator_adaptors.hpp>
 #include <list>
-#include <utility>
-#include <iterator>
-#include <functional>
 
 using namespace boost::python;
 
 typedef std::list<int> list_int;
 
-// Prove that we can handle InputIterators which return rvalues.  This
-// input iterator example was stolen from the iterator_adaptors
-// documentation
-typedef std::binder1st<std::multiplies<int> > doubler;
+// Prove that we can handle InputIterators which return rvalues.
+struct doubler
+{
+    typedef int result_type;
+    int operator()(int x) const { return x * 2; }
+};
+
 typedef boost::transform_iterator_generator<doubler, list_int::iterator>::type doubling_iterator;
 typedef std::pair<doubling_iterator,doubling_iterator> list_range2;
+
 list_range2 range2(list_int& x)
 {
     return list_range2(
-        boost::make_transform_iterator<doubler>(x.begin(), std::bind1st(std::multiplies<int>(),2))
-      , boost::make_transform_iterator<doubler>(x.end(), std::bind1st(std::multiplies<int>(),2)));
+        boost::make_transform_iterator<doubler>(x.begin(), doubler())
+      , boost::make_transform_iterator<doubler>(x.end(), doubler()));
 }
 
 // We do this in a separate module from iterators_ext (iterators.cpp)
