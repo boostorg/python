@@ -12,7 +12,7 @@
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 
 // Facilities for dealing with types which always manage Python
 // objects. Some examples are object, list, str, et. al. Different
@@ -118,14 +118,14 @@ struct object_manager_traits
 
 template <class T>
 struct is_object_manager
-    : mpl::bool_c<object_manager_traits<T>::is_specialized>
+    : mpl::bool_<object_manager_traits<T>::is_specialized>
 {
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <class T>
 struct is_reference_to_object_manager
-    : mpl::false_c
+    : mpl::false_
 {
 };
 
@@ -197,7 +197,7 @@ namespace detail
   
   template <class T>
   struct is_reference_to_object_manager_nonref
-      : mpl::false_c
+      : mpl::false_
   {
   };
 
@@ -211,7 +211,7 @@ namespace detail
             == sizeof(detail::yes_reference_to_object_manager)
           )
         );
-      typedef mpl::bool_c<value> type;
+      typedef mpl::bool_<value> type;
   };
 }
 

@@ -7,7 +7,7 @@
 # define VALUE_IS_XXX_DWA2003224_HPP
 
 # include <boost/config.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 # include <boost/preprocessor/enum_params.hpp>
 
 # if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -35,7 +35,7 @@ struct value_is_##name                                                  \
         bool, value                                                     \
         = (sizeof(test(dummy, 0)) == sizeof(yes)));                     \
                                                                         \
-    typedef mpl::bool_c<value> type;                                    \
+    typedef mpl::bool_<value> type;                                    \
 };
 
 # else
@@ -54,7 +54,7 @@ struct value_is_##name                                                  \
                                   typename remove_reference<X_>::type   \
                                >::type                                  \
                            >::value);                                   \
-    typedef mpl::bool_c<value> type;                                    \
+    typedef mpl::bool_<value> type;                                    \
                                                                         \
 };                                                              
 

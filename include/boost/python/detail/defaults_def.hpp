@@ -102,7 +102,7 @@ namespace detail
   //      template <typename OverloadsT, typename NameSpaceT>
   //      inline void
   //      define_stub_function(
-  //          char const* name, OverloadsT s, NameSpaceT& name_space, mpl::int_c<N>)
+  //          char const* name, OverloadsT s, NameSpaceT& name_space, mpl::int_<N>)
   //      {
   //          name_space.def(name, &OverloadsT::func_N);
   //      }

@@ -10,19 +10,19 @@
 # include <boost/type.hpp>
 # include <boost/type_traits/array_traits.hpp>
 # include <boost/type_traits/same_traits.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <class T>
-struct is_string_literal : mpl::false_c
+struct is_string_literal : mpl::false_
 {
 };
 
 #  if !defined(__MWERKS__) || __MWERKS__ > 0x2407
 template <std::size_t n>
-struct is_string_literal<char const[n]> : mpl::true_c
+struct is_string_literal<char const[n]> : mpl::true_
 {
 };
 
@@ -31,7 +31,7 @@ struct is_string_literal<char const[n]> : mpl::true_c
 // This compiler mistakenly gets the type of string literals as char*
 // instead of char[NN].
 template <>
-struct is_string_literal<char* const> : mpl::true_c
+struct is_string_literal<char* const> : mpl::true_
 {
 };
 #   endif
@@ -63,7 +63,7 @@ struct string_literal_helper
         
         BOOST_STATIC_CONSTANT(
             bool, value = sizeof(self::check(x)) == sizeof(yes_string_literal));
-        typedef mpl::bool_c<value> type;
+        typedef mpl::bool_<value> type;
     };
 };
 
@@ -71,7 +71,7 @@ template <>
 struct string_literal_helper<false>
 {
     template <class T>
-    struct apply : mpl::false_c
+    struct apply : mpl::false_
     {
     };
 };

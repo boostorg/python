@@ -20,7 +20,7 @@ BOOST_PYTHON_IS_XXX_DEF(auto_ptr, std::auto_ptr, 1)
 # else
 
 template <class T>
-struct is_auto_ptr : mpl::false_c
+struct is_auto_ptr : mpl::false_
 {
 };
 

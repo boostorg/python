@@ -14,8 +14,8 @@
 # include <boost/python/detail/void_return.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/type_traits/has_trivial_copy.hpp>
-# include <boost/mpl/logical/and.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/and.hpp>
+# include <boost/mpl/bool.hpp>
 
 namespace boost { namespace python { namespace converter { 
 

@@ -8,7 +8,7 @@
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/python/detail/type_list.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 # include <boost/preprocessor/enum_params_with_a_default.hpp>
 # include <boost/preprocessor/enum_params.hpp>
 
@@ -25,13 +25,13 @@ namespace boost { namespace python {
   {
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     template <class T> struct specifies_bases
-        : mpl::false_c
+        : mpl::false_
     {
     };
     
     template < BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_MAX_BASES, class Base) >
     struct specifies_bases< bases< BOOST_PYTHON_BASE_PARAMS > >
-        : mpl::true_c
+        : mpl::true_
     {
     };
 # else
@@ -48,7 +48,7 @@ namespace boost { namespace python {
         BOOST_STATIC_CONSTANT(bool, non_ref = !is_reference<T>::value);
      public:
         BOOST_STATIC_CONSTANT(bool, value = non_ref & (sizeof(is_bases_helper(make())) == 1));
-        typedef mpl::bool_c<value> type;
+        typedef mpl::bool_<value> type;
     };
 # endif
     template <class T, class Prev = bases<> >

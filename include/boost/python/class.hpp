@@ -25,9 +25,9 @@
 
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/mpl/bool_c.hpp>
-# include <boost/mpl/logical/not.hpp>
-# include <boost/mpl/logical/or.hpp>
+# include <boost/mpl/bool.hpp>
+# include <boost/mpl/not.hpp>
+# include <boost/mpl/or.hpp>
 
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
@@ -79,12 +79,12 @@ namespace detail
   struct operator_;
 
   // Register to_python converters for a class T.  The first argument
-  // will be mpl::true_c unless noncopyable was specified as a
+  // will be mpl::true_ unless noncopyable was specified as a
   // class_<...> template parameter. The 2nd argument is a pointer to
   // the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class SelectHolder>
-  inline void register_class_to_python(mpl::true_c copyable, SelectHolder selector, T* = 0)
+  inline void register_class_to_python(mpl::true_ copyable, SelectHolder selector, T* = 0)
   {
       typedef typename SelectHolder::type holder;
       force_instantiate(objects::class_cref_wrapper<T, objects::make_instance<T,holder> >());
@@ -92,7 +92,7 @@ namespace detail
   }
 
   template <class T, class SelectHolder>
-  inline void register_class_to_python(mpl::false_c copyable, SelectHolder selector, T* = 0)
+  inline void register_class_to_python(mpl::false_ copyable, SelectHolder selector, T* = 0)
   {
       SelectHolder::register_();
   }
@@ -131,7 +131,7 @@ namespace detail
         static void
         must_be_derived_class_member(Default const&)
         {
-            typedef typename assertion<mpl::logical_not<is_same<Default,Fn> > >::failed test0;
+            typedef typename assertion<mpl::not_<is_same<Default,Fn> > >::failed test0;
             typedef typename assertion<is_polymorphic<T> >::failed test1;
             typedef typename assertion<is_member_function_pointer<Fn> >::failed test2;
             not_a_derived_class_member<Default>(Fn());
@@ -398,7 +398,7 @@ class class_ : public objects::class_base
                 , helper.policies(), helper.keywords())
             , helper.doc());
 
-        this->def_default(name, fn, helper, mpl::bool_c<Helper::has_default_implementation>());
+        this->def_default(name, fn, helper, mpl::bool_<Helper::has_default_implementation>());
     }
 
     //
@@ -411,7 +411,7 @@ class class_ : public objects::class_base
         char const* name
         , Fn fn
         , Helper const& helper
-        , mpl::bool_c<true>)
+        , mpl::bool_<true>)
     {
         detail::error::virtual_function_default<T,Fn>::must_be_derived_class_member(
             helper.default_implementation());
@@ -424,7 +424,7 @@ class class_ : public objects::class_base
     }
     
     template <class Fn, class Helper>
-    inline void def_default(char const*, Fn, Helper const&, mpl::bool_c<false>)
+    inline void def_default(char const*, Fn, Helper const&, mpl::bool_<false>)
     { }
     
     //
@@ -474,7 +474,7 @@ inline void class_<T,X1,X2,X3>::register_() const
     objects::register_class_from_python<T,bases>();
 
     detail::register_class_to_python<T>(
-        mpl::bool_c<is_copyable>()
+        mpl::bool_<is_copyable>()
 # if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
         , holder_selector::execute((held_type*)0)
 # elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
@@ -519,7 +519,7 @@ namespace detail
 {
   template <class T1, class T2, class T3>
   struct has_noncopyable
-      : mpl::logical_or<
+      : mpl::or_<
           is_same<T1,noncopyable>
         , is_same<T2,noncopyable>
         , is_same<T3,noncopyable>
@@ -530,7 +530,7 @@ namespace detail
     template <class T, class Prev>
     struct select_held_type
         : mpl::if_<
-             mpl::logical_or<
+             mpl::or_<
                  specifies_bases<T>
                , is_same<T,noncopyable>
             >

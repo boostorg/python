@@ -15,7 +15,7 @@
 # endif
 
 # include <boost/config.hpp>
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 
 namespace boost { namespace python {
 
@@ -40,13 +40,13 @@ inline pointer_wrapper<T> ptr(T t)
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template<typename T>
 class is_pointer_wrapper
-    : public mpl::false_c
+    : public mpl::false_
 {
 };
 
 template<typename T>
 class is_pointer_wrapper<pointer_wrapper<T> >
-    : public mpl::true_c
+    : public mpl::true_
 {
 };
 
@@ -110,7 +110,7 @@ class is_pointer_wrapper
         bool, value = (
         sizeof(detail::is_pointer_wrapper_test(boost::type<T>()))
             == sizeof(detail::yes_pointer_wrapper_t)));
-    typedef mpl::bool_c<value> type;
+    typedef mpl::bool_<value> type;
 };
 
 template <typename T>

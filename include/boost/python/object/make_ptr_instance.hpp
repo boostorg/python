@@ -41,14 +41,14 @@ struct make_ptr_instance
     }
     
     template <class U>
-    static inline PyTypeObject* get_derived_class_object(mpl::true_c, U const volatile* x)
+    static inline PyTypeObject* get_derived_class_object(mpl::true_, U const volatile* x)
     {
         converter::registration const* r = converter::registry::query(type_info(typeid(*x)));
         return r ? r->m_class_object : 0;
     }
     
     template <class U>
-    static inline PyTypeObject* get_derived_class_object(mpl::false_c, U*)
+    static inline PyTypeObject* get_derived_class_object(mpl::false_, U*)
     {
         return 0;
     }

@@ -18,9 +18,9 @@
 
 # include <boost/type.hpp>
 
-# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/bool.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/logical/or.hpp>
+# include <boost/mpl/or.hpp>
 
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/is_base_and_derived.hpp>
@@ -49,7 +49,7 @@ namespace detail
   // constructor. Normally this means U is a virtual function
   // dispatcher subclass for T.
   template <class T, class U>
-  void check_default_constructible(T*, U*, mpl::bool_c<true>)
+  void check_default_constructible(T*, U*, mpl::bool_<true>)
   {
       python::detail::force_instantiate(
           sizeof(specify_init_arguments_or_no_init_for_class_<T>(U((::PyObject*)0)))
@@ -59,7 +59,7 @@ namespace detail
   // Handles the "normal" case where T is held directly and
   // has_back_reference<T> is not specialized.
   template <class T>
-  void check_default_constructible(T*, T*, mpl::bool_c<false>)
+  void check_default_constructible(T*, T*, mpl::bool_<false>)
   {
       python::detail::force_instantiate(
           sizeof(specify_init_arguments_or_no_init_for_class_<T>(T()))
@@ -94,7 +94,7 @@ namespace detail
 
       static void assert_default_constructible()
       {
-          detail::check_default_constructible((T*)0,(Held*)0,mpl::bool_c<back_ref>());
+          detail::check_default_constructible((T*)0,(Held*)0,mpl::bool_<back_ref>());
       }
   
       typedef typename mpl::if_c<
@@ -116,7 +116,7 @@ namespace detail
       
       static void assert_default_constructible()
       {
-          detail::check_default_constructible((T*)0,(pointee*)0,mpl::bool_c<back_ref>());
+          detail::check_default_constructible((T*)0,(pointee*)0,mpl::bool_<back_ref>());
       }
   
       typedef typename mpl::if_c<
@@ -127,13 +127,13 @@ namespace detail
       
       static inline void register_()
       {
-          select_pointer_holder::register_(mpl::bool_c<back_ref>());
+          select_pointer_holder::register_(mpl::bool_<back_ref>());
       }
 
       static type* get() { return 0; }
       
    private:
-      static inline void register_(mpl::true_c)
+      static inline void register_(mpl::true_)
       {
       }
 
@@ -145,7 +145,7 @@ namespace detail
           }
       };
       
-      static inline void register_(mpl::false_c)
+      static inline void register_(mpl::false_)
       {
           python::detail::force_instantiate(
               objects::class_value_wrapper<Ptr, make_ptr_instance<T,type> >());
@@ -212,7 +212,7 @@ struct select_holder
         is_same<Held, python::detail::not_specified>
       , detail::select_value_holder<T,T>
       , typename mpl::if_<
-            mpl::logical_or<
+            mpl::or_<
                 is_same<T,Held>
               , is_base_and_derived<T, Held>
             >

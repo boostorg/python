@@ -21,7 +21,7 @@
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/push_front.hpp>
 #include <boost/mpl/iterator_range.hpp>
-#include <boost/mpl/logical/not.hpp>
+#include <boost/mpl/not.hpp>
 
 # include <boost/python/detail/mpl_lambda.hpp>
 
@@ -30,7 +30,7 @@
 #include <boost/mpl/find_if.hpp>
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/pop_front.hpp>
-#include <boost/mpl/bool_c.hpp>
+#include <boost/mpl/bool.hpp>
 
 #include <boost/type_traits/is_same.hpp>
 
@@ -104,7 +104,7 @@ namespace detail
         BOOST_STATIC_CONSTANT(
             bool, value =
                 sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
-        typedef mpl::bool_c<value> type;
+        typedef mpl::bool_<value> type;
 
         BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
     };
@@ -127,7 +127,7 @@ namespace detail
     template <class T>
     struct is_optional : is_optional_impl<T>
     {
-        typedef mpl::bool_c<is_optional_impl<T>::value> type;
+        typedef mpl::bool_<is_optional_impl<T>::value> type;
         BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
     };
     #endif // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)

@@ -31,7 +31,7 @@
 # include <boost/type_traits/function_traits.hpp>
 
 
-# include <boost/mpl/logical/or.hpp>
+# include <boost/mpl/or.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -116,7 +116,7 @@ namespace detail
             , shared_ptr_arg_to_python<T>
       
             , typename mpl::if_<
-                mpl::logical_or<
+                mpl::or_<
                     is_function<T>
                   , python::detail::is_pointer_to_function<T>
                   , is_member_function_pointer<T>

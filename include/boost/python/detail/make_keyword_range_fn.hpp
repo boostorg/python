@@ -25,7 +25,7 @@ template <class F, class Policies>
 object make_keyword_range_function(F f, Policies const& policies, keyword_range const& kw)
 {
     return detail::make_function_aux(
-        f, policies, args_from_python(), detail::get_signature(f), kw, mpl::int_c<0>());
+        f, policies, args_from_python(), detail::get_signature(f), kw, mpl::int_<0>());
 }
 
 // Builds an '__init__' function which inserts the given Holder type

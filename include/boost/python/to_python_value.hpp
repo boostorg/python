@@ -21,7 +21,7 @@
 # include <boost/type_traits/transform_traits.hpp>
 
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/logical/or.hpp>
+# include <boost/mpl/or.hpp>
 
 namespace boost { namespace python { 
 
@@ -80,7 +80,7 @@ struct to_python_value
           detail::value_is_shared_ptr<T>
         , detail::shared_ptr_to_python_value<T>
         , typename mpl::if_<
-              mpl::logical_or<
+              mpl::or_<
                   converter::is_object_manager<T>
                 , converter::is_reference_to_object_manager<T>
               >

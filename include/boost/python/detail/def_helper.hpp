@@ -10,9 +10,9 @@
 # include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/logical/not.hpp>
-# include <boost/mpl/logical/and.hpp>
-# include <boost/mpl/logical/or.hpp>
+# include <boost/mpl/not.hpp>
+# include <boost/mpl/and.hpp>
+# include <boost/mpl/or.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/mpl/lambda.hpp>
 # include <boost/mpl/apply.hpp>
@@ -98,8 +98,8 @@ namespace detail
   struct doc_extract
       : tuple_extract<
         Tuple
-        , mpl::logical_not<
-           mpl::logical_or<
+        , mpl::not_<
+           mpl::or_<
               is_reference_to_class<mpl::_1>
               , is_reference_to_member_function_pointer<mpl::_1 >
            >
@@ -118,10 +118,10 @@ namespace detail
   struct policy_extract
       : tuple_extract<
           Tuple
-          , mpl::logical_and<
-             mpl::logical_not<is_same<not_specified const&,mpl::_1> >
+          , mpl::and_<
+             mpl::not_<is_same<not_specified const&,mpl::_1> >
                , is_reference_to_class<mpl::_1 >
-               , mpl::logical_not<is_reference_to_keywords<mpl::_1 > >
+               , mpl::not_<is_reference_to_keywords<mpl::_1 > >
           >
         >
   {

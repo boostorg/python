@@ -7,7 +7,7 @@
 # define COPY_CTOR_MUTATES_RHS_DWA2003219_HPP
 
 #include <boost/python/detail/is_auto_ptr.hpp>
-#include <boost/mpl/bool_c.hpp>
+#include <boost/mpl/bool.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
