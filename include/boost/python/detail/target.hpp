@@ -3,87 +3,36 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef TARGET_DWA2002513_HPP
-# define TARGET_DWA2002513_HPP
+#ifndef TARGET_DWA2002521_HPP
+# define TARGET_DWA2002521_HPP
 
+# include <boost/python/detail/preprocessor.hpp>
+# include <boost/preprocessor/comma_if.hpp>
+# include <boost/mpl/aux_/preprocessor.hpp>
+# include <boost/preprocessor/comma_if.hpp>
+# include <boost/preprocessor/if.hpp>
 # include <boost/type.hpp>
 
-namespace boost { namespace python { namespace detail {
+namespace boost { namespace python { namespace detail { 
 
-//
-// target(x) - deduce the type of the first argument when bind(x) is
-// invoked.
-//
+# ifndef BOOST_PYTHON_GENERATE_CODE
+#  include <boost/python/preprocessed/target.hpp>
+# endif 
 
-// functions
-template <class Target, class R>
-boost::type<Target>* target(R (*)(Target)) { return 0; }
+#  define BOOST_PYTHON_FIRST_ARGUMENT_PF(args, ignored)                                         \
+template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
+boost::type<BOOST_PP_IF(args, A0, void)>* target(BOOST_PYTHON_FN(*,0,args)) { return 0; }
 
-template <class Target, class R, class A1>
-boost::type<Target>* target(R (*)(Target, A1)) { return 0; }
-  
-template <class Target, class R, class A1, class A2>
-boost::type<Target>* target(R (*)(Target, A1, A2)) { return 0; }
-  
-template <class Target, class R, class A1, class A2, class A3>
-boost::type<Target>* target(R (*)(Target, A1, A2, A3)) { return 0; }
+#  define BOOST_PYTHON_FIRST_ARGUMENT_PMF(args, cv)                                     \
+template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>                     \
+boost::type<A0 cv()*>* target(BOOST_PYTHON_FN(A0::*,1,args)cv()) { return 0; }
 
-// data member pointers
-template <class Target, class R>
-boost::type<Target&>* target(R (Target::*)) { return 0; }
+BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PF, nil)
+BOOST_PYTHON_REPEAT_MF_CV_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PMF)
 
-// member Functions
-template <class Target, class R>
-boost::type<Target&>* target(R (Target::*)()) { return 0; }
-
-template <class Target, class R, class A1>
-boost::type<Target&>* target(R (Target::*)(A1)) { return 0; }
-
-template <class Target, class R, class A1, class A2>
-boost::type<Target&>* target(R (Target::*)(A1,A2)) { return 0; }
-
-template <class Target, class R, class A1, class A2, class A3>
-boost::type<Target&>* target(R (Target::*)(A1,A2,A3)) { return 0; }
-
-// const member functions
-template <class Target, class R>
-boost::type<Target const&>* target(R (Target::*)() const) { return 0; }
-
-template <class Target, class R, class A1>
-boost::type<Target const&>* target(R (Target::*)(A1) const) { return 0; }
-
-template <class Target, class R, class A1, class A2>
-boost::type<Target const&>* target(R (Target::*)(A1,A2) const) { return 0; }
-
-template <class Target, class R, class A1, class A2, class A3>
-boost::type<Target const&>* target(R (Target::*)(A1,A2,A3) const) { return 0; }
-
-// volatile member functions
-template <class Target, class R>
-boost::type<Target volatile&>* target(R (Target::*)() volatile) { return 0; }
-
-template <class Target, class R, class A1>
-boost::type<Target volatile&>* target(R (Target::*)(A1) volatile) { return 0; }
-
-template <class Target, class R, class A1, class A2>
-boost::type<Target volatile&>* target(R (Target::*)(A1,A2) volatile) { return 0; }
-
-template <class Target, class R, class A1, class A2, class A3>
-boost::type<Target volatile&>* target(R (Target::*)(A1,A2,A3) volatile) { return 0; }
-
-// const volatile member functions
-template <class Target, class R>
-boost::type<Target const volatile&>* target(R (Target::*)() const volatile) { return 0; }
-
-template <class Target, class R, class A1>
-boost::type<Target const volatile&>* target(R (Target::*)(A1) const volatile) { return 0; }
-
-template <class Target, class R, class A1, class A2>
-boost::type<Target const volatile&>* target(R (Target::*)(A1,A2) const volatile) { return 0; }
-
-template <class Target, class R, class A1, class A2, class A3>
-boost::type<Target const volatile&>* target(R (Target::*)(A1,A2,A3) const volatile) { return 0; }
+template <class R, class T>
+boost::type<T*>* target(R (T::*)) { return 0; }
 
 }}} // namespace boost::python::detail
 
-#endif // TARGET_DWA2002513_HPP
+#endif // TARGET_DWA2002521_HPP

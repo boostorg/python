@@ -119,7 +119,7 @@ namespace detail
 
       // Check the registry. If one is already registered, return it.
       ref result(
-          objects::registered_class_object(converter::undecorated_type_id<range_>()));
+          objects::registered_class_object(python::type_id<range_>()));
         
       if (result.get() == 0)
       {
@@ -189,7 +189,7 @@ namespace detail
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
 inline ref make_iterator_function(
     Accessor1 const& get_start, Accessor2 const& get_finish
-    , NextPolicies* , boost::type<Target>*)
+    , boost::type<Target>* = 0, NextPolicies* = 0)
 {
     typedef typename Accessor1::result_type result_type;
       
