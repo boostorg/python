@@ -21,6 +21,15 @@ header = '''//  (C) Copyright David Abrahams 2001. Permission to copy, use, modi
 
 _cv_qualifiers = ('', ' const', ' volatile', ' const volatile')
 
+_suffix = {
+    '': '''
+// Metrowerks thinks this creates ambiguities
+# if !defined(__MWERKS__) || __MWERKS__ > 0x2406
+''', ' const volatile': '''
+# endif // __MWERKS__
+'''
+    };
+
 def gen_arg_tuple_size(member_function_args, free_function_args = None):
     if free_function_args is None:
         free_function_args = member_function_args + 1
@@ -53,14 +62,20 @@ struct arg_tuple_size<R (*)(%(A%+%:, %))>
 ''', free_function_args)
 
             + '\n'
-            + gen_functions(
+
+            + reduce(lambda x,y: x+'\n'+y
+                   , map(
+        lambda cv: gen_functions(
 '''template <class R, class A0%(, class A%+%)>
 struct arg_tuple_size<R (A0::*)(%(A%+%:, %))%1>
 {
     BOOST_STATIC_CONSTANT(std::size_t, value = %+);
 };
 
-''', member_function_args, '')
+'''
+        , member_function_args, cv) + _suffix.get(cv, '')
+        , _cv_qualifiers))
+
             +
 '''# else
 

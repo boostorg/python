@@ -99,6 +99,122 @@ struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5)>
     BOOST_STATIC_CONSTANT(std::size_t, value = 6);
 };
 
+
+// Metrowerks thinks this creates ambiguities
+# if !defined(__MWERKS__) || __MWERKS__ > 0x2406
+
+template <class R, class A0>
+struct arg_tuple_size<R (A0::*)() const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+};
+
+template <class R, class A0, class A1>
+struct arg_tuple_size<R (A0::*)(A1) const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 2);
+};
+
+template <class R, class A0, class A1, class A2>
+struct arg_tuple_size<R (A0::*)(A1, A2) const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 3);
+};
+
+template <class R, class A0, class A1, class A2, class A3>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3) const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 4);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4) const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 5);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4, class A5>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5) const>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 6);
+};
+
+
+template <class R, class A0>
+struct arg_tuple_size<R (A0::*)() volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+};
+
+template <class R, class A0, class A1>
+struct arg_tuple_size<R (A0::*)(A1) volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 2);
+};
+
+template <class R, class A0, class A1, class A2>
+struct arg_tuple_size<R (A0::*)(A1, A2) volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 3);
+};
+
+template <class R, class A0, class A1, class A2, class A3>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3) volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 4);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4) volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 5);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4, class A5>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5) volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 6);
+};
+
+
+template <class R, class A0>
+struct arg_tuple_size<R (A0::*)() const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 1);
+};
+
+template <class R, class A0, class A1>
+struct arg_tuple_size<R (A0::*)(A1) const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 2);
+};
+
+template <class R, class A0, class A1, class A2>
+struct arg_tuple_size<R (A0::*)(A1, A2) const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 3);
+};
+
+template <class R, class A0, class A1, class A2, class A3>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3) const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 4);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4) const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 5);
+};
+
+template <class R, class A0, class A1, class A2, class A3, class A4, class A5>
+struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5) const volatile>
+{
+    BOOST_STATIC_CONSTANT(std::size_t, value = 6);
+};
+
+
+# endif // __MWERKS__
 # else
 
 // We will use the "sizeof() trick" to work around the lack of
