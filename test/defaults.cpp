@@ -91,6 +91,10 @@ struct X {
     : state(format % make_tuple(a, b, c, d))
     {}
 
+    X(std::string s, bool b)
+    : state("Got exactly two arguments from constructor: string(%s); bool(%s); " % make_tuple(s, b))
+    {}
+
     object
     bar(int a, char b = 'D', std::string c = "default", double d = 0.0) const
     {
@@ -162,11 +166,13 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
 
 # if (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
         .def(init<int, optional<char, std::string, double> >())
+        .def(init<std::string, bool>())
 # else
         .def_init(args<int>())
         .def_init(args<int, char>())
         .def_init(args<int, char, std::string>())
         .def_init(args<int, char, std::string, double>())
+        .def_init(args<std::string, bool>())
 # endif
         .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())

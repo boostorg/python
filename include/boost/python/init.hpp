@@ -262,7 +262,7 @@ namespace detail {
     struct count_optionals2 {
 
         BOOST_STATIC_CONSTANT(
-            int, value = boost::mpl::size<typename T::sequence>::value);
+            int, value = boost::mpl::size<typename T::sequence>::value + 1);
     };
 
     template <class T>
@@ -407,9 +407,8 @@ template <class ClassT, class CallPoliciesT, class InitT>
 void
 define_init(ClassT& cl, InitT const& i, CallPoliciesT const& policies, char const* doc)
 {
-    enum { n_defaults_plus_1 = InitT::n_defaults + 1 };
     typedef typename InitT::sequence args_t;
-    detail::define_class_init_helper<n_defaults_plus_1>::apply(cl, policies, args_t(), doc);
+    detail::define_class_init_helper<InitT::n_defaults>::apply(cl, policies, args_t(), doc);
 }
 
 }} // namespace boost::python

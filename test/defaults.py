@@ -66,6 +66,9 @@
 'int(1); char(K); string(Kim); double(0.0); '
 >>> x.bar2(1, 'K', "Kim", 9.9).get_state()
 'int(1); char(K); string(Kim); double(9.9); '
+>>> x = X("Phoenix", 1)
+>>> x.get_state()
+'Got exactly two arguments from constructor: string(Phoenix); bool(1); '
 
 """
 def run(args = None):
