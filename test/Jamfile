@@ -51,7 +51,8 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
-bpl-test test_vector_shared : test_vector_shared.py test_vector_shared_ext.cpp ;
+bpl-test test_indexing_const ;
+bpl-test test_vector_shared ;
 bpl-test test_array        : test_array.py        test_array_ext.cpp  ;
 bpl-test test_array_ref    : test_array_ref.py    test_array_ext.cpp  ;
 bpl-test test_vector_plain : test_vector_plain.py test_vector_ext.cpp ;
