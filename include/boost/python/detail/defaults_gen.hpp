@@ -10,6 +10,7 @@
 #ifndef DEFAULTS_GEN_JDG20020807_HPP
 #define DEFAULTS_GEN_JDG20020807_HPP
 
+#include <boost/python/detail/preprocessor.hpp>
 #include <boost/preprocessor/repeat.hpp>
 #include <boost/preprocessor/enum.hpp>
 #include <boost/preprocessor/enum_params.hpp>
@@ -44,30 +45,21 @@ struct func_stubs_base {};
         SigT                                                                    \
     >::type BOOST_PP_CAT(T, INDEX);                                             \
 
-#define BPL_IMPL_ARGS_GEN(z, INDEX, DATA)                                       \
-    BOOST_PP_CAT(T, INDEX) BOOST_PP_CAT(arg, INDEX)                             \
-
-#define BPL_IMPL_FUNC_WRAPPER_GEN(z, INDEX, DATA)                               \
-    static RT BOOST_PP_CAT(func_, INDEX)                                        \
-    (                                                                           \
-        BOOST_PP_ENUM                                                           \
-        (                                                                       \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),               \
-            BPL_IMPL_ARGS_GEN,                                                  \
-            BOOST_PP_EMPTY                                                      \
-        )                                                                       \
-    )                                                                           \
-    {                                                                           \
-        BOOST_PP_TUPLE_ELEM(3, 2, DATA)                                         \
-        BOOST_PP_TUPLE_ELEM(3, 0, DATA)                                         \
-        (                                                                       \
-            BOOST_PP_ENUM_PARAMS                                                \
-            (                                                                   \
-                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),           \
-                arg                                                             \
-            )                                                                   \
-        );                                                                      \
-    }                                                                           \
+#define BPL_IMPL_FUNC_WRAPPER_GEN(z, index, DATA)                                       \
+    static RT BOOST_PP_CAT(func_, index) (                                              \
+        BOOST_PYTHON_BINARY_ENUM(                                                       \
+            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)               \
+        )                                                                               \
+    {                                                                                   \
+        BOOST_PP_TUPLE_ELEM(3, 2, DATA)                                                 \
+        BOOST_PP_TUPLE_ELEM(3, 0, DATA)                                                 \
+        (                                                                               \
+            BOOST_PP_ENUM_PARAMS(                                                       \
+                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index),                   \
+                arg                                                                     \
+            )                                                                           \
+        );                                                                              \
+    }
 
 #define BPL_IMPL_GEN_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)      \
     struct FSTUBS_NAME {                                                        \
@@ -97,29 +89,20 @@ struct func_stubs_base {};
     };                                                                          \
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(z, INDEX, DATA)                           \
-    static RT BOOST_PP_CAT(func_, INDEX)                                        \
-    (                                                                           \
+#define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(z, index, DATA)                           \
+    static RT BOOST_PP_CAT(func_, index) (                                      \
         ClassT& obj BOOST_PP_COMMA_IF(                                          \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX))               \
-        BOOST_PP_ENUM                                                           \
-        (                                                                       \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),               \
-            BPL_IMPL_ARGS_GEN,                                                  \
-            BOOST_PP_EMPTY                                                      \
+            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index))               \
+        BOOST_PYTHON_BINARY_ENUM(                                               \
+            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)       \
         )                                                                       \
-    )                                                                           \
     {                                                                           \
-        BOOST_PP_TUPLE_ELEM(3, 2, DATA) obj.                                    \
-        BOOST_PP_TUPLE_ELEM(3, 0, DATA)                                         \
-        (                                                                       \
-            BOOST_PP_ENUM_PARAMS                                                \
-            (                                                                   \
-                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),           \
-                arg                                                             \
+        BOOST_PP_TUPLE_ELEM(3, 2, DATA) obj.BOOST_PP_TUPLE_ELEM(3, 0, DATA)(    \
+            BOOST_PP_ENUM_PARAMS(                                               \
+                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), arg       \
             )                                                                   \
         );                                                                      \
-    }                                                                           \
+    }
 
 #define BPL_IMPL_GEN_MEM_FUNCTION(FNAME, FSTUBS_NAME, N_ARGS, N_DFLTS, RETURN)          \
     struct FSTUBS_NAME {                                                                \
