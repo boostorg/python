@@ -18,6 +18,8 @@
 
 # include <boost/mpl/for_each.hpp>
 
+# include <boost/detail/workaround.hpp>
+
 namespace boost { namespace python { namespace objects { 
 
 //////////////////////////////////////////////////////////////////////
@@ -76,8 +78,9 @@ struct register_base_of
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
-    python::detail::force_instantiate(converter::shared_ptr_from_python<Derived>::registration);
-    
+    // Static object constructor performs registration
+    static converter::shared_ptr_from_python<Derived> shared_ptr_registration;
+
     // register all up/downcasts here
     register_dynamic_id<Derived>();
 

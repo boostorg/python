@@ -19,7 +19,6 @@ struct shared_ptr_from_python
         converter::registry::insert(&convertible, &construct, type_id<shared_ptr<T> >());
     }
 
-    static shared_ptr_from_python const registration;
  private:
     static void* convertible(PyObject* p)
     {
@@ -44,9 +43,6 @@ struct shared_ptr_from_python
         data->convertible = storage;
     }
 };
-
-template <class T>
-shared_ptr_from_python<T> const shared_ptr_from_python<T>::registration;
 
 }}} // namespace boost::python::converter
 
