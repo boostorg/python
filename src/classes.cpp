@@ -92,26 +92,41 @@ namespace {
       ref getstate(PyObject_GetAttrString(obj, const_cast<char*>("__getstate__")),
                    ref::null_ok);
       PyErr_Clear();
+
+      ref dict(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
+      PyErr_Clear();
+
       if (getstate.get() != 0)
       {
+          if (dict.get() != 0 && dictionary(dict).size() > 0)
+          {
+              ref getstate_manages_dict(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__getstate_manages_dict__")), ref::null_ok);
+              PyErr_Clear();
+              if (getstate_manages_dict.get() == 0)
+              {
+                  PyErr_SetString(PyExc_RuntimeError, "__getstate_manages_dict__ not defined");
+                  throw error_already_set();
+              }
+          }
+
           ref state = ref(PyEval_CallObject(getstate.get(), NULL));
           return tuple(instance_class, initargs, state);
       }
 
-      if (getinitargs.get() == 0) {
-        ref auto_pickle(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__auto_pickle__")), ref::null_ok);
-        PyErr_Clear();
-        if (auto_pickle.get() == 0) {
-            PyErr_SetString(PyExc_AttributeError, "auto_pickle not enabled");
-            throw error_already_set();
-        }
+      if (getinitargs.get() == 0)
+      {
+          ref dict_defines_state(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__dict_defines_state__")), ref::null_ok);
+          PyErr_Clear();
+          if (dict_defines_state.get() == 0)
+          {
+              PyErr_SetString(PyExc_RuntimeError, "__dict_defines_state__ not defined");
+              throw error_already_set();
+          }
       }
 
-      ref state(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
-      PyErr_Clear();
-      if (state.get() != 0 && dictionary(state).size() > 0)
+      if (dict.get() != 0 && dictionary(dict).size() > 0)
       {
-          return tuple(instance_class, initargs, state);
+          return tuple(instance_class, initargs, dict);
       }
 
       return tuple(instance_class, initargs);
