@@ -11,6 +11,9 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/same_traits.hpp>
+# include <boost/python/detail/preprocessor.hpp>
+# include <boost/mpl/aux_/preprocessor.hpp>
+# include <boost/preprocessor/comma_if.hpp>
 
 namespace boost { namespace python
 {
@@ -23,192 +26,41 @@ struct caller
 {
     typedef PyObject* result_type;
     
-    template <class P, class R>
-    PyObject* operator()(R (*f)(), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
+# ifndef BOOST_PYTHON_GENERATE_CODE
+#  include <boost/python/preprocessed/caller.hpp>
+# endif
 
-    template <class P, class R, class A0>
-    PyObject* operator()(R (*f)(A0), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
+# define BOOST_PYTHON_CALLER_PF(args_, ignored)                                 \
+template <                                                                      \
+    class P                                                                     \
+  , class R                                                                     \
+    BOOST_PP_COMMA_IF(args_) BOOST_MPL_TEMPLATE_PARAMETERS(0, args_, class A)   \
+  >                                                                             \
+PyObject* operator()(                                                           \
+    BOOST_PYTHON_NAMED_PF(f,args_)                                              \
+  , PyObject* args, PyObject* keywords                                          \
+  , P const& policies                                                           \
+  ) const                                                                       \
+{                                                                               \
+    return returning<R>::call(f, args, keywords, policies);                     \
+}
 
-    template <class P, class R, class A0, class A1>
-    PyObject* operator()(R (*f)(A0, A1), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2>
-    PyObject* operator()(R (*f)(A0, A1, A2), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3>
-    PyObject* operator()(R (*f)(A0, A1, A2, A3), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4>
-    PyObject* operator()(R (*f)(A0, A1, A2, A3, A4), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4, class A5>
-    PyObject* operator()(R (*f)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
+BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CALLER_PF, nil)
 
 // Member functions
-    template <class P, class R, class A0>
-    PyObject* operator()(R (A0::*f)(), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
+# define BOOST_PYTHON_CALLER_PMF(args_, cv)                                     \
+template <class P, class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args_, class A)>   \
+PyObject* operator()(                                                           \
+    BOOST_PYTHON_NAMED_PMF(f,args_,cv)                                          \
+  , PyObject* args, PyObject* keywords                                          \
+  , P const& policies                                                           \
+  ) const                                                                       \
+{                                                                               \
+    return returning<R>::call(f, args, keywords, policies);                     \
+}
 
-    template <class P, class R, class A0, class A1>
-    PyObject* operator()(R (A0::*f)(A1), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2>
-    PyObject* operator()(R (A0::*f)(A1, A2), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4, class A5>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4, A5), PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0>
-    PyObject* operator()(R (A0::*f)() const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1>
-    PyObject* operator()(R (A0::*f)(A1) const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2>
-    PyObject* operator()(R (A0::*f)(A1, A2) const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3) const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4) const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4, class A5>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4, A5) const, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0>
-    PyObject* operator()(R (A0::*f)() volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1>
-    PyObject* operator()(R (A0::*f)(A1) volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2>
-    PyObject* operator()(R (A0::*f)(A1, A2) volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3) volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4) volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4, class A5>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4, A5) volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0>
-    PyObject* operator()(R (A0::*f)() const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1>
-    PyObject* operator()(R (A0::*f)(A1) const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2>
-    PyObject* operator()(R (A0::*f)(A1, A2) const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3) const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4) const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
-
-    template <class P, class R, class A0, class A1, class A2, class A3, class A4, class A5>
-    PyObject* operator()(R (A0::*f)(A1, A2, A3, A4, A5) const volatile, PyObject* args, PyObject* keywords, P const& policies) const
-    {
-        return returning<R>::call(f, args, keywords, policies);
-    }
+BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(BOOST_PYTHON_CALLER_PMF)
+    
 };
 
 }}} // namespace boost::python::detail

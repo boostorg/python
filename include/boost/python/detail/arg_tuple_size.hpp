@@ -12,11 +12,10 @@
 # define ARG_TUPLE_SIZE_DWA20011201_HPP
 
 # include <boost/config.hpp>
+# include <boost/python/detail/char_array.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/mpl/aux_/preprocessor.hpp>
-# include <boost/python/detail/char_array.hpp>
 # include <boost/preprocessor/comma_if.hpp>
-# include <boost/preprocessor/list/for_each.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -26,26 +25,26 @@ namespace boost { namespace python { namespace detail {
 template <class F> struct arg_tuple_size;
 
 // Include the pre-expanded version of the code
-# if BOOST_PYTHON_DEBUGGABLE_ARITY
+# ifndef BOOST_PYTHON_GENERATE_CODE
 #  include <boost/python/preprocessed/arg_tuple_size.hpp>
 # endif 
 
 # if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 // Specializations for function pointers
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>    \
-struct arg_tuple_size<BOOST_PYTHON_PF(args)>                           \
-{                                                                       \
-    BOOST_STATIC_CONSTANT(std::size_t, value = args);                  \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
+template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
+struct arg_tuple_size<BOOST_PYTHON_PF(args)>                                                  \
+{                                                                                               \
+    BOOST_STATIC_CONSTANT(std::size_t, value = args);                                           \
 };
 
 // Specializations for member function pointers
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF1(args, cv)                \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)> \
-struct arg_tuple_size<BOOST_PYTHON_PMF(args,cv)>                    \
-{                                                                   \
-    BOOST_STATIC_CONSTANT(std::size_t, value = args);               \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                     \
+template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>     \
+struct arg_tuple_size<BOOST_PYTHON_PMF(args,cv)>                      \
+{                                                                       \
+    BOOST_STATIC_CONSTANT(std::size_t, value = args);                   \
 };
 
 # else
@@ -61,11 +60,11 @@ struct arg_tuple_size<BOOST_PYTHON_PMF(args,cv)>                    \
 // their return value is used to discriminate between various free
 // and member function pointers at compile-time.
 
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>    \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
+template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
 char_array<args> arg_tuple_size_helper(BOOST_PYTHON_PF(args));
 
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF1(args, cv)                \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                 \
 template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)> \
 char_array<args> arg_tuple_size_helper(BOOST_PYTHON_PMF(args,cv));
     
@@ -73,12 +72,9 @@ char_array<args> arg_tuple_size_helper(BOOST_PYTHON_PMF(args,cv));
 
 BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_ARG_TUPLE_SIZE_PF, nil)
     
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(index, ignored, cv)  \
-   BOOST_PYTHON_REPEAT_MF_ARITY_2ND(BOOST_PYTHON_ARG_TUPLE_SIZE_PMF1,cv)
-
-// Generate a series for each cv-qualification    
-BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_ARG_TUPLE_SIZE_PMF,nil,BOOST_PYTHON_MEMBER_FUNCTION_CV)
-
+// Generate a series for each cv-qualification
+BOOST_PYTHON_REPEAT_MF_CV_2ND(BOOST_PYTHON_ARG_TUPLE_SIZE_PMF)
+    
 # if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) || defined(__BORLANDC__)
 template <class F>
 struct arg_tuple_size

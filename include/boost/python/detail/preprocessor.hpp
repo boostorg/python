@@ -8,9 +8,11 @@
 
 # include <boost/config.hpp>
 # include <boost/preprocessor/tuple/to_list.hpp>
+# include <boost/preprocessor/list/for_each.hpp>
 # include <boost/preprocessor/repeat_from_to_2nd.hpp>
 # include <boost/preprocessor/inc.hpp>
 # include <boost/preprocessor/empty.hpp>
+# include <boost/preprocessor/expr_if.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -18,15 +20,16 @@ namespace boost { namespace python { namespace detail {
 # define BOOST_PYTHON_VOLATILE() volatile
 # define BOOST_PYTHON_CONST_VOLATILE() const volatile
 
-# if !defined(__MWERKS__) || __MWERKS__ > 0x2407
-#  define BOOST_PYTHON_MEMBER_FUNCTION_CV \
-     BOOST_PP_TUPLE_TO_LIST(4, (BOOST_PP_EMPTY \
-                                 , BOOST_PYTHON_CONST \
-                                 , BOOST_PYTHON_VOLATILE \
+#  define BOOST_PYTHON_ALL_CV                                           \
+     BOOST_PP_TUPLE_TO_LIST(4, (BOOST_PP_EMPTY                          \
+                                 , BOOST_PYTHON_CONST                   \
+                                 , BOOST_PYTHON_VOLATILE                \
                                  , BOOST_PYTHON_CONST_VOLATILE))
+
+# if !defined(__MWERKS__) || __MWERKS__ > 0x2407
+#  define BOOST_PYTHON_MEMBER_FUNCTION_CV BOOST_PYTHON_ALL_CV
 # else
-#  define BOOST_PYTHON_MEMBER_FUNCTION_CV \
-     BOOST_PP_TUPLE_TO_LIST(1, (BOOST_PP_EMPTY))
+#  define BOOST_PYTHON_MEMBER_FUNCTION_CV BOOST_PP_TUPLE_TO_LIST(1, (BOOST_PP_EMPTY))
 # endif 
 
 #ifndef BOOST_PYTHON_DEBUGGABLE_ARITY
@@ -58,14 +61,36 @@ namespace boost { namespace python { namespace detail {
 # define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
 #endif 
 
-# define BOOST_PYTHON_PF(Count)         R(*)(BOOST_MPL_TEMPLATE_PARAMETERS(0,Count,A))
-# define BOOST_PYTHON_PMF(Count, cv)    R(A0::*)(BOOST_MPL_TEMPLATE_PARAMETERS(1,Count,A))cv()
+# define BOOST_PYTHON_NAMED_PF(f,Count) \
+    R(*f)(BOOST_MPL_TEMPLATE_PARAMETERS(0,Count,A))
 
-# define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data) \
-    BOOST_PP_REPEAT_FROM_TO_2ND(BOOST_PYTHON_ARITY_START, BOOST_PYTHON_ARITY_FINISH, function, data)
+# define BOOST_PYTHON_NAMED_PMF(f, Count, cv) \
+   R(A0::*f)(BOOST_MPL_TEMPLATE_PARAMETERS(1,Count,A))cv()
 
-# define BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,data) \
-    BOOST_PP_REPEAT_FROM_TO_2ND(BOOST_PYTHON_MF_ARITY_START, BOOST_PYTHON_MF_ARITY_FINISH, function, data)
+# define BOOST_PYTHON_PF(Count) \
+    R(*)(BOOST_MPL_TEMPLATE_PARAMETERS(0,Count,A))
+
+# define BOOST_PYTHON_PMF(Count, cv) \
+   R(A0::*)(BOOST_MPL_TEMPLATE_PARAMETERS(1,Count,A))cv()
+
+# define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)           \
+    BOOST_PP_REPEAT_FROM_TO_2ND(                                \
+        BOOST_PYTHON_ARITY_START, BOOST_PYTHON_ARITY_FINISH     \
+        , function, data)
+
+# define BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,data)                \
+    BOOST_PP_REPEAT_FROM_TO_2ND(                                        \
+        BOOST_PYTHON_MF_ARITY_START, BOOST_PYTHON_MF_ARITY_FINISH       \
+        , function, data)
+
+#  define BOOST_PYTHON_REPEAT_PMF_CV(index, function, cv) \
+   BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,cv) 
+
+# define BOOST_PYTHON_REPEAT_MF_CV_2ND(function) \
+   BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_REPEAT_PMF_CV,function,BOOST_PYTHON_MEMBER_FUNCTION_CV) 
+
+# define BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(function) \
+   BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_REPEAT_PMF_CV,function,BOOST_PYTHON_ALL_CV)
 
 
 }}} // namespace boost::python::detail
