@@ -39,7 +39,7 @@ struct from_python<PyObject* const&>
 // implementations
 //
 template <class T>
-from_python<T>::from_python(PyObject* source)
+inline from_python<T>::from_python(PyObject* source)
     : base(source)
 {
 }
