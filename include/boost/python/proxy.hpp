@@ -11,7 +11,7 @@
 namespace boost { namespace python { namespace api {
 
 template <class Policies>
-class proxy
+class proxy : public object_operators<proxy<Policies> >
 {
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
     typedef proxy const& copy_ctor_self;
@@ -19,6 +19,7 @@ class proxy
     typedef proxy copy_ctor_self;
 # endif
  public:
+    proxy(object const& target, object const& key);
     operator object() const;
 
     // to support a[b] = c[d]
@@ -30,14 +31,6 @@ class proxy
         Policies::set(m_target, m_key, python::object(rhs));
         return *this;
     }
-
-    // truth value testing
-    operator object::bool_type() const;
-    bool operator!() const; // needed for vc6
-    
- private:
-    friend class object;
-    proxy(object const& target, object const& key);
     
  private:
     object m_target;
@@ -85,18 +78,6 @@ BOOST_PYTHON_PROXY_INPLACE(^=)
 BOOST_PYTHON_PROXY_INPLACE(|=)
 # undef BOOST_PYTHON_PROXY_INPLACE
 
-template <class Policies>
-inline proxy<Policies>::operator object::bool_type() const
-{
-    return python::object(*this);
-}
-
-template <class Policies>
-inline bool proxy<Policies>::operator!() const
-{
-    return !python::object(*this);
-}
-    
 }}} // namespace boost::python::api
 
 #endif // PROXY_DWA2002615_HPP

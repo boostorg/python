@@ -25,27 +25,33 @@ struct item_policies : const_item_policies
 //
 // implementation
 //
-inline object_item object::operator[](object::self_cref key)
+template <class U>
+inline object_item
+object_operators<U>::operator[](self_cref key)
 {
-    return object_item(*this, key);
+    return object_item(*static_cast<U*>(this), key);
 }
 
-inline const_object_item object::operator[](object::self_cref key) const
+template <class U>
+inline const_object_item
+object_operators<U>::operator[](self_cref key) const
 {
-    return const_object_item(*this, key);
+    return const_object_item(*static_cast<U const*>(this), key);
 }
 
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+template <class U>
 template <class T>
 inline const_object_item
-object::operator[](T const& key) const
+object_operators<U>::operator[](T const& key) const
 {
     return (*this)[object(key)];
 }
 
+template <class U>
 template <class T>
 inline object_item
-object::operator[](T const& key)
+object_operators<U>::operator[](T const& key)
 {
     return (*this)[object(key)];
 }

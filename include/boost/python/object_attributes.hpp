@@ -25,14 +25,16 @@ struct attribute_policies : const_attribute_policies
 //
 // implementation
 //
-inline object_attribute object::attr(char const* name)
+template <class U>
+inline object_attribute object_operators<U>::attr(char const* name)
 {
-    return object_attribute(*this, object(name));
+    return object_attribute(*static_cast<U*>(this), object(name));
 }
 
-inline const_object_attribute object::attr(char const* name) const
+template <class U>
+inline const_object_attribute object_operators<U>::attr(char const* name) const
 {
-    return const_object_attribute(*this, object(name));
+    return const_object_attribute(*static_cast<U const*>(this), object(name));
 }
 
 

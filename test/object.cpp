@@ -251,6 +251,14 @@ bool check_inplace(object l, object o)
     if (l[4] != o.attr("x4"))
         return false;
 
+    // set item 5 to be a list, by calling l.__class__
+    l[5] = l.attr("__class__")();
+    // append an element
+    l[5].attr("append")(2);
+    // Check its value
+    if (l[5][0] != 2)
+        return false;
+    
     return true;
 }
 
