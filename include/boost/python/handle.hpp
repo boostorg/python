@@ -61,7 +61,7 @@ namespace detail
 template <class T>
 class handle
 {
-    typedef T* (handle::*bool_type);
+    typedef T* (handle::* bool_type )() const;
 
  public: // types
     typedef T element_type;
@@ -112,7 +112,7 @@ class handle
     
     operator bool_type() const // never throws
     {
-        return m_p ? &handle<T>::m_p : 0;
+        return m_p ? &handle<T>::get : 0;
     }
     bool operator! () const; // never throws
 
