@@ -172,7 +172,7 @@ struct A
 struct B : A
 {
     B() : x(1) {}
-    char const* name() { return "B"; }
+    static char const* name(B*) { return "B"; }
     int x;
 };
 
