@@ -22,17 +22,16 @@
 #define BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
 
 #include <boost/config.hpp>
+#include <functional>
 
 namespace boost { namespace python { namespace indexing {
   template<typename T>
   struct value_traits {
     BOOST_STATIC_CONSTANT (bool, equality_comparable = true);
-    // Meaning from C++98 standard section 20.1.1
+    typedef std::equal_to<T> equal_to;
 
     BOOST_STATIC_CONSTANT (bool, lessthan_comparable = true);
-
-    // static bool const has_less = true;
-    // etc...
+    typedef std::less<T> less;
 
     // Default, do-nothing, version of visitor_helper
     template<typename PythonClass, typename Policy>

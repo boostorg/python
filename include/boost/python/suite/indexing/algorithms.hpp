@@ -28,27 +28,11 @@
 #include <boost/mpl/if.hpp>
 #include <boost/limits.hpp>
 #include <algorithm>
+#include <functional>
 #include <stdexcept>
 #include <string>
 
 namespace boost { namespace python { namespace indexing {
-  namespace detail {
-    struct no_override { };
-
-    template<typename Base, typename Override>
-    struct maybe_override
-    {
-      // Probably need to disable this if there is no partial
-      // specialization support, because Override is almost certain to
-      // be an incomplete type. If that is right, the workaround
-      // version would just have to do "typedef Base type;"
-
-      typedef typename mpl::if_
-        <is_same <Override, no_override>, Base, Override>
-        ::type type;
-    };
-  }
-
   template<typename ContainerTraits, typename Ovr = detail::no_override>
   class default_algorithms
   {
@@ -233,7 +217,13 @@ namespace boost { namespace python { namespace indexing {
   default_algorithms<ContainerTraits, Ovr>::find (
       container &c, key_param key)
   {
-    return std::find (most_derived::begin(c), most_derived::end(c), key);
+    typedef typename container_traits::value_traits_ value_traits_;
+    typedef typename value_traits_::equal_to comparison;
+
+    return std::find_if (
+        most_derived::begin(c)
+        , most_derived::end(c)
+        , std::bind1st (comparison(), key));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -268,7 +258,13 @@ namespace boost { namespace python { namespace indexing {
   default_algorithms<ContainerTraits, Ovr>::count (
       container &c, key_param key)
   {
-    return std::count (most_derived::begin(c), most_derived::end(c), key);
+    typedef typename container_traits::value_traits_ value_traits_;
+    typedef typename value_traits_::equal_to comparison;
+
+    return std::count_if (
+        most_derived::begin(c)
+        , most_derived::end(c)
+        , std::bind1st (comparison(), key));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -391,7 +387,9 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr>
   void default_algorithms<ContainerTraits, Ovr>::sort (container &c)
   {
-    std::sort (most_derived::begin(c), most_derived::end(c));
+    typedef typename container_traits::value_traits_ value_traits_;
+    typedef typename value_traits_::less comparison;
+    std::sort (most_derived::begin(c), most_derived::end(c), comparison());
   }
 
   /////////////////////////////////////////////////////////////////////////

@@ -86,6 +86,24 @@ namespace boost { namespace python { namespace indexing {
     typedef __int64 type;
   };
 #endif
+
+  namespace detail {
+    struct no_override { };
+
+    template<typename Base, typename Override>
+    struct maybe_override
+    {
+      // Probably need to disable this if there is no partial
+      // specialization support, because Override is almost certain to
+      // be an incomplete type. If that is right, the workaround
+      // version would just have to do "typedef Base type;"
+
+      typedef typename mpl::if_
+        <is_same <Override, no_override>, Base, Override>
+        ::type type;
+    };
+  }
+
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_SUITE_UTILS_HPP

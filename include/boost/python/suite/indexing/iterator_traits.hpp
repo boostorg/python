@@ -42,13 +42,13 @@ namespace boost { namespace python { namespace indexing {
     typedef ::boost::detail::iterator_traits<Iterator> std_traits;
 
   public:
-    typedef Iterator                                           iterator;
-    typedef BOOST_DEDUCED_TYPENAME std_traits::value_type      value_type;
-    typedef BOOST_DEDUCED_TYPENAME std_traits::reference       reference;
-    typedef BOOST_DEDUCED_TYPENAME std_traits::difference_type difference_type;
+    typedef Iterator                             iterator;
+    typedef typename std_traits::value_type      value_type;
+    typedef typename std_traits::reference       reference;
+    typedef typename std_traits::difference_type difference_type;
 
-    BOOST_STATIC_CONSTANT (bool,   has_copyable_iter = false);
-    BOOST_STATIC_CONSTANT (bool,   is_reorderable    = false);
+    BOOST_STATIC_CONSTANT (bool, has_copyable_iter = false);
+    BOOST_STATIC_CONSTANT (bool, is_reorderable    = false);
     BOOST_STATIC_CONSTANT (
         bool, has_mutable_ref = is_mutable_ref<reference>::value);
 
@@ -121,11 +121,11 @@ namespace boost { namespace python { namespace indexing {
 
     template<typename Iterator>
     class deduced_traits {
-      typedef BOOST_DEDUCED_TYPENAME ::boost::BOOST_ITERATOR_CATEGORY<
-          Iterator>::type category;
+      typedef typename ::boost::BOOST_ITERATOR_CATEGORY<Iterator>::type
+          category;
 
-      typedef BOOST_DEDUCED_TYPENAME ::boost::detail::std_category <
-          category>::type max_category;
+      typedef typename ::boost::detail::std_category<category>::type
+          max_category;
 
     public:
       typedef typename traits_by_category <max_category>

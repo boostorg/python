@@ -24,6 +24,11 @@
 #include <boost/python/suite/indexing/algo_selector.hpp>
 #include <list>
 
+#if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
+# include <boost/static_assert.hpp>
+# include <boost/type_traits.hpp>
+#endif
+
 namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
   // Algorithms implementation for std::list instances
@@ -93,7 +98,20 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr>
   void list_algorithms<ContainerTraits, Ovr>::sort (container &c)
   {
-    c.sort();
+    typedef typename container_traits::value_traits_ value_traits_;
+    typedef typename value_traits_::less comparison;
+#if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
+    // MSVC6 doesn't have a templated sort member in list, so we just
+    // use the parameterless version. This gives the correct behaviour
+    // provided that value_traits_::less is std::less<value_type>. It
+    // would be possible to support std::greater<T> (the only other
+    // overload of list::sort in MSVC6) with some additional work.
+    BOOST_STATIC_ASSERT (
+        (::boost::is_same<comparison, std::less<value_type> >::value));
+    c.sort ();
+#else
+    c.sort (comparison());
+#endif
   }
 } } }
 
