@@ -79,7 +79,7 @@ DEPOBJ= $(OBJ) comprehensive.o abstract.o \
 
 .SUFFIXES: .o .cpp
 
-all: libbpl.a boost_python_test.so abstract.so \
+all: libboost_python.a boost_python_test.so abstract.so \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so
 
@@ -107,13 +107,13 @@ unlink:
 	    fi; \
 	  done
 
-libbpl.a: $(OBJ)
-	rm -f libbpl.a
+libboost_python.a: $(OBJ)
+	rm -f libboost_python.a
 	cd cxx_repository; \
-          ls -1 > ../libbpl.a.input; \
-          ar r ../libbpl.a -input ../libbpl.a.input
-	rm -f libbpl.a.input
-	ar r libbpl.a $(OBJ)
+          ls -1 > ../libboost_python.a.input; \
+          ar r ../libboost_python.a -input ../libboost_python.a.input
+	rm -f libboost_python.a.input
+	ar r libboost_python.a $(OBJ)
 
 boost_python_test.so: $(OBJ) comprehensive.o
 	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o boost_python_test.so -lm
@@ -149,7 +149,7 @@ test:
 	$(PYEXE) test_getting_started5.py
 
 clean:
-	rm -f $(OBJ) libbpl.a libbpl.a.input
+	rm -f $(OBJ) libboost_python.a libboost_python.a.input
 	rm -f comprehensive.o boost_python_test.so
 	rm -f abstract.o abstract.so
 	rm -f getting_started1.o getting_started1.so

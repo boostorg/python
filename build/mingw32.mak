@@ -96,7 +96,7 @@ OBJ = classes.o conversions.o extension_class.o functions.o \
 
 .SUFFIXES: .o .cpp
 
-all: libbpl.a boost_python_test.pyd abstract.pyd \
+all: libboost_python.a boost_python_test.pyd abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
      getting_started4.pyd getting_started5.pyd
 
@@ -136,9 +136,9 @@ rmdefs:
             rm $$def.def; \
 	  done
 
-libbpl.a: $(OBJ)
-	del libbpl.a
-	ar r libbpl.a $(OBJ)
+libboost_python.a: $(OBJ)
+	del libboost_python.a
+	ar r libboost_python.a $(OBJ)
 
 DLLWRAPOPTS= -s --driver-name g++ -s
              --entry _DllMainCRTStartup@12 --target=i386-mingw32
@@ -198,7 +198,7 @@ test:
 	$(PYEXE) test_getting_started5.py
 
 clean:
-	rm -f $(OBJ) libbpl.a libbpl.a.input
+	rm -f $(OBJ) libboost_python.a libboost_python.a.input
 	rm -f comprehensive.o boost_python_test.pyd
 	rm -f abstract.o abstract.pyd
 	rm -f getting_started1.o getting_started1.pyd
