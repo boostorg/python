@@ -268,7 +268,7 @@ namespace objects
 
       object module_name = PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
           ? scope().attr("__name__")
-          : getattr(scope(), "__module__", object(""))
+          : api::getattr(scope(), "__module__", object(""))
           ;
 
       if (module_name)

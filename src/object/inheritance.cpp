@@ -6,7 +6,7 @@
 #include <boost/python/object/inheritance.hpp>
 #include <boost/python/type_id.hpp>
 #include <boost/graph/breadth_first_search.hpp>
-#if defined(BOOST_MSVC) && _MSC_FULL_VER == 13102171
+#if _MSC_FULL_VER >= 13102171 && _MSC_FULL_VER <= 13102179
 # include <boost/graph/reverse_graph.hpp>
 #endif 
 #include <boost/graph/adjacency_list.hpp>
