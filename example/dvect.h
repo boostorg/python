@@ -9,7 +9,7 @@ namespace vects {
   struct dvect : public std::vector<double>
   {
     dvect() : std::vector<double>() {}
-    dvect(size_t n) : std::vector<double>(n) {}
+    dvect(std::size_t n) : std::vector<double>(n) {}
     dvect(boost::python::tuple tuple) : std::vector<double>(tuple.size())
     {
       std::vector<double>::iterator v_it = begin();
