@@ -83,6 +83,8 @@ BOOST_PYTHON_MODULE(builtin_converters)
     def("rewrap_value_complex_float", by_value<std::complex<float> >::rewrap);
     def("rewrap_value_complex_double", by_value<std::complex<double> >::rewrap);
     def("rewrap_value_complex_long_double", by_value<std::complex<long double> >::rewrap);
+    def("rewrap_value_wstring", by_value<std::wstring>::rewrap);
+    def("rewrap_value_string", by_value<std::wstring>::rewrap);
     def("rewrap_value_string", by_value<std::string>::rewrap);
     def("rewrap_value_cstring", by_value<char const*>::rewrap);
     def("rewrap_value_handle", by_value<handle<> >::rewrap);

@@ -31,23 +31,33 @@
     <dl class="page-index">
       <dt>11 Sept 2003</dt>
 
-      <dd>Changed the response to multiple to-python converters being
-      registered for the same type from a hard error into warning;
-      Boost.Python now reports the offending type in the message.
+      <dd>
+        <ul>
+          <li>Changed the response to multiple to-python converters being
+          registered for the same type from a hard error into warning;
+          Boost.Python now reports the offending type in the message.</li>
+
+          <li>Added builtin <code>std::wstring</code> conversions</li>
+
+          <li>Added <code>std::out_of_range</code> =&gt; Python
+          <code>IndexError</code> exception conversion, thanks to <a href=
+          "mailto:RaoulGough-at-yahoo.co.uk">Raoul Gough</a></li>
+        </ul>
+      </dd>
 
       <dt>9 Sept 2003</dt>
 
-      <dd>Added new <code><a
-      href="v2/str.html#str-spec">str</a></code></dd> constructors
-      which take a range of characters, allowing strings containing
-      nul (<code>'\0'</code>) characters.
+      <dd>Added new <code><a href="v2/str.html#str-spec">str</a></code></dd>
+
+      <dt>constructors which take a range of characters, allowing strings
+      containing nul (<code>'\0'</code>) characters.</dt>
 
       <dt>8 Sept 2003</dt>
 
-      <dd>Added the ability to create methods from function
-      objects (with an <code>operator()</code>); see the <a
-      href="v2/make_function.html#make_function-spec">make_function</a>
-      docs for more info.</dd>
+      <dd>Added the ability to create methods from function objects (with an
+      <code>operator()</code>); see the <a href=
+      "v2/make_function.html#make_function-spec">make_function</a> docs for
+      more info.</dd>
 
       <dt>10 August 2003</dt>
 
@@ -170,7 +180,8 @@ BOOST_PYTHON_MODULE(test)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     11 September 2003 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     11 September 2003 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href="../../../people/dave_abrahams.htm">Dave

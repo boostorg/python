@@ -38,6 +38,10 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
     {
         PyErr_SetString(PyExc_OverflowError, x.what());
     }
+    catch(const std::out_of_range& x)
+    {
+        PyErr_SetString(PyExc_IndexError, x.what());
+    }
     catch(const std::exception& x)
     {
         PyErr_SetString(PyExc_RuntimeError, x.what());

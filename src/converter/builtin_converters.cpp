@@ -272,6 +272,42 @@ namespace
       }
   };
 
+  // encode_string_unaryfunc/py_encode_string -- manufacture a unaryfunc
+  // "slot" which encodes a Python string using the default encoding
+  extern "C" PyObject* encode_string_unaryfunc(PyObject* x)
+  {
+      return PyUnicode_FromEncodedObject( x, 0, 0 );
+  }
+  unaryfunc py_encode_string = encode_string_unaryfunc;
+
+  // A SlotPolicy for extracting C++ strings from Python objects.
+  struct wstring_rvalue_from_python
+  {
+      // If the underlying object is "string-able" this will succeed
+      static unaryfunc* get_slot(PyObject* obj)
+      {
+          return PyUnicode_Check(obj)
+              ? &py_object_identity
+            : PyString_Check(obj)
+              ? &py_encode_string
+            : 0;
+      };
+
+      // Remember that this will be used to construct the result object 
+      static std::wstring extract(PyObject* intermediate)
+      {
+          std::wstring result(::PyObject_Length(intermediate), L' ');
+          int err = PyUnicode_AsWideChar(
+              (PyUnicodeObject *)intermediate
+            , result.size() ? &result[0] : 0
+            , result.size());
+
+          if (err == -1)
+              throw_error_already_set();
+          return result;
+      }
+  };
+
   struct complex_rvalue_from_python
   {
       static unaryfunc* get_slot(PyObject* obj)
@@ -366,7 +402,8 @@ void initialize_builtin_converters()
     // Add an lvalue converter for char which gets us char const*
     registry::insert(convert_to_cstring,type_id<char>());
 
-    // Register by-value converters to std::string
+    // Register by-value converters to std::string, std::wstring
+    slot_rvalue_from_python<std::wstring, wstring_rvalue_from_python>();
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();
 }
 

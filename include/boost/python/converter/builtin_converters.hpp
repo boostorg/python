@@ -82,16 +82,16 @@ namespace detail
 
 // Specialize converters for signed and unsigned T to Python Int
 # define BOOST_PYTHON_TO_INT(T)                                         \
-    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, PyInt_FromLong(x))        \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, ::PyInt_FromLong(x))      \
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(                                    \
         unsigned T                                                      \
         , static_cast<unsigned long>(x) > static_cast<unsigned long>(   \
                 std::numeric_limits<long>::max())                       \
-        ? PyLong_FromUnsignedLong(x)                                    \
-        : PyInt_FromLong(x))
+        ? ::PyLong_FromUnsignedLong(x)                                  \
+        : ::PyInt_FromLong(x))
 
 // Bool is not signed.
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(bool, PyInt_FromLong(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(bool, ::PyInt_FromLong(x))
 
 // note: handles signed char and unsigned char, but not char (see below)
 BOOST_PYTHON_TO_INT(char)
@@ -103,23 +103,29 @@ BOOST_PYTHON_TO_INT(long)
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
 # ifdef HAVE_LONG_LONG 
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed BOOST_PYTHON_LONG_LONG, PyLong_FromLongLong(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, PyLong_FromUnsignedLongLong(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed BOOST_PYTHON_LONG_LONG, ::PyLong_FromLongLong(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUnsignedLongLong(x))
 # endif
     
 # undef BOOST_TO_PYTHON_INT
 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromStringAndSize(x.c_str(),x.size()))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),x.size()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),x.size()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, ::PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, ::PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, ::PyFloat_FromDouble(x))
 BOOST_PYTHON_RETURN_TO_PYTHON_BY_VALUE(PyObject*, converter::do_return_to_python(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<float>, PyComplex_FromDoubles(x.real(), x.imag()))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<double>, PyComplex_FromDoubles(x.real(), x.imag()))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<long double>, PyComplex_FromDoubles(x.real(), x.imag()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<float>, ::PyComplex_FromDoubles(x.real(), x.imag()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<double>, ::PyComplex_FromDoubles(x.real(), x.imag()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<long double>, ::PyComplex_FromDoubles(x.real(), x.imag()))
 
+# undef BOOST_PYTHON_RETURN_TO_PYTHON_BY_VALUE
+# undef BOOST_PYTHON_ARG_TO_PYTHON_BY_VALUE
+# undef BOOST_PYTHON_TO_PYTHON_BY_VALUE
+# undef BOOST_PYTHON_TO_INT
+    
 namespace converter
 { 
 
