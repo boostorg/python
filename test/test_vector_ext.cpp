@@ -17,8 +17,9 @@
 
 #include "int_wrapper.hpp"
 
-#include <boost/python/suite/indexing/container_suite.hpp>
+// Include container_proxy.hpp first to get overload of get_pointer in scope
 #include <boost/python/suite/indexing/container_proxy.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/vector.hpp>
 #include <vector>
 #include <boost/python/class.hpp>
