@@ -6,6 +6,7 @@
 #include <boost/python/converter/object_manager.hpp>
 #include <boost/python/borrowed.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/python/handle.hpp>
 
 using namespace boost::python;
 using namespace boost::python::converter;

@@ -10,6 +10,11 @@
 # include <boost/type_traits/alignment_traits.hpp>
 # include <cstddef>
 
+namespace boost { namespace python
+{
+  struct instance_holder;
+}} // namespace boost::python
+
 namespace boost { namespace python { namespace objects { 
 
 // Each extension instance will be one of these

@@ -11,6 +11,7 @@
 # include <boost/utility.hpp>
 # include <boost/python/instance_holder.hpp>
 # include <boost/python/object_core.hpp>
+# include <boost/python/type_id.hpp>
 # include <cstddef>
 
 namespace boost { namespace python {
@@ -24,7 +25,7 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
         char const* name              // The name of the class
         
         , std::size_t num_types         // A list of class_ids. The first is the type
-        , class_id const*const types    // this is wrapping. The rest are the types of
+        , type_info const*const types    // this is wrapping. The rest are the types of
                                         // any bases.
         
         , char const* doc = 0           // Docstring, if any.

@@ -9,6 +9,7 @@
 # include <boost/python/proxy.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_protocol.hpp>
+# include <boost/python/handle.hpp>
 # include <utility>
 
 namespace boost { namespace python { namespace api {

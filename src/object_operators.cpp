@@ -49,5 +49,9 @@ BOOST_PYTHON_INPLACE_OPERATOR(&, And)
 BOOST_PYTHON_INPLACE_OPERATOR(^, Xor)
 BOOST_PYTHON_INPLACE_OPERATOR(|, Or)
 #undef BOOST_PYTHON_INPLACE_OPERATOR
-    
+
+BOOST_PYTHON_DECL object::object(handle<> const& x)
+     : object_base(python::incref(python::expect_non_null(x.get())))
+{}
+
 }}} // namespace boost::python

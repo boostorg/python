@@ -8,6 +8,7 @@
 
 # include <boost/python/object/enum_base.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
+# include <boost/python/converter/registered.hpp>
 
 namespace boost { namespace python { 
 

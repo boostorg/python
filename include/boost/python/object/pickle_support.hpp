@@ -6,10 +6,14 @@
 #ifndef BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
 #define BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
 
-#include <boost/python/tuple.hpp>
-#include <boost/python/object_core.hpp>
-
 namespace boost { namespace python {
+
+namespace api
+{
+  class object;
+}
+using api::object;
+class tuple;
 
 BOOST_PYTHON_DECL object const& make_instance_reduce_function();
 

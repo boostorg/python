@@ -7,6 +7,7 @@
 # define OBJECT_OPERATORS_DWA2002617_HPP
 
 # include <boost/python/object_core.hpp>
+# include <boost/python/call.hpp>
 
 namespace boost { namespace python { namespace api {
 

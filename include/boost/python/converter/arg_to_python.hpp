@@ -10,7 +10,6 @@
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/converter/arg_to_python_base.hpp>
-# include <boost/python/converter/object_manager.hpp>
 # include <boost/python/to_python_indirect.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
@@ -25,6 +24,8 @@
 # include <boost/python/object/function_handle.hpp>
 
 namespace boost { namespace python { namespace converter { 
+
+template <class T> struct is_object_manager;
 
 namespace detail
 {

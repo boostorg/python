@@ -8,13 +8,13 @@
 
 # include <boost/type.hpp>
 
-# include <boost/python/handle.hpp>
-# include <boost/python/call.hpp>
+# include <boost/python/handle_fwd.hpp>
+# include <boost/python/errors.hpp>
 # include <boost/python/slice_nil.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
-# include <boost/python/converter/object_manager.hpp>
+# include <boost/python/tag.hpp>
 # include <boost/python/detail/dependent.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
@@ -222,7 +222,7 @@ namespace api
       }
 
       // Throw error_already_set() if the handle is null.
-      explicit object(handle<> const&);
+      BOOST_PYTHON_DECL explicit object(handle<> const&);
 
    public: // implementation detail -- for internal use only
       explicit object(detail::borrowed_reference);
@@ -312,10 +312,6 @@ template <class T> struct extract;
 // implementation
 //
 
-inline object::object(handle<> const& x)
-    : object_base(python::incref(python::expect_non_null(x.get())))
-{}
-
 inline object::object()
     : object_base(python::incref(Py_None))
 {}
@@ -364,6 +360,8 @@ inline PyObject* api::object_base::ptr() const
 //
 namespace converter
 {
+  template <class T> struct object_manager_traits;
+  
   template <>
   struct object_manager_traits<object>
   {

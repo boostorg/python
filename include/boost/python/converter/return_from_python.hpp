@@ -6,7 +6,6 @@
 #ifndef RETURN_FROM_PYTHON_DWA200265_HPP
 # define RETURN_FROM_PYTHON_DWA200265_HPP
 
-# include <boost/python/converter/object_manager.hpp>
 # include <boost/python/converter/from_python.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
@@ -16,6 +15,8 @@
 # include <boost/python/detail/void_return.hpp>
 
 namespace boost { namespace python { namespace converter { 
+
+template <class T> struct is_object_manager;
 
 namespace detail
 {

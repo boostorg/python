@@ -7,10 +7,12 @@
 # define CLASS_DWA200216_HPP
 
 # include <boost/python/class_fwd.hpp>
+# include <boost/python/object/class.hpp>
 # include <boost/python/bases.hpp>
 # include <boost/python/args.hpp>
-# include <boost/python/handle.hpp>
-# include <boost/python/object/class.hpp>
+
+# include <boost/python/object.hpp>
+
 # include <boost/python/type_id.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/object/class_converters.hpp>

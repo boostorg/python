@@ -16,6 +16,7 @@
 # include <boost/python/detail/void_return.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/refcount.hpp>
+# include <boost/utility.hpp>
 
 namespace boost { namespace python {
 
