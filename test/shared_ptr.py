@@ -1,6 +1,11 @@
 '''
 >>> from shared_ptr_ext import *
 
+>>> a = New(1)
+>>> A.call_f(a)
+1
+>>> New(0)
+
 >>> type(factory(3))
 <class 'shared_ptr_ext.Y'>
 >>> type(factory(42))

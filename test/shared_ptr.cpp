@@ -95,8 +95,53 @@ shared_ptr<Y> factory(int n)
 static int stored_v() { return functions<Z>::get()->v(); }
 static shared_ptr<Z> stored_z() { return functions<Z>::get(); }
 
+// regressions from Nicodemus
+    struct A
+    {
+        virtual int f() = 0;
+        static int call_f(shared_ptr<A>& a) { return a->f(); }
+    };
+
+    struct B: A
+    {
+        int f() { return 1; }
+    };
+
+    boost::shared_ptr<A> New(bool make)
+    {
+        return boost::shared_ptr<A>( make ? new B() : 0 );
+    }
+
+    struct A_Wrapper: A
+    {
+        A_Wrapper(PyObject* self_):
+            A(), self(self_) {}
+
+        int f() {
+            return call_method< int >(self, "f");
+        }
+
+        PyObject* self;
+    };
+
+// ------
+
 BOOST_PYTHON_MODULE(shared_ptr_ext)
 {
+    class_<A, boost::shared_ptr<A_Wrapper>, boost::noncopyable>("A")
+        .def("call_f", &A::call_f)
+        .staticmethod("call_f")
+        ;
+
+    // This is the ugliness required to register a to-python converter
+    // for shared_ptr<A>.
+    objects::class_value_wrapper<
+        shared_ptr<A>
+      , objects::make_ptr_instance<A, objects::pointer_holder<shared_ptr<A>,A> >
+    >();
+        
+    def("New", &New);
+    
     class_<X, boost::noncopyable>("X", init<int>())
         .def("value", &X::value)
         ;
