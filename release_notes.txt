@@ -1,0 +1,43 @@
+2000-11-02 23:25
+
+    Worked around MSVC optimizer bug by writing to_python(double) and
+    to_python(float) out-of-line
+
+    Add /Zm200 option to vc6_prj to deal with MSVC resource limitations
+    
+    Remove conflicting /Ot option from vc6_prj release build
+
+2000-11-02 17:42
+
+    Added a fix for interactions between default virtual function
+    implementations and declare_base(). You still need to write your
+    declare_base() /after/ all member functions have been def()d for the two
+    classes concerned.  Many, many thanks to Ullrich Koethe
+    <koethe@informatik.uni-hamburg.de> for all his work on this.
+
+    Added missing conversions:
+        to_python(float)
+        from_python(const char* const&)
+        from_python(const double&)
+        from_python(const float&)
+
+    Added a Regression test for a reference-counting bug thanks to Mark Evans
+    (<mark.evans@clarisay.com>)
+
+    const-ify ClassBase::getattr()
+
+    Add repr() function to Class<T>
+
+    Add to_python/from_python conversions for PyPtr<T>
+
+    Standardize set_item/get_item interfaces (instead of proxies) for Dict and List
+
+    Add Reprable<> template to newtypes.h
+
+    Fix a bug wherein the __module__ attribute would be lost for classes that have a
+    default virtual function implementation.
+
+    Remove extra ';' in module.cpp thanks to "Ralf W. Grosse-Kunstleve"
+    <rwgk@cci.lbl.gov>
+
+    Fix a bug in the code of example1.html
