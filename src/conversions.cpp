@@ -5,6 +5,10 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
+// 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
 #include <boost/python/conversions.hpp>
 #include <typeinfo>
@@ -43,6 +47,19 @@ void handle_exception()
         PyErr_SetString(PyExc_RuntimeError, "unidentifiable C++ exception");
     }
 }
+
+namespace detail {
+
+  void expect_complex(PyObject* p)
+  {
+      if (!PyComplex_Check(p))
+      {
+          PyErr_SetString(PyExc_TypeError, "expected a complex number");
+          throw boost::python::argument_error();
+      }
+  }
+
+} // namespace boost::python::detail
 
 }} // namespace boost::python
 
