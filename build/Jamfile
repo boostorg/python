@@ -23,43 +23,54 @@ if [ check-python-config ]
       bpl-linkflags = <linkflags>"-e initlibboost_python" ;
   }
 
+  local sources =
+    numeric.cpp
+    list.cpp
+    long.cpp
+    dict.cpp
+    tuple.cpp
+    str.cpp
+
+    aix_init_module.cpp
+    converter/from_python.cpp
+    converter/registry.cpp
+    converter/type_id.cpp
+    object/enum.cpp
+    object/class.cpp
+    object/function.cpp
+    object/inheritance.cpp
+    object/life_support.cpp
+    object/pickle_support.cpp
+    errors.cpp
+    module.cpp
+    converter/builtin_converters.cpp
+    converter/arg_to_python_base.cpp
+    object/iterator.cpp
+    object_protocol.cpp
+    object_operators.cpp
+    ;
+  
   dll boost_python
-    : 
-    ../src/numeric.cpp
-
-    ../src/list.cpp
-    ../src/long.cpp
-    ../src/dict.cpp
-    ../src/tuple.cpp
-    ../src/str.cpp
-
-    ../src/aix_init_module.cpp
-    ../src/converter/from_python.cpp
-    ../src/converter/registry.cpp
-    ../src/converter/type_id.cpp
-    ../src/object/enum.cpp
-    ../src/object/class.cpp
-    ../src/object/function.cpp
-    ../src/object/inheritance.cpp
-    ../src/object/life_support.cpp
-    ../src/object/pickle_support.cpp
-    ../src/errors.cpp
-    ../src/module.cpp
-    ../src/converter/builtin_converters.cpp
-    ../src/converter/arg_to_python_base.cpp
-    ../src/object/iterator.cpp
-    ../src/object_protocol.cpp
-    ../src/object_operators.cpp
-    :
-    $(BOOST_PYTHON_V2_PROPERTIES)
+    : ../src/$(sources)
+    : $(BOOST_PYTHON_V2_PROPERTIES)
       <define>BOOST_PYTHON_SOURCE
       $(bpl-linkflags)
       ;
 
-  stage bin-stage : <dll>boost_python
-    :
-        <tag><debug>"_debug"
-        <tag><debug-python>"_pydebug"
+  lib boost_python
+    : # sources
+      ../src/$(sources)
+        
+    : # requirements
+      $(BOOST_PYTHON_V2_PROPERTIES)
+      <define>BOOST_PYTHON_SOURCE
+      <define>BOOST_STATIC_LIB
+      $(bpl-linkflags)
+      ;
+
+  stage bin-stage : <dll>boost_python <lib>boost_python
+    : <tag><debug>"_debug"
+      <tag><debug-python>"_pydebug"
     :
         debug release
     ;
