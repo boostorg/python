@@ -71,7 +71,6 @@ Injected Constructors
 
 
 
-
 Type Converters
 ===============
 
@@ -152,3 +151,19 @@ NumArray Support Enhancements
 
   Consider integrating the enhancements described in
   http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1757092
+
+``PyFinalize`` Safety
+---------------------
+
+  Currently Boost.Python has several global (or function-static)
+  objects whose existence keeps reference counts from dropping to
+  zero until the Boost.Python shared object is unloaded.  This can
+  cause a crash because when the reference counts *do* go to zero,
+  there's no interpreter.  In order to make it safe to call
+  ``PyFinalize()`` we must register an ``atexit`` routine which
+  destroys these objects and releases all Python reference counts
+  so that Python can clean them up while there's still an
+  interpreter.  `Dirk Gerrits`_ has promised to do this job.
+
+  .. _`Dirk Gerrits`: mailto:dirk-at-gerrits.homeip.net
+
