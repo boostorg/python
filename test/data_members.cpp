@@ -18,6 +18,8 @@ typedef test_class<> X;
 
 typedef test_class<1> Y;
 
+double get_fair_value(X const& x) { return x.value(); }
+
 BOOST_PYTHON_MODULE_INIT(data_members_ext)
 {
     module("data_members_ext")
@@ -27,6 +29,7 @@ BOOST_PYTHON_MODULE_INIT(data_members_ext)
             .def("value", &X::value)
             .def("set", &X::set)
             .def_readonly("x", &X::x)
+            .add_property("get_fair_value", object(&get_fair_value))
             )
         .add(
             class_<Y>("Y")
