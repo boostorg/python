@@ -89,8 +89,11 @@
 0
 >>> rewrap_const_reference_bool(0)
 0
->>> rewrap_const_reference_bool('yes')
-1
+
+>>> try: rewrap_const_reference_bool('yes')
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
+
 >>> rewrap_const_reference_char('x')
 'x'
 
@@ -152,25 +155,30 @@ Check that None <==> NULL
 
 >>> rewrap_const_reference_cstring(None)
 
-But when converted to a string rvalue, None becomes 'None':
+But None cannot be converted to a string object:
 
->>> rewrap_const_reference_string(None)
-'None'
-
+>>> try: rewrap_const_reference_string(None)
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
 
 Now check implicit conversions between floating/integer types
 
 >>> rewrap_const_reference_float(42)
 42.0
 
->>> rewrap_const_reference_int(42.0)
-42
+>>> rewrap_const_reference_float(42L)
+42.0
+
+>>> try: rewrap_const_reference_int(42.0)
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
 
 >>> rewrap_value_float(42)
 42.0
 
->>> rewrap_value_int(42.0)
-42
+>>> try: rewrap_value_int(42.0)
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
 
 Check that classic classes also work
 
@@ -184,14 +192,21 @@ Check that classic classes also work
 ...     def __str__(self):
 ...         return '42'
 
->>> rewrap_const_reference_float(FortyTwo())
-42.0
->>> rewrap_value_int(FortyTwo())
-42
->>> rewrap_const_reference_string(FortyTwo())
-'42'
->>> abs(rewrap_value_complex_double(FortyTwo()) - (4+.2j)) < .000001
-1
+>>> try: rewrap_const_reference_float(FortyTwo())
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
+
+>>> try: rewrap_value_int(FortyTwo())
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
+
+>>> try: rewrap_const_reference_string(FortyTwo())
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
+
+>>> try: rewrap_value_complex_double(FortyTwo())
+... except TypeError: pass
+... else: print 'expected a TypeError exception'
 
 # show that arbitrary handle<T> instantiations can be returned
 >>> get_type(1) is type(1)
@@ -204,7 +219,13 @@ Check that classic classes also work
 def run(args = None):
     import sys
     import doctest
-
+    import builtin_converters
+    
+    if 'rewrap_value_long_long' in dir(builtin_converters):
+        print 'LONG_LONG supported, testing...'
+    else:
+        print 'LONG_LONG not supported, skipping those tests...'
+        
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))

@@ -74,15 +74,8 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          // For floating types, return the float conversion slot to avoid
-          // creating a new object. We'll handle that below
-          if (PyFloat_Check(obj))
-              return &number_methods->nb_float;
-
-          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__int__"))
-              return 0;
-          
-          return &number_methods->nb_int;
+          return (PyInt_Check(obj) || PyLong_Check(obj))
+              ? &number_methods->nb_int : 0;
       }
   };
 
@@ -91,17 +84,17 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          return PyFloat_Check(intermediate)
-              ? numeric_cast<T>(PyFloat_AS_DOUBLE(intermediate))
-              : numeric_cast<T>(PyInt_AS_LONG(intermediate))
-              ;
+          return numeric_cast<T>(PyInt_AS_LONG(intermediate));
       }
   };
 
-// using Python's macro instead of Boost's - we don't seem to get the
-// config right all the time.
+// Checking Python's macro instead of Boost's - we don't seem to get
+// the config right all the time. Furthermore, Python's is defined
+// when long long is absent but __int64 is present.
+  
 #ifdef HAVE_LONG_LONG
   // A SlotPolicy for extracting long long types from Python objects
+
   struct long_long_rvalue_from_python_base
   {
       static unaryfunc* get_slot(PyObject* obj)
@@ -110,22 +103,17 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          // For floating and integer types, return the identity
-          // conversion slot to avoid creating a new object. We'll
-          // handle that in the extract function
+          // Return the identity conversion slot to avoid creating a
+          // new object. We'll handle that in the extract function
           if (PyInt_Check(obj))
               return &number_methods->nb_int;
-
-          if (PyFloat_Check(obj))
-              return &number_methods->nb_float;
-
-          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__long__"))
+          else if (PyLong_Check(obj))
+              return &number_methods->nb_long;
+          else
               return 0;
-          
-          return &number_methods->nb_long;
       }
   };
-
+  
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
       static LONG_LONG extract(PyObject* intermediate)
@@ -133,10 +121,6 @@ namespace
           if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
-          }
-          if (PyFloat_Check(intermediate))
-          {
-              return numeric_cast<LONG_LONG>(PyFloat_AS_DOUBLE(intermediate));
           }
           else
           {
@@ -158,10 +142,6 @@ namespace
           {
               return numeric_cast<unsigned LONG_LONG>(PyInt_AS_LONG(intermediate));
           }
-          if (PyFloat_Check(intermediate))
-          {
-              return numeric_cast<unsigned LONG_LONG>(PyFloat_AS_DOUBLE(intermediate));
-          }
           else
           {
               unsigned LONG_LONG result = PyLong_AsUnsignedLongLong(intermediate);
@@ -174,7 +154,6 @@ namespace
       }
   };
 #endif 
-
 
   // identity_unaryfunc/py_object_identity -- manufacture a unaryfunc
   // "slot" which just returns its argument. Used for bool
@@ -190,9 +169,9 @@ namespace
   // A SlotPolicy for extracting bool from a Python object
   struct bool_rvalue_from_python
   {
-      static unaryfunc* get_slot(PyObject*)
+      static unaryfunc* get_slot(PyObject* obj)
       {
-          return &py_object_identity;
+          return obj == Py_None || PyInt_Check(obj) ? &py_object_identity : 0;
       }
       
       static bool extract(PyObject* intermediate)
@@ -214,11 +193,9 @@ namespace
           // creating a new object. We'll handle that below
           if (PyInt_Check(obj))
               return &number_methods->nb_int;
-      
-          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__float__"))
-              return 0;
-          
-          return &number_methods->nb_float;
+
+          return (PyLong_Check(obj) || PyFloat_Check(obj))
+              ? &number_methods->nb_float : 0;
       }
       
       static double extract(PyObject* intermediate)
@@ -240,10 +217,8 @@ namespace
       // If the underlying object is "string-able" this will succeed
       static unaryfunc* get_slot(PyObject* obj)
       {
-          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__str__"))
-              return 0;
-          
-          return &obj->ob_type->tp_str;
+          return (PyString_Check(obj))
+              ? &obj->ob_type->tp_str : 0;
       };
 
       // Remember that this will be used to construct the result object 
@@ -253,39 +228,14 @@ namespace
       }
   };
 
-
-  // to_complex_unaryfunc/py_object_to_complex -- manufacture a
-  // unaryfunc "slot" which calls its argument's __complex__
-  // method. We have this because there's no type object nb_complex
-  // slot.
-  extern "C" PyObject* to_complex_unaryfunc(PyObject* x)
-  {
-      return PyObject_CallMethod(x, "__complex__", const_cast<char*>("()"));
-  }
-  unaryfunc py_object_to_complex = to_complex_unaryfunc;
-
   struct complex_rvalue_from_python
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
-
           if (PyComplex_Check(obj))
               return &py_object_identity;
-
-          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
-          
-          // For integer types, return the tp_int conversion slot to avoid
-          // creating a new object. We'll handle that below
-          if (PyInt_Check(obj) && number_methods)
-              return &number_methods->nb_int;
-      
-          if (PyFloat_Check(obj) && number_methods)
-              return &number_methods->nb_float;
-      
-          if (!PyObject_HasAttrString((PyObject*)obj, "__complex__"))
-              return 0;
-          
-          return &py_object_to_complex;
+          else
+              return float_rvalue_from_python::get_slot(obj);
       }
       
       static std::complex<double> extract(PyObject* intermediate)
@@ -300,13 +250,10 @@ namespace
           {
               return PyInt_AS_LONG(intermediate);
           }
-          else if (!PyFloat_Check(intermediate)) 
+          else
           {
-              PyErr_SetString(PyExc_TypeError, "__complex__ method did not return a Complex object");
-              throw_error_already_set();
+              return PyFloat_AS_DOUBLE(intermediate);
           }
-          
-          return PyFloat_AS_DOUBLE(intermediate);
       }
   };
 } 

@@ -11,7 +11,7 @@ Just about anything has a truth value in Python
     >>> extract_bool(2)
     1
 
-    >>> assert check_bool('')
+    >>> assert not check_bool('')
 
 Check that object manager types work properly. These are a different
 case because they wrap Python objects instead of being wrapped by them.
