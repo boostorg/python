@@ -83,9 +83,9 @@
     interface applies to <code>array</code> instances as well.</p>
 
     <p><a name="default_search"></a>The default behavior is to use
-    <code>Numeric.ArrayType</code> as the associated Python type if the
-    <code>Numeric</code> module is installed in the default location.
-    Otherwise it falls back to use <code>numarray.NDArray</code>. If neither
+    <code>numarray.NDArray</code> as the associated Python type if the
+    <code>numarray</code> module is installed in the default location.
+    Otherwise it falls back to use <code>Numeric.ArrayType</code>. If neither
     extension module is installed, conversions to arguments of type
     <code>numeric::array</code> will cause overload resolution to reject the
     overload, and other attempted uses of <code>numeric::array</code> will <a
