@@ -71,12 +71,22 @@
 # define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #endif
 
-#if defined(BOOST_PYTHON_DYNAMIC_LIB) && (defined(_WIN32) || defined(__CYGWIN__))
-#  if defined(BOOST_PYTHON_SOURCE)
-#     define BOOST_PYTHON_DECL __declspec(dllexport)
-#     define BOOST_PYTHON_BUILD_DLL
-#  else
-#     define BOOST_PYTHON_DECL __declspec(dllimport)
+#if defined(BOOST_PYTHON_DYNAMIC_LIB)
+#  if (defined(_WIN32) || defined(__CYGWIN__))
+#     if defined(BOOST_PYTHON_SOURCE)
+#        define BOOST_PYTHON_DECL __declspec(dllexport)
+#        define BOOST_PYTHON_BUILD_DLL
+#     else
+#        define BOOST_PYTHON_DECL __declspec(dllimport)
+#     endif
+#  elif (defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5)
+#     if defined(BOOST_PYTHON_SOURCE)
+#        define BOOST_PYTHON_DECL __attribute__ ((visibility("default")))
+#        define BOOST_PYTHON_BUILD_DLL
+#        define BOOST_PYTHON_NODECL_DECLARATIONS
+#     else
+#        define BOOST_PYTHON_DECL
+#     endif
 #  endif
 
 // MinGW, at least, has some problems exporting template instantiations

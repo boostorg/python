@@ -42,6 +42,16 @@ extern "C"                                                              \
 }                                                                       \
 void init_module_##name()
 
+# elif (defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5)
+
+#   define BOOST_PYTHON_MODULE_INIT(name)                               \
+void init_module_##name();                                              \
+extern "C" __attribute__ ((visibility("default"))) void init##name()    \
+{                                                                       \
+    boost::python::detail::init_module(#name, &init_module_##name);     \
+}                                                                       \
+void init_module_##name()
+
 # else
 
 #   define BOOST_PYTHON_MODULE_INIT(name)                               \
