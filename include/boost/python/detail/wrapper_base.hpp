@@ -28,14 +28,7 @@ namespace detail
     
     template <class T>
     inline PyObject*
-    owner_impl(T const volatile* x, mpl::true_)
-    {
-        if (wrapper_base const volatile* w = dynamic_cast<wrapper_base const volatile*>(x))
-        {
-            return wrapper_base_::get_owner(*w);
-        }
-        return 0;
-    }
+    owner_impl(T const volatile* x, mpl::true_);
     
     template <class T>
     inline PyObject*
@@ -64,6 +57,17 @@ namespace detail
 
   namespace wrapper_base_ // ADL disabler
   {
+    template <class T>
+    inline PyObject*
+    owner_impl(T const volatile* x, mpl::true_)
+    {
+        if (wrapper_base const volatile* w = dynamic_cast<wrapper_base const volatile*>(x))
+        {
+            return wrapper_base_::get_owner(*w);
+        }
+        return 0;
+    }
+    
     inline PyObject* get_owner(wrapper_base const volatile& w)
     {
         return w.m_self;
