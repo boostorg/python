@@ -8,6 +8,8 @@ call build_pyste_nt templates ../example/templates.pyste
 call build_pyste_nt virtual ../example/virtual.pyste
 call build_pyste_nt wrappertest ../example/wrappertest.pyste
 call build_pyste_nt unions ../example/unions.pyste
+call build_pyste_nt virtual2 ../example/virtual2.pyste
+call build_pyste_nt smart_ptr ../example/smart_ptr.pyste
 
 
 runtests.py
