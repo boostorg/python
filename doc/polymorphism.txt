@@ -9,8 +9,12 @@ How Runtime Polymorphism is expressed in Boost.Python:
 
    struct Bcb : B
    { 
-      virtual std::string f() { return "B"; }
+      Bcb(PyObject* self) : m_self(self) {}
+
+      virtual std::string f() { return call_method<std::string>(m_sef, "f"); }
       static std::string f_default(B& b) { return b.B::f(); }
+
+      PyObject* m_self;
    };
 
    struct C : B
@@ -148,4 +152,23 @@ actually derive from a B', and B'.f invokes B::f non-virtually, while
 B.f invokes B::f virtually. However, people complained about the
 artificial class in the hierarchy, which was revealed when they tried
 to do normal kinds of Python introspection.
+
+-------
+
+Assumption: we will have a function which builds a virtual function
+dispatch callable Python object.
+
+     make_virtual_function(pvmf, default_impl, call_policies, dispatch_type)
+
+Pseudocode:
+
+     Get first argument from Python arg tuple
+     if it contains /only/ dispatch_type
+        call default_impl
+     else
+        call through pvmf
+
+
+
+     
 
