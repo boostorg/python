@@ -56,7 +56,7 @@ namespace
           ref intermediate(creator(obj));
 
           // Get the location in which to construct
-          void* storage = ((rvalue_data<T>*)data)->storage.bytes;
+          void* storage = ((rvalue_base_data<T>*)data)->storage.bytes;
           new (storage) T(SlotPolicy::extract(intermediate.get()));
 
           // record successful construction

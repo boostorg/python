@@ -25,7 +25,7 @@ struct to_python_converter
 template <class T, class Conversion>
 to_python_converter<T,Conversion>::to_python_converter()
 {
-    typedef converter::as_to_python_value_function<
+    typedef converter::as_to_python_function<
         T, Conversion
         > normalized;
         

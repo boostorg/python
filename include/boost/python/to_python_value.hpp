@@ -23,25 +23,14 @@ struct to_python_value
     
     static bool convertible();
     PyObject* operator()(argument_type) const;
-
- private:
-    // Note that this is a pointer to a function pointer
-    static converter::to_python_value_function const* fconvert;
 };
-
-
-template <class T>
-converter::to_python_value_function const*
-to_python_value<T>::fconvert
-        = &converter::registry::to_python_function(converter::undecorated_type_id<T>());
 
 
 template <class T>
 bool to_python_value<T>::convertible()
 {
     // if this assert fires, our static variable hasn't been set up yet.
-    assert(fconvert != 0);
-    return *fconvert != 0;
+    return converter::to_python_function<argument_type>::value != 0;
 }
 
 template <class T>
@@ -49,8 +38,7 @@ PyObject* to_python_value<T>::operator()(argument_type x) const
 {
     // This might be further optimized on platforms which dynamically
     // link without specific imports/exports
-    converter::to_python_value_function f = *fconvert;
-    return f(&x);
+    return converter::to_python_function<argument_type>::value(&x);
 }
 
 }} // namespace boost::python

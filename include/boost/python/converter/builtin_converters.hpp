@@ -7,6 +7,7 @@
 # define BUILTIN_CONVERTERS_DWA2002124_HPP
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/none.hpp>
+# include <boost/python/reference.hpp>
 # include <string>
 # include <complex>
 
@@ -21,6 +22,11 @@ namespace detail
   {
       static bool convertible() { return true; }
   };
+}
+
+namespace converter
+{
+  template <class T> struct callback_to_python;
 }
 
 # define BOOST_PYTHON_TO_PYTHON_BY_VALUE(T, expr)   \
@@ -39,7 +45,19 @@ namespace detail
         {                                           \
             return (expr);                          \
         }                                           \
-    };
+    };                                              \
+    namespace converter                             \
+    {                                               \
+      template <> struct callback_to_python< T >    \
+      {                                             \
+          callback_to_python(T const& x)            \
+            : m_held(expr) {}                       \
+          PyObject* get() const                     \
+            { return m_held.get(); }                \
+       private:                                     \
+          ref m_held;                               \
+      };                                            \
+    }                                               
 
 
 # define BOOST_PYTHON_TO_INT(T)                                         \
@@ -53,12 +71,12 @@ BOOST_PYTHON_TO_INT(int)
 BOOST_PYTHON_TO_INT(long)
 # undef BOOST_TO_PYTHON_INT
 
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, x ? PyString_FromString(x) : detail::none())
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, x ? PyString_FromString(x) : boost::python::detail::none())
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromString(x.c_str()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, x ? x : detail::none())
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, (x ? x : boost::python::detail::none()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<float>, PyComplex_FromDoubles(x.real(), x.imag()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<double>, PyComplex_FromDoubles(x.real(), x.imag()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<long double>, PyComplex_FromDoubles(x.real(), x.imag()))

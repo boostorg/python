@@ -8,17 +8,18 @@
 
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/converter/from_python_stage1_data.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
 struct lvalue_from_python_registration;
 struct rvalue_from_python_registration;
-struct rvalue_stage1_data;
 
 BOOST_PYTHON_DECL void* find(
     PyObject* source, lvalue_from_python_registration const*);
-BOOST_PYTHON_DECL void* find(
-    PyObject* source, rvalue_from_python_registration const*, rvalue_stage1_data&);
+
+BOOST_PYTHON_DECL rvalue_stage1_data find(
+    PyObject* source, rvalue_from_python_registration const*);
 
 }}} // namespace boost::python::converter
 

@@ -8,13 +8,14 @@
 
 # include <boost/python/converter/find_from_python.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/destroy.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/converter/pointer_type_id.hpp>
 # include <boost/python/converter/from_python_data.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/converter/registry.hpp>
+# include <boost/python/converter/lvalue_from_python_chain.hpp>
+# include <boost/python/converter/rvalue_from_python_chain.hpp>
 
 namespace boost { namespace python { namespace converter {
 
@@ -42,8 +43,6 @@ struct pointer_const_reference_from_python
     
  private:
     typename detail::referent_storage<T>::type m_result;
-    
-    static lvalue_from_python_registration*& chain;
 };
 
 // Used when T == U* 
@@ -52,8 +51,6 @@ struct pointer_from_python : from_python_base
 {
     pointer_from_python(PyObject*);
     T operator()(PyObject*) const;
-    
-    static lvalue_from_python_registration*& chain;
 };
 
 // Used when T == U& and (T != V const& or T == W volatile&)
@@ -62,8 +59,6 @@ struct reference_from_python : from_python_base
 {
     reference_from_python(PyObject*);
     T operator()(PyObject*) const;
-    
-    static lvalue_from_python_registration*& chain;
 };
 
 // ------- rvalue converters ---------
@@ -79,14 +74,12 @@ class rvalue_from_python
     
  public:
     rvalue_from_python(PyObject*);
-    ~rvalue_from_python();
     bool convertible() const;
     
     result_type operator()(PyObject*);
     
  private:
     rvalue_data<result_type> m_data;
-    static rvalue_from_python_registration*& chain;
 };
 
 template <class T>
@@ -191,7 +184,7 @@ inline pointer_const_reference_from_python<T>::pointer_const_reference_from_pyth
 {
     detail::write_void_ptr_reference(
         m_result.bytes
-        , p == Py_None ? p : find(p, chain)
+        , p == Py_None ? p : find(p, lvalue_from_python_chain<T>::value)
         , (T(*)())0);
 }
 
@@ -208,15 +201,11 @@ inline T pointer_const_reference_from_python<T>::operator()(PyObject* p) const
         : detail::void_ptr_to_reference(m_result.bytes, (T(*)())0);
 }
 
-template <class T>
-lvalue_from_python_registration*& pointer_const_reference_from_python<T>::chain
-        = registry::lvalue_converters(pointer_type_id<T>());
-
 // --------
 
 template <class T>
 inline pointer_from_python<T>::pointer_from_python(PyObject* p)
-    : from_python_base(p == Py_None ? p : find(p, chain))
+    : from_python_base(p == Py_None ? p : find(p, lvalue_from_python_chain<T>::value))
 {
 }
 
@@ -226,15 +215,11 @@ inline T pointer_from_python<T>::operator()(PyObject* p) const
     return (p == Py_None) ? 0 : T(result());
 }
 
-template <class T>
-lvalue_from_python_registration*& pointer_from_python<T>::chain
-        = registry::lvalue_converters(pointer_type_id<T>());
-
 // --------
 
 template <class T>
 inline reference_from_python<T>::reference_from_python(PyObject* p)
-    : from_python_base(find(p,chain))
+    : from_python_base(find(p,lvalue_from_python_chain<T>::value))
 {
 }
 
@@ -244,23 +229,12 @@ inline T reference_from_python<T>::operator()(PyObject*) const
     return detail::void_ptr_to_reference(result(), (T(*)())0);
 }
 
-template <class T>
-lvalue_from_python_registration*& reference_from_python<T>::chain
-        = registry::lvalue_converters(undecorated_type_id<T>());
-
 // -------
 
 template <class T>
 inline rvalue_from_python<T>::rvalue_from_python(PyObject* obj)
+    : m_data(find(obj, rvalue_from_python_chain<T>::value))
 {
-    find(obj, chain, m_data.stage1);
-}
-
-template <class T>
-inline rvalue_from_python<T>::~rvalue_from_python()
-{
-    if (m_data.stage1.convertible == m_data.storage.bytes)
-        python::detail::destroy_reference<result_type>(m_data.storage.bytes);
 }
 
 template <class T>
@@ -278,10 +252,6 @@ rvalue_from_python<T>::operator()(PyObject* p)
     
     return detail::void_ptr_to_reference(m_data.stage1.convertible, (result_type(*)())0);
 }
-
-template <class T>
-rvalue_from_python_registration*& rvalue_from_python<T>::chain
-        = registry::rvalue_converters(undecorated_type_id<T>());
 
 }}} // namespace boost::python::converter
 

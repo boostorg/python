@@ -19,7 +19,7 @@ namespace // <unnamed>
       entry();
       
       // The unique to_python converter for the associated C++ type.
-      to_python_value_function m_to_python_converter;
+      to_python_function_t m_to_python_converter;
       
       // The collection of from_python converters for the associated
       // C++ type.
@@ -66,15 +66,15 @@ namespace // <unnamed>
 
 namespace registry
 {
-  to_python_value_function const& to_python_function(
+  to_python_function_t const& get_to_python_function(
       undecorated_type_id_t key)
   {
       return find(key)->m_to_python_converter;
   }
   
-  void insert(to_python_value_function f, undecorated_type_id_t source_t)
+  void insert(to_python_function_t f, undecorated_type_id_t source_t)
   {
-      to_python_value_function& slot = find(source_t)->m_to_python_converter;
+      to_python_function_t& slot = find(source_t)->m_to_python_converter;
       assert(slot == 0); // we have a problem otherwise
       if (slot != 0)
       {

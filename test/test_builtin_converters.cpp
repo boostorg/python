@@ -25,9 +25,9 @@ struct by_const_reference
     }
 };
 
-BOOST_PYTHON_MODULE_INIT(builtin_converters_ext)
+BOOST_PYTHON_MODULE_INIT(builtin_converters)
 {
-    boost::python::module("builtin_converters_ext")
+    boost::python::module("builtin_converters")
         
         .def("rewrap_value_bool", by_value<bool>::rewrap)
         .def("rewrap_value_signed_char", by_value<signed char>::rewrap)

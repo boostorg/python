@@ -10,21 +10,23 @@
 
 namespace boost { namespace python { namespace converter { 
 
-BOOST_PYTHON_DECL void* find(
+BOOST_PYTHON_DECL rvalue_stage1_data find(
     PyObject* source
-    , rvalue_from_python_registration const* chain
-    , rvalue_stage1_data& data)
+    , rvalue_from_python_registration const* chain)
 {
+    rvalue_stage1_data data;
+    data.convertible = 0;
     for (;chain != 0; chain = chain->next)
     {
         void* r = chain->convertible(source);
         if (r != 0)
         {
+            data.convertible = r;
             data.construct = chain->construct;
-            return data.convertible = r;
+            break;
         }
     }
-    return data.convertible = 0;
+    return data;
 }
 
 BOOST_PYTHON_DECL void* find(

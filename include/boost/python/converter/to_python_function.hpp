@@ -8,23 +8,41 @@
 
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/transform_traits.hpp>
+# include <boost/type_traits/cv_traits.hpp>
+# include <boost/python/converter/type_id.hpp>
+# include <boost/python/converter/registry.hpp>
+# include <boost/python/converter/to_python_function_type.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-// The type of stored function pointers which actually do conversion
-// by-value. The void* points to the object to be converted, and
-// type-safety is preserved through runtime registration.
-typedef PyObject* (*to_python_value_function)(void const*);
-
-// Given a typesafe to_python conversion function, produces a
-// to_python_value_function which can be registered in the usual way.
-template <class T, class ToPython>
-struct as_to_python_value_function
+// to_python_function --
+//
+// essentially a "templated global reference" which holds the
+// converter for converting a type to Python by-value. We "normalize"
+// T by adding "const volatile&" so that fewer global variables and
+// associated static initializations are generated.
+namespace detail
 {
-    static PyObject* convert(void const* x)
-    {
-        return ToPython::convert(*(T const*)x);
-    }
+  template <class T>
+  struct to_python_function_base
+  {
+      static to_python_function_t const& value;
+  };
+  
+  template <class T>
+  to_python_function_t const&
+  to_python_function_base<T>::value
+        = converter::registry::get_to_python_function(undecorated_type_id<T>());
+}
+
+template <class T>
+struct to_python_function
+    : detail::to_python_function_base<
+        typename add_reference<
+          typename add_cv<T>::type
+        >::type
+      >
+{
 };
 
 }}} // namespace boost::python::converter

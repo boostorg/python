@@ -1,5 +1,5 @@
 """
->>> from builtin_converters_ext import *
+>>> from builtin_converters import *
 >>> rewrap_value_bool(None)
 0
 >>> rewrap_value_bool(0)

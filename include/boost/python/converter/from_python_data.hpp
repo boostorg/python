@@ -16,6 +16,7 @@
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/ice.hpp>
+# include <boost/python/detail/destroy.hpp>
 # include <boost/preprocessor/list/for_each_i.hpp>
 # include <boost/preprocessor/tuple/to_list.hpp>
 # include <boost/preprocessor/cat.hpp>
@@ -161,7 +162,7 @@ namespace detail
 }
 
 template <class T>
-struct rvalue_data
+struct rvalue_base_data
 {
     rvalue_stage1_data stage1;
     
@@ -169,6 +170,40 @@ struct rvalue_data
         typename add_reference<T>::type
     >::type storage;
 };
+
+template <class T>
+struct rvalue_data : rvalue_base_data<T>
+{
+    rvalue_data(rvalue_stage1_data const&);
+    rvalue_data(void*);
+    ~rvalue_data();
+};
+
+//
+// Implementataions
+//
+template <class T>
+inline rvalue_data<T>::rvalue_data(rvalue_stage1_data const& stage1)
+{
+    this->stage1 = stage1;
+}
+
+template <class T>
+inline rvalue_data<T>::rvalue_data(void* convertible)
+{
+    this->stage1.convertible = convertible;
+}
+
+template <class T>
+inline rvalue_data<T>::~rvalue_data()
+{
+    if (this->stage1.convertible == this->storage.bytes)
+        python::detail::destroy_reference<
+            add_reference<
+                add_cv<T>::type
+            >::type
+        >(storage.bytes);
+}
 
 }}} // namespace boost::python::converter
 
