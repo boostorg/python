@@ -33,9 +33,14 @@
 #   define BOOST_MSVC6_OR_EARLIER 1
 #  endif
 
-# pragma warning (disable : 4786)
+#  pragma warning (disable : 4786)
+
+# elif defined(__ICL) && __ICL < 600 // Intel C++ 5
+
+#  pragma warning(disable: 985) // identifier was truncated in debug information
 
 # endif
+
 
 // Work around the broken library implementation/strict ansi checking on some
 // EDG-based compilers (e.g. alpha), which incorrectly warn that the result of
