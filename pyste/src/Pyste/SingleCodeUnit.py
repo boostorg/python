@@ -23,7 +23,7 @@ class SingleCodeUnit:
         # define the avaiable sections
         self.code = {}
         # include section
-        self.code['include'] = ''
+        self.code['include'] = '#include <boost/python.hpp>\n'
         # declaration section (inside namespace)        
         self.code['declaration'] = ''
         # declaration (outside namespace)
@@ -58,18 +58,22 @@ class SingleCodeUnit:
         pass 
 
     
-    def Save(self):
+    def Save(self, append=False):
         'Writes this code unit to the filename'
         space = '\n\n'
-        fout = SmartFile(self.filename, 'w')
+        if not append:
+            flag = 'w'
+        else:
+            flag = 'a'
+        fout = SmartFile(self.filename, flag)
         # includes
-        includes = remove_duplicated_lines(self.code['include'])
-        fout.write('\n' + left_equals('Includes'))        
-        fout.write('#include <boost/python.hpp>\n')
-        fout.write(includes)
-        fout.write(space)
+        if self.code['include']:
+            includes = remove_duplicated_lines(self.code['include'])
+            fout.write('\n' + left_equals('Includes'))        
+            fout.write(includes)
+            fout.write(space)
         # using
-        if settings.USING_BOOST_NS:
+        if settings.USING_BOOST_NS and not append:
             fout.write(left_equals('Using'))
             fout.write('using namespace boost::python;\n\n')
         # declarations
@@ -77,7 +81,8 @@ class SingleCodeUnit:
         declaration_outside = self.code['declaration-outside']
         if declaration_outside or declaration:
             fout.write(left_equals('Declarations'))
-            fout.write(declaration_outside + '\n\n')
+            if declaration_outside:
+                fout.write(declaration_outside + '\n\n')
             if declaration:
                 pyste_namespace = namespaces.pyste[:-2]            
                 fout.write('namespace %s {\n\n\n' % pyste_namespace)

@@ -64,7 +64,7 @@ class HeaderExporter(Exporter):
             exporter = exporter_type(info)
             exporter.SetDeclarations(self.declarations)
             exporter.SetParsedHeader(self.parser_header)
-            codeunit.SetCurrent(exporter.Unit())
+            codeunit.SetCurrent(self.interface_file, exporter.Unit())
             exporter.GenerateCode(codeunit, exported_names)
 
     

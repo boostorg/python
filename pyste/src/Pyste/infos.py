@@ -59,6 +59,7 @@ class FunctionInfo(DeclarationInfo):
         # create a FunctionExporter
         exporter = FunctionExporter(InfoWrapper(self), tail)
         exporters.exporters.append(exporter)
+        exporter.interface_file = exporters.current_interface
 
 
 #==============================================================================
@@ -74,6 +75,7 @@ class ClassInfo(DeclarationInfo):
         # create a ClassExporter
         exporter = ClassExporter(InfoWrapper(self), tail)
         exporters.exporters.append(exporter) 
+        exporter.interface_file = exporters.current_interface 
         
 
 #==============================================================================
@@ -86,6 +88,7 @@ class IncludeInfo(DeclarationInfo):
         self._Attribute('include', include)
         exporter = IncludeExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)        
+        exporter.interface_file = exporters.current_interface 
 
 
 #==============================================================================
@@ -135,6 +138,7 @@ class EnumInfo(DeclarationInfo):
         self._Attribute('exclude', False)
         exporter = EnumExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)
+        exporter.interface_file = exporters.current_interface 
 
 
 #==============================================================================
@@ -147,6 +151,7 @@ class HeaderInfo(DeclarationInfo):
         self._Attribute('include', include)
         exporter = HeaderExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)
+        exporter.interface_file = exporters.current_interface 
 
 
 #==============================================================================
@@ -160,6 +165,7 @@ class VarInfo(DeclarationInfo):
         self._Attribute('include', include)
         exporter = VarExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)
+        exporter.interface_file = exporters.current_interface 
         
                                  
 #==============================================================================

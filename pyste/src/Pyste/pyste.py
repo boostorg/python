@@ -158,6 +158,7 @@ def Begin():
     includes, defines, module, out, interfaces, multiple = ParseArguments()
     # execute the interface files
     for interface in interfaces:
+        exporters.current_interface = interface
         context = CreateContext()
         execfile(interface, context)        
     # create the parser
@@ -211,7 +212,7 @@ def Begin():
         exported_names = {}
         for export in exports:
             if multiple:
-                codeunit.SetCurrent(export.Unit())
+                codeunit.SetCurrent(export.interface_file, export.Unit())
             export.GenerateCode(codeunit, exported_names)
             exported_names[export.Name()] = 1
         # force collect of cyclic references

@@ -11,6 +11,7 @@ class Exporter:
     def __init__(self, info, parser_tail=None):
         self.info = info
         self.parser_tail = parser_tail
+        self.interface_file = None
     
 
     def Name(self):

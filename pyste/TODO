@@ -8,3 +8,6 @@
   instance)
 
 - Virtual operators  
+
+
+- staticmethod bug
