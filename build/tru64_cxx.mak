@@ -64,12 +64,18 @@ $(BPL_EXA)/getting_started2.cpp \
 $(BPL_EXA)/getting_started3.cpp \
 $(BPL_EXA)/getting_started4.cpp \
 $(BPL_EXA)/getting_started5.cpp \
+$(BPL_EXA)/pickle1.cpp \
+$(BPL_EXA)/pickle2.cpp \
+$(BPL_EXA)/pickle3.cpp \
 $(BPL_EXA)/test_abstract.py \
 $(BPL_EXA)/test_getting_started1.py \
 $(BPL_EXA)/test_getting_started2.py \
 $(BPL_EXA)/test_getting_started3.py \
 $(BPL_EXA)/test_getting_started4.py \
 $(BPL_EXA)/test_getting_started5.py \
+$(BPL_EXA)/test_pickle1.py \
+$(BPL_EXA)/test_pickle2.py \
+$(BPL_EXA)/test_pickle3.py \
 $(BPL_EXA)/noncopyable.h \
 $(BPL_EXA)/noncopyable_export.cpp \
 $(BPL_EXA)/noncopyable_import.cpp \
@@ -89,6 +95,7 @@ DEPOBJ= $(OBJ) \
         abstract.o \
         getting_started1.o getting_started2.o getting_started3.o \
         getting_started4.o getting_started5.o \
+        pickle1.o pickle2.o pickle3.o \
         noncopyable_export.o noncopyable_import.o \
         ivect.o dvect.o
 
@@ -99,6 +106,7 @@ all: libboost_python.a \
      abstract.so \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so \
+     pickle1.so pickle2.so pickle3.so \
      noncopyable_export.so noncopyable_import.so \
      ivect.so dvect.so
 
@@ -155,6 +163,15 @@ getting_started4.so: $(OBJ) getting_started4.o
 getting_started5.so: $(OBJ) getting_started5.o
 	$(LD) $(LDOPTS) $(OBJ) getting_started5.o -o getting_started5.so
 
+pickle1.so: $(OBJ) pickle1.o
+	$(LD) $(LDOPTS) $(OBJ) pickle1.o -o pickle1.so
+
+pickle2.so: $(OBJ) pickle2.o
+	$(LD) $(LDOPTS) $(OBJ) pickle2.o -o pickle2.so
+
+pickle3.so: $(OBJ) pickle3.o
+	$(LD) $(LDOPTS) $(OBJ) pickle3.o -o pickle3.so
+
 noncopyable_export.so: $(OBJ) noncopyable_export.o
 	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) \
           noncopyable_export.o -o noncopyable_export.so
@@ -180,6 +197,9 @@ test:
 	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_getting_started4.py
 	$(PYEXE) test_getting_started5.py
+	$(PYEXE) test_pickle1.py
+	$(PYEXE) test_pickle2.py
+	$(PYEXE) test_pickle3.py
 
 tst:
 	$(PYEXE) tst_noncopyable.py
@@ -195,6 +215,9 @@ clean:
 	rm -f getting_started3.o getting_started3.so
 	rm -f getting_started4.o getting_started4.so
 	rm -f getting_started5.o getting_started5.so
+	rm -f pickle1.o pickle1.so
+	rm -f pickle2.o pickle2.so
+	rm -f pickle3.o pickle3.so
 	rm -f noncopyable_export.o noncopyable_export.so
 	rm -f noncopyable_import.o noncopyable_import.so
 	rm -f ivect.o ivect.so

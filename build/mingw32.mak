@@ -74,12 +74,18 @@ $(BPL_EXA)/getting_started2.cpp \
 $(BPL_EXA)/getting_started3.cpp \
 $(BPL_EXA)/getting_started4.cpp \
 $(BPL_EXA)/getting_started5.cpp \
+$(BPL_EXA)/pickle1.cpp \
+$(BPL_EXA)/pickle2.cpp \
+$(BPL_EXA)/pickle3.cpp \
 $(BPL_EXA)/test_abstract.py \
 $(BPL_EXA)/test_getting_started1.py \
 $(BPL_EXA)/test_getting_started2.py \
 $(BPL_EXA)/test_getting_started3.py \
 $(BPL_EXA)/test_getting_started4.py \
 $(BPL_EXA)/test_getting_started5.py \
+$(BPL_EXA)/test_pickle1.py \
+$(BPL_EXA)/test_pickle2.py \
+$(BPL_EXA)/test_pickle3.py \
 $(BPL_EXA)/noncopyable.h \
 $(BPL_EXA)/noncopyable_export.cpp \
 $(BPL_EXA)/noncopyable_import.cpp \
@@ -99,6 +105,9 @@ getting_started2 \
 getting_started3 \
 getting_started4 \
 getting_started5 \
+pickle1 \
+pickle2 \
+pickle3 \
 noncopyable_export \
 noncopyable_import \
 ivect \
@@ -115,6 +124,7 @@ all: libboost_python.a \
      abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
      getting_started4.pyd getting_started5.pyd \
+     pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd
 
@@ -136,7 +146,7 @@ unlink: rmdefs
             bn=`basename "$$pn"`; \
 	    if [ -L "$$bn" ]; then \
               echo "rm $$bn"; \
-              rm "$$bn"; \
+              rm -f "$$bn"; \
             elif [ -e "$$bn" ]; then \
               echo "info: not a softlink: $$bn"; \
 	    fi; \
@@ -151,7 +161,7 @@ defs:
 rmdefs:
 	@ for def in $(DEFS); \
 	  do \
-            rm $$def.def; \
+            rm -f $$def.def; \
 	  done
 
 libboost_python.a: $(OBJ)
@@ -203,6 +213,24 @@ getting_started5.pyd: $(OBJ) getting_started5.o
           --def getting_started5.def \
           $(OBJ) getting_started5.o $(PYLIB)
 
+pickle1.pyd: $(OBJ) pickle1.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle1.pyd \
+          --def pickle1.def \
+          $(OBJ) pickle1.o $(PYLIB)
+
+pickle2.pyd: $(OBJ) pickle2.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle2.pyd \
+          --def pickle2.def \
+          $(OBJ) pickle2.o $(PYLIB)
+
+pickle3.pyd: $(OBJ) pickle3.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle3.pyd \
+          --def pickle3.def \
+          $(OBJ) pickle3.o $(PYLIB)
+
 noncopyable_export.pyd: $(OBJ) noncopyable_export.o
 	dllwrap $(DLLWRAPOPTS) \
           --dllname noncopyable_export.pyd \
@@ -238,6 +266,9 @@ test:
 	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_getting_started4.py
 	$(PYEXE) test_getting_started5.py
+	$(PYEXE) test_pickle1.py
+	$(PYEXE) test_pickle2.py
+	$(PYEXE) test_pickle3.py
 
 tst:
 	$(PYEXE) tst_noncopyable.py
@@ -253,6 +284,9 @@ clean:
 	rm -f getting_started3.o getting_started3.pyd
 	rm -f getting_started4.o getting_started4.pyd
 	rm -f getting_started5.o getting_started5.pyd
+	rm -f pickle1.o pickle1.pyd
+	rm -f pickle2.o pickle2.pyd
+	rm -f pickle3.o pickle3.pyd
 	rm -f noncopyable_export.o noncopyable_export.pyd
 	rm -f noncopyable_import.o noncopyable_import.pyd
 	rm -f ivect.o ivect.pyd
