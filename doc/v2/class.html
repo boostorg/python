@@ -462,7 +462,9 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
                 <td>Any <a href="definitions.html#ntbs">ntbs</a>.</td>
 
                 <td>Value will be bound to the <code>__doc__</code> attribute
-                of the resulting method overload.</td>
+                of the resulting method overload. If an earlier overload 
+                supplied a docstring, two newline characters and the new
+                docstring are appended to it.</td>
               </tr>
 
               <tr>

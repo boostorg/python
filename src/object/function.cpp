@@ -472,7 +472,12 @@ void function::add_to_namespace(
     if (doc != 0)
     {
         object attr_copy(attribute);
-        attr_copy.attr("__doc__") = doc;
+        if (PyObject_HasAttrString(attr_copy.ptr(), "__doc__") && attr_copy.attr("__doc__")) {
+            attr_copy.attr("__doc__") += "\n\n";
+            attr_copy.attr("__doc__") += doc;
+        }
+        else
+            attr_copy.attr("__doc__") = doc;
     }
 }
 

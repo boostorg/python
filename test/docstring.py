@@ -15,15 +15,19 @@ includes some error-checking
 this is the __init__ function
 its documentation has two lines.
 
->>> printdoc(X.value)
-gets the value of the object
-
 >>> printdoc(create)
 creates a new X object
 
 >>> printdoc(fact)
 compute the factorial
 '''
+
+def check_double_string():
+	"""
+	>>> assert check_double_string() == True
+	"""
+	from docstring_ext import X
+	return X.value.__doc__ == "gets the value of the object\n\nalso gets the value of the object"
 
 def run(args = None):
     import sys

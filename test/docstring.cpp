@@ -47,6 +47,8 @@ BOOST_PYTHON_MODULE(docstring_ext)
         )
         .def("value", &X::value,
              "gets the value of the object")
+        .def( "value", &X::value,
+            "also gets the value of the object")
         ;
 
     def("create", create, return_value_policy<manage_new_object>(),
