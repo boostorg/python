@@ -566,18 +566,12 @@ bool add_capability_richcompare(type_object_base::capability capability, PyTypeO
     return false;
 }
 
-#if PYTHON_API_VERSION >= 1010
-# define ENABLE_INPLACE_CAPABILITY1 \
-        dest->tp_flags |= Py_TPFLAGS_HAVE_INPLACEOPS;
-#else
-# define ENABLE_INPLACE_CAPABILITY1
-#endif
 #define ENABLE_INPLACE_CAPABILITY(field) \
     case type_object_base::number_##field: \
         create_method_table_if_null(dest->tp_as_number); \
         dest->tp_as_number->nb_##field = &do_instance_nb_##field; \
         detail::shared_pod_manager::replace_if_equal(dest->tp_as_number); \
-        ENABLE_INPLACE_CAPABILITY1 \
+        dest->tp_flags |= Py_TPFLAGS_HAVE_INPLACEOPS; \
         return true
 
 bool add_capability_inplace(type_object_base::capability capability, PyTypeObject* dest)
@@ -585,6 +579,7 @@ bool add_capability_inplace(type_object_base::capability capability, PyTypeObjec
     assert(dest != 0);
     switch (capability)
     {
+#if PYTHON_API_VERSION >= 1010
         ENABLE_INPLACE_CAPABILITY (inplace_add);
         ENABLE_INPLACE_CAPABILITY (inplace_subtract);
         ENABLE_INPLACE_CAPABILITY (inplace_multiply);
@@ -596,6 +591,7 @@ bool add_capability_inplace(type_object_base::capability capability, PyTypeObjec
         ENABLE_INPLACE_CAPABILITY (inplace_and);
         ENABLE_INPLACE_CAPABILITY (inplace_or);
         ENABLE_INPLACE_CAPABILITY (inplace_xor);
+#endif
         default:
             return false;
     }

@@ -334,7 +334,8 @@ Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.
     'Docs for DerivedFromBase.fred'
 
     >>> import sys
-    >>> if sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and
+    >>> if not sys.__dict__.has_key('version_info') or \
+    ...    sys.version_info[0] < 2 or ( sys.version_info[0] == 2 and
     ...                                 sys.version_info[1] < 2 ):
     ...     assert dir(df) == []
     ...     assert dir(db) == []
@@ -1069,43 +1070,6 @@ test inheritB2
     Traceback (innermost last):
     TypeError: bad operand type(s) for pow()
 
-    >>> ii = Int(1)
-    >>> ii += Int(2)
-    >>> ii.i()
-    3
-    >>> ii -= Int(1)
-    >>> ii.i()
-    2
-    >>> ii *= Int(3)
-    >>> ii.i()
-    6
-    >>> ii /= Int(2)
-    >>> ii.i()
-    3
-    >>> ii <<= Int(2)
-    >>> ii.i()
-    12
-    >>> ii >>= Int(1)
-    >>> ii.i()
-    6
-    >>> ii &= Int(5)
-    >>> ii.i()
-    4
-    >>> ii |= Int(9)
-    >>> ii.i()
-    13
-    >>> ii ^= Int(7)
-    >>> ii.i()
-    10
-    >>> ii %= Int(4)
-    >>> ii.i()
-    2
-    >>> ii **= Int(3)
-    >>> ii.i()
-    8
-    >>> ii.j()
-    11
-
 Test operator export to a subclass
 
     # force method table sharing
@@ -1225,6 +1189,50 @@ test methodologies for wrapping functions that return a pointer
 
 '''
 #'
+
+__test__ = {}
+import sys
+
+# Inplace ops only exist in python 2.1 or later.
+if sys.hexversion >= 0x02010000:
+    __test__['inplacetests'] = r'''
+    >>> ii = Int(1)
+    >>> ii += Int(2)
+    >>> ii.i()
+    3
+    >>> ii -= Int(1)
+    >>> ii.i()
+    2
+    >>> ii *= Int(3)
+    >>> ii.i()
+    6
+    >>> ii /= Int(2)
+    >>> ii.i()
+    3
+    >>> ii <<= Int(2)
+    >>> ii.i()
+    12
+    >>> ii >>= Int(1)
+    >>> ii.i()
+    6
+    >>> ii &= Int(5)
+    >>> ii.i()
+    4
+    >>> ii |= Int(9)
+    >>> ii.i()
+    13
+    >>> ii ^= Int(7)
+    >>> ii.i()
+    10
+    >>> ii %= Int(4)
+    >>> ii.i()
+    2
+    >>> ii **= Int(3)
+    >>> ii.i()
+    8
+    >>> ii.j()
+    11
+'''
 
 from boost_python_test import *
 
