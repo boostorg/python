@@ -20,14 +20,14 @@ if PYTHON_ROOT:
     PYTHON_INCLUDE = PYTHON_ROOT + '/include'
     PYTHON_LIB = PYTHON_ROOT + '/libs'
 
-LIBS = ['boost_python', 'python22']
+LIBS = ['boost_python', 'python22']  
 
 INCLUDES = ['../example']
 if sys.platform == 'win32':
     CXX = 'icl'
     CXXFLAGS='/GR /GX /MD /nologo'
     INCLUDES += [BOOST_INCLUDE, STLPORT_INCLUDE, PYTHON_INCLUDE]
-    LIBPATH = [STLPORT_LIB, PYTHON_LIB, BOOST_LIB]
+    LIBPATH = [STLPORT_LIB, PYTHON_LIB, BOOST_LIB] + os.environ['LIB'].split(os.pathsep)  
 else:
     CXX = 'g++'
     CXXFLAGS = ''

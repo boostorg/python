@@ -18,13 +18,14 @@ class FunctionExporter(Exporter):
         
         
     def Export(self, codeunit, exported_names):
-        decls = self.GetDeclarations(self.info.name)
-        for decl in decls:
-            self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
-            exporterutils.WarnForwardDeclarations(decl)
-            self.ExportDeclaration(decl, len(decls) == 1, codeunit)
-            self.ExportOpaquePointer(decl, codeunit)
-        self.GenerateOverloads(decls, codeunit)  
+        if not self.info.exclude:
+            decls = self.GetDeclarations(self.info.name)
+            for decl in decls:
+                self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
+                exporterutils.WarnForwardDeclarations(decl)
+                self.ExportDeclaration(decl, len(decls) == 1, codeunit)
+                self.ExportOpaquePointer(decl, codeunit)
+            self.GenerateOverloads(decls, codeunit)  
 
 
     def ExportDeclaration(self, decl, unique, codeunit):

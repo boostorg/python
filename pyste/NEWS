@@ -1,3 +1,7 @@
+22 Apr 2003
+- Now shows a warning when the user tries to export a forward-declared class. Forward-declared classes are ignored by the AllFromHeader construct.
+- Fixed a bug where classes, functions and enums where being exported, even if excluded from a AllFromHeader construct.
+
 16 Apr 2003
 Added a more generic (but ugly) code to declare the smart pointer converters.
 

@@ -13,3 +13,11 @@ class HeaderTest(unittest.TestCase):
         self.assertEqual(c.get(), 'blue')
         c.c = choice.red
         self.assertEqual(c.get(), 'red')
+        # the following classes/functions should not have being exported
+        self.assertRaises(NameError, lambda: A())
+        self.assertRaises(NameError, lambda: foo())
+        self.assertRaises(NameError, lambda: bar.value)
+        self.assertRaises(NameError, lambda: ForwardDeclared())
+        
+if __name__ == '__main__':
+    unittest.main()    

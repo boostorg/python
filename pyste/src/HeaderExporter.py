@@ -49,19 +49,20 @@ class HeaderExporter(Exporter):
             Function : FunctionExporter,
         }
         
-        for decl_type, exporter_type in dispatch_table.items():
-            if type(decl) == decl_type:
-                self.HandleExporter(decl, exporter_type)
-                break
+        exporter_class = dispatch_table.get(type(decl))
+        if exporter_class is not None:
+            self.HandleExporter(decl, exporter_class)
 
             
     def HandleExporter(self, decl, exporter_type):
-        info = self.info[decl.name]
-        info.name = decl.FullName()
-        info.include = self.info.include
-        exporter = exporter_type(info)
-        exporter.SetDeclarations(self.declarations)
-        exporters.exporters.append(exporter)
+        # only export complete declarations
+        if not getattr(decl, "incomplete", False):
+            info = self.info[decl.name]
+            info.name = decl.FullName()
+            info.include = self.info.include
+            exporter = exporter_type(info)
+            exporter.SetDeclarations(self.declarations)
+            exporters.exporters.append(exporter)
 
     
     def Unit(self):

@@ -1,1 +1,4 @@
-AllFromHeader('header_test.h')
+h = AllFromHeader('header_test.h')
+exclude(h.A)
+exclude(h.foo)
+exclude(h.bar)

@@ -92,21 +92,30 @@ class ClassExporter(Exporter):
         
     
     def Export(self, codeunit, exported_names):
-        self.CheckForwardDeclarations()
-        self.ExportBasics()
-        self.ExportBases(exported_names)
-        self.ExportConstructors()
-        self.ExportVariables()
-        self.ExportMethods()
-        self.ExportVirtualMethods()
-        self.ExportOperators()
-        self.ExportNestedClasses(exported_names)
-        self.ExportNestedEnums()
-        self.ExportSmartPointer()
-        self.ExportOpaquePointerPolicies()
-        self.Write(codeunit)
+        if not self.info.exclude:
+            self.CheckIsForwardDeclared()
+            self.CheckForwardDeclarations()
+            self.ExportBasics()
+            self.ExportBases(exported_names)
+            self.ExportConstructors()
+            self.ExportVariables()
+            self.ExportMethods()
+            self.ExportVirtualMethods()
+            self.ExportOperators()
+            self.ExportNestedClasses(exported_names)
+            self.ExportNestedEnums()
+            self.ExportSmartPointer()
+            self.ExportOpaquePointerPolicies()
+            self.Write(codeunit)
 
 
+    def CheckIsForwardDeclared(self):
+        if self.class_.incomplete:
+            print "--> Error: Class %s is forward declared! " \
+                "Please use the header with its complete definition." % self.class_.FullName()
+            print
+            
+            
     def CheckForwardDeclarations(self):
         for m in self.public_members:
             if isinstance(m, Function):

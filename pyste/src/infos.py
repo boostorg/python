@@ -54,6 +54,7 @@ class FunctionInfo(DeclarationInfo):
         DeclarationInfo.__init__(self, otherOption)
         self._Attribute('name', name)
         self._Attribute('include', include)
+        self._Attribute('exclude', False)
         # create a FunctionExporter
         exporter = FunctionExporter(InfoWrapper(self), tail)
         exporters.exporters.append(exporter)
@@ -68,6 +69,7 @@ class ClassInfo(DeclarationInfo):
         DeclarationInfo.__init__(self, otherInfo)
         self._Attribute('name', name)
         self._Attribute('include', include)
+        self._Attribute('exclude', False)
         # create a ClassExporter
         exporter = ClassExporter(InfoWrapper(self), tail)
         exporters.exporters.append(exporter) 
@@ -129,6 +131,7 @@ class EnumInfo(DeclarationInfo):
         DeclarationInfo.__init__(self)
         self._Attribute('name', name)
         self._Attribute('include', include)
+        self._Attribute('exclude', False)
         exporter = EnumExporter(InfoWrapper(self))
         exporters.exporters.append(exporter)
 

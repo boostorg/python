@@ -26,6 +26,13 @@ struct C
     }
 };
 
+// test the exclusion of the following
+
+struct ForwardDeclared; // should be excluded automatically
+struct A {};
+void foo();
+enum bar { value };
+
 }
 
 #endif
