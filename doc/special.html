@@ -287,6 +287,35 @@ bignum_class.def(&amp;rmod,  "__rmod__");
         found first (be it ``<code>int</code>`` or ``<code>float</code>'') will be
         used for either of the two types.
 
+<h3><a name="inplace">Inplace Operators</a></h3>
+<p>
+        Boost.Python can also be used to expose inplace numeric operations
+        (i.e., <code>+=</code> and so forth).  These operators must be wrapped
+        manually, as described in the previous section.  For example, suppose
+        the class BigNum has an <code>operator+=</code>:
+
+<blockquote><pre>
+BigNum& operator+= (BigNum const&amp; right);
+</pre></blockquote>
+
+      This can be exposed by first writing a wrapper function:
+
+<blockquote><pre>
+BigNum& iadd (BigNum&amp; self, const BigNum&amp; right)
+{
+  return self += right;
+}
+</pre></blockquote>
+
+      and then exposing the wrapper with
+
+<blockquote><pre>
+bignum_class.def(&amp;iadd, "__iadd__");
+</pre></blockquote>
+
+
+
+
 <h3><a name="coercion">Coercion</a></h3>
 
 
