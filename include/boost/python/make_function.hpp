@@ -12,27 +12,30 @@
 # include <boost/python/object/function.hpp>
 # include <boost/python/object/make_holder.hpp>
 # include <boost/python/detail/caller.hpp>
+# include <boost/python/detail/arg_tuple_size.hpp>
 
 namespace boost { namespace python {
 
 template <class F>
-PyObject* make_function(F f)
+objects::function* make_function(F f)
 {
-    return new object::function(
-        object::py_function(
-            bind<PyObject*>(detail::caller(), f, _1, _2)));
+    return new objects::function(
+        objects::py_function(
+            bind<PyObject*>(detail::caller(), f, _1, _2))
+        , detail::arg_tuple_size<F>::value);
 }
 
 template <class T, class ArgList, class Generator>
-PyObject* make_constructor(T* = 0, ArgList* = 0, Generator* = 0)
+objects::function* make_constructor(T* = 0, ArgList* = 0, Generator* = 0)
 {
     enum { nargs = mpl::size<ArgList>::value };
-    return new object::function(
-        object::py_function(
+    return new objects::function(
+        objects::py_function(
             bind<PyObject*>(detail::caller(),
-                 object::make_holder<nargs>
+                 objects::make_holder<nargs>
                             ::template apply<T,Generator,ArgList>::execute
-                 , _1, _2)));
+                 , _1, _2))
+        , nargs + 1);
 }
 
 }} // namespace boost::python
