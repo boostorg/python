@@ -1,0 +1,24 @@
+To get started with the Boost Python Library, use the examples
+getting_started1.cpp and getting_started2.cpp.
+
+Examples for providing pickle support can be found in:
+  pickle1.cpp
+  pickle2.cpp
+  pickle3.cpp
+See also: libs/python/doc/pickle.html
+
+Other advanced concepts are introduced by:
+  abstract.cpp
+  simple_vector.cpp
+  do_it_yourself_converters.cpp
+
+Examples for the cross-module support are provided by:
+  noncopyable_export.cpp
+  noncopyable_import.cpp
+  dvect.cpp
+  ivect.cpp
+See also: libs/python/doc/cross_module.html
+
+The files example1.cpp and rwgk1.cpp are obsolete. They are only
+included because the Visual Studio project in the build directory still
+refers to them.

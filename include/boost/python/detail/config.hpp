@@ -6,6 +6,9 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
+//  Revision History:
+//  04 Mar 01  Some fixes so it will compile with Intel C++ (Dave Abrahams)
+
 #ifndef CONFIG_DWA052200_H_
 # define CONFIG_DWA052200_H_
 
@@ -21,7 +24,7 @@
 # else
 #  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
 #  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
-#  define BOOST_PYTHON_CONVERSION python
+#  define BOOST_PYTHON_CONVERSION boost::python
 #  define BOOST_PYTHON_IMPORT_CONVERSION(x) void never_defined() // so we can follow the macro with a ';'
 # endif
 
@@ -46,11 +49,18 @@
 # endif
 
 // The STLport puts all of the standard 'C' library names in std (as far as the
-// user is concerned), but without it you need a fix if you're using MSVC.
-# if defined(BOOST_MSVC6_OR_EARLIER) && !defined(__STLPORT)
+// user is concerned), but without it you need a fix if you're using MSVC or
+// Intel C++
+# if defined(BOOST_MSVC_STD_ITERATOR)
 #  define BOOST_CSTD_
 # else
 #  define BOOST_CSTD_ std
 # endif
+
+#if defined(_WIN32) || defined(__CYGWIN__)
+# define BOOST_PYTHON_MODULE_INIT(name) extern "C" __declspec(dllexport) void init##name()
+#else
+# define BOOST_PYTHON_MODULE_INIT(name) extern "C" void init##name()
+#endif
 
 #endif // CONFIG_DWA052200_H_
