@@ -20,6 +20,7 @@
 
 # include <boost/mpl/bool_c.hpp>
 # include <boost/mpl/if.hpp>
+# include <boost/mpl/logical/or.hpp>
 
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/is_base_and_derived.hpp>
@@ -211,7 +212,10 @@ struct select_holder
         is_same<Held, python::detail::not_specified>
       , detail::select_value_holder<T,T>
       , typename mpl::if_<
-            is_base_and_derived<T, Held>
+            mpl::logical_or<
+                is_same<T,Held>
+              , is_base_and_derived<T, Held>
+            >
           , detail::select_value_holder<T,Held>
           , detail::select_pointer_holder<T, Held>
         >::type
