@@ -80,7 +80,7 @@ namespace detail
   no_pointer_wrapper_t is_pointer_wrapper_test(...);
 
   template<typename T>
-  yes_pointer_wrapper_t is_pointer_wrapper_test(type< pointer_wrapper<T> >);
+  yes_pointer_wrapper_t is_pointer_wrapper_test(boost::type< pointer_wrapper<T> >);
 
   template<bool wrapped>
   struct pointer_unwrapper
@@ -109,7 +109,7 @@ class is_pointer_wrapper
  public:
     BOOST_STATIC_CONSTANT(
         bool, value = (
-            sizeof(detail::is_pointer_wrapper_test(type<T>()))
+            sizeof(detail::is_pointer_wrapper_test(boost::type<T>()))
             == sizeof(detail::yes_pointer_wrapper_t)));
 };
 
