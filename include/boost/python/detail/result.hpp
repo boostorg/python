@@ -92,8 +92,8 @@ result(X const&, short = 0) { return 0; }
 
 # define N BOOST_PP_ITERATION()
 
-template <class R BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
-boost::type<R>* result(R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A)), int = 0)
+template <class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
+boost::type<R>* result(R (*pf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)), int = 0)
 {
     return 0;
 }

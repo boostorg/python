@@ -23,6 +23,7 @@
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 #  include <cstddef>
 
@@ -64,7 +65,7 @@ struct make_holder<N>
         BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FORWARD_ARG, nil)
         static void execute(
             PyObject* p
-            BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, t, a))
+            BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, t, a))
         {
             typedef instance<Holder> instance_t;
             

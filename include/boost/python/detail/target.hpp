@@ -66,7 +66,7 @@ boost::type<BOOST_PP_IF(N, A0, void)>* target(R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N,
 # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
 
 template <class R, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
-boost::type<T Q*>* target(R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q)
+boost::type<T Q*>* target(R (T::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q)
 {
     return 0;
 }

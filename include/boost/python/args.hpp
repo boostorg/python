@@ -8,6 +8,7 @@
 #  include <boost/config.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/python/detail/type_list.hpp>
+#  include <boost/preprocessor/enum_params.hpp>
 
 namespace boost { namespace python {
 
@@ -24,8 +25,8 @@ namespace boost { namespace python {
 
 // A type list for specifying arguments
 template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, mpl::void_) >
-struct args : detail::args_base<args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
-      , detail::type_list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A) >::type
+struct args : detail::args_base<args<BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_MAX_ARITY, A)> >
+      , detail::type_list< BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_MAX_ARITY, A) >::type
 {};
 
 }} // namespace boost::python

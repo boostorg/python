@@ -92,7 +92,7 @@ struct returning<void>
 
     template<class P BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
-        R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A))
+        R (*pf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A))
         , PyObject* args_
         , PyObject*, P const* policies)
     {
@@ -113,7 +113,7 @@ struct returning<void>
 
     template<class P BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
-        R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A))
+        R (*pf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A))
         , PyObject* args_
         , PyObject*, P const* policies)
     {
@@ -158,7 +158,7 @@ struct returning<void>
 
     template<class P, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
-        R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q
+        R (T::*pmf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q
         , PyObject* args_
         , PyObject*, P const* policies)
     {
@@ -186,7 +186,7 @@ struct returning<void>
 
     template<class P, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
-        R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q
+        R (T::*pmf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q
         , PyObject* args_
         , PyObject*, P const* policies)
     {

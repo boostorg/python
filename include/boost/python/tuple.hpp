@@ -3,6 +3,8 @@
 
 #include <boost/python/object.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
+#include <boost/preprocessor/enum_params.hpp>
+#include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 namespace boost { namespace python {
 

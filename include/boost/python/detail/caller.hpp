@@ -61,10 +61,10 @@ struct caller
 
 template <
     class P, class R
-    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)
+    BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)
     >
 PyObject* operator()(
-    R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A))
+    R (*pf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A))
     , PyObject* args
     , PyObject* keywords
     , P const& policies) const
@@ -92,7 +92,7 @@ template <
     BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)
     >
 PyObject* operator()(
-    R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q
+    R (T::*pmf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q
     , PyObject* args, PyObject* keywords
     , P const& policies
     ) const

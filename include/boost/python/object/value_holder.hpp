@@ -19,9 +19,13 @@
 #  include <boost/python/detail/preprocessor.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/enum_params.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+
+#  include <boost/preprocessor/repetition/enum_params.hpp>
+#  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -96,10 +100,10 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
 # define N BOOST_PP_ITERATION()
 
 # if (N != 0)
-    template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template <BOOST_PP_ENUM_PARAMS_Z(1, N, class A)>
 # endif
     value_holder(
-      PyObject* BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+      PyObject* BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
         : m_held(
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
@@ -115,10 +119,10 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
 # define N BOOST_PP_ITERATION()
 
 # if (N != 0)
-    template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template <BOOST_PP_ENUM_PARAMS_Z(1, N, class A)>
 # endif
     value_holder_back_reference(
-        PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+        PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
         : m_held(
             p BOOST_PP_COMMA_IF(N)
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)

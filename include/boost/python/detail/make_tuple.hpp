@@ -17,9 +17,9 @@
         , python::incref(python::object(a##N).ptr())    \
         );
 
-    template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template <BOOST_PP_ENUM_PARAMS_Z(1, N, class A)>
     tuple
-    make_tuple(BOOST_PYTHON_BINARY_ENUM(N, A, const& a))
+    make_tuple(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, const& a))
     {
         tuple result((detail::new_reference)::PyTuple_New(N));
         BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_MAKE_TUPLE_ARG, _)

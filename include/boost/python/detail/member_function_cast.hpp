@@ -17,6 +17,8 @@
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+
+#  include <boost/preprocessor/repetition/enum_params.hpp>
 #  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 namespace boost { namespace python { namespace detail { 
@@ -97,17 +99,19 @@ struct member_function_cast
 
 # define N BOOST_PP_ITERATION()
 # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
+# define P BOOST_PP_ENUM_PARAMS_Z(1, N, A)
 
     template <
         class S, class R
         BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)
         >
-    static cast_helper<S, R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q>
-    stage1(R (S::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q)
+    static cast_helper<S, R (T::*)( P ) Q>
+    stage1(R (S::*)( P ) Q)
     {
-        return cast_helper<S, R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q>();
+        return cast_helper<S, R (T::*)( P ) Q>();
     }
 
+# undef P
 # undef N
 # undef Q
 

@@ -15,6 +15,7 @@
 #include <boost/preprocessor/repeat_from_to.hpp>
 #include <boost/preprocessor/enum.hpp>
 #include <boost/preprocessor/enum_params.hpp>
+#include <boost/preprocessor/repetition/enum_binary_params.hpp>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/arithmetic/sub.hpp>
@@ -97,17 +98,17 @@ struct overloads_common
         BOOST_PP_CAT(iter, BOOST_PP_INC(index));                                \
     typedef typename BOOST_PP_CAT(iter, index)::type BOOST_PP_CAT(T, index);    \
 
-#define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                           \
-    static RT BOOST_PP_CAT(func_,                                               \
-        BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (            \
-        BOOST_PYTHON_BINARY_ENUM(                                               \
-            index, T, arg))                                                     \
-    {                                                                           \
-        BOOST_PP_TUPLE_ELEM(3, 2, data)                                         \
-        BOOST_PP_TUPLE_ELEM(3, 0, data)(                                        \
-            BOOST_PP_ENUM_PARAMS(                                               \
-                index,                                                          \
-                arg));                                                          \
+#define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                   \
+    static RT BOOST_PP_CAT(func_,                                       \
+        BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (    \
+        BOOST_PP_ENUM_BINARY_PARAMS_Z(                                  \
+            1, index, T, arg))                                          \
+    {                                                                   \
+        BOOST_PP_TUPLE_ELEM(3, 2, data)                                 \
+        BOOST_PP_TUPLE_ELEM(3, 0, data)(                                \
+            BOOST_PP_ENUM_PARAMS(                                       \
+                index,                                                  \
+                arg));                                                  \
     }
 
 #define BOOST_PYTHON_GEN_FUNCTION(fname, fstubs_name, n_args, n_dflts, ret)     \
@@ -141,7 +142,7 @@ struct overloads_common
     static RT BOOST_PP_CAT(func_,                                               \
         BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (            \
             ClassT& obj BOOST_PP_COMMA_IF(index)                                \
-            BOOST_PYTHON_BINARY_ENUM(index, T, arg)                             \
+            BOOST_PP_ENUM_BINARY_PARAMS_Z(1, index, T, arg)                     \
         )                                                                       \
     {                                                                           \
         BOOST_PP_TUPLE_ELEM(3, 2, data) obj.BOOST_PP_TUPLE_ELEM(3, 0, data)(    \

@@ -77,7 +77,7 @@ struct arg_tuple_size
 # if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 template <class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
-struct arg_tuple_size<R (*)(BOOST_PYTHON_UNARY_ENUM(N, A))>
+struct arg_tuple_size<R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A))>
 {
     BOOST_STATIC_CONSTANT(std::size_t, value = N);
 };
@@ -86,7 +86,7 @@ struct arg_tuple_size<R (*)(BOOST_PYTHON_UNARY_ENUM(N, A))>
 
 template<class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
 char_array<N> arg_tuple_size_helper(
-        R (*)(BOOST_PYTHON_UNARY_ENUM(N, A)));
+        R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)));
 
 # endif // !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
