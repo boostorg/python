@@ -11,7 +11,7 @@
 
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/function.hpp>
+# include <boost/function/function0.hpp>
 
 namespace boost { namespace python {
 

@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <string>
-#include <boost/python/operators2.hpp>
+#include <boost/python/operators.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include "test_class.hpp"

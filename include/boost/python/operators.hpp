@@ -11,23 +11,28 @@
 //  23 Jan 2001 - Another stupid typo fix by Ralf W. Grosse-Kunstleve (David Abrahams)
 //  20 Jan 2001 - Added a fix from Ralf W. Grosse-Kunstleve (David Abrahams)
 #ifndef OPERATORS_UK112000_H_
-#define OPERATORS_UK112000_H_
+# define OPERATORS_UK112000_H_
+# ifdef BOOST_PYTHON_V2
 
-# include <boost/python/reference.hpp>
-# include <boost/python/detail/functions.hpp>
+#  include <boost/python/operators2.hpp>
+
+# else 
+
+#  include <boost/python/reference.hpp>
+#  include <boost/python/detail/functions.hpp>
 
 // When STLport is used with native streams, _STL::ostringstream().str() is not
 // _STL::string, but std::string. This confuses to_python(), so we'll use
 // strstream instead. Also, GCC 2.95.2 doesn't have sstream.
-# if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
-#  define BOOST_PYTHON_USE_SSTREAM
-# endif
+#  if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
+#   define BOOST_PYTHON_USE_SSTREAM
+#  endif
 
-#if defined(BOOST_PYTHON_USE_SSTREAM)
-#  include <sstream>
-# else
-#  include <strstream>
-# endif
+# if defined(BOOST_PYTHON_USE_SSTREAM)
+#   include <sstream>
+#  else
+#   include <strstream>
+#  endif
 
 namespace boost { namespace python {
 
@@ -234,7 +239,7 @@ namespace detail
 // Specializations for most operators follow a standard pattern: execute the expression
 // that uses the operator in question. This standard pattern is realized by the following 
 // macros so that the actual specialization can be done by just calling a macro.
-#define PY_DEFINE_BINARY_OPERATORS(id, oper)                                            \
+# define PY_DEFINE_BINARY_OPERATORS(id, oper)                                            \
   template <>                                                                           \
   struct define_operator<op_##id>                                                       \
   {                                                                                     \
@@ -275,7 +280,7 @@ namespace detail
       static const char * rname() { return "__r" #id "__"; }                            \
   }
 
-#define PY_DEFINE_UNARY_OPERATORS(id, oper) \
+# define PY_DEFINE_UNARY_OPERATORS(id, oper) \
   template <>                                                                                   \
   struct define_operator<op_##id>                                                               \
   {                                                                                             \
@@ -322,8 +327,8 @@ namespace detail
   PY_DEFINE_UNARY_OPERATORS(long, PyLong_FromLong);
   PY_DEFINE_UNARY_OPERATORS(float, double);
 
-#undef PY_DEFINE_BINARY_OPERATORS
-#undef PY_DEFINE_UNARY_OPERATORS
+# undef PY_DEFINE_BINARY_OPERATORS
+# undef PY_DEFINE_UNARY_OPERATORS
 
 // Some operators need special treatment, e.g. because there is no corresponding 
 // expression in C++. These are specialized manually.
@@ -496,7 +501,7 @@ namespace detail
       static const char * rname() { return "__rcmp__"; }
   };
 
-# ifndef BOOST_PYTHON_USE_SSTREAM
+#  ifndef BOOST_PYTHON_USE_SSTREAM
   class unfreezer {
    public:
       unfreezer(std::ostrstream& s) : m_stream(s) {}
@@ -504,7 +509,7 @@ namespace detail
    private:
       std::ostrstream& m_stream;
   };
-# endif
+#  endif
   
 // str(): Manual specialization needed because the string conversion does not follow
 // the standard pattern relized by the macros.
@@ -520,16 +525,16 @@ namespace detail
 
 // When STLport is used with native streams, _STL::ostringstream().str() is not
 // _STL::string, but std::string.
-# ifdef BOOST_PYTHON_USE_SSTREAM
+#  ifdef BOOST_PYTHON_USE_SSTREAM
               std::ostringstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>());
               return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
-# else
+#  else
               std::ostrstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>()) << char();
               auto unfreezer unfreeze(s);
               return BOOST_PYTHON_CONVERSION::to_python(const_cast<char const *>(s.str())); 
-# endif
+#  endif
           }
 
           const char* description() const
@@ -545,5 +550,6 @@ namespace detail
 
 }} // namespace boost::python
 
-# undef BOOST_PYTHON_USE_SSTREAM
+#  undef BOOST_PYTHON_USE_SSTREAM
+# endif 
 #endif /* OPERATORS_UK112000_H_ */

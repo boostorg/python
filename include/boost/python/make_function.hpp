@@ -11,7 +11,6 @@
 # include <boost/python/detail/caller.hpp>
 # include <boost/python/detail/arg_tuple_size.hpp>
 # include <boost/mpl/size.hpp>
-# include <boost/function.hpp>
 # include <boost/bind.hpp>
 # include <boost/python/default_call_policies.hpp>
 

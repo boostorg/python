@@ -9,7 +9,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/python/reference.hpp>
-# include <boost/function.hpp>
+# include <boost/function/function2.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
