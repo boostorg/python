@@ -53,6 +53,7 @@ namespace boost { namespace python { namespace indexing {
     static T    copy   (T const &copy)        { return copy; }
     static void assign (T &to, T const &from) { to = from; }
     static void pre_destruction (T &)         { }
+    static void swap   (T &one, T &two)       { std::swap (one, two); }
   };
 
   template<typename P> struct deref {
@@ -67,6 +68,7 @@ namespace boost { namespace python { namespace indexing {
     static P    copy   (P const &copy)        { return copy; }
     static void assign (P &to, P const &from) { to = from; }
     static void pre_destruction (P &)         { }
+    static void swap   (P &one, P &two)       { std::swap (one, two); }
   };
 
   struct vector_generator {
@@ -290,6 +292,7 @@ namespace boost { namespace python { namespace indexing {
     void write_proxies (size_type, size_type);
     bool clear_proxy (pointer_impl &);         // detach and do not reset
     void clear_proxies (size_type, size_type); // detach and do not reset
+    void claim_all_proxies (); // Makes all proxies point at this object
 
   private:
     held_type m_held_obj;
@@ -314,18 +317,6 @@ namespace boost { namespace python { namespace indexing {
     write_proxies (0, size());
   }
 
-  /*
-  template<class Container, class Holder, class Generator>
-  template<typename Iter>
-  container_proxy<Container, Holder, Generator>
-  ::container_proxy (Iter start, Iter finish)
-    : m_held_obj (Holder::create())
-    , m_proxies ()
-  {
-    insert (begin(), start, finish);
-  }
-  */
-
   template<class Container, class Holder, class Generator>
   container_proxy<Container, Holder, Generator>
   ::container_proxy (container_proxy const &copy)
@@ -340,17 +331,17 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder, Generator>
   ::operator= (container_proxy const &copy)
   {
-    // *FIXME* - provide an exception safety guarantee
+    container_proxy<Container, Holder, Generator> temp (copy);
+    // This could throw, but none of the remaining operations can
 
-    // Copy original values into any proxies being shared by external pointers
-    clear_proxies (0, size());
+    Holder::swap (m_held_obj, temp.m_held_obj);
+    std::swap (m_proxies, temp.m_proxies);
 
-    Holder::assign (m_held_obj, copy.m_held_obj);
-
-    m_proxies.resize (size());
-    write_proxies (0, m_proxies.size());
+    claim_all_proxies ();
+    temp.claim_all_proxies ();  // Prepare for detach
 
     return *this;
+    // temp destruction detaches any proxies that used to belong to us
   }
 
   template<class Container, class Holder, class Generator>
@@ -417,20 +408,6 @@ namespace boost { namespace python { namespace indexing {
     write_proxies (index, index + 1);
   }
 
-  /*
-  template<class Container, class Holder, class Generator>
-  template<typename Iter>
-  void
-  container_proxy<Container, Holder, Generator>
-  ::replace (size_type index, Iter from, Iter to)
-  {
-    while (from != to)
-      {
-        replace (index++, *from++);
-      }
-  }
-  */
-
   template<class Container, class Holder, class Generator>
   void
   container_proxy<Container, Holder, Generator>
@@ -494,82 +471,6 @@ namespace boost { namespace python { namespace indexing {
 
     return iterator (this, result);
   }
-
-  /*
-  template<class Container, class Holder, class Generator>
-  template<typename Iter>
-  void container_proxy<Container, Holder, Generator>::insert (
-      iterator iter, Iter from, Iter to, std::forward_iterator_tag)
-  {
-    assert (iter.ptr == this);
-    size_type count = std::distance (from, to);
-
-    // Add empty proxy pointers for the new value(s) (could throw)
-    m_proxies.insert (m_proxies.begin() + iter.index, count, pointer_impl());
-
-    try
-      {
-        // Insert the new element(s) into the real container (could throw)
-        raw_container().insert (
-            raw_container().begin() + iter.index
-            , from
-            , to);
-
-        try
-          {
-            // Create new proxies for the new elements (could throw)
-            write_proxies (iter.index, iter.index + count);
-          }
-
-        catch (...)
-          {
-            raw_container().erase (
-                raw_container().begin() + iter.index
-                , raw_container().begin() + iter.index + count);
-
-            throw;
-          }
-      }
-
-    catch (...)
-      {
-        m_proxies.erase (
-            m_proxies.begin() + iter.index
-            , m_proxies.begin() + iter.index + count);
-
-        throw;
-      }
-
-    // Adjust any proxies after the inserted elements (nothrow)
-    adjust_proxies (
-        m_proxies.begin() + iter.index + count
-        , m_proxies.end()
-        , static_cast<difference_type> (count));
-  }
-
-  template<class Container, class Holder, class Generator>
-  template<typename Iter>
-  void container_proxy<Container, Holder, Generator>::insert (
-      iterator iter, Iter from, Iter to, std::input_iterator_tag)
-  {
-    // insert overload for iterators where we *can't* get distance()
-    // so just insert elements one at a time
-    while (from != to)
-      {
-        iter = insert (iter, *from++) + 1;
-      }
-  }
-
-  template<class Container, class Holder, class Generator>
-  template<typename Iter>
-  void container_proxy<Container, Holder, Generator>::insert (
-      iterator iter, Iter from, Iter to)
-  {
-    // Forward insertion to the right overloaded version
-    typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
-    insert (iter, from, to, category());
-  }
-  */
 
   template<class Container, class Holder, class Generator>
   BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
@@ -733,6 +634,17 @@ namespace boost { namespace python { namespace indexing {
           }
 
         ++from;
+      }
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::claim_all_proxies ()
+  {
+    for (pointer_iterator iter = m_proxies.begin();
+         iter != m_proxies.end();
+         ++iter)
+      {
+        (*iter)->m_owner_ptr = this;
       }
   }
 
