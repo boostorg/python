@@ -62,6 +62,11 @@ with every boost distribution: [*bjam].
 Besides bjam, there are of course other ways to get your module built.
 What's written here should not be taken as "the one and only way".
 There are of course other build tools apart from [^bjam].
+
+Take note however that the preferred build tool for Boost.Python is bjam. 
+There are so many ways to set up the build incorrectly. Experience shows 
+that 90% of the "I can't build Boost.Python" problems come from people 
+who had to use a different tool.
 ]
 
 We shall skip over the details. Our objective will be to simply create the
