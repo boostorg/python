@@ -24,9 +24,9 @@
 
 #include <boost/python/suite/indexing/suite_utils.hpp>
 
-#include <iterator>
 #include <boost/call_traits.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/iterator/iterator_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
 #if !BOOST_MSVC
@@ -55,7 +55,7 @@ namespace boost { namespace python { namespace indexing {
   struct input_iterator_traits
   {
   private:
-    typedef std::iterator_traits<Iterator> std_traits;
+    typedef ::boost::detail::iterator_traits<Iterator> std_traits;
 
   public:
     typedef Iterator                              iterator;
@@ -65,8 +65,8 @@ namespace boost { namespace python { namespace indexing {
 
     BOOST_STATIC_CONSTANT (bool,   has_copyable_iter = false);
     BOOST_STATIC_CONSTANT (bool,   is_reorderable    = false);
-    BOOST_STATIC_CONSTANT (bool,   has_mutable_ref
-                           = is_mutable_ref<reference>::value);
+    BOOST_STATIC_CONSTANT (
+        bool, has_mutable_ref = is_mutable_ref<reference>::value);
 
     BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_none);
   };
@@ -140,14 +140,14 @@ namespace boost { namespace python { namespace indexing {
 
     template<typename Iterator>
     class traits_by_category {
-      typedef typename std::iterator_traits<Iterator>::iterator_category
-        iterator_category;
+      typedef typename BOOST_ITERATOR_CATEGORY<Iterator>::type category;
 
-      BOOST_STATIC_CONSTANT (size_t,   size
-                             = sizeof(sizer(iterator_category())));
+      BOOST_STATIC_CONSTANT (
+          size_t, size = sizeof (sizer (category())));
 
     public:
-      typedef typename traits_by_size<size>::template traits<Iterator>::type type;
+      typedef typename traits_by_size<size>
+        ::template traits<Iterator>::type type;
     };
   }
 

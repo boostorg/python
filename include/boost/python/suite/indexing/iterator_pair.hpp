@@ -21,11 +21,11 @@
 #ifndef BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
 #define BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
 
-#include <iterator>
 #include <stdexcept>
 #include <algorithm>
 #include <utility>
 #include <boost/type_traits.hpp>
+#include <boost/iterator/iterator_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename Iterator>
@@ -33,7 +33,7 @@ namespace boost { namespace python { namespace indexing {
   {
   private:
     typedef typename boost::call_traits<Iterator>::param_type iterator_param;
-    typedef std::iterator_traits<Iterator> std_traits;
+    typedef ::boost::detail::iterator_traits<Iterator> std_traits;
 
   public:
     typedef typename std_traits::reference       reference;

@@ -23,9 +23,7 @@
 #include <boost/python/suite/indexing/element_proxy.hpp>
 
 #include <map>
-#include <memory>
 #include <cassert>
-#include <iterator>
 #include <boost/shared_ptr.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 
@@ -62,7 +60,7 @@ namespace boost { namespace python { namespace indexing {
   {
     typedef container_proxy<Container, Holder> self_type;
     typedef typename Container::iterator raw_iterator;
-    typedef std::iterator_traits<raw_iterator> raw_iterator_traits;
+    typedef ::boost::detail::iterator_traits<raw_iterator> raw_iterator_traits;
 
     template<class C> friend class shared_proxy_impl;
     template<class C> friend class proxy_iterator;
@@ -391,7 +389,7 @@ namespace boost { namespace python { namespace indexing {
   ::insert (iterator iter, Iter from, Iter to)
   {
     // Forward insertion to the right overloaded version
-    typedef typename std::iterator_traits<Iter>::iterator_category category;
+    typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
     insert (iter, from, to, category());
   }
 
