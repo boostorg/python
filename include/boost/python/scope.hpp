@@ -12,7 +12,8 @@
 
 namespace boost { namespace python { 
 
-class BOOST_PYTHON_DECL scope : public object, noncopyable
+class BOOST_PYTHON_DECL scope
+    : public object, private noncopyable
 {
  public:
     inline scope(object const&);
