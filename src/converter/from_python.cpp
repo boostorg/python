@@ -257,7 +257,7 @@ BOOST_PYTHON_DECL void void_result_from_python(PyObject* o)
     Py_DECREF(expect_non_null(o));
 }
 
-}
+} // namespace boost::python::converter
 
 BOOST_PYTHON_DECL PyObject*
 pytype_check(PyTypeObject* type_, PyObject* source)
@@ -277,4 +277,4 @@ pytype_check(PyTypeObject* type_, PyObject* source)
     return source;
 }
 
-}} // namespace boost::python::converter
+}} // namespace boost::python
