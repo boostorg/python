@@ -72,7 +72,9 @@ namespace detail
         : m_pmf(pmf)
       {}
       
+#if !BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
    private:
+#endif
       friend class def_visitor_access;
       
       template <class C_, class Options>
