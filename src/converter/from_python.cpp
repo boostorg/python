@@ -7,6 +7,8 @@
 #include <boost/python/converter/find_from_python.hpp>
 #include <boost/python/converter/registrations.hpp>
 #include <boost/python/converter/from_python_data.hpp>
+#include <vector>
+#include <algorithm>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -29,15 +31,38 @@ BOOST_PYTHON_DECL rvalue_stage1_data find(
     return data;
 }
 
+namespace
+{
+  // Prevent looping in implicit conversions. This could/should be
+  // much more efficient, but will work for now.
+  typedef std::vector<rvalue_from_python_registration const*> visited_t;
+  static visited_t visited;
+}
+
 BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
     PyObject* source
     , rvalue_from_python_registration const* chain)
-{
-    for (;chain != 0; chain = chain->next)
+{    
+    visited_t::iterator p = std::lower_bound(visited.begin(), visited.end(), chain);
+    if (p != visited.end() && *p == chain)
+        return 0;
+    
+    visited.insert(p, chain);
+    try
     {
-        if (chain->convertible(source))
-            break;
+        for (;chain != 0; chain = chain->next)
+        {
+            if (chain->convertible(source))
+                break;
+        }
     }
+    catch(...)
+    {
+        visited.erase(p);
+        throw;
+    }
+    p = std::lower_bound(visited.begin(), visited.end(), chain);
+    visited.erase(p);
     return chain;
 }
 

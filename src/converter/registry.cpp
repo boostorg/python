@@ -109,6 +109,22 @@ namespace registry
       found->m_rvalue_from_python = registration;
   }
 
+  // Insert an rvalue from_python converter
+  void push_back(void* (*convertible)(PyObject*)
+              , constructor_function construct
+              , undecorated_type_id_t key)
+  {
+      rvalue_from_python_registration** found = &find(key)->m_rvalue_from_python;
+      while (*found != 0)
+          found = &(*found)->next;
+      
+      rvalue_from_python_registration *registration = new rvalue_from_python_registration;
+      registration->convertible = convertible;
+      registration->construct = construct;
+      registration->next = 0;
+      *found = registration;
+  }
+
   PyTypeObject*& class_object(undecorated_type_id_t key)
   {
       return find(key)->m_class_object;

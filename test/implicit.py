@@ -4,6 +4,12 @@
 42
 >>> x_value(42)
 42
+>>> x = make_x(X(42))
+>>> x.value()
+42
+>>> try: make_x('fool')
+... except TypeError: pass
+... else: print 'no error'
 '''
 
 def run(args = None):

@@ -17,7 +17,7 @@ void implicitly_convertible(boost::type<Source>* = 0, boost::type<Target>* = 0)
 {
     typedef converter::implicit<Source,Target> functions;
     
-    converter::registry::insert(
+    converter::registry::push_back(
           &functions::convertible
         , &functions::construct
         , converter::undecorated_type_id<Target>());

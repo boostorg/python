@@ -37,6 +37,14 @@ namespace registry
       , undecorated_type_id_t
       );
   
+  // Insert an rvalue from_python converter at the tail of the
+  // chain. Used for implicit conversions
+  BOOST_PYTHON_DECL void push_back(
+      void* (*convertible)(PyObject*)
+      , constructor_function
+      , undecorated_type_id_t
+      );
+  
   BOOST_PYTHON_DECL PyTypeObject*& class_object(undecorated_type_id_t key);
 }
 

@@ -16,6 +16,7 @@ struct test_class
 
     void set(int x) { assert(magic == 7654321 + n); this->x = x; }
     int value() const { assert(magic == 7654321 + n); return x; }
+    operator int() const { return x; }
     static int count() { return counter; }
  private:
     void operator=(test_class const&);

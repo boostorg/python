@@ -37,7 +37,7 @@ struct implicit
             registration->construct(obj, &intermediate_data.stage1);
           
         void* storage = ((rvalue_base_data<Target>*)data)->storage.bytes;
-        new (storage) Target(*(Source*)intermediate_data.storage.bytes);
+        new (storage) Target(*static_cast<Source*>(intermediate_data.stage1.convertible));
 
         // record successful construction
         data->convertible = storage;

@@ -14,24 +14,35 @@
 using namespace boost::python;
 
 typedef test_class<> X;
+typedef test_class<1> Y;
 
 int x_value(X const& x)
 {
     return x.value();
 }
 
+X make_x(int n) { return X(n); }
+
 BOOST_PYTHON_MODULE_INIT(implicit_ext)
 {
     implicitly_convertible<int,X>();
     module("implicit_ext")
         .def("x_value", x_value)
+        .def("make_x", make_x)
         .add(
             class_<X>("X")
             .def_init(args<int>())
             .def("value", &X::value)
             .def("set", &X::set)
             )
+        .add(
+            class_<Y>("Y")
+            .def_init(args<int>())
+            .def("value", &Y::value)
+            .def("set", &Y::set)
+            )
         ;
+    implicitly_convertible<X,int>();
 }
 
 #include "module_tail.cpp"
