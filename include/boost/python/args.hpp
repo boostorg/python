@@ -32,10 +32,12 @@
 
 namespace boost { namespace python {
 
+typedef detail::keywords<1> arg;
+
 namespace detail
 {
   template <std::size_t nkeywords>
-  struct keywords
+  struct keywords_base
   {
       BOOST_STATIC_CONSTANT(std::size_t, size = nkeywords);
       
@@ -44,19 +46,45 @@ namespace detail
           return keyword_range(elements, elements + nkeywords);
       }
 
-      keywords<nkeywords+1> operator,(const keywords<1> &k) const
-      {
-          python::detail::keywords<size+1> res;
-          std::copy(elements, elements+size, res.elements);
-          res.elements[size] = k.elements[0];
-          return res;
-      }
-      
-      keywords<nkeywords+1> operator,(const char *name) const;
-      
       keyword elements[nkeywords];
   };
+  
+  template <std::size_t nkeywords>
+  struct keywords : keywords_base<nkeywords>
+  {
+  };
 
+  template <>
+  struct keywords<1> : keywords_base<1>
+  {
+      explicit keywords(char const *name)
+      {
+          elements[0].name = name;
+      }
+    
+      template <class T>
+      arg& operator=(T const& value)
+      {
+          object z(value);
+          elements[0].default_value = handle<>(python::borrowed(object(value).ptr()));
+          return *this;
+      }
+    
+      operator detail::keyword const&() const
+      {
+          return elements[0];
+      }
+  };
+
+  template <std::size_t nkeywords>
+  keywords<nkeywords+1> operator,(keywords<nkeywords> const& l, const keywords<1> &k)
+  {
+      python::detail::keywords<nkeywords+1> res;
+      std::copy(l.elements, l.elements+nkeywords, res.elements);
+      res.elements[nkeywords] = k.elements[0];
+      return res;
+  }
+      
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template<typename T>
   struct is_keywords
@@ -112,35 +140,19 @@ namespace detail
 class old_edg_workaround_for_arg { friend class arg; };
 #endif
 
-struct arg : detail::keywords<1>
-{
-    explicit arg(char const *name)
-    {
-        elements[0].name = name;
-    }
-    
-    template <class T>
-    arg& operator=(T const& value)
-    {
-        object z(value);
-        elements[0].default_value = handle<>(python::borrowed(object(value).ptr()));
-        return *this;
-    }
-    
-    operator detail::keyword const&() const
-    {
-        return elements[0];
-    }
-};
-
 namespace detail
 {
   template <std::size_t nkeywords>
   inline keywords<nkeywords + 1>
-  keywords<nkeywords>::operator,(const char *name) const
+  operator,(keywords<nkeywords> const& l, char *name)
   {
-      return this->operator,(arg(name));
+      return l.operator,(arg(name));
   }
+}
+
+inline detail::keywords<1> args(char const* name)
+{ 
+    return detail::keywords<1>(name);
 }
 
 #  define BOOST_PYTHON_ASSIGN_NAME(z, n, _) result.elements[n].name = name##n;
@@ -151,7 +163,7 @@ inline detail::keywords<n> args(BOOST_PP_ENUM_PARAMS_Z(1, n, char const* name)) 
     BOOST_PP_REPEAT_1(n, BOOST_PYTHON_ASSIGN_NAME, _)                           \
     return result;                                                              \
 }
-#  define BOOST_PP_LOCAL_LIMITS (1, BOOST_PYTHON_MAX_ARITY)
+#  define BOOST_PP_LOCAL_LIMITS (2, BOOST_PYTHON_MAX_ARITY)
 #  include BOOST_PP_LOCAL_ITERATE()
 
 }} // namespace boost::python
