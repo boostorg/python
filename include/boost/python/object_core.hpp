@@ -195,8 +195,8 @@ namespace api
   struct object_base : object_operators<object>
   {
       // copy constructor without NULL checking, for efficiency. 
-      object_base(object_base const&);
-      object_base(PyObject* ptr);
+      inline object_base(object_base const&);
+      inline object_base(PyObject* ptr);
       
       object_base& operator=(object_base const& rhs);
       ~object_base();

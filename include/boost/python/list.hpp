@@ -94,8 +94,8 @@ class list : public object
     }
     
  public: // implementation detail -- for internal use only
-    explicit list(detail::borrowed_reference);
-    explicit list(detail::new_reference);
+    inline explicit list(detail::borrowed_reference);
+    inline explicit list(detail::new_reference);
     
  private:
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);
