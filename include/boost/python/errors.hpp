@@ -35,12 +35,12 @@ inline void handle_exception()
     handle_exception(detail::rethrow);
 }
 
-BOOST_PYTHON_DECL PyObject* expect_non_null(PyObject* x);
+BOOST_PYTHON_DECL PyObject* expect_non_null_impl(PyObject* x);
 
 template <class T>
-T* expect_non_null(T* x)
+inline T* expect_non_null(T* x)
 {
-    return (T*)expect_non_null((PyObject*)x);
+    return (T*)expect_non_null_impl((PyObject*)x);
 }
 
 BOOST_PYTHON_DECL void throw_argument_error();
