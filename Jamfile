@@ -1,0 +1,54 @@
+subproject libs/python ;
+
+# bring in the rules for python
+SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
+include <module@>python.jam ;
+
+PYTHON_PROPERTIES += <metrowerks><*><cxxflags>"-inline deferred" ;
+
+local export-bpl ;
+
+if $(NT)
+{
+    # Stick this in the property set to deal with gcc
+    export-bpl = export-bpl-logic ;
+
+    rule export-bpl-logic ( toolset variant : properties * )
+    {
+        if $(toolset) != gcc
+        {
+            properties += <define>BOOST_PYTHON_EXPORT=__declspec(dllexport) ;
+        }
+        else
+        {
+            properties += <define>BOOST_PYTHON_EXPORT= ;
+        }
+        return $(properties) ;
+    }
+}
+
+dll bpl
+  : 
+  src/converter/body.cpp
+  src/converter/handle.cpp
+  src/converter/registry.cpp
+  src/converter/wrapper.cpp
+  src/converter/unwrap.cpp
+  src/converter/unwrapper.cpp
+  src/converter/type_id.cpp
+  src/object/class.cpp
+  src/object/function.cpp
+  :
+  $(PYTHON_PROPERTIES)
+    $(export-bpl)
+      # <define>BOOST_PYTHON_TRACE
+  ;
+
+extension m1 : test/m1.cpp <lib>bpl       # <define>BOOST_PYTHON_TRACE
+  : <gcc><*><define>BOOST_PYTHON_EXPORT=
+: debug-python ;
+extension m2 : test/m2.cpp <lib>bpl       # <define>BOOST_PYTHON_TRACE
+  : <gcc><*><define>BOOST_PYTHON_EXPORT=
+: debug-python ;
+
+boost-python-runtest try : test/newtest.py <lib>m1 <lib>m2 : : debug-python ;
