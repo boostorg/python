@@ -60,6 +60,7 @@ if [ check-python-config ]
       <define>BOOST_PYTHON_SOURCE
       $(bpl-linkflags)
         <msvc-stlport><release>$(msvc-stlport-workarounds)
+        <darwin><*><linkflags>-bind_at_load
       ;
 
   template extension
