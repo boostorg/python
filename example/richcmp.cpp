@@ -188,16 +188,14 @@ ID_BINARY_OPERATORS( != )
                         boost::python::op_lt | boost::python::op_le  |\
                         boost::python::op_eq | boost::python::op_ne)
 
-BOOST_PYTHON_MODULE_INIT(richcmp)
-{
-  try
-  {
-    boost::python::module_builder richcmp_module("richcmp");
+namespace {
 
+  void init_module(boost::python::module_builder& this_module)
+  {
     boost::python::class_builder<vects::dvect>
-      dvect_class(richcmp_module, "dvect");
+      dvect_class(this_module, "dvect");
     boost::python::class_builder<vects::ivect>
-      ivect_class(richcmp_module, "ivect");
+      ivect_class(this_module, "ivect");
 
     dvect_class.def(boost::python::constructor<boost::python::tuple>());
     dvect_class.def(&vects::dvect::as_tuple,"as_tuple");
@@ -234,6 +232,17 @@ BOOST_PYTHON_MODULE_INIT(richcmp)
     // left_operand not needed since Python uses reflection
     ivect_class.def(boost::python::operators<comp_operators>(),
       boost::python::right_operand<vects::dvect>() );
+  }
+
+} // namespace <anonymous>
+
+BOOST_PYTHON_MODULE_INIT(richcmp)
+{
+  try {
+    boost::python::module_builder this_module("richcmp");
+    // The actual work is done in separate function in order
+    // to suppress a bogus VC60 warning.
+    init_module(this_module);
   }
   catch(...){boost::python::handle_exception();}
 }
