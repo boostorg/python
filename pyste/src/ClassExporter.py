@@ -624,6 +624,18 @@ class _VirtualWrapperGenerator(object):
 
         # default implementations (with overloading)
         # only for classes that are not abstract, and public methods 
+        def DefaultImpl(method, param_names):
+            'Return the body of a default implementation wrapper'
+            wrapper = self.info[method.name].wrapper
+            if not wrapper:
+                # return the default implementation of the class
+                return '%s%s::%s(%s);\n' % \
+                    (return_str, self.class_.FullName(), method.name, ', '.join(param_names)) 
+            else:
+                # return a call for the wrapper
+                params = ', '.join(['this'] + param_names)
+                return '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
+                
         if not method.abstract and method.visibility == Scope.public:
             minArgs = method.minArgs
             maxArgs = method.maxArgs
@@ -632,8 +644,7 @@ class _VirtualWrapperGenerator(object):
                 params, param_names, param_types = _ParamsInfo(method, argNum)            
                 decl += '\n'
                 decl += indent + '%s %s(%s)%s {\n' % (result, impl_name, params, constantness)
-                decl += indent*2 + '%s%s::%s(%s);\n' % \
-                    (return_str, self.class_.FullName(), method.name, ', '.join(param_names))
+                decl += indent*2 + DefaultImpl(method, param_names)
                 decl += indent + '}\n'                
         return decl
             
