@@ -61,8 +61,9 @@ namespace boost { namespace python {
 
 enum no_init_t { no_init };
 
+struct def_arg_base {};
 template <class Derived>
-struct def_arg {}; // Generic visitor
+struct def_arg : def_arg_base {}; // Generic visitor
 
 namespace detail
 {
@@ -281,8 +282,8 @@ class class_ : public objects::class_base
     }
 
     // Wrap a member function or a non-member function which can take
-    // a T, T cv&, or T cv* as its first parameter, or a callable
-    // python object.
+    // a T, T cv&, or T cv* as its first parameter, a callable
+    // python object, or a generic visitor.
     template <class F>
     self& def(char const* name, F f)
     {
@@ -475,9 +476,9 @@ class class_ : public objects::class_base
     inline void register_() const;
 
     //
-    // These two overloads discriminate between def() as applied to
+    // These three overloads discriminate between def() as applied to
     // things which are already wrapped into callable python::object
-    // instances and everything else.
+    // instances, a generic visitor, and everything else.
     //
     template <class F, class A1>
     inline void def_impl(
@@ -495,6 +496,16 @@ class class_ : public objects::class_base
         objects::add_to_namespace(*this, name, f, helper.doc());
     }
 
+    template <class Derived, class A1>
+    inline void def_impl(
+        char const* name
+        , def_arg<Derived> const& visitor
+        , detail::def_helper<A1> const& helper
+        , def_arg_base const*)
+    {
+         static_cast<Derived const&>(visitor).visit(*this, name);
+    }
+    
     template <class Fn, class Helper>
     inline void def_impl(
         char const* name

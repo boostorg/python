@@ -337,7 +337,7 @@ namespace boost { namespace python {
                             else
                             {
                                 PyErr_SetString(PyExc_TypeError, 
-                                    "Invalid list element");
+                                    "Invalid sequence element");
                                 throw_error_already_set();
                             }
                         }
