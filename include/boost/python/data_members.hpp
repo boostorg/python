@@ -61,7 +61,7 @@ namespace detail
 }
 
 template <class C, class D>
-PyObject* make_getter(D C::*pm)
+objects::function* make_getter(D C::*pm)
 {
     typedef return_value_policy<copy_non_const_reference> default_policy;
     return new objects::function(
@@ -73,7 +73,7 @@ PyObject* make_getter(D C::*pm)
 }
 
 template <class C, class D, class Policies>
-PyObject* make_getter(D C::*pm, Policies const& policies)
+objects::function* make_getter(D C::*pm, Policies const& policies)
 {
     return new objects::function(
         objects::py_function(
@@ -84,7 +84,7 @@ PyObject* make_getter(D C::*pm, Policies const& policies)
 }
 
 template <class C, class D>
-PyObject* make_setter(D C::*pm)
+objects::function* make_setter(D C::*pm)
 {
     return new objects::function(
         objects::py_function(
@@ -95,7 +95,7 @@ PyObject* make_setter(D C::*pm)
 }
 
 template <class C, class D, class Policies>
-PyObject* make_setter(D C::*pm, Policies const& policies)
+objects::function* make_setter(D C::*pm, Policies const& policies)
 {
     return new objects::function(
         objects::py_function(
