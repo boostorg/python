@@ -100,7 +100,7 @@ T integer_from_python(PyObject* p, py::Type<T>)
         PyErr_SetString(PyExc_ValueError, buffer);
         throw py::ArgumentError();
     }
-#if defined(__MWERKS__) && __MWERKS__ < 0x2400
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2400
     return 0; // Not smart enough to know that the catch clause always rethrows
 #endif
 }
@@ -205,7 +205,8 @@ void from_python(PyObject* p, py::Type<void>)
 const char* from_python(PyObject* p, py::Type<const char*>)
 {
     const char* s = PyString_AsString(p);
-    if (!s) throw py::ArgumentError();
+    if (!s)
+        throw py::ArgumentError();
     return s;
 }
 
