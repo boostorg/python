@@ -14,6 +14,10 @@ def gen_extclass(args):
 //  This file automatically generated for %d-argument constructors by
 //  gen_extclass.python
 
+//  Revision History:
+//  05 Mar 01  Fixed a bug which prevented auto_ptr values from being converted
+//             to_python (Dave Abrahams)
+
 #ifndef EXTENSION_CLASS_DWA052000_H_
 # define EXTENSION_CLASS_DWA052000_H_
 
@@ -157,7 +161,7 @@ template <class Ptr>
 bool is_null(const Ptr& x)
 {
     return is_null_helper<(is_pointer<Ptr>::value)>::test(x);
-};
+}
 
 }}} // namespace boost::python::detail
 
@@ -255,10 +259,12 @@ class python_extension_class_converters
         throw boost::python::argument_error();
     }
 
-    // Extract from obj a constant reference to the PtrType object which is holding a T.
-    // If obj is None, the reference denotes a default-constructed PtrType
+    // Extract from obj a reference to the PtrType object which is holding a
+    // T. If it weren't for auto_ptr, it would be a constant reference. Do not
+    // modify the referent except by copying an auto_ptr! If obj is None, the
+    // reference denotes a default-constructed PtrType
     template <class PtrType>
-    static const PtrType& smart_ptr_value(PyObject* obj, boost::python::type<PtrType>)
+    static PtrType& smart_ptr_value(PyObject* obj, boost::python::type<PtrType>)
     {
         if (obj == Py_None)
         {
@@ -320,7 +326,7 @@ class python_extension_class_converters
     friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T>&>)
         { return smart_ptr_reference(p, boost::python::type<std::auto_ptr<T> >()); }
     
-    friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >)
+    friend std::auto_ptr<T> from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >)
         { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
     
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>)
