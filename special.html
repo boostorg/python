@@ -52,9 +52,7 @@ Python provides a number of special operatos for basic customization of a class:
 <p>
 </dl>
 
-If we have a suitable C++ function that supports any of these features, we can
-export it like any other function, using its Python special name. For example,
-suppose that class <code>Foo</code> provides a string conversion function:
+If we have a suitable C++ function that supports any of these features, we can export it like any other function, using its Python special name. For example, suppose that class <code>Foo</code> provides a string conversion function:
 
 <pre>
     std::string to_string(Foo const &amp; f)
@@ -72,19 +70,13 @@ This function would be wrapped like this:
     foo_class.def(&amp;to_string, "__str__");
 </pre>
 
-Note that py_cpp also supports <em>automatic wrapping</em> in case of __str__
-and __cmp__. This is explained in the <a href="#numeric">next section</a> and
-the <a href="#numeric_table">table of numeric operators</a>.
+Note that py_cpp also supports <em>automatic wrapping</em> in case of __str__ and __cmp__. This is explained in the <a href="#numeric">next section</a> and the <a href="#numeric_table">table of numeric operators</a>. 
 
 <a name="numeric">
 <h2>Numeric Operators</h2>
 </a>
 
-There are two fundamental ways to define numeric operators within py_cpp: manual
-wrapping (as is done with <a href="#general">general operators</a>) and
-automatic wrapping. Lets start with the second possibility. Suppose, C++ defines
-a class <code>Int</code> (which might represent an infinite-precision integer)
-which support addition, so that we can write (in C++):
+There are two fundamental ways to define numeric operators within py_cpp: manual wrapping (as is done with <a href="#general">general operators</a>) and automatic wrapping. Lets start with the second possibility. Suppose, C++ defines a class <code>Int</code> (which might represent an infinite-precision integer) which support addition, so that we can write (in C++):
 
 <pre>
     Int a, b, c;
@@ -106,19 +98,13 @@ Then we export the addition operator like this:
     int_class.def(python::operators&lt;python::op_add&gt;());
 </pre>
 
-Since Int also supports subtraction, multiplication, adn division, we want to
-export those also. This can be done in a single command by 'or'ing the operator
-identifiers together (a complete list of these identifiers and the corresponding
-operators can be found in the <a href="#numeric_table">table</a>):
+Since Int also supports subtraction, multiplication, adn division, we want to export those also. This can be done in a single command by 'or'ing the operator identifiers together (a complete list of these identifiers and the corresponding operators can be found in the <a href="#numeric_table">table</a>):
 
 <pre>
     int_class.def(python::operators&lt;(python::op_sub | python::op_mul | python::op_div)&gt;());
 </pre>
 
-Note that the or-expression must be enclosed in parentheses. This form of
-operator definition will wrap homogeneous operators, i.e. operators whose left
-and right operand have the same type. Now, suppose that our C++ library also
-supports addition of Ints and plain integers:
+Note that the or-expression must be enclosed in parentheses. This form of operator definition will wrap homogeneous operators, i.e. operators whose left and right operand have the same type. Now, suppose that our C++ library also supports addition of Ints and plain integers:
 
 <pre>
     Int a, b;
@@ -128,19 +114,14 @@ supports addition of Ints and plain integers:
     a = i + b;
 </pre>
 
-To wrap these heterogeneous operators (left and right hand side have different
-types), we need a possibility to specify a different type for one of the
-operands. This is done using the <code>right_operand</code> and
-<code>left_operand</code> templates:
+To wrap these heterogeneous operators (left and right hand side have different types), we need a possibility to specify a different type for one of the operands. This is done using the <code>right_operand</code> and <code>left_operand</code> templates:
 
 <pre>
     int_class.def(python::operators&lt;python::op_add&gt;(), python::right_operand&lt;int&gt;());
     int_class.def(python::operators&lt;python::op_add&gt;(), python::left_operand&lt;int&gt;());
 </pre>
 
-Py_cpp uses overloading to register several variants of the same operation (more
-on this in the context of <a href="#coercion">coercion</a>). Again, several
-operators can be exported at once:
+Py_cpp uses overloading to register several variants of the same operation (more on this in the context of <a href="#coercion">coercion</a>). Again, several operators can be exported at once:
 
 <pre>
     int_class.def(python::operators&lt;(python::op_sub | python::op_mul | python::op_div)&gt;(),
@@ -150,31 +131,17 @@ operators can be exported at once:
 </pre>
 
 
-The type of the operand not mentioned is taken from the class object. In our
-example, the class object is <code>int_class</code>, and thus the other
-operand's type is `<code>Int const &amp;</code>'. You can override this default
-by explicitly specifying a type in the <code>operators</code> template:
+The type of the operand not mentioned is taken from the class object. In our example, the class object is <code>int_class</code>, and thus the other operand's type is `<code>Int const &amp;</code>'. You can override this default by explicitly specifying a type in the <code>operators</code> template:
 
 <pre>
     int_class.def(python::operators&lt;python::op_add, Int&gt;(), python::right_operand&lt;int&gt;());
 </pre>
 
 Here, `<code>Int</code>' would be used instead of `<code>Int const &amp;</code>'. 
-
 <p>
-Note that automatic wrapping doesn't need any specific form of
-<code>operator+()</code> (or one of the other operators), but rather wraps the
-<em>expression</em> `<code>left + right</code>'. That is, this mechanism can be
-used for any definition of <code>operator+()</code>, such as a free function
-`<code>Int operator+(Int, Int)</code>' or a member function `<code>Int
-Int::operator+(Int)</code>'.
-
+Note that automatic wrapping doesn't need any specific form of <code>operator+()</code> (or one of the other operators), but rather wraps the <em>expression</em> `<code>left + right</code>'. That is, this mechanism can be used for any definition of <code>operator+()</code>, such as a free function `<code>Int operator+(Int, Int)</code>' or a member function `<code>Int Int::operator+(Int)</code>'.
 <p>
-For the Python operators <code>pow()</code> and <code>abs()</code>, there is no
-corresponding C++ operator. Instead, automatic wrapping attempts to wrap C++
-functions of the same name. This only works if those functions are known in
-namespace <code>python::detail</code>. Thus it might be necessary to add a using
-declaration prior to wrapping:
+For the Python operators <code>pow()</code> and <code>abs()</code>, there is no corresponding C++ operator. Instead, automatic wrapping attempts to wrap C++ functions of the same name. This only works if those functions are known in namespace <code>python::detail</code>. Thus it might be necessary to add a using declaration prior to wrapping:
 
 <pre>
     namespace python { 
@@ -186,10 +153,7 @@ declaration prior to wrapping:
 
 
 <p>
-In some cases, automatic wrapping of operators is not possible or not
-desirable. Suppose, for example, that the modulo operation for Ints is defined
-by a set of functions <code>mod()</code> (for automatic wrapping, we would need
-<code>operator%()</code>):
+In some cases, automatic wrapping of operators is not possible or not desirable. Suppose, for example, that the modulo operation for Ints is defined by a set of functions <code>mod()</code> (for automatic wrapping, we would need <code>operator%()</code>):
 
 <pre>
     Int mod(Int const &amp; left, Int const &amp; right);
@@ -204,9 +168,7 @@ In order to create the Python operator "__mod__" from these functions, we have t
     int_class.def((Int (*)(Int const &amp;, int))&amp;mod, "__mod__");
 </pre>
 
-The third form (with <code>int</code> as left operand) cannot be wrapped this
-way. We must first create a function <code>rmod()</code> with the operands
-reversed:
+The third form (with <code>int</code> as left operand) cannot be wrapped this way. We must first create a function <code>rmod()</code> with the operands reversed:
 
 <pre>
     Int rmod(Int const &amp; right, int left)
@@ -224,70 +186,41 @@ This function must be wrapped under the name "__rmod__":
 A list of the possible operator names is also found in the <a href="#numeric_table">table</a>.
 Special treatment is necessary to export the <a href="#ternary_pow">ternary pow</a> operator.
 <p>
-Automatic and manual wrapping can be mixed arbitrarily. Note that you cannot
-overload the same operator for a given extension class on both
-`<code>int</code>' and `<code>float</code>', because Python implicitly converts
-these types into each other. Thus, the overloaded variant found first (be it
-`<code>int</code>' or `<code>float</code>') will be used for either of the two
-types.
+Automatic and manual wrapping can be mixed arbitrarily. Note that you cannot overload the same operator for a given extension class on both `<code>int</code>' and `<code>float</code>', because Python implicitly converts these types into each other. Thus, the overloaded variant found first (be it `<code>int</code>' or `<code>float</code>') will be used for either of the two types.
 
 <a name="coercion">
 <h4>Coercion</h4></a>
 
-Plain Python can only execute operators with identical types on the left and
-right hand side. If it encounters an expression where the types of the left and
-right operand differ, it tries to coerce these type to a common type before
-invoking the actual operator. Implementing good coercion functions can be
-difficult if many type combinations must be supported.
+Plain Python can only execute operators with identical types on the left and right hand side. If it encounters an expression where the types of the left and right operand differ, it tries to coerce these type to a common type before invoking the actual operator. Implementing good coercion functions can be difficult if many type combinations must be supported.
 <p>
-In contrast, py_cpp provides <em><a
-href="overloading.html">overloading</a></em>. By means of overloading, operator
-calling can be simplyfied drastically: you just register operators for all
-desired type combinations, and py_cpp automatically ensures that the correct
-function is called in each case. User defined coercion functions are <em>not
-necessary</em>. To enable operator overloading, py_cpp provides a standard
-coercion which is <em>implicitly registered</em> whenever automatic operator
-wrapping is used.
+In contrast, py_cpp provides <em><a href="overloading.html">overloading</a></em>. By means of overloading, operator calling can be simplyfied drastically: you just register operators for all desired type combinations, and py_cpp automatically ensures that the correct function is called in each case. User defined coercion functions are <em>not necessary</em>. To enable operator overloading, py_cpp provides a standard coercion which is <em>implicitly registered</em> whenever automatic operator wrapping is used. 
 <p>
-If you wrap all operator functions manually, but still want to use operator
-overloading, you have to register the standard coercion function explicitly:
+If you wrap all operator functions manually, but still want to use operator overloading, you have to register the standard coercion function explicitly:
 
 <pre>
     // this is not necessary if automatic operator wrapping is used
     int_class.def_standard_coerce();
 </pre>
 
-In case you encounter a situation where you absolutely need a customized
-coercion, you can overload the "__coerce__" operator itself. The signature of a
-coercion function must look like this:
+In case you encounter a situation where you absolutely need a customized coercion, you can overload the "__coerce__" operator itself. The signature of a coercion function must look like this:
 
 <pre>
     python::tuple custom_coerce(PyObject * left, PyObject * right);
 </pre>
 
-The resulting <code>tuple</code> must contain two elements which represent the
-values of <code>left</code> and <code>right</code> converted to the same
-type. Such a function is wrapped as usual:
+The resulting <code>tuple</code> must contain two elements which represent the values of <code>left</code> and <code>right</code> converted to the same type. Such a function is wrapped as usual:
 
 <pre>
     some_class.def(&amp;custom_coerce, "__coerce__");
 </pre>
 
-Note that the custom coercion function is only used if it is defined
-<em>before</em> any automatic operator wrapping on the given class or a call to
-`<code>some_class.def_standard_coerce()</code>'.
+Note that the custom coercion function is only used if it is defined <em>before</em> any automatic operator wrapping on the given class or a call to `<code>some_class.def_standard_coerce()</code>'.
 
 
 <a name="ternary_pow">
 <h4>The Ternary <code>pow()</code> Operator</h4></a>
 
-In addition to the usual binary <code>pow()</code>-operator (meaning
-<code>x^y</code>), Python also provides a ternary variant that implements
-<code>(x^y) % z</code> (presumably using a more efficient algorithm than
-concatenation of power and modulo operators). Automatic operator wrapping can
-only be used with the binary variant. Ternary <code>pow()</code> must always be
-wrapped manually. For a homgeneous ternary <code>pow()</code>, this is done as
-usual:
+In addition to the usual binary <code>pow()</code>-operator (meaning <code>x^y</code>), Python also provides a ternary variant that implements <code>(x^y) % z</code> (presumably using a more efficient algorithm than concatenation of power and modulo operators). Automatic operator wrapping can only be used with the binary variant. Ternary <code>pow()</code> must always be wrapped manually. For a homgeneous ternary <code>pow()</code>, this is done as usual:
 
 <pre>
     Int power(Int const &amp; first, Int const &amp; second, Int const &amp; module);
@@ -296,8 +229,7 @@ usual:
     int_class.def((ternary_function1)&amp;power,  "__pow__");
 </pre>
 
-In case you want to support this function with non-uniform argument types,
-wrapping is a little more involved. Suppose, you have to wrap:
+In case you want to support this function with non-uniform argument types, wrapping is a little more involved. Suppose, you have to wrap:
 
 <pre>
     Int power(Int const &amp; first, int second, int module);
@@ -312,10 +244,7 @@ The first variant can be wrapped as usual:
     int_class.def((ternary_function2)&amp;power,  "__pow__");
 </pre>
 
-In the second variant, however, <code>Int</code> appears only as second
-argument, and in the last one it is the third argument. Therefor we must first
-provide functions where the argumant order is changed so that <code>Int</code>
-appears in first place:
+In the second variant, however, <code>Int</code> appears only as second argument, and in the last one it is the third argument. Therefor we must first provide functions where the argumant order is changed so that <code>Int</code> appears in first place:
 
 <pre>
     Int rpower(Int const &amp; second, int first, int module)
@@ -592,31 +521,11 @@ Note that "__rrpow__" is an extension not present in plain Python.
 <h2>Sequence and Mapping Operators</h2>
 </a>
 
-Sequence and mapping operators let wrapped objects behave in accordance to
-Python's iteration and access protocols. These protocols differ considerably
-from the ones found in C++. For example, Python's typically iteration idiom
-looks like &nbsp;"<code>for i in S:</code>"&nbsp;, while in C++ one uses
-&nbsp;"<code>for(iterator i = S.begin(); i != S.end(); ++i)</code>". One could
-try to wrap C++ iterators in order to carry the C++ idiom into Python. However,
-this does not work very well because (1) it leads to non-uniform Python code
-(wrapped types must be used in a different way than Python built-in types) and
-(2) iterators are often implemented as plain C++ pointers which cannot be
-wrapped easily because py_cpp is designed to handle objects only.
-
+Sequence and mapping operators let wrapped objects behave in accordance to Python's iteration and access protocols. These protocols differ considerably from the ones found in C++. For example, Python's typically iteration idiom looks like &nbsp;"<code>for i in S:</code>"&nbsp;, while in C++ one uses &nbsp;"<code>for(iterator i = S.begin(); i != S.end(); ++i)</code>". One could try to wrap C++ iterators in order to carry the C++ idiom into Python. However, this does not work very well because (1) it leads to non-uniform Python code (wrapped types must be used in a different way than Python built-in types) and (2) iterators are often implemented as plain C++ pointers which cannot be wrapped easily because py_cpp is designed to handle objects only. 
 <p>
-Thus, it is a good idea to provide sequence and mapping operators for your
-wrapped containers. These operators have to be wrapped manually because there
-are no corresponding C++ operators that could be used for automatic
-wrapping. The Python documentation lists the relevant <a
-href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">container
-operators</a>. In particular, expose __getitem__, __setitem__ and remember to
-throw the <code>PyExc_IndexError</code> when the index is out-of-range in order
-to enable the &nbsp;"<code>for i in S:</code>"&nbsp; idiom.
-
+Thus, it is a good idea to provide sequence and mapping operators for your wrapped containers. These operators have to be wrapped manually because there are no corresponding C++ operators that could be used for automatic wrapping. The Python documentation lists the relevant <a href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">container operators</a>. In particular, expose __getitem__, __setitem__ and remember to throw the <code>PyExc_IndexError</code> when the index is out-of-range in order to enable the &nbsp;"<code>for i in S:</code>"&nbsp; idiom.
 <p>
-Here is an example. Suppose you, we want to wrap a
-<code>std::map&lt;std::size_t,std::string&gt;</code>. This is done as follows as
-follows:
+Here is an example. Suppose you, we want to wrap a <code>std::map&lt;std::size_t,std::string&gt;</code>. This is done as follows as follows:
 
       <blockquote>
 <pre>
@@ -771,7 +680,7 @@ three
         behavior. For example, when <code>def_getter()</code> is used, the
         default functionality for <code>setattr()</code> and <code>
         delattr()</code> remains in effect, operating on items in the extension
-        obj's name-space (i.e., its <code>__dict__</code>). For that
+        instance's name-space (i.e., its <code>__dict__</code>). For that
         reason, you'll usually want to stick with <code>def_readonly</code> and
         <code>def_read_write</code>.
       <p>
@@ -808,7 +717,7 @@ pair_int_long.def_read_write(&amp;Pil::second, "second");
 &gt;&gt;&gt; x.second = 8
 &gt;&gt;&gt; x.second
 8
-&gt;&gt;&gt; second(x) # Prove that we're not just changing the obj __dict__
+&gt;&gt;&gt; second(x) # Prove that we're not just changing the instance __dict__
 8
 </pre>
       </blockquote>
