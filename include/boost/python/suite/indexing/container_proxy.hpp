@@ -29,12 +29,16 @@
 #include <boost/python/suite/indexing/proxy_iterator.hpp>
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
 #include <boost/python/suite/indexing/element_proxy.hpp>
+#include <boost/python/suite/indexing/element_proxy_traits.hpp>
 #include <boost/python/suite/indexing/workaround.hpp>
 
-#include <vector>
+#include <vector>    // Default pointer container
 #include <cassert>
 #include <boost/shared_ptr.hpp>
 #include <boost/iterator/iterator_traits.hpp>
+#include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/algorithms.hpp>
+#include <boost/python/suite/indexing/algo_selector.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename T> struct identity {
@@ -641,6 +645,44 @@ namespace boost { namespace python { namespace indexing {
     return ok;
   }
 
+  /////////////////////////////////////////////////////////////////////////
+  // ContainerTraits implementation for container_proxy instances
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename Container>
+  struct container_proxy_traits : public default_sequence_traits<Container>
+  {
+    typedef Container container;
+    typedef typename container::raw_value_type value_type; // insert, ...
+    typedef typename container::raw_value_type key_type;   // find, count, ...
+    typedef typename container::reference reference;       // return values
+
+    typedef typename boost::call_traits<value_type>::param_type value_param;
+    typedef typename boost::call_traits<key_type>::param_type   key_param;
+
+    typedef value_traits<reference> value_traits_;
+    // Get value_traits for the reference type (i.e. element_proxy)
+    // to get the custom visitor_helper
+  };
+
+  namespace detail {
+    ///////////////////////////////////////////////////////////////////////
+    // algo_selector support for std::list instances
+    ///////////////////////////////////////////////////////////////////////
+
+    template <typename RawContainer, typename Holder, typename Generator>
+    class selector_impl<container_proxy<RawContainer, Holder, Generator> >
+    {
+      typedef container_proxy<RawContainer, Holder, Generator> Container;
+
+      typedef container_proxy_traits<Container>       mutable_traits;
+      typedef container_proxy_traits<Container const> const_traits;
+
+    public:
+      typedef default_algorithms<mutable_traits> mutable_algorithms;
+      typedef default_algorithms<const_traits>   const_algorithms;
+    };
+  }
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_CONTAINER_PROXY_HPP

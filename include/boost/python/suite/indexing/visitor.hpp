@@ -19,6 +19,7 @@
 #define BOOST_PYTHON_INDEXING_VISITOR_HPP
 
 #include <boost/python/suite/indexing/slice_handler.hpp>
+#include <boost/python/suite/indexing/suite_utils.hpp> // Get index_style_t
 
 #include <boost/python/def_visitor.hpp>
 #include <boost/python/iterator.hpp>

@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Header file algorithms.hpp
 //
 // Uniform interface layer for all containers.
@@ -13,6 +11,7 @@
 // History
 // =======
 // 2003/ 9/11   rmg     File creation from suite_utils.hpp
+// 2003/10/28   rmg     Split container-specific versions into separate headers
 //
 // $Id$
 //
@@ -110,31 +109,6 @@ namespace boost { namespace python { namespace indexing {
   };
 
   /////////////////////////////////////////////////////////////////////////
-  // Special cases for std::list
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr = detail::no_override>
-  class list_algorithms
-    : public default_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
-            <list_algorithms<ContainerTraits, Ovr>, Ovr>
-          ::type>
-  {
-    typedef list_algorithms<ContainerTraits, Ovr> self_type;
-    typedef typename detail::maybe_override<self_type, Ovr>::type most_derived;
-    typedef default_algorithms<ContainerTraits, most_derived> Parent;
-
-  public:
-    typedef typename Parent::container container;
-
-    // Use member functions for the following (hiding base class versions)
-    static void      reverse    (container &);
-    static void      sort       (container &);
-    //    static void      sort       (container &, PyObject *);
-  };
-
-  /////////////////////////////////////////////////////////////////////////
   // Base class for associative containers
   /////////////////////////////////////////////////////////////////////////
 
@@ -169,59 +143,6 @@ namespace boost { namespace python { namespace indexing {
 
   protected:
     static iterator  find_or_throw (container &, index_param);
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Special case for sets
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr = detail::no_override>
-  class set_algorithms
-    : public assoc_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
-            <set_algorithms<ContainerTraits, Ovr>, Ovr>
-          ::type>
-  {
-    typedef set_algorithms<ContainerTraits, Ovr> self_type;
-    typedef typename detail::maybe_override<self_type, Ovr>::type most_derived;
-    typedef assoc_algorithms<ContainerTraits, most_derived> Parent;
-
-  public:
-    typedef typename Parent::container container;
-    typedef typename Parent::value_param value_param;
-    typedef typename Parent::index_param index_param;
-
-    static void      insert     (container &, index_param);
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Special case for map
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr = detail::no_override>
-  class map_algorithms
-    : public assoc_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
-            <map_algorithms<ContainerTraits, Ovr>, Ovr>
-          ::type>
-  {
-    typedef map_algorithms<ContainerTraits, Ovr> self_type;
-    typedef typename detail::maybe_override<self_type, Ovr>::type most_derived;
-    typedef assoc_algorithms<ContainerTraits, most_derived> Parent;
-
-  public:
-    typedef typename Parent::container container;
-    typedef typename Parent::reference reference;
-    typedef typename Parent::index_param index_param;
-    typedef typename Parent::value_param value_param;
-
-    static reference get (container &, index_param);
-    // Version to return only the mapped type
-
-    static void      assign     (container &, index_param, value_param);
-    static void      insert     (container &, index_param, value_param);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -487,26 +408,6 @@ namespace boost { namespace python { namespace indexing {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  // Reverse the contents of a list (member function version)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void list_algorithms<ContainerTraits, Ovr>::reverse (container &c)
-  {
-    c.reverse();
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Sort the contents of a container (std algorithm version)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void list_algorithms<ContainerTraits, Ovr>::sort (container &c)
-  {
-    c.sort();
-  }
-
-  /////////////////////////////////////////////////////////////////////////
   // Index into a container (associative version)
   /////////////////////////////////////////////////////////////////////////
 
@@ -515,17 +416,6 @@ namespace boost { namespace python { namespace indexing {
   assoc_algorithms<ContainerTraits, Ovr>::get (container &c, index_param ix)
   {
     return *most_derived::find_or_throw (c, ix);
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Index into a container (map version)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  typename map_algorithms<ContainerTraits, Ovr>::reference
-  map_algorithms<ContainerTraits, Ovr>::get (container &c, index_param ix)
-  {
-    return most_derived::find_or_throw (c, ix)->second;
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -541,61 +431,6 @@ namespace boost { namespace python { namespace indexing {
       {
         PyErr_SetString (
             PyExc_ValueError, "Container does not hold value to be erased");
-
-        boost::python::throw_error_already_set ();
-      }
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Insert an element into a set
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void
-  set_algorithms<ContainerTraits, Ovr>::insert (
-      container &c, index_param ix)
-  {
-    if (!c.insert (ix).second)
-      {
-        PyErr_SetString (
-            PyExc_ValueError, "Set already holds value for insertion");
-
-        boost::python::throw_error_already_set ();
-      }
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Assign a value at a particular index (map version)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void
-  map_algorithms<ContainerTraits, Ovr>::assign (
-      container &c, index_param ix, value_param val)
-  {
-    c[ix] = val;   // Handles overwrite and insert
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Insert a new key, value pair into a map
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void
-  map_algorithms<ContainerTraits, Ovr>::insert (
-      container &c, index_param ix, value_param val)
-  {
-    typedef std::pair
-      <typename self_type::container_traits::index_type
-      , typename self_type::container_traits::value_type>
-      pair_type;
-
-    // Can't use std::make_pair, because param types may be references
-
-    if (!c.insert (pair_type (ix, val)).second)
-      {
-        PyErr_SetString (
-            PyExc_ValueError, "Map already holds value for insertion");
 
         boost::python::throw_error_already_set ();
       }

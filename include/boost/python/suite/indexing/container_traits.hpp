@@ -13,6 +13,7 @@
 // =======
 // 2003/ 8/23   rmg     File creation as container_suite.hpp
 // 2003/ 9/ 8   rmg     Renamed container_traits.hpp
+// 2003/10/28   rmg     Split container-specific versions into separate headers
 //
 // $Id$
 //
@@ -72,30 +73,21 @@ namespace boost { namespace python { namespace indexing {
 
     typedef value_traits<typename base_type::value_type> value_traits_;
 
-    BOOST_STATIC_CONSTANT (bool,   has_mutable_ref
+    BOOST_STATIC_CONSTANT (bool, has_mutable_ref
                            = base_type::has_mutable_ref && is_mutable);
 
-    BOOST_STATIC_CONSTANT (bool,   has_find
+    BOOST_STATIC_CONSTANT (bool, has_find
                            = value_traits_::equality_comparable);
 
     // Assume the worst for everything else
-    BOOST_STATIC_CONSTANT (bool,   has_insert         = false);
-    BOOST_STATIC_CONSTANT (bool,   has_erase          = false);
-    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = false);
-    BOOST_STATIC_CONSTANT (bool,   has_push_back      = false);
+    BOOST_STATIC_CONSTANT (bool, has_insert    = false);
+    BOOST_STATIC_CONSTANT (bool, has_erase     = false);
+    BOOST_STATIC_CONSTANT (bool, has_pop_back  = false);
+    BOOST_STATIC_CONSTANT (bool, has_push_back = false);
 
     // Forward visitor_helper to value_traits_
     template<typename PythonClass, typename Policy>
     static void visitor_helper (PythonClass &, Policy const &);
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Traits for the iterator_range container emulator
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename IteratorRange>
-  struct iterator_range_traits : public base_container_traits<IteratorRange>
-  {
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -107,8 +99,8 @@ namespace boost { namespace python { namespace indexing {
   struct default_container_traits : public base_container_traits<Container>
   {
     typedef default_container_traits<Container> self_type;
-    BOOST_STATIC_CONSTANT (bool,   has_insert         = self_type::is_mutable);
-    BOOST_STATIC_CONSTANT (bool,   has_erase          = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool, has_insert = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool, has_erase  = self_type::is_mutable);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -119,78 +111,10 @@ namespace boost { namespace python { namespace indexing {
   struct default_sequence_traits : public default_container_traits<Container>
   {
     typedef default_sequence_traits<Container> self_type;
-    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = self_type::is_mutable);
-    BOOST_STATIC_CONSTANT (bool,   has_push_back      = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool, has_pop_back  = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool, has_push_back = self_type::is_mutable);
   };
 
-  /////////////////////////////////////////////////////////////////////////
-  // Sequences within a container_proxy
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename Container>
-  struct container_proxy_traits : public default_sequence_traits<Container>
-  {
-    typedef Container container;
-    typedef typename container::raw_value_type value_type; // insert, ...
-    typedef typename container::raw_value_type key_type;   // find, count, ...
-    typedef typename container::reference reference;       // return values
-
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-
-    typedef value_traits<reference> value_traits_;
-    // Get value_traits for the reference type (i.e. element_proxy)
-    // to get the custom visitor_helper
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Associative containers set and multiset
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename Container>
-  struct set_traits : public default_container_traits<Container>
-  {
-    typedef typename Container::key_type value_type; // probably unused
-    typedef typename Container::key_type index_type; // operator[]
-    typedef typename Container::key_type key_type;   // find, count, ...
-
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-    typedef typename boost::call_traits<index_type>::param_type index_param;
-
-    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
-    BOOST_STATIC_CONSTANT (bool,   has_find        = true);
-
-    BOOST_STATIC_CONSTANT (bool,   has_mutable_ref = false);
-    BOOST_STATIC_CONSTANT (bool,   is_reorderable  = false);
-    // Some compilers seem to deduce has_mutable_ref as true from the
-    // set iterator traits. The previous two constants explicitly hide
-    // the bad results of that.
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Associative containers map and multimap
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename Container>
-  struct map_traits : public default_container_traits<Container>
-  {
-    typedef typename Container::mapped_type value_type;
-    typedef value_type &                    reference;
-    typedef typename Container::key_type    index_type; // operator[]
-    typedef typename Container::key_type    key_type;   // find, count, ...
-
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-    typedef typename boost::call_traits<index_type>::param_type index_param;
-
-    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
-    BOOST_STATIC_CONSTANT (bool,   has_find       = true);
-    BOOST_STATIC_CONSTANT (bool,   is_reorderable = false);
-    // std::map::reference (reference to the mapped type) is mutable,
-    // so explicitly override the base-class assumption of
-    // is_reorderable
-  };
 } } }
 
 /////////////////////////////////////////////////////////////////////////

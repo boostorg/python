@@ -25,6 +25,9 @@
 #include <utility>
 #include <boost/type_traits.hpp>
 #include <boost/iterator/iterator_traits.hpp>
+#include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/algorithms.hpp>
+#include <boost/python/suite/indexing/algo_selector.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename Iterator>
@@ -69,6 +72,12 @@ namespace boost { namespace python { namespace indexing {
     iterator m_begin;
     iterator m_end;
   };
+
+  // Array support functions
+  template<typename T, std::size_t N> T *begin (T (&array)[N]);
+  template<typename T, std::size_t N> T *end   (T (&array)[N]);
+  template<typename T, std::size_t N> iterator_range<T *> make_iterator_range (
+      T (&array)[N]);
 
   template<typename Iterator>
   iterator_range<Iterator>::iterator_range (
@@ -133,14 +142,39 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<typename T, std::size_t N>
-  T *begin (T(&array)[N]) {
+  T *begin (T (&array)[N]) {
     return array;
   }
 
   template<typename T, std::size_t N>
-  T *end (T(&array)[N]) {
+  T *end (T (&array)[N]) {
     return array + N;
   }
+
+  template<typename T, std::size_t N>
+  iterator_range<T *> make_iterator_range (T (&array)[N]) {
+    return iterator_range<T *>(begin (array), end (array));
+  }
+
+  namespace detail {
+    ///////////////////////////////////////////////////////////////////////
+    // algo_selector support for iterator_range instances
+    ///////////////////////////////////////////////////////////////////////
+
+    template <typename Iterator>
+    class selector_impl<iterator_range<Iterator> >
+    {
+      typedef iterator_range<Iterator> Container;
+
+      typedef base_container_traits<Container>       mutable_traits;
+      typedef base_container_traits<Container const> const_traits; // ?
+
+    public:
+      typedef default_algorithms<mutable_traits> mutable_algorithms;
+      typedef default_algorithms<const_traits>   const_algorithms;
+    };
+  }
+
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_ITERATOR_RANGE_HPP
