@@ -24,8 +24,6 @@ class EnumExporter(Exporter):
         else:
             self.enum = None
 
-    TYPE_COUNT = 0
-    
     def Export(self, codeunit, exported_names):
         if not self.info.exclude:
             indent = self.INDENT
@@ -34,10 +32,10 @@ class EnumExporter(Exporter):
             full_name = self.enum.FullName()
             unnamed_enum = False
             if rename.startswith('$_') or rename.startswith('._'):
+                unique_number = int(rename[2:])
                 unnamed_enum = True
                 self.ExportUniqueInt(codeunit)
-                full_name = namespaces.pyste + 'UniqueInt<%d>' % EnumExporter.TYPE_COUNT
-                EnumExporter.TYPE_COUNT += 1
+                full_name = namespaces.pyste + 'UniqueInt<%d>' % unique_number
                 rename = "unnamed"
             code = indent + namespaces.python
             code += 'enum_< %s >("%s")\n' % (full_name, rename)
