@@ -787,21 +787,20 @@ void init_module(py::Module& m)
     a2_class.def(&A2::inheritA2, "inheritA2");
 
     py::ClassWrapper<B1, B_callback> b1_class(m, "B1");
-
-    // Creates extension class "B_base"
-    b1_class.def(py::Constructor<>());
-    b1_class.def(&B1::overrideA1, "overrideA1", &B_callback::default_overrideA1); 
-    b1_class.def(&B1::overrideB1, "overrideB1", &B_callback::default_overrideB1); 
     b1_class.declare_base(a1_class);  
     b1_class.declare_base(a2_class);  
 
+    b1_class.def(py::Constructor<>());
+    b1_class.def(&B1::overrideA1, "overrideA1", &B_callback::default_overrideA1); 
+    b1_class.def(&B1::overrideB1, "overrideB1", &B_callback::default_overrideB1); 
+
     py::ClassWrapper<B2> b2_class(m, "B2");
+    b2_class.declare_base(a1_class);  
+    b2_class.declare_base(a2_class);  
 
     b2_class.def(py::Constructor<>());
     b2_class.def(&B2::overrideA1, "overrideA1"); 
     b2_class.def(&B2::inheritB2, "inheritB2"); 
-    b2_class.declare_base(a1_class);  
-    b2_class.declare_base(a2_class);  
 
     m.def(call_overrideA1, "call_overrideA1");    
     m.def(call_overrideB1, "call_overrideB1");    
