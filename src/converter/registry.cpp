@@ -25,7 +25,7 @@ namespace // <unnamed>
   {
       static registry_t registry;
 
-# ifdef BOOST_PYTHON_DYNAMIC_LIB // this conditional should go away eventually.
+# ifndef BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
       static bool builtin_converters_initialized = false;
       if (!builtin_converters_initialized)
       {

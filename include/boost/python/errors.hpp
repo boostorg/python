@@ -46,11 +46,9 @@ inline T* expect_non_null(T* x)
     return x;
 }
 
-# ifdef BOOST_PYTHON_V2
 // Return source if it is an instance of pytype; throw an appropriate
 // exception otherwise.
 BOOST_PYTHON_DECL PyObject* pytype_check(PyTypeObject* pytype, PyObject* source);
-# endif
 
 }} // namespace boost::python
 

@@ -10,9 +10,7 @@
 
 #include <boost/python/errors.hpp>
 #include <boost/cast.hpp>
-#ifdef BOOST_PYTHON_V2
-# include <boost/python/detail/exception_handler.hpp>
-#endif
+#include <boost/python/detail/exception_handler.hpp>
 
 namespace boost { namespace python {
 
@@ -21,10 +19,8 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
 {
     try
     {
-#ifdef BOOST_PYTHON_V2
         if (detail::exception_handler::chain)
             return detail::exception_handler::chain->handle(f);
-#endif 
         f();
         return false;
     }
@@ -75,7 +71,6 @@ namespace detail {
 // needed by void_adaptor (see void_adaptor.hpp)
 BOOST_PYTHON_DECL PyObject arbitrary_object = { 0 };
 
-#ifdef BOOST_PYTHON_V2
 bool exception_handler::operator()(function0<void> const& f) const
 {
     if (m_next)
@@ -110,7 +105,6 @@ BOOST_PYTHON_DECL void register_exception_handler(handler_function const& f)
     // interpreter exits).
     new exception_handler(f);
 }
-#endif 
 
 } // namespace boost::python::detail
 

@@ -1,205 +1,64 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
-"http://www.w3.org/TR/REC-html40/strict.dtd">
-    <title>
-      The Boost Python Library (Boost.Python)
-    </title>
-    <h1>
-       <img src="../../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277"
-      align="center" height="86"><br>The Boost Python Library (Boost.Python)
-    </h1>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<h2>Synopsis</h2>
-    <p>
-      Use the Boost Python Library to quickly and easily export a C++ library to <a
-      href="http://www.python.org">Python</a> such that the Python interface is
-      very similar to the C++ interface. It is designed to be minimally
-      intrusive on your C++ design. In most cases, you should not have to alter
-      your C++ classes in any way in order to use them with Boost.Python. The system
-      <em>should</em> simply ``reflect'' your C++ classes and functions into
-      Python. 
+<html>
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="boost.css">
 
-      <p>
+    <title>Boost.Python</title>
+  </head>
 
-<table border="1">
-<tr><td> <b>Note:</b> this is the last official release of
-Boost.Python v1. Development of this version of the library has
-stopped; it will be retired soon in favor of the redesigned and
-improved version 2. A summary of the development goals is available on
-the Python <a href="http://www.python.org/sigs/c++-sig/">C++-sig</a>
-page, which also serves as a mailing list for users of both versions
-of the library. A preview of the v2 documentation is available <a
-href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/boost/boost/libs/python/doc/v2/index.html?rev=HEAD&content-type=text/html">here</a>,
-and instructions for getting started with a prerelease are available
-upon request.
-</table>
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../c++boost.gif" border="0"></a></h3>
+        </td>
 
-<h2>Supported Platforms</h2>
-<p>Boost.Python is known to have been tested
-against <a href="http://www.python/org/2.2.1">Python 2.2.1</a> using
-the following compilers:
+        <td valign="top">
+          <h1 align="center">Boost.Python</h1>
 
-<ul>
-  <li><a
-  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>.
-  All tests pass.
+          <h2 align="center">Index</h2>
+        </td>
+      </tr>
+    </table>
+    <hr>
 
-  <li><a
-  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>
-  with <a href="http://www.stlport.org">STLPort</a>-4.5.3. A compiler bug interferes with
-  <a
-  href="../example/simple_vector.cpp">libs/python/example/simple_vector.cpp</a>. All
-  other tests pass.
+    <h2>Contents</h2>
 
-  <p>
-  <li><a href="http://msdn.microsoft.com/visualc/">MSVC++7 (Visual
-       Studio .NET)</a>. All tests pass.
+    <dl class="index">
+      <dt><a href="tutorial/index.html">Tutorial Introduction</a></dt>
 
-  <p>
-  <li><a href="http://www.metrowerks.com/products/windows/">Metrowerks
-        CodeWarrior Pro7.2 and Pro7.0 for Windows</a>. All tests pass.
+      <dt><a href="building.html">Building and Testing</a></dt>
 
-  <p>
-  <li><a href="http://gcc.gnu.org">GCC 3.0.4</a> under <a
-       href="http://www.cygwin.com">Cygwin</a> and
-       <a href="http://www.redhat.com/">RedHat Linux 7.1</a>.
-       All tests pass.
+      <dt><a href="v2/reference.html">Reference</a></dt>
 
-  <p>
-  <li>Compaq C++ V6.2-024 for Digital UNIX (an <a
-      href="http://www.edg.com/">EDG</a>-based compiler).
-      All tests pass.<br>
-      Note that the Boost.Compatibility
-      library must be included (see e.g. tru64_cxx.mak in the build
-      directory).
+      <dt><a href="v2/configuration.html">Configuration Information</a></dt>
 
-  <p>
-  <li>Silicon Graphics MIPSpro Version 7.3.1.2m (an <a
-      href="http://www.edg.com/">EDG</a>-based compiler).
-      All tests pass.<br>
-      Note that the Boost.Compatibility
-      library must be included (see e.g. irix_CC.mak in the build
-      directory).
+      <dt><a href="v2/rationale.html">Rationale</a></dt>
 
-  <p>
-  <li><a href="http://gcc.gnu.org">GCC 2.95.2</a> under <a
-       href="http://www.mingw.org">MinGW</a> and <a
-       href="http://www.redhat.com/">RedHat Linux 7.1</a>.
-       Compilation succeeds, but some tests fail at runtime due to
-       exception handling bugs. It is therefore highly recommended
-       to use GCC 3.0.4 instead.
+      <dt><a href="v2/definitions.html">Definitions</a></dt>
 
-  <p>
-  <li><a
-        href="http://developer.intel.com/software/products/compilers/c50/">Intel
-        C++ 6.0</a> beta: Comprehensive test fails to link due to a
-        linker bug. Other tests seem to work.
+      <dt><a href="v2/faq.html">Frequently Asked Questions (FAQs)</a></dt>
 
-  <p>
-  <li><a
-        href="http://developer.intel.com/software/products/compilers/c50/">Intel
-        C++ 5.0</a> Comprehensive test fails at runtime due to an
-        exception-handling bug. Other tests seem to work.
+      <dt><a href="v2/progress_reports.html">Progress Reports</a></dt>
 
-</ul>
+      <dt><a href="v2/acknowledgments.html">Acknowledgments</a></dt>
+    </dl>
+    <hr>
 
-<p>
-Note that pickling doesn't work with Python 2.2
-due to a core language bug. This is fixed in
-<a href="http://www.python/org/2.2.1">2.2.1</a>.
+    <p>Revised
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     08 October, 2002
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
 
-<p>
-Boost.Python has also been used with other versions of Python back to
-Python 1.5.2. It is expected that the older Python releases still work,
-but we are not regularly testing for backward compatibility.
-
-<h2>Credits</h2>
-<ul>
-      <li><a href="../../../people/dave_abrahams.htm">David Abrahams</a> originated
-      and wrote most of the library, and continues to coordinate development.
-
-      <li><a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich Koethe</a>
-      had independently developed a similar system. When he discovered Boost.Python,
-      he generously contributed countless hours of coding and much insight into
-      improving it. He is responsible for an early version of the support for <a
-      href="overloading.html">function overloading</a> and wrote the support for
-      <a href="inheritance.html#implicit_conversion">reflecting C++ inheritance
-      relationships</a>. He has helped to improve error-reporting from both
-      Python and C++, and has designed an extremely easy-to-use way of 
-      exposing <a href="special.html#numeric">numeric operators</a>, including
-      a way to avoid explicit coercion by means of overloading.
-      
-      <li><a href="http://cci.lbl.gov/staff/ralf_grosse-kunstleve.html">Ralf W.
-      Grosse-Kunstleve</a> contributed <a href="pickle.html">pickle support</a>
-      and numerous other small improvements. He's working on a way to allow
-      types exported by multiple modules to interact.
-
-      <li>The members of the boost mailing list and the Python community
-      supplied invaluable early feedback. In particular, Ron Clarke, Mark Evans,
-      Anton Gluck, Chuck Ingold, Prabhu Ramachandran, and Barry Scott took the
-      brave step of trying to use Boost.Python while it was still in early
-      stages of development.
-
-      <li>The development of Boost.Python wouldn't have been possible without
-      the generous support of <a href="http://www.dragonsys.com/">Dragon
-      Systems/Lernout and Hauspie, Inc</a> who supported its development as an
-      open-source project.
-</ul>
-
-    <h2>Table of Contents</h2>
-
-    <ol>
-      <li><a href="extending.html">A Brief Introduction to writing Python
-        extension modules</a>
-
-      <li><a href="comparisons.html">Comparisons between Boost.Python and other
-        systems for extending Python</a>
-
-      <li><a href="example1.html">A Simple Example</a>
-
-      <li><a href="exporting_classes.html">Exporting Classes</a>
-
-      <li><a href="overriding.html">Overridable Virtual Functions</a>
-
-      <li><a href="overloading.html">Function Overloading</a>
-
-      <li><a href="inheritance.html">Inheritance</a>
-
-      <li><a href="special.html">Special Method and Operator Support</a>
-
-      <li><a href="under-the-hood.html">A Peek Under the Hood</a>
-
-      <li><a href="building.html">Building an Extension Module</a>
-
-      <li><a href="pickle.html">Pickle Support</a>
-
-      <li><a href="cross_module.html">Cross-Extension-Module Dependencies</a>
-
-      <li><a href="enums.html">Wrapping Enums</a>
-
-      <li><a href="pointers.html">Pointers and Smart Pointers</a>
-
-      <li><a href="data_structures.txt">Internal Data Structures</a>
-          
-</ol>  
- 
-    <p>
-      Documentation is a major ongoing project; assistance is greatly
-      appreciated! In the meantime, useful examples of every Boost.Python feature should
-      be evident in the regression test files <code>test/comprehensive.[<a
-      href="../test/comprehensive.py">py</a>/<a
-      href="../test/comprehensive.hpp">hpp</a>/<a
-      href="../test/comprehensive.cpp">cpp</a>]</code>
-
-    <p>
-       Questions should be directed to the <a href= 
-      "http://www.python.org/sigs/c++-sig/">Python C++ SIG</a>.
-
-    <p>
-       &copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
-      sell and distribute this document is granted provided this copyright
-      notice appears in all copies. This document is provided ``as is'' without
-      express or implied warranty, and with no claim as to its suitability for
-      any purpose.
-    <p>
-       Updated: Apr 2002
+    <p><i>&copy; Copyright <a href="../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i></p>
+  </body>
+</html>
 

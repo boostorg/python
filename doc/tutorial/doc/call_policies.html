@@ -142,7 +142,7 @@ or more policies can be composed by chaining. Here's the general syntax:</p>
 </span></pre></code>
 <p>
 Here is the list of predefined call policies. A complete reference detailing
-these can be found <a href="../../v2/reference.html#models_of_call_policies">
+these can be found <a href="../../v2/CallPolicies.html">
 here</a>.</p>
 <ul><li><b>with_custodian_and_ward</b><br> Ties lifetimes of the arguments</li><li><b>with_custodian_and_ward_postcall</b><br> Ties lifetimes of the arguments and results</li><li><b>return_internal_reference</b><br> Ties lifetime of one argument to that of result</li><li><b>return_value_policy&lt;T&gt; with T one of:</b><br></li><li><b>reference_existing_object</b><br>naïve (dangerous) approach</li><li><b>copy_const_reference</b><br>Boost.Python v1 approach</li><li><b>copy_non_const_reference</b><br></li><li><b>manage_new_object</b><br> Adopt a pointer and hold the instance</li></ul><table width="80%" border="0" align="center">
   <tr>
