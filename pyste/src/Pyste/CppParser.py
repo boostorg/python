@@ -152,7 +152,6 @@ class CppParser:
         cache_file = os.path.splitext(interface_name)[0] + '.pystec'
         cache_file = os.path.join(self.cache_dir, cache_file) 
         return cache_file
-    
         
 
     def GetCache(self, header, interface, tail):

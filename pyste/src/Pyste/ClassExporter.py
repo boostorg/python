@@ -113,6 +113,9 @@ class ClassExporter(Exporter):
         valid_members = (Method, ClassVariable, NestedClass, ClassEnumeration)
             # these don't work INVESTIGATE!: (ClassOperator, ConverterOperator)
         fullnames = [x.FullName() for x in self.class_]
+        pointers = [x.PointerDeclaration(True) for x in self.class_ if isinstance(x, Method)]
+        fullnames = dict([(x, None) for x in fullnames])
+        pointers = dict([(x, None) for x in pointers])
         for level in self.class_.hierarchy:
             level_exported = False
             for base in level:
@@ -122,7 +125,12 @@ class ClassExporter(Exporter):
                         if type(member) in valid_members:
                             member_copy = copy.deepcopy(member)   
                             member_copy.class_ = self.class_.FullName()
-                            if member_copy.FullName() not in fullnames:
+                            if isinstance(member_copy, Method):
+                                pointer = member_copy.PointerDeclaration(True)
+                                if pointer not in pointers:
+                                    self.class_.AddMember(member)
+                                    pointers[pointer] = None
+                            elif member_copy.FullName() not in fullnames:
                                 self.class_.AddMember(member)        
                 else:
                     level_exported = True
@@ -646,7 +654,7 @@ class _VirtualWrapperGenerator(object):
     'Generates code to export the virtual methods of the given class'
 
     def __init__(self, class_, bases, info):
-        self.class_ = class_
+        self.class_ = copy.deepcopy(class_)
         self.bases = bases[:]
         self.info = info
         self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
@@ -703,7 +711,7 @@ class _VirtualWrapperGenerator(object):
             if not wrapper:
                 # return the default implementation of the class
                 if method.abstract:
-                    s = indent2 + 'PyErr_SetString(PyExc_RuntimeError, "abstract function called");\n' +\
+                    s = indent2 + 'PyErr_SetString(PyExc_RuntimeError, "pure virtual function called");\n' +\
                         indent2 + 'throw_error_already_set();\n' 
                     if method.result.FullName() != 'void':
                         s += indent2 + 'return %s();\n' % method.result.FullName()
@@ -789,14 +797,7 @@ class _VirtualWrapperGenerator(object):
             return type(m) is Method and \
                 m.virtual and \
                 m.visibility != Scope.private
-                                      
-        all_methods = [x for x in self.class_ if IsVirtual(x)]
-        for base in self.bases:
-            base_methods = [copy.deepcopy(x) for x in base if IsVirtual(x)]
-            for base_method in base_methods:
-                base_method.class_ = self.class_.FullName()
-                all_methods.append(base_method)
-        
+                
         # extract the virtual methods, avoiding duplications. The duplication
         # must take in account the full signature without the class name, so 
         # that inherited members are correctly excluded if the subclass overrides
@@ -811,10 +812,22 @@ class _VirtualWrapperGenerator(object):
             else:
                 result = ''
             params = ', '.join([x.FullName() for x in method.parameters]) 
-            return '%s %s(%s) %s' % (result, method.name, params, const) 
-        
-        self.virtual_methods = []
+            return '%s %s(%s) %s' % (result, method.name, params, const)                                 
+
         already_added = {}
+        self.virtual_methods = []
+        for member in self.class_:
+            if IsVirtual(member):
+                already_added[MethodSig(member)] = None
+                self.virtual_methods.append(member)
+
+        for base in self.bases:
+            base_methods = [copy.deepcopy(x) for x in base if IsVirtual(x)]
+            for base_method in base_methods:
+                self.class_.AddMember(base_method)
+                
+        all_methods = [x for x in self.class_ if IsVirtual(x)]
+        
         for member in all_methods:
             sig = MethodSig(member)
             if IsVirtual(member) and not sig in already_added:

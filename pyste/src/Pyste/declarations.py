@@ -123,7 +123,7 @@ class Class(Declaration):
                     m.is_unique = False
         else:
             member.is_unique = True
-            self.__member_names[member.name] = 1
+        self.__member_names[member.name] = 1
         self.__members.append(member)
         if isinstance(member, ClassOperator):
             self.operator[member.name] = member
@@ -329,6 +329,10 @@ class Constructor(Method):
         return param_reference and class_as_param and param.const and is_public
         
 
+    def PointerDeclaration(self, force=False):
+        return ''
+
+
 #==============================================================================
 # Destructor
 #==============================================================================
@@ -340,6 +344,10 @@ class Destructor(Method):
 
     def FullName(self):
         return self.class_ + '::~' + self.name
+
+
+    def PointerDeclaration(self, force=False):
+        return ''
 
 
 

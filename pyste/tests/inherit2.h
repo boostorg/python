@@ -4,12 +4,15 @@ struct A
 {
     int x;
     int getx() { return x; }
+    int foo() { return 0; }
+    int foo(int x) { return x; }
 };
 
 struct B : A
 {
     int y;
     int gety() { return y; }
+    int foo() { return 1; }
 };
 
 struct C : B

@@ -7,6 +7,9 @@ solution.
 Automatically convert \ to / in Windows systems before passing the paths to
 gccxml.
 
+Fixed a bug reported by Prabhu Ramachandran, where in some classes the virtual
+methods were being definied incorrectly. Thanks a lot Prabhu!
+
 7 July 2003
 Applied 2 patches by Prabhu Ramachandran: a fix in the new --multiple method,
 and two new functions "hold_with_shared_ptr" and its counterpart for auto_ptr.

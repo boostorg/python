@@ -16,6 +16,8 @@ class InheritExampleTest(unittest.TestCase):
         self.assertEqual(d.gety(), 15) 
         self.assertEqual(d.getz(), 10)
         self.assertEqual(d.getw(), 5) 
+        self.assertEqual(b.foo(), 1)
+        self.assertEqual(b.foo(3), 3)
 
         def wrong():
             return b.getw()

@@ -5,7 +5,8 @@ struct A
 {
     struct X { int y; };
     int x;
-    int foo() { return 1; }
+    virtual int foo() { return 0; }
+    virtual int foo(int x) { return x; }
     A operator+(A o) const
     {
         A r;
