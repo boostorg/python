@@ -31,7 +31,7 @@ class long_ : public object
     {
     }
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_)
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_, object)
     
  private:
     static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);

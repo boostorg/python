@@ -94,7 +94,7 @@ class list : public object
     }
     
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list)
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list, object)
     
  private:
     static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);

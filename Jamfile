@@ -13,6 +13,8 @@ if $(UNIX) && ( $(OS) = AIX )
 
 dll bpl
   : 
+  src/numeric.cpp
+  
   src/list.cpp
   src/long.cpp
   src/dict.cpp

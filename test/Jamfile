@@ -54,6 +54,8 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+bpl-test numpy ;
+
 bpl-test enum ;
 bpl-test minimal ;
 bpl-test docstring ;

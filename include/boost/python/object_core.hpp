@@ -234,13 +234,13 @@ namespace api
   // Macros for forwarding constructors in classes derived from
   // object. Derived classes will usually want these as an
   // implementation detail
-# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived)             \
+# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived, base)       \
     inline explicit derived(python::detail::borrowed_reference p)       \
-        : object(p) {}                                                  \
+        : base(p) {}                                                    \
     inline explicit derived(python::detail::new_reference p)            \
-        : object(p) {}                                                  \
+        : base(p) {}                                                    \
     inline explicit derived(python::detail::new_non_null_reference p)   \
-        : object(p) {}
+        : base(p) {}
 
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
 #  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_
@@ -253,9 +253,9 @@ namespace api
   // runtime failure into an ambiguity error at compile-time due to
   // the lack of partial ordering, or at least a link-time error if no
   // generalized template constructor is declared.
-#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived)     \
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived)          \
-    template <class T>                                          \
+#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived, base)       \
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived, base)            \
+    template <class T>                                                  \
     explicit derived(extract<T> const&);
 # endif
 
