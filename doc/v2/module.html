@@ -188,19 +188,23 @@ module&amp; add(class_&lt;T,Bases,HolderGenerator&gt; const&amp; c);
     </dl>
 <pre>
 template &lt;class Fn&gt;
-module&amp; def(char const* name, Fn fn);
+module&amp; def(char const* name, Fn f);
 
 template &lt;class Fn, class ResultHandler&gt;
-module&amp; def(char const* name, Fn fn, ResultHandler handler);
+module&amp; def(char const* name, Fn f, ResultHandler handler);
 </pre>
 
     <dl class="function-semantics">
+
       <dt><b>Requires:</b> <code>f</code> is a non-null pointer-to-function or
       pointer-to-member-function. <code>name</code> is a ntbs which conforms to
       Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
-      naming rules</a>. If supplied, <code>policy</code> conforms to the <a
-      href="CallPolicy.html">CallPolicy</a> concept requirements.
+      naming rules</a>. In the first form, the return type of
+      <code>f</code> is not a reference and is not a pointer other
+      than <code>char const*</code> or <code>PyObject*</code>. In the
+      second form <code>policy</code> is a model of <a
+      href="CallPolicy.html">CallPolicy</a>.
 
       <dt><b>Effects:</b> Adds the result of <code><a href=
       "make_function.html#make_function-spec">make_function</a>(f)</code> to
