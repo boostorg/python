@@ -67,6 +67,22 @@ namespace detail
           return python::objects::class_object<T>::reference;
       }
   };
+
+  // null_pointer_to_none -- return none() for null pointers and 0 for all other types/values
+  // 
+  // Uses simulated partial ordering
+  template <class T>
+  inline PyObject* null_pointer_to_none(T&, int)
+  {
+      return 0;
+  }
+
+  // overload for pointers
+  template <class T>
+  inline PyObject* null_pointer_to_none(T* x, long)
+  {
+      return x == 0 ? python::detail::none() : 0;
+  }
 }
 
 template <class T, class MakeHolder>
@@ -79,6 +95,10 @@ inline bool to_python_indirect<T,MakeHolder>::convertible()
 template <class T, class MakeHolder>
 inline PyObject* to_python_indirect<T,MakeHolder>::operator()(T x) const
 {
+    PyObject* const null_result = detail::null_pointer_to_none(x, 1L);
+    if (null_result != 0)
+        return null_result;
+    
     PyObject* raw_result = type()->tp_alloc(type(), 0);
 
     if (raw_result == 0)
