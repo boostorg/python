@@ -5,12 +5,12 @@
 // to its suitability for any purpose.
 #ifndef MEMBER_FUNCTION_CAST_DWA2002311_HPP
 # define MEMBER_FUNCTION_CAST_DWA2002311_HPP
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/python/detail/preprocessor.hpp>
-# include <boost/mpl/aux_/preprocessor.hpp>
 # include <boost/preprocessor/comma_if.hpp>
 # include <boost/preprocessor/dec.hpp>
+# include <boost/preprocessor/enum_shifted_params.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -60,16 +60,16 @@ struct member_function_cast_impl
 #  include <boost/python/preprocessed/member_function_cast.hpp>
 # endif
 
-# define BOOST_PYTHON_MEMBER_FUNCTION_CAST_STAGE1(args, cv)                                     \
-template <                                                                                      \
-    class S                                                                                     \
-  , class R                                                                                     \
-    BOOST_PP_COMMA_IF(BOOST_PP_DEC(args)) BOOST_MPL_TEMPLATE_PARAMETERS(1, args, class A)       \
-  >                                                                                             \
-static cast_helper<S,BOOST_PYTHON_FN(T::*,1,args)cv()>                                          \
-stage1(BOOST_PYTHON_FN(S::*,1,args)cv())                                                        \
-{                                                                                               \
-    return cast_helper<S,BOOST_PYTHON_FN(T::*,1,args)cv()>();                                   \
+# define BOOST_PYTHON_MEMBER_FUNCTION_CAST_STAGE1(args, cv)                             \
+template <                                                                              \
+    class S                                                                             \
+  , class R                                                                             \
+    BOOST_PP_COMMA_IF(BOOST_PP_DEC(args)) BOOST_PP_ENUM_SHIFTED_PARAMS(args, class A)   \
+  >                                                                                     \
+static cast_helper<S,BOOST_PYTHON_FN(T::*,1,args)cv()>                                  \
+stage1(BOOST_PYTHON_FN(S::*,1,args)cv())                                                \
+{                                                                                       \
+    return cast_helper<S,BOOST_PYTHON_FN(T::*,1,args)cv()>();                           \
 } 
 
 BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(BOOST_PYTHON_MEMBER_FUNCTION_CAST_STAGE1)
@@ -81,7 +81,7 @@ struct member_function_cast
 # ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
     : member_function_cast_impl<T>
 # else 
-    : mpl::select_type<
+    : mpl::select_if_c<
         is_member_function_pointer<SF>::value
         , member_function_cast_impl<T>
         , non_member_function_cast_impl
