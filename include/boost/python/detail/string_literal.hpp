@@ -27,7 +27,7 @@ struct is_string_literal<char const[n]>
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
-#   if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590014) \
+#   if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590031) \
   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730)
 // This compiler mistakenly gets the type of string literals as char*
 // instead of char[NN].
