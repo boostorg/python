@@ -187,7 +187,7 @@ namespace boost { namespace python {
             return DerivedPolicies::get_slice(container, from, to);
         }
 
-        static
+        static void
         base_get_slice_data(
             Container& container, PySliceObject* slice, Index& from, Index& to)
         {

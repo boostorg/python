@@ -109,7 +109,8 @@ namespace boost { namespace python { namespace detail {
                     right = iter; // adjust right
                     break;
                 }
-                extract<Proxy&>(*iter)().detach();
+                extract<Proxy&> p(*iter);
+                p().detach();
             }
             
             typename std::vector<PyObject*>::size_type 
@@ -119,7 +120,8 @@ namespace boost { namespace python { namespace detail {
 
             while (right != proxies.end())
             {
-                extract<Proxy&>(*right)().set_index(
+                extract<Proxy&> p(*right);
+                p().set_index(
                     policies_type::adjust_index(
                         extract<Proxy&>(*right)().get_index(), from, to, len));
                 ++right;
@@ -168,7 +170,7 @@ namespace boost { namespace python { namespace detail {
         remove(Proxy& proxy)
         {
             // Remove a proxy.
-            links_t::iterator r = links.find(&proxy.get_container());
+            typename links_t::iterator r = links.find(&proxy.get_container());
             if (r != links.end())
             {
                 r->second.remove(proxy);
@@ -188,7 +190,7 @@ namespace boost { namespace python { namespace detail {
         erase(Container& container, index_type from, index_type to)
         {
             // Erase all proxies with indexes from..to 
-            links_t::iterator r = links.find(&container);
+            typename links_t::iterator r = links.find(&container);
             if (r != links.end())
             {
                 r->second.erase(from, to);
@@ -209,7 +211,7 @@ namespace boost { namespace python { namespace detail {
             // procedure involves adjusting the indexes of 
             // the proxies.
 
-            links_t::iterator r = links.find(&container);
+            typename links_t::iterator r = links.find(&container);
             if (r != links.end())
             {
                 r->second.replace(from, to, len);
@@ -224,7 +226,7 @@ namespace boost { namespace python { namespace detail {
             // Find the proxy with *exact* index i.
             // Return 0 (null) if no proxy with the given 
             // index is found.
-            links_t::iterator r = links.find(&container);
+            typename links_t::iterator r = links.find(&container);
             if (r != links.end())
                 return r->second.find(i);
             return 0;
@@ -253,7 +255,7 @@ namespace boost { namespace python { namespace detail {
     
         typedef Index index_type;
         typedef typename Container::value_type element_type;
-        typedef typename Policies policies_type;
+        typedef Policies policies_type;
         typedef container_element<Container, Index, Policies> self_t;
         typedef proxy_group<self_t> links_type;
         
