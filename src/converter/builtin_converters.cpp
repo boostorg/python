@@ -194,7 +194,7 @@ namespace
   void register_int_converters(T* = 0)
   {
       static scalar_from_python<T, convertible_to_int, py_int_or_float_as_long> x;
-  };
+  }
 }    
 
 #define REGISTER_INT_CONVERTERS(U) register_int_converters<U>()
