@@ -209,7 +209,7 @@ Polymorphism also works:
 Pickling tests:
 
     >>> world.__module__
-    'demo'
+    'test'
     >>> world.__safe_for_unpickling__
     1
     >>> world.__reduce__()
@@ -1072,7 +1072,7 @@ test methodologies for wrapping functions that return a pointer
     1
 '''
 
-from demo import *
+from test import *
 import string
 import re
 import sys
@@ -1080,8 +1080,8 @@ import sys
 def run(args = None):
     if args is not None:
         sys.argv = args
-    import doctest, test_extclass
-    doctest.testmod(test_extclass)
+    import doctest, comprehensive
+    doctest.testmod(comprehensive)
     
 if __name__ == '__main__':
     run()
