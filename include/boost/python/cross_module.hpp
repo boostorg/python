@@ -18,8 +18,12 @@
 # include <boost/python/class_builder.hpp>
 
 namespace boost { namespace python {
-    struct BOOST_PYTHON_DECL import_error: error_already_set {};
-    struct BOOST_PYTHON_DECL export_error : error_already_set {};
+
+struct BOOST_PYTHON_DECL import_error: error_already_set {};
+struct BOOST_PYTHON_DECL export_error : error_already_set {};
+
+void BOOST_PYTHON_DECL throw_import_error();
+void BOOST_PYTHON_DECL throw_export_error();
 
 namespace detail
 {
@@ -170,10 +174,8 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
     virtual PyObject* to_python(const T& x) {
         PyErr_SetString(PyExc_RuntimeError,
           "to_python(const T&) converter not exported");
-        throw import_error();
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+        throw_import_error();
         return 0;
-#endif
     }
 
     virtual T* from_python_Ts(PyObject* p, boost::python::type<T*> t) {

@@ -344,7 +344,7 @@ namespace detail
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "expected 2 arguments, got 3");
-                  throw argument_error();
+                  throw_argument_error();
               }
 
               return BOOST_PYTHON_CONVERSION::to_python(
@@ -367,7 +367,7 @@ namespace detail
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
-                  throw argument_error();
+                  throw_argument_error();
               }
 
               return BOOST_PYTHON_CONVERSION::to_python(

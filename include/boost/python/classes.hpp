@@ -349,19 +349,21 @@ int class_t<T>::instance_mapping_ass_subscript(PyObject* obj, PyObject* key, PyO
     return 0;
 }
 
-void BOOST_PYTHON_DECL adjust_slice_indices(PyObject* obj, int& start, int& finish);
+bool BOOST_PYTHON_DECL adjust_slice_indices(PyObject* obj, int& start, int& finish);
 
 template <class T>
 PyObject* class_t<T>::instance_sequence_slice(PyObject* obj, int start, int finish) const
 {
-    adjust_slice_indices(obj, start, finish);    
+    if (!adjust_slice_indices(obj, start, finish))
+        return 0;
     return downcast<T>(obj)->get_slice(start, finish);
 }
 
 template <class T>
 int class_t<T>::instance_sequence_ass_slice(PyObject* obj, int start, int finish, PyObject* value) const
 {
-    adjust_slice_indices(obj, start, finish);
+    if (!adjust_slice_indices(obj, start, finish))
+        return -1;
     downcast<T>(obj)->set_slice(start, finish, value);
     return 0;
 }
