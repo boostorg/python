@@ -2,7 +2,7 @@
  Boost.Python_ Internals |(logo)|__
 ===================================
 
-.. |(logo)| image:: ../../../c++boost.gif
+.. |(logo)| image:: ../../../boost.png
    :alt: Boost
    :class: boost-logo
 
