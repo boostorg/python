@@ -698,17 +698,25 @@ class _VirtualWrapperGenerator(object):
         # default implementations (with overloading)
         def DefaultImpl(method, param_names):
             'Return the body of a default implementation wrapper'
+            indent2 = indent * 2
             wrapper = self.info[method.name].wrapper
             if not wrapper:
                 # return the default implementation of the class
-                return '%s%s(%s);\n' % \
+                if method.abstract:
+                    s = indent2 + 'PyErr_SetString(PyExc_RuntimeError, "abstract function called");\n' +\
+                        indent2 + 'throw_error_already_set();\n' 
+                    if method.result.FullName() != 'void':
+                        s += indent2 + 'return %s();\n' % method.result.FullName()
+                    return s
+                else:
+                    return indent2 + '%s%s(%s);\n' % \
                     (return_str, method.FullName(), ', '.join(param_names)) 
             else:
                 # return a call for the wrapper
                 params = ', '.join(['this'] + param_names)
-                return '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
+                return indent2 + '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
                 
-        if not method.abstract and method.visibility != Scope.private:
+        if method.visibility != Scope.private:
             minArgs = method.minArgs
             maxArgs = method.maxArgs
             impl_names = self.DefaultImplementationNames(method)
@@ -716,7 +724,7 @@ class _VirtualWrapperGenerator(object):
                 params, param_names, param_types = _ParamsInfo(method, argNum)            
                 decl += '\n'
                 decl += indent + '%s %s(%s)%s {\n' % (result, impl_name, params, constantness)
-                decl += indent*2 + DefaultImpl(method, param_names)
+                decl += DefaultImpl(method, param_names)
                 decl += indent + '}\n'                
         return decl
             
@@ -823,7 +831,7 @@ class _VirtualWrapperGenerator(object):
         for method in self.virtual_methods:
             exclude = self.info[method.name].exclude
             # generate definitions only for public methods and non-abstract methods
-            if method.visibility == Scope.public and not method.abstract and not exclude:
+            if method.visibility == Scope.public and not exclude:
                 defs.extend(self.MethodDefinition(method))
         return defs
 

@@ -1,3 +1,12 @@
+10 August 2003
+Support for incremental generation of the code has been added. This changes
+how --multiple works; documentation of this new feature will follow. Thanks
+to Prabhu Ramachandran, that saw the need for this feature and discussed a
+solution. 
+
+Automatically convert \ to / in Windows systems before passing the paths to
+gccxml.
+
 7 July 2003
 Applied 2 patches by Prabhu Ramachandran: a fix in the new --multiple method,
 and two new functions "hold_with_shared_ptr" and its counterpart for auto_ptr.

@@ -11,7 +11,7 @@ import sys
 if sys.platform == 'win32':
     
     includes = '-ID:/programming/libraries/boost-cvs/boost -ID:/Bin/Python/include'
-    build_pyste_cmd = 'python ../src/Pyste/pyste.py %s ' % includes
+    build_pyste_cmd = 'python ../src/Pyste/pyste.py --cache-dir=cache %s ' % includes
     compile_single_cmd = 'icl /nologo /GR /GX -c %s -I. ' % includes
     link_single_cmd = 'link /nologo /DLL '\
         '/libpath:D:/programming/libraries/boost-cvs/lib /libpath:D:/Bin/Python/libs '\
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     else:
         module = None
     try:
-        #main('--multiple', module)
+#        main('--multiple', module)
         main('', module)
     except RuntimeError, e:
         print e        

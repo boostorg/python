@@ -41,8 +41,9 @@ import sys
 from policies import *
 from CppParser import CppParser, CppParserError
 import time
+from declarations import Typedef
 
-__VERSION__ = '0.9.10'
+__VERSION__ = '0.9.11'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -61,6 +62,14 @@ def GetDefaultIncludes():
         return include.split(os.pathsep)
     else:
         return []
+
+
+def ProcessIncludes(includes):
+    if sys.platform == 'win32':
+        index = 0
+        for include in includes:
+            includes[index] = include.replace('\\', '/')
+            index += 1
 
 
 def ParseArguments():
@@ -147,6 +156,7 @@ def ParseArguments():
         Usage()
         sys.exit(3)
 
+    ProcessIncludes(includes)
     return includes, defines, module, out, files, multiple, cache_dir, create_cache, generate_main
 
     
@@ -313,6 +323,7 @@ def GenerateCode(parser, module, out, interfaces, multiple):
         else:
             declarations = []
             parsed_header = None
+        ExpandTypedefs(declarations, exported_names)
         export.SetDeclarations(declarations)
         export.SetParsedHeader(parsed_header)
         if multiple:
@@ -329,6 +340,15 @@ def GenerateCode(parser, module, out, interfaces, multiple):
         print 'Module %s generated' % module
     return 0
 
+
+def ExpandTypedefs(declarations, exported_names):
+    '''Check if the names in exported_names are a typedef, and add the real class 
+    name in the dict.
+    '''
+    for name in exported_names.keys():
+        for decl in declarations:
+            if isinstance(decl, Typedef):
+                exported_names[decl.type.FullName()] = None
 
 def UsePsyco():
     'Tries to use psyco if possible'

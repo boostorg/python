@@ -36,6 +36,7 @@ class CppParser:
         self.delete_cache = False
         self.cache_dir = cache_dir
         self.cache_files = []
+        self.mem_cache = {}
         # create the cache dir
         if cache_dir:
             try:
@@ -142,8 +143,7 @@ class CppParser:
         declarations = self.GetCache(header, interface, tail)
         if declarations is None:
             declarations = self.ParseWithGCCXML(header, tail)
-            if self.cache_dir is not None:
-                self.CreateCache(header, interface, tail, declarations)
+            self.CreateCache(header, interface, tail, declarations)
         return declarations, header
 
 
@@ -158,13 +158,19 @@ class CppParser:
     def GetCache(self, header, interface, tail):
         if self.cache_dir is None:
             return None
+        
+        key = (header, interface, tail)
+        # try memory cache first
+        if key in self.mem_cache:
+            return self.mem_cache[key]
+        
+        # get the cache from the disk
         header = self.FindHeader(header) 
         cache_file = self.CacheFileName(interface)    
         if os.path.isfile(cache_file):
             f = file(cache_file, 'rb')
             try:
                 cache = load(f)
-                key = (header, interface, tail)
                 if cache.has_key(key):
                     self.cache_files.append(cache_file)
                     return cache[key]
@@ -177,6 +183,15 @@ class CppParser:
 
 
     def CreateCache(self, header, interface, tail, declarations):
+        key = (header, interface, tail)
+        
+        # our memory cache only holds one item
+        self.mem_cache.clear() 
+        self.mem_cache[key] = declarations
+
+        # save the cache in the disk
+        if self.cache_dir is None:
+            return
         header = self.FindHeader(header) 
         cache_file = self.CacheFileName(interface)
         if os.path.isfile(cache_file):
@@ -187,7 +202,6 @@ class CppParser:
                 f.close()
         else:
             cache = {}
-        key = (header, interface, tail)
         cache[key] = declarations
         self.cache_files.append(cache_file)
         f = file(cache_file, 'wb')
