@@ -15,7 +15,6 @@
 template <unsigned size>
 struct choose
 {
-#if 1
     typedef typename boost::python::detail::if_<
         (sizeof(c1) == size)
     >::template then<
@@ -33,21 +32,6 @@ struct choose
     >::template then<
         c4
     >::template else_<void*>::type type;
-#else
-    typedef typename boost::python::detail::if_<
-        (sizeof(c1) == size)
-        , c1
-    >::template elif<
-        (sizeof(c2) == size)
-        , c2
-    >::template elif<
-        (sizeof(c3) == size)
-        , c3
-    >::template elif<
-        (sizeof(c4) == size)
-        , c4
-    >::template else_<void*>::type type;
-#endif 
 };
 
 int main()

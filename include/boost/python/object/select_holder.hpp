@@ -9,11 +9,11 @@
 # include <boost/python/has_back_reference.hpp>
 # include <boost/python/detail/not_specified.hpp>
 # include <boost/python/detail/pointee.hpp>
-# include <boost/python/detail/if_else.hpp>
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/select_type.hpp>
+# include <boost/type_traits/same_traits.hpp>
 
 namespace boost { namespace python { namespace objects {
 
