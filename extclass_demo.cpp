@@ -290,6 +290,85 @@ long range_hash(const Range& r)
     return r.m_start * 123 + r.m_finish;
 }
 
+/************************************************************/
+/*                                                          */
+/*           some functions to test overloading             */
+/*                                                          */
+/************************************************************/
+
+static std::string testVoid()
+{
+   return std::string("Hello world!");  
+}
+
+static int testInt(int i)
+{
+   return i;
+}
+
+static std::string testString(std::string i)
+{
+   return i;
+}
+
+static int test2(int i1, int i2)
+{
+    return i1+i2;
+}
+
+static int test3(int i1, int i2, int i3)
+{
+    return i1+i2+i3;
+}
+
+static int test4(int i1, int i2, int i3, int i4)
+{
+    return i1+i2+i3+i4;
+}
+
+static int test5(int i1, int i2, int i3, int i4, int i5)
+{
+    return i1+i2+i3+i4+i5;
+}
+
+/************************************************************/
+/*                                                          */
+/*               a class to test overloading                */
+/*                                                          */
+/************************************************************/
+
+struct OverloadTest
+{
+    OverloadTest(): x_(1000) {}
+    OverloadTest(int x): x_(x) {}
+    OverloadTest(int x,int y): x_(x+y) { }
+    OverloadTest(int x,int y,int z): x_(x+y+z) {}
+    OverloadTest(int x,int y,int z, int a): x_(x+y+z+a) {}
+    OverloadTest(int x,int y,int z, int a, int b): x_(x+y+z+a+b) {}
+    
+    int x() const { return x_; }
+    void setX(int x) { x_ = x; }
+
+    int p1(int x) { return x;  }
+    int p2(int x, int y) { return x + y; }
+    int p3(int x, int y, int z) { return x + y + z; }
+    int p4(int x, int y, int z, int a) { return x + y + z + a; }
+    int p5(int x, int y, int z, int a, int b) { return x + y + z + a + b; }
+  private:
+    int x_;
+};
+
+static int getX(OverloadTest * u)
+{
+    return u->x();
+}
+
+/************************************************************/
+/*                                                          */
+/*                       init the module                    */
+/*                                                          */
+/************************************************************/
+
 void init_module(py::Module& m)
 {
     m.add(new Foo::PythonClass);
@@ -321,6 +400,32 @@ void init_module(py::Module& m)
     range.def(&range_hash, "__hash__");
     range.def_readonly(&Range::m_start, "start");
     range.def_readonly(&Range::m_finish, "finish");
+    
+    m.def(&testVoid, "overloaded");
+    m.def(&testInt, "overloaded");
+    m.def(&testString, "overloaded");
+    m.def(&test2, "overloaded");
+    m.def(&test3, "overloaded");
+    m.def(&test4, "overloaded");
+    m.def(&test5, "overloaded");
+
+    py::ClassWrapper<OverloadTest> over(m, "OverloadTest");
+    over.def(py::Constructor<>());
+    over.def(py::Constructor<OverloadTest const &>());
+    over.def(py::Constructor<int>());
+    over.def(py::Constructor<int, int>());
+    over.def(py::Constructor<int, int, int>());
+    over.def(py::Constructor<int, int, int, int>());
+    over.def(py::Constructor<int, int, int, int, int>());
+    over.def(&getX, "getX");
+    over.def(&OverloadTest::setX, "setX");
+    over.def(&OverloadTest::x, "overloaded");
+    over.def(&OverloadTest::p1, "overloaded");
+    over.def(&OverloadTest::p2, "overloaded");
+    over.def(&OverloadTest::p3, "overloaded");
+    over.def(&OverloadTest::p4, "overloaded");
+    over.def(&OverloadTest::p5, "overloaded");
+    
 }
 
 void init_module()

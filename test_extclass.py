@@ -412,6 +412,80 @@ Testing __call__:
     0
     >>> comparator(couple2, couple)
     1
+
+Testing overloaded free functions
+    >>> overloaded()
+    'Hello world!'
+    >>> overloaded(1)
+    1
+    >>> overloaded('foo')
+    'foo'
+    >>> overloaded(1,2)
+    3
+    >>> overloaded(1,2,3)
+    6
+    >>> overloaded(1,2,3,4)
+    10
+    >>> overloaded(1,2,3,4,5)
+    15
+    >>> try: overloaded(1, 'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
+    
+Testing overloaded constructors
+
+    >>> x = OverloadTest()
+    >>> x.getX()
+    1000
+    >>> x = OverloadTest(1)
+    >>> x.getX()
+    1
+    >>> x = OverloadTest(1,1)
+    >>> x.getX()
+    2
+    >>> x = OverloadTest(1,1,1)
+    >>> x.getX()
+    3
+    >>> x = OverloadTest(1,1,1,1)
+    >>> x.getX()
+    4
+    >>> x = OverloadTest(1,1,1,1,1)
+    >>> x.getX()
+    5
+    >>> x = OverloadTest(x)
+    >>> x.getX()
+    5
+    >>> try: x = OverloadTest(1, 'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
+    
+Testing overloaded methods
+
+    >>> x.setX(3)
+    >>> x.overloaded()
+    3
+    >>> x.overloaded(1)
+    1
+    >>> x.overloaded(1,1)
+    2
+    >>> x.overloaded(1,1,1)
+    3
+    >>> x.overloaded(1,1,1,1)
+    4
+    >>> x.overloaded(1,1,1,1,1)
+    5
+    >>> try: x.overloaded(1,'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
 '''
 
 from demo import *
