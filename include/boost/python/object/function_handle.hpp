@@ -10,6 +10,7 @@
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/object/py_function.hpp>
 # include <boost/python/signature.hpp>
+# include <boost/python/arg_from_python.hpp>
 
 namespace boost { namespace python { namespace objects { 
 

@@ -11,7 +11,6 @@
 #  include <boost/python/detail/wrap_python.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/python/detail/none.hpp>
-#  include <boost/python/detail/this_arg_from_python.hpp>
 
 #  include <boost/type_traits/is_member_function_pointer.hpp>
 
@@ -52,7 +51,6 @@ template <class T> struct is_defaulted_virtual_fn;
 // Tag types describing invocation methods
 struct fn_tag {};
 struct mem_fn_tag {};
-struct virtual_fn_tag {};
 
 // A metafunction returning the appropriate tag type for invoking an
 // object of type T.
@@ -61,11 +59,7 @@ struct invoke_tag
     : mpl::if_<
         is_member_function_pointer<T>
         , mem_fn_tag
-        , typename mpl::if_<
-             is_defaulted_virtual_fn<T>
-            , virtual_fn_tag
-            , fn_tag
-        >::type
+        , fn_tag
     >
 {};
 
@@ -103,25 +97,6 @@ template <class F, class TC BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)>
 inline PyObject* invoke(mem_fn_tag, void_result_to_python, F& f, TC& tc BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, & ac) )
 {
     (tc().*f)(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT));
-    return none();
-}
-
-template <class RC, class F, class TC BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)>
-inline PyObject* invoke(virtual_fn_tag, RC*, F& f, TC& tc BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, & ac) )
-{
-    return RC()(
-        tc.use_default()
-        ? f.default_impl(tc() BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT))
-        : (tc().*f.dispatch)(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac, () BOOST_PP_INTERCEPT)) );
-}
-                 
-template <class F, class TC BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class AC)>
-inline PyObject* invoke(virtual_fn_tag, void_result_to_python, F& f, TC& tc BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, AC, & ac) )
-{
-    if (tc.use_default())
-        f.default_impl(tc() BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, ac,()BOOST_PP_INTERCEPT));
-    else
-        (tc().*f.dispatch)(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, ac,()BOOST_PP_INTERCEPT));
     return none();
 }
 

@@ -97,12 +97,11 @@ namespace detail
   template <class Tuple>
   struct doc_extract
       : tuple_extract<
-        Tuple,
-        mpl::logical_not<
+        Tuple
+        , mpl::logical_not<
            mpl::logical_or<
               is_reference_to_class<mpl::_1>
-              , is_reference_to_function_pointer<mpl::_1 >
-              , is_reference_to_function<mpl::_1 >
+              , is_reference_to_member_function_pointer<mpl::_1 >
            >
         >
      >
@@ -118,8 +117,8 @@ namespace detail
   template <class Tuple>
   struct policy_extract
       : tuple_extract<
-          Tuple,
-          mpl::logical_and<
+          Tuple
+          , mpl::logical_and<
              mpl::logical_not<is_same<not_specified const&,mpl::_1> >
                , is_reference_to_class<mpl::_1 >
                , mpl::logical_not<is_reference_to_keywords<mpl::_1 > >
@@ -131,12 +130,9 @@ namespace detail
   template <class Tuple>
   struct default_implementation_extract
       : tuple_extract<
-          Tuple,
-          mpl::logical_or<
-             is_reference_to_function_pointer<mpl::_1 >
-             , is_reference_to_function<mpl::_1 >
+          Tuple
+          , is_reference_to_member_function_pointer<mpl::_1 >
           >
-        >
   {
   };
 
@@ -161,8 +157,8 @@ namespace detail
           , default_call_policies
           , keywords<0>
           , char const*
-          , void(*)()   // A function pointer type which is never an
-                        // appropriate default implementation
+          , void(not_specified::*)()   // A function pointer type which is never an
+                                       // appropriate default implementation
           > all_t;
 
       // Constructors; these initialize an member of the tuple type
@@ -172,15 +168,16 @@ namespace detail
       def_helper(T1 const& a1, T2 const& a2, T3 const& a3) : m_all(a1,a2,a3,m_nil) {}
       def_helper(T1 const& a1, T2 const& a2, T3 const& a3, T4 const& a4) : m_all(a1,a2,a3,a4) {}
 
-   private: // type
+   private: // types
       typedef typename default_implementation_extract<all_t>::result_type default_implementation_t;
+      
+   public: // Constants which can be used for static assertions.
 
-   public: // Constant which can be used for static assertions. Users
-           // must not supply a default implementation for non-class
-           // methods.
+      // Users must not supply a default implementation for non-class
+      // methods.
       BOOST_STATIC_CONSTANT(
           bool, has_default_implementation = (
-              !is_same<default_implementation_t, void(*)()>::value));
+              !is_same<default_implementation_t, void(not_specified::*)()>::value));
       
    public: // Extractor functions which pull the appropriate value out
            // of the tuple
@@ -201,7 +198,7 @@ namespace detail
 
       default_implementation_t default_implementation() const
       {
-          return policy_extract<all_t>::extract(m_all);
+          return default_implementation_extract<all_t>::extract(m_all);
       }
       
    private: // data members

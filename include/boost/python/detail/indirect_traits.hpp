@@ -302,8 +302,7 @@ typename is_const_help<V>::type reference_to_const_helper(V&);
 outer_no_type
 reference_to_const_helper(...);
 
-template <bool ref = true>
-struct is_reference_to_const_helper1
+struct true_helper1
 {
     template <class T>
     struct apply
@@ -313,6 +312,21 @@ struct is_reference_to_const_helper1
             bool, value
             = sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type));
     };
+};
+
+template <bool ref = true>
+struct is_reference_to_const_helper1 : true_helper1
+{
+#   if 0
+    template <class T>
+    struct apply
+    {
+        static T t;
+        BOOST_STATIC_CONSTANT(
+            bool, value
+            = sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type));
+    };
+#   endif 
 };
 
 template <>

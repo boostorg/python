@@ -56,7 +56,7 @@ struct select_result_converter
 };
 
 
-template <unsigned> struct caller_gen;
+template <unsigned> struct caller_arity;
 
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
      typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
@@ -81,8 +81,8 @@ template <unsigned> struct caller_gen;
 template <class F, class ConverterGenerators, class CallPolicies, class Sig>
 struct caller_base_select
 {
-    enum { n_arguments = mpl::size<Sig>::value - 1 };
-    typedef typename caller_gen<n_arguments>::template impl<F,ConverterGenerators,CallPolicies,Sig> type;
+    enum { arity = mpl::size<Sig>::value - 1 };
+    typedef typename caller_arity<arity>::template impl<F,ConverterGenerators,CallPolicies,Sig> type;
 };
 
 // A function object type which wraps C++ objects as Python callable
@@ -131,7 +131,7 @@ struct caller
 # define N BOOST_PP_ITERATION()
 
 template <>
-struct caller_gen<N>
+struct caller_arity<N>
 {
     template <class F, class ConverterGenerators, class Policies, class Sig>
     struct impl

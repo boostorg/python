@@ -8,36 +8,42 @@
 
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/object/class.hpp>
+
 # include <boost/python/bases.hpp>
-
 # include <boost/python/object.hpp>
-
 # include <boost/python/type_id.hpp>
-# include <boost/python/object/class_converters.hpp>
-# include <boost/type_traits/ice.hpp>
-# include <boost/type_traits/same_traits.hpp>
-# include <boost/mpl/size.hpp>
-# include <boost/mpl/for_each.hpp>
-# include <boost/mpl/bool_c.hpp>
-# include <boost/python/object/select_holder.hpp>
-# include <boost/python/object/class_wrapper.hpp>
-# include <boost/python/object/make_instance.hpp>
 # include <boost/python/data_members.hpp>
-# include <boost/utility.hpp>
-# include <boost/python/object/pickle_support.hpp>
 # include <boost/python/make_function.hpp>
-# include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/signature.hpp>
 # include <boost/python/init.hpp>
 # include <boost/python/args_fwd.hpp>
 
-# include <boost/python/detail/string_literal.hpp>
+# include <boost/type_traits/ice.hpp>
+# include <boost/type_traits/is_same.hpp>
+# include <boost/type_traits/is_convertible.hpp>
+# include <boost/type_traits/is_member_function_pointer.hpp>
+# include <boost/type_traits/is_polymorphic.hpp>
 
+# include <boost/mpl/size.hpp>
+# include <boost/mpl/for_each.hpp>
+# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/logical/not.hpp>
+
+# include <boost/python/object/select_holder.hpp>
+# include <boost/python/object/class_wrapper.hpp>
+# include <boost/python/object/make_instance.hpp>
+# include <boost/python/object/pickle_support.hpp>
+# include <boost/python/object/add_to_namespace.hpp>
+# include <boost/python/object/class_converters.hpp>
+
+# include <boost/python/detail/string_literal.hpp>
 # include <boost/python/detail/overloads_fwd.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
+
+# include <boost/utility.hpp>
 
 namespace boost { namespace python {
 
@@ -88,6 +94,54 @@ namespace detail
   static inline void register_copy_constructor(mpl::bool_c<false> const&, SelectHolder const&, T* = 0)
   {
       SelectHolder::register_();
+  }
+
+  namespace error
+  {
+    //
+    // A meta-assertion mechanism which prints nice error messages and
+    // backtraces on lots of compilers. Usage:
+    //
+    //      assertion<C>::failed
+    //
+    // where C is an MPL metafunction class
+    //
+    
+    template <class C> struct assertion_failed { };
+    template <class C> struct assertion_ok { typedef C failed; };
+
+    template <class C>
+    struct assertion
+        : mpl::if_<C, assertion_ok<C>, assertion_failed<C> >::type
+    {};
+
+    //
+    // Checks for validity of arguments used to define virtual
+    // functions with default implementations.
+    //
+    
+    template <class Default>
+    void not_a_derived_class_member(Default) {}
+    
+    template <class T, class Fn>
+    struct virtual_function_default
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+        : assertion<is_polymorphic<T> >::failed
+        , assertion<is_member_function_pointer<Fn> >::failed
+# endif 
+    {
+        template <class Default>
+        static void
+        must_be_derived_class_member(Default const&)
+        {
+            typedef typename assertion<mpl::logical_not<is_same<Default,Fn> > >::failed test0;
+# if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
+            typedef typename assertion<is_polymorphic<T> >::failed test1;
+            typedef typename assertion<is_member_function_pointer<Fn> >::failed test2;
+# endif 
+            not_a_derived_class_member<Default>(Fn());
+        }
+    };
   }
 }
 
@@ -313,22 +367,6 @@ class class_ : public objects::class_base
     // things which are already wrapped into callable python::object
     // instances and everything else.
     //
-    template <class Fn, class Helper>
-    inline void def_impl(
-        char const* name
-        , Fn fn
-        , Helper const& helper
-        , ...)
-    {
-        objects::add_to_namespace(
-            *this, name,
-            make_function(
-                // This bit of nastiness casts F to a member function of T if possible.
-                detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
-                , helper.policies(), helper.keywords())
-            , helper.doc());
-    }
-
     template <class F, class A1>
     inline void def_impl(
         char const* name
@@ -345,6 +383,50 @@ class class_ : public objects::class_base
         objects::add_to_namespace(*this, name, f, helper.doc());
     }
 
+    template <class Fn, class Helper>
+    inline void def_impl(
+        char const* name
+        , Fn fn
+        , Helper const& helper
+        , ...)
+    {
+        objects::add_to_namespace(
+            *this, name,
+            make_function(
+                // This bit of nastiness casts F to a member function of T if possible.
+                detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
+                , helper.policies(), helper.keywords())
+            , helper.doc());
+
+        this->def_default(name, fn, helper, mpl::bool_c<Helper::has_default_implementation>());
+    }
+
+    //
+    // These two overloads handle the definition of default
+    // implementation overloads for virtual functions. The second one
+    // handles the case where no default implementation was specified.
+    //
+    template <class Fn, class Helper>
+    inline void def_default(
+        char const* name
+        , Fn fn
+        , Helper const& helper
+        , mpl::bool_c<true>)
+    {
+        detail::error::virtual_function_default<T,Fn>::must_be_derived_class_member(
+            helper.default_implementation());
+            
+        objects::add_to_namespace(
+            *this, name,
+            make_function(
+                helper.default_implementation(), helper.policies(), helper.keywords())
+            );
+    }
+    
+    template <class Fn, class Helper>
+    inline void def_default(char const*, Fn, Helper const&, mpl::bool_c<false>)
+    { }
+    
     //
     // These two overloads discriminate between def() as applied to
     // regular functions and def() as applied to the result of
