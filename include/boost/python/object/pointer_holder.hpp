@@ -136,10 +136,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 
 /* --------------- pointer_holder --------------- */
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
-# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
-#  line BOOST_PP_LINE(__LINE__, pointer_holder.hpp)
-# endif
+# line BOOST_PP_LINE(__LINE__, pointer_holder.hpp)
 
 # define N BOOST_PP_ITERATION()
 
@@ -156,10 +153,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 
 /* --------------- pointer_holder_back_reference --------------- */
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 2
-# if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
-#  line BOOST_PP_LINE(__LINE__, pointer_holder.hpp(pointer_holder_back_reference))
-# endif 
+# line BOOST_PP_LINE(__LINE__, pointer_holder.hpp(pointer_holder_back_reference))
 
 # define N BOOST_PP_ITERATION()
 
