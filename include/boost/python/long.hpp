@@ -31,8 +31,8 @@ class long_ : public object
     {
     }
  public: // implementation detail -- for internal use only
-    explicit long_(detail::borrowed_reference);
-    explicit long_(detail::new_reference);
+    explicit inline long_(detail::borrowed_reference);
+    explicit inline long_(detail::new_reference);
     
  private:
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);
