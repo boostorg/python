@@ -218,7 +218,7 @@ namespace api
       PyObject* m_ptr;
   };
 
-# if BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+# ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template <class T, class U>
   struct is_derived_impl
   {
