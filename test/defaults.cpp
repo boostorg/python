@@ -99,7 +99,12 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
     module      m("defaults_ext");
     m.def("foo", foo, foo_stubs());
+
+#if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1200))
     m.def("bar", signature<object(*)(int, char, std::string, double)>(), bar_stubs());
+#else // signature does not work on VC6 only (VC is ok)
+    m.def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
+#endif
 
     class_<X>   xc("X");
     m.add(xc);

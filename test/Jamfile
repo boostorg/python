@@ -63,7 +63,7 @@ bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters
 bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
-bpl-test defaults ;
+bpl-test defaults_ext : defaults.py defaults.cpp ;
 
 bpl-test object ;
 bpl-test list ;
