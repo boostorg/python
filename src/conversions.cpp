@@ -5,6 +5,10 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
+// 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
 #include <boost/python/conversions.hpp>
 #include <typeinfo>
@@ -43,6 +47,19 @@ void handle_exception()
         PyErr_SetString(PyExc_RuntimeError, "unidentifiable C++ exception");
     }
 }
+
+namespace detail {
+
+  void expect_complex(PyObject* p)
+  {
+      if (!PyComplex_Check(p))
+      {
+          PyErr_SetString(PyExc_TypeError, "expected a complex number");
+          throw boost::python::argument_error();
+      }
+  }
+
+} // namespace boost::python::detail
 
 }} // namespace boost::python
 
@@ -158,6 +175,24 @@ PyObject* to_python(unsigned short i)
 unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type)
 {
     return integer_from_python(p, type);
+}
+
+PyObject* to_python(char c)
+{
+    if (c == '\0') return PyString_FromString("");
+    return PyString_FromStringAndSize(&c, 1);
+}
+
+char from_python(PyObject* p, boost::python::type<char>)
+{
+    int l = -1;
+    if (PyString_Check(p)) l = PyString_Size(p);
+    if (l < 0 || l > 1) {
+        PyErr_SetString(PyExc_TypeError, "expected string of length 0 or 1");
+        throw boost::python::argument_error();
+    }
+    if (l == 0) return '\0';
+    return PyString_AsString(p)[0];
 }
 
 PyObject* to_python(unsigned char i)

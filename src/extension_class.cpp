@@ -5,6 +5,9 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #include <boost/python/detail/extension_class.hpp>
 #include <cstring>
@@ -46,24 +49,19 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python { 
 
-namespace detail {
+tuple standard_coerce(ref l, ref r)
+{
+    // Introduced sequence points for exception-safety.
+    ref first(detail::operator_dispatcher::create(l, l));
+    
+    ref second(r->ob_type == &detail::operator_dispatcher::type_obj
+               ? r
+               : ref(detail::operator_dispatcher::create(r, ref())));
 
-  tuple extension_class_coerce(ref l, ref r)
-  {
-      // Introduced sequence points for exception-safety.
-      ref first(operator_dispatcher::create(l, l));
-      ref second;
-      
-      if(r->ob_type == &operator_dispatcher::type_obj)
-      {
-           second = r;
-      }
-      else
-      {
-           second = ref(operator_dispatcher::create(r, ref()));
-      }
-      return boost::python::tuple(first, second);
-  }
+    return tuple(first, second);
+}
+
+namespace detail {
 
   enum { unwrap_exception_code = -1000 };
 
@@ -451,8 +449,8 @@ operator_dispatcher::operator_dispatcher(const ref& o, const ref& s)
     : m_object(o), m_self(s), m_free_list_link(0)
 
 {
-    ob_refcnt = 1;
-    ob_type = &type_obj;
+    PyObject* self = this;
+    PyObject_INIT(self, &type_obj);
 }
 
 operator_dispatcher* 
@@ -465,7 +463,9 @@ operator_dispatcher::create(const ref& object, const ref& self)
     free_list = result->m_free_list_link;
     result->m_object = object;
     result->m_self = self;
-    Py_INCREF(result);
+
+    PyObject* result_as_pyobject = result;
+    PyObject_INIT(result_as_pyobject, &type_obj);
     return result;
 }
 
