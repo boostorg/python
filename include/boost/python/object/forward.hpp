@@ -19,8 +19,12 @@ namespace boost { namespace python { namespace objects {
 template <class T>
 struct forward
 {
+    BOOST_STATIC_CONSTANT(
+        bool, by_value = (is_scalar<T>::value | is_reference<T>::value)
+        );
+
     typedef typename mpl::select_type<
-        is_scalar<T>::value | is_reference<T>::value
+        by_value
         , T
         , reference_wrapper<
                 typename add_const<T>::type
