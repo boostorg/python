@@ -13,14 +13,22 @@ else if [ GLOB /usr/include/python2.2 : * ]
     PYTHON_PATH = /usr ;
 }
 
-PYTHON_LIB = python2.2 ;
-
 if [ os.name ] in CYGWIN NT
 {
-    lib_condition = <shared>true: ;
+    lib_condition = <link>shared: ;
     defines = USE_DL_IMPORT ;
-    PYTHON_LIB = python2.2.dll ;
+   
+    # Declare a target for the python interpreter library
+    lib python : : <name>python2.2.dll ;
+    PYTHON_LIB = python ;    
+} 
+else 
+{
+   lib python : : <name>python2.2 ;
+   PYTHON_LIB = python ;    
 }
+
+
 
 if $(PYTHON_PATH) {
     
@@ -29,7 +37,7 @@ project boost/python
     : source-location ../src
         : requirements <include>$(PYTHON_PATH)/include/python2.2  
           $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
-            <shared>true:<find-library>$(PYTHON_LIB)
+            <link>shared:<library>$(PYTHON_LIB)
             <define>$(defines)
         : use-requirements # requirement that will be propageted to *users* of this library
           <include>$(PYTHON_PATH)/include/python2.2       
@@ -40,7 +48,7 @@ project boost/python
 #            <shared>true:<find-library>$(PYTHON_LIB)
             
           <library-path>$(PYTHON_PATH)/lib/python2.2/config
-            <find-library>$(PYTHON_LIB)
+            <library>$(PYTHON_LIB)
     ;
 
 lib boost_python
@@ -70,8 +78,8 @@ lib boost_python
     object/iterator.cpp
     object_protocol.cpp
     object_operators.cpp
-    :   <shared>false:<define>BOOST_PYTHON_STATIC_LIB 
+    :   <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
-    : <shared>true
+    : <link>shared
       ;
 }
