@@ -8,6 +8,7 @@
 # define INDEXING_SUITE_JDG20036_HPP
 
 # include <boost/python/class.hpp>
+# include <boost/python/def_visitor.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/suite/indexing/detail/indexing_suite_detail.hpp>
 # include <boost/python/return_internal_reference.hpp>

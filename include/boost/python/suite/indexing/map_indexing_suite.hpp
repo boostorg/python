@@ -53,14 +53,15 @@ namespace boost { namespace python {
           , DerivedPolicies
           , NoProxy
           , true
-          , typename Container::mapped_type
+          , typename Container::value_type::second_type
           , typename Container::key_type
           , typename Container::key_type
         >
     {      
     public:
     
-        typedef typename Container::mapped_type data_type;
+        typedef typename Container::value_type value_type;
+        typedef typename Container::value_type::second_type data_type;
         typedef typename Container::key_type key_type;
         typedef typename Container::key_type index_type;
         typedef typename Container::size_type size_type;
@@ -76,12 +77,12 @@ namespace boost { namespace python {
             elem_name += "_entry";
 
             typedef typename mpl::if_<
-                is_class<typename Container::mapped_type>
+                is_class<data_type>
               , return_internal_reference<>
               , default_call_policies
             >::type get_data_return_policy;
            
-            class_<typename Container::value_type>(elem_name.c_str())
+            class_<value_type>(elem_name.c_str())
                 .def("__repr__", &DerivedPolicies::print_elem)
                 .def("data", &DerivedPolicies::get_data, get_data_return_policy())
                 .def("key", &DerivedPolicies::get_key)
@@ -96,9 +97,9 @@ namespace boost { namespace python {
 
         static 
         typename mpl::if_<
-            is_class<typename Container::mapped_type>
-          , typename Container::mapped_type&
-          , typename Container::mapped_type
+            is_class<data_type>
+          , data_type&
+          , data_type
         >::type
         get_data(typename Container::value_type& e)
         {
