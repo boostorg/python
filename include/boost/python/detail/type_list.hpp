@@ -16,19 +16,19 @@
 #  define BOOST_PYTHON_BASE_LIST_SIZE BOOST_PYTHON_MAX_BASES
 # endif
 
-// Compute the MPL list header to use for lists up to BOOST_PYTHON_LIST_SIZE in length
+// Compute the MPL vector header to use for lists up to BOOST_PYTHON_LIST_SIZE in length
 # if BOOST_PYTHON_LIST_SIZE > 48
 #  error Arities above 48 not supported by Boost.Python due to MPL internal limit
 # elif BOOST_PYTHON_LIST_SIZE > 38
-#  include <boost/mpl/list/list50.hpp>
+#  include <boost/mpl/vector/vector50.hpp>
 # elif BOOST_PYTHON_LIST_SIZE > 28
-#  include <boost/mpl/list/list40.hpp>
+#  include <boost/mpl/vector/vector40.hpp>
 # elif BOOST_PYTHON_LIST_SIZE > 18
-#  include <boost/mpl/list/list30.hpp>
+#  include <boost/mpl/vector/vector30.hpp>
 # elif BOOST_PYTHON_LIST_SIZE > 8
-#  include <boost/mpl/list/list20.hpp>
+#  include <boost/mpl/vector/vector20.hpp>
 # else
-#  include <boost/mpl/list/list10.hpp>
+#  include <boost/mpl/vector/vector10.hpp>
 # endif
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION

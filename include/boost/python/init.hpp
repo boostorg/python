@@ -14,31 +14,21 @@
 #include <boost/python/args_fwd.hpp>
 #include <boost/python/detail/make_keyword_range_fn.hpp>
 
-#include <boost/mpl/fold_backward.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/apply_if.hpp>
-#include <boost/mpl/at.hpp>
 #include <boost/mpl/size.hpp>
-#include <boost/mpl/push_front.hpp>
 #include <boost/mpl/iterator_range.hpp>
-#include <boost/mpl/not.hpp>
-
-# include <boost/python/detail/mpl_lambda.hpp>
-
-#include <boost/mpl/lambda.hpp>
+#include <boost/mpl/empty.hpp>
 #include <boost/mpl/begin_end.hpp>
-#include <boost/mpl/find_if.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/pop_front.hpp>
 #include <boost/mpl/bool.hpp>
+#include <boost/mpl/prior.hpp>
+#include <boost/mpl/joint_view.hpp>
+#include <boost/mpl/back.hpp>
 
 #include <boost/type_traits/is_same.hpp>
 
-#include <boost/static_assert.hpp>
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/repeat.hpp>
 
 #include <utility>
 
@@ -80,14 +70,11 @@ namespace detail
     };
   }
 
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    //  is_optional<T>::value
-    //
-    //      This metaprogram checks if T is an optional
-    //
-    ///////////////////////////////////////////////////////////////////////////
-    #if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  //  is_optional<T>::value
+  //
+  //      This metaprogram checks if T is an optional
+  //
+#if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
     template <class T>
     struct is_optional {
@@ -105,32 +92,21 @@ namespace detail
             bool, value =
                 sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
         typedef mpl::bool_<value> type;
-
-        BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
     };
 
-    ///////////////////////////////////////
-    #else // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+#else
 
     template <class T>
-    struct is_optional_impl {
-
-        BOOST_STATIC_CONSTANT(bool, value = false);
-    };
+    struct is_optional
+      : mpl::false_
+    {};
 
     template <BOOST_PYTHON_OVERLOAD_TYPES>
-    struct is_optional_impl<optional<BOOST_PYTHON_OVERLOAD_ARGS> > {
-
-        BOOST_STATIC_CONSTANT(bool, value = true);
-    };
-
-    template <class T>
-    struct is_optional : is_optional_impl<T>
-    {
-        typedef mpl::bool_<is_optional_impl<T>::value> type;
-        BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_optional,(T))
-    };
-    #endif // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+    struct is_optional<optional<BOOST_PYTHON_OVERLOAD_ARGS> >
+      : mpl::true_
+    {};
+  
+#endif
 
 } // namespace detail
 
@@ -176,10 +152,9 @@ class init_with_call_policies
 {
     typedef init_base<init_with_call_policies<CallPoliciesT, InitT> > base;
  public:
-    BOOST_STATIC_CONSTANT(int, n_arguments = InitT::n_arguments);
-    BOOST_STATIC_CONSTANT(int, n_defaults = InitT::n_defaults);
-
-    typedef typename InitT::reversed_args reversed_args;
+    typedef typename InitT::n_arguments n_arguments;
+    typedef typename InitT::n_defaults n_defaults;
+    typedef typename InitT::signature signature;
 
     init_with_call_policies(
         CallPoliciesT const& policies_
@@ -199,6 +174,22 @@ class init_with_call_policies
     CallPoliciesT m_policies;
 };
 
+//
+// drop1<S> is the initial length(S) elements of S
+//
+namespace detail
+{
+  template <class S>
+  struct drop1
+    : mpl::iterator_range<
+          typename mpl::begin<S>::type
+        , typename mpl::prior<
+              typename mpl::end<S>::type
+          >::type
+      >
+  {};
+}
+
 template <BOOST_PYTHON_OVERLOAD_TYPES>
 class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
 {
@@ -216,7 +207,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
         : base(doc_, std::make_pair(kw.base(), kw.base() + Keywords::size))
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
-            Keywords::size, n_arguments
+            Keywords::size, n_arguments::value
             >::too_many_keywords assertion;
     }
 
@@ -225,7 +216,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
         : base(doc_, kw.range())
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
-            Keywords::size, n_arguments
+            Keywords::size, n_arguments::value
             >::too_many_keywords assertion;
     }
 
@@ -238,51 +229,39 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     }
 
     typedef detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS> signature_;
-    typedef typename mpl::end<signature_>::type finish;
 
-    // Find the optional<> element, if any
-    typedef typename mpl::find_if<
-        signature_, detail::is_optional<mpl::_>
-    >::type opt;
-
-
-    // Check to make sure the optional<> element, if any, is the last one
+    typedef detail::is_optional<
+        typename mpl::apply_if<
+            mpl::empty<signature_>
+          , mpl::false_
+          , mpl::back<signature_>
+        >::type
+    > back_is_optional;
+    
     typedef typename mpl::apply_if<
-        is_same<opt,finish>
-        , mpl::identity<opt>
-        , mpl::next<opt>
-    >::type expected_finish;
-    BOOST_STATIC_ASSERT((is_same<expected_finish, finish>::value));
-
-    typedef typename mpl::apply_if<
-        is_same<opt,finish>
-        , mpl::list0<>
-        , opt
+        back_is_optional
+      , mpl::back<signature_>
+      , mpl::vector0<>
     >::type optional_args;
 
+    typedef typename mpl::apply_if<
+        back_is_optional
+      , mpl::if_<
+            mpl::empty<optional_args>
+          , detail::drop1<signature_>
+          , mpl::joint_view<
+                detail::drop1<signature_>
+              , optional_args
+            >
+        >
+      , signature_
+    >::type signature;
+
+    // TODO: static assert to make sure there are no other optional elements
+
     // Count the number of default args
-    BOOST_STATIC_CONSTANT(int, n_defaults = mpl::size<optional_args>::value);
-
-    typedef typename mpl::iterator_range<
-        typename mpl::begin<signature_>::type
-        , opt
-    >::type required_args;
-
-    // Build a reverse image of all the args, including optionals
-    typedef typename mpl::fold<
-        required_args
-        , mpl::list0<>
-        , mpl::push_front<>
-    >::type reversed_required;
-
-    typedef typename mpl::fold<
-        optional_args
-        , reversed_required
-        , mpl::push_front<>
-    >::type reversed_args;
-
-    // Count the maximum number of arguments
-    BOOST_STATIC_CONSTANT(int, n_arguments = mpl::size<reversed_args>::value);
+    typedef mpl::size<optional_args> n_defaults;
+    typedef mpl::size<signature> n_arguments;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -300,21 +279,16 @@ struct optional
 
 namespace detail
 {
-  template <class ClassT, class CallPoliciesT, class ReversedArgs>
-  void def_init_reversed(
+  template <class ClassT, class CallPoliciesT, class Signature, class NArgs>
+  inline void def_init_aux(
       ClassT& cl
-      , ReversedArgs const&
+      , Signature const&
+      , NArgs
       , CallPoliciesT const& policies
       , char const* doc
       , detail::keyword_range const& keywords_
       )
   {
-      typedef typename mpl::fold<
-          ReversedArgs
-          , mpl::list0<>
-          , mpl::push_front<>
-          >::type args;
-
       typedef typename ClassT::holder_selector holder_selector_t;
 #    if !BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
       typedef typename holder_selector_t::type selector_t;
@@ -323,7 +297,7 @@ namespace detail
 
       cl.def(
             "__init__",
-            detail::make_keyword_range_constructor<args>(
+            detail::make_keyword_range_constructor<Signature,NArgs>(
                 policies
                 , keywords_
 #    if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
@@ -345,28 +319,30 @@ namespace detail
   //
   //      Accepts a class_ and an arguments list. Defines a constructor
   //      for the class given the arguments and recursively calls
-  //      define_class_init_helper<N-1>::apply with one less arguments (the
+  //      define_class_init_helper<N-1>::apply with one fewer argument (the
   //      rightmost argument is shaved off)
   //
   ///////////////////////////////////////////////////////////////////////////////
-  template <int N>
+  template <int NDefaults>
   struct define_class_init_helper {
 
-      template <class ClassT, class CallPoliciesT, class ReversedArgs>
+      template <class ClassT, class CallPoliciesT, class Signature, class NArgs>
       static void apply(
           ClassT& cl
           , CallPoliciesT const& policies
-          , ReversedArgs const& args
+          , Signature const& args
+          , NArgs
           , char const* doc
           , detail::keyword_range keywords)
       {
-          def_init_reversed(cl, args, policies, doc, keywords);
+          detail::def_init_aux(cl, args, NArgs(), policies, doc, keywords);
 
           if (keywords.second > keywords.first)
               --keywords.second;
-          
-          typename mpl::pop_front<ReversedArgs>::type next;
-          define_class_init_helper<N-1>::apply(cl, policies, next, doc, keywords);
+
+          typedef typename mpl::prior<NArgs>::type next_nargs;
+          define_class_init_helper<NDefaults-1>::apply(
+              cl, policies, Signature(), next_nargs(), doc, keywords);
       }
   };
 
@@ -383,15 +359,16 @@ namespace detail
   template <>
   struct define_class_init_helper<0> {
 
-      template <class ClassT, class CallPoliciesT, class ReversedArgs>
+      template <class ClassT, class CallPoliciesT, class Signature, class NArgs>
       static void apply(
           ClassT& cl
           , CallPoliciesT const& policies
-          , ReversedArgs const& args
+          , Signature const& args
+          , NArgs
           , char const* doc
           , detail::keyword_range const& keywords)
       {
-          def_init_reversed(cl, args, policies, doc, keywords);
+          def_init_aux(cl, args, NArgs(), policies, doc, keywords);
       }
   };
 }
@@ -421,9 +398,12 @@ template <class ClassT, class InitT>
 void
 define_init(ClassT& cl, InitT const& i)
 {
-    typedef typename InitT::reversed_args reversed_args;
-    detail::define_class_init_helper<InitT::n_defaults>::apply(
-        cl, i.call_policies(), reversed_args(), i.doc_string(), i.keywords());
+    typedef typename InitT::signature signature;
+    typedef typename InitT::n_arguments n_arguments;
+    typedef typename InitT::n_defaults n_defaults;
+    
+    detail::define_class_init_helper<n_defaults::value>::apply(
+        cl, i.call_policies(), signature(), n_arguments(), i.doc_string(), i.keywords());
 }
 
 }} // namespace boost::python

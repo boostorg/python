@@ -21,7 +21,7 @@ namespace boost { namespace python { namespace detail {
 
 template <BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(BOOST_PYTHON_LIST_SIZE, class T, mpl::void_)>
 struct type_list
-    : BOOST_PP_CAT(mpl::list,BOOST_PYTHON_LIST_SIZE)<BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_LIST_SIZE, T)>
+    : BOOST_PP_CAT(mpl::vector,BOOST_PYTHON_LIST_SIZE)<BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_LIST_SIZE, T)>
 {
 };
 
@@ -48,7 +48,7 @@ struct type_list<
     BOOST_PP_ENUM(
         BOOST_PYTHON_VOID_ARGS, BOOST_PYTHON_FIXED, mpl::void_)
     >
-   : BOOST_PP_CAT(mpl::list,N)<BOOST_PP_ENUM_PARAMS_Z(1, N, T)>
+   : BOOST_PP_CAT(mpl::vector,N)<BOOST_PP_ENUM_PARAMS_Z(1, N, T)>
 {
 };
 
