@@ -28,12 +28,11 @@ import python ;
 
 # Declare a Python extension called getting_started1
 extension getting_started1
-:  # sources
-   getting_started1.cpp
-  <template>@boost/libs/python/build/extension
+: # sources
+  getting_started1.cpp
   
-   # dependencies
-#   <dll>@boost/libs/python/build/boost_python
+  # requirements and dependencies for Boost.Python extensions
+  <template>@boost/libs/python/build/extension
   ;
 
 # Declare a test for the extension module
@@ -52,9 +51,8 @@ extension getting_started2
 :  # sources
    getting_started2.cpp
   
-   # dependencies
+  # requirements and dependencies for Boost.Python extensions
   <template>@boost/libs/python/build/extension
-#   <dll>@boost/libs/python/build/boost_python
   ;
 
 # Declare a test for the extension module
