@@ -1,0 +1,16 @@
+24 Mar 2003
+Default policy for functions/methods that return const T& is now
+return_value_policy<copy_const_reference>().
+
+22 Mar 2003
+Exporting virtual methods of the base classes in the derived classes too.
+
+21 Mar 2003
+Added manual support for boost::shared_ptr and std::auto_ptr (see doc).
+
+19 Mar 2003 
+Added support for int, double, float and long operators acting as expected in
+python.
+
+14 Mar 2003 
+Fixed bug: Wrappers for protected and virtual methods were not being generated.

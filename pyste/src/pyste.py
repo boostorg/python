@@ -25,13 +25,8 @@ import exporterutils
 import settings
 from policies import *
 from CppParser import CppParser, CppParserError
-from Exporter import Exporter
-from FunctionExporter import FunctionExporter
-from ClassExporter import ClassExporter
-from IncludeExporter import IncludeExporter
-from HeaderExporter import HeaderExporter
 
-__VERSION__ = '0.5.9'
+__VERSION__ = '0.6'
 
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:

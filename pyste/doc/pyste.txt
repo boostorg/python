@@ -47,6 +47,7 @@ Pyste supports the following features:
 * Attributes 
 * Enums (both "free" enums and class enums)
 * Nested Classes
+* Support for [^boost::shared_ptr] and [^std::auto_ptr]
 
 [page Running Pyste]
 
@@ -214,10 +215,17 @@ function:
 
 [blurb 
 [$theme/note.gif] [*What if a function or method needs a policy and the user
-doesn't set one?][br][br]
-If a function/method needs a policy and one was not set, Pyste will issue a error.
-The user should then go in the interface file and set the policy for it,
-otherwise the generated cpp won't compile.
+doesn't set one?][br][br] If a function/method needs a policy and one was not
+set, Pyste will issue a error.  The user should then go in the interface file
+and set the policy for it, otherwise the generated cpp won't compile.
+]
+
+[blurb
+[$theme/note.gif] 
+Note that, for functions/methods that return [^const T&], the policy
+[^return_value_policy<copy_const_reference>()] wil be used by default, because
+that's normally what you want. You can change it to something else if you need
+to, thought.
 ]
 
 [page:1 Templates]
@@ -281,12 +289,14 @@ Suppose you have this function:
 
     std::vector<std::string> names();
 
-But you don't want to export a vector<string>, you want this function to return
-a python list of strings. Boost.Python has an excellent support for that:
+But you don't want to export [^std::vector<string>], you want this function
+to return a python list of strings. Boost.Python has an excellent support for
+that:
 
     list names_wrapper()
     {
         list result;
+        // call original function
         vector<string> v = names();
         // put each string from the vector in the list
         return result;
@@ -297,9 +307,8 @@ a python list of strings. Boost.Python has an excellent support for that:
         def("names", &names_wrapper);
     }
 
-Nice heh?
-Pyste supports this mechanism too. You declare the [^names_wrapper] function in a
-header, like "[^test_wrappers.h]", and in the interface file:
+Nice heh? Pyste supports this mechanism too. You declare the [^names_wrapper]
+function in a header named "[^test_wrappers.h]" and in the interface file:
 
     Include("test_wrappers.h")
     names = Function("names", "test.h")

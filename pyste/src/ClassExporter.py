@@ -7,6 +7,7 @@ from CodeUnit import CodeUnit
 from EnumExporter import EnumExporter
 from makeid import makeid
 from copy import deepcopy
+import exporterutils
 
 #==============================================================================
 # ClassExporter
@@ -246,24 +247,6 @@ class ClassExporter(Exporter):
                 code = '%s("%s", &%s)' % (def_, name, fullname)
                 self.Add('inside', code)
 
-
-    printed_policy_warnings = {}
-    
-    def CheckPolicy(self, m):
-        'Warns the user if this method needs a policy'            
-        def IsString(type):
-            return type.const and type.name == 'char' and isinstance(type, PointerType)
-        needs_policy = isinstance(m.result, (ReferenceType, PointerType))
-        if IsString(m.result):
-            needs_policy = False
-        has_policy = self.info[m.name].policy is not None
-        if needs_policy and not has_policy:
-            warning = '---> Error: Method "%s" needs a policy.' % m.FullName()
-            if warning not in self.printed_policy_warnings:
-                print warning
-                print 
-                self.printed_policy_warnings[warning] = 1
-            
     
     def ExportMethods(self):
         'Export all the non-virtual methods of this class'        
@@ -305,24 +288,28 @@ class ClassExporter(Exporter):
         methods = [x for x in self.public_members if IsExportable(x)]        
         
         for method in methods:
-            if self.info[method.name].exclude:
-                continue # skip this method
+            method_info = self.info[method.name]
+            
+            # skip this method if it was excluded by the user
+            if method_info.exclude:
+                continue 
 
-            name = self.info[method.name].rename or method.name
+            # rename the method if the user requested
+            name = method_info.rename or method.name
             
             # warn the user if this method needs a policy and doesn't have one
-            self.CheckPolicy(method)            
+            method_info.policy = exporterutils.HandlePolicy(method, method_info.policy)
             
             # check for policies
-            policy = self.info[method.name].policy or ''
+            policy = method_info.policy or ''
             if policy:
                 policy = ', %s%s()' % (namespaces.python, policy.Code())
             # check for overloads
             overload = ''
             if method.minArgs != method.maxArgs:
                 # add the overloads for this method
-                overload_name = OverloadName(method)
                 DeclareOverloads(method)
+                overload_name = OverloadName(method)
                 overload = ', %s%s()' % (namespaces.pyste, overload_name)
         
             # build the .def string to export the method
@@ -337,7 +324,7 @@ class ClassExporter(Exporter):
                 code = '.staticmethod("%s")' % name
                 self.Add('inside', code)
             # add wrapper code if this method has one
-            wrapper = self.info[method.name].wrapper
+            wrapper = method_info.wrapper
             if wrapper and wrapper.code:
                 self.Add('declaration', wrapper.code)
 

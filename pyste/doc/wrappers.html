@@ -30,13 +30,15 @@ Suppose you have this function:</p>
     <span class=identifier>std</span><span class=special>::</span><span class=identifier>vector</span><span class=special>&lt;</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>&gt; </span><span class=identifier>names</span><span class=special>();
 </span></pre></code>
 <p>
-But you don't want to export a vector&lt;string&gt;, you want this function to return
-a python list of strings. <a href="../../index.html">
-Boost.Python</a> has an excellent support for that:</p>
+But you don't want to export <tt>std::vector&lt;string&gt;</tt>, you want this function
+to return a python list of strings. <a href="../../index.html">
+Boost.Python</a> has an excellent support for
+that:</p>
 <code><pre>
     <span class=identifier>list </span><span class=identifier>names_wrapper</span><span class=special>()
     {
         </span><span class=identifier>list </span><span class=identifier>result</span><span class=special>;
+        // </span><span class=identifier>call </span><span class=identifier>original </span><span class=identifier>function
         </span><span class=identifier>vector</span><span class=special>&lt;</span><span class=identifier>string</span><span class=special>&gt; </span><span class=identifier>v </span><span class=special>= </span><span class=identifier>names</span><span class=special>();
         // </span><span class=identifier>put </span><span class=identifier>each </span><span class=identifier>string </span><span class=identifier>from </span><span class=identifier>the </span><span class=identifier>vector </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>list
         </span><span class=keyword>return </span><span class=identifier>result</span><span class=special>;
@@ -48,9 +50,8 @@ Boost.Python</a> has an excellent support for that:</p>
     }
 </span></pre></code>
 <p>
-Nice heh?
-Pyste supports this mechanism too. You declare the <tt>names_wrapper</tt> function in a
-header, like &quot;<tt>test_wrappers.h</tt>&quot;, and in the interface file:</p>
+Nice heh? Pyste supports this mechanism too. You declare the <tt>names_wrapper</tt>
+function in a header named &quot;<tt>test_wrappers.h</tt>&quot; and in the interface file:</p>
 <code><pre>
     <span class=identifier>Include</span><span class=special>(</span><span class=string>&quot;test_wrappers.h&quot;</span><span class=special>)
     </span><span class=identifier>names </span><span class=special>= </span><span class=identifier>Function</span><span class=special>(</span><span class=string>&quot;names&quot;</span><span class=special>, </span><span class=string>&quot;test.h&quot;</span><span class=special>)

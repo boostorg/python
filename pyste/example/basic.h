@@ -1,3 +1,5 @@
+#include <string>
+
 namespace basic {
     
 struct C
@@ -10,6 +12,10 @@ struct C
     int foo(int x=1){
         return x+1;
     }
+
+    const std::string& name() { return _name; }
+    void set_name(const std::string& name) { _name = name; }
+    std::string _name;
 };
 
 int call_f(C& c)

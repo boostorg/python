@@ -2,8 +2,12 @@ from Exporter import Exporter
 from policies import *
 from declarations import *
 from settings import *
+import exporterutils
 
 
+#==============================================================================
+# FunctionExporter
+#==============================================================================
 class FunctionExporter(Exporter):
     'Generates boost.python code to export the given function.'
     
@@ -14,7 +18,7 @@ class FunctionExporter(Exporter):
     def Export(self, codeunit, exported_names):
         decls = self.GetDeclarations(self.info.name)
         for decl in decls:
-            self.CheckPolicy(decl)
+            self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
             self.ExportDeclaration(decl, len(decls) == 1, codeunit)
         self.GenerateOverloads(decls, codeunit)            
 
@@ -22,17 +26,6 @@ class FunctionExporter(Exporter):
     def Name(self):
         return self.info.name
 
-
-    def CheckPolicy(self, func):
-        'Warns the user if this function needs a policy'            
-        def IsString(type):
-            return type.const and type.name == 'char' and isinstance(type, PointerType)    
-        needs_policy = isinstance(func.result, (ReferenceType, PointerType))
-        if IsString(func.result):
-            needs_policy = False
-        if needs_policy and self.info.policy is None:
-            print '---> Error: Function "%s" needs a policy.' % func.FullName() 
-            print 
 
     def ExportDeclaration(self, decl, unique, codeunit):
         name = self.info.rename or decl.name
