@@ -46,3 +46,4 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
     ;
 }
 
+#include "module_tail.cpp"
