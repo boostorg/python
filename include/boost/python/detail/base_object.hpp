@@ -5,6 +5,9 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// Mar 01 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #ifndef BASE_OBJECT_DWA051600_H_
 # define BASE_OBJECT_DWA051600_H_
@@ -46,9 +49,8 @@ base_object<python_type>::base_object(PyTypeObject* type_obj)
     std::
 #endif
 		memset(bp, 0, sizeof(base_python_type));
-    ob_refcnt = 1;
-    ob_type = type_obj;
     Py_INCREF(type_obj);
+    PyObject_INIT(bp, type_obj);
 }
 
 template <class python_type>

@@ -29,7 +29,7 @@ private:
 };
   ...
 
-void initoverload_demo()
+BOOST_PYTHON_MODULE_INIT(overload_demo)
 {
     try
     {
@@ -113,18 +113,17 @@ namespace scope as Python member functions.
 
 <h2>Overload Resolution</h2>
       <p>
-        The function overload resolution mechanism in py_cpp works as
-        follows:
+        The function overload resolution mechanism  works as follows:
 
         <ul>
 
         <li>Attribute lookup for extension classes proceeds in <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/tut/node11.html#SECTION0011510000000000000000">the
+        href="http://www.python.org/doc/current/tut/node11.html#SECTION0011510000000000000000">the
         usual Python way</a> using a depth-first, left-to-right search. When a
         class is found which has a matching attribute, only functions overloaded
         in the context of that class are candidates for overload resolution. In
         this sense, overload resolution mirrors the C++ mechanism, where a name
-        in a derived class &ldquo;hides&rdquo; all functions with the same name from a base
+        in a derived class ``hides'' all functions with the same name from a base
         class.
         <p>
 
@@ -133,24 +132,24 @@ namespace scope as Python member functions.
         <code>def()</code>ed. The first function whose signature can be made to
         match each argument passed is the one which is ultimately called. 
         This means in particular that you cannot overload the same function on 
-        both &ldquo;<code>int</code>&rdquo; and &ldquo;<code>float</code>&rdquo; because Python 
+        both ``<code>int</code>'' and ``<code>float</code>'' because Python 
         automatically converts either of the two types into the other one. 
-        If the &ldquo;<code>float</code>&rdquo; overload is found first, it is used 
-        also used for arguments of type &ldquo;<code>int</code>&rdquo; as well, and the 
-        &ldquo;<code>int</code>&rdquo; version of the function is never invoked.
+        If the ``<code>float</code>'' overload is found first, it is used 
+        also used for arguments of type ``<code>int</code>'' as well, and the 
+        ``<code>int</code>'' version of the function is never invoked.
         </ul>
 
       <p>
-         Prev: <a href="overriding.html">Overridable Virtual Functions</a>
-         Next: <a href="inheritance.html">Special Method Names</a>
+         Next: <a href="inheritance.html">Inheritance</a>
+         Previous: <a href="overriding.html">Overridable Virtual Functions</a>
          Up: <a href="index.html">Top</a>
       <p>
-         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+         &copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
         sell and distribute this document is granted provided this copyright
-        notice appears in all copies. This document is provided &ldquo;as
-        is&rdquo; without express or implied warranty, and with no claim as to
+        notice appears in all copies. This document is provided ``as
+        is'' without express or implied warranty, and with no claim as to
         its suitability for any purpose.
       <p>
-         Updated: Nov 26, 2000
+         Updated: Mar 6, 2001
     </div>
 
