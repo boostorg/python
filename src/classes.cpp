@@ -203,7 +203,8 @@ namespace detail {
       }
       if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
       {
-          ref target(as_object(this), ref::increment_count);
+          PyObject* self = as_object(this);
+          ref target(self, ref::increment_count);
           return bound_function::create(target, global_class_reduce());
       }
       
@@ -808,7 +809,7 @@ namespace detail {
   // Enable the special handler for methods of the given name, if any.
   void enable_named_method(boost::python::detail::class_base* type_obj, const char* name)
   {
-      const std::size_t num_enablers = sizeof(enablers) / sizeof(enablers[0]);
+      const std::size_t num_enablers = PY_ARRAY_LENGTH(enablers);
 
       // Make sure this ends with "__" since we'll only compare the head of the
       // string.  This is done to make the __getattr__<name>__/__setattr__<name>__
