@@ -32,9 +32,17 @@ template <class T> class import_extension_class;
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-//QUESTIONMARK
-//  This class is a look-alike of class python_extension_class_converters.
-//  Is there a formal way to ensure that the siblings stay in sync?
+/* This class template is instantiated by import_converters<T>.
+   This class is a look-alike of class python_extension_class_converters.
+   The converters in this class are wrappers that call converters
+   imported from another module.
+   To ensure that the dynamic loader resolves all symbols in the
+   intended way, the signature of all friend functions is changed with
+   respect to the original functions in class
+   python_extension_class_converters by adding an arbitrary additional
+   parameter with a default value, in this case "bool sig = false".
+   See also: comments for class export_converter_object_base below.
+ */
 template <class T>
 class python_import_extension_class_converters
 {
@@ -103,9 +111,15 @@ namespace boost { namespace python {
 
 BOOST_PYTHON_IMPORT_CONVERSION(python_import_extension_class_converters);
 
-// A pointer to this class is exported/imported via the Python API.
-// All functions are virtual. This is, what we really export/import
-// is essentially just a pointer to a vtbl.
+/* This class template is instantiated by export_converters().
+   A pointer to this class is exported/imported via the Python API.
+   Using the Python API ensures maximum portability.
+   All member functions are virtual. This is, what we export/import
+   is essentially just a pointer to a vtbl.
+   To work around a deficiency of Visual C++ 6.0, the name of each
+   from_python() member functions is made unique by appending a few
+   characters (derived in a ad-hoc manner from the corresponding type).
+ */
 template <class T>
 struct export_converter_object_base
 {
@@ -203,10 +217,12 @@ struct export_converter_object : export_converter_object_noncopyable<T>
 
 namespace detail {
 
-//QUESTIONMARK
-//  A stripped-down, modified version of class extension_class.
-//  Would it make sense to establish a formal relationship
-//  between the two classes?
+/* This class template is instantiated by import_converters<T>.
+   Its purpose is to import the converter_object via the Python API.
+   The actual import is only done once. The pointer to the
+   imported converter object is kept in the static data member
+   imported_converters.
+ */
 template <class T>
 class import_extension_class
     : public python_import_extension_class_converters<T>
@@ -253,6 +269,7 @@ import_extension_class<T>::get_converters() {
 
 namespace boost { namespace python {
 
+// Implementation of export_converters().
 template <class T, class U>
 void export_converters(class_builder<T, U>& cb)
 {
@@ -262,6 +279,7 @@ void export_converters(class_builder<T, U>& cb)
       detail::converters_attribute_name);
 }
 
+// Implementation of export_converters_noncopyable().
 template <class T, class U>
 void export_converters_noncopyable(class_builder<T, U>& cb)
 {
@@ -271,17 +289,17 @@ void export_converters_noncopyable(class_builder<T, U>& cb)
       detail::converters_attribute_name);
 }
 
+// Implementation of import_converters<T>.
 template <class T>
 class import_converters
-    : python_import_extension_class_converters<T>
+    : python_import_extension_class_converters<T> // Works around MSVC6.x/GCC2.95.2 bug described
+                                                  // at the bottom of class_builder.hpp.
 {
  public:
     import_converters(const char* module, const char* py_class)
         : m_class(new detail::import_extension_class<T>(module, py_class))
     { }
  private:
-    //QUESTIONMARK
-    //reference<detail::import_extension_class<T> > m_class;
     boost::shared_ptr<detail::import_extension_class<T> > m_class;
 };
 
