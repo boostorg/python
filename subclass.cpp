@@ -11,16 +11,258 @@
 #include "singleton.h"
 #include <cstddef>
 #include "callback.h"
+#include <cstring>
 
 namespace py {
+
+namespace detail {
+  void enable_named_method(py::detail::ClassBase* type_object, const char* name);
+}
+
+namespace {
+  // Add the name of the module currently being loaded to the name_space with the
+  // key "__module__". If no module is being loaded, or if name_space already has
+  // a key "__module", has no effect. This is not really a useful public
+  // interface; it's just used for Class<>::Class() below.
+  void add_current_module_name(Dict&);
+
+  bool is_prefix(const char* s1, const char* s2);
+  bool is_special_name(const char* name);
+  void enable_special_methods(py::detail::ClassBase* derived, const Tuple& bases, const Dict& name_space);
+
+  void report_ignored_exception(PyObject* source)
+  {
+      // This bit of code copied wholesale from classobject.c in the Python source.
+      PyObject *f, *t, *v, *tb;
+      PyErr_Fetch(&t, &v, &tb);
+      f = PySys_GetObject("stderr");
+      if (f != NULL)
+      {
+          PyFile_WriteString("Exception ", f);
+          if (t) {
+              PyFile_WriteObject(t, f, Py_PRINT_RAW);
+              if (v && v != Py_None) {
+                  PyFile_WriteString(": ", f);
+                  PyFile_WriteObject(v, f, 0);
+              }
+          }
+          PyFile_WriteString(" in ", f);
+          PyFile_WriteObject(source, f, 0);
+          PyFile_WriteString(" ignored\n", f);
+          PyErr_Clear(); /* Just in case */
+      }
+      Py_XDECREF(t);
+      Py_XDECREF(v);
+      Py_XDECREF(tb);
+  }
+}
+
+
+namespace detail {
+
+  ClassBase::ClassBase(PyTypeObject* meta_class, String name, Tuple bases, const Dict& name_space)
+      : py::TypeObjectBase(meta_class),
+        m_name(name),
+        m_bases(bases),
+        m_name_space(name_space)
+  {
+      this->tp_name = const_cast<char*>(name.c_str());
+      enable(TypeObjectBase::getattr);
+      enable(TypeObjectBase::setattr);
+      add_current_module_name(m_name_space);
+      static const py::String docstr("__doc__", py::String::interned);
+      if (PyDict_GetItem(m_name_space.get(), docstr.get())== 0)
+      {
+          PyDict_SetItem(m_name_space.get(), docstr.get(), Py_None);
+      }
+      enable_special_methods(this, bases, name_space);
+  }
+
+  void ClassBase::add_base(Ptr base)
+  {
+      Tuple new_bases(m_bases.size() + 1);
+      for (std::size_t i = 0; i < m_bases.size(); ++i)
+          new_bases.set_item(i, m_bases[i]);
+      new_bases.set_item(m_bases.size(), base);
+      m_bases = new_bases;
+  }
+
+  PyObject* ClassBase::getattr(const char* name)
+  {
+      if (!PY_CSTD_::strcmp(name, "__dict__"))
+      {
+          PyObject* result = m_name_space.get();
+          Py_INCREF(result);
+          return result;
+      }
+      
+      if (!PY_CSTD_::strcmp(name, "__bases__"))
+      {
+          PyObject* result = m_bases.get();
+          Py_INCREF(result);
+          return result;
+      }
+      
+      if (!PY_CSTD_::strcmp(name, "__name__"))
+      {
+          PyObject* result = m_name.get();
+          Py_INCREF(result);
+          return result;
+      }
+      
+      Ptr local_attribute = m_name_space.get_item(String(name).reference());
+    
+      if (local_attribute.get())
+          return local_attribute.release();
+
+      // In case there are no bases...
+      PyErr_SetString(PyExc_AttributeError, name);
+
+      // Check bases
+      for (std::size_t i = 0; i < m_bases.size(); ++i)
+      {
+          if (PyErr_ExceptionMatches(PyExc_AttributeError))
+              PyErr_Clear(); // we're going to try a base class
+          else if (PyErr_Occurred()) 
+              break; // Other errors count, though!
+        
+          PyObject* base_attribute = PyObject_GetAttrString(m_bases[i].get(), const_cast<char*>(name));
+
+          if (base_attribute != 0)
+          {
+              // Unwind the actual underlying function from unbound Python class
+              // methods in case of multiple inheritance from real Python
+              // classes. Python stubbornly insists that the first argument to a
+              // method must be a true Python Instance object otherwise. Do not
+              // unwrap bound methods; that would interfere with intended semantics.
+              if (PyMethod_Check(base_attribute)
+                  && reinterpret_cast<PyMethodObject*>(base_attribute)->im_self == 0)
+              {
+                  PyObject* function
+                      = reinterpret_cast<PyMethodObject*>(base_attribute)->im_func;
+                  Py_INCREF(function);
+                  Py_DECREF(base_attribute);
+                  return function;
+              }
+              else
+              {
+                  return base_attribute;
+              }
+          }
+      }
+      return 0;
+  }
+
+  int ClassBase::setattr(const char* name, PyObject* value)
+  {
+      if (is_special_name(name)
+          && PY_CSTD_::strcmp(name, "__doc__") != 0
+          && PY_CSTD_::strcmp(name, "__name__") != 0)
+      {
+          py::String message("Special attribute names other than '__doc__' and '__name__' are read-only, in particular: ");
+          PyErr_SetObject(PyExc_TypeError, (message + name).get());
+          throw ErrorAlreadySet();
+      }
+      
+      if (PyCallable_Check(value))
+          detail::enable_named_method(this, name);
+      
+      return PyDict_SetItemString(
+          m_name_space.reference().get(), const_cast<char*>(name), value);
+  }
+
+  bool ClassBase::initialize_instance(Instance* instance, PyObject* args, PyObject* keywords)
+  {
+      // Getting the init function off the instance should result in a
+      // bound method.
+      PyObject* const init_function = instance->getattr("__init__", false);
+        
+      if (init_function == 0)
+      {
+          if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_AttributeError)) {
+              PyErr_Clear(); // no __init__? That's legal.
+          }
+          else {
+              return false; // Something else? Keep the error
+          }
+      }
+      else
+      {
+          // Manage the reference to the bound function
+          Ptr init_function_holder(init_function);
+        
+        // Declare a Ptr to manage the result of calling __init__ (which should be None).
+          Ptr init_result(
+              PyEval_CallObjectWithKeywords(init_function, args, keywords));
+      }
+      return true;
+  }
+
+  void ClassBase::instance_dealloc(PyObject* instance) const
+  {
+      Py_INCREF(instance); // This allows a __del__ function to revive the instance
+      
+      PyObject* exc_type;
+      PyObject* exc_value;
+      PyObject* exc_traceback;
+      PyErr_Fetch(&exc_type, &exc_value, &exc_traceback);
+
+      // This scope ensures that the reference held by del_function doesn't release
+      // the last reference and delete the object recursively (infinitely).
+      {
+          Ptr del_function;
+          try {
+              Instance* const target = py::Downcast<py::Instance>(instance);
+              del_function = Ptr(target->getattr("__del__", false), Ptr::null_ok);
+          }
+          catch(...) {
+          }
+
+          if (del_function.get() != 0)
+          {
+              Ptr result(PyEval_CallObject(del_function.get(), (PyObject *)NULL), Ptr::null_ok);
+              
+              if (result.get() == NULL)
+                  report_ignored_exception(del_function.get());
+          }
+      }
+      PyErr_Restore(exc_type, exc_value, exc_traceback);
+      
+      if (--instance->ob_refcnt <= 0)
+          delete_instance(instance);
+  }
+
+
+}
 
 Instance::Instance(PyTypeObject* class_)
     : PythonObject(class_)
 {
 }
 
+Instance::~Instance()
+{
+}
+
 PyObject* Instance::getattr(const char* name, bool use_special_function)
 {
+    if (!PY_CSTD_::strcmp(name, "__dict__"))
+    {
+        if (PyEval_GetRestricted()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "instance.__dict__ not accessible in restricted mode");
+				return 0;
+        }
+        Py_INCREF(m_name_space.get());
+        return m_name_space.get();
+    }
+    
+    if (!PY_CSTD_::strcmp(name, "__class__"))
+    {
+        Py_INCREF(this->ob_type);
+        return as_object(this->ob_type);
+    }
+    
     Ptr local_attribute = m_name_space.get_item(String(name).reference());
     
     if (local_attribute.get())
@@ -29,9 +271,14 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     // Check its class. 
     PyObject* function =
         PyObject_GetAttrString(as_object(this->ob_type), const_cast<char*>(name));
+    
+    if (function == 0 && !use_special_function)
+    {
+        return 0;
+    }
 
     Ptr class_attribute;
-    if (!use_special_function || function != 0)
+    if (function != 0)
     {
         // This will throw if the attribute wasn't found
         class_attribute = Ptr(function);
@@ -66,7 +313,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         if (PyErr_Occurred())
         {
             PyErr_SetString(PyExc_AttributeError, name);
-            throw ErrorAlreadySet();
+            return 0;
         }
 
         // Take ownership of the method
@@ -87,6 +334,29 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     }
 }
 
+// Instance::setattr_dict
+//
+//  Implements setattr() functionality for the "__dict__" attribute
+//
+int Instance::setattr_dict(PyObject* value)
+{
+    if (PyEval_GetRestricted())
+    {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "__dict__ not accessible in restricted mode");
+        return -1;
+    }
+
+    if (value == 0 || !PyDict_Check(value))
+    {
+        PyErr_SetString(PyExc_TypeError,
+                        "__dict__ must be set to a dictionary");
+        return -1;
+    }
+    m_name_space = Dict(Ptr(value, Ptr::borrowed));
+    return 0;
+}
+
 // Instance::setattr -
 //
 //  Implements the setattr() and delattr() functionality for our own Instance
@@ -94,6 +364,15 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
 //  the attribute, and returns 0 unless an error occurred.
 int Instance::setattr(const char* name, PyObject* value)
 {
+    if (PY_CSTD_::strcmp(name, "__class__") == 0)
+    {
+        PyErr_SetString(PyExc_TypeError, "__class__ attribute is read-only");
+        throw ErrorAlreadySet();
+    }
+    
+    if (PY_CSTD_::strcmp(name, "__dict__") == 0)
+        return setattr_dict(value);
+    
     // Try to find an appropriate "specific" setter or getter method, either
     // __setattr__<name>__(value) or __delattr__<name>__(). This is an extension
     // to regular Python class functionality.
@@ -410,92 +689,101 @@ namespace {
   }
 }
 
-// Enable any special methods which are enabled in the base class.
-void enable_special_methods(TypeObjectBase* derived, const Tuple& bases, const Dict& name_space)
-{
-    detail::AllMethods all_methods;
-    PY_CSTD_::memset(&all_methods, 0, sizeof(all_methods));
-    
-    for (std::size_t i = 0; i < bases.size(); ++i)
-    {
-        PyTypeObject* base = Downcast<PyTypeObject>(bases[i].get());
-        
-        for (std::size_t n = 0; n < detail::num_capabilities; ++n)
-        {
-            detail::add_capability(n, derived, all_methods, base);
-        }
-    }
+namespace detail {
+  // Enable the special handler for methods of the given name, if any.
+  void enable_named_method(py::detail::ClassBase* type_object, const char* name)
+  {
+      const std::size_t num_enablers = sizeof(enablers) / sizeof(enablers[0]);
 
-    Ptr keys = name_space.keys();
-    for (std::size_t j = 0, len = PyList_GET_SIZE(keys.get()); j < len; ++j)
-    {
-        const char* name = PyString_AsString(PyList_GetItem(keys.get(), j));
-        
-        if (!is_special_name(name))
-            continue;
-        
-        for (std::size_t i = 0; i < PY_ARRAY_LENGTH(enablers); ++i)
-        {
-            if (is_prefix(enablers[i].name + 2, name + 2))
-            {
-                detail::add_capability(enablers[i].capability, derived, all_methods, 0);
-            }
-        }
-    }
+      // Make sure this ends with "__" since we'll only compare the head of the
+      // string.  This is done to make the __getattr__<name>__/__setattr__<name>__
+      // extension work.
+      if (!is_special_name(name))
+          return;
 
-    // Now replace those pointers with a persistent copy
-    using detail::UniquePodSet;
-    if (derived->tp_as_buffer)
-        derived->tp_as_buffer = UniquePodSet::instance().get(*derived->tp_as_buffer);
-    
-    if (derived->tp_as_number)
-        derived->tp_as_number = UniquePodSet::instance().get(*derived->tp_as_number);
-    
-    if (derived->tp_as_sequence)
-        derived->tp_as_sequence = UniquePodSet::instance().get(*derived->tp_as_sequence);
-    
-    if (derived->tp_as_mapping)
-        derived->tp_as_mapping = UniquePodSet::instance().get(*derived->tp_as_mapping);
+      for (std::size_t i = 0; i < num_enablers; ++i)
+      {
+          if (is_prefix(enablers[i].name + 2, name + 2))
+          {
+              type_object->enable(enablers[i].capability);
+          }
+      }
+  }
 }
 
-// Enable the special handler for methods of the given name, if any.
-void enable_named_method(TypeObjectBase* type_object, const char* name)
-{
-    const std::size_t num_enablers = sizeof(enablers) / sizeof(enablers[0]);
+namespace {
+  // Enable any special methods which are enabled in the base class.
+  void enable_special_methods(py::detail::ClassBase* derived, const Tuple& bases, const Dict& name_space)
+  {
+      detail::AllMethods all_methods;
+      PY_CSTD_::memset(&all_methods, 0, sizeof(all_methods));
 
-    // Make sure this ends with "__" since we'll only compare the head of the
-    // string.  This is done to make the __getattr__<name>__/__setattr__<name>__
-    // extension work.
-    if (!is_special_name(name))
-        return;
-    
-    for (std::size_t i = 0; i < num_enablers; ++i)
-    {
-        if (is_prefix(enablers[i].name + 2, name + 2))
-        {
-            type_object->enable(enablers[i].capability);
-        }
-    }
-}
+      for (std::size_t i = 0; i < bases.size(); ++i)
+      {
+          PyObject* base = bases[i].get();
 
-void add_current_module_name(Dict& name_space)
-{
-    static String module_key("__module__", String::interned);
-    static String name_key("__name__", String::interned);
+          for (std::size_t n = 0; n < PY_ARRAY_LENGTH(enablers); ++n)
+          {
+              Ptr attribute(
+                  PyObject_GetAttrString(base, const_cast<char*>(enablers[n].name)),
+                  Ptr::null_ok);
+              PyErr_Clear();
+              if (attribute.get() != 0 && PyCallable_Check(attribute.get()))
+                  detail::add_capability(n, derived, all_methods);
+          }
+      }
+
+      Ptr keys = name_space.keys();
+      for (std::size_t j = 0, len = PyList_GET_SIZE(keys.get()); j < len; ++j)
+      {
+          const char* name = PyString_AsString(PyList_GetItem(keys.get(), j));
+
+          if (!is_special_name(name))
+              continue;
+
+          for (std::size_t i = 0; i < PY_ARRAY_LENGTH(enablers); ++i)
+          {
+              if (is_prefix(enablers[i].name + 2, name + 2))
+              {
+                  detail::add_capability(enablers[i].capability, derived, all_methods);
+              }
+          }
+      }
+
+      // Now replace those pointers with a persistent copy
+      using detail::UniquePodSet;
+      if (derived->tp_as_buffer)
+          derived->tp_as_buffer = UniquePodSet::instance().get(*derived->tp_as_buffer);
+
+      if (derived->tp_as_number)
+          derived->tp_as_number = UniquePodSet::instance().get(*derived->tp_as_number);
+
+      if (derived->tp_as_sequence)
+          derived->tp_as_sequence = UniquePodSet::instance().get(*derived->tp_as_sequence);
+
+      if (derived->tp_as_mapping)
+          derived->tp_as_mapping = UniquePodSet::instance().get(*derived->tp_as_mapping);
+  }
+
+  void add_current_module_name(Dict& name_space)
+  {
+      static String module_key("__module__", String::interned);
+      static String name_key("__name__", String::interned);
     
-    Ptr existing_value = name_space.get_item(module_key);
-    if (existing_value.get() == 0)
-    {
-        PyObject* globals = PyEval_GetGlobals();
-        if (globals != 0) // Why don't we throw in this case? Who knows? This is
-        {                 // what Python does for class objects!
-            PyObject* module_name = PyDict_GetItem(globals, name_key.get());
-            if (module_name != 0)
-            {
-                name_space[module_key] = Ptr(module_name, Ptr::borrowed);
-            }
-        }
-    }
+      Ptr existing_value = name_space.get_item(module_key);
+      if (existing_value.get() == 0)
+      {
+          PyObject* globals = PyEval_GetGlobals();
+          if (globals != 0) // Why don't we throw in this case? Who knows? This is
+          {                 // what Python does for class objects!
+              PyObject* module_name = PyDict_GetItem(globals, name_key.get());
+              if (module_name != 0)
+              {
+                  name_space[module_key] = Ptr(module_name, Ptr::borrowed);
+              }
+          }
+      }
+  }
 }
 
 void adjust_slice_indices(PyObject* instance, int& start, int& finish)
