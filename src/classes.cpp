@@ -99,6 +99,13 @@ namespace {
           return tuple(instance_class, initargs, state);
       }
 
+      ref auto_pickle(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__auto_pickle__")), ref::null_ok);
+      PyErr_Clear();
+      if (auto_pickle.get() == 0) {
+          PyErr_SetString(PyExc_AttributeError, "auto_pickle not enabled");
+          throw error_already_set();
+      }
+
       ref state(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
       PyErr_Clear();
       if (state.get() != 0 && dictionary(state).size() > 0)
