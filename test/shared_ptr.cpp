@@ -49,15 +49,36 @@ struct functions
     {
         return look(get());
     }
-    
-    static void expose()
+
+    template <class C>
+    static void expose(C const& c)
     {
         def("look", &look);
         def("store", &store);
-        def("modify", &modify); 
-        def("look_store", &look_store); 
-        def("identity", &identity); 
-        def("null", &null); 
+        def("modify", &modify);
+        def("identity", &identity);
+        def("null", &null);
+            
+        const_cast<C&>(c)
+            .def("look", &look)
+            .staticmethod("look")
+            .def("store", &store)
+            .staticmethod("store")
+            .def("modify", &modify)
+            .staticmethod("modify")
+            .def("look_store", &look_store)
+            .staticmethod("look_store")
+            .def("identity", &identity)
+            .staticmethod("identity")
+            .def("null", &null)
+            .staticmethod("null")
+            .def("get", &get)
+            .staticmethod("get")
+            .def("count", &T::count)
+            .staticmethod("count")
+            .def("release", &release_store)
+            .staticmethod("release")
+            ;
     }
 
     static shared_ptr<T> identity(shared_ptr<T> x) { return x; }
@@ -93,13 +114,15 @@ struct YY : Y
     YY(int n) : Y(n) {}
 };
 
+struct YYY : Y
+{
+    YYY(int n) : Y(n) {}
+};
+
 shared_ptr<Y> factory(int n)
 {
     return shared_ptr<Y>(n < 42 ? new Y(n) : new YY(n));
 }
-
-static int stored_v() { return functions<Z>::get()->v(); }
-static shared_ptr<Z> stored_z() { return functions<Z>::get(); }
 
 // regressions from Nicodemus
     struct A
@@ -147,41 +170,30 @@ BOOST_PYTHON_MODULE(shared_ptr_ext)
     >();
         
     def("New", &New);
-    
-    class_<X, boost::noncopyable>("X", init<int>())
-        .def("value", &X::value)
-        ;
 
     def("factory", factory);
     
-    functions<X>::expose();
-    def("x_count", &X::count);
-    def("x_release", &functions<X>::release_store);
-    def("x_look_store", &functions<X>::look_store);
+    functions<X>::expose(
+        class_<X, boost::noncopyable>("X", init<int>())
+             .def("value", &X::value)
+        );
     
-    class_<Y, boost::shared_ptr<Y> >("Y", init<int>())
-        .def("value", &Y::value)
-        ;
+    functions<Y>::expose(
+        class_<Y, boost::shared_ptr<Y> >("Y", init<int>())
+            .def("value", &Y::value)
+        );
     
     class_<YY, bases<Y>, boost::noncopyable>("YY", init<int>())
         ;
 
-    functions<Y>::expose();
-    def("y_count", &Y::count);
-    def("y_release", &functions<Y>::release_store);
-    def("y_look_store", &functions<Y>::look_store);
-
-    class_<Z, ZWrap>("Z", init<int>())
-        .def("value", &Z::value)
-        .def("v", &Z::v, &ZWrap::default_v)
+    class_<YYY, shared_ptr<YYY>, bases<Y> >("YYY", init<int>())
         ;
-    
-    functions<Z>::expose();
-    def("z_count", &Z::count);
-    def("z_release", &functions<Z>::release_store);
-    def("z_look_store", &functions<Z>::look_store);
-    def("stored_z", &stored_z);
-    def("stored_v", &stored_v);
+
+    functions<Z>::expose(
+        class_<Z, ZWrap>("Z", init<int>())
+            .def("value", &Z::value)
+            .def("v", &Z::v, &ZWrap::default_v)
+        );
 }
 
 #include "module_tail.cpp"
