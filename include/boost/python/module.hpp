@@ -77,9 +77,8 @@ class module : public detail::module_base
         detail::func_stubs_base<DerivedT> const& stubs,
         SigT sig, char const* doc = 0)
     {
-        //  convert sig to a type_list (see detail::get_signature in signature.hpp) and
-        //  call detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
-        //  this module instance, and the converted sig type_list.
+        //  convert sig to a type_list (see detail::get_signature in signature.hpp)
+        //  before calling detail::define_with_defaults.
         detail::define_with_defaults(name, stubs.derived(), *this, detail::get_signature(sig), doc);
         return *this;
     }

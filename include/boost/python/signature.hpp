@@ -29,9 +29,10 @@ namespace boost { namespace python {
 //  return type, class (for member functions) and arguments of a
 //  function or member function. Examples:
 //
-//      signature<int(*)(int)>          int foo(int)
-//      signature<void(*)(int, int)>    void foo(int, int)
-//      signature<void(C::*)(int)>      void C::foo(int, int)
+//      signature<int(*)(int)>              int foo(int)
+//      signature<void(*)(int, int)>        void foo(int, int)
+//      signature<void(C::*)(int)>          void C::foo(int, int)
+//      signature<void(C::*)(int) const>    void C::foo(int, int) const
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename T>
@@ -71,6 +72,13 @@ namespace detail {
 //      get_signature(signature<RT(ClassT::*)(T0...TN))>)
 //      {
 //          return boost::mpl::type_list<RT, ClassT, T0...TN>();
+//      }
+//
+//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      get_signature(signature<RT(ClassT::*)(T0...TN) const)>)
+//      {
+//          return boost::mpl::type_list<RT, ClassT const, T0...TN>();
 //      }
 //
 //      template <typename RT, typename ClassT, typename T0... typename TN>
@@ -158,6 +166,31 @@ namespace detail {
         return boost::mpl::type_list                                            \
             <RT, ClassT BOOST_PP_COMMA_IF(INDEX) BOOST_PP_ENUM_PARAMS(INDEX, T)>\
             ();                                                                 \
+    }                                                                           \
+                                                                                \
+                                                                                \
+    template                                                                    \
+    <                                                                           \
+        typename RT, typename ClassT BOOST_PP_COMMA_IF(INDEX)                   \
+        BOOST_PP_ENUM                                                           \
+        (                                                                       \
+            INDEX,                                                              \
+            BPL_IMPL_TEMPLATE_GEN,                                              \
+            BOOST_PP_EMPTY                                                      \
+        )                                                                       \
+    >                                                                           \
+    inline boost::mpl::type_list                                                \
+    <                                                                           \
+        RT, ClassT BOOST_PP_COMMA_IF(INDEX) BOOST_PP_ENUM_PARAMS(INDEX, T)      \
+    >                                                                           \
+    get_signature(                                                              \
+        signature<RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(INDEX, T)) const>)         \
+    {                                                                           \
+        return boost::mpl::type_list                                            \
+        <                                                                       \
+            RT, ClassT const                                                    \
+            BOOST_PP_COMMA_IF(INDEX) BOOST_PP_ENUM_PARAMS(INDEX, T)             \
+        >();                                                                    \
     }                                                                           \
                                                                                 \
     template                                                                    \
