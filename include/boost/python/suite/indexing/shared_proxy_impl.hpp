@@ -25,6 +25,7 @@
 #define BOOST_PYTHON_INDEXING_SHARED_PROXY_IMPL_HPP
 
 #include <memory>
+#include <boost/python/suite/indexing/workaround.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<class ContainerProxy>
@@ -85,7 +86,7 @@ namespace boost { namespace python { namespace indexing {
   shared_proxy_impl<ContainerProxy>::operator* () const
   {
     return m_owner_ptr
-      ? m_owner_ptr->raw_container().at (m_index)
+      ? m_owner_ptr->raw_container().BOOST_INDEXING_AT (m_index)
       : *m_element_ptr;
   }
 

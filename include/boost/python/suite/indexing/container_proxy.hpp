@@ -21,6 +21,7 @@
 #include <boost/python/suite/indexing/proxy_iterator.hpp>
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
 #include <boost/python/suite/indexing/element_proxy.hpp>
+#include <boost/python/suite/indexing/workaround.hpp>
 
 #include <map>
 #include <cassert>
@@ -271,7 +272,7 @@ namespace boost { namespace python { namespace indexing {
   ::replace (size_type index, raw_value_type const &copy)
   {
     detach_proxy (index);
-    raw_container().at(index) = copy;
+    raw_container().BOOST_INDEXING_AT (index) = copy;
   }
 
   template<class Container, class Holder>
