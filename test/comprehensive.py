@@ -239,6 +239,47 @@ Pickling tests:
     Hello from California! 42
     Hello from California! 0
 
+Pickle safety measures:
+    >>> r=Rational(3, 4)
+    >>> r
+    Rational(3, 4)
+    >>> try: s=pickle.dumps(r)
+    ... except RuntimeError, err: print err[0]
+    ... 
+    Incomplete pickle support (__dict_defines_state__ not set)
+    >>> class myrational(Rational):
+    ...   __dict_defines_state__ = 1 # this is a lie but good enough for testing.
+    ...             
+    >>> r=myrational(3, 4)
+    >>> r
+    Rational(3, 4)
+    >>> s=pickle.dumps(r)
+
+    >>> class myworld(world):
+    ...   def __init__(self):
+    ...     world.__init__(self, 'anywhere')
+    ...     self.x = 1
+    ... 
+    >>> w = myworld()
+    >>> w.greet()
+    'Hello from anywhere!'
+    >>> w.__dict__
+    {'x': 1}
+    >>> try: s=pickle.dumps(w)
+    ... except RuntimeError, err: print err[0]
+    ... 
+    Incomplete pickle support (__getstate_manages_dict__ not set)
+
+    >>> class myunsafeworld(myworld):
+    ...   __getstate_manages_dict__ = 1 # this is a lie but good enough for testing.
+    ... 
+    >>> w = myunsafeworld()
+    >>> w.greet()
+    'Hello from anywhere!'
+    >>> w.__dict__
+    {'x': 1}
+    >>> s=pickle.dumps(w)
+
 Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.uk>
 
     >>> class DerivedFromFoo(Foo):

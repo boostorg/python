@@ -1,3 +1,6 @@
+// Revision History:
+// Mar 03 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
+
 #ifndef CLASS_WRAPPER_DWA101000_H_
 # define CLASS_WRAPPER_DWA101000_H_
 
@@ -24,6 +27,13 @@ class class_builder
     
     ~class_builder()
     {}
+
+    inline void dict_defines_state() {
+      add(ref(BOOST_PYTHON_CONVERSION::to_python(1)), "__dict_defines_state__");
+    }
+    inline void getstate_manages_dict() {
+      add(ref(BOOST_PYTHON_CONVERSION::to_python(1)), "__getstate_manages_dict__");
+    }
     
     // define constructors
     template <class signature>
