@@ -1,39 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="../boost.css">
-<title>Boost.Python - FAQ</title>
-</head>
-<body link="#0000ff" vlink="#800080">
-<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+  <head>
+    <meta name="generator" content=
+    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+
+    <title>Boost.Python - FAQ</title>
+  </head>
+
+  <body link="#0000ff" vlink="#800080">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
     "header">
-  <tr> 
-    <td valign="top" width="300"> 
-          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
-          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
-    </td>
-    <td valign="top"> 
-      <h1 align="center">Boost.Python</h1>
-      <h2 align="center">Frequently Asked Questions (FAQs)</h2>
-    </td>
-  </tr>
-</table>
-<hr>
-<dl class="page-index">
-  <dt><a href="#question1">{{question}}</a></dt>
-  <dt><a href="#question2">{{question}}</a></dt>
-</dl>
-<h2><a name="question1"></a>{{question}}</h2>
-<p>{{answer}}</p>
-<h2><a name="question2"></a>{{question}}</h2>
-<p>{{answer}}</p>
-<hr>
-<p>Revised 
-  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  05 November, 2002 
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
-</p>
-<p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave Abrahams</a> 
-  2002. All Rights Reserved.</i></p>
-</body>
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../../index.htm"><img height="86" width="277"
+          alt="C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
+        </td>
+
+        <td valign="top">
+          <h1 align="center">Boost.Python</h1>
+
+          <h2 align="center">Frequently Asked Questions (FAQs)</h2>
+        </td>
+      </tr>
+    </table>
+    <hr>
+
+    <dl class="page-index">
+      <dt><a href="#question1">{{question}}</a></dt>
+
+      <dt><a href="#question2">{{question}}</a></dt>
+    </dl>
+
+    <h2><a name="question1"></a>Is return_internal reference efficient?</h2>
+
+    <blockquote>
+      <b>Q:</b> <i>I have an object composed of 12 doubles. A const&amp; to this object is
+      returned by a member function of another class. From the viewpoint of
+      using the returned object in Python I do not care if I get a copy or a
+      reference to the returned object. In Boost.Python Version 2 I have the
+      choice of using copy_const_reference or return_internal_reference. Are
+      there considerations that would lead me to prefer one over the other,
+      such as size of generated code or memory overhead?</i>
+
+    <p><b>A:</b> copy_const_reference will make an instance with storage for one of
+    your objects, size = base_size + 12 * sizeof(double).
+    return_internal_reference will make an instance with storage for a
+    pointer to one of your objects, size = base_size + sizeof(void*).
+    However, it will also create a weak reference object which goes in the
+    source object's weakreflist and a special callback object to manage the
+    lifetime of the internally-referenced object. My guess?
+    copy_const_reference is your friend here, resulting in less overall
+    memory use and less fragmentation, also probably fewer total cycles.</p>
+    </blockquote>
+
+    <h2><a name="question2"></a>{{question}}</h2>
+
+    <p>{{answer}}</p>
+    <hr>
+
+    <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     05 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+    </p>
+
+    <p><i>&copy; Copyright <a href=
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All Rights
+    Reserved.</i></p>
+  </body>
 </html>
+

@@ -247,7 +247,7 @@
 namespace boost { namespace python
 {
   template &lt;class T
- <font color="#007F00">          , class Bases = bases&lt;&gt;
+   <font color="#007F00">         , class Bases = bases&lt;&gt;
             , class HeldType = T
             , class NonCopyable = <i>unspecified</i>
            &gt;
@@ -742,23 +742,26 @@ template &lt;class Policies&gt;
     properties, used to describe a family of <code>__init__</code> methods to
     be generated for an extension class: 
 
-    <dl class="properties">
-      <dt><b>docstring:</b> An <a href="definitions.html#ntbs">ntbs</a> whose
-      value will bound to the method's <code>__doc__</code> attribute</dt>
+    <blockquote>
+      <dl class="properties">
+        <dt><b>docstring:</b> An <a href="definitions.html#ntbs">ntbs</a>
+        whose value will bound to the method's <code>__doc__</code>
+        attribute</dt>
 
-      <dt><b>keywords:</b> A <a href=
-      "args.html#keyword-expression">keyword-expression</a> which will be
-      used to name (a trailing subset of) the arguments to the generated
-      <code>__init__</code> function(s).</dt>
+        <dt><b>keywords:</b> A <a href=
+        "args.html#keyword-expression">keyword-expression</a> which will be
+        used to name (a trailing subsequence of) the arguments to the generated
+        <code>__init__</code> function(s).</dt>
 
-      <dt><b>call policies:</b> An instance of a model of <a href=
-      "CallPolicies.html">CallPolicies</a>.</dt>
+        <dt><b>call policies:</b> An instance of a model of <a href=
+        "CallPolicies.html">CallPolicies</a>.</dt>
 
-      <dt><b>argument types:</b> An MPL sequence of C++ argument types which
-      will be used to construct the wrapped C++ object. An init expression
-      has one or more <b>valid prefixes</b> which are given by a sequence of
-      prefixes of its argument types.</dt>
-    </dl>
+        <dt><b>argument types:</b> An MPL sequence of C++ argument types
+        which will be used to construct the wrapped C++ object. An init
+        expression has one or more <b>valid prefixes</b> which are given by a
+        sequence of prefixes of its argument types.</dt>
+      </dl>
+    </blockquote>
 
     <h3><a name="optional-spec"></a>Class template <code>optional&lt;T1
     =</code> <i>unspecified</i><code>,&nbsp;T2 =</code>
