@@ -9,7 +9,6 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/bases.hpp>
-# include <boost/python/args.hpp>
 
 # include <boost/python/object.hpp>
 
@@ -37,6 +36,8 @@
 # include <boost/python/init.hpp>
 
 namespace boost { namespace python {
+
+enum no_init_t { no_init };
 
 namespace detail
 {
@@ -218,7 +219,7 @@ class class_ : public objects::class_base
         //      def(name, function)
         //      def(name, function, policy)
         //      def(name, function, doc_string)
-        //      def(name, signature, stubs)
+        //      def(name, signature, overloads)
 
         dispatch_def(&arg2, name, arg1, arg2);
         return *this;
@@ -318,17 +319,17 @@ class class_ : public objects::class_base
 
     inline void register_() const;
 
-    template <class StubsT, class SigT>
+    template <class OverloadsT, class SigT>
     void dispatch_def(
         detail::overloads_base const*,
         char const* name,
         SigT sig,
-        StubsT const& stubs)
+        OverloadsT const& overloads)
     {
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
         detail::define_with_defaults(
-            name, stubs, *this, detail::get_signature(sig));
+            name, overloads, *this, detail::get_signature(sig));
     }
 
     template <class Fn, class CallPolicyOrDoc>

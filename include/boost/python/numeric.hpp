@@ -210,7 +210,7 @@ class array : public aux::array_base
     static BOOST_PYTHON_DECL void set_module_and_type(char const* package_name = 0, char const* type_attribute_name = 0);
 
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(array, array_base);
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(array, base);
 };
 
 } // namespace boost::python::numeric
