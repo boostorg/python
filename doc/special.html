@@ -13,7 +13,7 @@
       </h2>
       <p>
          BPL supports all of the standard <a href=
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
+        "http://www.python.org/doc/current/ref/specialnames.html">
         special method names</a> supported by real Python class instances <em>
         except</em> <code>__complex__</code> (more on the reasons <a href=
         "#reasons">below</a>). In addition, it can quickly and easily expose
@@ -33,7 +33,7 @@
       Python provides a number of special operators for basic customization of a
       class. Only a brief description is provided below; more complete
       documentation can be found <a
-      href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/customization.html">here</a>.
+      href="http://www.python.org/doc/current/ref/customization.html">here</a>.
 
       <dl>
         <dt>
@@ -114,7 +114,7 @@ foo_class.def(&amp;to_string, "__str__");
 <p>
       Numeric operators can be exposed manually, by <code>def</code>ing C++
       [member] functions that support the standard Python <a
-      href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">numeric
+      href="http://www.python.org/doc/current/ref/numeric-types.html">numeric
       protocols</a>. This is the same basic technique used to expose
       <code>to_string()</code> as <code>__str__()</code> above, and is <a
       href="#numeric_manual">covered in detail below</a>.  BPL also supports
@@ -398,7 +398,7 @@ Note that "__rrpow__" is an extension not present in plain Python.
 <h2><a name="numeric_table">Table of Automatically Wrapped Methods</a></h2>
       <p>
          BPL can automatically wrap the following <a href=
-         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
+         "http://www.python.org/doc/current/ref/specialnames.html">
          special methods</a>:
 
       <p>
@@ -672,12 +672,12 @@ for (iterator i = S.begin(), end = S.end(); i != end; ++i)
 
       <p>
         It is a better idea to support the standard <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">Python
+        href="http://www.python.org/doc/current/ref/sequence-types.html">Python
         sequence and mapping protocols</a> for your wrapped containers. These
         operators have to be wrapped manually because there are no corresponding
         C++ operators that could be used for automatic wrapping. The Python
         documentation lists the relevant <a href=
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">
+        "http://www.python.org/doc/current/ref/sequence-types.html">
         container operators</a>. In particular, expose __getitem__, __setitem__
         and remember to raise the appropriate Python exceptions
         (<code>PyExc_IndexError</code> for sequences,
@@ -773,7 +773,7 @@ KeyError: 2
 
       <p>
         Just like built-in Python classes, BPL extension classes support <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/attribute-access.html">special
+        href="http://www.python.org/doc/current/ref/attribute-access.html">special
         the usual attribute access methods</a> <code>__getattr__</code>,
         <code>__setattr__</code>, and <code>__delattr__</code>.
         Because writing these functions can

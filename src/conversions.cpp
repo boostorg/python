@@ -160,6 +160,25 @@ unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type
     return integer_from_python(p, type);
 }
 
+PyObject* to_python(char c)
+{
+  return PyString_FromStringAndSize(&c, 1);
+}
+
+char from_python(PyObject* p, boost::python::type<char>)
+{
+    if (! PyString_Check(p)) {
+        PyErr_SetString(PyExc_TypeError, "expected string with exactly one character");
+        throw boost::python::argument_error();
+    }
+    const char* s = PyString_AsString(p);
+    if (! s || s[0] == '\0' || s[1] != '\0') {
+        PyErr_SetString(PyExc_ValueError, "expected string with exactly one character");
+        throw boost::python::argument_error();
+    }
+    return s[0];
+}
+
 PyObject* to_python(unsigned char i)
 {
 	return integer_to_python(i);
