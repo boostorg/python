@@ -197,6 +197,7 @@ namespace
   {
    public:
       ref get(class_id id) const;
+      ref query(class_id id) const;
       void set(class_id, ref class_object);
    private:
       typedef detail::map_entry<class_id,ref> entry;
@@ -209,7 +210,7 @@ namespace
       return x;
   }
 
-  ref class_registry::get(class_id id) const
+  inline ref class_registry::query(class_id id) const
   {
       std::vector<entry>::const_iterator start = m_impl.begin();
       std::vector<entry>::const_iterator finish = m_impl.end();
@@ -217,17 +218,24 @@ namespace
       std::vector<entry>::const_iterator p
           = boost::detail::lower_bound(start, finish, id);
 
-      if (p == finish || p->key != id)
+      return (p == finish || p->key != id) ? ref() : p->value;
+  }
+  
+  inline ref class_registry::get(class_id id) const
+  {
+      ref result(this->query(id));
+
+      if (result.get() == 0)
       {
           string report("extension class wrapper for base class ");
           (report += id.name()) += " has not been created yet";
           PyErr_SetObject(PyExc_RuntimeError, report.get());
           throw_error_already_set();
       }
-      return p->value;
+      return result;
   }
 
-  void class_registry::set(class_id id, ref object)
+  inline void class_registry::set(class_id id, ref object)
   {
       std::vector<entry>::iterator start = m_impl.begin();
       std::vector<entry>::iterator finish = m_impl.end();
@@ -272,15 +280,24 @@ extern "C"
 void class_base::add_property(char const* name, ref const& fget)
 {
     ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
-    if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
-        throw_error_already_set();
+    setattr(name, property);
 }
 
 void class_base::add_property(char const* name, ref const& fget, ref const& fset)
 {
     ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
-    if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
+    setattr(name, property);
+}
+
+void class_base::setattr(char const* name, ref const& x)
+{
+    if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), x.get()) < 0)
         throw_error_already_set();
+}
+
+BOOST_PYTHON_DECL ref registered_class_object(class_id id)
+{
+    return registry().query(id);
 }
 
 }}} // namespace boost::python::objects
