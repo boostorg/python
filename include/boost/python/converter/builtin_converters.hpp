@@ -6,6 +6,7 @@
 #ifndef BUILTIN_CONVERTERS_DWA2002124_HPP
 # define BUILTIN_CONVERTERS_DWA2002124_HPP
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/none.hpp>
 # include <string>
 
 namespace boost { namespace python {
@@ -44,18 +45,19 @@ namespace detail
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, PyInt_FromLong(x))        \
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned T, PyInt_FromLong(x))
 
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(bool, PyInt_FromLong(x))
 BOOST_PYTHON_TO_INT(char)
 BOOST_PYTHON_TO_INT(short)
 BOOST_PYTHON_TO_INT(int)
 BOOST_PYTHON_TO_INT(long)
 # undef BOOST_TO_PYTHON_INT
 
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, PyString_FromString(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, x ? PyString_FromString(x) : detail::none())
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromString(x.c_str()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, x)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, x ? x : detail::none())
 
 namespace converter
 { 

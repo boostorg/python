@@ -30,7 +30,7 @@ class BOOST_PYTHON_DECL module_base
     void add_type(ref);
     
     // Return a reference to the Python module object being built
-    ref module() const;
+    ref object() const;
 
  private:
     ref m_module;
@@ -76,7 +76,7 @@ class module : public module_base
 //
 // inline implementations
 //
-inline ref module_base::module() const
+inline ref module_base::object() const
 {
     return m_module;
 }

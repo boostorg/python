@@ -76,19 +76,24 @@ first parameter. Its template arguments are:
     <table border="1" summary="class_ template parameters">
       <tr>
         <th>Parameter
-        <th>Description
+        <th>Requirements
         <th>Default
       <tr>
         <td><code>T</code>
-        <td>The class being exposed to Python
+        <td>A class type.
       <tr>
         <td><code>Bases</code>
-        <td>An <a href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++ base classes
+
+        <td>An <a href="../../../mpl/doc/Sequences.html">MPL
+        sequence</a> of C++ base classes of <code>T</code>.
+
         <td>An unspecified empty sequence
+
       <tr>
-        <td><a href="HolderGenerator.html">HolderGenerator</a></code>
-        <td>A type generator for the holder which
-maintains the C++ object inside the Python instance. 
+        <td><code>HolderGenerator</code>
+
+        <td>A model of <code><a href="HolderGenerator.html">HolderGenerator</a></code>.
+
         <td><code>boost::python::objects::value_holder_generator</code>
       </table>
 

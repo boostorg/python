@@ -150,6 +150,31 @@ namespace
       }
   };
 
+  extern "C" PyObject* identity_unaryfunc(PyObject* x)
+  {
+      Py_INCREF(x);
+      return x;
+  }
+  
+  unaryfunc non_null = identity_unaryfunc;
+  
+  struct convertible_to_bool
+  {
+      static unaryfunc* execute(PyObject* obj)
+      {
+          return &non_null;
+      }
+  };
+
+  struct py_object_as_bool
+  {
+      static bool execute(PyObject* obj)
+      {
+          return PyObject_IsTrue(obj);
+      }
+  };
+
+  
   struct convertible_to_double
   {
       static unaryfunc* execute(PyObject* obj)
@@ -203,6 +228,9 @@ namespace
 
 void initialize_builtin_converters()
 {
+    static scalar_from_python<
+        bool, convertible_to_bool, py_object_as_bool> bool_from_python;
+    
     REGISTER_INT_CONVERTERS2(char);
     REGISTER_INT_CONVERTERS2(short);
     REGISTER_INT_CONVERTERS2(int);

@@ -13,6 +13,7 @@
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/utility.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
