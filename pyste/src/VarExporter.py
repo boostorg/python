@@ -1,6 +1,6 @@
 from Exporter import Exporter
 from settings import *
-
+import utils
 
 #==============================================================================
 # VarExporter
@@ -29,3 +29,7 @@ class VarExporter(Exporter):
 
     def Order(self):
         return self.info.name
+
+
+    def Unit(self):
+        return utils.makeid(self.info.include) 
