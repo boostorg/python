@@ -72,6 +72,7 @@ namespace detail
 template <class T, class MakeHolder>
 inline bool to_python_indirect<T,MakeHolder>::convertible()
 {
+    BOOST_STATIC_ASSERT(is_pointer<T>::value || is_reference<T>::value);
     return type() != 0;
 }
 
