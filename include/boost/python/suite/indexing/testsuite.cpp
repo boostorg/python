@@ -22,46 +22,76 @@
 //
 
 #include "container_suite.hpp"
+#include "IntWrapper.hpp"
 
 #include <list>
 #include <vector>
 #include <map>
+#include <string>
+#include <sstream>
+
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/implicit.hpp>
 
 #include "iterator_pair.hpp"
 
-indexing::iterator_pair<int *> getArray()
+indexing::iterator_pair<IntWrapper *> getArray()
 {
-  static int array[] = { 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+  static IntWrapper array[] = {
+    IntWrapper(8), IntWrapper(7), IntWrapper(6), IntWrapper(5)
+    , IntWrapper(4), IntWrapper(3), IntWrapper(2)
+    , IntWrapper(1), IntWrapper(0) };
 
-  return indexing::iterator_pair<int *>(indexing::begin(array)
-					, indexing::end(array));
+  return indexing::iterator_pair<IntWrapper *>(indexing::begin(array)
+					       , indexing::end(array));
+}
+
+std::string repr (IntWrapper const &i)
+{
+  std::stringstream temp;
+  temp << i;
+  return temp.str();
 }
 
 BOOST_PYTHON_MODULE(testsuite)
 {
+  boost::python::implicitly_convertible <int, IntWrapper>();
+
+  boost::python::class_<IntWrapper> ("IntWrapper", boost::python::init<int>())
+    .def ("increment", &IntWrapper::increment)
+    .def ("__repr__", repr);
+    ;
+
   typedef std::vector<int> Container1;
 
   boost::python::class_<Container1>("Vector")
-    .def (indexing::container_suite<Container1>());
+    .def (indexing::container_suite<Container1>::generate());
 
-  typedef std::list<int> Container2;
+  typedef std::list<IntWrapper> Container2;
 
   boost::python::class_<Container2>("List")
-    .def (indexing::container_suite<Container2>());
+    .def (indexing::container_suite<Container2>::generate());
 
-  typedef std::map<std::string, int> Container3;
+  typedef std::map<std::string, IntWrapper> Container3;
 
   boost::python::class_<Container3>("Map")
-    .def (indexing::container_suite<Container3>());
+    .def (indexing::container_suite<Container3>::generate());
 
-  typedef indexing::iterator_pair<int *> Container4;
+  typedef indexing::iterator_pair<IntWrapper *> Container4;
 
-  boost::python::class_<Container4>("Array"
-				    , boost::python::init<int *, int *>())
-    .def (indexing::container_suite<Container4>());
+  boost::python::class_<Container4>
+    ("Array", boost::python::init<IntWrapper *, IntWrapper *>())
+    .def (indexing::container_suite<Container4>::generate());
 
   boost::python::def ("getArray", getArray);
+
+  typedef std::vector<IntWrapper> Container5;
+
+  // Returning internal references to elements of a vector is
+  // dangerous! The references can be invalidated by inserts or
+  // deletes!
+  boost::python::class_<Container5>("Vector_ref")
+    .def (indexing::container_suite<Container5>::generate (boost::python::return_internal_reference<>()));
 }
