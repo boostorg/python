@@ -1,5 +1,6 @@
 '''
 >>> from iterator_ext import *
+>>> from input_iterator import *
 >>> x = list_int()
 >>> x.push_back(1)
 >>> x.back()
@@ -17,6 +18,17 @@
 1
 3
 5
+
+   Range2 wraps a transform_iterator which doubles the elements it
+   traverses. This proves we can wrap input iterators
+   
+>>> z2 = range2(x)
+>>> for y in z2:
+...     print y
+2
+6
+10
+
 >>> l2 = two_lists()
 >>> for y in l2.primes:
 ...     print y

@@ -98,6 +98,15 @@ namespace detail
 
           return cr(x);
       }
+      template <class ValueType>
+      static PyObject* convert_result(ValueType const& x)
+      {
+          typedef typename Policies::result_converter result_converter;
+          typename mpl::apply1<result_converter,ValueType const&>::type cr;
+          if (!cr.convertible()) return 0;
+
+          return cr(x);
+      }
   };
 
   // Get a Python class which contains the given iterator and

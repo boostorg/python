@@ -65,7 +65,7 @@ bpl-test bienstman1 ;
 bpl-test bienstman2 ;
 bpl-test bienstman3 ;
 bpl-test multi_arg_constructor ;
-bpl-test iterator ;
+bpl-test iterator : iterator.py iterator.cpp input_iterator.cpp ;
 
 if $(TEST_BIENSTMAN_NON_BUGS)
 {

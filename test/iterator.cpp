@@ -14,11 +14,11 @@
 #include <iterator>
 #include <algorithm>
 
-
 using namespace boost::python;
 
 typedef std::list<int> list_int;
 typedef std::list<list_int> list_list;
+
 
 void push_back(list_int& x, int y)
 {
