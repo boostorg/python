@@ -698,7 +698,13 @@ class _VirtualWrapperGenerator(object):
             for base_member in base.members:
                 base_member.class_ = self.class_.FullName()
                 all_members.append(base_member)
-        self.virtual_methods = [m for m in all_members if IsVirtual(m)]        
+        # extract the virtual methods, avoiding duplications
+        self.virtual_methods = []
+        already_added = {}
+        for member in all_members:
+            if IsVirtual(member) and not member.FullName() in already_added:
+                self.virtual_methods.append(member)
+                already_added[member.FullName()] = 0
             
     
     def IsMethodUnique(self, method):
