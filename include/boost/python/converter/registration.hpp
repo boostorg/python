@@ -5,18 +5,19 @@
 // to its suitability for any purpose.
 #ifndef REGISTRATION_DWA20011130_HPP
 # define REGISTRATION_DWA20011130_HPP
-# include <boost/config.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
+# include <utility>
 # ifdef BOOST_PYTHON_TRACE
 #  include <iostream>
 # endif 
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_EXPORT wrapper_base;
-struct BOOST_PYTHON_EXPORT unwrapper_base;
+struct BOOST_PYTHON_DECL wrapper_base;
+struct BOOST_PYTHON_DECL unwrapper_base;
 
 // This class is really sort of a "templated namespace". It manages a
 // static data member which refers to the registry entry for T. This
@@ -28,7 +29,7 @@ struct registration
  public: // member functions
     // Return a converter which can convert the given Python object to
     // T, or 0 if no such converter exists
-    static unwrapper_base* unwrapper(PyObject*);
+    static std::pair<unwrapper_base*,void*> unwrapper(PyObject*);
 
     // Return a converter which can convert T to a Python object, or 0
     // if no such converter exists
@@ -61,7 +62,7 @@ inline registry::entry* registration<T>::entry()
 }
 
 template <class T>
-unwrapper_base* registration<T>::unwrapper(PyObject* p)
+std::pair<unwrapper_base*,void*> registration<T>::unwrapper(PyObject* p)
 {
 # ifdef BOOST_PYTHON_TRACE
     std::cout << "retrieving unwrapper for " << type_id<T>() << std::endl;

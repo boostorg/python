@@ -9,6 +9,7 @@
 # include <boost/python/converter/unwrapper_base.hpp>
 # include <boost/python/converter/unwrap.hpp>
 # include <boost/python/converter/body.hpp>
+# include <boost/type.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -21,13 +22,7 @@ struct unwrapper : unwrapper_base
  public:
     unwrapper();
 
-    T do_conversion(unwrap_more_<T> const* handle) const;
-    
- private:
-    virtual T convert(PyObject*, void*&) const = 0;
-    
- private: // body required interface implementation
-    void destroy_handle(handle*) const {}
+    virtual T convert(PyObject*, void* data, boost::type<T>) const = 0;
 };
 
 //
@@ -37,15 +32,6 @@ template <class T>
 unwrapper<T>::unwrapper()
     : unwrapper_base(type_id<T>())
 {
-}
-
-// We could think about making this virtual in an effort to get its
-// code generated in the module where the unwrapper is defined, but
-// it's not clear that it's a good tradeoff.
-template <class T>
-T unwrapper<T>::do_conversion(unwrap_more_<T> const* handle) const
-{
-    return convert(handle->source(), handle->m_storage);
 }
 
 }}} // namespace boost::python::converter

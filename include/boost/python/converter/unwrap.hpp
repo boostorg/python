@@ -12,22 +12,28 @@
 # include <boost/python/converter/registration.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/unwrapper_select.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
+# include <boost/type.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
 template <class T> struct unwrapper;
-struct BOOST_PYTHON_EXPORT body;
+struct BOOST_PYTHON_DECL body;
 
-struct BOOST_PYTHON_EXPORT unwrap_base : handle
+struct BOOST_PYTHON_DECL unwrap_base : handle
 {
  public: // member functions
-    inline unwrap_base(PyObject* source, body*, handle& prev);
-    inline unwrap_base(PyObject* source, body*);
+    inline unwrap_base(PyObject* source, std::pair<unwrapper_base*,void*>, handle& prev);
+    inline unwrap_base(PyObject* source, std::pair<unwrapper_base*,void*>);
     inline PyObject* source() const;
-
+    
+ protected:
+    inline PyObject*& source();
+    inline void* data() const;
+        
  private: // data members
     PyObject* m_source;
+    void* m_data;
 };
 
 // These converters will be used by the function wrappers. They don't
@@ -47,15 +53,7 @@ struct unwrap_more_ : unwrap_base
     // this constructor is only for the use of unwrap_
     unwrap_more_(PyObject* source);
 
- private: // helper functions
-    // Return the unwrapper which will convert the given Python object
-    // to T, or 0 if no such converter exists
-    static unwrapper_base* lookup(PyObject*);
-
  private:
-    // unspecified storage which may be allocated by the unwrapper to
-    // do value conversions.
-    mutable void* m_storage;
     typedef typename unwrapper_select<T>::type unwrapper_t;
 };
 
@@ -78,9 +76,9 @@ struct unwrap_more_<PyObject*>
         return source();
     }
         
-    bool convertible(PyObject*) const
+    void* can_convert(PyObject*) const
     {
-        return true;
+        return &m_unwrapper;
     }
     
  protected: // constructor
@@ -91,7 +89,7 @@ struct unwrap_more_<PyObject*>
     {
     }
  private:
-    static BOOST_PYTHON_EXPORT unwrapper_base* m_unwrapper;
+    static BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*> m_unwrapper;
 };
 
 template <class T>
@@ -104,16 +102,24 @@ struct unwrap_ : unwrap_more_<T>
 //
 // implementations
 //
-inline unwrap_base::unwrap_base(PyObject* source, body* body, handle& prev)
-    : handle(body, prev)
+inline unwrap_base::unwrap_base(
+    PyObject* source, std::pair<unwrapper_base*,void*> unwrapper, handle& prev)
+    : handle(unwrapper.first, prev)
     , m_source(source)
+    , m_data(unwrapper.second)
 {
 }
 
-inline unwrap_base::unwrap_base(PyObject* source, body* body)
-    : handle(body)
+inline unwrap_base::unwrap_base(PyObject* source, std::pair<unwrapper_base*,void*> unwrapper)
+    : handle(unwrapper.first)
     , m_source(source)
+    , m_data(unwrapper.second)
 {
+}
+
+inline void* unwrap_base::data() const
+{
+    return m_data;
 }
 
 inline PyObject* unwrap_base::source() const
@@ -121,25 +127,22 @@ inline PyObject* unwrap_base::source() const
     return m_source;
 }
 
-template <class T>
-inline unwrapper_base* unwrap_more_<T>::lookup(PyObject* source)
+inline PyObject*& unwrap_base::source()
 {
-    // Find the converters registered for T and get a unwrapper
-    // appropriate for the source object
-    return registration<T>::unwrapper(source);
+    return m_source;
 }
 
 template <class T>
 unwrap_more_<T>::unwrap_more_(PyObject* source, handle& prev)
-    : unwrap_base(source, lookup(source), prev)
-    , m_storage(0)
+    : unwrap_base(source,
+                  registration<T>::unwrapper(source),
+                  prev)
 {
 }
 
 template <class T>
 unwrap_more_<T>::unwrap_more_(PyObject* source)
-    : unwrap_base(source, lookup(source))
-    , m_storage(0)
+    : unwrap_base(source, registration<T>::unwrapper(source))
 {
 }
 
@@ -153,7 +156,7 @@ template <class T>
 T unwrap_more_<T>::operator*()
 {
     return static_cast<unwrapper<T>*>(
-        get_body())->convert(this->m_source, this->m_storage);
+        get_body())->convert(this->source(), this->data(), boost::type<T>());
 }
 
 template <class T>

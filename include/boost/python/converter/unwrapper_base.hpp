@@ -8,16 +8,27 @@
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/body.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_EXPORT unwrapper_base : body
+struct BOOST_PYTHON_DECL unwrapper_base : body
 {
  public:
     unwrapper_base(type_id_t); // registers
     ~unwrapper_base();         // unregisters
-    virtual bool convertible(PyObject*) const = 0;
+
+    // Must return non-null iff the conversion will be successful. Any
+    // non-null pointer is acceptable, and will be passed on to the
+    // convert() function, so useful data can be stored there.
+    virtual void* can_convert(PyObject*) const = 0;
+    
+ protected:
+    // this is an arbitrary non-null pointer you can use to indicate success
+    static void* const non_null;
+    
+ private: // body required interface implementation
+    void destroy_handle(handle*) const {}
 };
 
 }}} // namespace boost::python::converter
