@@ -168,17 +168,14 @@ class class_ : public objects::class_base
     {
         ref fget(make_getter(pm));
         ref fset(make_setter(pm));
-        this->add_property(name, fget, fset);
-        return *this;
+        return this->add_property(name, fget, fset);
     }
 
     // Property creation
     self& add_property(char const* name, ref const& fget);
     self& add_property(char const* name, ref const& fget, ref const& fset);
 
-
-    // return the underlying object
-//    ref object() const; (implemented in base class)
+    self& setattr(char const* name, ref const&);
 
  private: // types
     typedef objects::class_id class_id;
@@ -253,6 +250,13 @@ template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ref const& fget, ref const& fset)
 {
     class_base::add_property(name, fget, fset);
+    return *this;
+}
+
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, ref const& x)
+{
+    class_base::setattr(name, x);
     return *this;
 }
 
