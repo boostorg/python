@@ -145,6 +145,7 @@ bpl-test nested ;
 bpl-test docstring ;
 
 bpl-test vector_indexing_suite ;
+bpl-test map_indexing_suite ;
 
 if $(TEST_BIENSTMAN_NON_BUGS)
 {
