@@ -76,7 +76,9 @@ bool check_numeric_array_rich_slice()
 // Verify functions accepting a slice argument can be called
 bool accept_slice( slice) { return true; }
 
-int check_slice_get_indicies(const slice index);
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+int check_slice_get_indicies(slice index);
+#endif
 int check_slice_get_indicies(const slice index)
 {
     // A vector of integers from [-5, 5].
