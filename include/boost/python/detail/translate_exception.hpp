@@ -7,8 +7,11 @@
 # define TRANSLATE_EXCEPTION_DWA2002810_HPP
 
 # include <boost/python/detail/exception_handler.hpp>
-# include <boost/function/function0.hpp>
+
 # include <boost/call_traits.hpp>
+# include <boost/type_traits/add_const.hpp>
+
+# include <boost/function/function0.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
