@@ -136,7 +136,7 @@ bpl-test noncopyable_import : ../example/noncopyable_import.cpp ;
 ############## cross-module tests from ../example ##########
 
 # A simple rule to build a test which depends on multiple modules in the PYTHONPATH
-local rule boost-python-multi-example-runtest ( test-name : modules + )
+rule boost-python-multi-example-runtest ( test-name : modules + )
 {
     boost-python-runtest $(test-name)
         : ../example/tst_$(test-name).py <lib>$(modules) <lib>libboost_python
