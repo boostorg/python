@@ -88,17 +88,14 @@ local CPP_SOURCES =
   init_function module_builder objects cross_module errors
   ;
 
-# Only build the static library if a user really insists on it!
-if $(BOOST_PYTHON_STATIC_LIB)
-{
-    lib boost_python_static : ../src/$(CPP_SOURCES).cpp
-      # requirements
-      : $(BOOST_PYTHON_INCLUDES)
-        <shared-linkable>true
-        <define>BOOST_PYTHON_STATIC_LIB=1
-        [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] 
-          ;
-}
+lib boost_python_static : ../src/$(CPP_SOURCES).cpp
+  # requirements
+  : $(BOOST_PYTHON_INCLUDES)
+    <shared-linkable>true
+    <define>BOOST_PYTHON_STATIC_LIB=1
+    [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] 
+      : <suppress>true # don't build this unless the user asks for it by name
+      ;
 
 dll boost_python
   # $(SUFDLL[1])
