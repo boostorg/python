@@ -6,8 +6,18 @@
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/object.hpp>
+#include <boost/python/class.hpp>
 
 using namespace boost::python;
+
+class NotCopyable
+{
+} not_copyable;
+
+object ref_to_noncopyable()
+{
+  return object(boost::ref(not_copyable));
+}
 
 object call_object_3(object f)
 {
@@ -281,6 +291,9 @@ bool check_inplace(object l, object o)
 
 BOOST_PYTHON_MODULE(object_ext)
 {
+    class_<NotCopyable, boost::noncopyable>("NotCopyable", no_init);
+
+    def("ref_to_noncopyable", ref_to_noncopyable);
     def("call_object_3", call_object_3);
     def("message", message);
     def("number", number);

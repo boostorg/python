@@ -280,7 +280,7 @@ namespace api
       return object_initializer<
           BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
       >::get(
-            api::do_unforward_cref(x)
+            x
           , is_obj()
       );
   }

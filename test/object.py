@@ -1,5 +1,9 @@
 '''
 >>> from object_ext import *
+
+>>> class(ref_to_noncopyable())
+object_ext.NotCopyable
+
 >>> def print1(x):
 ...     print x
 >>> call_object_3(print1)
