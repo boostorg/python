@@ -189,28 +189,6 @@ namespace detail {
       static const char * name() { return "__" #id "__"; }                                      \
   }
 
-#define PY_DEFINE_CONVERSION_OPERATORS(id, oper) \
-  template <>                                                                                   \
-  struct define_operator<op_##id>                                                               \
-  {                                                                                             \
-      template <class operand>                                                                  \
-      struct operator_function : Function                                                       \
-      {                                                                                         \
-          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
-          {                                                                                     \
-              Tuple args(Ptr(arguments, Ptr::new_ref));                                         \
-                                                                                                \
-              return PY_CONVERSION::to_python(                                                  \
-                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));        \
-          }                                                                                     \
-                                                                                                \
-          const char* description() const                                                       \
-              { return "__" #id "_"; }                                                          \
-      };                                                                                        \
-                                                                                                \
-      static const char * name() { return "__" #id "_"; }                                       \
-  }
-
   PY_DEFINE_BINARY_OPERATORS(add, +);
   PY_DEFINE_BINARY_OPERATORS(sub, -);
   PY_DEFINE_BINARY_OPERATORS(mul, *);
@@ -226,14 +204,12 @@ namespace detail {
   PY_DEFINE_UNARY_OPERATORS(pos, +);
   PY_DEFINE_UNARY_OPERATORS(abs, abs);
   PY_DEFINE_UNARY_OPERATORS(invert, ~);
-
-  PY_DEFINE_CONVERSION_OPERATORS(int, int);
-  PY_DEFINE_CONVERSION_OPERATORS(long, long);
-  PY_DEFINE_CONVERSION_OPERATORS(float, double);
+  PY_DEFINE_UNARY_OPERATORS(int, int);
+  PY_DEFINE_UNARY_OPERATORS(long, long);
+  PY_DEFINE_UNARY_OPERATORS(float, double);
 
 #undef PY_DEFINE_BINARY_OPERATORS
 #undef PY_DEFINE_UNARY_OPERATORS
-#undef PY_DEFINE_CONVERSION_OPERATORS
 
   template <>
   struct define_operator<op_pow>
@@ -270,7 +246,7 @@ namespace detail {
 
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
-                  PyErr_SetString(PyExc_TypeError, "expected 2 arguments, got 3");
+                  PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
                   throw ArgumentError();
               }
 
@@ -408,10 +384,11 @@ namespace detail {
 
 #if !defined(__GNUC__) || defined(__SGI_STL_PORT)
               std::ostringstream s;
-#else
-              std::strstream s;
-#endif
               s << PY_CONVERSION::from_python(args[0].get(), py::Type<operand>());
+#else
+              std::ostrstream s;
+              s << PY_CONVERSION::from_python(args[0].get(), py::Type<operand>()) << char();
+#endif
 
 #if !defined(__GNUC__) || defined(__SGI_STL_PORT)
               return PY_CONVERSION::to_python(s.str()); 
