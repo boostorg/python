@@ -525,7 +525,7 @@ Testing base class conversions
     >>> testUpcast(der2)
     444
     >>> der2 = derived2Factory(1111)
-    >>> testDowncast2(der1)
+    >>> testDowncast2(der2)
     Traceback (innermost last):
     TypeError: extension class 'Base' is not convertible into 'Derived2'.
     

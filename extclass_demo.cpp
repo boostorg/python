@@ -373,12 +373,14 @@ static int getX(OverloadTest * u)
 
 struct Dummy
 {
+    virtual ~Dummy() {}
     int dummy_;
 };
 
 struct Base
 {
     virtual int x() const { return 999; };
+    virtual ~Base() {}
 };
 
 // inherit Dummy so that the Base part of Concrete starts at an offset
@@ -437,6 +439,7 @@ struct CallbackTestBase
 {
   virtual int testCallback(int i) { return callback(i); }
   virtual int callback(int i) = 0;
+  virtual ~CallbackTestBase() {}
 };
 
 struct CallbackTest : public CallbackTestBase

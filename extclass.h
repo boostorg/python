@@ -60,11 +60,13 @@ typedef void * (*ConversionFunction)(void *);
 
 struct BaseClassInfo
 {
-    BaseClassInfo(Class<ExtensionInstance> * t, ConversionFunction f)
+    typedef Class<ExtensionInstance> ClassObject;
+    
+    BaseClassInfo(ClassObject * t, ConversionFunction f)
     :class_object(t), convert(f)
     {}
     
-    Class<ExtensionInstance> * class_object;
+    ClassObject * class_object;
     ConversionFunction convert;
 };
 typedef BaseClassInfo DerivedClassInfo;
@@ -85,6 +87,8 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void add_setter_method(Function*, const char* name);
     void add_getter_method(Function*, const char* name);
     
+    // the purpose of try_class_conversions() and its related functions 
+    // is explained in extclass.cpp
     virtual void * try_class_conversions(InstanceHolderBase*) const;
     virtual void * try_base_class_conversions(InstanceHolderBase*) const;
     virtual void * try_derived_class_conversions(InstanceHolderBase*) const;
@@ -205,7 +209,6 @@ class PyExtensionClassConverters
             
             return py::PyPtr<py::ExtensionInstance>(new py::ExtensionInstance(class_));
         }
-
 
     // Convert to const T*
     friend const T* from_python(PyObject* p, py::Type<const T*>)
@@ -442,7 +445,7 @@ class ExtensionClass
     virtual std::vector<detail::DerivedClassInfo> const & derived_classes() const;
 
     // the purpose of this function is explained in extclass.cpp
-    virtual void * convert_from_holder(InstanceHolderBase * v) const;
+    virtual void * extract_object_from_holder(InstanceHolderBase * v) const;
 
     template <class Signature>
     void add_constructor(Signature sig)
@@ -521,7 +524,7 @@ class InstancePtrHolder : public InstanceHolder<HeldType>
  public:
     HeldType* target() { return &*m_ptr; }
     PtrType& ptr() { return m_ptr; }
-
+    
     InstancePtrHolder(PtrType ptr) : m_ptr(ptr) {}
  private:
     PtrType m_ptr;
@@ -577,7 +580,7 @@ ExtensionClass<T, U>::derived_classes() const
 }
        
 template <class T, class U>
-void * ExtensionClass<T, U>::convert_from_holder(InstanceHolderBase * v) const
+void * ExtensionClass<T, U>::extract_object_from_holder(InstanceHolderBase * v) const
 {
     py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(v);
     if(held) return held->target();

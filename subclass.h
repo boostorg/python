@@ -102,7 +102,7 @@ class Class
     virtual void * try_class_conversions(InstanceHolderBase*) const { return 0; }
     virtual void * try_base_class_conversions(InstanceHolderBase*) const { return 0; }
     virtual void * try_derived_class_conversions(InstanceHolderBase*) const { return 0; }
-    virtual void * convert_from_holder(InstanceHolderBase*) const { return 0; }
+    virtual void * extract_object_from_holder(InstanceHolderBase*) const { return 0; }
 
  protected:
     void add_base(Ptr base);

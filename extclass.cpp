@@ -234,10 +234,10 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
     try_derived_class_conversions(). If a particular conversion is impossible, all
     conversion functions will return a NULL pointer.
     
-    The function extract_from_holder() attempts to actually extract the pointer to
-    the contained object from an InstanceHolderBase (a wrapper class). A conversion
+    The function extract_object_from_holder() attempts to actually extract the pointer 
+    to the contained object from an InstanceHolderBase (a wrapper class). A conversion
     of the held object to 'T *' is allowed when the conversion 
-    'dynamic_cast<InstanceHolde<T> *>(an_instance_holder_base)' succeeds.
+    'dynamic_cast<InstanceHolder<T> *>(an_instance_holder_base)' succeeds.
 */
 void * ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) const
 {
@@ -254,8 +254,7 @@ void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object)
     {
         if(base_classes()[i].convert == 0) 
             continue;
-        
-        void* result1 = base_classes()[i].class_object->convert_from_holder(object);
+        void* result1 = base_classes()[i].class_object->extract_object_from_holder(object);
         if (result1)
             return (*base_classes()[i].convert)(result1);
         
@@ -270,7 +269,7 @@ void* ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase* obje
 {
     for (std::size_t i = 0; i < derived_classes().size(); ++i)
     {
-        void* result1 = derived_classes()[i].class_object->convert_from_holder(object);
+        void* result1 = derived_classes()[i].class_object->extract_object_from_holder(object);
         if (result1) 
             return (*derived_classes()[i].convert)(result1);
         
