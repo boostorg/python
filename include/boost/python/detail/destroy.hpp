@@ -62,7 +62,7 @@ struct value_destroyer<false,true>
 };
 
 template <class T>
-inline void destroy_reference_impl(void* p, T& (*)())
+inline void destroy_referent_impl(void* p, T& (*)())
 {
     // note: cv-qualification needed for MSVC6
     // must come *before* T for metrowerks
@@ -73,9 +73,9 @@ inline void destroy_reference_impl(void* p, T& (*)())
 }
 
 template <class T>
-inline void destroy_reference(void* p, T(*)() = 0)
+inline void destroy_referent(void* p, T(*)() = 0)
 {
-    destroy_reference_impl(p, (T(*)())0);
+    destroy_referent_impl(p, (T(*)())0);
 }
 
 }}} // namespace boost::python::detail

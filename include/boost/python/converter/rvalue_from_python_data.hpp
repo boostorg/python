@@ -129,7 +129,7 @@ template <class T>
 inline rvalue_from_python_data<T>::~rvalue_from_python_data()
 {
     if (this->stage1.convertible == this->storage.bytes)
-        python::detail::destroy_reference<ref_type>(this->storage.bytes);
+        python::detail::destroy_referent<ref_type>(this->storage.bytes);
 }
 
 }}} // namespace boost::python::converter
