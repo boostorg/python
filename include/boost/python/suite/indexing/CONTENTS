@@ -1,4 +1,13 @@
 
+container_suite.hpp    Top-level do-all suite for all supported container types
+container_traits.hpp   Container traits
+iterator_suite.hpp     (misnamed) Iterator traits
+suite_utils.hpp        Utilities to abstract away container interface diffs
+iterator_pair.hpp      Container emulator using iterator pairs
+testsuite.cpp          Python extension class for testing the container suite
+slice_handler.hpp      Python slice interpreter
+
+
 container_proxy.hpp    Container wrapper with semi-transparent proxies
 shared_proxy_impl.hpp  Component shared by proxies that refer to same element
 testcontprox.cpp       Simple tests for container_proxy
@@ -9,13 +18,9 @@ sample.out             Sample output of testindexing.py
 vector_indexing_suite_ext.cpp  Modified extension module from python/test
 vector_indexing_suite.py       Python test script from python/test (unmodified)
 
-
 older stuff
 ===========
 
-container_suite.hpp    Container traits
-iterator_suite.hpp     Traits for iterator ranges
-suite_utils.hpp        Traits utilities
 indexing_suite.cpp     Traits tests
 containers.txt         Analysis of Python sequence vs. C++ containers
 testlist.py            Test behaviour of real Python lists
