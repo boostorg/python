@@ -299,74 +299,56 @@ PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
 
 namespace detail {
 
-    class shared_pod_manager
-    {
-        struct counted_pod
-        {
-            union max_align {
-              short       dummy0;
-              long        dummy1;
-              double      dummy2;
-              long double dummy3;
-              void*       dummy4;
-            };
-
-            int m_ref_count;
-            max_align m_data;
-        };
+  class shared_pod_manager
+  {
+      typedef std::pair<char*, std::size_t> Holder;
+      typedef std::vector<Holder> Storage;
         
-        typedef std::pair<char*, std::size_t> Holder;
-        typedef std::vector<Holder> Storage;
+   public:
+      static shared_pod_manager& instance();
+      ~shared_pod_manager();
+
+      template <class T>
+      void replace_if_equal(T*& t)
+      {
+          t = reinterpret_cast<T*>(replace_if_equal(t, sizeof(T)));
+      }
+
+      template <class T>
+      void make_unique_copy(T*& t)
+      {
+          t = reinterpret_cast<T*>(make_unique_copy(t, sizeof(T)));
+      }
+
+      template <class T>
+      void create(T*& t)
+      {
+          t = reinterpret_cast<T*>(create(sizeof(T)));
+      }
+
+      template <class T>
+      void dispose(T* t)
+      {
+          dec_ref(t, sizeof(T));
+      }
+
+   private:
+      void* replace_if_equal(void* pod, std::size_t size);
+      void* make_unique_copy(void* pod, std::size_t size);
+      void* create(std::size_t size);
+      void dec_ref(void* pod, std::size_t size);
         
-      public:
-        enum { offset = PY_OFFSETOF(counted_pod, m_data) };
-    
-        static shared_pod_manager& instance();
-        ~shared_pod_manager();
+      struct Compare;
+      struct identical;
 
-        template <class T>
-        void replace_if_equal(T*& t)
-        {
-            t = reinterpret_cast<T*>(replace_if_equal(t, sizeof(T)));
-        }
-
-        template <class T>
-        void make_unique_copy(T*& t)
-        {
-            t = reinterpret_cast<T*>(make_unique_copy(t, sizeof(T)));
-        }
-
-        template <class T>
-        void create(T*& t)
-        {
-            t = reinterpret_cast<T*>(create(sizeof(T)));
-        }
-
-        template <class T>
-        void dispose(T* t)
-        {
-            dec_ref(t);
-        }
-
-      private:
-        void* replace_if_equal(void* pod, std::size_t size);
-        void* make_unique_copy(void* pod, std::size_t size);
-        void* create(std::size_t size);
-        void dec_ref(void * pod);
-        
-        struct Compare;
-        struct identical;
-
-      private:
-        shared_pod_manager() {} // singleton
+   private:
+      shared_pod_manager() {} // singleton
 
 #ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
-      public:
+   public:
 #endif
-        Storage m_storage;
-    };
-
-
+      Storage m_storage;
+  };
 
 
   void add_capability(TypeObjectBase::Capability capability, 
