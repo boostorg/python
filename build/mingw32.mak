@@ -30,13 +30,16 @@
 # -fvtable-thunks eliminates the compiler warning, but
 #                 "import boost_python_test" still causes a crash.
 
-ROOT=L:
+ROOT=R:
 BOOST_WIN="$(ROOT)\boost"
 BOOST_UNIX=$(HOME)/boost
 
 PYEXE="C:\Program files\Python\python.exe"
 PYINC=-I"C:\usr\include\python1.5"
 PYLIB="C:\usr\lib\libpython15.a"
+#PYEXE="C:\Python21\python.exe"
+#PYINC=-I"C:\usr\include\python2.1"
+#PYLIB="C:\usr\lib\libpython21.a"
 
 STDOPTS=-ftemplate-depth-21
 WARNOPTS=
@@ -60,6 +63,7 @@ all: libboost_python.a \
      getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
      do_it_yourself_convts.pyd \
+     nested.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
@@ -107,6 +111,12 @@ do_it_yourself_convts.pyd: $(OBJ) do_it_yourself_convts.o
           --dllname do_it_yourself_convts.pyd \
           --def do_it_yourself_convts.def \
           $(OBJ) do_it_yourself_convts.o $(PYLIB)
+
+nested.pyd: $(OBJ) nested.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname nested.pyd \
+          --def nested.def \
+          $(OBJ) nested.o $(PYLIB)
 
 pickle1.pyd: $(OBJ) pickle1.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -178,6 +188,7 @@ test:
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_simple_vector.py
 	$(PYEXE) test_do_it_yourself_convts.py
+	$(PYEXE) test_nested.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py

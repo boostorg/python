@@ -10,7 +10,7 @@
 #   12 Apr 01 new macro ROOT to simplify configuration (R.W. Grosse-Kunstleve)
 #   Initial version: R.W. Grosse-Kunstleve
 
-ROOT=L:
+ROOT=R:
 BOOST_WIN="$(ROOT)\boost"
 BOOST_UNIX=$(HOME)/boost
 
@@ -44,6 +44,7 @@ all: boost_python.lib \
      getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
      do_it_yourself_convts.pyd \
+     nested.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
@@ -69,6 +70,9 @@ simple_vector.pyd: $(OBJ) simple_vector.obj
 
 do_it_yourself_convts.pyd: $(OBJ) do_it_yourself_convts.obj
 	$(LD) $(LDOPTS) $(OBJ) do_it_yourself_convts.obj $(PYLIB) /export:initdo_it_yourself_convts /out:"do_it_yourself_convts.pyd"
+
+nested.pyd: $(OBJ) nested.obj
+	$(LD) $(LDOPTS) $(OBJ) nested.obj $(PYLIB) /export:initnested /out:"nested.pyd"
 
 pickle1.pyd: $(OBJ) pickle1.obj
 	$(LD) $(LDOPTS) $(OBJ) pickle1.obj $(PYLIB) /export:initpickle1 /out:"pickle1.pyd"
@@ -110,6 +114,7 @@ test:
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_simple_vector.py
 	$(PYEXE) test_do_it_yourself_convts.py
+	$(PYEXE) test_nested.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
