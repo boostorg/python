@@ -1,3 +1,7 @@
+9 October 2004
+- Applied a patch by Christian Hudon that fixed an issue with files
+that had a tail and relative includes.
+
 18 July 2004
 - Applied a patch by Paul Bridger that solves some problems for wrapper 
 methods.

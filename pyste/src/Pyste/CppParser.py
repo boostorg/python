@@ -86,10 +86,16 @@ class CppParser:
         '''Creates a temporary file, appends the text tail to it, and returns
         the filename of the file.
         '''
-        temp = tempfile.mktemp('.h') 
-        shutil.copyfile(filename, temp)
-        f = file(temp, 'a')
-        f.write('\n\n'+tail)
+        if hasattr(tempfile, 'mkstemp'):
+            f_no, temp = tempfile.mkstemp('.h')
+            f = file(temp, 'a')
+            os.close(f_no)
+        else:
+            temp = tempfile.mktemp('.h') 
+            f = file(temp, 'a')
+        f.write('#include "%s"\n\n' % os.path.abspath(filename))
+        f.write(tail)
+        f.write('\n')
         f.close()   
         return temp
 
@@ -153,7 +159,7 @@ class CppParser:
         '''        
         if tail is None:
             tail = ''
-        tail.strip()
+        tail = tail.strip()
         declarations = self.GetCache(header, interface, tail)
         if declarations is None:
             declarations = self.ParseWithGCCXML(header, tail)
