@@ -213,6 +213,19 @@ bool from_python(PyObject* p, py::Type<bool>)
     return true;
 }
 
+#ifdef PY_MSVC6_OR_EARLIER
+// An optimizer bug prevents these from being inlined.
+PyObject* to_python(double d)
+{
+    return PyFloat_FromDouble(d);
+}
+
+PyObject* to_python(float f)
+{
+    return PyFloat_FromDouble(f);
+}
+#endif // PY_MSVC6_OR_EARLIER
+
 #ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
 namespace py {
 #endif
