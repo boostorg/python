@@ -17,8 +17,6 @@
 
 namespace boost { namespace python { namespace api {
 
-# if !defined(BOOST_NO_SFINAE) && !defined(BOOST_NO_IS_CONVERTIBLE)
-
 template <class X>
 char is_object_operators_helper(object_operators<X> const*);
     
@@ -27,7 +25,7 @@ no_type is_object_operators_helper(...);
 
 template <class X> X* make_ptr();
 
-template <class L, class R>
+template <class L, class R = L>
 struct is_object_operators
 {
     enum {
@@ -40,6 +38,7 @@ struct is_object_operators
     typedef mpl::bool_<value> type;
 };
 
+# if !defined(BOOST_NO_SFINAE) && !defined(BOOST_NO_IS_CONVERTIBLE)
 template <class L, class R, class T>
 struct enable_binary
   : boost::iterators::enable_if<is_object_operators<L,R>, T>

@@ -2,6 +2,26 @@
 
 using namespace boost::python;
 
+namespace test {
+
+// Hmm.  return_internal_reference<>() wants to wrap a real class.
+class ret_type
+{
+ public:
+    ret_type() : i(42.5) {}
+	double i;
+};
+
+class crash_me
+{
+	private:
+		ret_type i;
+	public:
+		ret_type& get_i() { return i; }
+};
+
+}
+
 struct X
 {
     X( int value ) : m_value( value )
@@ -55,6 +75,20 @@ BOOST_PYTHON_MODULE(properties_ext)
                               make_setter( &X::s_count, return_by_internal_reference_t() ) )
         //defining class property using a global function
         .add_static_property( "instance_count_injected", &get_X_instance_count );
+
+	
+	class_< test::ret_type>( "ret_type")
+		.add_property( "i", &test::ret_type::i, &test::ret_type::i)
+		;
+	
+	class_< test::crash_me> crash_me_wrapper( "crash_me");
+    
+    crash_me_wrapper
+		.def( "get_i", &test::crash_me::get_i , return_internal_reference<>())
+		;
+	
+	crash_me_wrapper.add_property( "i", crash_me_wrapper.attr("get_i"));
+
 }
 
 #include "module_tail.cpp"
