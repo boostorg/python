@@ -7,10 +7,12 @@
 # define DEFAULT_CALL_POLICIES_DWA2002131_HPP
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/mpl/select_type.hpp>
+# include <boost/python/to_python_value.hpp>
+# include <boost/type_traits/transform_traits.hpp>
 
 namespace boost { namespace python { 
 
-template <class T> struct to_python;
+template <class T> struct to_python_value;
 
 namespace detail
 {
@@ -49,7 +51,9 @@ struct default_result_converter
         typedef typename mpl::select_type<
             is_reference<R>::value | is_pointer<R>::value
             , detail::specify_a_result_policy_to_wrap_functions_returning<R>
-            , to_python<R>
+            , boost::python::to_python_value<
+                typename add_reference<typename add_const<R>::type>::type
+                >
         >::type type;
     };
 };
@@ -58,13 +62,13 @@ struct default_result_converter
 template <>
 struct default_result_converter::apply<char const*>
 {
-    typedef boost::python::to_python<char const*> type;
+    typedef boost::python::to_python_value<char const*const&> type;
 };
 
 template <>
 struct default_result_converter::apply<PyObject*>
 {
-    typedef boost::python::to_python<PyObject*> type;
+    typedef boost::python::to_python_value<PyObject*const&> type;
 };
 
 }} // namespace boost::python

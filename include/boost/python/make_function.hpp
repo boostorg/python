@@ -11,7 +11,6 @@
 # include <boost/python/converter/registration.hpp>
 # include <boost/python/detail/caller.hpp>
 # include <boost/python/detail/arg_tuple_size.hpp>
-# include <boost/python/detail/signature.hpp>
 # include <boost/mpl/size.hpp>
 # include <boost/function.hpp>
 # include <boost/bind.hpp>
@@ -22,7 +21,6 @@ namespace boost { namespace python {
 template <class F>
 objects::function* make_function(F f)
 {
-    converter::acquire_registrations(detail::signature(f));
     return new objects::function(
         objects::py_function(
             ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, default_call_policies()))
@@ -32,7 +30,6 @@ objects::function* make_function(F f)
 template <class F, class Policies>
 objects::function* make_function(F f, Policies const& policies)
 {
-    converter::acquire_registrations(detail::signature(f));
     return new objects::function(
         objects::py_function(
             ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, policies))
@@ -43,9 +40,6 @@ template <class T, class ArgList, class Generator>
 objects::function* make_constructor(T* = 0, ArgList* = 0, Generator* = 0)
 {
     enum { nargs = mpl::size<ArgList>::value };
-    
-    typedef typename mpl::push_front<ArgList,void>::sequence signature;
-    converter::acquire_registrations(signature());
     
     return new objects::function(
         objects::py_function(

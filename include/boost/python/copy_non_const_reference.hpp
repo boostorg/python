@@ -21,7 +21,7 @@ namespace detail
   ;
 }
 
-template <class T> struct to_python;
+template <class T> struct to_python_value;
 
 struct copy_non_const_reference
 {
@@ -30,7 +30,7 @@ struct copy_non_const_reference
     {
         typedef typename mpl::select_type<
             boost::python::detail::is_reference_to_non_const<T>::value
-            , to_python<T>
+            , to_python_value<T>
             , detail::copy_non_const_reference_expects_a_non_const_reference_return_type<T>
         >::type type;
     };
