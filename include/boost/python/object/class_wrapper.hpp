@@ -18,7 +18,7 @@ template <class T>
 struct class_wrapper
     : converter::wrapper<T const&>
 {
-    class_wrapper(PyObject* type_)
+    class_wrapper(ref const& type_)
         : m_class_object(type_)
     {
 # ifndef NDEBUG

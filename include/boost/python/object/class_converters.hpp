@@ -9,6 +9,7 @@
 # include <boost/python/converter/class.hpp>
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/mpl/for_each.hpp>
+# include <boost/python/reference.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -20,7 +21,7 @@ struct class_converters
 {
  public: // member functions
     // Constructor takes the python class object associated with T
-    class_converters(PyObject* python_class);
+    class_converters(ref const& python_class);
 
  private: // data members
     converter::class_unwrapper<Derived> m_unwrapper;
@@ -86,7 +87,7 @@ struct register_base_of
 };
 
 template <class Derived, class Bases>
-class_converters<Derived,Bases>::class_converters(PyObject* type_object)
+class_converters<Derived,Bases>::class_converters(ref const& type_object)
     : m_wrapper(type_object)
 {
     // register all up/downcasts here

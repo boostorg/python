@@ -38,8 +38,8 @@ struct BOOST_PYTHON_DECL class_base : noncopyable
                                         // any bases.
         );
 
-    // Retrieve a pointer to the underlying object
-    PyObject* object() const { return m_object.get(); }
+    // Retrieve the underlying object
+    ref object() const { return m_object; }
  private:
     ref m_object;
 };
