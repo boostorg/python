@@ -51,6 +51,7 @@ rule bpl-test ( name ? : files * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+bpl-test minimal ;
 bpl-test try : newtest.py m1.cpp m2.cpp ;
 bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters.cpp ;
 bpl-test test_pointer_adoption ;
@@ -64,6 +65,8 @@ bpl-test bienstman1 ;
 bpl-test bienstman2 ;
 bpl-test bienstman3 ;
 bpl-test multi_arg_constructor ;
+bpl-test iterator ;
+
 if $(TEST_BIENSTMAN_NON_BUGS)
 {
     bpl-test bienstman4 ;
@@ -98,6 +101,7 @@ unit-test select_holder
 unit-test select_from_python_test
   : select_from_python_test.cpp 
     ../src/converter/type_id.cpp
+    ../src/errors.cpp
 
   : <include>$(BOOST_ROOT) 
     [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
