@@ -13,6 +13,7 @@
 #include <boost/python/object_protocol.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
+#include <boost/python/dict.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 #include <vector>
@@ -275,17 +276,9 @@ namespace objects
       if (module_name)
           module_name += '.';
       
-      // Build the (name, bases, dict) tuple for creating the new class
-      handle<> args(PyTuple_New(3));
-      PyTuple_SET_ITEM(args.get(), 0, incref((module_name + name).ptr()));
-      PyTuple_SET_ITEM(args.get(), 1, bases.release());
-      handle<> d(PyDict_New());
-      PyTuple_SET_ITEM(args.get(), 2, d.release());
-
       // Call the class metatype to create a new class
-      PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
-      assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
-      object result = object(python::detail::new_reference(c));
+      object result = object(class_metatype())(module_name + name, bases, dict());
+      assert(PyType_IsSubtype(result.ptr()->ob_type, &PyType_Type));
       
       if (scope().ptr() != Py_None)
           scope().attr(name) = result;
