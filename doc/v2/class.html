@@ -265,7 +265,6 @@ namespace boost { namespace python
     void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
 
     // pickle support
-    void enable_pickling(bool getstate_manages_dict);
     template &lt;typename PickleSuite&gt;
     self&amp; def_pickle(PickleSuite const&amp;);
   };
@@ -593,30 +592,32 @@ this-&gt;add_property(name, <a href=
       syntax.</dt>
     </dl>
 <pre>
-void enable_pickling(bool getstate_manages_dict);
-</pre>
-
-    <dl class="function-semantics">
-      <dt><b>Requires:</b> {{Ralf}}</dt>
-
-      <dt><b>Effects:</b> {{Ralf}}</dt>
-
-      <dt><b>Rationale:</b> Allows users to easily expose functions that can
-      be invoked from Python with attribute access syntax.</dt>
-    </dl>
-<pre>
 template &lt;typename PickleSuite&gt;
 class_&amp; def_pickle(PickleSuite const&amp;);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> {{Ralf}}</dt>
+      <dt><b>Requires:</b> PickleSuite must be publically derived from
+          <a href="pickle.html"
+          ><code>pickle_suite</code></a>.</dt>
 
-      <dt><b>Effects:</b> {{Ralf}}</dt>
+      <dt><b>Effects:</b> Defines a legal combination of the special
+          attributes and methods:
+          <code>__getinitargs__</code>,
+          <code>__getstate__</code>,
+          <code>__setstate__</code>,
+          <code>__getstate_manages_dict__</code>,
+          <code>__safe_for_unpickling__</code>,
+          <code>__reduce__</code>
+      </dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
-      <dt><b>Rationale:</b> {{Ralf}}</dt>
+      <dt><b>Rationale:</b> Provides an
+          <a href="pickle.html"
+          >easy to use high-level interface</a>
+          for establishing complete pickle support for the wrapped class.
+          The user is protected by compile-time consistency checks.</dt>
     </dl>
     <br>
      
