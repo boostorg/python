@@ -71,7 +71,7 @@ struct signature_arity<N>
 # define BOOST_PP_LOCAL_MACRO(i)                                                            \
      {                                                                                      \
          type_id<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>().name()                    \
-       , is_reference_to_non_const<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>::value    \
+         , indirect_traits::is_reference_to_non_const<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>::value \
      },
                 
 # define BOOST_PP_LOCAL_LIMITS (0, N)
