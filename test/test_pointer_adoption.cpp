@@ -3,7 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/manage_new_object.hpp>
 #include <boost/python/return_internal_reference.hpp>
@@ -88,15 +89,13 @@ A* as_A(Base* b)
 
 BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
 {
-    boost::python::module("test_pointer_adoption_ext")
-        .def("num_a_instances", num_a_instances)
+    def("num_a_instances", num_a_instances);
 
         // Specify the manage_new_object return policy to take
         // ownership of create's result
-        .def("create", create, return_value_policy<manage_new_object>())
+    def("create", create, return_value_policy<manage_new_object>());
 
-        .def("as_A", as_A, return_internal_reference<>())
-        ;
+    def("as_A", as_A, return_internal_reference<>());
     
     class_<Base>("Base")
         ;

@@ -7,7 +7,8 @@
 
 #include "simple_type.hpp"
 #include "complicated.hpp"
-#include <boost/python/module.hpp>
+#include <boost/python/def.hpp>
+#include <boost/python/module_init.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/lvalue_from_pytype.hpp>
 #include <boost/python/copy_const_reference.hpp>
@@ -215,37 +216,35 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
     lvalue_from_pytype<extract_identity<SimpleObject>,&SimpleType>();
     
-    module("m1")
-      // Insert the metaclass for all extension classes
-      .setattr("xclass", boost::python::objects::class_metatype())
+    // Insert the metaclass for all extension classes
+    scope().attr("xclass") = boost::python::objects::class_metatype();
     
       // Insert the base class for all extension classes
-      .setattr("xinst", boost::python::objects::class_type())
+    scope().attr("xinst") = boost::python::objects::class_type();
 
-      .def("new_noddy", new_noddy)
-      .def("new_simple", new_simple)
+    def("new_noddy", new_noddy);
+    def("new_simple", new_simple);
 
       // Expose f() in all its variations
-      .def("f", f)
-      .def("f_mutable_ref", f_mutable_ref)
-      .def("f_mutable_ptr", f_mutable_ptr)
-      .def("f_const_ptr", f_const_ptr)
+    def("f", f);
+    def("f_mutable_ref", f_mutable_ref);
+    def("f_mutable_ptr", f_mutable_ptr);
+    def("f_const_ptr", f_const_ptr);
 
-      .def("f2", f2)
+    def("f2", f2);
         
       // Expose g()
-      .def("g", g , return_value_policy<copy_const_reference>()
-          )
+    def("g", g , return_value_policy<copy_const_reference>()
+        );
 
-      .def("take_a", take_a)
-      .def("take_b", take_b)
-      .def("take_c", take_c)
-      .def("take_d", take_d)
+    def("take_a", take_a);
+    def("take_b", take_b);
+    def("take_c", take_c);
+    def("take_d", take_d);
 
 
-      .def("take_d_shared_ptr", take_d_shared_ptr)
-      .def("d_factory", d_factory)
-        ;
+    def("take_d_shared_ptr", take_d_shared_ptr);
+    def("d_factory", d_factory);
 
     class_<A, shared_ptr<A> >("A")
         .def("name", &A::name)

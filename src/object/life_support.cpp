@@ -37,7 +37,7 @@ extern "C"
 }
 
 PyTypeObject life_support_type = {
-    PyObject_HEAD_INIT(&PyType_Type)
+    PyObject_HEAD_INIT(0)//(&PyType_Type)
     0,
     "Boost.Python.life_support",
     sizeof(life_support),
@@ -84,8 +84,11 @@ PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)
     if (nurse == Py_None)
         return incref(nurse);
     
-    if ((life_support_type.tp_flags & Py_TPFLAGS_READY) == 0)
+    if (life_support_type.ob_type == 0)
+    {
+        life_support_type.ob_type = &PyType_Type;
         PyType_Ready(&life_support_type);
+    }
     
     life_support* system = PyObject_New(life_support, &life_support_type);
     if (!system)

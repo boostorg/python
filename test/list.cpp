@@ -4,7 +4,8 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/make_function.hpp>
@@ -126,20 +127,19 @@ void exercise(list x, object y, object print)
 
 BOOST_PYTHON_MODULE_INIT(list_ext)
 {
-    module("list_ext")
-        .def("new_list", new_list)
-        .def("listify", listify)
-        .def("listify_string", listify_string)
-        .def("apply_object_list", apply_object_list)
-        .def("apply_list_list", apply_list_list)
+    def("new_list", new_list);
+    def("listify", listify);
+    def("listify_string", listify_string);
+    def("apply_object_list", apply_object_list);
+    def("apply_list_list", apply_list_list);
         
-        .def("append_object", append_object)
-        .def("append_list", append_list)
+    def("append_object", append_object);
+    def("append_list", append_list);
 
-        .def("exercise", exercise)
-        
-        .add(class_<X>("X", args<int>())
-             .def( "__repr__", x_rep))
+    def("exercise", exercise);
+    
+    class_<X>("X", args<int>())
+        .def( "__repr__", x_rep)
         ;
 }
 

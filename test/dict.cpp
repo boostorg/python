@@ -1,4 +1,5 @@
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/dict.hpp>
 #include <exception>
@@ -69,14 +70,12 @@ void test_templates(object print)
     
 BOOST_PYTHON_MODULE_INIT(dict_ext)
 {
-    module("dict_ext")
-        .def("new_dict", new_dict)
-        .def("data_dict", data_dict)
-        .def("dict_keys", dict_keys)
-        .def("dict_values", dict_values)
-        .def("dict_items", dict_items)
-        .def("dict_from_sequence", dict_from_sequence)
-        .def("work_with_dict", work_with_dict)
-        .def("test_templates", test_templates)
-        ;
+    def("new_dict", new_dict);
+    def("data_dict", data_dict);
+    def("dict_keys", dict_keys);
+    def("dict_values", dict_values);
+    def("dict_items", dict_items);
+    def("dict_from_sequence", dict_from_sequence);
+    def("work_with_dict", work_with_dict);
+    def("test_templates", test_templates);
 }

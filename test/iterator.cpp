@@ -3,7 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/copy_non_const_reference.hpp>
@@ -72,9 +73,7 @@ private:
 
 BOOST_PYTHON_MODULE_INIT(iterator_ext)
 {
-    module("iterator_ext")
-        .def("range", &::range)
-        ;
+    def("range", &::range);
 
     class_<list_int>("list_int")
         .def("push_back", push_back)

@@ -3,7 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/object.hpp>
 
 using namespace boost::python;
@@ -280,38 +281,37 @@ bool check_inplace(object l, object o)
 
 BOOST_PYTHON_MODULE_INIT(object_ext)
 {
-    module("object_ext")
-        .def("call_object_3", call_object_3)
-        .def("message", message)
-        .def("number", number)
+    def("call_object_3", call_object_3);
+    def("message", message);
+    def("number", number);
 
-        .def("obj_getattr", obj_getattr)
-        .def("obj_const_getattr", obj_const_getattr)
-        .def("obj_setattr", obj_setattr)
-        .def("obj_setattr42", obj_setattr42)
-        .def("obj_moveattr", obj_moveattr)
+    def("obj_getattr", obj_getattr);
+    def("obj_const_getattr", obj_const_getattr);
+    def("obj_setattr", obj_setattr);
+    def("obj_setattr42", obj_setattr42);
+    def("obj_moveattr", obj_moveattr);
 
 
-        .def("obj_getitem", obj_getitem)
-        .def("obj_getitem3", obj_getitem)
-        .def("obj_const_getitem", obj_const_getitem)
-        .def("obj_setitem", obj_setitem)
-        .def("obj_setitem42", obj_setitem42)
-        .def("obj_moveitem", obj_moveitem)
-        .def("obj_moveitem2", obj_moveitem2)
+    def("obj_getitem", obj_getitem);
+    def("obj_getitem3", obj_getitem);
+    def("obj_const_getitem", obj_const_getitem);
+    def("obj_setitem", obj_setitem);
+    def("obj_setitem42", obj_setitem42);
+    def("obj_moveitem", obj_moveitem);
+    def("obj_moveitem2", obj_moveitem2);
 
-        .def("test", test)
-        .def("test_not", test_not)
+    def("test", test);
+    def("test_not", test_not);
 
-        .def("test_attr", test_attr)
-        .def("test_not_attr", test_not_attr)
+    def("test_attr", test_attr);
+    def("test_not_attr", test_not_attr);
 
-        .def("test_item", test_item)
-        .def("test_not_item", test_not_item)
+    def("test_item", test_item);
+    def("test_not_item", test_not_item);
 
-        .def("check_binary_operators", check_binary_operators)
-        .def("check_inplace", check_inplace)
-        .def("check_string_slice", check_string_slice)
+    def("check_binary_operators", check_binary_operators);
+    def("check_inplace", check_inplace);
+    def("check_string_slice", check_string_slice);
         ;
 }
 

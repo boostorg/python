@@ -3,10 +3,13 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module.hpp>
+
+#include <boost/python/def.hpp>
+#include <boost/python/module_init.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
+#include <boost/python/module.hpp>
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
 # include <iostream> // works around a KCC intermediate code generation bug
@@ -115,11 +118,15 @@ BOOST_PYTHON_MEM_FUN_GENERATOR(X_foo_3_stubs, foo, 2, 3)
 
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
-    module("defaults_ext")
-        .def("foo", foo, foo_stubs())
-        .def("bar", (object(*)(int, char, std::string, double))0, bar_stubs())
-        ;
+    def("foo", foo, foo_stubs());
+    def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
 
+    // Show that this works with the old obsolete module version of def().
+    module("defaults_ext")
+        .def("foobar", foo, foo_stubs())
+        .def("barfoo", (object(*)(int, char, std::string, double))0, bar_stubs())
+        ;
+    
     class_<X>("X")
 
 # if (!defined(__EDG_VERSION__) || __EDG_VERSION__ > 245)                       \

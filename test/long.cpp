@@ -4,7 +4,8 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/long.hpp>
 #include <cassert>
 
@@ -40,12 +41,11 @@ int is_long2(char const*)
 
 BOOST_PYTHON_MODULE_INIT(long_ext)
 {
-    module("long_ext")
-        .def("new_long", new_long)
-        .def("longify", longify)
-        .def("longify_string", longify_string)
-        .def("is_long", is_long1)
-        .def("is_long", is_long2)
+    def("new_long", new_long);
+    def("longify", longify);
+    def("longify_string", longify_string);
+    def("is_long", is_long1);
+    def("is_long", is_long2);
         ;
 }
 

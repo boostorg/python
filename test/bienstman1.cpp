@@ -1,4 +1,5 @@
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/reference_existing_object.hpp>
 #include <boost/python/return_value_policy.hpp>

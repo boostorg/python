@@ -6,7 +6,9 @@
 #include <string>
 #include <boost/python/operators.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
+#include <boost/python/scope.hpp>
 #include <boost/python/manage_new_object.hpp>
 #include "test_class.hpp"
 
@@ -30,32 +32,28 @@ unsigned long fact(unsigned long n)
 
 BOOST_PYTHON_MODULE_INIT(docstring_ext)
 {
-    module("docstring_ext",
-           
-           "A simple test module for documentation strings\n"
-           "Exercised by docstring.py"
-           )
-        
-        .add(
-            class_<X>("X",
-                      "A simple class wrapper around a C++ int\n"
-                      "includes some error-checking"
-                      
-                      , args<int>(),
-                      "this is the __init__ function\n"
-                      "its documentation has two lines."
-
-                )
-            
-            .def("value", &X::value,
-                 "gets the value of the object")
-            )
-        
-        .def("create", create, return_value_policy<manage_new_object>(),
-             "creates a new X object")
-        
-        .def("fact", fact, "compute the factorial")
+    scope().attr("__doc__") =
+        "A simple test module for documentation strings\n"
+        "Exercised by docstring.py"
         ;
+        
+    class_<X>("X",
+              "A simple class wrapper around a C++ int\n"
+              "includes some error-checking"
+                      
+              , args<int>(),
+              "this is the __init__ function\n"
+              "its documentation has two lines."
+
+        )
+        .def("value", &X::value,
+             "gets the value of the object")
+        ;
+        
+    def("create", create, return_value_policy<manage_new_object>(),
+        "creates a new X object");
+        
+    def("fact", fact, "compute the factorial");
 }
 
 #include "module_tail.cpp"

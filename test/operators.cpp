@@ -6,7 +6,8 @@
 #include <string>
 #include <boost/python/operators.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include "test_class.hpp"
 #if __GNUC__ != 2
 # include <ostream>

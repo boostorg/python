@@ -4,7 +4,8 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include "test_class.hpp"
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245

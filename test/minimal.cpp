@@ -3,7 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
 # include <iostream> // works around a KCC intermediate code generation bug
@@ -11,7 +12,6 @@
 
 BOOST_PYTHON_MODULE_INIT(minimal_ext)
 {
-    boost::python::module m("minimal_ext");
 }
 
 #include "module_tail.cpp"

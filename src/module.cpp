@@ -13,6 +13,7 @@
 #include <boost/python/borrowed.hpp>
 #include <boost/python/object.hpp>
 #include <boost/python/detail/raw_pyobject.hpp>
+#include <boost/python/scope.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -35,6 +36,14 @@ void module_base::setattr_doc(const char* name, python::object const& x, char co
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
     objects::function::add_to_namespace(python::object(m_module), name, x, doc);
+}
+
+void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& x, char const* doc)
+{
+    // Use function::add_to_namespace to achieve overloading if
+    // appropriate.
+    scope current;
+    objects::function::add_to_namespace(current, name, x, doc);
 }
 
 void module_base::add(type_handle const& x)
@@ -74,6 +83,6 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_DECL PyObject* scope::current_scope = Py_None;
+BOOST_PYTHON_DECL PyObject* scope::current_scope = 0;
 
 }}

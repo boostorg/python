@@ -37,15 +37,15 @@ inline scope::scope(object const& new_scope)
 
 inline scope::scope()
     : object(detail::borrowed_reference(
-                 current_scope
+                 current_scope ? current_scope : Py_None
                  ))
-      , m_previous_scope(python::incref(current_scope))
+      , m_previous_scope(python::xincref(current_scope))
 {
 }
 
 inline scope::~scope()
 {
-    python::decref(current_scope);
+    python::xdecref(current_scope);
     current_scope = m_previous_scope;
 }
 

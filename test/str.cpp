@@ -1,4 +1,5 @@
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/str.hpp>
 
@@ -60,9 +61,7 @@ void work_with_string(object print)
 
 BOOST_PYTHON_MODULE_INIT(str_ext)
 {
-    module("str_ext")
-        .def("convert_to_string",convert_to_string)
-        .def("work_with_string",work_with_string)
-        ;
+    def("convert_to_string",convert_to_string);
+    def("work_with_string",work_with_string);
 }
 

@@ -7,7 +7,8 @@
 #include "test_class.hpp"
 #include <boost/python/extract.hpp>
 #include <boost/python/list.hpp>
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/reference_existing_object.hpp>
 #include <boost/python/return_value_policy.hpp>
@@ -98,29 +99,28 @@ std::string x_rep(X const& x)
 BOOST_PYTHON_MODULE_INIT(extract_ext)
 {
     implicitly_convertible<int, X>();
-    
-    module("extract_ext")
-        .def("extract_bool", extract_bool)
-        .def("extract_list", extract_list)
-        .def("extract_cstring", extract_cstring)
-        .def("extract_string", extract_string)
-        .def("extract_string_cref", extract_string_cref, return_value_policy<reference_existing_object>())
-        .def("extract_X", extract_X)
-        .def("extract_X_ptr", extract_X_ptr, return_value_policy<reference_existing_object>())
-        .def("extract_X_ref", extract_X_ref, return_value_policy<reference_existing_object>())
 
-        .def("check_bool", check_bool)
-        .def("check_list", check_list)
-        .def("check_cstring", check_cstring)
-        .def("check_string", check_string)
-        .def("check_string_cref", check_string_cref)
-        .def("check_X", check_X)
-        .def("check_X_ptr", check_X_ptr)
-        .def("check_X_ref", check_X_ref)
+    def("extract_bool", extract_bool);
+    def("extract_list", extract_list);
+    def("extract_cstring", extract_cstring);
+    def("extract_string", extract_string);
+    def("extract_string_cref", extract_string_cref, return_value_policy<reference_existing_object>());
+    def("extract_X", extract_X);
+    def("extract_X_ptr", extract_X_ptr, return_value_policy<reference_existing_object>());
+    def("extract_X_ref", extract_X_ref, return_value_policy<reference_existing_object>());
 
-        .def("double_X", double_X)
+    def("check_bool", check_bool);
+    def("check_list", check_list);
+    def("check_cstring", check_cstring);
+    def("check_string", check_string);
+    def("check_string_cref", check_string_cref);
+    def("check_X", check_X);
+    def("check_X_ptr", check_X_ptr);
+    def("check_X_ref", check_X_ref);
 
-        .def("count_Xs", &X::count)
+    def("double_X", double_X);
+
+    def("count_Xs", &X::count);
         ;
 
     object x_class(

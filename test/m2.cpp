@@ -7,7 +7,8 @@
 // This module exercises the converters exposed in m1 at a low level
 // by exposing raw Python extension functions that use wrap<> and
 // unwrap<> objects.
-#include <boost/python/module.hpp>
+#include <boost/python/module_init.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/copy_non_const_reference.hpp>
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
@@ -65,35 +66,34 @@ BOOST_PYTHON_MODULE_INIT(m2)
     using boost::python::return_value_policy;
     using boost::python::copy_const_reference;
     using boost::python::copy_non_const_reference;
+    using boost::python::def;
     
-    boost::python::module("m2")
-        .def("unwrap_int", unwrap_int)
-        .def("unwrap_int_ref", unwrap_int_ref)
-        .def("unwrap_int_const_ref", unwrap_int_const_ref)
-        .def("unwrap_simple", unwrap_simple)
-        .def("unwrap_simple_ref", unwrap_simple_ref)
-        .def("unwrap_simple_const_ref", unwrap_simple_const_ref)
+    def("unwrap_int", unwrap_int);
+    def("unwrap_int_ref", unwrap_int_ref);
+    def("unwrap_int_const_ref", unwrap_int_const_ref);
+    def("unwrap_simple", unwrap_simple);
+    def("unwrap_simple_ref", unwrap_simple_ref);
+    def("unwrap_simple_const_ref", unwrap_simple_const_ref);
 
-        .def("wrap_int", &rewrap<int>::f)
+    def("wrap_int", &rewrap<int>::f);
         
-        .def("wrap_int_ref", &rewrap<int&>::f
-             , return_value_policy<copy_non_const_reference>()
-            )
+    def("wrap_int_ref", &rewrap<int&>::f
+        , return_value_policy<copy_non_const_reference>()
+        );
         
-        .def("wrap_int_const_ref", &rewrap<int const&>::f
-             , return_value_policy<copy_const_reference>()
-            )
+    def("wrap_int_const_ref", &rewrap<int const&>::f
+        , return_value_policy<copy_const_reference>()
+        );
         
-        .def("wrap_simple", &rewrap<simple>::f)
+    def("wrap_simple", &rewrap<simple>::f);
         
-        .def("wrap_simple_ref", &rewrap<simple&>::f
-             , return_value_policy<copy_non_const_reference>()
-            )
+    def("wrap_simple_ref", &rewrap<simple&>::f
+        , return_value_policy<copy_non_const_reference>()
+        );
         
-        .def("wrap_simple_const_ref", &rewrap<simple const&>::f
-             , return_value_policy<copy_const_reference>()
-            )
-        ;
+    def("wrap_simple_const_ref", &rewrap<simple const&>::f
+        , return_value_policy<copy_const_reference>()
+            );
 }
 
 #include "module_tail.cpp"
