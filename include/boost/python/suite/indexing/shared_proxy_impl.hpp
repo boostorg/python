@@ -1,4 +1,3 @@
-// -*- mode:c++; switch-modules-target: "container_proxy.hpp" -*-
 //
 // Header file shared_proxy_impl.hpp
 //
@@ -48,7 +47,7 @@ namespace boost { namespace python { namespace indexing {
     // Creates value-only (detached) proxy
 
   private:
-    template<class C, class A> friend class container_proxy;
+    template<class C, class A, class G> friend class container_proxy;
 
     shared_proxy_impl (ContainerProxy *, size_t);
     void detach ();

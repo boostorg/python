@@ -26,6 +26,7 @@
 // Include this early to ensure the declaration of the get_pointer
 // overload for element_proxy is in-scope for both name-lookup phases
 
+#include <boost/python/suite/indexing/element_proxy_traits.hpp>
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 
@@ -164,10 +165,10 @@ namespace boost { namespace python { namespace indexing {
     };
 
     // Container proxies
-    template <typename RawContainer>
-    class selector_impl<container_proxy<RawContainer> >
+    template <typename RawContainer, typename Holder, typename Generator>
+    class selector_impl<container_proxy<RawContainer, Holder, Generator> >
     {
-      typedef container_proxy<RawContainer> Container;
+      typedef container_proxy<RawContainer, Holder, Generator> Container;
 
       typedef container_proxy_traits<Container>       mutable_traits;
       typedef container_proxy_traits<Container const> const_traits;

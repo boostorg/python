@@ -1,5 +1,4 @@
-// -*- mode:c++ -*-
-//
+
 // Header file proxy_iterator.hpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -24,7 +23,7 @@ namespace boost { namespace python { namespace indexing {
   template<class ContainerProxy>
   class proxy_iterator
   {
-    template<class C, class H> friend class container_proxy;
+    template<class C, class H, class G> friend class container_proxy;
 
   public:
     typedef ContainerProxy container_proxy_;
