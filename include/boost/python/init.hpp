@@ -328,23 +328,14 @@ namespace detail
       , detail::keyword_range const& keywords_
       )
   {
-      typedef typename ClassT::holder_selector holder_selector_t;
-#    if !BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-      typedef typename holder_selector_t::type selector_t;
-#    endif 
-      typedef typename ClassT::held_type held_type_t;
+      typedef typename ClassT::select_holder selector_t;
 
       cl.def(
             "__init__",
             detail::make_keyword_range_constructor<Signature,NArgs>(
                 policies
                 , keywords_
-#    if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-                // Using runtime type selection works around a CWPro7 bug.
-                , holder_selector_t::execute((held_type_t*)0).get()
-#    else
                 , selector_t::get()
-#    endif 
                 )
             , doc
             );

@@ -170,60 +170,12 @@ namespace detail
 
 //    select_holder<T,Held>::execute((Held*)0)
 //
-// implements a compile-time returns an instantiation of
+// Returns an instantiation of
 // detail::select_value_holder or detail::select_pointer_holder, as
 // appropriate for class_<T,Held>
 template <class T, class Held>
 struct select_holder
-{
-    // Return the additional size to allocate in Python class
-    // instances to hold the C++ instance data.
-    static inline std::size_t additional_size()
-    {
-        return additional_size_helper(
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-            execute((Held*)0)
-# else
-            type()
-# endif 
-            );
-    }
-
- # if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-    // These overloads are an elaborate workaround for deficient
-    // compilers:
-    //
-    // They are meant to be called with a null pointer to the class_'s
-    // Held template argument.  The selected overload will create an
-    // appropriate instantiation of select_value_holder or
-    // select_pointer_holder, which is itself an empty class that is
-    // ultimately used to create the class_'s instance_holder subclass
-    // object.
-
-    // No Held was specified; T is held directly by-value
-    static inline detail::select_value_holder<T,T>
-    execute(python::detail::not_specified*)
-    {
-        return detail::select_value_holder<T,T>();
-    }
-
-    // A type derived from T was specified; it is assumed to be a
-    // virtual function dispatcher class, and T is held as Held.
-    static inline detail::select_value_holder<T, Held>
-    execute(T*)
-    {
-        return detail::select_value_holder<T, Held>();
-    }
-
-    // Some other type was specified; Held is assumed to be a (smart)
-    // pointer to T or a class derived from T.
-    static inline detail::select_pointer_holder<T,Held>
-    execute(void*)
-    {
-        return detail::select_pointer_holder<T,Held>();
-    }
-#  else
-    typedef typename mpl::if_<
+  : mpl::if_<
         is_same<Held, python::detail::not_specified>
       , detail::select_value_holder<T,T>
       , typename mpl::if_<
@@ -234,16 +186,8 @@ struct select_holder
           , detail::select_value_holder<T,Held>
           , detail::select_pointer_holder<T, Held>
         >::type
-    >::type type;
-#  endif 
-    
- private:
-    template <class Selector>
-    static inline std::size_t additional_size_helper(Selector const&)
-    {
-        typedef typename Selector::type holder;
-        return additional_instance_size<holder>::value;
-    }
+    >::type
+{
 };
 
 }}} // namespace boost::python::objects
