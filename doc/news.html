@@ -29,26 +29,35 @@
     <hr>
 
     <dl class="page-index">
+      <dt>29 December 2002</dt>
+
+      <dd>Added Visual Studio project file and instructions from Brett
+      Calcott.</dd>
+
+      <dt>20 December 2002</dt>
+
+      <dd>Added automatic downcasting for pointers, references, and smart
+      pointers to polymorphic class types upon conversion to python</dd>
+
+      <dt>18 December 2002</dt>
+
+      <dd>Optimized from_python conversions for wrapped classes by putting
+      the conversion logic in the shared library instead of registering
+      separate converters for each class in each extension module</dd>
+
       <dt>19 November 2002</dt>
 
-      <dd>Removed the need for users to cast base class member
-          function pointers when used as arguments to <a
-          href="v2/class.html#class_-spec-modifiers">add_property</a></dd>
+      <dd>Removed the need for users to cast base class member function
+      pointers when used as arguments to <a href=
+      "v2/class.html#class_-spec-modifiers">add_property</a></dd>
 
       <dt>13 December 2002</dt>
 
       <dd>Allow exporting of <a href=
-      "v2/enum.html#enum_-spec"><code>enum_</code></a> values into
-      enclosing <a
-      href="v2/scope.html#scope-spec"><code>scope</code></a>.
-
-<br>
-      Fixed unsigned integer conversions to deal correctly with
-        numbers that are out-of-range of <code>signed long</code>.
-
-        </dd>
-
-      
+      "v2/enum.html#enum_-spec"><code>enum_</code></a> values into enclosing
+      <a href="v2/scope.html#scope-spec"><code>scope</code></a>.<br>
+       Fixed unsigned integer conversions to deal correctly with numbers that
+      are out-of-range of <code>signed long</code>.</dd>
 
       <dt>14 November 2002</dt>
 
@@ -71,7 +80,7 @@
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     13 November, 2002 
+     20 December, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 

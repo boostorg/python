@@ -51,7 +51,8 @@
 
       <dt><a href="#variants">Build Variants</a></dt>
 
-      <dt><a href="#visual_studio">Building Using the Microsoft Visual Studio IDE</a></dt>
+      <dt><a href="#VisualStudio">Building Using the Microsoft Visual Studio
+      IDE</a></dt>
     </dl>
     <hr>
 
@@ -311,62 +312,54 @@ bjam -sTOOLS=<i><a href=
     incompatibilities.<br>
     </p>
 
-    <h2><a name="visual_studio">Building Using the Microsoft Visual
-    Studio IDE</a></h2>
+    <h2><a name="VisualStudio">Building Using the Microsoft Visual Studio
+    IDE</a></h2>
 
-    <p>For the those of you who feel more comfortable in the IDE
-    world, a workspace and project file have been included in the <a
-    href="../build/visual_studio">libs/python/build/visual_studio</a>
-    subdirectory. It builds release and debug versions of the
-    Boost.Python libraries and places them and the same directory as
-    Jamfile build does, though the intermediate object files are
-    placed in a different directory. The files have been created using
-    Microsoft Visual C++ version 6, but they should work for later
-    versions as well.  You will need to tell the IDE where to find the
-    Python <code>Include/</code> and <code>Libs/</code> directories.
-    Under <b>Tools&gt;Options&gt;Directories</b>, add an entry for the
-    Python include dir (i.e. <code>c:/Python22/Include</code>), and
-    one for the Lib (i.e.  <code>c:/Python/Libs</code>.  Make sure it
-    is <code>Libs</code> with an "<code>s</code>" and not just
-    <code>Lib</code>).
+    <p>For the those of you who feel more comfortable in the IDE world, a
+    workspace and project file have been included in the <a href=
+    "../build/VisualStudio">libs/python/build/VisualStudio</a> subdirectory.
+    It builds release and debug versions of the Boost.Python libraries and
+    places them and the same directory as Jamfile build does, though the
+    intermediate object files are placed in a different directory. The files
+    have been created using Microsoft Visual C++ version 6, but they should
+    work for later versions as well. You will need to tell the IDE where to
+    find the Python <code>Include/</code> and <code>Libs/</code> directories.
+    Under <b>Tools&gt;Options&gt;Directories</b>, add an entry for the Python
+    include dir (i.e. <code>c:/Python22/Include</code>), and one for the Lib
+    (i.e. <code>c:/Python/Libs</code>. Make sure it is <code>Libs</code> with
+    an "<code>s</code>" and not just <code>Lib</code>).</p>
 
     <h3>Using the IDE for you own projects</h3>
 
-    <p>Building your own projects using the IDE is slightly more
-    complicated.  Firstly, you need to make sure that the project you
-    create as the right kind. It should be a &quot;Win32 Dynamic-Link
-    Library&quot;. The default one that Visual Studio 6 creates needs
-    some modifications: turn on RTTI, and change the debug and release
-    builds to use the respective debug and release Multithreaded DLL
-    versions.  You should probably turn off incremental linking too --
-    I believe it a bit flaky.  If you do this, then change the "Debug
-    Info" to "Program Database" to get rid of the Edit and Continue
-    warning.
-    </p>
-    
+    <p>Building your own projects using the IDE is slightly more complicated.
+    Firstly, you need to make sure that the project you create as the right
+    kind. It should be a "Win32 Dynamic-Link Library". The default one that
+    Visual Studio 6 creates needs some modifications: turn on RTTI, and
+    change the debug and release builds to use the respective debug and
+    release Multithreaded DLL versions. You should probably turn off
+    incremental linking too -- I believe it a bit flaky. If you do this, then
+    change the "Debug Info" to "Program Database" to get rid of the Edit and
+    Continue warning.</p>
+
     <p>You'll need to add the Boost root directory under
     <b>Tools&gt;Options&gt;Directories</b> to get your code compiling. To
     make it link, add the above <code>boost_python.dsp</code> file to your
     workspace, and make your project depend upon it (under
-    <b>Project&gt;Dependencies</b>). You should be able to build now.
-    </p>
+    <b>Project&gt;Dependencies</b>). You should be able to build now.</p>
 
-    <p>Lastly, go to the <b>Project Settings&gt;Debug</b> Page and add
-    the <code>Python.exe</code> as the executable for the project.
-    Set a startup directory, and make sure that your current project's
-    output dll, the <code>boost_python.dll</code> and the
-    <code>python22.dll</code> are on the current <code>PATH</code>.
-    If you have a python script that tests your dll, then add it in
-    the &quot;Program Arguments&quot;.  Now, if all went well, you
-    should be able to hit the Run (F5) button, and debug your code.
-    </p>
+    <p>Lastly, go to the <b>Project Settings&gt;Debug</b> Page and add the
+    <code>Python.exe</code> as the executable for the project. Set a startup
+    directory, and make sure that your current project's output dll, the
+    <code>boost_python.dll</code> and the <code>python22.dll</code> are on
+    the current <code>PATH</code>. If you have a python script that tests
+    your dll, then add it in the "Program Arguments". Now, if all went well,
+    you should be able to hit the Run (F5) button, and debug your code.</p>
 
-<blockquote>
-<em>The Visual Studio project files are graciously contributed and
-maintained by <a href="mailto:brett.calcott@paradise.net.nz">Brett
-Calcott</a></em>.
-</blockquote>
-
+    <blockquote>
+      <em>The Visual Studio project files are graciously contributed and
+      maintained by <a href="mailto:brett.calcott@paradise.net.nz">Brett
+      Calcott</a></em>.
+    </blockquote>
     <hr>
 
     <p>&copy; Copyright David Abrahams 2002. Permission to copy, use, modify,
