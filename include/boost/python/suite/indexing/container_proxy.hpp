@@ -485,11 +485,11 @@ namespace boost { namespace python { namespace indexing {
 
     if (!ptr.unique())
       {
-	// Reinsert only if there are other pointers "out there"
-	// referring to the shared proxy
+        // Reinsert only if there are other pointers "out there"
+        // referring to the shared proxy
 
-	ptr->m_index += offset;
-	m_map.insert (typename map_type::value_type (ptr->m_index, ptr));
+        ptr->m_index += offset;
+        m_map.insert (typename map_type::value_type (ptr->m_index, ptr));
       }
   }
 
@@ -513,9 +513,9 @@ namespace boost { namespace python { namespace indexing {
       {
         map_iterator target (low_bound);
 
-	++low_bound;  // Find next node before erasing the current target
+        ++low_bound;  // Find next node before erasing the current target
 
-	adjust_index (target, offset);
+        adjust_index (target, offset);
       }
   }
 
@@ -527,25 +527,25 @@ namespace boost { namespace python { namespace indexing {
   {
     if (low_bound != high_bound)
       {
-	--high_bound;  // Adjust now because high_bound is one-past-the-end
+        --high_bound;  // Adjust now because high_bound is one-past-the-end
 
-	while (true)
-	  {
-	    if (high_bound == low_bound)
-	      {
-		adjust_index (high_bound, offset);  // Last one to adjust
-		break;
-	      }
+        while (true)
+          {
+            if (high_bound == low_bound)
+              {
+                adjust_index (high_bound, offset);  // Last one to adjust
+                break;
+              }
 
-	    else
-	      {
-		map_iterator target (high_bound);
+            else
+              {
+                map_iterator target (high_bound);
 
-		--high_bound;   // Find previous node before doing erase
+                --high_bound;   // Find previous node before doing erase
 
-		adjust_index (target, offset);   // Do erase
-	      }
-	  }
+                adjust_index (target, offset);   // Do erase
+              }
+          }
       }
   }
 
