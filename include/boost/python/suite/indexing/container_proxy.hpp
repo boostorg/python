@@ -507,12 +507,11 @@ namespace boost { namespace python { namespace indexing {
 
     while (low_bound != high_bound)
       {
-        MapIterator next (low_bound);
-	++next;  // Find next node before erasing the current target
+        MapIterator target (low_bound);
 
-	adjustIndex (low_bound, offset);
+	++low_bound;  // Find next node before erasing the current target
 
-        low_bound = next;
+	adjustIndex (target, offset);
       }
   }
 
@@ -523,24 +522,26 @@ namespace boost { namespace python { namespace indexing {
 			  , MapIterator high_bound
 			  , long offset)
   {
-    while (low_bound != high_bound)
+    if (low_bound != high_bound)
       {
 	--high_bound;  // Adjust now because high_bound is one-past-the-end
 
-	if (high_bound == low_bound)
+	while (true)
 	  {
-	    adjustIndex (high_bound, offset);  // Last one to adjust
-	  }
+	    if (high_bound == low_bound)
+	      {
+		adjustIndex (high_bound, offset);  // Last one to adjust
+		break;
+	      }
 
-	else
-	  {
-	    MapIterator temp (high_bound);
-	    --temp;   // Find previous node before doing erase
+	    else
+	      {
+		MapIterator target (high_bound);
 
-	    adjustIndex (high_bound, offset);   // Do erase
+		--high_bound;   // Find previous node before doing erase
 
-	    high_bound = temp;
-	    ++high_bound;   // Make one-past-the-end again
+		adjustIndex (target, offset);   // Do erase
+	      }
 	  }
       }
   }
