@@ -7,6 +7,7 @@ from IncludeExporter import IncludeExporter
 from EnumExporter import EnumExporter
 from HeaderExporter import HeaderExporter
 from exporterutils import FunctionWrapper
+from makeid import makeid
 
 
 #==============================================================================
@@ -90,7 +91,7 @@ class IncludeInfo(DeclarationInfo):
 def GenerateName(name, type_list):
     name = name.replace('::', '_')
     names = [name] + type_list
-    return '_'.join(names) 
+    return makeid('_'.join(names))
 
     
 class ClassTemplateInfo(DeclarationInfo):

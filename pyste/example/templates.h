@@ -1,10 +1,10 @@
 namespace templates {
     
-template <class X, class Y>
+template <class T>
 struct Point
 {
-    X x;
-    Y y;
+    T x;
+    T y;
 };
   
 }

@@ -5,6 +5,7 @@ from enumerate import enumerate
 from settings import *
 from CodeUnit import CodeUnit
 from EnumExporter import EnumExporter
+from makeid import makeid
 
 
 #==============================================================================
@@ -42,7 +43,7 @@ class ClassExporter(Exporter):
 
 
     def ScopeName(self):
-        return _ID(self.class_.FullName()) + '_scope'
+        return makeid(self.class_.FullName()) + '_scope'
 
 
     def Name(self):
@@ -265,7 +266,7 @@ class ClassExporter(Exporter):
             
         def OverloadName(m):
             'Returns the name of the overloads struct for the given method'            
-            return _ID(m.FullName()) + ('_overloads_%i_%i' % (m.minArgs, m.maxArgs))
+            return makeid(m.FullName()) + ('_overloads_%i_%i' % (m.minArgs, m.maxArgs))
         
         declared = {}
         def DeclareOverloads(m):
@@ -488,7 +489,7 @@ class ClassExporter(Exporter):
                 return self.SPECIAL_CONVERTERS[result_fullname]
             else:
                 # extract the last name from the full name
-                result_name = _ID(result_fullname.split('::')[-1])
+                result_name = makeid(result_fullname.split('::')[-1])
                 return 'to_' + result_name
             
         for converter in converters:
@@ -541,17 +542,6 @@ class ClassExporter(Exporter):
             self.nested_codeunits.append(codeunit)
             
 
-            
-
-def _ID(name):
-    'Returns the name as a valid identifier'
-    for invalidchar in ('::', '<', '>', ' ', ','):
-        name = name.replace(invalidchar, '_') 
-    # avoid duplications of '_' chars
-    names = [x for x in name.split('_') if x]
-    return '_'.join(names)
-
-
 #==============================================================================
 # Virtual Wrapper utils
 #==============================================================================
@@ -576,7 +566,7 @@ class _VirtualWrapperGenerator(object):
     def __init__(self, class_, info):
         self.class_ = class_
         self.info = info
-        self.wrapper_name = _ID(class_.FullName()) + '_Wrapper'
+        self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
 
 
     def DefaultImplementationNames(self, method):
