@@ -58,6 +58,16 @@ For <tt>std::auto_ptr</tt>'s, use the function <tt>use_auto_ptr</tt>.</p>
 <p>
 This system is temporary, and in the future the converters will automatically be
 exported if needed, without the need to tell Pyste about them explicitly.</p>
+<a name="holders"></a><h2>Holders</h2><p>
+If only the converter for the smart pointers is not enough and you need to
+specify the smart pointer as the holder for a class, use the functions
+<tt>hold_with_shared_ptr</tt> and <tt>hold_with_auto_ptr</tt>:</p>
+<code><pre>
+    <span class=identifier>C </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=literal>'C'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>)
+    </span><span class=identifier>hold_with_shared_ptr</span><span class=special>(</span><span class=identifier>C</span><span class=special>)
+    </span><span class=identifier>Function</span><span class=special>(</span><span class=literal>'newC'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>)
+    </span><span class=identifier>Function</span><span class=special>(</span><span class=literal>'printC'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>) 
+</span></pre></code>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

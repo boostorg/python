@@ -7,6 +7,8 @@ class OpaqueTest(unittest.TestCase):
 
         c = new_C()
         self.assertEqual(get(c), 10)
+        c = new_C_zero()
+        self.assertEqual(get(c), 0) 
         a = A()
         d = a.new_handle()
         self.assertEqual(a.get(d), 3.0)

@@ -1,3 +1,16 @@
+7 July 2003
+Applied 2 patches by Prabhu Ramachandran: a fix in the new --multiple method,
+and two new functions "hold_with_shared_ptr" and its counterpart for auto_ptr.
+Thanks a lot Prabhu!
+
+Fixed a bug where the macro BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID was being
+called multiple times for the same type.
+Thanks to Gottfried Ganﬂauge for reporting this!
+
+5 July 2003
+Changed how --multiple works: now it generates one cpp file for each pyste
+file, makeing easier to integrate Pyste with build systems.
+
 4 July 2003
 Applied patch that solved a bug in ClassExporter and added a distutils install
 script (install/setup.py), both contributed by Prabhu Ramachandran.

@@ -215,6 +215,12 @@ def use_shared_ptr(info):
 def use_auto_ptr(info):
     info._Attribute('smart_ptr', 'std::auto_ptr< %s >')
         
+def hold_with_shared_ptr(info):
+    info._Attribute('held_type', 'boost::shared_ptr< %s >')
+
+def hold_with_auto_ptr(info):
+    info._Attribute('held_type', 'std::auto_ptr< %s >') 
+
 def add_method(info, name, rename=None):
     added = info._Attribute('__added__')
     if added is None:

@@ -68,5 +68,15 @@ def HandlePolicy(function, policy):
     return policy
             
 
-
-
+#==============================================================================
+# EspecializeTypeID
+#==============================================================================
+_exported_type_ids = {}
+def EspecializeTypeID(typename):
+    global _exported_type_ids
+    macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)\n' % typename
+    if macro not in _exported_type_ids:
+        _exported_type_ids[macro] = 1
+        return macro
+    else:
+        return None

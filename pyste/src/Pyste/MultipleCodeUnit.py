@@ -79,24 +79,27 @@ class MultipleCodeUnit(object):
         self._CreateOutputDir();
         # order all code units by filename, and merge them all
         codeunits = {} # filename => list of codeunits
-        # the main_unit holds all the include, declaration and declaration-outside sections
-        # to keep them all in the top of the source file
-        main_unit = None
+
+        # While ordering all code units by file name, the first code
+        # unit in the list of code units is used as the main unit
+        # which dumps all the include, declaration and
+        # declaration-outside sections at the top of the file.
         for (filename, _), codeunit in self.codeunits.items(): 
-            if filename not in codeunits:                
+            if filename not in codeunits:
+                # this codeunit is the main codeunit.
                 codeunits[filename] = [codeunit]
-                main_unit = codeunit
-                main_unit.Merge(self.all)
+                codeunit.Merge(self.all)
             else:
+                main_unit = codeunits[filename][0]
                 for section in ('include', 'declaration', 'declaration-outside'):
                     main_unit.code[section] = main_unit.code[section] + codeunit.code[section]
                     codeunit.code[section] = ''
                 codeunits[filename].append(codeunit)
-        # write all the codeunits, merging first the contents of
-        # the special code unit named __all__
-        for codeunits in codeunits.values():
+
+        # Now write all the codeunits appending them correctly.
+        for file_units in codeunits.values():
             append = False
-            for codeunit in codeunits:
+            for codeunit in file_units:
                 codeunit.Save(append)
                 if not append:
                     append = True

@@ -17,6 +17,11 @@ inline C* new_C()
     return new C(10);
 }
 
+inline C* new_C_zero()
+{
+    return new C(0);
+}
+
 inline int get(C* c)
 {
     return c->value;

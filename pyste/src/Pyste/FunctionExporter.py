@@ -14,7 +14,6 @@ class FunctionExporter(Exporter):
     
     def __init__(self, info, tail=None):
         Exporter.__init__(self, info, tail)
-        self._exported_opaque_pointers = {}
         
 
     def Export(self, codeunit, exported_names):
@@ -77,12 +76,10 @@ class FunctionExporter(Exporter):
 
     def ExportOpaquePointer(self, function, codeunit):
         if self.info.policy == return_value_policy(return_opaque_pointer):
-            type = function.result.name
-            macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)' % type
-            if macro not in self._exported_opaque_pointers:
+            typename = function.result.name
+            macro = exporterutils.EspecializeTypeID(typename)  
+            if macro:
                 codeunit.Write('declaration-outside', macro)
-                self._exported_opaque_pointers[macro] = 1
-
 
     def Order(self):
         return self.info.name

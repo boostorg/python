@@ -81,8 +81,8 @@ Usage:
 where options are:
     -I <path>           add an include path    
     -D <symbol>         define symbol    
-    --multiple          create various cpps, instead of only one 
-                        (useful during development)                        
+    --multiple          create various cpps (one for each pyste file), instead
+                        of only one (useful during development)                        
     --out               specify output filename (default: <module>.cpp)
                         in --multiple mode, this will be a directory
     --no-using          do not declare "using namespace boost";
@@ -480,6 +480,16 @@ For [^std::auto_ptr]'s, use the function [^use_auto_ptr].
 This system is temporary, and in the future the converters will automatically be
 exported if needed, without the need to tell Pyste about them explicitly.
 
+[h2 Holders]
+
+If only the converter for the smart pointers is not enough and you need to
+specify the smart pointer as the holder for a class, use the functions
+[^hold_with_shared_ptr] and [^hold_with_auto_ptr]:
+
+    C = Class('C', 'C.h')
+    hold_with_shared_ptr(C)
+    Function('newC', 'C.h')
+    Function('printC', 'C.h') 
 
 [page:1 Global Variables]
 

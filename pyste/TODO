@@ -9,5 +9,6 @@
 
 - Virtual operators  
 
-
 - staticmethod bug
+
+- opaque pointers bug

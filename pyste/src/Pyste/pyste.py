@@ -39,7 +39,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.9.8'
+__VERSION__ = '0.9.9'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -117,6 +117,11 @@ def ParseArguments():
         out = module
         if not multiple:
             out += '.cpp'
+    for file in files:
+        d = os.path.dirname(os.path.abspath(file))
+        if d not in sys.path:
+            sys.path.append(d) 
+
     return includes, defines, module, out, files, multiple
 
     
@@ -138,6 +143,8 @@ def CreateContext():
     context['set_wrapper'] = infos.set_wrapper
     context['use_shared_ptr'] = infos.use_shared_ptr
     context['use_auto_ptr'] = infos.use_auto_ptr
+    context['hold_with_shared_ptr'] = infos.hold_with_shared_ptr
+    context['hold_with_auto_ptr'] = infos.hold_with_auto_ptr 
     context['add_method'] = infos.add_method
     context['final'] = infos.final
     # policies

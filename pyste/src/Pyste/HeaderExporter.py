@@ -7,6 +7,7 @@ from infos import *
 from declarations import *
 import os.path
 import exporters
+import MultipleCodeUnit
 
 #==============================================================================
 # HeaderExporter
@@ -64,7 +65,10 @@ class HeaderExporter(Exporter):
             exporter = exporter_type(info)
             exporter.SetDeclarations(self.declarations)
             exporter.SetParsedHeader(self.parser_header)
-            codeunit.SetCurrent(self.interface_file, exporter.Unit())
+            if isinstance(codeunit, MultipleCodeUnit.MultipleCodeUnit):
+                codeunit.SetCurrent(self.interface_file, exporter.Unit())
+            else:
+                codeunit.SetCurrent(exporter.Unit())
             exporter.GenerateCode(codeunit, exported_names)
 
     
