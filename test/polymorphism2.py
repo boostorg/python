@@ -46,6 +46,19 @@ class PolymorphTest(unittest.TestCase):
       self.failUnlessEqual ('X.f', x.f())
       self.failUnlessEqual ('X.f', call_f(x))
 
+   def test_self_default(self):
+
+      class X(A):
+         def f(self):
+            return 'X.f() -> ' + A.f(self)
+
+      x = X()
+      
+      self.failUnlessEqual ('X.f() -> A::f()', x.f())
+      
+      # This one properly raises the "dangling reference" exception
+      # self.failUnlessEqual ('X.f() -> A::f()', call_f(x))
+
    def test_wrapper_downcast(self):
       a = pass_a(D())
       self.failUnlessEqual('D::g()', a.g())

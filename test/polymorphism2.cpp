@@ -55,9 +55,11 @@ struct ACallback :  A, wrapper<A>
 #else 
             return f();
 #endif 
-        //else
-            return A::f();
+
+        return A::f();
     }
+
+    char const* default_f() { return this->A::f(); }
 };
 
 struct B : A
@@ -124,7 +126,7 @@ A* pass_a(A* x) { return x; }
 BOOST_PYTHON_MODULE_INIT(polymorphism2_ext)
 {
     class_<ACallback,boost::noncopyable>("A")
-        .def("f", &A::f)
+        .def("f", &A::f, &ACallback::default_f)
         ;
     
     def("getBCppObj", getBCppObj, return_value_policy<reference_existing_object>());
