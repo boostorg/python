@@ -114,18 +114,28 @@ namespace scope as Python member functions.
 <h2>Overload Resolution</h2>
       <p>
         The function overload resolution mechanism in py_cpp works as
-        follows:<ul>
-        <li>Attribute lookup for extension classes proceeds in the usual way. When a
+        follows:
+
+        <ul>
+
+        <li>Attribute lookup for extension classes proceeds in <a
+        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/tut/node11.html#SECTION0011510000000000000000">the
+        usual Python way</a> using a depth-first, left-to-right search. When a
         class is found which has a matching attribute, only functions overloaded
-        in the context of that class are candidates for overload resolution.
+        in the context of that class are candidates for overload resolution. In
+        this sense, overload resolution mirrors the C++ mechanism, where a name
+        in a derived class "hides" all functions with the same name from a base
+        class.
+
         <li>Within a name-space context (extension class or module), overloaded
         functions are tried in the same order they were
         <code>def()</code>ed. The first function whose signature can be made to
-        match each argument passed is the one which is ultimately called.
+        match each argument passed is the one which is ultimately called. 
         </ul>
+
       <p>
          Prev: <a href="overloading.html">Function Overloading</a>
-         Next: <a href="special.html">Special Method Names</a>
+         Next: <a href="inheritance.html">Special Method Names</a>
          Up: <a href="py_cpp.html">Top</a>
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
@@ -134,6 +144,6 @@ namespace scope as Python member functions.
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>
-         Updated: Oct 15, 2000
+         Updated: Oct 30, 2000
     </div>
 
