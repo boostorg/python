@@ -41,13 +41,14 @@ class TypeObjectBase : public PythonType
     virtual ~TypeObjectBase();
 
  public:
-    enum Capability
-    {
+    enum Capability {
         hash, call, str, getattr, setattr, compare, repr,
+
         mapping_length, mapping_subscript, mapping_ass_subscript,
+        
         sequence_length, sequence_item, sequence_ass_item,
         sequence_concat, sequence_repeat, sequence_slice, sequence_ass_slice,
-
+        
         number_add, number_subtract, number_multiply, number_divide,
         number_remainder, number_divmod, number_power, number_negative,
         number_positive, number_absolute, number_nonzero, number_invert,
@@ -296,57 +297,8 @@ PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
 
 namespace detail {
 
-  struct AllMethods {
-      PyMappingMethods mapping;
-      PySequenceMethods sequence;
-      PyNumberMethods number;
-      PyBufferProcs buffer;
-  };
-
-  typedef void (*Dispatch)();
-  struct CapabilityEntry
-  {
-      std::size_t offset1;
-      std::size_t offset2;
-      Dispatch dispatch;
-      std::size_t substructure_size;
-      int allmethods_offset;
-  };
-
-  extern const CapabilityEntry capabilities[];
-  extern const std::size_t num_capabilities;
-
-  void add_capability(std::size_t index, PyTypeObject* dest, AllMethods&);
-
-  class UniquePodSet
-  {
-      typedef std::pair<const char*, const char*> Holder;
-      typedef std::vector<Holder> Storage;
-   public:
-      static UniquePodSet& instance();
-      ~UniquePodSet();
-
-      template <class T>
-      T* get(const T& x)
-      {
-          char* base = const_cast<char*>(
-              reinterpret_cast<const char*>(&x));
-          return const_cast<T*>(
-              static_cast<const T*>(
-              get_element(base, sizeof(T))));
-      }
-
-      const void* get_element(const void* buffer, std::size_t size);
-
-   private:
-      struct Compare;
-
-   private:
-      UniquePodSet() {} // singleton
-
-   private:
-      Storage m_storage;
-  };
+  void add_capability(TypeObjectBase::Capability capability, 
+                      PyTypeObject* dest);
 
 # define PY_ARRAY_LENGTH(a) \
         (sizeof(::py::detail::countof_validate(a, &(a))) ? sizeof(a) / sizeof((a)[0]) : 0)

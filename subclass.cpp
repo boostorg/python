@@ -728,9 +728,6 @@ namespace {
   // Enable any special methods which are enabled in the base class.
   void enable_special_methods(py::detail::ClassBase* derived, const Tuple& bases, const Dict& name_space)
   {
-      detail::AllMethods all_methods;
-      PY_CSTD_::memset(&all_methods, 0, sizeof(all_methods));
-
       for (std::size_t i = 0; i < bases.size(); ++i)
       {
           PyObject* base = bases[i].get();
@@ -742,7 +739,7 @@ namespace {
                   Ptr::null_ok);
               PyErr_Clear();
               if (attribute.get() != 0 && PyCallable_Check(attribute.get()))
-                  detail::add_capability(n, derived, all_methods);
+                  detail::add_capability(enablers[n].capability, derived);
           }
       }
 
@@ -759,24 +756,10 @@ namespace {
           {
               if (is_prefix(enablers[i].name + 2, name + 2))
               {
-                  detail::add_capability(enablers[i].capability, derived, all_methods);
+                  detail::add_capability(enablers[i].capability, derived);
               }
           }
       }
-
-      // Now replace those pointers with a persistent copy
-      using detail::UniquePodSet;
-      if (derived->tp_as_buffer)
-          derived->tp_as_buffer = UniquePodSet::instance().get(*derived->tp_as_buffer);
-
-      if (derived->tp_as_number)
-          derived->tp_as_number = UniquePodSet::instance().get(*derived->tp_as_number);
-
-      if (derived->tp_as_sequence)
-          derived->tp_as_sequence = UniquePodSet::instance().get(*derived->tp_as_sequence);
-
-      if (derived->tp_as_mapping)
-          derived->tp_as_mapping = UniquePodSet::instance().get(*derived->tp_as_mapping);
   }
 
   void add_current_module_name(Dict& name_space)

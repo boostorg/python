@@ -963,17 +963,15 @@ test inheritB2
     TypeError: bad operand type(s) for pow()
 
 Test operator export to a subclass
-    >>> class Foo(Int):
+    >>> class IntDerived(Int):
     ...     def __init__(self, i):
     ...             Int.__init__(self, i)
     ...     def __str__(self):
-    ...             return 'Foo: ' + str(self.i())
-    ...     def __coerce__(self, other):
-    ...             return Int.__coerce__(self, other)
+    ...             return 'IntDerived: ' + str(self.i())
     ... 
-    >>> f = Foo(3)
+    >>> f = IntDerived(3)
     >>> str(f)
-    'Foo: 3'
+    'IntDerived: 3'
     >>> j = f * f
     >>> j.i()
     9

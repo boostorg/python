@@ -13,78 +13,11 @@
 #include <cstring>
 #include <vector>
 #include <cstddef>
+#include <stdexcept>
 #include <boost/smart_ptr.hpp>
 #include "objects.h"
 
 namespace py {
-
-namespace detail {
-UniquePodSet& UniquePodSet::instance()
-{
-    static UniquePodSet me;
-    return me;
-}
-
-struct UniquePodSet::Compare
-{
-    bool operator()(const std::pair<const char*, const char*>& x1,
-                   const std::pair<const char*, const char*>& x2) const
-    {
-        const std::ptrdiff_t n1 = x1.second - x1.first;
-        const std::ptrdiff_t n2 = x2.second - x2.first;
-        return n1 < n2 || n1 == n2 && PY_CSTD_::memcmp(x1.first, x2.first, n1) < 0;
-    }
-};
-
-const void* UniquePodSet::get_element(const void* buffer, std::size_t size)
-{
-    const Holder element(static_cast<const char*>(buffer),
-                   static_cast<const char*>(buffer) + size);
-    
-    const Storage::iterator found
-        = std::lower_bound(m_storage.begin(), m_storage.end(), element, Compare());
-    
-    if (found != m_storage.end() && !Compare()(element, *found))
-        return found->first;
-
-    std::size_t length = element.second - element.first;
-    char* base_address = new char[length];
-    try {
-        PY_CSTD_::memcpy(base_address, element.first, length);
-        Holder new_element(base_address, base_address + length);
-        m_storage.insert(found, new_element);
-    }
-    catch(...) {
-        delete[] base_address;
-        throw;
-    }
-    return base_address;
-}
-
-UniquePodSet::~UniquePodSet()
-{
-    for (Storage::const_iterator p = m_storage.begin(), finish = m_storage.end();
-         p != finish; ++p)
-    {
-        delete[] const_cast<char*>(p->first);
-    }
-}
-} // namespace detail
-
-template <class MethodStruct, class MemberPtr, class Fn>
-static MethodStruct* enable_method(const MethodStruct* base, MemberPtr p, Fn f)
-{
-    MethodStruct new_value;
-    
-    if (base != 0)
-        new_value = *base;
-    else
-        PY_CSTD_::memset(&new_value, 0, sizeof(PyMappingMethods));
-    
-    new_value.*p = f;
-    
-    return const_cast<MethodStruct*>(detail::UniquePodSet::instance().get(new_value));
-}
 
 namespace {
 
@@ -214,7 +147,7 @@ int call_length_function(PyObject* instance, int (TypeObjectBase::*f)(PyObject*)
     }
 }
 
-}
+}  // anonymous namespace
 
 extern "C" {
 
@@ -457,150 +390,172 @@ static PyObject* do_instance_nb_hex(PyObject* instance)
     return call(instance, &TypeObjectBase::instance_number_hex);
 }
 
+} // extern "C"
+
+namespace
+{
+
+#define ENABLE_GENERAL_CAPABILITY(field) \
+    case TypeObjectBase::field: \
+        dest->tp_##field = &do_instance_##field; \
+        break
+
+bool add_capability_general(TypeObjectBase::Capability capability, PyTypeObject* dest)
+{
+    assert(dest != 0);
+    
+    switch(capability)
+    {
+        ENABLE_GENERAL_CAPABILITY(hash);
+        ENABLE_GENERAL_CAPABILITY(call);
+        ENABLE_GENERAL_CAPABILITY(str);
+        ENABLE_GENERAL_CAPABILITY(getattr);
+        ENABLE_GENERAL_CAPABILITY(setattr);
+        ENABLE_GENERAL_CAPABILITY(compare);
+        ENABLE_GENERAL_CAPABILITY(repr);
+        default:
+            return false;
+    }
+    return true;
 }
 
+template <class T>
+void create_method_table_if_null(T *& table)
+{
+    if(table == 0)
+    {
+        table = new T;
+        memset(table, 0, sizeof(T));
+    }
+}
+
+#define ENABLE_MAPPING_CAPABILITY(field) \
+    case TypeObjectBase::mapping_##field: \
+        create_method_table_if_null(dest); \
+        dest->mp_##field = &do_instance_mp_##field; \
+        break
+
+bool add_capability_mapping(TypeObjectBase::Capability capability, PyMappingMethods*& dest)
+{
+    switch(capability)
+    {
+        ENABLE_MAPPING_CAPABILITY(length);
+        ENABLE_MAPPING_CAPABILITY(subscript);
+        ENABLE_MAPPING_CAPABILITY(ass_subscript);
+        default:
+            return false;
+    }
+    return true;
+}
+
+#define ENABLE_SEQUENCE_CAPABILITY(field) \
+    case TypeObjectBase::sequence_##field: \
+        create_method_table_if_null(dest); \
+        dest->sq_##field = &do_instance_sq_##field; \
+        break
+
+bool add_capability_sequence(TypeObjectBase::Capability capability, PySequenceMethods*& dest)
+{
+    switch(capability)
+    {
+        ENABLE_SEQUENCE_CAPABILITY(length);
+        ENABLE_SEQUENCE_CAPABILITY(item);
+        ENABLE_SEQUENCE_CAPABILITY(ass_item);
+        ENABLE_SEQUENCE_CAPABILITY(concat);
+        ENABLE_SEQUENCE_CAPABILITY(repeat);
+        ENABLE_SEQUENCE_CAPABILITY(slice);
+        ENABLE_SEQUENCE_CAPABILITY(ass_slice);
+        default:
+            return false;
+    }
+    return true;
+}
+
+#define ENABLE_NUMBER_CAPABILITY(field) \
+    case TypeObjectBase::number_##field: \
+        create_method_table_if_null(dest); \
+        dest->nb_##field = &do_instance_nb_##field; \
+        break
+
+bool add_capability_number(TypeObjectBase::Capability capability, PyNumberMethods*& dest)
+{
+    switch(capability)
+    {
+        ENABLE_NUMBER_CAPABILITY(add);
+        ENABLE_NUMBER_CAPABILITY(subtract);
+        ENABLE_NUMBER_CAPABILITY(multiply);
+        ENABLE_NUMBER_CAPABILITY(divide);
+        ENABLE_NUMBER_CAPABILITY(remainder);
+        ENABLE_NUMBER_CAPABILITY(divmod);
+        ENABLE_NUMBER_CAPABILITY(power);
+        ENABLE_NUMBER_CAPABILITY(negative);
+        ENABLE_NUMBER_CAPABILITY(positive);
+        ENABLE_NUMBER_CAPABILITY(absolute);
+        ENABLE_NUMBER_CAPABILITY(nonzero);
+        ENABLE_NUMBER_CAPABILITY(invert);
+        ENABLE_NUMBER_CAPABILITY(lshift);
+        ENABLE_NUMBER_CAPABILITY(rshift);
+        ENABLE_NUMBER_CAPABILITY(and);
+        ENABLE_NUMBER_CAPABILITY(xor);
+        ENABLE_NUMBER_CAPABILITY(or);
+        ENABLE_NUMBER_CAPABILITY(coerce);
+        ENABLE_NUMBER_CAPABILITY(int);
+        ENABLE_NUMBER_CAPABILITY(long);
+        ENABLE_NUMBER_CAPABILITY(float);
+        ENABLE_NUMBER_CAPABILITY(oct);
+        ENABLE_NUMBER_CAPABILITY(hex);
+        default:
+            return false;
+    }
+    return true;
+}
+
+#define ENABLE_BUFFER_CAPABILITY(field) \
+    case TypeObjectBase::buffer_##field: \
+        create_method_table_if_null(dest); \
+        dest->bf_##field = &do_instance_bf_##field; \
+        break
+
+bool add_capability_buffer(TypeObjectBase::Capability capability, PyBufferProcs*& dest)
+{
+    switch(capability)
+    {
+        // nothing defined yet
+        
+        default:
+            return false;
+    }
+    return true;
+}
+
+} // anonymous namespace
+
 namespace detail  {
-template <std::size_t> struct category_type;
-
-#define DECLARE_CAPABILITY_TYPE(field, sub_structure) \
-     template <> \
-     struct category_type<(PY_OFFSETOF(PyTypeObject, tp_as_##field))> \
-     { \
-         typedef sub_structure type; \
-     }
-
-#define CAPABILITY(field) \
-        { PY_OFFSETOF(PyTypeObject, tp_##field), 0, Dispatch(do_instance_##field), 0, -1 }
-
-#define CAPABILITY2(category, field) \
-        { PY_OFFSETOF(PyTypeObject, tp_as_##category), \
-          PY_OFFSETOF(category_type<PY_OFFSETOF(PyTypeObject, tp_as_##category)>::type, field), \
-          Dispatch(do_instance_##field), \
-          sizeof(category_type<PY_OFFSETOF(PyTypeObject, tp_as_##category)>::type), \
-          PY_OFFSETOF(AllMethods, category) \
-        }
-
-DECLARE_CAPABILITY_TYPE(mapping, PyMappingMethods);
-DECLARE_CAPABILITY_TYPE(sequence, PySequenceMethods);
-DECLARE_CAPABILITY_TYPE(number, PyNumberMethods);
-
-const CapabilityEntry capabilities[] = {
-    CAPABILITY(hash),
-    CAPABILITY(call),
-    CAPABILITY(str),
-    CAPABILITY(getattr),
-    CAPABILITY(setattr),
-    CAPABILITY(compare),
-    CAPABILITY(repr),
-
-    CAPABILITY2(mapping, mp_length),
-    CAPABILITY2(mapping, mp_subscript),
-    CAPABILITY2(mapping, mp_ass_subscript),
-    
-    CAPABILITY2(sequence, sq_length),
-    CAPABILITY2(sequence, sq_item),
-    CAPABILITY2(sequence, sq_ass_item),
-    CAPABILITY2(sequence, sq_concat),
-    CAPABILITY2(sequence, sq_repeat),
-    CAPABILITY2(sequence, sq_slice),
-    CAPABILITY2(sequence, sq_ass_slice),
-
-    CAPABILITY2(number, nb_add),
-    CAPABILITY2(number, nb_subtract),
-    CAPABILITY2(number, nb_multiply),
-    CAPABILITY2(number, nb_divide),
-    CAPABILITY2(number, nb_remainder),
-    CAPABILITY2(number, nb_divmod),
-    CAPABILITY2(number, nb_power),
-    CAPABILITY2(number, nb_negative),
-    CAPABILITY2(number, nb_positive),
-    CAPABILITY2(number, nb_absolute),
-    CAPABILITY2(number, nb_nonzero),
-    CAPABILITY2(number, nb_invert),
-    CAPABILITY2(number, nb_lshift),
-    CAPABILITY2(number, nb_rshift),
-    CAPABILITY2(number, nb_and),
-    CAPABILITY2(number, nb_xor),
-    CAPABILITY2(number, nb_or),
-    CAPABILITY2(number, nb_coerce),
-    CAPABILITY2(number, nb_int),
-    CAPABILITY2(number, nb_long),
-    CAPABILITY2(number, nb_float),
-    CAPABILITY2(number, nb_oct),
-    CAPABILITY2(number, nb_hex)
-};
-
-  const std::size_t num_capabilities = PY_ARRAY_LENGTH(capabilities);
 
   void add_capability(
-      std::size_t n,
-      PyTypeObject* dest_,
-      AllMethods& all_methods)
+      TypeObjectBase::Capability capability,
+      PyTypeObject* dest_)
   {
-      assert(n < PY_ARRAY_LENGTH(capabilities));
-      const CapabilityEntry& c = capabilities[n];
+    if(add_capability_general(capability, dest_))
+        return;
+    if(add_capability_mapping(capability, dest_->tp_as_mapping))
+        return;
+    if(add_capability_sequence(capability, dest_->tp_as_sequence))
+        return;
+    if(add_capability_number(capability, dest_->tp_as_number))
+        return;
+    if(add_capability_buffer(capability, dest_->tp_as_buffer))
+        return;
 
-      char** const dest = reinterpret_cast<char**>(
-          reinterpret_cast<char*>(dest_) + c.offset1);
-            
-      if (c.substructure_size == 0)
-      {
-          *reinterpret_cast<Dispatch*>(dest) = c.dispatch;
-      }
-      else
-      {
-          *dest = reinterpret_cast<char*>(&all_methods) + c.allmethods_offset;
-          *reinterpret_cast<Dispatch*>(*dest + c.offset2) = c.dispatch;
-      }
+    // no one recognized the capability
+    throw std::runtime_error("py::detail::add_capability(): unknown capability");
   }
 } // namespace detail
 
-namespace {
-  union SubStructures {
-      PyMappingMethods mapping;
-      PySequenceMethods sequence;
-      PyNumberMethods number;
-      PyBufferProcs buffer;
-  };
-}
-
 void TypeObjectBase::enable(TypeObjectBase::Capability capability)
 {
-    using detail::capabilities;
-    using detail::CapabilityEntry;
-    using detail::Dispatch;
-
-    assert((std::size_t)capability < PY_ARRAY_LENGTH(capabilities));
-    const CapabilityEntry& c = capabilities[capability];
-    
-    PyTypeObject* const me = this;
-    char* const base_address = reinterpret_cast<char*>(me);
-    
-    if (c.substructure_size == 0)
-    {        
-        // Stuff the dispatch function directly into the PyTypeObject
-        *reinterpret_cast<Dispatch*>(base_address + c.offset1) = c.dispatch;
-        return;
-    }
-    
-    const char*& sub_structure = *reinterpret_cast<const char**>(base_address + c.offset1);
-
-    // Initialize this POD union with the current state-of-the-world
-    SubStructures sub;
-    if (sub_structure == 0)
-        PY_CSTD_::memset(&sub, 0, c.substructure_size);
-    else
-        PY_CSTD_::memcpy(&sub, sub_structure, c.substructure_size);
-
-    // Stuff the dispatch function into the sub-structure
-    *reinterpret_cast<Dispatch*>(reinterpret_cast<char*>(&sub) + c.offset2) = c.dispatch;
-
-    // Retrieve the unique dynamically-allocated substructure and stuff it into
-    // the PyTypeObject.
-    sub_structure = static_cast<const char*>(
-        detail::UniquePodSet::instance().get_element(&sub, c.substructure_size));
+    detail::add_capability(capability, this);
 }
-
 
 TypeObjectBase::TypeObjectBase(PyTypeObject* t)
     : PythonType(t)
@@ -826,6 +781,10 @@ PyObject* TypeObjectBase::instance_number_hex(PyObject*) const
 
 TypeObjectBase::~TypeObjectBase()
 {
+    delete tp_as_mapping;
+    delete tp_as_sequence;
+    delete tp_as_number;
+    delete tp_as_buffer;
 }
 
 }
