@@ -47,14 +47,14 @@ def HandlePolicy(function, policy):
         return type.FullName() == '_object *' # internal name of PyObject
     
     result = function.result
-    # basic test if the result type demands a policy
-    needs_policy = isinstance(result, (ReferenceType, PointerType))
     # if the function returns const char*, a policy is not needed
     if IsString(result) or IsPyObject(result):
-        needs_policy = False
+        return policy
     # if returns a const T&, set the default policy
     if policy is None and result.const and isinstance(result, ReferenceType):
         policy = return_value_policy(copy_const_reference)
+    # basic test if the result type demands a policy
+    needs_policy = isinstance(result, (ReferenceType, PointerType)) 
     # show a warning to the user, if needed
     if needs_policy and policy is None:
         global _printed_warnings

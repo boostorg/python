@@ -25,6 +25,14 @@ class VirtualTest(unittest.TestCase):
         self.assertEqual(d.get_name(), 'C')
         self.assertEqual(e.get_name(), 'E')
 
+        #c = C()
+        #def bar(arg):
+        #    c.bar(arg)
+        #bar(1)      # ok
+        #bar('a')    # ok
+        #self.assertRaises(TypeError, bar, 1.0)        
+            
+
 
         
 if __name__ == '__main__':

@@ -622,6 +622,7 @@ class _VirtualWrapperGenerator(object):
         self.info = info
         self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
         self.virtual_methods = None
+        self._method_count = {}
         self.GenerateVirtualMethods()
 
 
@@ -666,7 +667,6 @@ class _VirtualWrapperGenerator(object):
         decl += indent + '}\n'
 
         # default implementations (with overloading)
-        # only for classes that are not abstract, and public methods 
         def DefaultImpl(method, param_names):
             'Return the body of a default implementation wrapper'
             wrapper = self.info[method.name].wrapper
@@ -679,7 +679,7 @@ class _VirtualWrapperGenerator(object):
                 params = ', '.join(['this'] + param_names)
                 return '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
                 
-        if not method.abstract and method.visibility == Scope.public:
+        if not method.abstract and method.visibility != Scope.private:
             minArgs = method.minArgs
             maxArgs = method.maxArgs
             impl_names = self.DefaultImplementationNames(method)
@@ -747,27 +747,45 @@ class _VirtualWrapperGenerator(object):
         This method creates the instance variable self.virtual_methods.
         '''        
         def IsVirtual(m):
-            return type(m) == Method and m.virtual        
+            return m.virtual and m.visibility != Scope.private        
                                       
         all_members = self.class_.members[:]
         for base in self.bases:
             for base_member in base.members:
                 base_member.class_ = self.class_.FullName()
                 all_members.append(base_member)
-        # extract the virtual methods, avoiding duplications
+        
+        # extract the virtual methods, avoiding duplications. The duplication
+        # must take in account the full signature without the class name, so 
+        # that inherited members are correctly excluded if the subclass overrides
+        # them.
+        def MethodSig(method):
+            if method.const:
+                const = 'const'
+            else:
+                const = ''
+            if method.result:
+                result = method.result.FullName()
+            else:
+                result = ''
+            params = ', '.join([x.FullName() for x in method.parameters]) 
+            return '%s %s(%s) %s' % (result, method.name, params, const) 
+        
+        all_members = [x for x in all_members if type(x) == Method]
         self.virtual_methods = []
         already_added = {}
         for member in all_members:
-            if IsVirtual(member) and not member.FullName() in already_added:
+            sig = MethodSig(member)
+            if IsVirtual(member) and not sig in already_added:
                 self.virtual_methods.append(member)
-                already_added[member.FullName()] = 0
+                already_added[sig] = 0
             
     
     def IsMethodUnique(self, method):
-        count = {}
-        for m in self.virtual_methods:
-            count[m.name] = count.get(m.name, 0) + 1
-        return count[m.name] == 1
+        if not self._method_count:
+            for m in self.virtual_methods:
+                self._method_count[m.name] = self._method_count.get(m.name, 0) + 1
+        return self._method_count[method] == 1
         
         
     def Constructors(self):

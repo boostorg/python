@@ -8,6 +8,9 @@ public:
         return f_abs();
     }
 
+    virtual void bar(int) {}
+    virtual void bar(char*) {}
+
     const char* get_name()
     {
         return name();
@@ -16,7 +19,7 @@ public:
 protected:    
     virtual int f_abs() = 0;
 
-private:
+private:    
     virtual const char* name() { return "C"; }
 };
 

@@ -280,6 +280,7 @@ class Type(Declaration):
         # used when the Type is a function argument
         self.default = default
         self.volatile = False
+        self.restricted = False
         self.incomplete = incomplete
 
     def __repr__(self):

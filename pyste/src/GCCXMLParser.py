@@ -87,24 +87,29 @@ class GCCXMLParser(object):
     
 
     def GetType(self, id):
-        const = False
-        volatile = False
-        if id[-1] == 'v':
-            volatile = True
-            id = id[:-1]
-        if id[-1] == 'c':
-            const = True
-            id = id[:-1]
+        def Check(id, feature):
+            pos = id.find(feature)
+            if pos != -1:
+                id = id[:pos] + id[pos+1:]
+                return True, id
+            else:
+                return False, id
+        const, id = Check(id, 'c')
+        volatile, id = Check(id, 'v')
+        restricted, id = Check(id, 'r')
         decl = self.GetDecl(id)
         if isinstance(decl, Type):
             res = deepcopy(decl)
             if const:
                 res.const = const
-            if volatile:
+            if volatile: 
                 res.volatile = volatile
+            if restricted:
+                res.restricted = restricted
         else:
             res = Type(decl.FullName(), const)
             res.volatile = volatile
+            res.restricted = restricted
             res.incomplete = decl.incomplete
         return res            
         
@@ -404,3 +409,7 @@ def ParseDeclarations(filename):
     parser = GCCXMLParser() 
     parser.Parse(filename)
     return parser.Declarations()
+
+
+if __name__ == '__main__':
+    ParseDeclarations(r'D:\Programming\Libraries\boost-cvs\boost\libs\python\pyste\example\test.xml')
