@@ -104,7 +104,7 @@ namespace {
               PyErr_Clear();
               if (getstate_manages_dict.get() == 0)
               {
-                  PyErr_SetString(PyExc_RuntimeError, "__getstate_manages_dict__ not defined");
+                  PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__getstate_manages_dict__ not set)");
                   throw error_already_set();
               }
           }
@@ -119,7 +119,7 @@ namespace {
           PyErr_Clear();
           if (dict_defines_state.get() == 0)
           {
-              PyErr_SetString(PyExc_RuntimeError, "__dict_defines_state__ not defined");
+              PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__dict_defines_state__ not set)");
               throw error_already_set();
           }
       }
