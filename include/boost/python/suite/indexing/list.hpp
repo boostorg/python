@@ -1,10 +1,10 @@
-// Header file list.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file list.hpp
 //
 // Indexing algorithms support for std::list instances
 //
@@ -21,7 +21,6 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 #include <list>
 
 #if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
@@ -58,11 +57,11 @@ namespace boost { namespace python { namespace indexing {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::list instances
+    // algorithms support for std::list instances
     ///////////////////////////////////////////////////////////////////////
 
     template <class T, class Allocator>
-    class selector_impl<std::list<T, Allocator> >
+    class algorithms_selector<std::list<T, Allocator> >
     {
       typedef std::list<T, Allocator> Container;
 
@@ -103,14 +102,17 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr>
   void list_algorithms<ContainerTraits, Ovr>::sort (container &c)
   {
-    typedef typename self_type::container_traits::value_traits_ value_traits_;
-    typedef typename value_traits_::less comparison;
+    typedef typename self_type::container_traits::value_traits_type
+      vtraits;
+
+    typedef typename vtraits::less comparison;
 #if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
     // MSVC6 doesn't have a templated sort member in list, so we just
     // use the parameterless version. This gives the correct behaviour
-    // provided that value_traits_::less is std::less<value_type>. It
-    // would be possible to support std::greater<T> (the only other
-    // overload of list::sort in MSVC6) with some additional work.
+    // provided that value_traits_type::less is exactly
+    // std::less<value_type>. It would be possible to support
+    // std::greater<T> (the only other overload of list::sort in
+    // MSVC6) with some additional work.
     BOOST_STATIC_ASSERT(
         (::boost::is_same<comparison, std::less<value_type> >::value));
     c.sort ();

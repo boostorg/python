@@ -1,10 +1,13 @@
-// Header file container_proxy.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file container_proxy.hpp
+//
+// A container-wrapper that provides Python-style reference semantics
+// for values stored in vector-like containers via element proxies.
 //
 // Class invariant:
 //   size() == m_proxies.size()
@@ -39,7 +42,6 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 
 namespace boost { namespace python { namespace indexing {
 
@@ -683,17 +685,18 @@ namespace boost { namespace python { namespace indexing {
 
 #if defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     // value_traits for the reference type (i.e. our element_proxy
-    // instance) supplies a custom visitor_helper. Compilers without
-    // partial specialization need help here.
+    // instance) supplies a custom visit_container_class. Compilers
+    // without partial specialization need help here.
 
-    typedef element_proxy_traits<Container> value_traits_;
+    typedef element_proxy_traits<Container> value_traits_type;
 
-    // Hide base class visitor_helper, which would call the
+    // Hide base class visit_container_class, which would call the
     // unspecialized value_traits version
     template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    static void visit_container_class(
+        PythonClass &pyClass, Policy const &policy)
     {
-      value_traits_::visitor_helper (pyClass, policy);
+      value_traits_type::visit_container_class (pyClass, policy);
     }
 #endif
   };
@@ -701,11 +704,11 @@ namespace boost { namespace python { namespace indexing {
 #if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for container_proxy instances
+    // algorithms support for container_proxy instances
     ///////////////////////////////////////////////////////////////////////
 
     template <typename RawContainer, typename Holder, typename Generator>
-    class selector_impl<container_proxy<RawContainer, Holder, Generator> >
+    class algorithms_selector<container_proxy<RawContainer, Holder, Generator> >
     {
       typedef container_proxy<RawContainer, Holder, Generator> Container;
 

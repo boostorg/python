@@ -1,12 +1,12 @@
-// -*- mode:c++ -*-
-//
-// Header file container_suite.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file container_suite.hpp
+//
+// Top-level interface to the container suite.
 //
 // History
 // =======
@@ -19,7 +19,7 @@
 #ifndef BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
 #define BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
 
-#include <boost/python/suite/indexing/algo_selector.hpp>
+#include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/visitor.hpp>
 
 #include <boost/python/return_by_value.hpp>
@@ -33,7 +33,7 @@ namespace boost { namespace python { namespace indexing {
       class Container,
       int Flags = 0,
       class Algorithms
-          = algo_selector<Container>
+          = algorithms<Container>
   >
   struct container_suite
     : public visitor<Algorithms, default_container_policies, Flags>

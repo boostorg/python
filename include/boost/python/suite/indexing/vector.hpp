@@ -1,10 +1,10 @@
-// Header file vector.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file vector.hpp
 //
 // Indexing algorithms support for std::vector instances
 //
@@ -21,18 +21,17 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 #include <vector>
 
 namespace boost { namespace python { namespace indexing {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::vector instances
+    // algorithms support for std::vector instances
     ///////////////////////////////////////////////////////////////////////
 
     template <class T, class Allocator>
-    class selector_impl<std::vector<T, Allocator> >
+    class algorithms_selector<std::vector<T, Allocator> >
     {
       typedef std::vector<T, Allocator> Container;
 

@@ -1,10 +1,10 @@
-// Header file set.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file set.hpp
 //
 // Indexing algorithms support for std::set instances
 //
@@ -21,7 +21,6 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 #include <set>
 
 namespace boost { namespace python { namespace indexing {
@@ -79,11 +78,11 @@ namespace boost { namespace python { namespace indexing {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::set instances
+    // algorithms support for std::set instances
     ///////////////////////////////////////////////////////////////////////
 
     template <class Key, class Compare, class Allocator>
-    class selector_impl<std::set<Key, Compare, Allocator> >
+    class algorithms_selector<std::set<Key, Compare, Allocator> >
     {
       typedef std::set<Key, Compare, Allocator> Container;
 
@@ -96,11 +95,11 @@ namespace boost { namespace python { namespace indexing {
     };
 
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::multiset instances
+    // algorithms support for std::multiset instances
     ///////////////////////////////////////////////////////////////////////
 
     template <class Key, class Compare, class Allocator>
-    class selector_impl<std::multiset<Key, Compare, Allocator> >
+    class algorithms_selector<std::multiset<Key, Compare, Allocator> >
     {
       typedef std::multiset<Key, Compare, Allocator> Container;
 

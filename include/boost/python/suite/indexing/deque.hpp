@@ -1,10 +1,10 @@
-// Header file deque.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file deque.hpp
 //
 // Indexing algorithms support for std::deque instances
 //
@@ -21,18 +21,17 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 #include <deque>
 
 namespace boost { namespace python { namespace indexing {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::deque instances
+    // algorithms support for std::deque instances
     ///////////////////////////////////////////////////////////////////////
 
     template <class T, class Allocator>
-    class selector_impl<std::deque<T, Allocator> >
+    class algorithms_selector<std::deque<T, Allocator> >
     {
       typedef std::deque<T, Allocator> Container;
 

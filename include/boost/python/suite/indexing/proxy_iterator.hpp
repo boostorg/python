@@ -48,7 +48,7 @@ namespace boost { namespace python { namespace indexing {
     > base_type;
 
   public:
-    typedef ContainerProxy container_proxy_;
+    typedef ContainerProxy container_proxy_type;
 
     typedef Iter raw_iterator;
     typedef Traits raw_iterator_traits;
@@ -59,9 +59,12 @@ namespace boost { namespace python { namespace indexing {
     typedef value_type *pointer;
     typedef value_type reference; // Already has reference semantics
 
-    proxy_iterator (container_proxy_ *p, size_type i) : ptr (p), index (i) { }
+    proxy_iterator (container_proxy_type *p, size_type i)
+      : ptr (p), index (i)
+    {
+    }
  
-    proxy_iterator (container_proxy_ *p, raw_iterator iter)
+    proxy_iterator (container_proxy_type *p, raw_iterator iter)
       : ptr (p), index (iter - p->raw_container().begin())
     {
     }
@@ -139,7 +142,7 @@ namespace boost { namespace python { namespace indexing {
 #else
   private:
 #endif
-    container_proxy_ *ptr;
+    container_proxy_type *ptr;
     size_type index;
   };
 } } }

@@ -1,10 +1,13 @@
-// Header file visitor.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file visitor.hpp:
+//
+// def_visitor implementation to install the container_suite's Python
+// methods in an object of a boost::python::class_<> instance.
 //
 // History
 // =======
@@ -26,9 +29,16 @@
 #include <boost/bind.hpp>
 #include <functional>
 
-#define ICE_AND(a, b) ::boost::type_traits::ice_and <(a), (b)>::value
-#define ICE_NOT(a) ::boost::type_traits::ice_not <(a)>::value
-// undef'd at end of header
+# if defined (BOOST_MSVC)
+    // Prevent MSVC int-to-bool truncation warning (C4305)
+#   define QUIET_BOOL(val) static_cast<bool>(val)
+# else
+#   define QUIET_BOOL(val) (val)
+# endif
+
+# define ICE_AND(a, b) ::boost::type_traits::ice_and <(a), (b)>::value
+# define ICE_NOT(a) ::boost::type_traits::ice_not <QUIET_BOOL(a)>::value
+// these three macros undef'd at end of header
 
 namespace boost { namespace python { namespace indexing {
   enum visitor_flags {
@@ -495,9 +505,9 @@ namespace boost { namespace python { namespace indexing {
     Policy m_policy;
 
   public:
-    typedef Algorithms algorithms;
-    typedef typename algorithms::container_traits traits;
-    typedef typename traits::value_traits_ value_traits_;
+    typedef Algorithms algorithms_type;
+    typedef typename algorithms_type::container_traits traits;
+    typedef typename traits::value_traits_type value_traits_type;
 
     explicit visitor (Policy const &policy = Policy()) : m_policy (policy) { }
 
@@ -523,43 +533,43 @@ namespace boost { namespace python { namespace indexing {
         ICE_AND(
             traits::has_copyable_iter,
             ICE_NOT (Flags & disable_len))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_getitem <has_indexing, has_slicing>
-        ::apply (pyClass, algorithms(), m_policy);
+        ::apply (pyClass, algorithms_type(), m_policy);
 
       maybe_add_setitem<
           ICE_AND (traits::has_mutable_ref, has_indexing),
           has_slicing
-      >::apply (pyClass, algorithms(), m_policy);
+      >::apply (pyClass, algorithms_type(), m_policy);
 
       maybe_add_delitem<ICE_AND (traits::has_erase, has_indexing), has_slicing>
-        ::apply (pyClass, algorithms(), m_policy);
+        ::apply (pyClass, algorithms_type(), m_policy);
 
       maybe_add_iter<
         ICE_AND(
             traits::index_style != index_style_linear,
             traits::has_copyable_iter)
-      >::apply (pyClass, algorithms(), m_policy);
+      >::apply (pyClass, algorithms_type(), m_policy);
 
       maybe_add_sort<
         ICE_AND(
             ICE_AND(
                 traits::is_reorderable,
-                value_traits_::lessthan_comparable),
+                value_traits_type::less_than_comparable),
             ICE_NOT (Flags & disable_reorder))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_reverse<
         ICE_AND (traits::is_reorderable, ICE_NOT (Flags & disable_reorder))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_append<traits::has_push_back>
-        ::apply (pyClass, algorithms(), precallPolicy);
+        ::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_insert<
         ICE_AND (traits::has_insert, ICE_NOT (Flags & disable_insert))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_extend<
         ICE_AND(
@@ -567,7 +577,7 @@ namespace boost { namespace python { namespace indexing {
                 traits::index_style == index_style_linear,
                 traits::has_insert),
             ICE_NOT (Flags & disable_extend))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_index<
         ICE_AND(
@@ -575,21 +585,22 @@ namespace boost { namespace python { namespace indexing {
                 traits::index_style == index_style_linear,
                 traits::has_find),
             ICE_NOT (Flags & disable_search))
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_count<
         ICE_AND(
             traits::has_find,
             ICE_NOT (Flags & disable_search)),
         traits::index_style
-      >::apply (pyClass, algorithms(), precallPolicy);
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
-      Algorithms::visitor_helper (pyClass, m_policy);
+      Algorithms::visit_container_class (pyClass, m_policy);
     }
   };
 } } }
 
-#undef ICE_AND
 #undef ICE_NOT
+#undef ICE_AND
+#undef QUIET_BOOL
 
 #endif // BOOST_PYTHON_INDEXING_VISITOR_HPP

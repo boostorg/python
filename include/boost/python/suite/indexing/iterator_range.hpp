@@ -1,13 +1,13 @@
-// Header file iterator_range.hpp
-//
-// Emulate an STL container using a pair of iterators. Doesn't support
-// insertion or deletion, for the obvious reasons.
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file iterator_range.hpp
+//
+// Emulate an STL container using a pair of iterators. Doesn't support
+// insertion or deletion, for the obvious reasons.
 //
 // History
 // =======
@@ -28,7 +28,6 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
-#include <boost/python/suite/indexing/algo_selector.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename Iterator>
@@ -183,11 +182,11 @@ namespace boost { namespace python { namespace indexing {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for iterator_range instances
+    // algorithms support for iterator_range instances
     ///////////////////////////////////////////////////////////////////////
 
     template <typename Iterator>
-    class selector_impl<iterator_range<Iterator> >
+    class algorithms_selector<iterator_range<Iterator> >
     {
       typedef iterator_range<Iterator> Container;
 

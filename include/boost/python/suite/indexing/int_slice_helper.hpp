@@ -1,12 +1,10 @@
-// -*- mode:c++ -*-
-//
-// Header file int_slice_helper.hpp
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file int_slice_helper.hpp
 //
 // History
 // =======
@@ -28,13 +26,13 @@ namespace boost { namespace python { namespace indexing {
     // Works with a SliceType that provides an int-like index_type
     // that is convertible to the algorithm's index_param
 
-    typedef Algorithms algorithms;
+    typedef Algorithms algorithms_type;
     typedef SliceType slice_type;
 
-    typedef typename algorithms::container container;
-    typedef typename algorithms::reference reference;
-    typedef typename algorithms::value_param value_param;
-    typedef typename algorithms::container_traits container_traits;
+    typedef typename algorithms_type::container container;
+    typedef typename algorithms_type::reference reference;
+    typedef typename algorithms_type::value_param value_param;
+    typedef typename algorithms_type::container_traits container_traits;
     typedef typename slice_type::index_type index_type;
 
     int_slice_helper (container &c, slice_type const &);
@@ -91,7 +89,7 @@ namespace boost { namespace python { namespace indexing {
   typename int_slice_helper<Algorithms, SliceType>::reference
   int_slice_helper<Algorithms, SliceType>::current () const
   {
-    return algorithms::get (*m_ptr, m_pos);
+    return algorithms_type::get (*m_ptr, m_pos);
   }
 
   template<typename Algorithms, typename SliceType>
@@ -111,7 +109,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
   void int_slice_helper<Algorithms, SliceType>::assign (value_param val) const
   {
-    algorithms::assign (*m_ptr, m_pos, val);
+    algorithms_type::assign (*m_ptr, m_pos, val);
   }
 
   namespace detail {

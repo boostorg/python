@@ -1,13 +1,13 @@
-// Header file container_traits.hpp
-//
-// Traits information about entire containers for use in determining
-// what Python methods to support for a container.
-//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // Use, modification and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
+//
+// Header file container_traits.hpp
+//
+// Traits information about entire containers for use in determining
+// what Python methods to provide.
 //
 // History
 // =======
@@ -85,26 +85,25 @@ namespace boost { namespace python { namespace indexing {
     typedef typename make_signed<size_type>::type index_type;
     // at(), operator[]. Signed to support Python -ve indexes
 
-    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <value_type>::param_type
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS<value_type>::param_type
         value_param;
-    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS<key_type>::param_type
         key_param;
-    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS<index_type>::param_type
         index_param;
 
     // Allow client code to replace the default value traits via our
     // second (optional) template parameter
     typedef value_traits<typename base_type::value_type> default_value_traits;
-
     typedef typename detail::maybe_override<
-        default_value_traits, ValueTraits>::type value_traits_;
+        default_value_traits, ValueTraits>::type value_traits_type;
 
     BOOST_STATIC_CONSTANT(
         bool, has_mutable_ref
         = ICE_AND (base_type::has_mutable_ref, is_mutable));
 
     BOOST_STATIC_CONSTANT(
-        bool, has_find = value_traits_::equality_comparable);
+        bool, has_find = value_traits_type::equality_comparable);
 
     // Assume the worst for everything else
     BOOST_STATIC_CONSTANT (bool, has_insert    = false);
@@ -112,11 +111,12 @@ namespace boost { namespace python { namespace indexing {
     BOOST_STATIC_CONSTANT (bool, has_pop_back  = false);
     BOOST_STATIC_CONSTANT (bool, has_push_back = false);
 
-    // Forward visitor_helper to value_traits_
+    // Forward visit_container_class to value_traits_type
     template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    static void visit_container_class(
+        PythonClass &pyClass, Policy const &policy)
     {
-      value_traits_::visitor_helper (pyClass, policy);
+      value_traits_type::visit_container_class (pyClass, policy);
     }
   };
 
