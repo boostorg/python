@@ -151,7 +151,7 @@ std::size_t length_if_string(PyObject* p)
    if (!converter.convertible())
       return 0;
    else
-      return converter().size();
+      return converter(p).size();
 }
 </pre>
 
