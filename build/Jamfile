@@ -103,7 +103,6 @@ dll boost_python
       : $(BOOST_PYTHON_INCLUDES)
 	<shared-linkable>true
         <runtime-link>dynamic
-        <define>BOOST_PYTHON_HAS_DLL_RUNTIME=1
 	$(PYTHON_PROPERTIES)
           ;
 
