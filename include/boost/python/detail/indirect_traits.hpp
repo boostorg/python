@@ -183,6 +183,7 @@ struct is_reference_to_class
           >
       >
 {
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
 };
 
 template <class T>
@@ -196,6 +197,7 @@ struct is_pointer_to_class
           >
       >
 {
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_pointer_to_class,(T))
 };
 
 #  else
