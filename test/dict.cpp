@@ -61,6 +61,7 @@ void test_templates(object print)
     //print(tmp[1]);
     tmp[1.5] = 13;
     print(tmp.get(1.5));
+    print(tmp.get(44));
     print(tmp);
     print(tmp.get(2,"default"));
     print(tmp.has_key(key));

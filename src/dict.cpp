@@ -65,8 +65,8 @@ object dict_base::get(object_cref k) const
 {
     if (check_exact(this))
     {
-        return object(detail::borrowed_reference(
-                          PyDict_GetItem(this->ptr(),k.ptr())));
+        PyObject* result = PyDict_GetItem(this->ptr(),k.ptr());
+        return object(detail::borrowed_reference(result ? result : Py_None));
     }
     else
     {

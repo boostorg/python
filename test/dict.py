@@ -20,6 +20,7 @@
 >>> test_templates(printer)
 a test string
 13
+None
 {1.5: 13, 1: 'a test string'}
 default
 0
