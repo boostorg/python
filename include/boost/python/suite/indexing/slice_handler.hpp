@@ -27,6 +27,7 @@
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
+#include <boost/mpl/apply.hpp>
 #include <algorithm>
 
 // #include <boost/python/extract.hpp>
@@ -99,9 +100,46 @@ namespace indexing
     typedef typename Algorithms::value_type value_type;
     typedef typename Algorithms::reference reference;
 
-    static PyObject *get_slice (container &c, slice sl)
+    class postcall_override
     {
-      boost::python::list temp;
+      // This class overrides our Policy's postcall function and
+      // result_conveter to handle the list returned from get_slice.
+      // The Policy's result_converter is removed, since it gets
+      // applied within get_slice. Our postcall override applies the
+      // original postcall to each element of the Python list returned
+      // from get_slice.
+
+      Policy mBase;
+
+    public:
+      postcall_override (Policy const &p) : mBase (p) {
+      }
+
+      bool precall (PyObject *args) {
+	return mBase.precall (args);
+      }
+
+      PyObject* postcall (PyObject *args, PyObject *result) {
+	int size = PyList_Size (result);
+
+	for (int count = 0; count < size; ++count)
+	  {
+	    mBase.postcall (args, PyList_GetItem (result, count));
+	  }
+
+	return result;
+      }
+
+      typedef boost::python::default_result_converter result_converter;
+    };
+
+    static boost::python::list get_slice (container &c, slice sl)
+    {
+      typedef typename Policy::result_converter converter_type;
+      typedef typename Algorithms::reference reference;
+      typename boost::mpl::apply1<converter_type, reference>::type converter;
+
+      boost::python::list result;
 
       sl.setLength (Algorithms::size(c));
 
@@ -111,18 +149,18 @@ namespace indexing
 	     ; ((sl.stop() - index) * direction) > 0
 	     ; index += sl.step())
 	{
-	  // *FIXME* handle return policies for each element?
-	  temp.append (Algorithms::get (c, index));
+	  result.append
+	    (boost::python::handle<>
+	     (converter (Algorithms::get (c, index))));
 	}
 
-      PyObject *result = temp.ptr();
-      Py_INCREF (result);  // ????
       return result;
     }
 
     static boost::python::object make_getitem (Policy const &policy)
     {
-      return boost::python::make_function (get_slice, policy);
+      return boost::python::make_function
+	(get_slice, postcall_override (policy));
     }
   };
 }
