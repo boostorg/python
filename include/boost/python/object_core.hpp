@@ -88,21 +88,12 @@ namespace api
   template <class U>
   class object_operators
   {
+   protected:
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
       typedef object const& object_cref;
 # else 
       typedef object object_cref;
 # endif
-
-     // there is a confirmed CWPro8 codegen bug here. We prevent the
-     // early destruction of a temporary by binding a named object
-     // instead.
-# if __MWERKS__ != 0x3000 
-    typedef object const& object_cref2;
-# else
-    typedef object const object_cref2;
-# endif
-      
    public:
       // function call
       //
@@ -201,6 +192,15 @@ namespace api
               slice_bound<T>::type(start)
               , slice_bound<V>::type(end));
       }
+# endif
+   private:
+     // there is a confirmed CWPro8 codegen bug here. We prevent the
+     // early destruction of a temporary by binding a named object
+     // instead.
+# if __MWERKS__ != 0x3000 
+    typedef object const& object_cref2;
+# else
+    typedef object const object_cref2;
 # endif
   };
 

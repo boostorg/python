@@ -63,6 +63,7 @@ bpl-test operators ;
 bpl-test callbacks ;
 bpl-test object ;
 bpl-test list ;
+bpl-test long ;
 bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;
