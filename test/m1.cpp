@@ -9,7 +9,7 @@
 #include "complicated.hpp"
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/type_from_python.hpp>
+#include <boost/python/lvalue_from_pytype.hpp>
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/to_python_converter.hpp>
@@ -111,7 +111,7 @@ struct simple_to_python
     }
 };
 
-struct int_from_noddy_extractor
+struct int_from_noddy
 {
     static int& execute(NoddyObject& p)
     {
@@ -198,18 +198,18 @@ BOOST_PYTHON_MODULE_INIT(m1)
     
     simple_to_python();
 
-    type_from_python<&NoddyType,int_from_noddy_extractor>();
+    lvalue_from_pytype<int_from_noddy,&NoddyType>();
 
-    boost::python::type_from_python<
-        &SimpleType
-#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-        , member_extractor<SimpleObject, simple, &SimpleObject::x>
+    lvalue_from_pytype<
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300 // doesn't support non-type member pointer parameters
+        extract_member<SimpleObject, simple, &SimpleObject::x>
 #else 
-        , extract_simple_object
+        extract_simple_object
 #endif 
+        , &SimpleType
         >();
 
-    type_from_python<&SimpleType, identity_extractor<SimpleObject> >();
+    lvalue_from_pytype<extract_identity<SimpleObject>,&SimpleType>();
     
     module m1("m1");
 
