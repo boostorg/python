@@ -8,12 +8,13 @@
 
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/object/function.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_non_const_reference.hpp>
 # include <boost/python/object/function_object.hpp>
+# include <boost/python/arg_from_python.hpp>
+# include <boost/bind.hpp>
 
 namespace boost { namespace python { 
 

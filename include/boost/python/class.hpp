@@ -12,7 +12,6 @@
 # include <boost/python/handle.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/type_id.hpp>
-# include <boost/python/detail/wrap_function.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/object/class_converters.hpp>
 # include <boost/type_traits/ice.hpp>
@@ -26,6 +25,8 @@
 # include <boost/utility.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/object/pickle_support.hpp>
+# include <boost/python/make_function.hpp>
+# include <boost/python/object/add_to_namespace.hpp>
 
 namespace boost { namespace python { 
 
@@ -101,30 +102,19 @@ class class_ : public objects::class_base
     template <class F>
     self& def(char const* name, F f)
     {
-        // Use function::add_to_namespace to achieve overloading if
-        // appropriate.
-        objects::function::add_to_namespace(
-            *this, name
-            , object(
-                detail::new_reference(
-                    detail::wrap_function(
-                    // This bit of nastiness casts F to a member function of T if possible. 
-                    detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f)
-                        ))));
+        this->def_impl(name, f, 0, &f);
         return *this;
     }
 
     template <class Fn, class CallPolicy>
     self& def(char const* name, Fn fn, CallPolicy policy)
     {
-        this->def(name
+        return this->def(name
                   , boost::python::make_function(
                       // This bit of nastiness casts F to a member function of T if possible. 
                       detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
                       , policy)
             );
-        
-        return *this;
     }
 
     template <detail::operator_id id, class L, class R>
@@ -133,12 +123,7 @@ class class_ : public objects::class_base
         typedef detail::operator_<id,L,R> op_t;
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
-        objects::function::add_to_namespace(
-            *this, op.name()
-            , object(
-                detail::new_reference(
-                    detail::wrap_function(&op_t::template apply<T>::execute))));
-        return *this;
+        return this->def(op.name(), &op_t::template apply<T>::execute);
     }
     
     // Define the constructor with the given Args, which should be an
@@ -146,26 +131,24 @@ class class_ : public objects::class_base
     template <class Args>
     self& def_init(Args const&)
     {
-        def("__init__",
-            make_constructor<Args>(
+        return this->def("__init__",
+            python::make_constructor<Args>(
                 // Using runtime type selection works around a CWPro7 bug.
                 objects::select_holder<T,held_type>((held_type*)0).get()
                 )
             );
-        return *this;
     }
 
     template <class Args, class CallPolicy>
     self& def_init(Args const&, CallPolicy policy)
     {
-        def("__init__",
-            make_constructor<Args>(
+        return this->def("__init__",
+            python::make_constructor<Args>(
                 policy
                 // Using runtime type selection works around a CWPro7 bug.
                 , objects::select_holder<T,held_type>((held_type*)0).get()
                 )
             );
-        return *this;
     }
 
     // Define the default constructor.
@@ -216,6 +199,24 @@ class class_ : public objects::class_base
       return *this;
     }
 
+ private: // helper functions
+
+    template <class F>
+    inline void def_impl(char const* name, F const& f, char const* doc, ...)
+    {
+        objects::add_to_namespace(
+            *this, name, make_function(
+                    // This bit of nastiness casts F to a member function of T if possible. 
+                detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f))
+            , doc);
+    }
+
+    template <class F>
+    inline void def_impl(char const* name, F const& f, char const* doc, object const volatile*)
+    {
+        objects::add_to_namespace(*this, name, f, doc);
+    }
+    
  private: // types
     typedef objects::class_id class_id;
     

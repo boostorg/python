@@ -7,21 +7,24 @@
 # define BACK_REFERENCE_DWA2002510_HPP
 
 # include <boost/python/handle.hpp>
-# include <boost/python/object_core.hpp>
+# include <boost/python/object_fwd.hpp>
+# include <boost/python/detail/dependent.hpp>
 
 namespace boost { namespace python { 
 
 template <class T>
 struct back_reference
 {
+ private: // types
+    typedef typename detail::dependent<object,T>::type source_t;
  public:
     typedef T type;
     
     back_reference(PyObject*, T);
-    object const& source() const;
+    source_t const& source() const;
     T get() const;
  private:
-    object m_source;
+    source_t m_source;
     T m_value;
 };
 
@@ -82,7 +85,7 @@ back_reference<T>::back_reference(PyObject* p, T x)
 }
 
 template <class T>
-object const& back_reference<T>::source() const
+typename back_reference<T>::source_t const& back_reference<T>::source() const
 {
     return m_source;
 }

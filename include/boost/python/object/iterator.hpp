@@ -10,7 +10,7 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_const_reference.hpp>
-# include <boost/python/object/function.hpp>
+# include <boost/python/object/function_object.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/type.hpp>
 # include <boost/python/arg_from_python.hpp>
@@ -126,11 +126,10 @@ namespace detail
           return object(class_obj);
 
       // Make a callable object which can be used as the iterator's next() function.
-      handle<> next_function(
-          new objects::function(
-              objects::py_function(
-                  bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies))
-              , 1));
+      object next_function = 
+          objects::function_object(
+                  bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies)
+              , 1);
     
       return class_<range_>(name)
           .def("__iter__", identity_function())
@@ -192,17 +191,14 @@ inline object make_iterator_function(
 {
     typedef typename Accessor1::result_type result_type;
       
-    return object(
-        python::detail::new_non_null_reference(
-            new objects::function(
-                objects::py_function(
-                    boost::bind(
-                        &detail::make_iterator_help<
-                        Target,result_type,Accessor1,Accessor2,NextPolicies
-                        >::create
-                        , get_start, get_finish, _1, _2))
-                ,1 ))
-        );
+    return 
+        objects::function_object(
+            boost::bind(
+                &detail::make_iterator_help<
+                    Target,result_type,Accessor1,Accessor2,NextPolicies
+                >::create
+                , get_start, get_finish, _1, _2)
+            , 1 );
 }
 
 //

@@ -111,7 +111,7 @@ void exercise(list x, object y, object print)
     print(x);
 
     print("reverse sorted:");
-    x.sort(handle<>(make_function(notcmp)));
+    x.sort(&notcmp);
     print(x);
 
     list w;

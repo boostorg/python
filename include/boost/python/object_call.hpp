@@ -11,10 +11,10 @@
 #define N BOOST_PP_ITERATION()
 
     template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
-    typename dependent<object, A0>::type
+    typename detail::dependent<object, A0>::type
     operator()(BOOST_PYTHON_BINARY_ENUM(N, A, const& a)) const
     {
-        typedef typename dependent<object, A0>::type obj;
+        typedef typename detail::dependent<object, A0>::type obj;
         U const& self = *static_cast<U const*>(this);
         return call<obj>(get_managed_object(self, tag), BOOST_PYTHON_UNARY_ENUM(N, a));
     }

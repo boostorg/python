@@ -8,10 +8,11 @@
 
 #include <boost/python/object/class.hpp>
 #include <boost/python/tuple.hpp>
+#include <boost/python/object_core.hpp>
 
 namespace boost { namespace python {
 
-handle<> make_instance_reduce_function();
+BOOST_PYTHON_DECL object const& make_instance_reduce_function();
 
 struct pickle_suite;
 

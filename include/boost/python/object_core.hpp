@@ -16,6 +16,7 @@
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/converter/object_manager.hpp>
+# include <boost/python/detail/dependent.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
 
@@ -76,16 +77,6 @@ namespace api
 
   template <bool is_proxy, bool is_object_manager>  struct object_initializer;
   
-  // A way to turn a conrete type T into a type dependent on U. This
-  // keeps conforming compilers from complaining about returning an
-  // incomplete T from a template member function (which must be
-  // defined in the class body to keep MSVC happy).
-  template <class T, class U>
-  struct dependent
-  {
-      typedef T type;
-  };
-
   class object;
   typedef PyObject* (object::*bool_type)() const;
   

@@ -28,21 +28,16 @@ module_base::~module_base()
 {
 }
 
-void module_base::setattr(const char* name, PyObject* x)
-{
-    setattr(name, handle<>(x));
-}
-
-void module_base::setattr(char const* name, handle<> const& x)
+void module_base::setattr_doc(const char* name, python::object const& x, char const* doc)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
-    objects::function::add_to_namespace(python::object(m_module), name, python::object(x));
+    objects::function::add_to_namespace(python::object(m_module), name, x, doc);
 }
 
 void module_base::add(type_handle const& x)
 {
-    this->setattr(x->tp_name, x);
+    this->setattr_doc(x->tp_name, python::object(x), 0);
 }
 
 void module_base::add_class(type_handle const& class_obj)

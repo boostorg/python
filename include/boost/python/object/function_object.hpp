@@ -5,19 +5,20 @@
 // to its suitability for any purpose.
 #ifndef FUNCTION_OBJECT_DWA2002725_HPP
 # define FUNCTION_OBJECT_DWA2002725_HPP
-# include <boost/python/object/function.hpp>
+# include <boost/python/detail/wrap_python.hpp>
+# include <boost/function/function2.hpp>
 # include <boost/python/object_core.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
+BOOST_PYTHON_DECL api::object function_object_impl(boost::function2<PyObject*, PyObject*, PyObject*> const& f, unsigned min_args, unsigned max_args = 0);
+
 template <class F>
 inline object function_object(F const& f, unsigned min_args, unsigned max_args = 0)
 {
-    return python::object(
-        python::detail::new_non_null_reference(
-            new function(objects::py_function(f), min_args, max_args)));
+    return objects::function_object_impl(boost::function2<PyObject*, PyObject*, PyObject*>(f), min_args, max_args);
 }
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // FUNCTION_OBJECT_DWA2002725_HPP

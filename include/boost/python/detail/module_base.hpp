@@ -7,6 +7,7 @@
 # define MODULE_BASE_DWA2002227_HPP
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/handle.hpp>
+# include <boost/python/object_fwd.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -18,14 +19,13 @@ class BOOST_PYTHON_DECL module_base
     ~module_base();
 
     // Add elements to the module
-    void setattr(const char* name, PyObject*);
-    void setattr(const char* name, handle<> const&);
     void add(type_handle const&); // just use the type's name
     
     // Return a reference to the Python module object being built
     inline handle<> object() const;
 
  protected:
+    void setattr_doc(const char* name, python::object const&, char const* doc);
     void add_class(type_handle const& class_obj);
 
  private:

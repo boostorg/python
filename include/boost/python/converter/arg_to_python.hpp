@@ -13,18 +13,28 @@
 # include <boost/python/converter/object_manager.hpp>
 # include <boost/python/to_python_indirect.hpp>
 # include <boost/type_traits/cv_traits.hpp>
+# include <boost/type_traits/composite_traits.hpp>
+# include <boost/type_traits/function_traits.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
 # include <boost/python/detail/convertible.hpp>
 # include <boost/python/detail/string_literal.hpp>
 # include <boost/python/base_type_traits.hpp>
 // Bring in specializations
 # include <boost/python/converter/builtin_converters.hpp>
 # include <boost/python/tag.hpp>
+# include <boost/python/object/function_handle.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
 namespace detail
 {
   BOOST_PYTHON_DECL void throw_no_class_registered();
+
+  template <class T>
+  struct function_arg_to_python : handle<>
+  {
+      function_arg_to_python(T const& x);
+  };
 
   template <class T>
   struct reference_arg_to_python : handle<>
@@ -81,6 +91,9 @@ namespace detail
           bool, is_string = python::detail::is_string_literal<T const>::value);
       
       BOOST_STATIC_CONSTANT(
+          bool, function = is_function<T>::value | python::detail::is_pointer_to_function<T>::value | is_member_function_pointer<T>::value);
+      
+      BOOST_STATIC_CONSTANT(
           bool, manager = is_object_manager<T>::value);
       
       BOOST_STATIC_CONSTANT(
@@ -99,18 +112,22 @@ namespace detail
           is_string
           , arg_to_python<char const*>
           , typename mpl::select_type<
-              manager
-              , object_manager_arg_to_python<T>
+              function
+              , function_arg_to_python<T>
               , typename mpl::select_type<
-                  ptr
-                  , pointer_deep_arg_to_python<T>
+                  manager
+                  , object_manager_arg_to_python<T>
                   , typename mpl::select_type<
-                      ptr_wrapper
-                      , pointer_shallow_arg_to_python<unwrapped_ptr>
+                      ptr
+                      , pointer_deep_arg_to_python<T>
                       , typename mpl::select_type<
-                          ref_wrapper
-                          , reference_arg_to_python<unwrapped_referent>
-                          , value_arg_to_python<T>
+                          ptr_wrapper
+                          , pointer_shallow_arg_to_python<unwrapped_ptr>
+                          , typename mpl::select_type<
+                              ref_wrapper
+                              , reference_arg_to_python<unwrapped_referent>
+                              , value_arg_to_python<T>
+                            >::type
                         >::type
                     >::type
                 >::type
@@ -168,6 +185,12 @@ namespace detail
   }
   // ---------
       
+  template <class T>
+  inline function_arg_to_python<T>::function_arg_to_python(T const& x)
+      : handle<>(python::objects::make_function_handle(x))
+  {
+  }
+
   template <class T>
   inline value_arg_to_python<T>::value_arg_to_python(T const& x)
       : arg_to_python_base(&x, registered<T>::converters)

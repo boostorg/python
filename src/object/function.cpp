@@ -4,22 +4,24 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
+#include <boost/python/object/function.hpp>
 #include <boost/python/object/function_object.hpp>
+#include <boost/python/object/function_handle.hpp>
 #include <numeric>
 #include <boost/python/errors.hpp>
 #include <boost/python/str.hpp>
 #include <algorithm>
 #include <cstring>
+#include <boost/python/object_attributes.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
 extern PyTypeObject function_type;
 
-function::function(py_function implementation, unsigned min_args, unsigned max_args)
+function::function(py_function const& implementation, unsigned min_args, unsigned max_args)
     : m_fn(implementation)
     , m_min_args(min_args)
-      , m_max_args(std::max(max_args,min_args))
-      , m_overloads(0)
+    , m_max_args(std::max(max_args,min_args))
 {
     PyObject* p = this;
     PyObject_INIT(p, &function_type);
@@ -27,8 +29,6 @@ function::function(py_function implementation, unsigned min_args, unsigned max_a
 
 function::~function()
 {
-    PyObject* overloads = m_overloads;
-    Py_XDECREF(overloads);
 }
     
 PyObject* function::call(PyObject* args, PyObject* keywords) const
@@ -52,7 +52,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
             if (result != 0 || PyErr_Occurred())
                 return result;
         }
-        f = f->m_overloads;
+        f = f->m_overloads.get();
     }
     while (f);
     // None of the overloads matched; time to generate the error message
@@ -66,17 +66,18 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
     PyErr_BadArgument();
 }
 
-void function::add_overload(function* overload_)
+void function::add_overload(handle<function> const& overload_)
 {
-    Py_XINCREF(overload_);
-    
     function* parent = this;
     
-    while (parent->m_overloads != 0)
-    {
-        parent = parent->m_overloads;
-    }
+    while (parent->m_overloads)
+        parent = parent->m_overloads.get();
+
     parent->m_overloads = overload_;
+
+    // If we have no documentation, get the docs from the overload
+    if (!m_doc)
+        m_doc = overload_->m_doc;
 }
 
 namespace
@@ -146,10 +147,10 @@ namespace
       return Py_NotImplemented;
   }
   
-  function* not_implemented_function()
+  handle<function> not_implemented_function()
   {
       static object keeper(function_object(&not_implemented_impl, 2, 3));
-      return (function*)keeper.ptr();
+      return handle<function>(borrowed(downcast<function>(keeper.ptr())));
   }
 }
 
@@ -172,16 +173,17 @@ void function::add_to_namespace(
 
         if (dict == 0)
             throw_error_already_set();
-        
-        handle<> existing( allow_null(::PyObject_GetItem(dict, name.ptr())) );
+
+        // This isn't quite typesafe. We'll shoot first by assuming
+        // the thing is a function*, then ask questions later. The code works nicer that way.
+        handle<function> existing(
+            allow_null(downcast<function>(::PyObject_GetItem(dict, name.ptr())))
+            );
         
         if (existing.get())
         {
             if (existing->ob_type == &function_type)
-            {
-                static_cast<function*>(attribute.ptr())->add_overload(
-                    static_cast<function*>(existing.get()));
-            }
+                static_cast<function*>(attribute.ptr())->add_overload(existing);
         }
         // Binary operators need an additional overload which returns NotImplemented
         else if (is_binary_operator(name_))
@@ -190,11 +192,22 @@ void function::add_to_namespace(
                 not_implemented_function());
         }
     }
-    
+
     // The PyObject_GetAttrString() call above left an active error
     PyErr_Clear();
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
         throw_error_already_set();
+}
+
+void function::add_to_namespace(
+    object const& name_space, char const* name_, object const& attribute, char const* doc)
+{
+    add_to_namespace(name_space, name_, attribute);
+    if (doc != 0)
+    {
+        object attr_copy(attribute);
+        attr_copy.attr("__doc__") = doc;
+    }
 }
 
 namespace
@@ -245,6 +258,24 @@ extern "C"
         handle_exception(bind_return(result, static_cast<function*>(func), args, kw));
         return result;
     }
+
+    static PyObject* function_get_doc(PyObject* op, void*)
+    {
+        function* f = downcast<function>(op);
+        return incref(f->doc().ptr());
+    }
+    
+    static int function_set_doc(PyObject* op, PyObject* doc)
+    {
+        function* f = downcast<function>(op);
+        f->doc(doc ? object(python::detail::borrowed_reference(doc)) : object());
+        return 0;
+    }
+    
+    static PyGetSetDef function_getsetlist[] = {
+        {"__doc__", function_get_doc, (setter)function_set_doc},
+	{NULL} /* Sentinel */
+    };
 }
 
 PyTypeObject function_type = {
@@ -277,8 +308,8 @@ PyTypeObject function_type = {
     0,                                  /* tp_iter */
     0,                                  /* tp_iternext */
     0,                                  /* tp_methods */
-    0, // func_memberlist,                      /* tp_members */
-    0, //func_getsetlist,                       /* tp_getset */
+    0, // func_memberlist,              /* tp_members */
+    function_getsetlist,                /* tp_getset */
     0,                                  /* tp_base */
     0,                                  /* tp_dict */
     function_descr_get,                 /* tp_descr_get */
@@ -289,5 +320,32 @@ PyTypeObject function_type = {
     0,
     0                                       /* tp_new */
 };
+
+object function_object_impl(py_function const& f, unsigned min_args, unsigned max_args)
+{
+    return python::object(
+        python::detail::new_non_null_reference(
+            new function(f, min_args, max_args)));
+}
+
+handle<> function_handle_impl(py_function const& f, unsigned min_args, unsigned max_args)
+{
+    return python::handle<>(
+        allow_null(
+            new function(f, min_args, max_args)));
+}
+
+BOOST_PYTHON_DECL void add_to_namespace(
+    object const& name_space, char const* name, object const& attribute)
+{
+    function::add_to_namespace(name_space, name, attribute);
+}
+
+BOOST_PYTHON_DECL void add_to_namespace(
+    object const& name_space, char const* name, object const& attribute, char const* doc)
+{
+    function::add_to_namespace(name_space, name, attribute, doc);
+}
+
 
 }}} // namespace boost::python::objects

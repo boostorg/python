@@ -54,9 +54,9 @@ namespace {
 
 } // namespace
 
-handle<> make_instance_reduce_function()
+object const& make_instance_reduce_function()
 {
-    static handle<> result(make_function(&instance_reduce));
+    static object result(&instance_reduce);
     return result;
 }
 

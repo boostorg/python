@@ -8,6 +8,7 @@
 
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/same_traits.hpp>
+# include <boost/type_traits/cv_traits.hpp>
 # include <boost/type.hpp>
 # include <boost/python/base_type_traits.hpp>
 # include <boost/python/detail/convertible.hpp>
@@ -16,18 +17,41 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  template <class Target>
-  inline Target* upcast(Target* p, yes_convertible)
+  template <class Source, class Target> inline Target* upcast_impl(Source*, Target*);
+  
+  template <class Source, class Target>
+  inline Target* upcast(Source* p, yes_convertible, no_convertible, Target*)
   {
       return p;
   }
 
-  template <class Target, class Source>
-  inline Target* upcast(Source* p, no_convertible, boost::type<Target>* = 0)
+  template <class Source, class Target>
+  inline Target* upcast(Source* p, no_convertible, no_convertible, Target*)
   {
       typedef typename base_type_traits<Source>::type base;
-      return detail::upcast<Target>((base*)p, convertible<Target*>::check((base*)0));
+      
+      return detail::upcast_impl((base*)p, (Target*)0);
   }
+
+  template <bool is_same = true>
+  struct upcaster
+  {
+      template <class T>
+      static inline T* execute(T* x, T*) { return x; }
+  };
+  
+  template <>
+  struct upcaster<false>
+  {
+      template <class Source, class Target>
+      static inline Target* execute(Source* x, Target*)
+      {
+          return detail::upcast(
+              x, detail::convertible<Target*>::check(x)
+              , detail::convertible<Source*>::check((Target*)0)
+              , (Target*)0);
+      }
+  };
 
 
   template <class Target, class Source>
@@ -48,6 +72,16 @@ namespace detail
   {
       typedef char must_be_a_complete_type[sizeof(T)];
   }
+
+  template <class Source, class Target>
+  inline Target* upcast_impl(Source* x, Target*)
+  {
+      typedef typename add_cv<Source>::type src_t;
+      typedef typename add_cv<Target>::type target_t;
+      static bool const same = is_same<src_t,target_t>::value;
+      
+      return detail::upcaster<same>::execute(x, (Target*)0);
+  }
 }
 
 template <class Target, class Source>
@@ -55,7 +89,8 @@ inline Target* upcast(Source* x, Target* = 0)
 {
     detail::assert_castable<Source>();
     detail::assert_castable<Target>();
-    return detail::upcast<Target>(x, detail::convertible<Target*>::check(x));
+    return detail::upcast_impl(x, (Target*)0);
+    
 }
 
 template <class Target, class Source>

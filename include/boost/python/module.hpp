@@ -12,6 +12,7 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/detail/module_base.hpp>
 # include <boost/python/module_init.hpp>
+# include <boost/python/object_core.hpp>
 
 namespace boost { namespace python {
 
@@ -24,10 +25,14 @@ class module : public detail::module_base
         : base(name) {}
 
     // Add elements to the module
-    module& setattr(const char* name, PyObject*);
-    module& setattr(const char* name, PyTypeObject*);
-    module& setattr(const char* name, handle<> const&);
-    module& add(PyTypeObject* x); // just use the type's name
+    template <class T>
+    module& setattr(const char* name, T const& x)
+    {
+        this->module_base::setattr_doc(name, python::object(x), 0);
+        return *this;
+    }
+    
+    module& add(type_handle x); // just use the type's name
     
     template <class T1, class T2 , class T3, class T4>
     module& add(class_<T1,T2,T3,T4> const& c)
@@ -37,17 +42,17 @@ class module : public detail::module_base
     }
     
     template <class Fn>
-    module& def(char const* name, Fn fn)
+    module& def(char const* name, Fn fn, char const* doc = 0)
     {
-        this->setattr(name, boost::python::make_function(fn));
+        this->setattr_doc(name, boost::python::make_function(fn), doc);
         return *this;
     }
 
     
     template <class Fn, class ResultHandler>
-    module& def(char const* name, Fn fn, ResultHandler handler)
+    module& def(char const* name, Fn fn, ResultHandler handler, char const* doc = 0)
     {
-        this->setattr(name, boost::python::make_function(fn, handler));
+        this->setattr_doc(name, boost::python::make_function(fn, handler), doc);
         return *this;
     }
 };
@@ -55,27 +60,9 @@ class module : public detail::module_base
 //
 // inline implementations
 //
-inline module& module::setattr(const char* name, PyObject* x)
+inline module& module::add(type_handle x)
 {
-    this->base::setattr(name, x);
-    return *this;
-}
-
-inline module& module::setattr(const char* name, PyTypeObject* x)
-{
-    this->base::setattr(name, (PyObject*)x);
-    return *this;
-}
-
-inline module& module::setattr(const char* name, handle<> const& x)
-{
-    this->base::setattr(name, x);
-    return *this;
-}
-
-inline module& module::add(PyTypeObject* x)
-{
-    this->base::add(handle<>(borrowed(x)));
+    this->base::add(x);
     return *this;
 }
 
