@@ -104,7 +104,7 @@ extern "C"
 static PyTypeObject static_data_object = {
     PyObject_HEAD_INIT(0)//&PyType_Type)
     0,
-    "Boost.Python.class",
+    "Boost.Python.StaticProperty",
     PyType_Type.tp_basicsize,
     0,
     0,                                      /* tp_dealloc */
