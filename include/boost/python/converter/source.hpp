@@ -17,63 +17,19 @@ namespace boost { namespace python { namespace converter {
 //    ../../../more/generic_programming.html#type_generator) is used
 //    to select the argument type to use when converting T to a PyObject*
 
-template <class T> struct source;
-
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
-// Since for some strange reason temporaries can't be bound to const
-// volatile references (8.5.3/5 in the C++ standard), we cannot use a
-// const volatile reference as the standard for values and references.
 template <class T>
 struct source
 {
-    typedef T const& type;
-};
+    BOOST_STATIC_CONSTANT(bool, use_identity = (::boost::is_pointer<T>::value));
 
-// This will handle the following:
-//      T const volatile& -> T const volatile&
-//      T volatile& -> T const volatile&
-//      T const& -> T const&
-//      T& -> T const&
-template <class T>
-struct source<T&>
-{
-    typedef T const& type;
-};
-
-template <class T>
-struct source<T*>
-{
-    typedef T const* type;
-};
-
-template <class T>
-struct source<T* const>
-{
-    typedef T const* type;
-};
-
-// Deal with references to pointers
-template <class T>
-struct source<T*&>
-{
-    typedef T const* type;
-};
-
-template <class T>
-struct source<T* const&>
-{
-    typedef T const* type;
-};
-# else
-template <class T>
-struct source
-{
-    typedef typename add_reference<
-        typename add_const<T>::type
+    typedef typename mpl::select_type<
+        use_identity
+        , T
+        , typename add_reference<
+                typename add_const<T>::type
+          >::type
     >::type type;
 };
-# endif
 
 }}} // namespace boost::python::converter
 
