@@ -165,8 +165,8 @@ invokes Pyste passing the interface files to it. Pyste then generates a single
 cpp file with Boost.Python code, with all the classes and functions exported.
 
 Besides declaring the classes and functions, the user has a number of other
-options, like renaming classes and methods, excluding methods and attributes,
-and so on. 
+options, like renaming e excluding classes and member functionis. Those are
+explained later on.
 
 [h2 Basics]
 
@@ -200,7 +200,7 @@ That will expose the class, the free function and the enum found in [^hello.h].
 
 [page:1 Renaming and Excluding]
 
-You can easily rename functions, classes, methods, attributes, etc. Just use the
+You can easily rename functions, classes, member functions, attributes, etc. Just use the
 function [^rename], like this:
 
     World = Class("World", "hello.h")
@@ -208,7 +208,7 @@ function [^rename], like this:
     show = Function("choice", "hello.h")
     rename(show, "Show")
 
-You can rename methods and attributes using this syntax:
+You can rename member functions and attributes using this syntax:
 
     rename(World.greet, "Greet")
     rename(World.set, "Set")
@@ -216,7 +216,7 @@ You can rename methods and attributes using this syntax:
     rename(choice.red, "Red")
     rename(choice.blue, "Blue")
 
-You can exclude functions, classes, methods, attributes, etc, in the same way,
+You can exclude functions, classes, member functions, attributes, etc, in the same way,
 with the function [^exclude]:
 
     exclude(World.greet)
@@ -231,12 +231,25 @@ To access the operators of a class, access the member [^operator] like this
 
 The string inside the brackets is the same as the name of the operator in C++.[br]
 
+[h2 Virtual Member Functions]
+
+Pyste automatically generates wrappers for virtual member functions, but you
+may want to disable this behaviour (for performance reasons, or to let the code
+more clean) if you do not plan to override the functions in Python. To do
+this, use the function [^no_override]:
+
+    C = Class('C', 'C.h')
+    no_override(C.foo) # C::foo is a virtual member function
+
+No wrapper code will be generated for the virtual member function C::foo that
+way.
+
 [page:1 Policies]
 
 Even thought Pyste can identify various elements in the C++ code, like virtual
-methods, attributes, and so on, one thing that it can't do is to guess the
-semantics of functions that return pointers or references. In this case, the
-user must manually specify the policy. Policies are explained in the
+member functions, attributes, and so on, one thing that it can't do is to
+guess the semantics of functions that return pointers or references. In this
+case, the user must manually specify the policy. Policies are explained in the
 [@../../doc/tutorial/doc/call_policies.html tutorial].
 
 The policies in Pyste are named exactly as in Boost.Python, only the syntax is
@@ -248,22 +261,23 @@ becomes in Pyste:
 
     return_internal_reference(1, with_custodian_and_ward(1, 2))
 
-The user can specify policies for functions and methods with the [^set_policy]
-function:
+The user can specify policies for functions and virtual member functions with
+the [^set_policy] function:
 
     set_policy(f, return_internal_reference())
     set_policy(C.foo, return_value_policy(manage_new_object))
 
 [blurb 
-[$theme/note.gif] [*What if a function or method needs a policy and the user
-doesn't set one?][br][br] If a function/method needs a policy and one was not
-set, Pyste will issue a error.  The user should then go in the interface file
-and set the policy for it, otherwise the generated cpp won't compile.
+[$theme/note.gif] [*What if a function or member function needs a policy and
+the user doesn't set one?][br][br] If a function needs a policy and one
+was not set, Pyste will issue a error.  The user should then go in the
+interface file and set the policy for it, otherwise the generated cpp won't
+compile.
 ]
 
 [blurb
 [$theme/note.gif] 
-Note that, for functions/methods that return [^const T&], the policy
+Note that, for functions that return [^const T&], the policy
 [^return_value_policy<copy_const_reference>()] wil be used by default, because
 that's normally what you want. You can change it to something else if you need
 to, though.
@@ -371,9 +385,9 @@ You can optionally declare the function in the interface file itself:
     names = Function("names", "test.h")
     set_wrapper(names, names_wrapper)
 
-The same mechanism can be used with methods too. Just remember that the first
-parameter of wrappers for methods is a pointer to the class, like in
-Boost.Python:
+The same mechanism can be used with member functions too. Just remember that
+the first parameter of wrappers for member functions is a pointer to the
+class, as in:
 
     struct C
     {
@@ -394,7 +408,7 @@ And then in the interface file:
 [$theme/note.gif]Even though Boost.Python accepts either a pointer or a
 reference to the class in wrappers for member functions as the first parameter,
 Pyste expects them to be a [*pointer]. Doing otherwise will prevent your
-code to compile when you set a wrapper for a virtual method.
+code to compile when you set a wrapper for a virtual member function.
 ]
 
 [page:1 Exporting An Entire Header]
@@ -479,7 +493,8 @@ functions, and export those.
 
 [page:1 Adding New Methods]
 
-Suppose that you want to add a function to a class, turning it into a method:
+Suppose that you want to add a function to a class, turning it into a member
+function:
 
     struct World
     {
@@ -492,14 +507,14 @@ Suppose that you want to add a function to a class, turning it into a method:
         return w.msg;
     }
 
-Here, we want to make [^greet] work as a method of the class [^World]. We do
+Here, we want to make [^greet] work as a member function of the class [^World]. We do
 that using the [^add_method] construct:
 
     W = Class("World", "hello.h")
     add_method(W, "greet")
 
 Notice also that then you can rename it, set its policy, just like a regular
-method:
+member function:
 
     rename(W.greet, 'Greet')
 

@@ -8,8 +8,6 @@ Module declarations
 class Declaration(object):
     'Represents a basic declaration.'
 
-    __slots__ = 'name namespace location incomplete'.split()
-
     def __init__(self, name, namespace):
         # the declaration name
         self.name = name
@@ -44,15 +42,15 @@ class Declaration(object):
 class Class(Declaration):
     'The declaration of a class or struct.'
     
-    __slots__= 'members abstract bases _members_count'.split()
-    def __init__(self, name, namespace, members, abstract, bases):
+    def __init__(self, name, namespace, members, abstract):
         Declaration.__init__(self, name, namespace)
         # list of members
         self.members = members
         # whatever the class has any abstract methods
         self.abstract = abstract
         # instances of Base
-        self.bases = bases
+        self.bases = ()
+        self.hierarchy = ()
         self._members_count = {}
 
 
@@ -117,10 +115,8 @@ class Class(Declaration):
 class NestedClass(Class):
     'The declaration of a class/struct inside another class/struct.'
 
-    __slots__= 'class_ visibility'.split()
-    
-    def __init__(self, name, class_, visib, members, abstract, bases):
-        Class.__init__(self, name, None, members, abstract, bases)
+    def __init__(self, name, class_, visib, members, abstract):
+        Class.__init__(self, name, None, members, abstract)
         self.class_ = class_
         self.visibility = visib
 
@@ -133,8 +129,6 @@ class NestedClass(Class):
 class Base:
     'Represents a base class of another class.'
 
-    __slots__= 'name visibility'.split() 
-    
     def __init__(self, name, visibility=None):
         # class_ is the full name of the base class
         self.name = name
@@ -154,8 +148,6 @@ class Scope:
     
 class Function(Declaration):
     'The declaration of a function.'
-    
-    __slots__= 'result parameters'.split()
     
     def __init__(self, name, namespace, result, params):
         Declaration.__init__(self, name, namespace)
@@ -206,8 +198,6 @@ class Operator(Function):
 class Method(Function):
     'The declaration of a method.'
 
-    __slots__= 'visibility virtual abstract static class_ const'.split() 
-    
     def __init__(self, name, class_, result, params, visib, virtual, abstract, static, const):
         Function.__init__(self, name, None, result, params)
         self.visibility = visib
@@ -301,8 +291,6 @@ class ConverterOperator(ClassOperator):
 class Type(Declaration):
     'Represents a type.'
 
-    __slots__= 'const default volatile restricted incomplete'.split() 
-    
     def __init__(self, name, const=False, default=None, incomplete=False):
         Declaration.__init__(self, name, None)
         # whatever the type is constant or not
@@ -339,8 +327,6 @@ class Type(Declaration):
 class ArrayType(Type):
     'Represents an array.'
 
-    __slots__= 'min max'.split() 
-    
     def __init__(self, name, const=False, default=None, incomplete=False): 
         'min and max can be None.'
         Type.__init__(self, name, const)
@@ -358,8 +344,6 @@ class ArrayType(Type):
 class ReferenceType(Type): 
     'A reference type.'    
 
-    __slots__= 'expand'.split() 
-    
     def __init__(self, name, const=False, default=None, incomplete=False, expandRef=True):
         Type.__init__(self, name, const, default, incomplete)
         self.expand = expandRef
@@ -382,8 +366,6 @@ class ReferenceType(Type):
 
 class PointerType(Type):
     'A pointer type.'
-    
-    __slots__= 'expand'.split() 
     
     def __init__(self, name, const=False, default=None, incomplete=False, expandPointer=False):
         Type.__init__(self, name, const, default, incomplete)
@@ -415,8 +397,6 @@ class FundamentalType(Type):
 class FunctionType(Type):
     'A pointer to a function.'
 
-    __slots__= 'result parameters name'.split() 
-    
     def __init__(self, result, parameters):  
         Type.__init__(self, '', False)
         self.result = result
@@ -438,8 +418,6 @@ class FunctionType(Type):
 class MethodType(FunctionType):
     'A pointer to a member function of a class.'
 
-    __slots__= 'result parameters class_ name'.split() 
-    
     def __init__(self, result, parameters, class_):  
         Type.__init__(self, '', False)
         self.result = result
@@ -460,8 +438,6 @@ class MethodType(FunctionType):
 class Variable(Declaration):
     'Represents a global variable.'
     
-    __slots__= 'type'.split()
-    
     def __init__(self, type, name, namespace):
         Declaration.__init__(self, name, namespace)
         # instance of Type
@@ -472,8 +448,6 @@ class Variable(Declaration):
 class ClassVariable(Variable):
     'Represents a class variable.'
 
-    __slots__= 'visibility static class_'.split() 
-    
     def __init__(self, type, name, class_, visib, static):
         Variable.__init__(self, type, name, None)
         self.visibility = visib
@@ -487,8 +461,6 @@ class ClassVariable(Variable):
         
     
 class Enumeration(Declaration):
-    
-    __slots__= 'values'.split()
     
     def __init__(self, name, namespace):
         Declaration.__init__(self, name, namespace)
@@ -505,8 +477,6 @@ class Enumeration(Declaration):
 
 class ClassEnumeration(Enumeration):
 
-    __slots__= 'class_ visibility'.split()
-    
     def __init__(self, name, class_, visib):
         Enumeration.__init__(self, name, None)
         self.class_ = class_
@@ -525,8 +495,6 @@ class ClassEnumeration(Enumeration):
 
 class Typedef(Declaration):
 
-    __slots__= 'type visibility'.split() 
-    
     def __init__(self, type, name, namespace):
         Declaration.__init__(self, name, namespace)
         self.type = type
@@ -540,8 +508,6 @@ class Union(Declaration):
 
 
 class ClassUnion(Union):
-
-    __slots__= 'class_ visibility'.split() 
 
     def __init__(self, name, class_, visib):
         Union.__init__(self, name, None)

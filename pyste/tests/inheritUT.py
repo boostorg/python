@@ -14,6 +14,15 @@ class InheritExampleTest(unittest.TestCase):
         self.assertEqual(b.go(), 1)
         self.assertEqual(b.get(), 1)
 
+        d = D()
+        self.assert_(issubclass(D, B))
+        self.assertEqual(d.x, 0)
+        self.assertEqual(d.y, 0)
+        self.assertEqual(d.s, 1)
+        self.assertEqual(D.s, 1)
+        self.assertEqual(d.f1(), 1)
+        self.assertEqual(d.f2(), 2)
+
 
 
 if __name__ == '__main__':

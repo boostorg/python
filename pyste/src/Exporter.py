@@ -64,7 +64,7 @@ class Exporter:
 
     def GetDeclaration(self, fullname):
         decls = self.GetDeclarations(fullname)
-        assert len(decls) == 1
+        #assert len(decls) == 1
         return decls[0]
 
 

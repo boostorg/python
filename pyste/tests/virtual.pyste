@@ -1,2 +1,6 @@
-Class('virtual_::C', 'virtual.h')
+C = Class('virtual_::C', 'virtual.h')
+no_override(C.dummy)
+D = Class('virtual_::D', 'virtual.h')
+no_override(D.dummy)
 Function('virtual_::call_f', 'virtual.h')
+Function('virtual_::call_dummy', 'virtual.h')

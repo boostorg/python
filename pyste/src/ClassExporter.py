@@ -6,7 +6,7 @@ from policies import *
 from SingleCodeUnit import SingleCodeUnit
 from EnumExporter import EnumExporter
 from utils import makeid, enumerate
-from copy import deepcopy
+import copy
 import exporterutils
 import re
 
@@ -66,20 +66,16 @@ class ClassExporter(Exporter):
                 self.info.rename = decl.name
         else:
             self.class_ = decl
-        self.public_members = \
-            [x for x in self.class_.members if x.visibility == Scope.public]
+        self.class_ = copy.deepcopy(self.class_)
+        
         
         
     def ClassBases(self):
-        bases = []
-        def GetBases(class_):
-            this_bases = [self.GetDeclaration(x.name) for x in class_.bases]
-            bases.extend(this_bases)
-            for base in this_bases:
-                GetBases(base)
-
-        GetBases(self.class_)
-        return bases
+        all_bases = []       
+        for level in self.class_.hierarchy:
+            for base in level:
+                all_bases.append(base)
+        return [self.GetDeclaration(x.name) for x in all_bases] 
 
     
     def Order(self):
@@ -91,6 +87,8 @@ class ClassExporter(Exporter):
         
     
     def Export(self, codeunit, exported_names):
+        self.InheritMethods(exported_names)
+        self.MakeNonVirtual()
         if not self.info.exclude:
             self.CheckIsForwardDeclared()
             self.CheckForwardDeclarations()
@@ -98,8 +96,8 @@ class ClassExporter(Exporter):
             self.ExportBases(exported_names)
             self.ExportConstructors()
             self.ExportVariables()
-            self.ExportMethods()
             self.ExportVirtualMethods()
+            self.ExportMethods()
             self.ExportOperators()
             self.ExportNestedClasses(exported_names)
             self.ExportNestedEnums()
@@ -108,10 +106,38 @@ class ClassExporter(Exporter):
             self.Write(codeunit)
 
 
+    def InheritMethods(self, exported_names):
+        '''Go up in the class hierarchy looking for classes that were not
+        exported yet, and then add their public members to this classes
+        members, as if they were members of this class. This allows the user to
+        just export one type and automatically get all the methods from the
+        base classes.
+        '''
+        valid_members = (Method, ClassVariable, NestedClass, ClassOperator,
+            ConverterOperator, ClassEnumeration)
+        for level in self.class_.hierarchy:
+            level_exported = False
+            for base in level:
+                base = self.GetDeclaration(base.name)
+                if base.FullName() not in exported_names:
+                    for member in base.members:
+                        if type(member) in valid_members:
+                            member = copy.deepcopy(member)   
+                            #if type(member) not in (ClassVariable,:
+                            #    member.class_ = self.class_.FullName()
+                            self.class_.members.append(member)        
+                else:
+                    level_exported = True
+            if level_exported:
+                break
+        self.public_members = \
+            [x for x in self.class_.members if x.visibility == Scope.public] 
+
     def CheckIsForwardDeclared(self):
         if self.class_.incomplete:
             print "--> Error: Class %s is forward declared! " \
-                "Please use the header with its complete definition." % self.class_.FullName()
+                "Please use the header with its complete definition." \
+                % self.class_.FullName()
             print
             
             
@@ -191,15 +217,16 @@ class ClassExporter(Exporter):
         
     def ExportBases(self, exported_names):
         'Expose the bases of the class into the template section'        
-        bases = self.class_.bases
-        bases_list = []
-        for base in bases:
-            if base.visibility == Scope.public and base.name in exported_names:
-                bases_list.append(base.name)
-        if bases_list:
-            code = namespaces.python + 'bases< %s > ' % \
-                (', '.join(bases_list))
-            self.Add('template', code)        
+        hierarchy = self.class_.hierarchy
+        for level in hierarchy:
+            exported = []
+            for base in level:
+                if base.visibility == Scope.public and base.name in exported_names:
+                    exported.append(base.name)
+            if exported:
+                code = namespaces.python + 'bases< %s > ' %  (', '.join(exported))
+                self.Add('template', code)         
+                return
 
 
     def ExportConstructors(self):
@@ -372,6 +399,14 @@ class ClassExporter(Exporter):
             wrapper = method_info.wrapper
             if wrapper and wrapper.code:
                 self.Add('declaration', wrapper.code)
+
+
+    def MakeNonVirtual(self):
+        '''Make all methods that the user indicated to no_override no more virtual, delegating their
+        export to the ExportMethods routine'''
+        for member in self.class_.members:
+            if type(member) == Method and member.virtual:
+                member.virtual = not self.info[member.name].no_override 
 
 
     def ExportVirtualMethods(self):        
@@ -565,7 +600,6 @@ class ClassExporter(Exporter):
             nested_info.include = self.info.include
             nested_info.name = nested_class.FullName()
             exporter = ClassExporter(nested_info)
-            self.declarations.append(nested_class)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, exported_names)
@@ -579,7 +613,6 @@ class ClassExporter(Exporter):
             enum_info.include = self.info.include
             enum_info.name = enum.FullName()
             exporter = EnumExporter(enum_info)
-            self.declarations.append(enum)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, None)
@@ -746,12 +779,17 @@ class _VirtualWrapperGenerator(object):
         else:
             pointer = method.PointerDeclaration()
 
+        # Add policy to overloaded methods also
+        policy = self.info[method.name].policy or ''
+        if policy:
+            policy = ', %s%s()' % (namespaces.python, policy.Code())
+
         # generate the defs
         definitions = []
         # basic def
-        definitions.append('.def("%s", %s, %s)' % (rename, pointer, default_pointers[-1]))
+        definitions.append('.def("%s", %s, %s%s)' % (rename, pointer, default_pointers[-1], policy))
         for default_pointer in default_pointers[:-1]:
-            definitions.append('.def("%s", %s)' % (rename, default_pointer))
+            definitions.append('.def("%s", %s%s)' % (rename, default_pointer, policy))
         return definitions
 
     
@@ -766,7 +804,9 @@ class _VirtualWrapperGenerator(object):
         This method creates the instance variable self.virtual_methods.
         '''        
         def IsVirtual(m):
-            return type(m) is Method and m.virtual and m.visibility != Scope.private        
+            return type(m) is Method and \
+                m.virtual and \
+                m.visibility != Scope.private
                                       
         all_methods = [x for x in self.class_.members if IsVirtual(x)]
         for base in self.bases:

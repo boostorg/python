@@ -1,8 +1,8 @@
-# Doesn't work:
-A = Template('A', 'inherit.h')
-A_int = A('int')
+A = Template('inherit::A', 'inherit.h')
+A_int = A('int', 'A_int')
 
-Class('B', 'inherit.h')
-
-# Does work:
-#AllFromHeader('inherit.h')
+Class('inherit::B', 'inherit.h')
+Class('inherit::D', 'inherit.h')
+E = Class('inherit::E', 'inherit.h')
+exclude(E.s)
+exclude(E.ab)

@@ -139,6 +139,7 @@ def CreateContext():
     context['use_shared_ptr'] = infos.use_shared_ptr
     context['use_auto_ptr'] = infos.use_auto_ptr
     context['add_method'] = infos.add_method
+    context['no_override'] = infos.no_override
     # policies
     context['return_internal_reference'] = return_internal_reference
     context['with_custodian_and_ward'] = with_custodian_and_ward

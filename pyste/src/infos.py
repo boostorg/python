@@ -215,3 +215,6 @@ def add_method(info, name, rename=None):
         info._Attribute('__added__', [(name, rename)])
     else:
         added.append((name, rename))
+
+def no_override(info):
+    info._Attribute('no_override', True)

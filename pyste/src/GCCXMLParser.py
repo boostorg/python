@@ -2,6 +2,7 @@ from declarations import *
 from elementtree.ElementTree import ElementTree
 from xml.parsers.expat import ExpatError
 from copy import deepcopy
+from utils import enumerate
 
 
 class InvalidXMLError(Exception): pass
@@ -199,14 +200,18 @@ class GCCXMLParser(object):
         self.ParseFunction(id, element, Operator)
 
         
-    def GetBases(self, bases):       
-        'Parses the string "bases" from the xml into a list of Base instances.'
+    def GetHierarchy(self, bases):       
+        '''Parses the string "bases" from the xml into a list of tuples of Base
+        instances. The first tuple is the most direct inheritance, and then it
+        goes up in the hierarchy. 
+        '''
 
         if bases is None:
             return []
-        bases = bases.split()
-        baseobjs = []
-        for base in bases:
+        base_names = bases.split()
+        this_level = []      
+        next_levels = []
+        for base in base_names:
             # get the visibility
             split = base.split(':')
             if len(split) == 2:
@@ -214,10 +219,21 @@ class GCCXMLParser(object):
                 base = split[1]
             else:
                 visib = Scope.public                            
-            decl = self.GetDecl(base)
-            baseobj = Base(decl.FullName(), visib)
-            baseobjs.append(baseobj)
-        return baseobjs
+            decl = self.GetDecl(base) 
+            base = Base(decl.FullName(), visib)
+            this_level.append(base)
+            # normalize with the other levels
+            for index, level in enumerate(decl.hierarchy):
+                if index < len(next_levels):
+                    next_levels[index] = next_levels[index] + level
+                else:
+                    next_levels.append(level)
+        hierarchy = []
+        if this_level:
+            hierarchy.append(tuple(this_level))
+        if next_levels:
+            hierarchy.extend(next_levels)
+        return hierarchy
 
         
     def GetMembers(self, members):
@@ -237,20 +253,22 @@ class GCCXMLParser(object):
         context = self.GetDecl(element.get('context'))
         incomplete = bool(element.get('incomplete', False))
         if isinstance(context, str): 
-            class_ = Class(name, context, [], abstract, [])
-            self.AddDecl(class_)
+            class_ = Class(name, context, [], abstract)
         else:
             # a nested class
             visib = element.get('access', Scope.public)
             class_ = NestedClass(
-                name, context.FullName(), visib, [], abstract, [])
+                name, context.FullName(), visib, [], abstract)
+        self.AddDecl(class_)
         # we have to add the declaration of the class before trying        
         # to parse its members and bases, to avoid recursion.
         class_.location = location
         class_.incomplete = incomplete
         self.Update(id, class_)       
         # now we can get the members and the bases
-        class_.bases = self.GetBases(element.get('bases'))        
+        class_.hierarchy = self.GetHierarchy(element.get('bases'))        
+        if class_.hierarchy:
+            class_.bases = class_.hierarchy[0]
         class_.members = self.GetMembers(element.get('members'))
 
 
@@ -379,11 +397,10 @@ class GCCXMLParser(object):
         context = self.GetDecl(element.get('context'))
         if isinstance(context, str):
             enum = Enumeration(name, context)
-            self.AddDecl(enum) # in this case, is a top level decl 
         else:
             visib = element.get('access', Scope.public)
             enum = ClassEnumeration(name, context.FullName(), visib)
-            
+        self.AddDecl(enum)
         enum.location = location
         for child in element:
             if child.tag == 'EnumValue':

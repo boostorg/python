@@ -1,3 +1,21 @@
+16 June 2003
+Thanks to discussions with David Abrahams and Roman Sulzhyk, some behaviours
+have changed:
+
+- If you export a derived class without exporting its base classes, the derived
+  class will explicitly export the bases's methods and attributes. Before, if
+  you were interested in the bases's methods, you had to export the base
+  classes too.
+
+- Added a new function, no_override. When a member function is specified as
+  "no_override", no virtual wrappers are generated for it, improving
+  performance and letting the code more clean.
+
+- There was a bug in which the policy of virtual member functions was being
+  ignored (patch by Roman Sulzhyk). 
+  
+Thanks again to Roman Sulzhyk for the patches and discussion in the c++-sig.
+
 4 June 2003
 Major improvements in memory usage.
 

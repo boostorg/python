@@ -12,7 +12,14 @@ class Virtual2Test(unittest.TestCase):
         self.assertEqual(call_fs(b), 30)
         self.assertEqual(call_f(a), 0)
         self.assertEqual(call_f(b), 1)
-
+        nb = b.make_new()
+        na = a.make_new()
+        self.assertEqual(na.f1(), 10)
+        self.assertEqual(nb.f1(), 10)
+        self.assertEqual(nb.f2(), 20)
+        self.assertEqual(call_fs(nb), 30)
+        self.assertEqual(call_f(na), 0)
+        self.assertEqual(call_f(nb), 1) 
         class C(B):
             def f1(self): return 1
             def f2(self): return 2

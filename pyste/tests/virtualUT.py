@@ -5,33 +5,45 @@ class VirtualTest(unittest.TestCase):
 
     def testIt(self):              
         
-        class D(C):
+        class E(C):
             def f_abs(self):
                 return 3
+            def dummy(self):
+                # override should not work
+                return 100
             
-        class E(C):
+        class F(C):
             def f(self):
                 return 10
             def name(self):
-                return 'E'
+                return 'F'
+  
+        class G(D):
+            def dummy(self):
+                # override should not work
+                return 100
 
-        d = D()
         e = E()
+        f = F()
 
-        self.assertEqual(d.f(), 3)
-        self.assertEqual(call_f(d), 3)
-        self.assertEqual(e.f(), 10)
-        self.assertEqual(call_f(e), 10)
-        self.assertEqual(d.get_name(), 'C')
+        self.assertEqual(e.f(), 3)
+        self.assertEqual(call_f(e), 3)
+        self.assertEqual(f.f(), 10)
+        self.assertEqual(call_f(f), 10)
+        self.assertEqual(e.get_name(), 'C')
         #self.assertEqual(e.get_name(), 'E') check this later
 
         c = C()
-        def bar(arg):
-            c.bar(arg)
-        bar(1)      # ok
-        bar('a')    # ok
-        self.assertRaises(TypeError, bar, 1.0)        
-            
+        c.bar(1)      # ok
+        c.bar('a')    # ok
+        self.assertRaises(TypeError, c.bar, 1.0)        
+
+        # test no_overrides
+        d = G()        
+        self.assertEqual(e.dummy(), 100)
+        self.assertEqual(call_dummy(e), 0)
+        self.assertEqual(d.dummy(), 100)
+        self.assertEqual(call_dummy(d), 0)     
 
 
         
