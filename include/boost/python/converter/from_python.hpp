@@ -16,6 +16,12 @@
 # include <boost/python/converter/lvalue_from_python_chain.hpp>
 # include <boost/python/converter/rvalue_from_python_chain.hpp>
 # include <boost/python/detail/void_ptr.hpp>
+# include <boost/python/back_reference.hpp>
+
+namespace boost { namespace python
+{
+  template <class T> struct from_python;
+}}
 
 namespace boost { namespace python { namespace converter {
 
@@ -82,6 +88,21 @@ class rvalue_from_python
     rvalue_data<result_type> m_data;
 };
 
+// ------- back-reference converters --------
+
+// Converts to a (PyObject*,T) bundle, for when you need a reference
+// back to the Python object
+
+template <class T>
+struct back_reference_from_python
+    : boost::python::from_python<typename T::type>
+{
+    back_reference_from_python(PyObject*);
+    T operator()(PyObject*);
+ private:
+    typedef boost::python::from_python<typename T::type> base;
+};
+
 template <class T>
 struct select_from_python
 {
@@ -100,6 +121,10 @@ struct select_from_python
         boost::python::detail::is_reference_to_non_const<T>::value
         || boost::python::detail::is_reference_to_volatile<T>::value);
 
+    BOOST_STATIC_CONSTANT(
+        bool, back_ref =
+        boost::python::is_back_reference<T>::value);
+
     typedef typename mpl::select_type<
         ptr
         , pointer_from_python<T>
@@ -109,7 +134,11 @@ struct select_from_python
              , typename mpl::select_type<
                    ref
                    , reference_from_python<T>
-                   , rvalue_from_python<T>
+                   , typename mpl::select_type<
+                        back_ref
+                        , back_reference_from_python<T>
+                        , rvalue_from_python<T>
+                    >::type
                 >::type
           >::type
     >::type type;
@@ -230,6 +259,19 @@ rvalue_from_python<T>::operator()(PyObject* p)
         m_data.stage1.construct(p, &m_data.stage1);
     
     return python::detail::void_ptr_to_reference(m_data.stage1.convertible, (result_type(*)())0);
+}
+
+template <class T>
+back_reference_from_python<T>::back_reference_from_python(PyObject* x)
+    : base(x)
+{
+}
+
+template <class T>
+inline T
+back_reference_from_python<T>::operator()(PyObject* x)
+{
+    return T(x, base::operator()(x));
 }
 
 }}} // namespace boost::python::converter

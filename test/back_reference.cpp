@@ -6,6 +6,7 @@
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/has_back_reference.hpp>
+#include <boost/python/back_reference.hpp>
 #include <boost/ref.hpp>
 #include <boost/utility.hpp>
 #include <memory>
@@ -73,6 +74,17 @@ namespace boost { namespace python
   };
 }}
 
+// prove that back_references get initialized with the right PyObject*
+PyObject* y_identity(back_reference<Y const&> y)
+{
+    return y.reference().release();
+}
+
+// prove that back_references contain the right value
+bool y_equality(back_reference<Y const&> y1, Y const& y2)
+{
+    return &y1.get() == &y2;
+}
 
 BOOST_PYTHON_MODULE_INIT(back_reference_ext)
 {
@@ -93,6 +105,8 @@ BOOST_PYTHON_MODULE_INIT(back_reference_ext)
             .def("value", &Z::value)
             .def("set", &Z::set)
             )
+        .def("y_identity", y_identity)
+        .def("y_equality", y_equality)
         ;
 }
 
