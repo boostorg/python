@@ -112,7 +112,7 @@ class Base_callback : public Base
  public:
    Base_callback(PyObject* self) : m_self(self) {}
 
-   char const* class_name() const { return <b>call_method</b>(m_self, "class_name"); }
+   char const* class_name() const { return <b>call_method</b>&lt;char const*&gt;(m_self, "class_name"); }
    char const* Base_name() const { return Base::class_name(); }
  private:
    PyObject* const m_self;
