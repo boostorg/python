@@ -60,13 +60,81 @@ try: wrap_int_ref(n)
 Create an extension class which wraps "complicated" (init1 and get_n)
 are a complicated constructor and member function, respectively.
 
->>> C = xclass('C', (xinst,), {'__init__': init1, 'get_n': get_n})
->>> c1 = C(s, 99)
+>>> c1 = complicated(s, 99)
 >>> c1.get_n()
 99
->>> c2 = C(s)
+>>> c2 = complicated(s)
 >>> c2.get_n()
 0
+
+>>> a = A()
+>>> b = B()
+>>> c = C()
+>>> d = D()
+
+------
+>>> take_a(a)
+0
+
+>>> try:
+...     take_b(a)
+... except: pass
+... else: print 'no exception'
+
+>>> try:
+...     take_c(a)
+... except: pass
+... else: print 'no exception'
+
+>>> try:
+...     take_d(a)
+... except: pass
+... else: print 'no exception'
+
+------
+>>> take_a(b)
+0
+
+>>> take_b(b)
+1
+
+>>> try:
+...     take_c(b)
+... except: pass
+... else: print 'no exception'
+
+>>> try:
+...     take_d(b)
+... except: pass
+... else: print 'no exception'
+
+-------
+>>> take_a(c)
+0
+
+>>> try:
+...     take_b(c)
+... except: pass
+... else: print 'no exception'
+
+>>> take_c(c)
+2
+
+>>> try:
+...     take_d(c)
+... except: pass
+... else: print 'no exception'
+
+-------
+>>> take_a(d)
+0
+>>> take_b(d)
+1
+>>> take_c(d)
+2
+>>> take_d(d)
+3
+
 
 """
 
