@@ -143,7 +143,7 @@ void test_direct_proxy ()
   raw_container_type raw_container (4);
 
   {
-    std::auto_ptr<proxy_container_type> proxy_auto_p (
+    std::auto_ptr<proxy_container_type> proxy_auto_p(
         new proxy_container_type (raw_container));
 
     initial_tests (*proxy_auto_p);
@@ -168,7 +168,7 @@ void test_direct_proxy ()
 
   {
     // Check construction from iterators
-    proxy_container_type proxy_container (
+    proxy_container_type proxy_container(
         raw_container.begin(), raw_container.end());
 
     BOOST_CHECK (proxy_container.is_valid());

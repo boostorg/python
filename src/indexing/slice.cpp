@@ -47,12 +47,12 @@ boost::python::indexing::integer_slice
   : m_slice (sl)
   // Leave index members uninitialized
 {
-  PySlice_GetIndices (
-      reinterpret_cast<PySliceObject *> (m_slice.ptr())
-      , length
-      , &m_start
-      , &m_stop
-      , &m_step);
+  PySlice_GetIndices(
+      reinterpret_cast<PySliceObject *> (m_slice.ptr()),
+      length,
+      &m_start,
+      &m_stop,
+      &m_step);
 
   if (m_step == 0)
     {

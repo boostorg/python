@@ -32,16 +32,16 @@ unsigned int_wrapper::our_object_counter = 0;
 std::vector<int_wrapper> get_vector ()
 {
   static int_wrapper array[] = {
-    int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2)
-    , int_wrapper(1), int_wrapper(3), int_wrapper(5)
-    , int_wrapper(7), int_wrapper(0) };
+    int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2),
+    int_wrapper(1), int_wrapper(3), int_wrapper(5),
+    int_wrapper(7), int_wrapper(0) };
 
   return std::vector<int_wrapper>
 #if BOOST_WORKAROUND (BOOST_MSVC, <=1200)
     (array, array + sizeof(array) / sizeof (array[0]));
 #else
-    (boost::python::indexing::begin(array)
-     , boost::python::indexing::end(array));
+    (boost::python::indexing::begin(array),
+     boost::python::indexing::end(array));
 #endif
 }
 

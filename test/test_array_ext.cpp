@@ -36,9 +36,9 @@ boost::python::indexing::iterator_range<int *> get_array_plain()
 boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
 {
   static int_wrapper array[] = {
-    int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2)
-    , int_wrapper(1), int_wrapper(3), int_wrapper(5)
-    , int_wrapper(7), int_wrapper(0) };
+    int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2),
+    int_wrapper(1), int_wrapper(3), int_wrapper(5),
+    int_wrapper(7), int_wrapper(0) };
 
   return BOOST_MAKE_ITERATOR_RANGE (array);
 }
@@ -82,8 +82,8 @@ BOOST_PYTHON_MODULE(test_array_ext)
   // lifetimes of the array elements.
   boost::python::class_<Container2>
     ("Array_ref", boost::python::init<int_wrapper *, int_wrapper *>())
-    .def (Suite2::with_policies (
-        boost::python::return_value_policy <
+    .def (Suite2::with_policies(
+        boost::python::return_value_policy<
             boost::python::reference_existing_object>()));
 
   boost::python::def ("get_array_wrap", get_array_wrap);

@@ -60,8 +60,8 @@ inline int compare (int_wrapper const &lhs, int_wrapper const &rhs);
 // 
 
 int_wrapper::int_wrapper ()
-  : m_obj_number (our_object_counter++)
-  , m_int (0)
+  : m_obj_number (our_object_counter++),
+  m_int (0)
 {
   if (our_trace_flag)
     {
@@ -70,27 +70,27 @@ int_wrapper::int_wrapper ()
 }
 
 int_wrapper::int_wrapper (int i)
-  : m_obj_number (our_object_counter++)
-  , m_int (i)
+  : m_obj_number (our_object_counter++),
+  m_int (i)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u (%d) at %p\n"
-              , m_obj_number
-              , m_int
+      printf ("int_wrapper %u (%d) at %p\n",
+              m_obj_number,
+              m_int
 	      , this);
     }
 }
 
 int_wrapper::int_wrapper (int_wrapper const &other)
-  : m_obj_number (our_object_counter++)
-  , m_int (other.m_int)
+  : m_obj_number (our_object_counter++),
+  m_int (other.m_int)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u (int_wrapper %u at %p) at %p\n"
-              , m_obj_number
-              , other.m_obj_number
+      printf ("int_wrapper %u (int_wrapper %u at %p) at %p\n",
+              m_obj_number,
+              other.m_obj_number
 	      , &other
 	      , this);
     }
@@ -100,10 +100,10 @@ int_wrapper &int_wrapper::operator= (int_wrapper const &other)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u at %p = int_wrapper %u at %p\n"
-              , m_obj_number
-	      , this
-              , other.m_obj_number
+      printf ("int_wrapper %u at %p = int_wrapper %u at %p\n",
+              m_obj_number
+	      , this,
+              other.m_obj_number
 	      , &other);
     }
 

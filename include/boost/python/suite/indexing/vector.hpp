@@ -46,10 +46,10 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template <
-    class Container
-    , int Flags = 0
-    , class Traits = default_sequence_traits<Container>
+  template<
+    class Container,
+    int Flags = 0,
+    class Traits = default_sequence_traits<Container>
   >
   struct vector_suite
     : container_suite<Container, Flags, default_algorithms<Traits> >

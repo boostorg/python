@@ -59,8 +59,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr = detail::no_override>
   class set_algorithms
     : public assoc_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
+        <ContainerTraits,
+        typename detail::maybe_override
             <set_algorithms<ContainerTraits, Ovr>, Ovr>
           ::type>
   {
@@ -114,10 +114,10 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template <
-    class Container
-    , int Flags = 0
-    , class Traits = set_traits<Container>
+  template<
+    class Container,
+    int Flags = 0,
+    class Traits = set_traits<Container>
   >
   struct set_suite
     : container_suite<Container, Flags, set_algorithms<Traits> >
@@ -130,12 +130,12 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  set_algorithms<ContainerTraits, Ovr>::insert (
+  set_algorithms<ContainerTraits, Ovr>::insert(
       container &c, index_param ix)
   {
     if (!c.insert (ix).second)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "Set already holds value for insertion");
 
         boost::python::throw_error_already_set ();

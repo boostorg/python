@@ -90,10 +90,10 @@ namespace boost { namespace python { namespace indexing {
 #else
   private:
 #endif
-    static size_type bounds_check (
-        container &, index_param, char const *msg
-        , bool one_past = false
-        , bool truncate = false);
+    static size_type bounds_check(
+        container &, index_param, char const *msg,
+        bool one_past = false,
+        bool truncate = false);
     // Throws std::out_of_range if necessary. If one_past is set, then
     // indexes up to container.size() *inclusive* are allowed. If
     // truncate is set, then out of bounds values are reset to the
@@ -109,8 +109,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr = detail::no_override>
   class assoc_algorithms
     : public default_algorithms
-        <ContainerTraits
-        , BOOST_DEDUCED_TYPENAME detail::maybe_override
+        <ContainerTraits,
+        BOOST_DEDUCED_TYPENAME detail::maybe_override
             <assoc_algorithms<ContainerTraits, Ovr>, Ovr>
           ::type>
   {
@@ -157,12 +157,12 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
-  default_algorithms<ContainerTraits, Ovr>::bounds_check (
-      container &c
-      , index_param ix
-      , char const *msg
-      , bool one_past
-      , bool truncate)
+  default_algorithms<ContainerTraits, Ovr>::bounds_check(
+      container &c,
+      index_param ix,
+      char const *msg,
+      bool one_past,
+      bool truncate)
   {
     size_type bound = most_derived::size(c) + (one_past ? 1 : 0);
     size_type result;
@@ -214,16 +214,16 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::iterator
-  default_algorithms<ContainerTraits, Ovr>::find (
+  default_algorithms<ContainerTraits, Ovr>::find(
       container &c, key_param key)
   {
     typedef typename container_traits::value_traits_ value_traits_;
     typedef typename value_traits_::equal_to comparison;
 
-    return std::find_if (
-        most_derived::begin(c)
-        , most_derived::end(c)
-        , std::bind1st (comparison(), key));
+    return std::find_if(
+        most_derived::begin(c),
+        most_derived::end(c),
+        std::bind1st (comparison(), key));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -232,14 +232,14 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
-  default_algorithms<ContainerTraits, Ovr>::get_index (
+  default_algorithms<ContainerTraits, Ovr>::get_index(
       container &c, key_param key)
   {
     iterator found (most_derived::find (c, key));
 
     if (found == most_derived::end(c))
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "get_index: element not found");
 
         boost::python::throw_error_already_set ();
@@ -255,16 +255,16 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
-  default_algorithms<ContainerTraits, Ovr>::count (
+  default_algorithms<ContainerTraits, Ovr>::count(
       container &c, key_param key)
   {
     typedef typename container_traits::value_traits_ value_traits_;
     typedef typename value_traits_::equal_to comparison;
 
-    return std::count_if (
-        most_derived::begin(c)
-        , most_derived::end(c)
-        , std::bind1st (comparison(), key));
+    return std::count_if(
+        most_derived::begin(c),
+        most_derived::end(c),
+        std::bind1st (comparison(), key));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   bool
-  default_algorithms<ContainerTraits, Ovr>::contains (
+  default_algorithms<ContainerTraits, Ovr>::contains(
       container &c, key_param key)
   {
     return most_derived::find (c, key) != most_derived::end(c);
@@ -285,7 +285,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::reference
-  default_algorithms<ContainerTraits, Ovr>::get (
+  default_algorithms<ContainerTraits, Ovr>::get(
       container &c, index_param ix)
   {
     return c[most_derived::bounds_check (c, ix, "get")];
@@ -297,7 +297,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  default_algorithms<ContainerTraits, Ovr>::assign (
+  default_algorithms<ContainerTraits, Ovr>::assign(
       container &c, index_param ix, value_param val)
   {
     c[most_derived::bounds_check (c, ix, "assign")] = val;
@@ -309,7 +309,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  default_algorithms<ContainerTraits, Ovr>::push_back (
+  default_algorithms<ContainerTraits, Ovr>::push_back(
       container &c, value_param v)
   {
     c.push_back (v);
@@ -321,13 +321,13 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  default_algorithms<ContainerTraits, Ovr>::insert (
+  default_algorithms<ContainerTraits, Ovr>::insert(
       container &c, index_param i, value_param v)
   {
     iterator insert_pos (most_derived::begin(c));
 
     // Index may range up to c.size() inclusive to allow inserting at end
-    std::advance (
+    std::advance(
         insert_pos, most_derived::bounds_check (c, i, "insert", true, true));
 
     c.insert (insert_pos, v);
@@ -339,7 +339,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  default_algorithms<ContainerTraits, Ovr>::erase_range (
+  default_algorithms<ContainerTraits, Ovr>::erase_range(
       container &c, index_param from, index_param to)
   {
     iterator start (most_derived::begin(c));
@@ -362,7 +362,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  default_algorithms<ContainerTraits, Ovr>::erase_one (
+  default_algorithms<ContainerTraits, Ovr>::erase_one(
       container &c, index_param ix)
   {
     iterator iter (most_derived::begin(c));
@@ -421,12 +421,12 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  assoc_algorithms<ContainerTraits, Ovr>::erase_one (
+  assoc_algorithms<ContainerTraits, Ovr>::erase_one(
       container &c, key_param key)
   {
     if (c.erase (key) == 0)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "Container does not hold value to be erased");
 
         boost::python::throw_error_already_set ();
@@ -451,7 +451,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   bool
-  assoc_algorithms<ContainerTraits, Ovr>::contains (
+  assoc_algorithms<ContainerTraits, Ovr>::contains(
       container &c, key_param key)
   {
     return most_derived::find (c, key) != most_derived::end(c);
@@ -464,14 +464,14 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::iterator
-  assoc_algorithms<ContainerTraits, Ovr>::find_or_throw (
+  assoc_algorithms<ContainerTraits, Ovr>::find_or_throw(
       container &c, index_param ix)
   {
     iterator iter = most_derived::find (c, ix);
 
     if (iter == most_derived::end(c))
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "associative container: key not found");
 
         boost::python::throw_error_already_set ();
@@ -486,7 +486,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::size_type
-  assoc_algorithms<ContainerTraits, Ovr>::count (
+  assoc_algorithms<ContainerTraits, Ovr>::count(
       container &c, key_param key)
   {
     return c.count (key);

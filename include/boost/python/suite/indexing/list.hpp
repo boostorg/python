@@ -37,8 +37,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr = detail::no_override>
   class list_algorithms
     : public default_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
+        <ContainerTraits,
+        typename detail::maybe_override
             <list_algorithms<ContainerTraits, Ovr>, Ovr>
           ::type>
   {
@@ -76,10 +76,10 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template <
-    class Container
-    , int Flags = 0
-    , class Traits = default_sequence_traits<Container>
+  template<
+    class Container,
+    int Flags = 0,
+    class Traits = default_sequence_traits<Container>
   >
   struct list_suite
     : container_suite<Container, Flags, list_algorithms<Traits> >
@@ -111,7 +111,7 @@ namespace boost { namespace python { namespace indexing {
     // provided that value_traits_::less is std::less<value_type>. It
     // would be possible to support std::greater<T> (the only other
     // overload of list::sort in MSVC6) with some additional work.
-    BOOST_STATIC_ASSERT (
+    BOOST_STATIC_ASSERT(
         (::boost::is_same<comparison, std::less<value_type> >::value));
     c.sort ();
 #else

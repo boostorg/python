@@ -66,8 +66,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr = detail::no_override>
   class map_algorithms
     : public assoc_algorithms
-        <ContainerTraits
-        , typename detail::maybe_override
+        <ContainerTraits,
+        typename detail::maybe_override
             <map_algorithms<ContainerTraits, Ovr>, Ovr>
           ::type>
   {
@@ -126,10 +126,10 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template <
-    class Container
-    , int Flags = 0
-    , class Traits = map_traits<Container>
+  template<
+    class Container,
+    int Flags = 0,
+    class Traits = map_traits<Container>
   >
   struct map_suite
     : container_suite<Container, Flags, map_algorithms<Traits> >
@@ -153,7 +153,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  map_algorithms<ContainerTraits, Ovr>::assign (
+  map_algorithms<ContainerTraits, Ovr>::assign(
       container &c, index_param ix, value_param val)
   {
     c[ix] = val;   // Handles overwrite and insert
@@ -166,19 +166,19 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename ContainerTraits, typename Ovr>
   void
-  map_algorithms<ContainerTraits, Ovr>::insert (
+  map_algorithms<ContainerTraits, Ovr>::insert(
       container &c, index_param ix, value_param val)
   {
     typedef std::pair
-      <BOOST_DEDUCED_TYPENAME self_type::container_traits::index_type
-      , BOOST_DEDUCED_TYPENAME self_type::container_traits::value_type>
+      <BOOST_DEDUCED_TYPENAME self_type::container_traits::index_type,
+      BOOST_DEDUCED_TYPENAME self_type::container_traits::value_type>
       pair_type;
 
     // Can't use std::make_pair, because param types may be references
 
     if (!c.insert (pair_type (ix, val)).second)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "Map already holds value for insertion");
 
         boost::python::throw_error_already_set ();

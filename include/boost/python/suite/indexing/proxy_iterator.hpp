@@ -24,27 +24,27 @@
 
 namespace boost { namespace python { namespace indexing {
 
-  template <class ContainerProxy, typename ElementProxy, typename Traits
-      , typename Size, typename Iter>
+  template <class ContainerProxy, typename ElementProxy, typename Traits,
+      typename Size, typename Iter>
   class proxy_iterator
-    : public boost::iterator <
-          std::random_access_iterator_tag
-          , ElementProxy
-          , typename Traits::difference_type
-          , ElementProxy *
-          , ElementProxy // Already has reference semantics
+    : public boost::iterator<
+          std::random_access_iterator_tag,
+          ElementProxy,
+          typename Traits::difference_type,
+          ElementProxy *,
+          ElementProxy // Already has reference semantics
       >
   {
 #if !defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
     template<class C, class H, class G> friend class container_proxy;
 #endif
 
-    typedef boost::iterator <
-        std::random_access_iterator_tag
-        , ElementProxy
-        , typename Traits::difference_type
-        , ElementProxy *
-        , ElementProxy
+    typedef boost::iterator<
+        std::random_access_iterator_tag,
+        ElementProxy,
+        typename Traits::difference_type,
+        ElementProxy *,
+        ElementProxy
     > base_type;
 
   public:
@@ -148,9 +148,9 @@ namespace boost { namespace python { namespace indexing {
 // MSVC7.0 can't decide between this and the unspecialized version
 namespace std {
   template <class C, typename E, typename T, typename S, typename I>
-  void iter_swap (
-      boost::python::indexing::proxy_iterator<C, E, T, S, I> const &first
-      , boost::python::indexing::proxy_iterator<C, E, T, S, I> const &second)
+  void iter_swap(
+      boost::python::indexing::proxy_iterator<C, E, T, S, I> const &first,
+      boost::python::indexing::proxy_iterator<C, E, T, S, I> const &second)
   {
     first.iter_swap (second);
   }

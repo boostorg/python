@@ -80,7 +80,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename T> iterator_range<T *> make_iterator_range (T *, T*);
 
 #if !BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
-  template<typename T, std::size_t N> iterator_range<T *> make_iterator_range (
+  template<typename T, std::size_t N> iterator_range<T *> make_iterator_range(
       T (&array)[N]);
 
   template<typename T, std::size_t N> T *begin (T (&array)[N]);
@@ -97,18 +97,18 @@ namespace boost { namespace python { namespace indexing {
 #endif
 
   template<typename Iterator>
-  iterator_range<Iterator>::iterator_range (
+  iterator_range<Iterator>::iterator_range(
       iterator_param begin, iterator_param end)
-    : m_begin (begin)
-    , m_end (end)
+    : m_begin (begin),
+    m_end (end)
   {
   }
 
   template<typename Iterator>
   iterator_range<Iterator>
   ::iterator_range (std::pair<iterator, iterator> const &pair)
-    : m_begin (pair.first)
-    , m_end (pair.second)
+    : m_begin (pair.first),
+    m_end (pair.second)
   {
   }
 
@@ -201,10 +201,10 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template <
-    class Container
-    , int Flags = 0
-    , class Traits = base_container_traits<Container>
+  template<
+    class Container,
+    int Flags = 0,
+    class Traits = base_container_traits<Container>
   >
   struct iterator_range_suite
     : container_suite<Container, Flags, default_algorithms<Traits> >

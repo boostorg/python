@@ -91,9 +91,9 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template<class Container
-           , class Holder = identity<Container>
-           , class Generator = vector_generator>
+  template<class Container,
+           class Holder = identity<Container>,
+           class Generator = vector_generator>
   class container_proxy
   {
     typedef container_proxy<Container, Holder, Generator> self_type;
@@ -122,16 +122,16 @@ namespace boost { namespace python { namespace indexing {
     typedef const_element_proxy<self_type> const_value_type;
     typedef const_value_type               const_reference; // Ref. semantics
 
-    typedef proxy_iterator <self_type, value_type, raw_iterator_traits
-        , size_type, raw_iterator> iterator;
+    typedef proxy_iterator <self_type, value_type, raw_iterator_traits,
+        size_type, raw_iterator> iterator;
     typedef iterator const_iterator; // No const_iterator yet implemented
 
   public:
     // Constructors
     template<typename Iter> container_proxy (Iter start, Iter finish)
       // Define inline for MSVC6 compatibility
-      : m_held_obj (Holder::create())
-      , m_proxies ()
+      : m_held_obj (Holder::create()),
+      m_proxies ()
     {
       insert (begin(), start, finish);
     }
@@ -220,10 +220,10 @@ namespace boost { namespace python { namespace indexing {
       try
         {
           // Insert the new element(s) into the real container (could throw)
-          raw_container().insert (
-              raw_container().begin() + iter.index
-              , from
-              , to);
+          raw_container().insert(
+              raw_container().begin() + iter.index,
+              from,
+              to);
 
           try
             {
@@ -233,9 +233,9 @@ namespace boost { namespace python { namespace indexing {
 
           catch (...)
             {
-              raw_container().erase (
-                  raw_container().begin() + iter.index
-                  , raw_container().begin() + iter.index + count);
+              raw_container().erase(
+                  raw_container().begin() + iter.index,
+                  raw_container().begin() + iter.index + count);
 
               throw;
             }
@@ -243,18 +243,18 @@ namespace boost { namespace python { namespace indexing {
 
       catch (...)
         {
-          m_proxies.erase (
-              m_proxies.begin() + iter.index
-              , m_proxies.begin() + iter.index + count);
+          m_proxies.erase(
+              m_proxies.begin() + iter.index,
+              m_proxies.begin() + iter.index + count);
 
           throw;
         }
 
       // Adjust any proxies after the inserted elements (nothrow)
-      adjust_proxies (
-          m_proxies.begin() + iter.index + count
-          , m_proxies.end()
-          , static_cast<difference_type> (count));
+      adjust_proxies(
+          m_proxies.begin() + iter.index + count,
+          m_proxies.end(),
+          static_cast<difference_type> (count));
     }
 
     template<typename Iter>
@@ -302,8 +302,8 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder, class Generator>
   container_proxy<Container, Holder, Generator>
   ::container_proxy ()
-    : m_held_obj (Holder::create())
-    , m_proxies ()
+    : m_held_obj (Holder::create()),
+    m_proxies ()
   {
     // Container is empty - no further processing
   }
@@ -311,8 +311,8 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder, class Generator>
   container_proxy<Container, Holder, Generator>
   ::container_proxy (held_type const &held)
-    : m_held_obj (Holder::copy (held))
-    , m_proxies (size())
+    : m_held_obj (Holder::copy (held)),
+    m_proxies (size())
   {
     write_proxies (0, size());
   }
@@ -320,8 +320,8 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder, class Generator>
   container_proxy<Container, Holder, Generator>
   ::container_proxy (container_proxy const &copy)
-    : m_held_obj (Holder::copy (copy.m_held_obj))
-    , m_proxies (size())
+    : m_held_obj (Holder::copy (copy.m_held_obj)),
+    m_proxies (size())
   {
     write_proxies (0, size()); // Create our own proxies for the copied values
   }
@@ -454,7 +454,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<class Container, class Holder, class Generator>
   BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
-  container_proxy<Container, Holder, Generator>::erase (
+  container_proxy<Container, Holder, Generator>::erase(
       iterator from, iterator to)
   {
     assert (from.ptr == this);
@@ -465,16 +465,16 @@ namespace boost { namespace python { namespace indexing {
 
     // Erase the elements from the real container
     raw_iterator result
-      = raw_container().erase (
-          raw_container().begin() + from.index
-          , raw_container().begin() + to.index);
+      = raw_container().erase(
+          raw_container().begin() + from.index,
+          raw_container().begin() + to.index);
 
     return iterator (this, result);
   }
 
   template<class Container, class Holder, class Generator>
   BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
-  container_proxy<Container, Holder, Generator>::insert (
+  container_proxy<Container, Holder, Generator>::insert(
       iterator iter, raw_value_type const &copy)
   {
     // Use the iterator-based version by treating the value as an
@@ -485,7 +485,7 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  bool container_proxy<Container, Holder, Generator>::clear_proxy (
+  bool container_proxy<Container, Holder, Generator>::clear_proxy(
       pointer_impl &ptr)
   {
     // Warning - this can break the class invariant. Use only when the
@@ -509,7 +509,7 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::clear_proxies (
+  void container_proxy<Container, Holder, Generator>::clear_proxies(
       size_type from_index, size_type to_index)
   {
     while (from_index != to_index)
@@ -535,7 +535,7 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::detach_proxies (
+  void container_proxy<Container, Holder, Generator>::detach_proxies(
       size_type from_index, size_type to_index)
   {
     while (from_index != to_index)
@@ -564,12 +564,12 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::notify_insertion (
+  void container_proxy<Container, Holder, Generator>::notify_insertion(
       size_type from_index, size_type to_index)
   {
     size_type count = to_index - from_index;
 
-    m_proxies.insert (
+    m_proxies.insert(
         m_proxies.begin() + from_index, count, pointer_impl());
 
     try
@@ -579,25 +579,25 @@ namespace boost { namespace python { namespace indexing {
 
     catch (...)
       {
-        m_proxies.erase (
-            m_proxies.begin() + from_index
-            , m_proxies.begin() + to_index);
+        m_proxies.erase(
+            m_proxies.begin() + from_index,
+            m_proxies.begin() + to_index);
 
         throw;
       }
 
     // Adjust any proxies after the inserted elements (nothrow)
-    adjust_proxies (
-        m_proxies.begin() + to_index
-        , m_proxies.end()
-        , static_cast<difference_type> (count));
+    adjust_proxies(
+        m_proxies.begin() + to_index,
+        m_proxies.end(),
+        static_cast<difference_type> (count));
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::adjust_proxies (
-      pointer_iterator from
-      , pointer_iterator to
-      , difference_type offset)
+  void container_proxy<Container, Holder, Generator>::adjust_proxies(
+      pointer_iterator from,
+      pointer_iterator to,
+      difference_type offset)
   {
     while (from != to)
       {
@@ -607,7 +607,7 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::write_proxies (
+  void container_proxy<Container, Holder, Generator>::write_proxies(
       size_type from, size_type to)
   {
     // (over)write proxy pointers in the given range. Re-uses existing
@@ -718,10 +718,10 @@ namespace boost { namespace python { namespace indexing {
     };
   }
 #endif
-  template <
-      class Container
-      , int Flags = 0
-      , class Traits = container_proxy_traits<Container>
+  template<
+      class Container,
+      int Flags = 0,
+      class Traits = container_proxy_traits<Container>
   >
   struct container_proxy_suite
     : container_suite<Container, Flags, default_algorithms<Traits> >

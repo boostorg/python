@@ -83,7 +83,7 @@ namespace boost { namespace python { namespace indexing {
   ::make_getitem (Policy const &policy)
   {
     return
-      boost::python::make_function (
+      boost::python::make_function(
           get_slice, detail::postcall_override<Policy> (policy));
   }
 
@@ -209,7 +209,7 @@ namespace boost { namespace python { namespace indexing {
 
     if (!read_ptr.get())
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_TypeError, "Type assigned to slice must be a sequence");
 
         boost::python::throw_error_already_set();
@@ -219,10 +219,10 @@ namespace boost { namespace python { namespace indexing {
     // a reference to existing object, if possible and sensible) and the
     // second allowing implicit conversions.
 
-    typedef boost::python::extract <
+    typedef boost::python::extract<
         BOOST_DEDUCED_TYPENAME Algorithms::value_param> extractor1;
 
-    typedef boost::python::extract <
+    typedef boost::python::extract<
         BOOST_DEDUCED_TYPENAME Algorithms::value_type> extractor2;
 
     // Note: any error during this operation will probably leave the
@@ -294,9 +294,9 @@ namespace boost { namespace python { namespace indexing {
     slice sl
       ((boost::python::handle<>
         (PySlice_New
-         (length.ptr()
-          , boost::python::object().ptr()
-          , boost::python::object().ptr()))));
+         (length.ptr(),
+          boost::python::object().ptr(),
+          boost::python::object().ptr()))));
 
     set_slice (c, sl, values);
   }

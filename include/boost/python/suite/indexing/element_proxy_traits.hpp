@@ -30,7 +30,7 @@
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
   struct element_proxy_traits
-    : public value_traits <
+    : public value_traits<
           BOOST_DEDUCED_TYPENAME ContainerProxy::raw_value_type>
   {
     typedef element_proxy<ContainerProxy> element_proxy_;
@@ -44,7 +44,7 @@ namespace boost { namespace python { namespace indexing {
     {
       typename base_type::less m_base_compare;
 
-      bool operator() (
+      bool operator()(
           element_proxy_ const &p1, element_proxy_ const &p2) const
       {
         return m_base_compare (*p1, *p2);
@@ -59,7 +59,7 @@ namespace boost { namespace python { namespace indexing {
 
       typename base_type::equal_to m_base_compare;
 
-      bool operator() (
+      bool operator()(
           raw_value_type const &v, element_proxy_ const &p) const
       {
         return m_base_compare (v, *p);

@@ -67,19 +67,19 @@ namespace boost { namespace python { namespace indexing {
   };
 
   template<class ContainerProxy>
-  shared_proxy_impl<ContainerProxy>::shared_proxy_impl (ContainerProxy *owner
-                                                        , size_t index)
-    : m_owner_ptr (owner)
-    , m_index (index)
-    , m_element_ptr ()
+  shared_proxy_impl<ContainerProxy>::shared_proxy_impl (ContainerProxy *owner,
+                                                        size_t index)
+    : m_owner_ptr (owner),
+    m_index (index),
+    m_element_ptr ()
   {
   }
 
   template<class ContainerProxy>
   shared_proxy_impl<ContainerProxy>::shared_proxy_impl (value_type const &val)
-    : m_owner_ptr (0)
-    , m_index (static_cast<size_t>(-1))
-    , m_element_ptr (new value_type (val))
+    : m_owner_ptr (0),
+    m_index (static_cast<size_t>(-1)),
+    m_element_ptr (new value_type (val))
   {
   }
 
@@ -95,7 +95,7 @@ namespace boost { namespace python { namespace indexing {
   template<class ContainerProxy>
   void shared_proxy_impl<ContainerProxy>::detach ()
   {
-    BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+    BOOST_PYTHON_INDEXING_RESET_AUTO_PTR(
         m_element_ptr, new value_type (**this));
     m_owner_ptr = 0;
     m_index = static_cast<size_t>(-1);

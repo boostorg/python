@@ -30,7 +30,7 @@ boost::python::indexing::make_iterator (boost::python::object temp)
 
   try
     {
-      BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+      BOOST_PYTHON_INDEXING_RESET_AUTO_PTR(
           result, (python_iterator *) new python_iter_iterator (temp));
     }
 
@@ -40,7 +40,7 @@ boost::python::indexing::make_iterator (boost::python::object temp)
 
       try
         {
-          BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+          BOOST_PYTHON_INDEXING_RESET_AUTO_PTR(
               result, (python_iterator *) new python_getitem_iterator (temp));
         }
 
@@ -67,9 +67,9 @@ boost::python::indexing::python_iterator::~python_iterator ()
 
 boost::python::indexing::python_getitem_iterator
 ::python_getitem_iterator (boost::python::object obj)
-  : m_getitem_method (obj.attr ("__getitem__"))
-  , m_index (0)
-  , m_current()
+  : m_getitem_method (obj.attr ("__getitem__")),
+  m_index (0),
+  m_current()
 {
 }
 
@@ -123,8 +123,8 @@ boost::python::indexing::python_getitem_iterator::current () const
 
 boost::python::indexing::python_iter_iterator
 ::python_iter_iterator (boost::python::object obj)
-  : m_next_method (obj.attr ("__iter__")().attr ("next"))
-  , m_current()
+  : m_next_method (obj.attr ("__iter__")().attr ("next")),
+  m_current()
 {
 }
 

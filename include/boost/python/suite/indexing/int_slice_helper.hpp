@@ -58,9 +58,9 @@ namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
   int_slice_helper<Algorithms, SliceType>
   ::int_slice_helper (container &c, slice_type const &sl)
-    : m_slice (sl)
-    , m_ptr (&c)
-    , m_pos (-1)
+    : m_slice (sl),
+    m_ptr (&c),
+    m_pos (-1)
   {
   }
 
@@ -117,7 +117,7 @@ namespace boost { namespace python { namespace indexing {
   namespace detail {
     template<bool doit> struct maybe_insert {
       template<class Algorithms>
-      static void apply (
+      static void apply(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           // Can't explicitly instantiate member function - must let
@@ -125,13 +125,13 @@ namespace boost { namespace python { namespace indexing {
           // parameter. Same applies throughout
           Algorithms *,
 # endif
-          typename Algorithms::container &
-          , typename Algorithms::index_param
-          , typename Algorithms::value_param)
+          typename Algorithms::container &,
+          typename Algorithms::index_param,
+          typename Algorithms::value_param)
       {
-        PyErr_SetString (
-            PyExc_TypeError
-            , "container does not support insertion into slice");
+        PyErr_SetString(
+            PyExc_TypeError,
+            "container does not support insertion into slice");
 
         boost::python::throw_error_already_set ();
       }
@@ -139,14 +139,14 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_insert<true> {
       template<class Algorithms>
-      static void apply (
+      static void apply(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
 # endif
-          typename Algorithms::container &c
-          , typename Algorithms::index_param i
-          , typename Algorithms::value_param v)
+          typename Algorithms::container &c,
+          typename Algorithms::index_param i,
+          typename Algorithms::value_param v)
       {
         Algorithms::insert (c, i, v);
       }
@@ -158,7 +158,7 @@ namespace boost { namespace python { namespace indexing {
   {
     if (m_slice.step() != 1)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "attempt to insert via extended slice");
 
         boost::python::throw_error_already_set ();
@@ -171,7 +171,7 @@ namespace boost { namespace python { namespace indexing {
   && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           apply (static_cast<Algorithms *>(0),
 # else
-          BOOST_NESTED_TEMPLATE apply <Algorithms> (
+          BOOST_NESTED_TEMPLATE apply <Algorithms>(
 # endif
               *m_ptr, m_pos, val);
 
@@ -182,16 +182,16 @@ namespace boost { namespace python { namespace indexing {
   namespace detail {
     template<bool doit> struct maybe_erase {
       template<class Algorithms>
-      static void apply (
+      static void apply(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
 # endif
-          typename Algorithms::container &
-          , typename Algorithms::index_param
-          , typename Algorithms::index_param)
+          typename Algorithms::container &,
+          typename Algorithms::index_param,
+          typename Algorithms::index_param)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_TypeError, "container does not support item deletion");
 
         boost::python::throw_error_already_set ();
@@ -200,14 +200,14 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_erase<true> {
       template<class Algorithms>
-      static void apply (
+      static void apply(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
 # endif
-          typename Algorithms::container &c
-          , typename Algorithms::index_param from
-          , typename Algorithms::index_param to)
+          typename Algorithms::container &c,
+          typename Algorithms::index_param from,
+          typename Algorithms::index_param to)
       {
         Algorithms::erase_range (c, from, to);
       }
@@ -219,7 +219,7 @@ namespace boost { namespace python { namespace indexing {
   {
     if (m_slice.step() != 1)
       {
-        PyErr_SetString (
+        PyErr_SetString(
             PyExc_ValueError, "attempt to delete via extended slice");
 
         boost::python::throw_error_already_set ();
@@ -233,7 +233,7 @@ namespace boost { namespace python { namespace indexing {
   && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           apply (static_cast<Algorithms *>(0),
 # else
-          BOOST_NESTED_TEMPLATE apply <Algorithms> (
+          BOOST_NESTED_TEMPLATE apply <Algorithms>(
 # endif
               *m_ptr, m_pos, m_slice.stop());
       }

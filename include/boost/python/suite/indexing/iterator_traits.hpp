@@ -49,7 +49,7 @@ namespace boost { namespace python { namespace indexing {
 
     BOOST_STATIC_CONSTANT (bool, has_copyable_iter = false);
     BOOST_STATIC_CONSTANT (bool, is_reorderable    = false);
-    BOOST_STATIC_CONSTANT (
+    BOOST_STATIC_CONSTANT(
         bool, has_mutable_ref = is_mutable_ref<reference>::value);
 
     BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_none);

@@ -55,24 +55,24 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename Container, typename ValueTraits = detail::no_override>
   struct base_container_traits
-    : public ::boost::python::indexing::iterator_traits <
-        BOOST_DEDUCED_TYPENAME mpl::if_ <
-          is_const<Container>
-          , BOOST_DEDUCED_TYPENAME Container::const_iterator
-          , BOOST_DEDUCED_TYPENAME Container::iterator
+    : public ::boost::python::indexing::iterator_traits<
+        BOOST_DEDUCED_TYPENAME mpl::if_<
+          is_const<Container>,
+          BOOST_DEDUCED_TYPENAME Container::const_iterator,
+          BOOST_DEDUCED_TYPENAME Container::iterator
         >::type
       >
   {
   protected:
-    typedef ::boost::python::indexing::iterator_traits <
-      BOOST_DEDUCED_TYPENAME mpl::if_ <
-        is_const<Container>
-        , BOOST_DEDUCED_TYPENAME Container::const_iterator
-        , BOOST_DEDUCED_TYPENAME Container::iterator
+    typedef ::boost::python::indexing::iterator_traits<
+      BOOST_DEDUCED_TYPENAME mpl::if_<
+        is_const<Container>,
+        BOOST_DEDUCED_TYPENAME Container::const_iterator,
+        BOOST_DEDUCED_TYPENAME Container::iterator
       >::type
     > base_type;
 
-    BOOST_STATIC_CONSTANT (
+    BOOST_STATIC_CONSTANT(
         bool, is_mutable = ! boost::is_const<Container>::value);
 
   public:
@@ -96,14 +96,14 @@ namespace boost { namespace python { namespace indexing {
     // second (optional) template parameter
     typedef value_traits<typename base_type::value_type> default_value_traits;
 
-    typedef typename detail::maybe_override <
+    typedef typename detail::maybe_override<
         default_value_traits, ValueTraits>::type value_traits_;
 
-    BOOST_STATIC_CONSTANT (
+    BOOST_STATIC_CONSTANT(
         bool, has_mutable_ref
         = ICE_AND (base_type::has_mutable_ref, is_mutable));
 
-    BOOST_STATIC_CONSTANT (
+    BOOST_STATIC_CONSTANT(
         bool, has_find = value_traits_::equality_comparable);
 
     // Assume the worst for everything else

@@ -34,9 +34,9 @@ namespace boost { namespace python { namespace indexing {
   index_style_t const index_style_linear = 2;
 #else
   enum index_style_t {
-    index_style_none         // No random access (iteration only)
-    , index_style_nonlinear  // Random access by key (no slicing)
-    , index_style_linear     // Random access by integer index (allows slicing)
+    index_style_none,         // No random access (iteration only)
+    index_style_nonlinear,  // Random access by key (no slicing)
+    index_style_linear     // Random access by integer index (allows slicing)
   };
 #endif
 
