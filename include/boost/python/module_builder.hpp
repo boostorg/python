@@ -16,6 +16,17 @@
 
 namespace boost { namespace python {
 
+class module_builder;
+
+template <class T, class U> class class_builder;
+
+namespace detail {
+
+template <class T, class U>
+void wrap_cursor_class(module_builder & module, 
+                       class_builder<T, U> & wrapped_container);
+} // namspace detail
+
 class module_builder
 {
  public:
@@ -38,6 +49,15 @@ class module_builder
     void def(Fn fn, const char* name)
     {
         add(detail::new_wrapped_function(fn), name);
+    }
+    
+    // wrapped_container must wrap an STL conforming container;
+    // this function creates a cursor that wraps this container's iterator
+    // and adds the factory function "cursor()" to the wrapped container
+    template <class T, class U>
+    void def_cursor_for(class_builder<T, U> & wrapped_container)
+    {
+        detail::wrap_cursor_class(*this, wrapped_container);
     }
 
     // Return true iff a module is currently being built.
