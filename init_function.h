@@ -165,6 +165,7 @@ private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
+    string arguments_as_string(tuple arguments) const;
 };
 
 

@@ -15,13 +15,13 @@ a single long parameter.
     ...     print str(err)
     ... else: print 'no exception'
     'demo.Foo.__init__' expected argument(s) (int),
-    but got (demo.Foo) instead.
+    but got () instead.
     >>> try: ext = Foo('foo')
     ... except TypeError, err:
     ...     print str(err)
     ... else: print 'no exception'
     'demo.Foo.__init__' expected argument(s) (int),
-    but got (demo.Foo, string) instead.
+    but got (string) instead.
     >>> ext = Foo(1)
 
 Call a virtual function. This call takes a trip into C++ where
@@ -363,7 +363,7 @@ Some simple overloading tests:
     ...     print str(err)
     ... else: print 'no exception'
     No variant of overloaded function 'demo.Range.__init__' matches argument(s):
-    (demo.Range, string)
+    (string)
     Candidates are:
     (int)
     (int, int)
@@ -617,7 +617,7 @@ Testing overloaded constructors
     ... else:
     ...     print 'no exception'
     No variant of overloaded function 'demo.OverloadTest.__init__' matches argument(s):
-    (demo.OverloadTest, int, string)
+    (int, string)
     Candidates are:
     ()
     (demo.OverloadTest)

@@ -33,4 +33,9 @@ namespace python { namespace detail {
       return none();
   }
 
+    string init::arguments_as_string(tuple arguments) const
+    {
+        return argument_tuple_as_string(arguments.slice(1, arguments.size()));
+    }
+
 }} // namespace python::detail

@@ -46,6 +46,7 @@ class function : public python_object
  
  protected:   
     virtual PyObject* description() const = 0;
+    virtual string arguments_as_string(tuple args) const;
  private:
     virtual PyObject* do_call(PyObject* args, PyObject* keywords) const = 0;
     virtual string function_name() const = 0;

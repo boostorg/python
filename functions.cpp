@@ -154,7 +154,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                 message += description_as_string(desc);
                 message += ",\nbut got ";
                 tuple arguments(ref(args, ref::increment_count));
-                message += argument_tuple_as_string(arguments);
+                message += arguments_as_string(arguments);
                 message += " instead.";
                 PyErr_SetObject(PyExc_TypeError, message.get());
             }
@@ -177,7 +177,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     message += " matches argument(s):\n";
     
     tuple arguments(ref(args, ref::increment_count));
-    message += argument_tuple_as_string(arguments);
+    message += arguments_as_string(arguments);
 
     message += "\nCandidates are:\n";
     for (const function* f1 = this; f1 != 0; f1 = f1->m_overloads.get())
@@ -190,6 +190,11 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 
     PyErr_SetObject(PyExc_TypeError, message.get());
     return 0;
+}
+
+string function::arguments_as_string(tuple arguments) const
+{
+    return argument_tuple_as_string(arguments);
 }
 
 bound_function* bound_function::create(const ref& target, const ref& fn)
