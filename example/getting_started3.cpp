@@ -132,9 +132,10 @@ initgetting_started3()
     py_a_lame_number.def(python::constructor<int>());
     py_a_lame_number.def(&a_number<int>::get, "get");
 
-    // The third argument enables pickling of the object's __dict__.
+    // Enable pickling of the object's __dict__.
     python::class_builder<a_number<double> >
-    py_a_number(this_module, "a_number", true);
+    py_a_number(this_module, "a_number");
+    py_a_number.dict_defines_state();
     py_a_number.def(python::constructor<>());
     py_a_number.def(python::constructor<double>());
     py_a_number.def(&a_number<double>::get, "get");
