@@ -1,3 +1,18 @@
+2000-11-04 17:35
+
+    Integrated Ullrich Koethe's brilliant from_python_experiment for better
+    error-reporting in many cases.
+
+    extclass.h, gen_extclass.py:
+        removed special-case MSVC code
+        added much commentary
+        removed unused py_copy_to_new_value_holder
+
+    init_function.h, gen_init_function.py:
+        added missing 'template' keyword on type-dependent template member usage
+        removed special-case MSVC code
+        added much commentary
+        
 2000-11-04 0:36
 
     Removed the need for the phantom base class that screwed up inheritance
