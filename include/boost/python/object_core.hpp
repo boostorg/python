@@ -325,7 +325,6 @@ inline object::object(detail::borrowed_reference p)
     : object_base(python::incref((PyObject*)p))
 {}
 
-
 inline object::object(detail::new_reference p)
     : object_base(expect_non_null((PyObject*)p))
 {}

@@ -23,6 +23,7 @@ dll bpl
   src/object/function.cpp
   src/object/inheritance.cpp
   src/object/life_support.cpp
+  src/py_interface.cpp
   src/errors.cpp
   src/module.cpp
   src/objects2.cpp

@@ -14,6 +14,7 @@
 # include <boost/python/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
+# include <boost/python/detail/module_base.hpp>
 # include <boost/python/object/class_converters.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/same_traits.hpp>
@@ -86,12 +87,12 @@ class class_ : public objects::class_base
  public:
     // Automatically derive the class name - only works on some
     // compilers because type_info::name is sometimes mangled (gcc)
-    class_();
+     class_(base const& parent_class = empty_class_base());
     
     // Construct with the class name.  [ Would have used a default
     // argument but gcc-2.95.2 choked on typeid(T).name() as a default
     // parameter value]
-    class_(char const* name);
+    class_(char const* name, base const& parent_class = empty_class_base());
 
 
     // Wrap a member function or a non-member function which can take
@@ -195,6 +196,22 @@ class class_ : public objects::class_base
 
     self& setattr(char const* name, handle<> const&);
 
+    // add to module
+    self& add(module &m)
+    {
+        // redundant
+        // m.add(*this);
+        return *this;
+    }
+
+    // add to current module
+    self& add()
+    {
+        // redundant
+        // boost::python::add(*this);
+        return *this;
+    }
+
  private: // types
     typedef objects::class_id class_id;
     
@@ -231,7 +248,7 @@ class class_ : public objects::class_base
 // implementations
 //
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_()
+inline class_<T,X1,X2,X3>::class_(base const& parent_class)
     : base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
     // register converters
@@ -241,10 +258,16 @@ inline class_<T,X1,X2,X3>::class_()
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , this->object());
+
+    // get the context to add the class to
+    handle<> parent(parent_class.object() ? handle<>(parent_class.object()) :
+                    base::get_class_context_object(typeid(T).name(), object()));
+    // add the class to the current module
+    boost::python::detail::module_base::add(object(), parent);
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_(char const* name)
+inline class_<T,X1,X2,X3>::class_(char const* name, base const& parent_class)
     : base(name, id_vector::size, id_vector().ids)
 {
     // register converters
@@ -254,8 +277,13 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , this->object());
-}
 
+    // get the context to add the class to
+    handle<> parent(parent_class.object() ? handle<>(parent_class.object()) :
+                    base::get_class_context_object(name, object()));
+    // add the class to the current module
+    boost::python::detail::module_base::add(object(), parent);
+}
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, handle<> const& fget)

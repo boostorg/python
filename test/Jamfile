@@ -93,6 +93,7 @@ run bases.cpp ;
 run if_else.cpp ;
 run pointee.cpp ;
 run result.cpp ;
+run submod_subclass_api.cpp <dll>../bpl : : : $(PYTHON_PROPERTIES) ;
 compile string_literal.cpp ;
 compile borrowed.cpp : $(UNIT_TEST_PROPERTIES) ;
 compile object_manager.cpp : $(UNIT_TEST_PROPERTIES) ;
