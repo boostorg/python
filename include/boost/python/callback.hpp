@@ -46,7 +46,7 @@ struct callback
     template <class A1>
     static R call_method(PyObject* self, const char* name, const A1& a1)
     {
-        ref p1(to_python(a1));
+        ref p1(to_python(search_namespace, a1));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(O)"),
                                      p1.get()));
@@ -57,7 +57,7 @@ struct callback
     template <class A1>
     static R call(PyObject* self, const A1& a1)
     {
-        ref p1(to_python(a1));
+        ref p1(to_python(search_namespace, a1));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(O)"),
                                        p1.get()));
         detail::callback_adjust_refcount(result.get(), type<R>());
@@ -67,8 +67,8 @@ struct callback
     template <class A1, class A2>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OO)"),
                                      p1.get(),
@@ -80,8 +80,8 @@ struct callback
     template <class A1, class A2>
     static R call(PyObject* self, const A1& a1, const A2& a2)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OO)"),
                                        p1.get(),
                                        p2.get()));
@@ -92,9 +92,9 @@ struct callback
     template <class A1, class A2, class A3>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOO)"),
                                      p1.get(),
@@ -107,9 +107,9 @@ struct callback
     template <class A1, class A2, class A3>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -121,10 +121,10 @@ struct callback
     template <class A1, class A2, class A3, class A4>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOO)"),
                                      p1.get(),
@@ -138,10 +138,10 @@ struct callback
     template <class A1, class A2, class A3, class A4>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -154,11 +154,11 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOO)"),
                                      p1.get(),
@@ -173,11 +173,11 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -191,12 +191,12 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOO)"),
                                      p1.get(),
@@ -212,12 +212,12 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -232,13 +232,13 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOO)"),
                                      p1.get(),
@@ -255,13 +255,13 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -277,14 +277,14 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOO)"),
                                      p1.get(),
@@ -302,14 +302,14 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -326,15 +326,15 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOOO)"),
                                      p1.get(),
@@ -353,15 +353,15 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -379,16 +379,16 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
-        ref p10(to_python(a10));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
+        ref p10(to_python(search_namespace, a10));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOOOO)"),
                                      p1.get(),
@@ -408,16 +408,16 @@ struct callback
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
-        ref p10(to_python(a10));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
+        ref p10(to_python(search_namespace, a10));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -455,7 +455,7 @@ struct callback<void>
     template <class A1>
     static void call_method(PyObject* self, const char* name, const A1& a1)
     {
-        ref p1(to_python(a1));
+        ref p1(to_python(search_namespace, a1));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(O)"),
                                      p1.get()));
@@ -464,7 +464,7 @@ struct callback<void>
     template <class A1>
     static void call(PyObject* self, const A1& a1)
     {
-        ref p1(to_python(a1));
+        ref p1(to_python(search_namespace, a1));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(O)"),
                                        p1.get()));
     }
@@ -472,8 +472,8 @@ struct callback<void>
     template <class A1, class A2>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OO)"),
                                      p1.get(),
@@ -483,8 +483,8 @@ struct callback<void>
     template <class A1, class A2>
     static void call(PyObject* self, const A1& a1, const A2& a2)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OO)"),
                                        p1.get(),
                                        p2.get()));
@@ -493,9 +493,9 @@ struct callback<void>
     template <class A1, class A2, class A3>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOO)"),
                                      p1.get(),
@@ -506,9 +506,9 @@ struct callback<void>
     template <class A1, class A2, class A3>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -518,10 +518,10 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOO)"),
                                      p1.get(),
@@ -533,10 +533,10 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -547,11 +547,11 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOO)"),
                                      p1.get(),
@@ -564,11 +564,11 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -580,12 +580,12 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOO)"),
                                      p1.get(),
@@ -599,12 +599,12 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -617,13 +617,13 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOO)"),
                                      p1.get(),
@@ -638,13 +638,13 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -658,14 +658,14 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOO)"),
                                      p1.get(),
@@ -681,14 +681,14 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -703,15 +703,15 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOOO)"),
                                      p1.get(),
@@ -728,15 +728,15 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
@@ -752,16 +752,16 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
-        ref p10(to_python(a10));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
+        ref p10(to_python(search_namespace, a10));
         ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(OOOOOOOOOO)"),
                                      p1.get(),
@@ -779,16 +779,16 @@ struct callback<void>
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
     {
-        ref p1(to_python(a1));
-        ref p2(to_python(a2));
-        ref p3(to_python(a3));
-        ref p4(to_python(a4));
-        ref p5(to_python(a5));
-        ref p6(to_python(a6));
-        ref p7(to_python(a7));
-        ref p8(to_python(a8));
-        ref p9(to_python(a9));
-        ref p10(to_python(a10));
+        ref p1(to_python(search_namespace, a1));
+        ref p2(to_python(search_namespace, a2));
+        ref p3(to_python(search_namespace, a3));
+        ref p4(to_python(search_namespace, a4));
+        ref p5(to_python(search_namespace, a5));
+        ref p6(to_python(search_namespace, a6));
+        ref p7(to_python(search_namespace, a7));
+        ref p8(to_python(search_namespace, a8));
+        ref p9(to_python(search_namespace, a9));
+        ref p10(to_python(search_namespace, a10));
         ref result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOOO)"),
                                        p1.get(),
                                        p2.get(),
