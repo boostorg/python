@@ -36,9 +36,20 @@ typedef detail::keywords<1> arg;
 
 namespace detail
 {
+  // A hack to simplify code by making arg a dependent name
+  template <std::size_t nkeywords>
+  struct dependent_arg
+  {
+      typedef arg type;
+  };
+  
   template <std::size_t nkeywords>
   struct keywords_base
   {
+      typedef typename
+        dependent_arg<nkeywords>::type
+      arg;
+      
       BOOST_STATIC_CONSTANT(std::size_t, size = nkeywords);
       
       keyword_range range() const
