@@ -6,10 +6,8 @@
 #ifndef TYPE_ID_DWA20011127_HPP
 # define TYPE_ID_DWA20011127_HPP
 # include <boost/python/detail/config.hpp>
-# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/select_type.hpp>
-# include <boost/type_traits/cv_traits.hpp>
-# include <boost/type_traits/composite_traits.hpp>
 # include <boost/operators.hpp>
 # include <typeinfo>
 # include <iosfwd>
@@ -79,80 +77,6 @@ struct type_id_t : totally_ordered<type_id_t>
     base_id_t m_base_type;
 };
 
-#  ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-template <class T>
-struct is_reference_to_const
-{
-    BOOST_STATIC_CONSTANT(bool, value = false);
-};
-
-template <class T>
-struct is_reference_to_const<T const&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = true);
-};
-
-template <class T>
-struct is_reference_to_volatile
-{
-    BOOST_STATIC_CONSTANT(bool, value = false);
-};
-
-template <class T>
-struct is_reference_to_volatile<T volatile&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = true);
-};
-#  else 
-template <typename V>
-struct is_const_help
-{
-    typedef typename mpl::select_type<
-        is_const<V>::value
-        , type_traits::yes_type
-        , type_traits::no_type
-        >::type type;
-};
-
-template <typename V>
-struct is_volatile_help
-{
-    typedef typename mpl::select_type<
-        is_volatile<V>::value
-        , type_traits::yes_type
-        , type_traits::no_type
-        >::type type;
-};
-
-template <typename V>
-typename is_const_help<V>::type reference_to_const_helper(V&);
-    
-type_traits::no_type
-reference_to_const_helper(...);
-
-template <class T>
-struct is_reference_to_const
-{
-    static T t;
-    BOOST_STATIC_CONSTANT(
-        bool, value
-        = sizeof(reference_to_const_helper(t)) == sizeof(type_traits::yes_type));
-};
-
-template <typename V>
-typename is_volatile_help<V>::type reference_to_volatile_helper(V&);
-type_traits::no_type reference_to_volatile_helper(...);
-
-template <class T>
-struct is_reference_to_volatile
-{
-    static T t;
-    BOOST_STATIC_CONSTANT(
-        bool, value
-        = sizeof(reference_to_volatile_helper(t)) == sizeof(type_traits::yes_type));
-};
-#  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION 
-
 template <class T>
 inline undecorated_type_id_t undecorated_type_id(detail::dummy<T>* = 0)
 {
@@ -165,9 +89,9 @@ inline type_id_t type_id(detail::dummy<T>* = 0)
     return type_id_t(
         undecorated_type_id<T>()
         , type_id_t::decoration(
-            (is_const<T>::value || is_reference_to_const<T>::value
+            (is_const<T>::value || python::detail::is_reference_to_const<T>::value
              ? type_id_t::const_ : 0)
-            | (is_volatile<T>::value || is_reference_to_volatile<T>::value
+            | (is_volatile<T>::value || python::detail::is_reference_to_volatile<T>::value
                ? type_id_t::volatile_ : 0)
             | (is_reference<T>::value ? type_id_t::reference : 0)
             )

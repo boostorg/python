@@ -58,18 +58,18 @@ class module : public module_base
         return *this;
     }
     
-# if 0
-    template <class Fn>
-    void def_raw(char const* name, Fn fn)
-    {
-        add(detail::new_raw_arguments_function(fn), name);
-    }
-# endif
-    
     template <class Fn>
     module& def(char const* name, Fn fn)
     {
         this->setattr(name, boost::python::make_function(fn));
+        return *this;
+    }
+
+    
+    template <class Fn, class ResultHandler>
+    module& def(char const* name, Fn fn, ResultHandler handler)
+    {
+        this->setattr(name, boost::python::make_function(fn, handler));
         return *this;
     }
 };

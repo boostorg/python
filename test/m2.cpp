@@ -8,6 +8,9 @@
 // by exposing raw Python extension functions that use wrap<> and
 // unwrap<> objects.
 #include <boost/python/module.hpp>
+#include <boost/python/copy_non_const_reference.hpp>
+#include <boost/python/copy_const_reference.hpp>
+#include <boost/python/return_value_policy.hpp>
 #include "simple_type.hpp"
 
 // Get a simple (by value) from the argument, and return the
@@ -59,6 +62,10 @@ struct rewrap
 
 BOOST_PYTHON_MODULE_INIT(m2)
 {
+    using boost::python::return_value_policy;
+    using boost::python::copy_const_reference;
+    using boost::python::copy_non_const_reference;
+    
     boost::python::module("m2")
         .def("unwrap_int", unwrap_int)
         .def("unwrap_int_ref", unwrap_int_ref)
@@ -68,11 +75,24 @@ BOOST_PYTHON_MODULE_INIT(m2)
         .def("unwrap_simple_const_ref", unwrap_simple_const_ref)
 
         .def("wrap_int", &rewrap<int>::f)
-        .def("wrap_int_ref", &rewrap<int&>::f)
-        .def("wrap_int_const_ref", &rewrap<int const&>::f)
+        
+        .def("wrap_int_ref", &rewrap<int&>::f
+             , return_value_policy<copy_non_const_reference>()
+            )
+        
+        .def("wrap_int_const_ref", &rewrap<int const&>::f
+             , return_value_policy<copy_const_reference>()
+            )
+        
         .def("wrap_simple", &rewrap<simple>::f)
-        .def("wrap_simple_ref", &rewrap<simple&>::f)
-        .def("wrap_simple_const_ref", &rewrap<simple const&>::f)
+        
+        .def("wrap_simple_ref", &rewrap<simple&>::f
+             , return_value_policy<copy_non_const_reference>()
+            )
+        
+        .def("wrap_simple_const_ref", &rewrap<simple const&>::f
+             , return_value_policy<copy_const_reference>()
+            )
         ;
 }
 

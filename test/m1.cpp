@@ -12,7 +12,8 @@
 #include <boost/python/object/value_holder.hpp>
 #include <boost/python/object/pointer_holder.hpp>
 #include <boost/python/object/class.hpp>
-//#include <boost/python/object/inheritance.hpp>
+#include <boost/python/copy_const_reference.hpp>
+#include <boost/python/return_value_policy.hpp>
 #include <boost/python/converter/class.hpp>
 #include <boost/python/reference_from_python.hpp>
 #include <boost/python/value_from_python.hpp>
@@ -198,6 +199,9 @@ BOOST_PYTHON_MODULE_INIT(m1)
     using boost::python::value_from_python;
     using boost::python::type_from_python;
     using boost::python::get_member;
+    using boost::python::copy_const_reference;
+    using boost::python::return_value_policy;
+    using boost::mpl::type_list;
     
     // Create the converters; they are self-registering/unregistering.
     static to_python_converter<simple const&> c1(simple_to_python);
@@ -239,7 +243,8 @@ BOOST_PYTHON_MODULE_INIT(m1)
       .def("f", f)
 
       // Expose g()
-      .def("g", g)
+      .def("g", g , return_value_policy<copy_const_reference>()
+          )
 
       .def("take_a", take_a)
       .def("take_b", take_b)
@@ -279,8 +284,8 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
         .add(
             class_<complicated>("complicated")
-            .def_init(args<simple const&,int>())
-            .def_init(args<simple const&>())
+            .def_init(type_list<simple const&,int>())
+            .def_init(type_list<simple const&>())
             .def("get_n", &complicated::get_n)
             )
         ;

@@ -101,7 +101,7 @@ template <class T>
 inline bool
 to_python_lookup<T>::convertible() const
 {
-    return m_converter != 0;
+    return m_convert != 0;
 }
 
 template <class T>

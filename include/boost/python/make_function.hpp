@@ -15,6 +15,7 @@
 # include <boost/mpl/size.hpp>
 # include <boost/function.hpp>
 # include <boost/bind.hpp>
+# include <boost/python/default_call_policies.hpp>
 
 namespace boost { namespace python {
 
@@ -24,7 +25,17 @@ objects::function* make_function(F f)
     converter::acquire_registrations(detail::signature(f));
     return new objects::function(
         objects::py_function(
-            ::boost::bind<PyObject*>(detail::caller(), f, _1, _2))
+            ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, default_call_policies()))
+        , detail::arg_tuple_size<F>::value);
+}
+
+template <class F, class Policies>
+objects::function* make_function(F f, Policies const& policies)
+{
+    converter::acquire_registrations(detail::signature(f));
+    return new objects::function(
+        objects::py_function(
+            ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, policies))
         , detail::arg_tuple_size<F>::value);
 }
 
@@ -41,7 +52,7 @@ objects::function* make_constructor(T* = 0, ArgList* = 0, Generator* = 0)
             ::boost::bind<PyObject*>(detail::caller(),
                  objects::make_holder<nargs>
                             ::template apply<T,Generator,ArgList>::execute
-                 , _1, _2))
+                 , _1, _2, default_call_policies()))
         , nargs + 1);
 }
 
