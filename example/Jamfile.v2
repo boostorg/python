@@ -5,6 +5,6 @@ project
     : requirements <library>@/boost/python/boost_python
     ;
 
-lib getting_started1 : getting_started1.cpp : <shared>true ;
-lib getting_started2 : getting_started2.cpp : <shared>true ;
+python-extension getting_started1 : getting_started1.cpp : <shared>true ;
+python-extension getting_started2 : getting_started2.cpp : <shared>true ;
   
