@@ -96,7 +96,8 @@ if $(TEST_BIENSTMAN_NON_BUGS)
 
 # --- unit tests of library components ---
 
-local UNIT_TEST_PROPERTIES = [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB ;
+local UNIT_TEST_PROPERTIES = <lib>../../test/build/test_exec_monitor
+  [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB ;
 
 run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
@@ -120,7 +121,7 @@ run upcast.cpp
 run select_holder.cpp
   : # command-line args
   : # input files
-  : $(UNIT_TEST_PROPERTIES)
+  : $(UNIT_TEST_PROPERTIES) 
     ;
 
 
