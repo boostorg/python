@@ -20,6 +20,7 @@
 
 #include <ostream>
 #include <boost/shared_ptr.hpp>
+#include <stdio.h>
 
 struct IntWrapper {
   static bool gIntWrapperTrace;
@@ -41,6 +42,7 @@ struct IntWrapper {
 };
 
 inline bool operator== (IntWrapper const &lhs, IntWrapper const &rhs);
+inline bool operator!= (IntWrapper const &lhs, IntWrapper const &rhs);
 inline bool operator< (IntWrapper const &lhs, IntWrapper const &rhs);
 inline int compare (IntWrapper const &lhs, IntWrapper const &rhs);
 inline std::ostream &operator<< (std::ostream &strm, IntWrapper const &iw);
@@ -140,6 +142,11 @@ void IntWrapper::setTrace (int onoff)
 bool operator== (IntWrapper const &lhs, IntWrapper const &rhs)
 {
   return lhs.mI == rhs.mI;
+}
+
+bool operator!= (IntWrapper const &lhs, IntWrapper const &rhs)
+{
+  return lhs.mI != rhs.mI;
 }
 
 bool operator< (IntWrapper const &lhs, IntWrapper const &rhs)
