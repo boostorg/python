@@ -30,8 +30,11 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename Container>
-  struct map_traits : public default_container_traits<Container>
+  class map_traits : public base_container_traits<Container>
   {
+    typedef base_container_traits<Container> base_class;
+
+  public:
 # if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
     // MSVC6 has a nonstandard name for mapped_type in std::map
     typedef typename Container::referent_type value_type;
@@ -49,12 +52,23 @@ namespace boost { namespace python { namespace indexing {
     typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
       index_param;
 
-    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
-    BOOST_STATIC_CONSTANT (bool,   has_find       = true);
-    BOOST_STATIC_CONSTANT (bool,   is_reorderable = false);
-    // std::map::reference (reference to the mapped type) is mutable,
-    // so explicitly override the base-class assumption of
-    // is_reorderable
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods = (
+              method_iter
+
+            | method_getitem
+            | method_contains
+            | method_count
+            | method_has_key
+
+            | detail::method_set_if<
+                  base_class::is_mutable,
+                    method_setitem
+                  | method_delitem
+                  | method_insert
+              >::value
+        ));
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -126,11 +140,11 @@ namespace boost { namespace python { namespace indexing {
 
   template<
     class Container,
-    int Flags = 0,
+    method_set_type MethodMask = all_methods,
     class Traits = map_traits<Container>
   >
   struct map_suite
-    : container_suite<Container, Flags, map_algorithms<Traits> >
+    : container_suite<Container, MethodMask, map_algorithms<Traits> >
   {
   };
 

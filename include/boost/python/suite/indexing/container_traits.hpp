@@ -14,6 +14,7 @@
 // 2003/ 8/23   rmg     File creation as container_suite.hpp
 // 2003/ 9/ 8   rmg     Renamed container_traits.hpp
 // 2003/10/28   rmg     Split container-specific versions into separate headers
+// 2004/ 1/28   rmg     Convert to bitset-based feature selection
 //
 // $Id$
 //
@@ -22,16 +23,14 @@
 #define BOOST_PYTHON_INDEXING_CONTAINER_TRAITS_HPP
 
 #include <boost/python/suite/indexing/suite_utils.hpp>
-#include <boost/python/suite/indexing/iterator_traits.hpp>
+#include <boost/python/suite/indexing/methods.hpp>
 #include <boost/python/suite/indexing/value_traits.hpp>
 
 #include <boost/type_traits.hpp>
 #include <boost/call_traits.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/ice.hpp>
-
-#define ICE_AND(a, b) type_traits::ice_and<(a), (b)>::value
-// #undef'd later in this header
+#include <boost/iterator/iterator_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
 #if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
@@ -55,33 +54,28 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename Container, typename ValueTraits = detail::no_override>
   struct base_container_traits
-    : public ::boost::python::indexing::iterator_traits<
-        BOOST_DEDUCED_TYPENAME mpl::if_<
-          is_const<Container>,
-          BOOST_DEDUCED_TYPENAME Container::const_iterator,
-          BOOST_DEDUCED_TYPENAME Container::iterator
-        >::type
-      >
   {
-  protected:
-    typedef ::boost::python::indexing::iterator_traits<
-      BOOST_DEDUCED_TYPENAME mpl::if_<
-        is_const<Container>,
-        BOOST_DEDUCED_TYPENAME Container::const_iterator,
-        BOOST_DEDUCED_TYPENAME Container::iterator
-      >::type
-    > base_type;
+    typedef base_container_traits<Container, ValueTraits> self_type;
 
+  protected:
     BOOST_STATIC_CONSTANT(
         bool, is_mutable = ! boost::is_const<Container>::value);
 
   public:
     typedef Container container;
 
-    typedef typename container::size_type  size_type;
-    typedef typename base_type::value_type value_type; // insert
-    typedef typename base_type::value_type key_type;   // find
+    typedef BOOST_DEDUCED_TYPENAME container::value_type value_type;
 
+    typedef BOOST_DEDUCED_TYPENAME mpl::if_<
+        is_const<container>,
+        BOOST_DEDUCED_TYPENAME container::const_iterator,
+        BOOST_DEDUCED_TYPENAME container::iterator
+      >::type iterator;
+
+    typedef typename ::boost::iterator_reference<iterator>::type reference;
+
+    typedef value_type key_type; // Used for find, etc.
+    typedef typename container::size_type size_type;
     typedef typename make_signed<size_type>::type index_type;
     // at(), operator[]. Signed to support Python -ve indexes
 
@@ -94,22 +88,9 @@ namespace boost { namespace python { namespace indexing {
 
     // Allow client code to replace the default value traits via our
     // second (optional) template parameter
-    typedef value_traits<typename base_type::value_type> default_value_traits;
+    typedef value_traits<value_type> default_value_traits;
     typedef typename detail::maybe_override<
         default_value_traits, ValueTraits>::type value_traits_type;
-
-    BOOST_STATIC_CONSTANT(
-        bool, has_mutable_ref
-        = ICE_AND (base_type::has_mutable_ref, is_mutable));
-
-    BOOST_STATIC_CONSTANT(
-        bool, has_find = value_traits_type::equality_comparable);
-
-    // Assume the worst for everything else
-    BOOST_STATIC_CONSTANT (bool, has_insert    = false);
-    BOOST_STATIC_CONSTANT (bool, has_erase     = false);
-    BOOST_STATIC_CONSTANT (bool, has_pop_back  = false);
-    BOOST_STATIC_CONSTANT (bool, has_push_back = false);
 
     // Forward visit_container_class to value_traits_type
     template<typename PythonClass, typename Policy>
@@ -121,34 +102,58 @@ namespace boost { namespace python { namespace indexing {
   };
 
   /////////////////////////////////////////////////////////////////////////
-  // Default container traits - almost all "real" containers would meet
-  // at least these requirements
+  // ContainerTraits for sequences with random access - std::vector,
+  // std::deque and the like
   /////////////////////////////////////////////////////////////////////////
 
   template<typename Container, typename ValueTraits = detail::no_override>
-  struct default_container_traits
+  class random_access_sequence_traits
     : public base_container_traits<Container, ValueTraits>
   {
-    typedef default_container_traits<Container, ValueTraits> self_type;
-    BOOST_STATIC_CONSTANT (bool, has_insert = self_type::is_mutable);
-    BOOST_STATIC_CONSTANT (bool, has_erase  = self_type::is_mutable);
-  };
+    typedef base_container_traits<Container, ValueTraits> base_class;
 
-  /////////////////////////////////////////////////////////////////////////
-  // Sequences (list, deque, vector)
-  /////////////////////////////////////////////////////////////////////////
+  public:
+    typedef typename base_class::value_traits_type value_traits_type;
 
-  template<typename Container, typename ValueTraits = detail::no_override>
-  struct default_sequence_traits
-    : public default_container_traits<Container, ValueTraits>
-  {
-    typedef default_sequence_traits<Container, ValueTraits> self_type;
-    BOOST_STATIC_CONSTANT (bool, has_pop_back  = self_type::is_mutable);
-    BOOST_STATIC_CONSTANT (bool, has_push_back = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods = (
+              method_len
+            | method_getitem
+            | method_getitem_slice
+
+            | detail::method_set_if<
+                  value_traits_type::equality_comparable,
+                    method_index
+                  | method_contains
+                  | method_count
+              >::value
+
+            | detail::method_set_if<
+                  base_class::is_mutable,
+                    method_setitem
+                  | method_setitem_slice
+                  | method_delitem
+                  | method_delitem_slice
+                  | method_reverse
+                  | method_append
+                  | method_insert
+                  | method_extend
+              >::value
+
+            | detail::method_set_if<
+                  type_traits::ice_and<
+                      base_class::is_mutable,
+                      value_traits_type::less_than_comparable
+                  >::value,
+                  method_sort
+              >::value
+
+        ));
+
+        // Not supported: method_iter, method_has_key
   };
 
 } } }
-
-#undef ICE_AND
 
 #endif // BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP

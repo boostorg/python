@@ -29,36 +29,17 @@
 #include <boost/bind.hpp>
 #include <functional>
 
-# if defined (BOOST_MSVC)
-    // Prevent MSVC int-to-bool truncation warning (C4305)
-#   define QUIET_BOOL(val) static_cast<bool>(val)
-# else
-#   define QUIET_BOOL(val) (val)
-# endif
-
-# define ICE_AND(a, b) ::boost::type_traits::ice_and <(a), (b)>::value
-# define ICE_NOT(a) ::boost::type_traits::ice_not <QUIET_BOOL(a)>::value
-// these three macros undef'd at end of header
-
 namespace boost { namespace python { namespace indexing {
-  enum visitor_flags {
-    disable_len = 1,
-    disable_slices = 2,
-    disable_search = 4,
-    disable_reorder = 8,
-    disable_extend = 16,
-    disable_insert = 32,
-    minimum_support = 0xffff   // Disable all optional features
-  };
+  //////////////////////////////////////////////////////////////////////////
+  // Policy override template that masks everything except the precall
+  // functions. i.e. it uses default policies for everything except
+  // precall, which must be provided by the template argument.
+  //////////////////////////////////////////////////////////////////////////
 
   namespace detail {
     template<typename PrecallPolicy>
     struct precall_only : public boost::python::default_call_policies
     {
-      // This policies struct uses default policies for everything
-      // except precall, which must be provided by the template
-      // argument.
-
       precall_only () : m_precall () { }
       explicit precall_only (PrecallPolicy const &copy) : m_precall (copy) { }
 
@@ -71,168 +52,68 @@ namespace boost { namespace python { namespace indexing {
   }
 
   //////////////////////////////////////////////////////////////////////////
-  // __len__ dummy
+  // Ugly macro to define a template that optionally adds a method to
+  // a Python class. This version (OPTIONAL_ALGO_SUPPORT) works with
+  // static functions in an Algorithms class.
+  //
+  // This macro is #undef'd at the end of this header
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit>
-  struct maybe_add_len {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
+#define OPTIONAL_ALGO_SUPPORT(ADDER_NAME, METHOD_NAME, ALGO_FN) \
+  template<bool doit>  \
+  struct ADDER_NAME {  \
+    template<class PythonClass, class Algorithms, class Policy>  \
+    static void apply (PythonClass &, Algorithms const &, Policy const &)  \
+    {  \
+    }  \
+  };  \
+\
+  template<>  \
+  struct ADDER_NAME<true> {  \
+    template<class PythonClass, class Algorithms, class Policy>  \
+    static void apply(  \
+        PythonClass &pyClass,  \
+        Algorithms const &,  \
+        Policy const &policy)  \
+    {  \
+      pyClass.def (METHOD_NAME, &Algorithms::ALGO_FN, policy);  \
+    }  \
+  }
 
   //////////////////////////////////////////////////////////////////////////
-  // __len__ real
+  // Ugly macro to define a template that optionally adds a method to
+  // a Python class. This version (OPTIONAL_SLICE_SUPPORT) works with
+  // static functions in the slice_handler template.
+  //
+  // This macro is #undef'd at the end of this header
   //////////////////////////////////////////////////////////////////////////
 
-  template<>
-  struct maybe_add_len<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__len__", &Algorithms::size, policy);
-    }
-  };
+#define OPTIONAL_SLICE_SUPPORT(ADDER_NAME, METHOD_NAME, SLICE_HANDLER_FN) \
+  template<bool doit>  \
+  struct ADDER_NAME {  \
+    template<class PythonClass, class Algorithms, class Policy>  \
+    static void apply (PythonClass &, Algorithms const &, Policy const &)  \
+    {  \
+    }  \
+  };  \
+\
+  template<>  \
+  struct ADDER_NAME<true> {  \
+    template<class PythonClass, class Algorithms, class Policy>  \
+    static void apply(  \
+        PythonClass &pyClass,  \
+        Algorithms const &,  \
+        Policy const &policy)  \
+    {  \
+      pyClass.def ( \
+          METHOD_NAME, \
+          slice_handler<Algorithms, Policy>::SLICE_HANDLER_FN (policy));  \
+    }  \
+  }
 
   //////////////////////////////////////////////////////////////////////////
-  // __getitem__ dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit, bool with_slice>
-  struct maybe_add_getitem {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __getitem__ no-slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_getitem<true, false> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__getitem__", &Algorithms::get, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __getitem__ with slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_getitem<true, true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__getitem__", &Algorithms::get, policy);
-      pyClass.def(
-          "__getitem__",
-          slice_handler<Algorithms, Policy>::make_getitem (policy));
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __setitem__ dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit, bool with_slice>
-  struct maybe_add_setitem {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __setitem__ no-slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_setitem<true, false> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__setitem__", &Algorithms::assign, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __setitem__ with slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_setitem<true, true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__setitem__", &Algorithms::assign, policy);
-      pyClass.def(
-          "__setitem__",
-          slice_handler<Algorithms, Policy>::make_setitem (policy));
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __delitem__ dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit, bool with_slicing>
-  struct maybe_add_delitem {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __delitem__ no-slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_delitem<true, false> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__delitem__", &Algorithms::erase_one, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __delitem__ with slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_delitem<true, true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("__delitem__", &Algorithms::erase_one, policy);
-      pyClass.def(
-          "__delitem__",
-          slice_handler<Algorithms, Policy>::make_delitem (policy));
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // __iter__ dummy
+  // __iter__ is a special case not handled by the above macros. First
+  // the unspecialized (do-nothing) version
   //////////////////////////////////////////////////////////////////////////
 
   template<bool doit>
@@ -242,7 +123,7 @@ namespace boost { namespace python { namespace indexing {
   };
 
   //////////////////////////////////////////////////////////////////////////
-  // __iter__ real
+  // Specialization with the real implementation of __iter__
   //////////////////////////////////////////////////////////////////////////
 
   template<>
@@ -266,259 +147,45 @@ namespace boost { namespace python { namespace indexing {
   };
 
   //////////////////////////////////////////////////////////////////////////
-  // sort dummy
+  // All other optional methods are covered by the two OPTIONAL_*
+  // macros
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit>
-  struct maybe_add_sort {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // sort real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_sort<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("sort", &Algorithms::sort, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // reverse dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit>
-  struct maybe_add_reverse {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // reverse real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_reverse<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("reverse", &Algorithms::reverse, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // append dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit>
-  struct maybe_add_append {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // append real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_append<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("append", &Algorithms::push_back, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // extend dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit>
-  struct maybe_add_insert {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // insert real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_insert<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("insert", Algorithms::insert, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // extend dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit>
-  struct maybe_add_extend {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // extend real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_extend<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def(
-          "extend",
-          slice_handler<Algorithms, Policy>::make_extend (policy));
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // index dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit>
-  struct maybe_add_index {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // index real
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_index<true> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("index", Algorithms::get_index, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // count dummy
-  //////////////////////////////////////////////////////////////////////////
-
-  template<bool doit, index_style_t style>
-  struct maybe_add_count {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &, Algorithms const &, Policy const &) { }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // count real (sequences without indexing)
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_count<true, index_style_none> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      pyClass.def ("count", Algorithms::count, policy);
-      pyClass.def ("__contains__", Algorithms::contains, policy);
-    }
-  };
-
-
-  //////////////////////////////////////////////////////////////////////////
-  // count real (sequences with indexing)
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_count<true, index_style_linear> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      // This is identical to the index_style_none version. Doing it
-      // this way avoids using a partial specialization for
-      // <true, *>
-      pyClass.def ("count", Algorithms::count, policy);
-      pyClass.def ("__contains__", Algorithms::contains, policy);
-    }
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // count real (associative containers). add has_key
-  //////////////////////////////////////////////////////////////////////////
-
-  template<>
-  struct maybe_add_count<true, index_style_nonlinear> {
-    template<class PythonClass, class Algorithms, class Policy>
-    static void apply(
-        PythonClass &pyClass,
-        Algorithms const &,
-        Policy const &policy)
-    {
-      // Nearest equivalent is has_key, since Python dictionaries
-      // have at most one value for a key.
-      pyClass.def ("has_key", Algorithms::contains, policy);
-      pyClass.def ("__contains__", Algorithms::contains, policy);
-
-      // Maybe this makes sense for multimap or multiset. Then again,
-      // maybe they should always return a list of elements for a key?
-      pyClass.def ("count", Algorithms::count, policy);
-    }
-  };
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_len, "__len__", size);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_getitem, "__getitem__", get);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_setitem, "__setitem__", assign);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_delitem, "__delitem__", erase_one);
+  OPTIONAL_SLICE_SUPPORT (maybe_add_getslice, "__getitem__", make_getitem);
+  OPTIONAL_SLICE_SUPPORT (maybe_add_setslice, "__setitem__", make_setitem);
+  OPTIONAL_SLICE_SUPPORT (maybe_add_delslice, "__delitem__", make_delitem);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_sort, "sort", sort);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_reverse, "reverse", reverse);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_append, "append", push_back);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_insert, "insert", insert);
+  OPTIONAL_SLICE_SUPPORT (maybe_add_extend, "extend", make_extend);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_index, "index", get_index);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_count, "count", count);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_contains, "__contains__", contains);
+  OPTIONAL_ALGO_SUPPORT  (maybe_add_has_key, "has_key", contains);
 
   //////////////////////////////////////////////////////////////////////////
   // Do-all visitor
   //////////////////////////////////////////////////////////////////////////
 
-  template<class Algorithms, class Policy, int Flags = 0>
+  template<class Algorithms, class Policy, method_set_type MethodMask>
   class visitor
-    : public boost::python::def_visitor< visitor< Algorithms, Policy, Flags > >
+    : public def_visitor< visitor< Algorithms, Policy, MethodMask > >
   {
     Policy m_policy;
 
+    BOOST_STATIC_CONSTANT (
+        method_set_type,
+        enabled_methods = Algorithms::supported_methods & MethodMask);
+
   public:
     typedef Algorithms algorithms_type;
-    typedef typename algorithms_type::container_traits traits;
-    typedef typename traits::value_traits_type value_traits_type;
 
     explicit visitor (Policy const &policy = Policy()) : m_policy (policy) { }
-
-  private:
-    BOOST_STATIC_CONSTANT(
-        bool, has_indexing = traits::index_style >= index_style_nonlinear);
-
-    BOOST_STATIC_CONSTANT(
-        bool, has_slicing = ICE_AND(
-            traits::index_style == index_style_linear,
-            ICE_NOT (Flags & disable_slices)));
 
   public:
     template <class PythonClass>
@@ -526,72 +193,71 @@ namespace boost { namespace python { namespace indexing {
     {
       detail::precall_only<Policy> precallPolicy (m_policy);
 
-      // Note - this will add __len__ for anything that can determine
-      // its size, even if that might be inefficient (e.g. have linear
-      // time complexity). Disable by setting disable_len in Flags
-      maybe_add_len<
-        ICE_AND(
-            traits::has_copyable_iter,
-            ICE_NOT (Flags & disable_len))
-      >::apply (pyClass, algorithms_type(), precallPolicy);
+      maybe_add_len<detail::is_member<enabled_methods, method_len>::value>
+        ::apply(pyClass, algorithms_type(), precallPolicy);
 
-      maybe_add_getitem <has_indexing, has_slicing>
-        ::apply (pyClass, algorithms_type(), m_policy);
+      maybe_add_getitem<
+        detail::is_member<enabled_methods, method_getitem>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
+
+      maybe_add_getslice<
+          detail::is_member<enabled_methods, method_getitem_slice>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
 
       maybe_add_setitem<
-          ICE_AND (traits::has_mutable_ref, has_indexing),
-          has_slicing
-      >::apply (pyClass, algorithms_type(), m_policy);
+        detail::is_member<enabled_methods, method_setitem>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
 
-      maybe_add_delitem<ICE_AND (traits::has_erase, has_indexing), has_slicing>
-        ::apply (pyClass, algorithms_type(), m_policy);
+      maybe_add_setslice<
+          detail::is_member<enabled_methods, method_setitem_slice>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
+
+      maybe_add_delitem<
+        detail::is_member<enabled_methods, method_delitem>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
+
+      maybe_add_delslice<
+          detail::is_member<enabled_methods, method_delitem_slice>::value
+      >::apply(pyClass, algorithms_type(), m_policy);
 
       maybe_add_iter<
-        ICE_AND(
-            traits::index_style != index_style_linear,
-            traits::has_copyable_iter)
+        detail::is_member<enabled_methods, method_iter>::value
       >::apply (pyClass, algorithms_type(), m_policy);
 
       maybe_add_sort<
-        ICE_AND(
-            ICE_AND(
-                traits::is_reorderable,
-                value_traits_type::less_than_comparable),
-            ICE_NOT (Flags & disable_reorder))
+        detail::is_member<enabled_methods, method_sort>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_reverse<
-        ICE_AND (traits::is_reorderable, ICE_NOT (Flags & disable_reorder))
+        detail::is_member<enabled_methods, method_reverse>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
-      maybe_add_append<traits::has_push_back>
-        ::apply (pyClass, algorithms_type(), precallPolicy);
+      maybe_add_append<
+        detail::is_member<enabled_methods, method_append>::value
+      >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_insert<
-        ICE_AND (traits::has_insert, ICE_NOT (Flags & disable_insert))
+        detail::is_member<enabled_methods, method_insert>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_extend<
-        ICE_AND(
-            ICE_AND(
-                traits::index_style == index_style_linear,
-                traits::has_insert),
-            ICE_NOT (Flags & disable_extend))
+        detail::is_member<enabled_methods, method_extend>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_index<
-        ICE_AND(
-            ICE_AND(
-                traits::index_style == index_style_linear,
-                traits::has_find),
-            ICE_NOT (Flags & disable_search))
+        detail::is_member<enabled_methods, method_index>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
       maybe_add_count<
-        ICE_AND(
-            traits::has_find,
-            ICE_NOT (Flags & disable_search)),
-        traits::index_style
+        detail::is_member<enabled_methods, method_count>::value
+      >::apply (pyClass, algorithms_type(), precallPolicy);
+
+      maybe_add_contains<
+        detail::is_member<enabled_methods, method_contains>::value
+      >::apply (pyClass, algorithms_type(), precallPolicy);
+
+      maybe_add_has_key<
+        detail::is_member<enabled_methods, method_has_key>::value
       >::apply (pyClass, algorithms_type(), precallPolicy);
 
       Algorithms::visit_container_class (pyClass, m_policy);
@@ -599,8 +265,7 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#undef ICE_NOT
-#undef ICE_AND
-#undef QUIET_BOOL
+#undef OPTIONAL_SLICE_SUPPORT
+#undef OPTIONAL_ALGO_SUPPORT
 
 #endif // BOOST_PYTHON_INDEXING_VISITOR_HPP

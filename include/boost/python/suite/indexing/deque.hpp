@@ -35,8 +35,8 @@ namespace boost { namespace python { namespace indexing {
     {
       typedef std::deque<T, Allocator> Container;
 
-      typedef default_sequence_traits<Container>       mutable_traits;
-      typedef default_sequence_traits<Container const> const_traits;
+      typedef random_access_sequence_traits<Container>       mutable_traits;
+      typedef random_access_sequence_traits<Container const> const_traits;
 
     public:
       typedef default_algorithms<mutable_traits> mutable_algorithms;
@@ -47,11 +47,11 @@ namespace boost { namespace python { namespace indexing {
 
   template<
     class Container,
-    int Flags = 0,
-    class Traits = default_sequence_traits<Container>
+    method_set_type MethodMask = all_methods,
+    class Traits = random_access_sequence_traits<Container>
   >
   struct deque_suite
-    : container_suite<Container, Flags, default_algorithms<Traits> >
+    : container_suite<Container, MethodMask, default_algorithms<Traits> >
   {
   };
 

@@ -21,6 +21,7 @@
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
+#include <boost/type_traits/is_const.hpp>
 #include <set>
 
 namespace boost { namespace python { namespace indexing {
@@ -29,8 +30,11 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename Container>
-  struct set_traits : public default_container_traits<Container>
+  class set_traits : public base_container_traits<Container>
   {
+    typedef base_container_traits<Container> base_class;
+
+  public:
     typedef typename Container::key_type value_type; // probably unused
     typedef typename Container::key_type index_type; // operator[]
     typedef typename Container::key_type key_type;   // find, count, ...
@@ -42,13 +46,21 @@ namespace boost { namespace python { namespace indexing {
     typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
         index_param;
 
-    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
-    BOOST_STATIC_CONSTANT (bool, has_find        = true);
-    BOOST_STATIC_CONSTANT (bool, has_mutable_ref = false);
-    BOOST_STATIC_CONSTANT (bool, is_reorderable  = false);
-    // Some compilers seem to deduce has_mutable_ref as true from the
-    // set iterator traits. The previous two constants explicitly hide
-    // the bad results of that.
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods = (
+              method_iter
+            | method_getitem
+            | method_contains
+            | method_count
+            | method_has_key
+
+            | detail::method_set_if<
+                  base_class::is_mutable,
+                    method_delitem
+                  | method_insert
+              >::value
+        ));
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -115,11 +127,11 @@ namespace boost { namespace python { namespace indexing {
 
   template<
     class Container,
-    int Flags = 0,
+    method_set_type MethodMask = all_methods,
     class Traits = set_traits<Container>
   >
   struct set_suite
-    : container_suite<Container, Flags, set_algorithms<Traits> >
+    : container_suite<Container, MethodMask, set_algorithms<Traits> >
   {
   };
 

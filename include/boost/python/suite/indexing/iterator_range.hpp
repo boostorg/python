@@ -24,10 +24,13 @@
 #include <algorithm>
 #include <utility>
 #include <boost/type_traits.hpp>
+#include <boost/type_traits/ice.hpp>
+#include <boost/detail/workaround.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
+#include <boost/python/suite/indexing/iterator_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename Iterator>
@@ -179,6 +182,48 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
+  template<typename Container, typename ValueTraits = detail::no_override>
+  class iterator_range_traits
+    : public base_container_traits<Container, ValueTraits>
+  {
+    typedef base_container_traits<Container, ValueTraits> base_class;
+
+    typedef ::boost::python::indexing::iterator_traits<
+      typename Container::iterator
+    > iterator_traits_type;
+
+  public:
+    typedef typename base_class::value_traits_type value_traits_type;
+
+  private:
+    // Methods that we *can't* support because of our value type
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        disabled_methods = (
+            detail::method_set_if<
+               type_traits::ice_not<
+                   value_traits_type::equality_comparable
+               >::value,
+                 method_index      // Impossible if !equality_comparable
+               | method_contains   // Impossible if !equality_comparable
+               | method_count      // Impossible if !equality_comparable
+            >::value
+
+          | detail::method_set_if<
+               type_traits::ice_not<
+                   value_traits_type::less_than_comparable
+               >::value,
+               method_sort         // Impossible if !less_than_comparable
+            >::value
+        ));
+
+  public:
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods =
+        iterator_traits_type::supported_methods & ~disabled_methods);
+  };
+
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
@@ -190,8 +235,8 @@ namespace boost { namespace python { namespace indexing {
     {
       typedef iterator_range<Iterator> Container;
 
-      typedef base_container_traits<Container>       mutable_traits;
-      typedef base_container_traits<Container const> const_traits; // ?
+      typedef iterator_range_traits<Container>       mutable_traits;
+      typedef iterator_range_traits<Container const> const_traits; // ?
 
     public:
       typedef default_algorithms<mutable_traits> mutable_algorithms;
@@ -202,11 +247,11 @@ namespace boost { namespace python { namespace indexing {
 
   template<
     class Container,
-    int Flags = 0,
-    class Traits = base_container_traits<Container>
+    method_set_type MethodMask = all_methods,
+    class Traits = iterator_range_traits<Container>
   >
   struct iterator_range_suite
-    : container_suite<Container, Flags, default_algorithms<Traits> >
+    : container_suite<Container, MethodMask, default_algorithms<Traits> >
   {
   };
 

@@ -114,8 +114,13 @@ namespace boost { namespace python { namespace indexing {
 
   namespace detail {
     template<bool doit> struct maybe_insert {
+
+      // NOTE: use the name "apply_" instead of "apply" to avoid
+      // weirdo compiler crash in mpl/aux_/apply.hpp on MSVC7. Don't
+      // even ask how I arrived at this fix :-)
+
       template<class Algorithms>
-      static void apply(
+      static void apply_(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           // Can't explicitly instantiate member function - must let
@@ -137,7 +142,7 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_insert<true> {
       template<class Algorithms>
-      static void apply(
+      static void apply_(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
@@ -164,12 +169,14 @@ namespace boost { namespace python { namespace indexing {
 
     else
       {
-        detail::maybe_insert<container_traits::has_insert>::
+        detail::maybe_insert<
+          detail::is_member<
+            container_traits::supported_methods, method_insert>::value>::
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
   && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
-          apply (static_cast<Algorithms *>(0),
+          apply_ (static_cast<Algorithms *>(0),
 # else
-          BOOST_NESTED_TEMPLATE apply <Algorithms>(
+          BOOST_NESTED_TEMPLATE apply_ <Algorithms>(
 # endif
               *m_ptr, m_pos, val);
 
@@ -180,7 +187,7 @@ namespace boost { namespace python { namespace indexing {
   namespace detail {
     template<bool doit> struct maybe_erase {
       template<class Algorithms>
-      static void apply(
+      static void apply_(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
@@ -198,7 +205,7 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_erase<true> {
       template<class Algorithms>
-      static void apply(
+      static void apply_(
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
         && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
           Algorithms *,
@@ -225,13 +232,15 @@ namespace boost { namespace python { namespace indexing {
 
     else
       {
-        detail::maybe_erase<container_traits::has_erase>::
+        detail::maybe_erase<
+          detail::is_member<
+            container_traits::supported_methods, method_delitem>::value>::
 
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
   && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
-          apply (static_cast<Algorithms *>(0),
+          apply_ (static_cast<Algorithms *>(0),
 # else
-          BOOST_NESTED_TEMPLATE apply <Algorithms>(
+          BOOST_NESTED_TEMPLATE apply_ <Algorithms>(
 # endif
               *m_ptr, m_pos, m_slice.stop());
       }

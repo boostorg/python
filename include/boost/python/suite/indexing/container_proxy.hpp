@@ -33,8 +33,9 @@
 #include <boost/python/suite/indexing/element_proxy.hpp>
 #include <boost/python/suite/indexing/element_proxy_traits.hpp>
 #include <boost/python/suite/indexing/workaround.hpp>
+#include <boost/python/suite/indexing/methods.hpp>
 
-#include <vector>    // Default pointer container
+#include <vector>
 #include <cassert>
 #include <boost/shared_ptr.hpp>
 #include <boost/mpl/apply.hpp>
@@ -671,7 +672,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename Container>
-  struct container_proxy_traits : public default_sequence_traits<Container>
+  struct container_proxy_traits : random_access_sequence_traits<Container>
   {
     typedef Container container;
     typedef typename container::raw_value_type value_type; // insert, ...
@@ -723,11 +724,11 @@ namespace boost { namespace python { namespace indexing {
 #endif
   template<
       class Container,
-      int Flags = 0,
+      method_set_type MethodMask = all_methods,
       class Traits = container_proxy_traits<Container>
   >
   struct container_proxy_suite
-    : container_suite<Container, Flags, default_algorithms<Traits> >
+    : container_suite<Container, MethodMask, default_algorithms<Traits> >
   {
   };
 

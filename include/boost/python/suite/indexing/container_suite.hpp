@@ -19,6 +19,7 @@
 #ifndef BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
 #define BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
 
+#include <boost/python/suite/indexing/methods.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/visitor.hpp>
 
@@ -31,20 +32,20 @@ namespace boost { namespace python { namespace indexing {
 
   template<
       class Container,
-      int Flags = 0,
+      method_set_type MethodMask = all_methods,  // All supported by algorithms
       class Algorithms
           = algorithms<Container>
   >
   struct container_suite
-    : public visitor<Algorithms, default_container_policies, Flags>
+    : public visitor<Algorithms, default_container_policies, MethodMask>
   {
     typedef Algorithms algorithms;
 
     template<typename Policy>
-    static
-    visitor<Algorithms, Policy, Flags> with_policies (Policy const &policy)
+    static visitor<Algorithms, Policy, MethodMask>
+    with_policies (Policy const &policy)
     {
-      return visitor <Algorithms, Policy> (policy);
+      return visitor <Algorithms, Policy, MethodMask> (policy);
     }
   };
 } } }

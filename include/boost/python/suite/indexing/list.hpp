@@ -30,6 +30,48 @@
 
 namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
+  // ContainerTraits implementation for std::list instances
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename Container, typename ValueTraits = detail::no_override>
+  class list_traits
+    : public base_container_traits<Container, ValueTraits>
+  {
+    typedef base_container_traits<Container, ValueTraits> base_class;
+
+  public:
+    typedef typename base_class::value_traits_type value_traits_type;
+
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods = (
+              method_len
+            | method_iter
+
+            | detail::method_set_if<
+                  value_traits_type::equality_comparable,
+                    method_contains
+                  | method_count
+              >::value
+
+            | detail::method_set_if<
+                  base_class::is_mutable,
+                  method_reverse
+                  | method_append
+              >::value
+
+            | detail::method_set_if<
+                  type_traits::ice_and<
+                      base_class::is_mutable,
+                      value_traits_type::less_than_comparable
+                  >::value,
+                  method_sort
+              >::value
+
+        ));
+  };
+
+  /////////////////////////////////////////////////////////////////////////
   // Algorithms implementation for std::list instances
   /////////////////////////////////////////////////////////////////////////
 
@@ -65,8 +107,8 @@ namespace boost { namespace python { namespace indexing {
     {
       typedef std::list<T, Allocator> Container;
 
-      typedef default_sequence_traits<Container>       mutable_traits;
-      typedef default_sequence_traits<Container const> const_traits;
+      typedef list_traits<Container>       mutable_traits;
+      typedef list_traits<Container const> const_traits;
 
     public:
       typedef list_algorithms<mutable_traits> mutable_algorithms;
@@ -77,11 +119,11 @@ namespace boost { namespace python { namespace indexing {
 
   template<
     class Container,
-    int Flags = 0,
-    class Traits = default_sequence_traits<Container>
+    method_set_type MethodMask = all_methods,
+    class Traits = list_traits<Container>
   >
   struct list_suite
-    : container_suite<Container, Flags, list_algorithms<Traits> >
+    : container_suite<Container, MethodMask, list_algorithms<Traits> >
   {
   };
 

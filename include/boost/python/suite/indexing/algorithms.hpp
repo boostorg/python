@@ -53,6 +53,18 @@ namespace boost { namespace python { namespace indexing {
     typedef typename ContainerTraits::index_param index_param;
     typedef typename ContainerTraits::key_param   key_param;
 
+    // Defer selection of supported_methods to the ContainerTraits
+    // template argument. This makes sense because default_algorithms
+    // derives all of its other information from this argument, and
+    // can't decide which of the static member functions will
+    // instantiate successfully for the container. Obviously a
+    // custom-written Algorithms implementation could choose to
+    // provide the supported_methods directly.
+
+    BOOST_STATIC_CONSTANT(
+        method_set_type,
+        supported_methods = ContainerTraits::supported_methods);
+
     static size_type size       (container &);
     static iterator  find       (container &, key_param);
     static size_type get_index  (container &, key_param);
@@ -505,7 +517,7 @@ namespace boost { namespace python { namespace indexing {
 
   namespace detail {
     template<typename Container> class algorithms_selector
-# if defined(BOOST_MPL_MSVC_60_ETI_BUG)
+# if defined(BOOST_MPL_MSVC_ETI_BUG)
     {
       // Bogus types to prevent compile errors due to ETI
       typedef algorithms_selector<Container> mutable_algorithms;
