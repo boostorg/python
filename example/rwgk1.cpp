@@ -17,7 +17,7 @@ extern "C"
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-initrwgk1()
+void initrwgk1()
 {
   try
   {
