@@ -8,6 +8,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/reference.hpp>
+# include <boost/python/converter/callback_to_python_base.hpp>
 # include <string>
 # include <complex>
 
@@ -33,40 +34,37 @@ namespace converter
   BOOST_PYTHON_DECL PyObject* do_callback_to_python(PyObject*);
 }
 
-# define BOOST_PYTHON_CALL_TO_PYTHON_BY_VALUE(T, expr)   \
-    template <> struct to_python_value<T&>          \
-        : detail::builtin_to_python                 \
-    {                                               \
-        PyObject* operator()(T const& x) const      \
-        {                                           \
-            return (expr);                          \
-        }                                           \
-    };                                              \
-    template <> struct to_python_value<T const&>    \
-        : detail::builtin_to_python                 \
-    {                                               \
-        PyObject* operator()(T const& x) const      \
-        {                                           \
-            return (expr);                          \
-        }                                           \
+# define BOOST_PYTHON_CALL_TO_PYTHON_BY_VALUE(T, expr)  \
+    template <> struct to_python_value<T&>              \
+        : detail::builtin_to_python                     \
+    {                                                   \
+        PyObject* operator()(T const& x) const          \
+        {                                               \
+            return (expr);                              \
+        }                                               \
+    };                                                  \
+    template <> struct to_python_value<T const&>        \
+        : detail::builtin_to_python                     \
+    {                                                   \
+        PyObject* operator()(T const& x) const          \
+        {                                               \
+            return (expr);                              \
+        }                                               \
     };
 
-# define BOOST_PYTHON_CALLBACK_TO_PYTHON_BY_VALUE(T, expr)   \
-    namespace converter                             \
-    {                                               \
-      template <> struct callback_to_python< T >    \
-      {                                             \
-          callback_to_python(T const& x)            \
-            : m_held(expr) {}                       \
-          PyObject* get() const                     \
-            { return m_held.get(); }                \
-       private:                                     \
-          ref m_held;                               \
-      };                                            \
+# define BOOST_PYTHON_CALLBACK_TO_PYTHON_BY_VALUE(T, expr)      \
+    namespace converter                                         \
+    {                                                           \
+      template <> struct callback_to_python< T >                \
+        : detail::callback_to_python_holder                     \
+      {                                                         \
+          callback_to_python(T const& x)                        \
+            : detail::callback_to_python_holder(expr) {}        \
+      };                                                        \
     } 
 
-# define BOOST_PYTHON_TO_PYTHON_BY_VALUE(T, expr)   \
-        BOOST_PYTHON_CALL_TO_PYTHON_BY_VALUE(T,expr) \
+# define BOOST_PYTHON_TO_PYTHON_BY_VALUE(T, expr)               \
+        BOOST_PYTHON_CALL_TO_PYTHON_BY_VALUE(T,expr)            \
         BOOST_PYTHON_CALLBACK_TO_PYTHON_BY_VALUE(T,expr)
 
 # define BOOST_PYTHON_TO_INT(T)                                         \

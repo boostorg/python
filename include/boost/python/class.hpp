@@ -24,6 +24,7 @@
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/python/data_members.hpp>
 # include <boost/utility.hpp>
+# include <boost/python/detail/operator_id.hpp>
 
 namespace boost { namespace python { 
 
@@ -36,6 +37,9 @@ namespace detail
   
   template <class T1, class T2, class T3>
   struct has_noncopyable;
+
+  template <detail::operator_id, class L, class R>
+  struct operator_;
 
   // Register a to_python converter for a class T, depending on the
   // type of the first (tag) argument. The 2nd argument is a pointer
@@ -115,6 +119,18 @@ class class_ : public objects::class_base
                       , policy)
             );
         
+        return *this;
+    }
+
+    template <detail::operator_id id, class L, class R>
+    self& def(detail::operator_<id,L,R> const& op)
+    {
+        typedef detail::operator_<id,L,R> op_t;
+        // Use function::add_to_namespace to achieve overloading if
+        // appropriate.
+        objects::function::add_to_namespace(
+            this->object(), op.name(), 
+            ref(detail::wrap_function(&op_t::template apply<T>::execute)));
         return *this;
     }
     

@@ -16,7 +16,8 @@ namespace detail
   struct callback_to_python_holder
   {
       callback_to_python_holder(PyObject* obj);
-      inline PyObject* get() const;
+      PyObject* get() const;
+      PyObject* get_incref() const;
    private:
       ref m_held;
   };
@@ -37,6 +38,13 @@ namespace detail
   inline PyObject* callback_to_python_holder::get() const
   {
       return m_held.get();
+  }
+
+  inline PyObject* callback_to_python_holder::get_incref() const
+  {
+      PyObject* result = m_held.get();
+      Py_XINCREF(result);
+      return result;
   }
 }
 

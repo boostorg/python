@@ -8,6 +8,10 @@
 #include <numeric>
 #include <boost/python/errors.hpp>
 #include <boost/python/objects.hpp>
+#include <boost/bind.hpp>
+#include <algorithm>
+#include <functional>
+#include <cstring>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -77,6 +81,67 @@ void function::add_overload(function* overload_)
     parent->m_overloads = overload_;
 }
 
+namespace
+{
+  char const* const binary_operator_names[] =
+  {
+      "add__",
+      "and__",
+      "div__",
+      "eq__",
+      "ge__",
+      "gt__",
+      "le__",
+      "lshift__",
+      "lt__",
+      "mod__",
+      "mul__",
+      "ne__",
+      "or__",
+      "radd__",
+      "rand__",
+      "rdiv__",
+      "rlshift__",
+      "rmod__",
+      "rmul__",
+      "ror__",
+      "rrshift__",
+      "rshift__",
+      "rsub__",
+      "rxor__",
+      "sub__",
+      "xor__",
+  };
+
+  inline bool is_binary_operator(char const* name)
+  {
+      return name[0] == '_'
+          && name[1] == '_'
+          && std::binary_search(
+              &binary_operator_names[0]
+              , binary_operator_names + sizeof(binary_operator_names)/sizeof(*binary_operator_names)
+              , name + 2
+              , bind<bool>(std::less<int>(),
+                     bind(BOOST_CSTD_::strcmp, _1, _2), 0)
+              );
+  }
+
+  // Something for the end of the chain of binary operators
+  PyObject* not_implemented_impl(PyObject*, PyObject*)
+  {
+      Py_INCREF(Py_NotImplemented);
+      return Py_NotImplemented;
+  }
+  
+  function* not_implemented_function()
+  {
+      static function* result = new function(py_function(&not_implemented_impl), 2, 3);
+      static ref keeper(result);
+      
+      return result;
+  }
+}
+
 void function::add_to_namespace(
     ref const& name_space, char const* name_, ref const& attribute)
 {
@@ -99,11 +164,19 @@ void function::add_to_namespace(
         
         ref existing(PyObject_GetItem(dict, name.get()), ref::null_ok);
         
-        if (existing.get() && existing->ob_type == &function_type)
+        if (existing.get())
         {
-            static_cast<function*>(existing.get())->add_overload(
-                static_cast<function*>(attribute.get()));
-            return;
+            if (existing->ob_type == &function_type)
+            {
+                static_cast<function*>(attribute.get())->add_overload(
+                    static_cast<function*>(existing.get()));
+            }
+        }
+        // Binary operators need an additional overload which returns NotImplemented
+        else if (is_binary_operator(name_))
+        {
+            static_cast<function*>(attribute.get())->add_overload(
+                not_implemented_function());
         }
     }
     

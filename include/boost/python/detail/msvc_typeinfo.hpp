@@ -57,8 +57,8 @@ template <bool> struct bool_t{};
 template <class T>
 inline typeinfo typeid_nonref(boost::type<T>* = 0)
 {
-    BOOST_STATIC_CONSTANT(bool, c = is_const<T>::value);
-    BOOST_STATIC_CONSTANT(bool, v = is_volatile<T>::value);
+    bool const c = is_const<T>::value;
+    bool const v = is_volatile<T>::value;
     return value_id_accessor<(2 * v + c)>::get((T*)0);
 }
 

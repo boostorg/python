@@ -8,11 +8,19 @@
 #include <boost/python/objects.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/detail/binary_search.hpp>
+#include <boost/python/self.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 #include <vector>
 
 namespace boost { namespace python {
+
+# ifdef BOOST_PYTHON_SELF_IS_CLASS
+namespace self_ns
+{
+  self_t self;
+}
+# endif 
 
 instance_holder::instance_holder()
     : m_next(0)
