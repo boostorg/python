@@ -93,6 +93,7 @@ shared_ptr<Y> factory(int n)
 }
 
 static int stored_v() { return functions<Z>::get()->v(); }
+static shared_ptr<Z> stored_z() { return functions<Z>::get(); }
 
 BOOST_PYTHON_MODULE(shared_ptr_ext)
 {
@@ -128,6 +129,7 @@ BOOST_PYTHON_MODULE(shared_ptr_ext)
     def("z_count", &Z::count);
     def("z_release", &functions<Z>::release_store);
     def("z_look_store", &functions<Z>::look_store);
+    def("stored_z", &stored_z);
     def("stored_v", &stored_v);
 }
 

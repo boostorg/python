@@ -12,6 +12,7 @@
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
+# include <boost/mpl/bool_c.hpp>
 
 // Facilities for dealing with types which always manage Python
 // objects. Some examples are object, list, str, et. al. Different
@@ -117,16 +118,15 @@ struct object_manager_traits
 
 template <class T>
 struct is_object_manager
+    : mpl::bool_c<object_manager_traits<T>::is_specialized>
 {
-    BOOST_STATIC_CONSTANT(
-        bool, value = object_manager_traits<T>::is_specialized);
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template <class T>
 struct is_reference_to_object_manager
+    : mpl::false_c
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
 template <class T>
@@ -164,8 +164,8 @@ namespace detail
   template <class T>
   struct is_object_manager_help
   {
-      typedef typename mpl::if_c<
-          is_object_manager<T>::value
+      typedef typename mpl::if_<
+          is_object_manager<T>
           , yes_reference_to_object_manager
           , no_reference_to_object_manager
           >::type type;
@@ -197,8 +197,8 @@ namespace detail
   
   template <class T>
   struct is_reference_to_object_manager_nonref
+      : mpl::false_c
   {
-      BOOST_STATIC_CONSTANT(bool, value = false);
   };
 
   template <class T>
@@ -211,19 +211,18 @@ namespace detail
             == sizeof(detail::yes_reference_to_object_manager)
           )
         );
+      typedef mpl::bool_c<value> type;
   };
 }
 
 template <class T>
 struct is_reference_to_object_manager
-{
-    typedef typename mpl::if_c<
-        is_reference<T>::value
+    : mpl::if_<
+        is_reference<T>
         , detail::is_reference_to_object_manager_ref<T>
         , detail::is_reference_to_object_manager_nonref<T>
-    > chooser;
-
-    BOOST_STATIC_CONSTANT(bool, value = chooser::type::value);
+    >::type
+{
 };
 # endif 
 

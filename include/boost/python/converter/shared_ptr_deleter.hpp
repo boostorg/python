@@ -8,12 +8,12 @@
 
 namespace boost { namespace python { namespace converter { 
 
-struct shared_ptr_deleter
+struct BOOST_PYTHON_DECL shared_ptr_deleter
 {
-    shared_ptr_deleter(handle<> owner)
-        : owner(owner) {}
+    shared_ptr_deleter(handle<> owner);
+    ~shared_ptr_deleter();
 
-    void operator()(void const*) { owner.reset(); }
+    void operator()(void const*);
         
     handle<> owner;
 };

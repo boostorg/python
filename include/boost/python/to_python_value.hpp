@@ -6,15 +6,22 @@
 #ifndef TO_PYTHON_VALUE_DWA200221_HPP
 # define TO_PYTHON_VALUE_DWA200221_HPP
 
-# include <boost/type_traits/transform_traits.hpp>
+# include <boost/python/refcount.hpp>
+# include <boost/python/tag.hpp>
+
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/builtin_converters.hpp>
 # include <boost/python/converter/object_manager.hpp>
+# include <boost/python/converter/object_manager.hpp>
+# include <boost/python/converter/shared_ptr_to_python.hpp>
+
+# include <boost/python/detail/value_is_shared_ptr.hpp>
+
+# include <boost/type_traits/transform_traits.hpp>
+
 # include <boost/mpl/if.hpp>
-# include <boost/type_traits/ice.hpp>
-# include <boost/python/refcount.hpp>
-# include <boost/python/tag.hpp>
+# include <boost/mpl/logical/or.hpp>
 
 namespace boost { namespace python { 
 
@@ -50,18 +57,36 @@ namespace detail
       // but it will have to serve for now.
       BOOST_STATIC_CONSTANT(bool, uses_registry = true);
   };
+
+  template <class T>
+  struct shared_ptr_to_python_value
+  {
+      typedef typename add_reference<
+          typename add_const<T>::type
+      >::type argument_type;
+    
+      PyObject* operator()(argument_type) const;
+
+      // This information helps make_getter() decide whether to try to
+      // return an internal reference or not. I don't like it much,
+      // but it will have to serve for now.
+      BOOST_STATIC_CONSTANT(bool, uses_registry = false);
+  };
 }
 
 template <class T>
 struct to_python_value
-    : mpl::if_c<
-          boost::type_traits::ice_or<
-              converter::is_object_manager<T>::value
-            , converter::is_reference_to_object_manager<T>::value
-            >::value
-
-        , detail::object_manager_to_python_value<T>
-        , detail::registry_to_python_value<T>
+    : mpl::if_<
+          detail::value_is_shared_ptr<T>
+        , detail::shared_ptr_to_python_value<T>
+        , typename mpl::if_<
+              mpl::logical_or<
+                  converter::is_object_manager<T>
+                , converter::is_reference_to_object_manager<T>
+              >
+            , detail::object_manager_to_python_value<T>
+            , detail::registry_to_python_value<T>
+          >::type
       >::type
 {
 };
@@ -84,6 +109,12 @@ namespace detail
           python::xincref(
               get_managed_object(x, tag))
           );
+  }
+
+  template <class T>
+  inline PyObject* shared_ptr_to_python_value<T>::operator()(argument_type x) const
+  {
+      return converter::shared_ptr_to_python(x);
   }
 }
 

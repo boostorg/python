@@ -13,7 +13,7 @@
 namespace boost { namespace python { namespace converter { 
 
 struct registration;
-struct rvalue_from_python_chain;
+
 
 BOOST_PYTHON_DECL void* get_lvalue_from_python(
     PyObject* source, registration const&);

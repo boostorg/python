@@ -46,6 +46,7 @@ bye
 ... except TypeError: pass
 ... else: 'print expected a TypeError'
 >>> store(z)
+>>> assert stored_z() is z  # show that deleter introspection works
 >>> del z
 >>> stored_v()
 13

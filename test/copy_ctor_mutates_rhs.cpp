@@ -20,4 +20,5 @@ int main()
     BOOST_STATIC_ASSERT(copy_ctor_mutates_rhs<std::auto_ptr<int> >::value);
     BOOST_STATIC_ASSERT(!copy_ctor_mutates_rhs<std::string>::value);
     BOOST_STATIC_ASSERT(!copy_ctor_mutates_rhs<foo>::value);
+    return 0;
 }

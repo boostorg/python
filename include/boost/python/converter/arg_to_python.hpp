@@ -7,21 +7,31 @@
 # define ARG_TO_PYTHON_DWA200265_HPP
 
 # include <boost/python/ptr.hpp>
+# include <boost/python/tag.hpp>
+# include <boost/python/to_python_indirect.hpp>
+
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/converter/arg_to_python_base.hpp>
-# include <boost/python/to_python_indirect.hpp>
-# include <boost/type_traits/cv_traits.hpp>
-# include <boost/type_traits/composite_traits.hpp>
-# include <boost/type_traits/function_traits.hpp>
+# include <boost/python/converter/shared_ptr_to_python.hpp>
+// Bring in specializations
+# include <boost/python/converter/builtin_converters.hpp>
+
+# include <boost/python/object/function_handle.hpp>
+
+# include <boost/python/base_type_traits.hpp>
+
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/python/detail/convertible.hpp>
 # include <boost/python/detail/string_literal.hpp>
-# include <boost/python/base_type_traits.hpp>
-// Bring in specializations
-# include <boost/python/converter/builtin_converters.hpp>
-# include <boost/python/tag.hpp>
-# include <boost/python/object/function_handle.hpp>
+# include <boost/python/detail/value_is_shared_ptr.hpp>
+
+# include <boost/type_traits/cv_traits.hpp>
+# include <boost/type_traits/composite_traits.hpp>
+# include <boost/type_traits/function_traits.hpp>
+
+
+# include <boost/mpl/logical/or.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -39,6 +49,14 @@ namespace detail
   struct reference_arg_to_python : handle<>
   {
       reference_arg_to_python(T& x);
+   private:
+      static PyObject* get_object(T& x);
+  };
+
+  template <class T>
+  struct shared_ptr_arg_to_python : handle<>
+  {
+      shared_ptr_arg_to_python(T const& x);
    private:
       static PyObject* get_object(T& x);
   };
@@ -84,54 +102,51 @@ namespace detail
   template <class T>
   struct select_arg_to_python
   {
-      // Special handling for char const[N]; interpret them as char
-      // const* for the sake of conversion
-      BOOST_STATIC_CONSTANT(
-          bool, is_string = python::detail::is_string_literal<T const>::value);
-      
-      BOOST_STATIC_CONSTANT(
-          bool, function = is_function<T>::value | python::detail::is_pointer_to_function<T>::value | is_member_function_pointer<T>::value);
-      
-      BOOST_STATIC_CONSTANT(
-          bool, manager = is_object_manager<T>::value);
-      
-      BOOST_STATIC_CONSTANT(
-          bool, ptr = is_pointer<T>::value);
-      
-      BOOST_STATIC_CONSTANT(
-          bool, ref_wrapper = is_reference_wrapper<T>::value);
-
-      BOOST_STATIC_CONSTANT(
-          bool, ptr_wrapper = is_pointer_wrapper<T>::value);
-
       typedef typename unwrap_reference<T>::type unwrapped_referent;
       typedef typename unwrap_pointer<T>::type unwrapped_ptr;
 
-      typedef typename mpl::if_c<
-          is_string
-          , arg_to_python<char const*>
-          , typename mpl::if_c<
-              function
-              , function_arg_to_python<T>
-              , typename mpl::if_c<
-                  manager
-                  , object_manager_arg_to_python<T>
-                  , typename mpl::if_c<
-                      ptr
-                      , pointer_deep_arg_to_python<T>
-                      , typename mpl::if_c<
-                          ptr_wrapper
-                          , pointer_shallow_arg_to_python<unwrapped_ptr>
-                          , typename mpl::if_c<
-                              ref_wrapper
-                              , reference_arg_to_python<unwrapped_referent>
-                              , value_arg_to_python<T>
-                            >::type
-                        >::type
-                    >::type
-                >::type
-            >::type
-        >::type
+      typedef typename mpl::if_<
+          // Special handling for char const[N]; interpret them as char
+          // const* for the sake of conversion
+          python::detail::is_string_literal<T const>
+        , arg_to_python<char const*>
+
+        , typename mpl::if_<
+              python::detail::value_is_shared_ptr<T>
+            , shared_ptr_arg_to_python<T>
+      
+            , typename mpl::if_<
+                mpl::logical_or<
+                    is_function<T>
+                  , python::detail::is_pointer_to_function<T>
+                  , is_member_function_pointer<T>
+                >
+                , function_arg_to_python<T>
+
+                , typename mpl::if_<
+                      is_object_manager<T>
+                    , object_manager_arg_to_python<T>
+
+                    , typename mpl::if_<
+                          is_pointer<T>
+                        , pointer_deep_arg_to_python<T>
+
+                        , typename mpl::if_<
+                              is_pointer_wrapper<T>
+                            , pointer_shallow_arg_to_python<unwrapped_ptr>
+
+                            , typename mpl::if_<
+                                  is_reference_wrapper<T>
+                                , reference_arg_to_python<unwrapped_referent>
+                                , value_arg_to_python<T>
+                              >::type
+                          >::type
+                      >::type
+                  >::type
+              >::type
+          >::type
+      >::type
+      
       type;
   };
 }
@@ -213,6 +228,12 @@ namespace detail
   template <class T>
   inline reference_arg_to_python<T>::reference_arg_to_python(T& x)
       : handle<>(reference_arg_to_python<T>::get_object(x))
+  {
+  }
+
+  template <class T>
+  inline shared_ptr_arg_to_python<T>::shared_ptr_arg_to_python(T const& x)
+      : handle<>(shared_ptr_to_python(x))
   {
   }
 
