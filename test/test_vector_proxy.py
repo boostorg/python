@@ -86,10 +86,19 @@
 [-1, 3, 4, 4, 5, 6, 7, 8, 9]
 >>> print least_element, v[0]                  # Check values match
 -1 -1
->>> v[0].increment()                           # Mutate value in container
->>> print least_element, v[0]                  # Verify proxy still attached
-0 0
 '''
+
+# It would be nice if sorting the list did not detach any existing
+# proxies, but this is probably not possible to guarantee with the
+# current implementation. The overload of iter_swap is sufficient with
+# some standard libraries, but not others. The following test works
+# only on MSVC so far.
+
+#
+# >>> v[0].increment()                           # Mutate value in container
+# >>> print least_element, v[0]                  # Verify proxy still attached
+# 0 0
+#
 
 def run(args = None):
     import sys
