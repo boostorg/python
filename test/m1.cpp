@@ -187,9 +187,9 @@ struct D : B, C
 };
 
 A take_a(A const& a) { return a; }
-B take_b(B const& b) { return b; }
-C take_c(C const& c) { return c; }
-D take_d(D const& d) { return d; }
+B take_b(B& b) { return b; }
+C take_c(C* c) { return *c; }
+D take_d(D* const& d) { return *d; }
     
 BOOST_PYTHON_MODULE_INIT(m1)
 {
