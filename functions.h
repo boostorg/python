@@ -201,9 +201,9 @@ namespace detail {
 class BoundFunction : public PythonObject
 {
  public:
-    static Ptr create(Ptr target, Ptr fn);
+    static BoundFunction* create(const Ptr& target, const Ptr& fn);
     
-    BoundFunction(Ptr target, Ptr fn);
+    BoundFunction(const Ptr& target, const Ptr& fn);
     PyObject* call(PyObject*args, PyObject* keywords) const;
     PyObject* getattr(const char* name) const;
     

@@ -97,20 +97,17 @@ PyObject* Function::call(PyObject* args, PyObject* keywords) const
     return 0;
 }
 
-Ptr BoundFunction::create(Ptr target, Ptr fn)
+BoundFunction* BoundFunction::create(const Ptr& target, const Ptr& fn)
 {
-    BoundFunction* result = free_list;
-    if (result != 0)
-    {
-        free_list = result->m_free_list_link;
-        result->m_target = target;
-        result->m_unbound_function = fn;
-    }
-    else
-    {
-        result = new BoundFunction(target, fn);
-    }
-    return Ptr(result, Ptr::new_ref);
+    BoundFunction* const result = free_list;
+    if (result == 0)
+        return new BoundFunction(target, fn);
+    
+    free_list = result->m_free_list_link;
+    result->m_target = target;
+    result->m_unbound_function = fn;
+    Py_INCREF(result);
+    return result;
 }
 
 // The singleton class whose instance represents the type of BoundFunction
@@ -126,7 +123,7 @@ private: // TypeObject<BoundFunction> hook override
     void dealloc(BoundFunction*) const;
 };
 
-BoundFunction::BoundFunction(Ptr target, Ptr fn)
+BoundFunction::BoundFunction(const Ptr& target, const Ptr& fn)
     : PythonObject(TypeObject::singleton()),
       m_target(target),
       m_unbound_function(fn),
