@@ -36,7 +36,7 @@ struct make_holder<1>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         
         static void execute(
@@ -54,9 +54,9 @@ struct make_holder<2>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename mpl::at_c<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
         
         static void execute(
@@ -73,11 +73,11 @@ struct make_holder<3>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename mpl::at_c<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename mpl::at_c<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
         
         static void execute(
@@ -94,13 +94,13 @@ struct make_holder<4>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename mpl::at_c<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename mpl::at_c<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename mpl::at_c<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
         
         static void execute(
@@ -117,15 +117,15 @@ struct make_holder<5>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename mpl::at_c<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename mpl::at_c<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename mpl::at_c<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
+        typedef typename mpl::at_c<4,ArgList>::type t4;
         typedef typename forward<t4>::type f4;
         
         static void execute(
@@ -142,17 +142,17 @@ struct make_holder<6>
     template <class Holder, class ArgList>
     struct apply
     {
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename mpl::at_c<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename mpl::at_c<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename mpl::at_c<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename mpl::at_c<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
+        typedef typename mpl::at_c<4,ArgList>::type t4;
         typedef typename forward<t4>::type f4;
-        typedef typename mpl::at<5,ArgList>::type t5;
+        typedef typename mpl::at_c<5,ArgList>::type t5;
         typedef typename forward<t5>::type f5;
         
         static void execute(
