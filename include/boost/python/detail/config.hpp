@@ -98,7 +98,7 @@
 #  endif
 
 // MinGW, at least, has some problems exporting template instantiations
-#  if defined(__GNUC__) && __GNUC__ < 3
+#  if defined(__GNUC__) && __GNUC__ < 3 && !defined(__CYGWIN__)
 #   define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #  endif
 
