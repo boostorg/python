@@ -100,6 +100,10 @@ PyObject* to_python(unsigned short);
 unsigned short from_python(PyObject*, boost::python::type<unsigned short>);
 unsigned short from_python(PyObject*, boost::python::type<const unsigned short&>);
 
+PyObject* to_python(char);
+char from_python(PyObject*, boost::python::type<char>);
+char from_python(PyObject*, boost::python::type<const char&>);
+
 PyObject* to_python(signed char);
 signed char from_python(PyObject*, boost::python::type<signed char>);
 signed char from_python(PyObject*, boost::python::type<const signed char&>);
@@ -302,6 +306,11 @@ inline unsigned int from_python(PyObject* p, boost::python::type<const unsigned 
 inline unsigned short from_python(PyObject* p, boost::python::type<const unsigned short&>)
 {
     return from_python(p, boost::python::type<unsigned short>());
+}
+
+inline char from_python(PyObject* p, boost::python::type<const char&>)
+{
+    return from_python(p, boost::python::type<char>());
 }
 
 inline signed char from_python(PyObject* p, boost::python::type<const signed char&>)
