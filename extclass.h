@@ -151,8 +151,6 @@ class PyExtensionClassConverters
         { return py::Type<U>(); }
 #endif
     
-    PyExtensionClassConverters() {}
-    
     // Convert to T*
     friend T* from_python(PyObject* obj, py::Type<T*>)
     {
