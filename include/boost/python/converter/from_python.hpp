@@ -10,7 +10,6 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-# include <boost/python/converter/pointer_type_id.hpp>
 # include <boost/python/converter/from_python_data.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/converter/registry.hpp>
