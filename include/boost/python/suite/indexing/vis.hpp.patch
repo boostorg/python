@@ -1,0 +1,33 @@
+Index: vector_indexing_suite.hpp
+===================================================================
+RCS file: /cvsroot/boost/boost/boost/python/suite/indexing/vector_indexing_suite.hpp,v
+retrieving revision 1.4
+diff -w -d -u -r1.4 vector_indexing_suite.hpp
+--- vector_indexing_suite.hpp	14 Aug 2003 12:14:25 -0000	1.4
++++ vector_indexing_suite.hpp	30 Aug 2003 11:47:22 -0000
+@@ -52,6 +52,7 @@
+     public:
+     
+         typedef typename Container::value_type data_type;
++        typedef typename Container::reference reference_type;
+         typedef typename Container::value_type key_type;
+         typedef typename Container::size_type index_type;
+         typedef typename Container::size_type size_type;
+@@ -67,7 +68,7 @@
+             ;
+         }
+         
+-        static data_type& 
++        static reference_type 
+         get_item(Container& container, index_type i)
+         { 
+             return container[i];
+@@ -185,7 +186,7 @@
+         static void
+         base_append(Container& container, PyObject* v)
+         {
+-            extract<data_type&> elem(v);
++            extract<reference_type> elem(v);
+             // try if elem is an exact Data
+             if (elem.check())
+             {

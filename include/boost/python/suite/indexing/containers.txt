@@ -1,0 +1,129 @@
+
+Copyright (c) 2003 Raoul M. Gough
+
+This material is provided "as is", with absolutely no warranty expressed
+or implied. Any use is at your own risk.
+
+Permission to use or copy this material for any purpose is hereby
+granted without fee, provided the above notices are retained on all
+copies. Permission to modify the material and to distribute modified
+versions for any purpose is granted, provided the above notices are
+retained, and a notice that the material was modified is included with
+the above copyright notice.
+
+$Id$
+
+==============================================================================
+
+This file contains information and comments about mapping Python
+sequence functionality onto STL containers or iterator pairs. Primary
+sources of information are the Python Library Reference, sections
+2.2.6 (Sequence types) and 2.2.6.4 (Mutable sequence types), the
+Python Reference Manual (aka Language Reference) sections 3.3 (Special
+method names), 3.3.4 (Emulating container types) and 3.3.6 (Eumlating
+numeric types) and the C++ standard (ISO/IEC 14882:1998(E)).
+
+==============================================================================
+
+Sequence functionality - Python expressions, the Python method used to
+implement the operation (in order of preference) and possible C++
+equivalents.
+
+  Python feature    Implementation (preferential order)  Possible C++ emulation
+  ==============    ===================================  ======================
+
+  x in s            __contains__, __iter__, __getitem__  find algo/member fn
+  x not in s        __contains__, __iter__, __getitem__  find algo/member fn
+  s + t             __add__ or __radd__                  constr., insert [1]
+  s * n , n * s     __mul__ or __rmul__                  constr., insert [1]
+  s[i]              __getitem__                          [] or *(iter + i)
+  s[i:j]            __getslice__ [3], __getitem__        constr(iter,iter)[2]
+  len(s)            __len__                              distance/size memfn
+  iter(s)           __iter__                             constr. iter pair
+  min(s)            __iter__, __getitem__ (?)
+  max(s)            __iter__, __getitem__ (?)
+
+[1] have to construct new container (make vector from iterator pairs?)
+[2] construct copy of container contents or return iterator pair?
+[3] __getslice__, __setslice__ and __delslice__ are deprecated
+
+
+Mutable sequence functionality:
+
+  Python feature    Implementation (preferential order)  Possible C++ emulation
+  ==============    ===================================  ======================
+
+  s[i] = x          __setitem__                          s[i]=x or *(iter+i)=x
+  s[i:j] = t        __setslice__ [3], __setitem__        operator=,insert,erase
+  del s[i:j]        __delslice__ [3], __delitem__        erase
+  del s[i]          __delitem__                          erase
+  s += t            __iadd__                             insert(iter,iter)
+  s *= t            __imul__                             insert(iter,iter)
+  s.append(x)       append                               insert(obj)
+  s.extend(x)       extend [ python list type only ]     insert(iter,iter)
+  s.count(x)        count                                count algo/mem fn
+  s.index(x)        index                                find algo/mem fn
+  s.insert(i, x)    insert                               insert
+  s.pop([i])        pop                                  pop_back/erase?
+  s.remove(x)       remove                               remove_if and erase?
+  s.reverse()       reverse                              reverse
+  s.sort([cmpfunc]) sort                                 sort algo?
+
+[3] __getslice__, __setslice__ and __delslice__ are deprecated
+
+==============================================================================
+
+Cross-reference. C++ functions for the various types of iterator-pair
+ranges and the python methods that they can implement.
+
+  C++ functions              Minimum iterator type   Python function(s)
+  =============              =====================   ==================
+
+  ++, *                      input_iterator[4]       next
+  copyable iterator          forward_iterator[5]     __iter__
+  std::distance              forward_iterator[5]     __len__
+  std::find                  forward_iterator[5]     __contains__, index
+  std::count                 forward_iterator[5]     count
+  std::reverse               bidirectional_iter[6]   reverse
+  +, *                       random_access_iter[4]   __getitem__ [7]
+  +, non-const *             random_access_iter[6]   __setitem__(index)[8]
+  std::sort                  random_access_iter[6]   sort([cmpfunc])
+
+[4] iterator_traits<iterator>::reference can be reference to const
+[5] input_iterator is unsuitable because copies aren't independant
+[6] iterator_traits<iterator>::reference must not be reference to const
+[7] maybe return an iterator pair if step is 1 or -1 (reverse_iterator)
+[8] support slices where replacement sequence is of equal length?
+
+Continued cross-reference. C++ functions for the various types of STL
+containers and the python methods that they can implement.
+
+  C++ functions              Minimum container type  Python function(s)
+  =============              ======================  ==================
+
+  insert                     any                     insert
+  member function size       any(?)                  __len__
+  nonconst []                any except list         __setitem__(index/key)
+  pop_back		     non-associative         pop()
+  push_back                  non-associative         append, __iadd__, __imul__
+  std::find, erase           non-associative         remove(value)
+  member function find       associative             __contains__
+  find, erase                associative             pop(key)
+  erase                      associative             remove, __delitem__(key)
+  nonconst [], insert, erase vector, deque           __setitem__(slice)
+  erase                      vector, deque           pop(index), __delitem__
+  insert                     multimap, multiset      __iadd__, __imul__
+  member function sort       list                    sort
+  member function reverse    list                    reverse
+
+=============================================================================
+
+random notes
+============
+
+What about __lt__, __le__, __ne__, __eq__, __ge__ and __gt__ ?
+
+What about debugging? Maybe the traits classes need to identify
+themselves, so that traits-clients could trace information about what
+traits were used. Otherwise, if expected features aren't available,
+how would the programmer figure out why not?

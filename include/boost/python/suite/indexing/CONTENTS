@@ -1,0 +1,21 @@
+
+container_proxy.hpp    Container wrapper with semi-transparent proxies
+shared_proxy_impl.hpp  Component shared by proxies that refer to same element
+testcontprox.cpp       Simple tests for container_proxy
+testindexing.py        Test various instantiations of the indexing_suite
+indexing.cpp           Python extensions required for testindexing.py
+vis.hpp.patch          Simple vector_indexing_suite.hpp patch for indexing.cpp
+sample.out             Sample output of testindexing.py
+vector_indexing_suite_ext.cpp  Modified extension module from python/test
+vector_indexing_suite.py       Python test script from python/test (unmodified)
+
+
+older stuff
+===========
+
+container_suite.hpp    Container traits
+iterator_suite.hpp     Traits for iterator ranges
+suite_utils.hpp        Traits utilities
+indexing_suite.cpp     Traits tests
+containers.txt         Analysis of Python sequence vs. C++ containers
+testlist.py            Test behaviour of real Python lists
