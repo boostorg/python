@@ -11,45 +11,53 @@
 
 namespace boost { namespace python { namespace converter { 
 
-struct class_unwrapper_base
-{
-    class_unwrapper_base(type_id_t sought_type);
-    void*
-};
-
 template <class T>
 struct class_unwrapper
+    : private unwrapper<T&>
+    , private unwrapper<T const&>
+    , private unwrapper<T*>
+    , private unwrapper<T const*>
 {
-    struct ref_unwrapper : unwrapper<T&>
-    {
-        bool convertible(PyObject* p) const
-        {
-            return p->ob_type == &SimpleType;
-        }
-    
-        simple const& convert(PyObject* p, void*&) const
-        {
-            return static_cast<SimpleObject*>(p)->x;
-        }
-        
-    };
-    
-# ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-    struct const_ref_unwrapper : unwrapper<T const&>
-    {
-        bool convertible(PyObject* p) const
-        {
-            return p->ob_type == &SimpleType;
-        }
-    
-        simple const& convert(PyObject* p, void*&) const
-        {
-            return static_cast<SimpleObject*>(p)->x;
-        }
-        
-    };
-# endif 
+ private:
+    void* can_convert(PyObject*) const;
+    T& convert(PyObject*, void*, boost::type<T&>) const;
+    T const& convert(PyObject*, void*, boost::type<T const&>) const;
+    T* convert(PyObject*, void*, boost::type<T*>) const;
+    T const* convert(PyObject*, void*, boost::type<T const*>) const;
 };
+
+//
+// implementations
+//
+template <class T>
+void* class_unwrapper<T>::can_convert(PyObject* p) const
+{
+    return object::find_holder<T>(p);
+}
+
+template <class T>
+T& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T&>) const
+{
+    return *static_cast<object::holder<T>*>(holder_)->target();
+}
+
+template <class T>
+T const& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const&>) const
+{
+    return *static_cast<object::holder<T>*>(holder_)->target();
+}
+
+template <class T>
+T* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T*>) const
+{
+    return static_cast<object::holder<T>*>(holder_)->target();
+}
+
+template <class T>
+T const* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const*>) const
+{
+    return static_cast<object::holder<T>*>(holder_)->target();
+}
 
 }}} // namespace boost::python::converter
 
