@@ -131,32 +131,56 @@ namespace indexing {
     }
   };
 
-  template<class Container
-	   , class Traits = container_traits<Container> >
-  struct container_suite
-    : public boost::python::def_visitor<container_suite<Container, Traits> >
+  template<class Container, class Policy, class Traits>
+  class container_suite_impl
+    : public boost::python::def_visitor <container_suite_impl<Container, Policy, Traits> >
   {
+    Policy mPolicy;
+
+  public:
     typedef typename Traits::algorithms algorithms;
     typedef typename Traits::reference reference_return;
+    typedef Policy return_policy;
 
-    typedef boost::python::return_value_policy<boost::python::return_by_value>
-      return_policy;
+    container_suite_impl (Policy const &policy) : mPolicy (policy) { }
 
     template <class PythonClass>
-    static void visit (PythonClass &pyClass)
+    void visit (PythonClass &pyClass) const
     {
       maybe_add_getitem<Traits::index_style>
-	::apply (pyClass, algorithms(), return_policy());
+	::apply (pyClass, algorithms(), mPolicy);
 
       maybe_add_setitem<Traits::index_style>
-	::apply (pyClass, algorithms(), return_policy());
+	::apply (pyClass, algorithms(), mPolicy);
 
       maybe_add_iter<((Traits::index_style != index_style_linear)
 		      && Traits::has_copyable_iter)>
-	::apply (pyClass, algorithms(), return_policy());
+	::apply (pyClass, algorithms(), mPolicy);
 
       maybe_add_append<Traits::has_push_back>
-	::apply (pyClass, algorithms(), return_policy());
+	::apply (pyClass, algorithms(), mPolicy);
+    }
+  };
+
+  template<class Container, class Traits = container_traits<Container> >
+  struct container_suite
+  {
+    typedef boost::python::return_value_policy<boost::python::return_by_value>
+    default_policies;
+
+    static
+    container_suite_impl <Container, default_policies, Traits>
+    generate ()
+    {
+      return container_suite_impl <Container, default_policies, Traits> (default_policies());
+    }
+
+    template<typename Policy>
+    static
+    container_suite_impl <Container, Policy, Traits>
+    generate (Policy const &policy)
+    {
+      return container_suite_impl <Container, Policy, Traits> (policy);
     }
   };
 }
