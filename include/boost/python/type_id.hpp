@@ -17,8 +17,9 @@
 # include <boost/type_traits/same_traits.hpp>
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
-#   if defined(__GNUC__) \
-    && ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+#   if defined(__GNUC__)                                                \
+    && ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))   \
+    && !defined(__EDG_VERSION__)
 #    define BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   endif
 #  endif
