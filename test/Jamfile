@@ -124,6 +124,8 @@ bpl-test iterator : iterator.py iterator.cpp input_iterator.cpp ;
 
 bpl-test extract ;
 
+bpl-test opaque ;
+
 bpl-test pickle1 ;
 bpl-test pickle2 ;
 bpl-test pickle3 ;
