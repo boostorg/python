@@ -125,8 +125,6 @@ namespace detail
   template <class Reference>
   struct referent_storage
   {
-      typedef typename remove_cv<typename remove_reference<Reference>::type>::type referent;
-
       BOOST_STATIC_CONSTANT(std::size_t, target = referent_alignment<Reference>::value);
       typedef lower_alignment<target> t1;
 
