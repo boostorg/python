@@ -5,12 +5,9 @@
 #include "module.h"
 #include "py.h"
 #include "cast.h"
+#include "pyptr.h"
 
 namespace py {
-
-namespace detail {
-struct EmptyBase {};
-}
 
 // Syntactic sugar to make wrapping classes more convenient
 template <class T, class U = HeldInstance<T> >
@@ -103,7 +100,13 @@ class ClassWrapper
     {
         return m_class.get();
     }
-    
+
+    // set an arbitrary attribute. Useful for non-function class data members,
+    // e.g. enums
+    void add(PyObject* x, const char* name)
+        { return m_class->set_attribute(name, x); }
+    void add(Ptr x, const char* name)
+        { return m_class->set_attribute(name, x); }
  private:
     PyPtr<ExtensionClass<T, U> > m_class;
 };
