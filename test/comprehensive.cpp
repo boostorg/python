@@ -1225,6 +1225,9 @@ extern "C" BOOL WINAPI DllMain ( HINSTANCE hInst, DWORD wDataSeg, LPVOID lpvRese
 
 # ifdef BOOST_MSVC
 extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS*)
+#  if BOOST_MSVC > 1200
+    throw(...)
+#  endif 
 {
     throw;
 }
