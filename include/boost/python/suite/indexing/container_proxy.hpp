@@ -18,6 +18,7 @@
 #ifndef container_proxy_rmg_20030826_included
 #define container_proxy_rmg_20030826_included
 
+#include <boost/python/suite/indexing/proxy_iterator.hpp>
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
 #include <boost/python/suite/indexing/element_proxy.hpp>
 
@@ -64,6 +65,7 @@ namespace boost { namespace python { namespace indexing {
     typedef std::iterator_traits<raw_iterator> raw_iterator_traits;
 
     template<class C> friend class shared_proxy_impl;
+    template<class C> friend class proxy_iterator;
 
   public:
     typedef typename Holder::held_type held_type;
@@ -81,63 +83,7 @@ namespace boost { namespace python { namespace indexing {
     typedef const_element_proxy<self_type> const_value_type;
     typedef const_value_type               const_reference; // Ref. semantics
 
-  public:
-    struct iterator
-    {
-      typedef typename raw_iterator_traits::difference_type difference_type;
-      typedef std::random_access_iterator_tag iterator_category;
-      typedef typename container_proxy::value_type value_type;
-      typedef value_type *pointer;
-      typedef value_type reference;  // Already has reference semantics
-
-      iterator (container_proxy *p, size_type i) : ptr (p), index (i) { }
- 
-      iterator (container_proxy *p, raw_iterator iter)
-        : ptr (p), index (iter - p->raw_container().begin())
-      {
-      }
-
-      reference operator*() const { return ptr->at(index); }
-      pointer operator->() const { return &ptr->at(index); }
-      reference operator[](size_type s) { return ptr->at (index + s); }
-
-      iterator &operator++ () { ++index; return *this; }
-      iterator operator++ (int) { iterator temp(*this); ++index; return temp; }
-      iterator &operator+= (size_type s) { index += s; return *this; }
-
-      iterator &operator-- () { --index; return *this; }
-      iterator operator-- (int) { iterator temp(*this); --index; return temp; }
-      iterator &operator-= (size_type s) { index -= s; return *this; }
-
-      iterator operator+ (size_type s) const { return iterator(*this) += s; }
-      iterator operator- (size_type s) const { return iterator(*this) -= s; }
-      difference_type operator- (iterator i) const { return index - i.index; }
-
-      bool operator== (iterator const &other) const {
-        return (ptr == other.ptr) && (index == other.index);
-      }
-
-      bool operator!= (iterator const &other) const { return !(*this == other); }
-
-      bool operator< (iterator const &other) const {
-        return index < other.index;
-      }
-
-      bool operator> (iterator const &other) const {
-        return index > other.index;
-      }
-
-      //  public:
-      // Extensions to the normal iterator interface
-      //    void replace (value_type const &copy) { ptr->replace (index, copy); }
-
-    public:
-      friend class container_proxy;
-      container_proxy *ptr;
-      size_type index;
-    };
-
-    friend struct iterator;
+    typedef proxy_iterator<self_type> iterator;
 
   public:
     // Constructors
@@ -189,6 +135,8 @@ namespace boost { namespace python { namespace indexing {
     // Convenient replacement of elements (automatic proxy detachment)
     void replace (size_type index, raw_value_type const &);
     template<typename Iter> void replace (size_type index, Iter, Iter);
+
+    void swap_elements (size_type index1, size_type index2);
 
   private:
     // Overloads for insertions with/without useful std::distance
@@ -340,6 +288,45 @@ namespace boost { namespace python { namespace indexing {
       {
         replace (index++, *from++);
       }
+  }
+
+  template<class Container, class Holder>
+  void
+  container_proxy<Container, Holder>
+  ::swap_elements (size_type index1, size_type index2)
+  {
+    MapIterator iter1 = myMap.find (index1);
+    MapIterator iter2 = myMap.find (index2);
+
+    long distance = static_cast<long>(index2) - static_cast<long>(index1);
+
+    if ((iter1 == myMap.end()) && (iter2 == myMap.end()))
+      {
+        // No proxies exist for these indexes.
+      }
+
+    else if ((iter1 != myMap.end()) && (iter2 == myMap.end()))
+      {
+        // Proxy for the first index only
+        MapIterator temp (iter1);
+        adjustIndexes (iter1, ++temp, distance);
+      }
+
+    else if ((iter1 == myMap.end()) && (iter2 != myMap.end()))
+      {
+        // Proxy for the second index only
+        MapIterator temp (iter2);
+        adjustIndexes (iter2, ++temp, -distance);
+      }
+
+    else
+      {
+        // Proxies for both indexes
+        std::swap (iter1->second->myIndex, iter2->second->myIndex);
+        std::swap (iter1->second, iter2->second);
+      }
+
+    std::swap (raw_container()[index1], raw_container()[index2]);
   }
 
   template<class Container, class Holder>
