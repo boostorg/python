@@ -18,6 +18,13 @@
 
 namespace boost { namespace python {
 
+namespace detail
+{
+    // Forward declaration (detail/defaults_def.hpp)
+    template <typename DerivedT>
+    struct func_stubs_base;
+}
+
 class module : public detail::module_base
 {
  public:
