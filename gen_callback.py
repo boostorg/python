@@ -5,7 +5,20 @@ def gen_callback(args):
     # A template for the call_method function which we're going to generate
     call_method = '''%{    template <%(class A%n%:, %)>
 %}    static %1 call_method(PyObject* self, const char* name%(, const A%n& a%n%))
-        { %2PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(%(N%))")%(, to_python(a%n)%))%3; }
+    {
+        %2PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(%(N%))")%(,
+                            to_python(a%n)%))%3;
+    }
+
+'''
+
+    call_function = '''%{    template <%(class A%n%:, %)>
+%}    static %1 call(PyObject* self%(, const A%n& a%n%))
+    {
+        %2PyEval_CallFunction(self, const_cast<char*>("(%(N%))")%(,
+                              to_python(a%n)%))%3;
+    }
 
 '''
     non_void = ('R', 'return from_python(expect_non_null(', '), Type<R>())')
@@ -39,6 +52,7 @@ struct Callback
 {
 """ % args
         + gen_functions(call_method, args, 'R', 'return from_python(expect_non_null(', '), Type<R>())')
+        + gen_functions(call_function, args, 'R', 'return from_python(expect_non_null(', '), Type<R>())')
         + 
 """};
 
@@ -50,6 +64,7 @@ struct Callback<void>
 {
 """
         + gen_functions(call_method, args, 'void', 'expect_and_absorb_non_null(', ')')
+        + gen_functions(call_function, args, 'void', 'expect_and_absorb_non_null(', ')')
         +
 """};
 

@@ -24,27 +24,110 @@ template <class R>
 struct Callback
 {
     static R call_method(PyObject* self, const char* name)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("()"))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("()"))), Type<R>());
+    }
 
     template <class A1>
     static R call_method(PyObject* self, const char* name, const A1& a1)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(N)"), to_python(a1))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(N)"),
+                            to_python(a1))), Type<R>());
+    }
 
     template <class A1, class A2>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NN)"), to_python(a1), to_python(a2))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NN)"),
+                            to_python(a1),
+                            to_python(a2))), Type<R>());
+    }
 
     template <class A1, class A2, class A3>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNN)"), to_python(a1), to_python(a2), to_python(a3))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3))), Type<R>());
+    }
 
     template <class A1, class A2, class A3, class A4>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNNN)"), to_python(a1), to_python(a2), to_python(a3), to_python(a4))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3),
+                            to_python(a4))), Type<R>());
+    }
 
     template <class A1, class A2, class A3, class A4, class A5>
     static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
-        { return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNNNN)"), to_python(a1), to_python(a2), to_python(a3), to_python(a4), to_python(a5))), Type<R>()); }
+    {
+        return from_python(expect_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNNNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3),
+                            to_python(a4),
+                            to_python(a5))), Type<R>());
+    }
+
+    static R call(PyObject* self)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("()"))), Type<R>());
+    }
+
+    template <class A1>
+    static R call(PyObject* self, const A1& a1)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("(N)"),
+                              to_python(a1))), Type<R>());
+    }
+
+    template <class A1, class A2>
+    static R call(PyObject* self, const A1& a1, const A2& a2)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("(NN)"),
+                              to_python(a1),
+                              to_python(a2))), Type<R>());
+    }
+
+    template <class A1, class A2, class A3>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3))), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3),
+                              to_python(a4))), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
+    {
+        return from_python(expect_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNNNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3),
+                              to_python(a4),
+                              to_python(a5))), Type<R>());
+    }
 
 };
 
@@ -55,30 +138,114 @@ template <>
 struct Callback<void>
 {
     static void call_method(PyObject* self, const char* name)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("()"))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("()")));
+    }
 
     template <class A1>
     static void call_method(PyObject* self, const char* name, const A1& a1)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(N)"), to_python(a1))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(N)"),
+                            to_python(a1)));
+    }
 
     template <class A1, class A2>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NN)"), to_python(a1), to_python(a2))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NN)"),
+                            to_python(a1),
+                            to_python(a2)));
+    }
 
     template <class A1, class A2, class A3>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNN)"), to_python(a1), to_python(a2), to_python(a3))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3)));
+    }
 
     template <class A1, class A2, class A3, class A4>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNNN)"), to_python(a1), to_python(a2), to_python(a3), to_python(a4))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3),
+                            to_python(a4)));
+    }
 
     template <class A1, class A2, class A3, class A4, class A5>
     static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
-        { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("(NNNNN)"), to_python(a1), to_python(a2), to_python(a3), to_python(a4), to_python(a5))); }
+    {
+        expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name),
+                            const_cast<char*>("(NNNNN)"),
+                            to_python(a1),
+                            to_python(a2),
+                            to_python(a3),
+                            to_python(a4),
+                            to_python(a5)));
+    }
+
+    static void call(PyObject* self)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("()")));
+    }
+
+    template <class A1>
+    static void call(PyObject* self, const A1& a1)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("(N)"),
+                              to_python(a1)));
+    }
+
+    template <class A1, class A2>
+    static void call(PyObject* self, const A1& a1, const A2& a2)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("(NN)"),
+                              to_python(a1),
+                              to_python(a2)));
+    }
+
+    template <class A1, class A2, class A3>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3)));
+    }
+
+    template <class A1, class A2, class A3, class A4>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3),
+                              to_python(a4)));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5)
+    {
+        expect_and_absorb_non_null(PyEval_CallFunction(self, const_cast<char*>("(NNNNN)"),
+                              to_python(a1),
+                              to_python(a2),
+                              to_python(a3),
+                              to_python(a4),
+                              to_python(a5)));
+    }
 
 };
 
 } // namespace py
 
 #endif // CALLBACK_DWA_052100_H_
+
