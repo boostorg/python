@@ -87,7 +87,7 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void* try_base_class_conversions(InstanceHolderBase*) const;
     void* try_derived_class_conversions(InstanceHolderBase*) const;
 
-    void set_attribute(const char* name, PyObject* x_);
+    void set_attribute(const char* name, PyObject* x);
     void set_attribute(const char* name, Ptr x);
     
  private:
@@ -239,6 +239,14 @@ class PyExtensionClassConverters
     friend const T* from_python(PyObject* p, py::Type<const T*>)
         { return from_python(p, py::Type<T*>()); }
 
+    // Convert to const T* const&
+    friend const T* from_python(PyObject* p, py::Type<const T *const&>)
+         { return from_python(p, py::Type<const T*>()); }
+  
+    // Convert to T* const&
+    friend T* from_python(PyObject* p, py::Type<T* const&>)
+         { return from_python(p, py::Type<T*>()); }
+ 
     // Convert to T&
     friend T& from_python(PyObject* p, py::Type<T&>)
         { return *py::check_non_null(from_python(p, py::Type<T*>())); }
