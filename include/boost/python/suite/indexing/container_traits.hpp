@@ -28,6 +28,7 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/call_traits.hpp>
+#include <boost/mpl/if.hpp>
 
 namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
@@ -37,8 +38,13 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename Container>
   struct base_container_traits
-    : public iterator_detail::traits_by_category<typename Container::iterator>
-  ::type
+    : public iterator_detail::traits_by_category <
+        typename mpl::if_ <
+          is_const<Container>
+          , typename Container::const_iterator
+          , typename Container::iterator
+        >::type
+      >::type
   {
   protected:
     typedef typename
@@ -61,9 +67,6 @@ namespace boost { namespace python { namespace indexing {
     typedef typename boost::call_traits<value_type>::param_type value_param;
     typedef typename boost::call_traits<key_type>::param_type   key_param;
     typedef typename boost::call_traits<index_type>::param_type index_param;
-
-    // *FIXME* should probably override the typedefs for iterator,
-    // value_type and reference with the const versions if !is_mutable
 
     typedef value_traits<typename base_type::value_type> value_traits_;
 
@@ -145,13 +148,11 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct set_traits : public default_container_traits<Container>
   {
-    // *FIXME* handle const sets
+    typedef typename Container::key_type value_type; // probably unused
+    typedef typename Container::key_type index_type; // operator[]
+    typedef typename Container::key_type key_type;   // find, count, ...
 
-    typedef void                            value_type; // index_type only (?)
-    typedef typename Container::key_type    index_type; // operator[]
-    typedef typename Container::key_type    key_type;   // find, count, ...
-
-    typedef void *                                              value_param;
+    typedef typename boost::call_traits<value_type>::param_type value_param;
     typedef typename boost::call_traits<key_type>::param_type   key_param;
     typedef typename boost::call_traits<index_type>::param_type index_param;
 
@@ -169,7 +170,6 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct map_traits : public default_container_traits<Container>
   {
-    // *FIXME* handle const maps
     typedef typename Container::mapped_type value_type;
     typedef value_type &                    reference;
     typedef typename Container::key_type    index_type; // operator[]
