@@ -112,7 +112,7 @@ PyTypeObject opaque_pointer_converter<Pointer>::type_object =
     ::boost::python::detail::dealloc
 };
 }} // namespace boost::python
-# ifdef BOOST_MSVC
+# if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
 // MSC works without this workaround, but needs another one ...
 # define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)  \
 BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(Pointee)
