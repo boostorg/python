@@ -23,10 +23,12 @@ BODY
 PRE
 {
     MARGIN-LEFT: 2pc;
+    FONT-SIZE: 80%;
     BACKGROUND-COLOR: #dfffff
 }
 CODE
 {
+    FONT-SIZE: 95%;
      white-space: pre
 }
 .index
