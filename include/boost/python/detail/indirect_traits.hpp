@@ -75,24 +75,7 @@ struct is_pointer_to_function
 template <class T>
 struct is_pointer_to_function<T*>
 {
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-template <class T>
-struct is_pointer_to_function<T const*>
-{
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-template <class T>
-struct is_pointer_to_function<T volatile*>
-{
-    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
-};
-
-template <class T>
-struct is_pointer_to_function<T const volatile*>
-{
+    // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
     BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
 
