@@ -9,7 +9,7 @@ LIBSRC = \
     objects.cpp
     
 LIBOBJ = $(LIBSRC:.cpp=.o)
-OBJ = $(LIBOBJ) extclass_demo.o
+OBJ = $(LIBOBJ) extclass_demo.o num_demo.o numeric.o 
 
 
 ifeq "$(OS)" "Windows_NT"
@@ -33,6 +33,10 @@ endif
 demo: extclass_demo.o libpycpp.a
 	g++ -shared -o demomodule.$(MODULE_EXTENSION) $(PYTHON_LIB) extclass_demo.o -L. -lpycpp
 	python test_extclass.py
+
+num: num_demo.o numeric.o libpycpp.a
+	g++ -shared -o nummodule.$(MODULE_EXTENSION) $(PYTHON_LIB) num_demo.o numeric.o  -L. -lpycpp
+	python test_num.py
 
 clean:
 	rm -rf *.o *.$(MODULE_EXTENSION) *.a *.d *.pyc *.bak a.out
