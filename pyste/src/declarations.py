@@ -157,7 +157,7 @@ class Function(Declaration):
         'returns a declaration of a pointer to this function'
         result = self.result.FullName()
         params = ', '.join([x.FullName() for x in self.parameters]) 
-        return '(%s (*)(%s))%s' % (result, params, self.FullName())
+        return '(%s (*)(%s))&%s' % (result, params, self.FullName())
 
     
     def _MinArgs(self):
@@ -211,7 +211,7 @@ class Method(Function):
         const = ''
         if self.const:
             const = 'const'            
-        return '(%s (%s::*)(%s) %s)%s' %\
+        return '(%s (%s::*)(%s) %s)&%s' %\
             (result, self.class_, params, const, self.FullName()) 
 
     
