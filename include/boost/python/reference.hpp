@@ -173,10 +173,10 @@ public:
     void reset(T2* x, increment_count_t)
     {
         assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(x);
         Py_XDECREF(m_p);
         m_p = expect_non_null(x);
         assert(m_p->ob_refcnt > 0);
-        Py_INCREF(m_p);
     }
     
     template <class T2>
@@ -192,20 +192,20 @@ public:
     void reset(T2* x, allow_null, increment_count_t)
     {
         assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(x);
         Py_XDECREF(m_p);
         m_p = x;
         assert(m_p == 0 || m_p->ob_refcnt > 0);
-        Py_XINCREF(m_p);
     }
     
     template <class T2>
     void reset(T2* x, increment_count_t, allow_null)
     {
         assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(x);
         Py_XDECREF(m_p);
         m_p = x;
         assert(m_p == 0 || m_p->ob_refcnt > 0);
-        Py_XINCREF(m_p);
     }
     
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
