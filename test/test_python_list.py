@@ -44,7 +44,7 @@ def run(args = None):
 if __name__ == '__main__':
     import test_python_ref_common   # Checks for python reference semantics
     import test_vector_common
-    __doc__ += test_python_ref_common.common_doctest_string
+    __doc__ += test_python_ref_common.extended_doctest_string
     __doc__ += test_vector_common.common_doctest_string
     print 'running...'
     import sys

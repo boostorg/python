@@ -87,16 +87,18 @@
 -1 -1
 '''
 
-# It would be nice if sorting the list did not detach any existing
-# proxies, but this is probably not possible to guarantee with the
-# current implementation. The overload of iter_swap is sufficient with
-# some standard libraries, but not others. The following test works
-# only on MSVC so far.
+# It would be nice if sorting the list did not detach any elements
+# from a container_proxy, but this is probably not possible to
+# guarantee with the current implementation. The problem is that some
+# standard libraries apply operator= to the elements during a sort,
+# instead of using the overloaded iter_swap. The following extension
+# to the test works with container_proxy on MSVC 7.1 and should work
+# everywhere with a container of shared pointers or a real Python list
 
-#
-# >>> increment(v[0])                            # Mutate value in container
-# >>> print least_element, v[0]                  # Verify proxy still attached
-# 0 0
-#
+sort_test_extension = \
+'>>> increment(v[0])                        # Mutate value in container\n' \
+'>>> print least_element, v[0]              # Verify proxy still attached\n' \
+'0 0\n'
 
 common_doctest_string = __doc__
+extended_doctest_string = common_doctest_string + sort_test_extension
