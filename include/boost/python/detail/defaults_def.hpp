@@ -144,7 +144,7 @@ namespace detail {
         BOOST_STATIC_ASSERT(
             (stubs_type::max_args + 1) <= boost::mpl::size<SigT>::value);
 
-        typedef stubs_type::template gen<SigT> gen_type;
+        typedef typename stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def
             (name, gen_type(), holder, doc);
     }
