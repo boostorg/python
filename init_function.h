@@ -165,8 +165,6 @@ private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
-    string description_as_string() const;
-    string argument_types_as_string(tuple args) const;
 };
 
 
@@ -183,7 +181,7 @@ struct init0 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>())); 
+        return function_signature((void (*)())0); 
     }
     
     string function_name() const
@@ -209,8 +207,7 @@ struct init1 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>()), 
-                                  get_python_type_name(python::type<A1>())); 
+        return function_signature((void (*)(A1))0); 
     }
     
     string function_name() const
@@ -238,9 +235,7 @@ struct init2 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>()), 
-                                  get_python_type_name(python::type<A1>()), 
-                                  get_python_type_name(python::type<A2>())); 
+        return function_signature((void (*)(A1, A2))0); 
     }
     
     string function_name() const
@@ -270,10 +265,7 @@ struct init3 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>()), 
-                                  get_python_type_name(python::type<A1>()), 
-                                  get_python_type_name(python::type<A2>()), 
-                                  get_python_type_name(python::type<A3>())); 
+        return function_signature((void (*)(A1, A2, A3))0); 
     }
     
     string function_name() const
@@ -305,11 +297,7 @@ struct init4 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>()), 
-                                  get_python_type_name(python::type<A1>()), 
-                                  get_python_type_name(python::type<A2>()), 
-                                  get_python_type_name(python::type<A3>()), 
-                                  get_python_type_name(python::type<A4>())); 
+        return function_signature((void (*)(A1, A2, A3, A4))0); 
     }
     
     string function_name() const
@@ -343,12 +331,7 @@ struct init5 : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>()), 
-                                  get_python_type_name(python::type<A1>()), 
-                                  get_python_type_name(python::type<A2>()), 
-                                  get_python_type_name(python::type<A3>()), 
-                                  get_python_type_name(python::type<A4>()), 
-                                  get_python_type_name(python::type<A5>())); 
+        return function_signature((void (*)(A1, A2, A3, A4, A5))0); 
     }
     
     string function_name() const

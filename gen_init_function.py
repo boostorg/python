@@ -130,8 +130,6 @@ private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
-    string description_as_string() const;
-    string argument_types_as_string(tuple args) const;
 };
 """ + gen_functions("""
 
@@ -150,8 +148,7 @@ struct init%x : init
     
     PyObject* description() const
     { 
-        return function_signature(get_python_type_name(python::type<T>())%(, 
-                                  get_python_type_name(python::type<A%n>())%)); 
+        return function_signature((void (*)(%(A%n%:, %)))0); 
     }
     
     string function_name() const

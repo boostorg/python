@@ -26,6 +26,7 @@ namespace python { namespace detail {
 class extension_instance;
 
 string argument_tuple_as_string(tuple args);
+string description_as_string(tuple description);
 
 
 // function --
@@ -47,8 +48,6 @@ class function : public python_object
     virtual PyObject* description() const = 0;
  private:
     virtual PyObject* do_call(PyObject* args, PyObject* keywords) const = 0;
-    virtual string description_as_string() const;
-    virtual string argument_types_as_string(tuple args) const;
     virtual string function_name() const = 0;
     virtual bool rephrase_argument_error() const 
         { return true; }

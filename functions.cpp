@@ -35,6 +35,20 @@ string argument_tuple_as_string(tuple arguments)
     return result;
 }
 
+string description_as_string(tuple description)
+{
+    string result("(");
+    for (std::size_t i = 0; i < description.size(); ++i)
+    {
+        if (i != 0)
+            result += ", ";
+        result += string(description[i]);
+    }
+
+    result += ")";
+    return result;
+}
+
 struct function::type_object :
         singleton<function::type_object, getattrable<callable<python::detail::type_object<function> > > >
 {
@@ -85,7 +99,7 @@ PyObject* function::getattr(const char * name) const
         list signatures;
         for (const function* f = this; f != 0; f = f->m_overloads.get())
         {
-            signatures.push_back(f->description());
+                signatures.push_back(ref(f->description()));
         }
         return signatures.reference().release();
         
@@ -136,10 +150,11 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                     message += "' ";
                 }
                 message += "expected argument(s) ";
-                message += description_as_string();
+                tuple desc(this->description());
+                message += description_as_string(desc);
                 message += ",\nbut got ";
                 tuple arguments(ref(args, ref::increment_count));
-                message += argument_types_as_string(arguments);
+                message += argument_tuple_as_string(arguments);
                 message += " instead.";
                 PyErr_SetObject(PyExc_TypeError, message.get());
             }
@@ -162,38 +177,19 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     message += " matches argument(s):\n";
     
     tuple arguments(ref(args, ref::increment_count));
-    message += argument_types_as_string(arguments);
+    message += argument_tuple_as_string(arguments);
 
     message += "\nCandidates are:\n";
     for (const function* f1 = this; f1 != 0; f1 = f1->m_overloads.get())
     {
         if (f1 != this)
             message += "\n";
-        message += f1->description_as_string();
+        tuple desc(f1->description());
+        message += description_as_string(desc);
     }
 
     PyErr_SetObject(PyExc_TypeError, message.get());
     return 0;
-}
-
-string function::description_as_string() const
-{
-    string result("(");
-    tuple arguments(ref(this->description()));
-    for (std::size_t i = 0; i < arguments.size(); ++i)
-    {
-        if (i != 0)
-            result += ", ";
-        result += string(arguments[i]);
-    }
-
-    result += ")";
-    return result;
-}
-
-string function::argument_types_as_string(tuple arguments) const
-{
-    return argument_tuple_as_string(arguments);
 }
 
 bound_function* bound_function::create(const ref& target, const ref& fn)
