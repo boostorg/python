@@ -151,6 +151,21 @@ class PyExtensionClassConverters
         { return py::Type<U>(); }
 #endif
     
+    friend inline PyExtensionClassConverters const & converter(py::Type<T>)
+    { 
+        static PyExtensionClassConverters conv;
+        return conv; 
+    }
+
+    PyObject* to_python(const T& x) const
+        {
+            py::PyPtr<py::ExtensionInstance> result(create_instance(false));
+            result->add_implementation(
+                std::auto_ptr<py::InstanceHolderBase>(
+                    new py::InstanceValueHolder<T,U>(result.get(), x)));
+            return result.release();
+        }
+        
     PyExtensionClassConverters() {}
     
     // Convert to T*
@@ -267,6 +282,8 @@ py_copy_to_new_value_holder(py::ExtensionInstance* p, const T& x, py::Type<U>)
     return new py::InstanceValueHolder<T,U>(p, x);
 }
 
+#if 0
+
 template <class T>
 PyObject* to_python(const T& x)
 {
@@ -276,6 +293,14 @@ PyObject* to_python(const T& x)
         std::auto_ptr<py::InstanceHolderBase>(
             py_copy_to_new_value_holder(result.get(), x, py_holder_type(x))));
     return result.release();
+}
+#endif /* #if 0 */
+
+
+template <class T>
+PyObject* to_python(const T& x)
+{
+    return converter(py::Type<T>()).to_python(x);
 }
 #endif
 
