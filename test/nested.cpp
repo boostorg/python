@@ -8,9 +8,25 @@
 #include <boost/python/operators.hpp>
 #include <boost/python/scope.hpp>
 #include "test_class.hpp"
+#if __GNUC__ != 2
+# include <ostream>
+#else
+# include <ostream.h>
+#endif
 
 typedef test_class<> X;
 typedef test_class<1> Y;
+
+std::ostream& operator<<(std::ostream& s, X const& x)
+{
+    return s << x.value();
+}
+
+std::ostream& operator<<(std::ostream& s, Y const& x)
+{
+    return s << x.value();
+}
+
 
 BOOST_PYTHON_MODULE_INIT(nested_ext)
 {
