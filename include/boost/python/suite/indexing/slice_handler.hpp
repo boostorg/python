@@ -26,21 +26,69 @@
 
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
+#include <boost/python/converter/pytype_object_mgr_traits.hpp>
+#include <algorithm>
 
 // #include <boost/python/extract.hpp>
 
 namespace indexing
 {
-  struct slice
+  class slice : public boost::python::object
   {
-    long start;
-    long step;   // Extended slices (currently unsupported)
-    long stop;
+    int mStart;
+    int mStep;
+    int mStop;
+    bool mLengthSet;
 
-    // Implement from_python using:
-    //
-    // PySlice_GetIndices
-    // (PySliceObject *slice, int length, int *start, int *stop, int *step)
+    void validate () const {
+      if (!mLengthSet)
+	{
+	  PyErr_SetString (PyExc_RuntimeError
+			   , "slice access attempted before setLength called");
+	  boost::python::throw_error_already_set();
+	}
+    }
+
+  public:
+    slice (boost::python::detail::borrowed_reference ref)
+      : boost::python::object (ref)
+      , mStart (0)
+      , mStep (0)
+      , mStop (0)
+      , mLengthSet (false)
+    {
+      if (!PySlice_Check (this->ptr()))
+	{
+	  PyErr_SetString (PyExc_TypeError
+			   , "slice constructor: passed a non-slice object");
+
+	  boost::python::throw_error_already_set();
+	}
+
+      //
+      // *** WARNING ***
+      //
+      // The slice object is useless until setLength is called
+      //
+    }
+
+    void setLength (int sequenceLength)
+    {
+      PySlice_GetIndices ((PySliceObject *) this->ptr()
+			  , sequenceLength
+			  , &mStart
+			  , &mStop
+			  , &mStep);
+
+      mStart = std::max (0, std::min (sequenceLength, mStart));
+      mStop = std::max (0, std::min (sequenceLength, mStop));
+
+      mLengthSet = true;
+    }
+
+    int start() const { validate(); return mStart; }
+    int step() const  { validate(); return mStep; }
+    int stop() const  { validate(); return mStop; }
   };
 
   template<class Algorithms, class Policy>
@@ -51,47 +99,41 @@ namespace indexing
     typedef typename Algorithms::value_type value_type;
     typedef typename Algorithms::reference reference;
 
-    static PyObject *get_slice (container &c, slice const &sl)
+    static PyObject *get_slice (container &c, slice sl)
     {
       boost::python::list temp;
 
-      for (long index = sl.start; index < sl.stop; index += sl.step)
+      sl.setLength (Algorithms::size(c));
+
+      int direction = (sl.step() > 0) ? 1 : ((sl.step() == 0) ? 0 : -1);
+
+      for (int index = sl.start()
+	     ; ((sl.stop() - index) * direction) > 0
+	     ; index += sl.step())
 	{
 	  // *FIXME* handle return policies for each element?
 	  temp.append (Algorithms::get (c, index));
 	}
 
-      PyObject *result = list.ptr();
-      Py_INCREF (result);
+      PyObject *result = temp.ptr();
+      Py_INCREF (result);  // ????
       return result;
-    }
-
-    static reference get_plain (container &c, index_param ix)
-    {
-      return Algorithms::get (c, ix);
-    }
-
-    static PyObject *get_automatic (PyObject *args
-				    , PyObject *keywords
-				    , boost::python::object plain_function
-				    , boost::python::object slice_function)
-    {
-      // ?
-      return 0;
     }
 
     static boost::python::object make_getitem (Policy const &policy)
     {
-      // ? Is there an easy way to generate a function that will
-      // call get_plain or get_slice depending on the arguments?
-      //
-      // Could be done by using get_automatic as a dispatcher, with
-      // the last two parameters bound to wrappers for the two
-      // implementations, but maybe there is a better way.
-
-      return boost::python::make_function (get_plain, policy);
+      return boost::python::make_function (get_slice, policy);
     }
   };
 }
+
+namespace boost { namespace python { namespace converter {
+  // Specialized converter to handle PySlice_Type objects
+  template<>
+  struct object_manager_traits<indexing::slice>
+    : pytype_object_manager_traits<&PySlice_Type, ::indexing::slice>
+  {
+  };
+}}}
 
 #endif // slice_handler_rmg_20030909_included
