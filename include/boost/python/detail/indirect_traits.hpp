@@ -195,24 +195,6 @@ struct is_reference_to_class
 };
 
 template <class T>
-struct is_reference_to_classx
-{
-    BOOST_STATIC_CONSTANT(
-        bool, value
-        = (boost::type_traits::ice_and<
-           is_reference<T>::value
-           , is_class<
-                typename remove_cv<
-                    typename remove_reference<T>::type
-                >::type
-             >::value
-         >::value)
-        );
-    typedef mpl::bool_<value> type;
-    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
-};
-
-template <class T>
 struct is_pointer_to_class
     : mpl::and_<
           is_pointer<T>
