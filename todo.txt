@@ -14,40 +14,39 @@ Specializations of Caller<> for commmon combinations of argument types (?)
 special member functions for numeric types
 pickling support
 testing with Python 2.0
+Make abstract classes non-instantiable
 
 Documentation:
-    Contributors
-
-    Comparison with other systems:
-        CXX
-        SWIG
-        Zope ExtensionClasses
-        ?
-
-    Supported Python versions
-
     building
-
-    Private virtual functions with default implementations
 
     overloading and the overload resolution mechanism
 
     special member functions
 
     exposing data members as attributes
-
-    adding conversions for fundamental types
-        generic conversions for template types (with partial spec).
-
-    extending multiple-argument support using gen_all.py
+        def_readonly()
+        def_readwrite()
+        def_getter()
+        def_setter()
 
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
 
     exception handling
 
-    dealing with non-const reference/pointer parameters
+    Advanced Topics:
+        Advanced Type Conversion
+            adding conversions for fundamental types
+                generic conversions for template types (with partial spec).
 
+            Interacting with built-in Python objects and types from C++
+
+            dealing with non-const reference/pointer parameters
+
+        Private virtual functions with default implementations
+
+        extending multiple-argument support using gen_all.py
+    
     limitations
         templates
             Yes. If you look at the examples in extclass_demo.cpp you'll see that I have
