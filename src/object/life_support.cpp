@@ -99,11 +99,12 @@ PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)
     // We're going to leak this reference, but don't worry; the
     // life_support system decrements it when the nurse dies.
     PyObject* weakref = PyWeakref_NewRef(nurse, (PyObject*)system);
+
+    // weakref has either taken ownership, or we have to release it
+    // anyway
+    Py_DECREF(system);
     if (!weakref)
-    {
-        Py_XDECREF(system);
         return 0;
-    }
     
     system->patient = patient;
     Py_XINCREF(patient); // hang on to the patient until death
