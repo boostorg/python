@@ -57,7 +57,7 @@ PyTypeObject class_metatype_object = {
         0,                                      /* tp_setattro */
         0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT // | Py_TPFLAGS_HAVE_GC
-		| Py_TPFLAGS_BASETYPE,		/* tp_flags */
+                | Py_TPFLAGS_BASETYPE,          /* tp_flags */
         0,                                      /* tp_doc */
         0,                                      /* tp_traverse */
         0,                                      /* tp_clear */
@@ -77,7 +77,7 @@ PyTypeObject class_metatype_object = {
         0,                                      /* tp_alloc */
         0, // filled in with type_new           /* tp_new */
         0, // filled in with __PyObject_GC_Del  /* tp_free */
-	(inquiry)type_is_gc,			/* tp_is_gc */
+        (inquiry)type_is_gc,                    /* tp_is_gc */
 };
 
 // Get the metatype object for all extension classes.
@@ -132,7 +132,7 @@ PyTypeObject class_type_object = {
         0,                                      /* tp_setattro */
         0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT // | Py_TPFLAGS_HAVE_GC
-		| Py_TPFLAGS_BASETYPE,		/* tp_flags */
+                | Py_TPFLAGS_BASETYPE,          /* tp_flags */
         0,                                      /* tp_doc */
         0,                                      /* tp_traverse */
         0,                                      /* tp_clear */
