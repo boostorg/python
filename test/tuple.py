@@ -10,6 +10,12 @@
 >>> t2 = (1,2,3,4)
 >>> test_operators(t1,t2,printer)
 ('t', 'h', 'i', 's', ' ', 'i', 's', 1, 2, 3, 4)
+>>> make_tuple()
+()
+>>> make_tuple(42)
+(42,)
+>>> make_tuple('hello', 42)
+('hello', 42)
 """
 
 def run(args = None):
