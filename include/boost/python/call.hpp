@@ -52,13 +52,22 @@ call(PyObject* callable
     , boost::type<R>* = 0
     )
 {
-    converter::return_from_python<R> converter;
-    return converter(
+    PyObject* const result = 
         PyEval_CallFunction(
             callable
             , const_cast<char*>("(" BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FIXED, "O") ")")
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET, nil)
-            ));
+            );
+    
+    // This conversion *must not* be done in the same expression as
+    // the call, because, in the special case where the result is a
+    // reference a Python object which was created by converting a C++
+    // argument for passing to PyEval_CallFunction, its reference
+    // count will be 2 until the end of the full expression containing
+    // the conversion, and that interferes with dangling
+    // pointer/reference detection.
+    converter::return_from_python<R> converter;
+    return converter(result);
 }
 
 # undef N

@@ -218,7 +218,7 @@ namespace
       , char const* ref_type)
   {
       handle<> holder(source);
-      if (source->ob_refcnt <= 2)
+      if (source->ob_refcnt <= 1)
       {
           handle<> msg(
               ::PyString_FromFormat(
