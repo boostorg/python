@@ -14,6 +14,7 @@
 # include <boost/preprocessor/enum_params.hpp>
 # include <boost/preprocessor/repeat.hpp>
 # include <boost/preprocessor/cat.hpp>
+# include <boost/python/detail/void_return.hpp>
 # include <boost/type.hpp>
 
 namespace boost { namespace python { 
@@ -27,7 +28,7 @@ template <                                                                      
     class R                                                                     \
     BOOST_PP_COMMA_IF(nargs) BOOST_PP_ENUM_PARAMS(nargs, class A)               \
     >                                                                           \
-typename converter::return_from_python<R>::result_type                          \
+typename detail::returnable<R>::type                                            \
 call(PyObject* callable                                                         \
      BOOST_PP_COMMA_IF(nargs) BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))    \
    , boost::type<R>* = 0                                                        \
