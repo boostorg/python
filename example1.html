@@ -25,7 +25,7 @@ namespace hello {
       const char* get() const { return "hi, world"; }
     ...
   };
-  void length(const world&amp; x) { return std::strlen(x.get()); }
+  std::size_t length(const world&amp; x) { return std::strlen(x.get()); }
 }
 
 </pre>
@@ -122,6 +122,6 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>
-         Updated: Oct 15, 2000
+         Updated: Oct 30, 2000
     </div>
 
