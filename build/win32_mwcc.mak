@@ -10,7 +10,7 @@
 #   14 Dec 01 derived from vc60.mak (R.W. Grosse-Kunstleve)
 
 ROOT=R:
-BOOST_WIN="$(ROOT)\boostdev"
+BOOST_WIN="$(ROOT)\boost"
 BOOST_UNIX=$(HOME)/boost
 
 #PYEXE="C:\Program files\Python\python.exe"
@@ -20,7 +20,7 @@ PYEXE="C:\Python21\python.exe"
 PYINC=-I"C:\Python21\include"
 PYLIB="C:\Python21\libs\python21.lib"
 
-STDOPTS=-gccinc -prefix UseDLLPrefix.h
+STDOPTS=-gccinc -prefix UseDLLPrefix.h -DBOOST_PYTHON_STATIC_LIB
 WARNOPTS=-warn on,nounusedexpr,nounused
 OPTOPTS=-O
 
@@ -31,7 +31,7 @@ CPPOPTS=$(STDOPTS) $(WARNOPTS) $(OPTOPTS) \
 LD=mwld
 LDOPTS=-export dllexport -shared
 
-OBJ=classes.obj conversions.obj extension_class.obj functions.obj \
+OBJ=classes.obj conversions.obj errors.obj extension_class.obj functions.obj \
     init_function.obj module_builder.obj \
     objects.obj types.obj cross_module.obj
 

@@ -11,6 +11,7 @@ LIBSRC = \
     classes.cpp \
     conversions.cpp \
     cross_module.cpp \
+    errors.cpp \
     extension_class.cpp \
     functions.cpp \
     init_function.cpp \

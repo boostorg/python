@@ -129,4 +129,13 @@
 #  endif
 #endif
 
+#if defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
+// Work around a compiler bug.
+// boost::python::detail::function has to be seen by the compiler before the
+// boost::function class template.
+namespace boost { namespace python { namespace detail {
+class function;
+}}}
+#endif
+
 #endif // CONFIG_DWA052200_H_

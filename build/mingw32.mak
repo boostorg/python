@@ -52,7 +52,7 @@ CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST_WIN) $(PYINC) \
 LD=g++
 LDOPTS=-shared
 
-OBJ=classes.o conversions.o extension_class.o functions.o \
+OBJ=classes.o conversions.o errors.o extension_class.o functions.o \
     init_function.o module_builder.o \
     objects.o types.o cross_module.o
 

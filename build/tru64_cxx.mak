@@ -17,10 +17,10 @@
 ROOT=$(HOME)
 BOOST=$(ROOT)/boost
 
-PYEXE=PYTHONPATH=. /usr/local/Python-1.5.2/bin/python
-PYINC=-I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE=PYTHONPATH=. /usr/local/Python-2.1/bin/python
-#PYINC=-I/usr/local/Python-2.1/include/python2.1
+#PYEXE=PYTHONPATH=. /usr/local/Python-1.5.2/bin/python
+#PYINC=-I/usr/local/Python-1.5.2/include/python1.5
+PYEXE=PYTHONPATH=. /usr/local_cci/Python-2.1.1/bin/python
+PYINC=-I/usr/local_cci/Python-2.1.1/include/python2.1
 #STLPORTINC=-I/usr/local/STLport-4.1b3/stlport
 #STLPORTINC=-I/usr/local/STLport-4.1b4/stlport
 #STLPORTOPTS= \
@@ -46,7 +46,7 @@ LDOPTS=-shared -expect_unresolved 'Py*' -expect_unresolved '_Py*'
 
 #HIDDEN=-hidden
 
-OBJ=classes.o conversions.o extension_class.o functions.o \
+OBJ=classes.o conversions.o errors.o extension_class.o functions.o \
     init_function.o module_builder.o \
     objects.o types.o cross_module.o
 DEPOBJ=$(OBJ) \

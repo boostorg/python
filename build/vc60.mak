@@ -14,14 +14,14 @@ ROOT=R:
 BOOST_WIN="$(ROOT)\boost"
 BOOST_UNIX=$(HOME)/boost
 
-PYEXE="C:\Program files\Python\python.exe"
-PYINC=/I"C:\Program files\Python\include"
-PYLIB="C:\Program files\Python\libs\python15.lib"
-#PYEXE="C:\Python21\python.exe"
-#PYINC=/I"C:\Python21\include"
-#PYLIB="C:\Python21\libs\python21.lib"
+#PYEXE="C:\Program files\Python\python.exe"
+#PYINC=/I"C:\Program files\Python\include"
+#PYLIB="C:\Program files\Python\libs\python15.lib"
+PYEXE="C:\Python21\python.exe"
+PYINC=/I"C:\Python21\include"
+PYLIB="C:\Python21\libs\python21.lib"
 
-STDOPTS=/nologo /MD /GR /GX /Zm200
+STDOPTS=/nologo /MD /GR /GX /Zm200 /DBOOST_PYTHON_STATIC_LIB
 WARNOPTS=
 OPTOPTS=
 
@@ -32,7 +32,7 @@ CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) /I$(BOOST_WIN) $(PYINC) \
 LD=link.exe
 LDOPTS=/nologo /dll /incremental:no
 
-OBJ=classes.obj conversions.obj extension_class.obj functions.obj \
+OBJ=classes.obj conversions.obj errors.obj extension_class.obj functions.obj \
     init_function.obj module_builder.obj \
     objects.obj types.obj cross_module.obj
 

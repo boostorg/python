@@ -17,12 +17,12 @@
 ROOT=$(HOME)
 BOOST=$(ROOT)/boost
 
-PYEXE=PYTHONPATH=. /usr/bin/python
-PYINC=-I/usr/include/python1.5
+#PYEXE=PYTHONPATH=. /usr/bin/python
+#PYINC=-I/usr/include/python1.5
 #PYEXE=PYTHONPATH=. /usr/local/Python-1.5.2/bin/python
 #PYINC=-I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE=PYTHONPATH=. /usr/local/Python-2.1/bin/python
-#PYINC=-I/usr/local/Python-2.1/include/python2.1
+PYEXE=PYTHONPATH=. /usr/local_cci/Python-2.1.1/bin/python
+PYINC=-I/usr/local_cci/Python-2.1.1/include/python2.1
 
 STDOPTS=-fPIC -ftemplate-depth-21
 WARNOPTS=
@@ -36,7 +36,7 @@ MAKEDEP=-M
 LD=$(CPP)
 LDOPTS=-shared
 
-OBJ=classes.o conversions.o extension_class.o functions.o \
+OBJ=classes.o conversions.o errors.o extension_class.o functions.o \
     init_function.o module_builder.o \
     objects.o types.o cross_module.o
 DEPOBJ=$(OBJ) \

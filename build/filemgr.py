@@ -8,6 +8,7 @@ bpl_exa = "/libs/python/example"
 files = (
 bpl_src + "/classes.cpp",
 bpl_src + "/conversions.cpp",
+bpl_src + "/errors.cpp",
 bpl_src + "/extension_class.cpp",
 bpl_src + "/functions.cpp",
 bpl_src + "/init_function.cpp",
