@@ -41,16 +41,160 @@ instance_holder::~instance_holder()
 {
 }
 
-// This is copied from typeobject.c in the Python sources. Even though
-// class_metatype_object doesn't set Py_TPFLAGS_HAVE_GC, that bit gets
-// filled in by the base class initialization process in
-// PyType_Ready(). However, tp_is_gc is *not* copied from the base
-// type, making it assume that classes are GC-able even if (like
-// class_type_object) they're statically allocated.
-static int
-type_is_gc(PyTypeObject *python_type)
+extern "C"
 {
-    return python_type->tp_flags & Py_TPFLAGS_HEAPTYPE;
+  // This is copied from typeobject.c in the Python sources. Even though
+  // class_metatype_object doesn't set Py_TPFLAGS_HAVE_GC, that bit gets
+  // filled in by the base class initialization process in
+  // PyType_Ready(). However, tp_is_gc is *not* copied from the base
+  // type, making it assume that classes are GC-able even if (like
+  // class_type_object) they're statically allocated.
+  static int
+  type_is_gc(PyTypeObject *python_type)
+  {
+      return python_type->tp_flags & Py_TPFLAGS_HEAPTYPE;
+  }
+
+  // This is also copied from the Python sources.  We can't implement
+  // static_data as a subclass property effectively without it.
+  typedef struct {
+      PyObject_HEAD
+      PyObject *prop_get;
+      PyObject *prop_set;
+      PyObject *prop_del;
+      PyObject *prop_doc;
+  } propertyobject;
+
+  static PyObject *
+  static_data_descr_get(PyObject *self, PyObject *obj, PyObject * /*type*/)
+  {
+      propertyobject *gs = (propertyobject *)self;
+
+      return PyObject_CallFunction(gs->prop_get, "()");
+  }
+
+  static int
+  static_data_descr_set(PyObject *self, PyObject *obj, PyObject *value)
+  {
+      propertyobject *gs = (propertyobject *)self;
+      PyObject *func, *res;
+
+      if (value == NULL)
+          func = gs->prop_del;
+      else
+          func = gs->prop_set;
+      if (func == NULL) {
+          PyErr_SetString(PyExc_AttributeError,
+                          value == NULL ?
+                          "can't delete attribute" :
+                          "can't set attribute");
+          return -1;
+      }
+      if (value == NULL)
+          res = PyObject_CallFunction(func, "()");
+      else
+          res = PyObject_CallFunction(func, "(O)", value);
+      if (res == NULL)
+          return -1;
+      Py_DECREF(res);
+      return 0;
+  }
+}
+
+static PyTypeObject static_data_object = {
+    PyObject_HEAD_INIT(0)//&PyType_Type)
+    0,
+    "Boost.Python.class",
+    PyType_Type.tp_basicsize,
+    0,
+    0,                                      /* tp_dealloc */
+    0,                                      /* tp_print */
+    0,                                      /* tp_getattr */
+    0,                                      /* tp_setattr */
+    0,                                      /* tp_compare */
+    0,                                      /* tp_repr */
+    0,                                      /* tp_as_number */
+    0,                                      /* tp_as_sequence */
+    0,                                      /* tp_as_mapping */
+    0,                                      /* tp_hash */
+    0,                                      /* tp_call */
+    0,                                      /* tp_str */
+    0,                                      /* tp_getattro */
+    0,                                      /* tp_setattro */
+    0,                                      /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT // | Py_TPFLAGS_HAVE_GC
+    | Py_TPFLAGS_BASETYPE,          /* tp_flags */
+    0,                                      /* tp_doc */
+    0,                                      /* tp_traverse */
+    0,                                      /* tp_clear */
+    0,                                      /* tp_richcompare */
+    0,                                      /* tp_weaklistoffset */
+    0,                                      /* tp_iter */
+    0,                                      /* tp_iternext */
+    0,                                      /* tp_methods */
+    0,                                      /* tp_members */
+    0,                                      /* tp_getset */
+    0, //&PyProperty_Type,                           /* tp_base */
+    0,                                      /* tp_dict */
+    static_data_descr_get,                                      /* tp_descr_get */
+    static_data_descr_set,                                      /* tp_descr_set */
+    0,                                      /* tp_dictoffset */
+    0,                                      /* tp_init */
+    0,                                      /* tp_alloc */
+    0, // filled in with type_new           /* tp_new */
+    0, // filled in with __PyObject_GC_Del  /* tp_free */
+    (inquiry)type_is_gc,                    /* tp_is_gc */
+};
+
+namespace objects
+{
+  extern "C"
+  {
+      // This declaration needed due to broken Python 2.2 headers
+      extern DL_IMPORT(PyTypeObject) PyProperty_Type;
+  }
+
+  BOOST_PYTHON_DECL PyObject* static_data()
+  {
+      if (static_data_object.tp_dict == 0)
+      {
+          static_data_object.ob_type = &PyType_Type;
+          static_data_object.tp_base = &PyProperty_Type;
+          if (PyType_Ready(&static_data_object))
+              return 0;
+      }
+      return upcast<PyObject>(&static_data_object);
+  }
+}  
+
+extern "C"
+{
+    // Ordinarily, descriptors have a certain assymetry: you can use
+    // them to read attributes off the class object they adorn, but
+    // writing the same attribute on the class object always replaces
+    // the descriptor in the class __dict__.  In order to properly
+    // represent C++ static data members, we need to allow them to be
+    // written through the class instance.  This function of the
+    // metaclass makes it possible.
+    static int
+    class_setattro(PyObject *obj, PyObject *name, PyObject* value)
+    {
+        // Must use "private" Python implementation detail
+        // _PyType_Lookup instead of PyObject_GetAttr because the
+        // latter will always end up calling the descr_get function on
+        // any descriptor it finds; we need the unadulterated
+        // descriptor here.
+        PyObject* a = _PyType_Lookup(downcast<PyTypeObject>(obj), name);
+
+        // a is a borrowed reference or 0
+        
+        // If we found a static data descriptor, call it directly to
+        // force it to set the static data member
+        if (a != 0 && PyObject_IsInstance(a, objects::static_data()))
+            return a->ob_type->tp_descr_set(a, obj, value);
+        else
+            return PyType_Type.tp_setattro(obj, name, value);
+    }
 }
 
 static PyTypeObject class_metatype_object = {
@@ -72,7 +216,7 @@ static PyTypeObject class_metatype_object = {
     0,                                      /* tp_call */
     0,                                      /* tp_str */
     0,                                      /* tp_getattro */
-    0,                                      /* tp_setattro */
+    class_setattro,                         /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT // | Py_TPFLAGS_HAVE_GC
     | Py_TPFLAGS_BASETYPE,          /* tp_flags */
@@ -110,6 +254,8 @@ void instance_holder::install(PyObject* self) throw()
 
 namespace objects
 {
+      static int (*class_setattro_save)(PyObject *obj, PyObject *name, PyObject* value);
+          
 // Get the metatype object for all extension classes.
   BOOST_PYTHON_DECL type_handle class_metatype()
   {
@@ -119,6 +265,7 @@ namespace objects
           class_metatype_object.tp_base = &PyType_Type;
           if (PyType_Ready(&class_metatype_object))
               return type_handle();
+          class_setattro_save = class_metatype_object.tp_setattro;
       }
       return type_handle(borrowed(&class_metatype_object));
   }
@@ -189,6 +336,7 @@ namespace objects
           inst->dict = python::incref(dict);
           return 0;
       }
+
   }
 
 
@@ -254,6 +402,7 @@ namespace objects
           class_type_object.tp_base = &PyBaseObject_Type;
           if (PyType_Ready(&class_type_object))
               return type_handle();
+//          class_type_object.tp_setattro = class_setattro;
       }
       return type_handle(borrowed(&class_type_object));
   }
@@ -377,12 +526,6 @@ namespace objects
       this->attr("__instance_size__") = instance_size;
   }
   
-  extern "C"
-  {
-      // This declaration needed due to broken Python 2.2 headers
-      extern DL_IMPORT(PyTypeObject) PyProperty_Type;
-  }
-
   void class_base::add_property(char const* name, object const& fget)
   {
       object property(
@@ -397,6 +540,24 @@ namespace objects
       object property(
           (python::detail::new_reference)
               PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr()));
+      
+      this->setattr(name, property);
+  }
+
+  void class_base::add_static_property(char const* name, object const& fget)
+  {
+      object property(
+          (python::detail::new_reference)
+          PyObject_CallFunction(static_data(), "O", fget.ptr()));
+      
+      this->setattr(name, property);
+  }
+
+  void class_base::add_static_property(char const* name, object const& fget, object const& fset)
+  {
+      object property(
+          (python::detail::new_reference)
+          PyObject_CallFunction(static_data(), "OO", fget.ptr(), fset.ptr()));
       
       this->setattr(name, property);
   }

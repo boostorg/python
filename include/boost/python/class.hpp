@@ -290,19 +290,28 @@ class class_ : public objects::class_base
     //
     // Data member access
     //
-    template <class D, class B>
-    self& def_readonly(char const* name, D B::*pm_)
+    template <class D>
+    self& def_readonly(char const* name, D const& d)
     {
-        D T::*pm = pm_;
-        this->add_property(name, make_getter(pm));
-        return *this;
+        return this->def_readonly_impl(name, d, 0);
     }
 
-    template <class D, class B>
-    self& def_readwrite(char const* name, D B::*pm_)
+    template <class D>
+    self& def_readwrite(char const* name, D const& d)
     {
-        D T::*pm = pm_;
-        return this->add_property(name, make_getter(pm), make_setter(pm));
+        return this->def_readwrite_impl(name, d, 0);
+    }
+
+    template <class D>
+    self& def_readonly(char const* name, D& d)
+    {
+        return this->def_readonly_impl(name, d, 0);
+    }
+
+    template <class D>
+    self& def_readwrite(char const* name, D& d)
+    {
+        return this->def_readwrite_impl(name, d, 0);
     }
 
     // Property creation
@@ -323,6 +332,34 @@ class class_ : public objects::class_base
     self& add_property(char const* name, Get fget, Set fset)
     {
         base::add_property(
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            , object(
+                detail::member_function_cast<T,Set>::stage1(fset).stage2((T*)0).stage3(fset)
+                )
+            );
+        return *this;
+    }
+        
+    template <class Get>
+    self& add_static_property(char const* name, Get fget)
+    {
+        base::add_static_property(
+            name
+            , object(
+                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
+                )
+            );
+        
+        return *this;
+    }
+
+    template <class Get, class Set>
+    self& add_static_property(char const* name, Get fget, Set fset)
+    {
+        base::add_static_property(
             name
             , object(
                 detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
@@ -361,6 +398,32 @@ class class_ : public objects::class_base
         return *this;
     }
  private: // helper functions
+
+    template <class D, class B>
+    self& def_readonly_impl(char const* name, D B::*pm_, int)
+    {
+        D T::*pm = pm_;
+        return this->add_property(name, make_getter(pm));
+    }
+
+    template <class D, class B>
+    self& def_readwrite_impl(char const* name, D B::*pm_, int)
+    {
+        D T::*pm = pm_;
+        return this->add_property(name, make_getter(pm), make_setter(pm));
+    }
+
+    template <class D>
+    self& def_readonly_impl(char const* name, D& d, ...)
+    {
+        return this->add_static_property(name, make_getter(d));
+    }
+
+    template <class D>
+    self& def_readwrite_impl(char const* name, D& d, ...)
+    {
+        return this->add_static_property(name, make_getter(d), make_setter(d));
+    }
 
     inline void register_() const;
 

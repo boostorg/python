@@ -18,7 +18,11 @@ using namespace boost::python;
 
 typedef test_class<> X;
 
-typedef test_class<1> Y;
+struct Y : test_class<1>
+{
+    Y(int v) : test_class<1>(v) {}
+    Y& operator=(Y const& rhs) { x = rhs.x; return *this; }
+};
 
 double get_fair_value(X const& x) { return x.value(); }
 
@@ -29,6 +33,7 @@ struct VarBase
     
     std::string const name;
     std::string get_name1() const { return name; }
+    
 };
 
 struct Var : VarBase
@@ -38,7 +43,13 @@ struct Var : VarBase
     float value;
     char const* name2;
     Y y;
+
+    static int static1;
+    static Y static2;
 };
+
+int Var::static1 = 0;
+Y Var::static2(0);
 
 BOOST_PYTHON_MODULE(data_members_ext)
 {
@@ -74,6 +85,17 @@ BOOST_PYTHON_MODULE(data_members_ext)
         .def("get_name2", &Var::get_name2, return_value_policy<return_by_value>())
         
         .add_property("name3", &Var::get_name1)
+
+        // Test static data members
+        .def_readonly("ro1a", &Var::static1)
+        .def_readonly("ro1b", Var::static1)
+        .def_readwrite("rw1a", &Var::static1)
+        .def_readwrite("rw1b", Var::static1)
+
+        .def_readonly("ro2a", &Var::static2)
+        .def_readonly("ro2b", Var::static2)
+        .def_readwrite("rw2a", &Var::static2)
+        .def_readwrite("rw2b", Var::static2)
         ;
 }
 
