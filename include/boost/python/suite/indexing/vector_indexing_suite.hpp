@@ -8,6 +8,7 @@
 # define VECTOR_INDEXING_SUITE_JDG20036_HPP
 
 # include <boost/python/suite/indexing/indexing_suite.hpp>
+# include <boost/python/suite/indexing/container_utils.hpp>
 # include <boost/python/iterator.hpp>
 
 namespace boost { namespace python {
@@ -50,13 +51,23 @@ namespace boost { namespace python {
     {
     public:
     
-        typedef typename Container::value_type element_type;
+        typedef typename Container::value_type data_type;
         typedef typename Container::value_type key_type;
         typedef typename Container::size_type index_type;
         typedef typename Container::size_type size_type;
         typedef typename Container::difference_type difference_type;
         
-        static element_type& 
+        template <class Class>
+        static void 
+        extension_def(Class& cl)
+        {
+            cl
+                .def("append", &base_append)
+                .def("extend", &base_extend)
+            ;
+        }
+        
+        static data_type& 
         get_item(Container& container, index_type i)
         { 
             return container[i];
@@ -69,14 +80,14 @@ namespace boost { namespace python {
         }
 
         static void 
-        set_item(Container& container, index_type i, element_type const& v)
+        set_item(Container& container, index_type i, data_type const& v)
         { 
             container[i] = v;
         }
 
         static void 
         set_slice(Container& container, index_type from, 
-            index_type to, element_type const& v)
+            index_type to, data_type const& v)
         { 
             container.erase(container.begin()+from, container.begin()+to);
             container.insert(container.begin()+from, v);
@@ -128,6 +139,12 @@ namespace boost { namespace python {
             return container.size();
         }
       
+        static bool 
+        compare_index(index_type a, index_type b)
+        {
+            return a < b;
+        }
+        
         static index_type
         convert_index(Container& container, PyObject* i_)
         { 
@@ -158,7 +175,7 @@ namespace boost { namespace python {
         }
         
         static void 
-        append(Container& container, element_type const& v)
+        append(Container& container, data_type const& v)
         { 
             container.push_back(v);
         }
@@ -168,6 +185,44 @@ namespace boost { namespace python {
         extend(Container& container, Iter first, Iter last)
         { 
             container.insert(container.end(), first, last);
+        }
+        
+    private:
+    
+        static void
+        base_append(Container& container, PyObject* v)
+        {
+            extract<data_type&> elem(v);
+            // try if elem is an exact Data
+            if (elem.check())
+            {
+                DerivedPolicies::append(container, elem());
+            }
+            else
+            {
+                //  try to convert elem to data_type
+                extract<data_type> elem(v);
+                if (elem.check())
+                {
+                    DerivedPolicies::append(container, elem());
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, 
+                        "Attempting to append an invalid type");
+                    throw_error_already_set();
+                }
+            }
+        }
+        
+        static void
+        base_extend(Container& container, PyObject* v)
+        {
+            std::vector<data_type> temp;
+            handle<> l_(borrowed(v));
+            object l(l_);
+            container_utils::extend_container(temp, l);
+            DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
     };
        

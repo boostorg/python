@@ -10,7 +10,6 @@
 # include <boost/python/class.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/suite/indexing/detail/indexing_suite_detail.hpp>
-# include <boost/python/suite/indexing/container_utils.hpp>
 # include <boost/python/return_internal_reference.hpp>
 # include <boost/python/iterator.hpp>
 # include <boost/mpl/or.hpp>
@@ -28,19 +27,19 @@ namespace boost { namespace python {
     // Derived classes provide the hooks needed by the indexing_suite
     // to do its job:
     //
-    //      static element_type& 
+    //      static data_type& 
     //      get_item(Container& container, index_type i);
     //
     //      static object 
     //      get_slice(Container& container, index_type from, index_type to);
     //
     //      static void 
-    //      set_item(Container& container, index_type i, element_type const& v);
+    //      set_item(Container& container, index_type i, data_type const& v);
     //
     //      static void 
     //      set_slice(
     //         Container& container, index_type from, 
-    //         index_type to, element_type const& v
+    //         index_type to, data_type const& v
     //      );
     //
     //      template <class Iter>
@@ -100,9 +99,9 @@ namespace boost { namespace python {
         , class DerivedPolicies
         , bool NoProxy = false
         , bool NoSlice = false
-        , class Element = typename Container::value_type
-        , class Key = typename Container::value_type
+        , class Data = typename Container::value_type
         , class Index = typename Container::size_type
+        , class Key = typename Container::value_type
     >
     class indexing_suite 
         : public def_visitor<
@@ -111,16 +110,16 @@ namespace boost { namespace python {
             , DerivedPolicies
             , NoProxy
             , NoSlice
-            , Element
-            , Key
+            , Data
             , Index
+            , Key
         > >
     {
     private:
         
         typedef mpl::or_<
             mpl::bool_<NoProxy>
-          , mpl::not_<is_class<Element> > > 
+          , mpl::not_<is_class<Data> > > 
         no_proxy;
                     
         typedef detail::container_element<Container, Index, DerivedPolicies>
@@ -152,13 +151,13 @@ namespace boost { namespace python {
                 Container
               , DerivedPolicies
               , proxy_handler
-              , Element
+              , Data
               , Index>
           , detail::slice_helper<
                 Container
               , DerivedPolicies
               , proxy_handler
-              , Element
+              , Data
               , Index> >::type
         slice_handler;
   
@@ -177,14 +176,20 @@ namespace boost { namespace python {
                 .def("__getitem__", &base_get_item)
                 .def("__contains__", &base_contains)
                 .def("__iter__", def_iterator())
-
-                .def("append", &base_append)
-                .def("extend", &base_extend)
-            ;         
+            ;
+            
+            DerivedPolicies::extension_def(cl);
         }        
         
+        template <class Class>
+        static void 
+        extension_def(Class& cl)
+        {
+            // no more extensions
+        }
+
     private:
-                   
+      
         static object
         base_get_item(back_reference<Container&> container, PyObject* i)
         { 
@@ -205,8 +210,8 @@ namespace boost { namespace python {
             }
             else
             {
-                extract<Element&> elem(v);
-                // try if elem is an exact Element
+                extract<Data&> elem(v);
+                // try if elem is an exact Data
                 if (elem.check())
                 {
                     DerivedPolicies::
@@ -216,8 +221,8 @@ namespace boost { namespace python {
                 }
                 else
                 {
-                    //  try to convert elem to Element
-                    extract<Element> elem(v);
+                    //  try to convert elem to Data
+                    extract<Data> elem(v);
                     if (elem.check())
                     {
                         DerivedPolicies::
@@ -273,42 +278,6 @@ namespace boost { namespace python {
                 else
                     return false;
             }            
-        }
-        
-        static void
-        base_append(Container& container, PyObject* v)
-        {
-            extract<Element&> elem(v);
-            // try if elem is an exact Element
-            if (elem.check())
-            {
-                DerivedPolicies::append(container, elem());
-            }
-            else
-            {
-                //  try to convert elem to Element
-                extract<Element> elem(v);
-                if (elem.check())
-                {
-                    DerivedPolicies::append(container, elem());
-                }
-                else
-                {
-                    PyErr_SetString(PyExc_TypeError, 
-                        "Attempting to append an invalid type");
-                    throw_error_already_set();
-                }
-            }
-        }
-        
-        static void
-        base_extend(Container& container, PyObject* v)
-        {
-            std::vector<Element> temp;
-            handle<> l_(borrowed(v));
-            object l(l_);
-            container_utils::extend_container(temp, l);
-            DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
     };
     

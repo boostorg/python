@@ -18,30 +18,30 @@ namespace boost { namespace python { namespace container_utils {
     void
     extend_container(Container& container, object l)
     {
-        typedef typename Container::value_type element_t;
+        typedef typename Container::value_type data_type;
         
         //  l must be a list or some container
 
         for (int i = 0; i < l.attr("__len__")(); i++)
         {
             object elem(l[i]);
-            extract<element_t const&> x(elem);
-            //  try if elem is an exact element_t type
+            extract<data_type const&> x(elem);
+            //  try if elem is an exact data_type type
             if (x.check())
             {
                 container.push_back(x());
             }
             else
             {
-                //  try to convert elem to element_t type
-                extract<element_t> x(elem);
+                //  try to convert elem to data_type type
+                extract<data_type> x(elem);
                 if (x.check())
                 {
                     container.push_back(x());
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_TypeError, "Incompatible Element Type");
+                    PyErr_SetString(PyExc_TypeError, "Incompatible Data Type");
                     throw_error_already_set();
                 }
             }

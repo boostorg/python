@@ -32,7 +32,9 @@ namespace boost { namespace python { namespace detail {
         template <class Index>
         bool operator()(PyObject* prox, Index i) const
         {
-            return extract<Proxy&>(prox)().get_index() < i;
+            typedef typename Proxy::policies_type policies_type;
+            return policies_type::
+                compare_index(extract<Proxy&>(prox)().get_index(), i);
         }
     };        
  
@@ -476,7 +478,7 @@ namespace boost { namespace python { namespace detail {
           class Container
         , class DerivedPolicies
         , class ProxyHandler
-        , class Element
+        , class Data
         , class Index
     >
     struct slice_helper
@@ -510,8 +512,8 @@ namespace boost { namespace python { namespace detail {
             Index from, to;
             base_get_slice_data(container, slice, from, to);
             
-            extract<Element&> elem(v);
-            // try if elem is an exact Element
+            extract<Data&> elem(v);
+            // try if elem is an exact Data
             if (elem.check())
             {
                 ProxyHandler::base_replace_indexes(container, from, to, 1);
@@ -519,8 +521,8 @@ namespace boost { namespace python { namespace detail {
             }
             else
             {
-                //  try to convert elem to Element
-                extract<Element> elem(v);
+                //  try to convert elem to Data
+                extract<Data> elem(v);
                 if (elem.check())
                 {
                     ProxyHandler::base_replace_indexes(container, from, to, 1);
@@ -532,20 +534,20 @@ namespace boost { namespace python { namespace detail {
                     handle<> l_(python::borrowed(v));
                     object l(l_);
     
-                    std::vector<Element> temp;
+                    std::vector<Data> temp;
                     for (int i = 0; i < l.attr("__len__")(); i++)
                     {
                         object elem(l[i]);
-                        extract<Element const&> x(elem);
-                        //  try if elem is an exact Element type
+                        extract<Data const&> x(elem);
+                        //  try if elem is an exact Data type
                         if (x.check())
                         {
                             temp.push_back(x());
                         }
                         else
                         {
-                            //  try to convert elem to Element type
-                            extract<Element> x(elem);
+                            //  try to convert elem to Data type
+                            extract<Data> x(elem);
                             if (x.check())
                             {
                                 temp.push_back(x());
@@ -581,7 +583,7 @@ namespace boost { namespace python { namespace detail {
           class Container
         , class DerivedPolicies
         , class ProxyHandler
-        , class Element
+        , class Data
         , class Index
     >
     struct no_slice_helper
