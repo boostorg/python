@@ -223,7 +223,7 @@ class Function(Declaration):
         if self.throws is None:
             return ""
         else:
-            return " throw(%s)" % ', '.join (self.throws) 
+            return " throw(%s)" % ', '.join ([x.FullName() for x in self.throws]) 
 
 
     def PointerDeclaration(self, force=False):
@@ -236,7 +236,7 @@ class Function(Declaration):
         else:
             result = self.result.FullName()
             params = ', '.join([x.FullName() for x in self.parameters]) 
-            return '(%s (*)(%s))&%s' % (result, params, self.FullName())
+            return '(%s (*)(%s)%s)&%s' % (result, params, self.Exceptions(), self.FullName())
 
     
     def MinArgs(self):
@@ -346,7 +346,7 @@ class Constructor(Method):
         param = self.parameters[0]
         class_as_param = self.parameters[0].name == self.class_
         param_reference = isinstance(param, ReferenceType) 
-        is_public = self.visibility = Scope.public
+        is_public = self.visibility == Scope.public
         return param_reference and class_as_param and param.const and is_public
         
 

@@ -130,9 +130,10 @@ class CppParser:
             return declarations
         finally:
             if settings.DEBUG and os.path.isfile(xmlfile):
-                filename = os.path.basename(header)
-                filename = os.path.splitext(filename)[0] + '.xml'
-                shutil.copy(xmlfile, filename)
+                debugname = os.path.basename(header)
+                debugname = os.path.splitext(debugname)[0] + '.xml'
+                print 'DEBUG:', debugname
+                shutil.copy(xmlfile, debugname)
             # delete the temporary files
             try:
                 os.remove(xmlfile)
