@@ -258,14 +258,14 @@ extern "C"
 
 void class_base::add_property(char const* name, ref const& fget)
 {
-    ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "sO", fget.get()));
+    ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
     if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
         throw error_already_set();
 }
 
 void class_base::add_property(char const* name, ref const& fget, ref const& fset)
 {
-    ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "sOO", fget.get(), fset.get()));
+    ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
     if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
         throw error_already_set();
 }

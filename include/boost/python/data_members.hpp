@@ -91,7 +91,7 @@ objects::function* make_setter(D C::*pm)
             ::boost::bind(
                 &detail::member<D,C,default_call_policies>::set, pm, _1, _2
                 , default_call_policies()))
-        , 1);
+        , 2);
 }
 
 template <class C, class D, class Policies>
@@ -102,7 +102,7 @@ objects::function* make_setter(D C::*pm, Policies const& policies)
             ::boost::bind(
                 &detail::member<D,C,Policies>::set, pm, _1, _2
                 , policies))
-        , 1);
+        , 2);
 }
 
     

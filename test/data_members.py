@@ -4,8 +4,8 @@
 >>> x.x
 42
 >>> try: x.x = 77
->>> except AttributeError: pass
->>> else: print 'no error'
+... except AttributeError: pass
+... else: print 'no error'
 
 >>> y = Y(69)
 >>> y.x
