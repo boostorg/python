@@ -7,8 +7,8 @@
 # define ARG_TO_PYTHON_DWA200265_HPP
 
 # include <boost/python/ptr.hpp>
-# include <boost/python/converter/to_python_function.hpp>
-# include <boost/python/converter/pointee_to_python_function.hpp>
+# include <boost/python/converter/registered.hpp>
+# include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/converter/arg_to_python_base.hpp>
 # include <boost/python/converter/object_manager.hpp>
 # include <boost/python/to_python_indirect.hpp>
@@ -180,13 +180,13 @@ namespace detail
       
   template <class T>
   inline value_arg_to_python<T>::value_arg_to_python(T const& x)
-      : arg_to_python_base(&x, to_python_function<T>::value)
+      : arg_to_python_base(&x, registered<T>::converters.to_python)
   {
   }
 
   template <class Ptr>
   inline pointer_deep_arg_to_python<Ptr>::pointer_deep_arg_to_python(Ptr x)
-      : arg_to_python_base(x, pointee_to_python_function<Ptr>::value)
+      : arg_to_python_base(x, registered_pointee<Ptr>::converters.to_python)
   {
       detail::reject_raw_object_ptr((Ptr)0);
   }

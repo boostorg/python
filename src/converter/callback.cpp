@@ -47,7 +47,7 @@ namespace detail
 
   BOOST_PYTHON_DECL void* callback_convert_reference(
       PyObject* source
-      , from_python_registration const& converters)
+      , registration const& converters)
   {
       handle<> holder(source);
       if (source->ob_refcnt <= 2)
@@ -76,7 +76,7 @@ namespace detail
   
   BOOST_PYTHON_DECL void* callback_convert_pointer(
       PyObject* source
-      , from_python_registration const& converters)
+      , registration const& converters)
   {
       if (source == Py_None)
       {
@@ -98,9 +98,9 @@ namespace detail
   {
       handle<> holder(src);
 
-      void const* registration = data.convertible;
+      void const* converters = data.convertible;
       data = rvalue_from_python_stage1(
-          src, *static_cast<from_python_registration const*>(registration));
+          src, *static_cast<registration const*>(converters));
       
       if (!data.convertible)
       {

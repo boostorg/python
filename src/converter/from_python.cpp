@@ -16,7 +16,7 @@ namespace boost { namespace python { namespace converter {
 
 BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source
-    , from_python_registration const& converters)
+    , registration const& converters)
 {
     rvalue_from_python_chain const* chain = converters.rvalue_chain;
     
@@ -37,7 +37,7 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
 
 BOOST_PYTHON_DECL void* get_lvalue_from_python(
     PyObject* source
-    , from_python_registration const& converters)
+    , registration const& converters)
 {
     lvalue_from_python_chain const* chain = converters.lvalue_chain;
     
@@ -76,7 +76,7 @@ namespace
 
 BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
     PyObject* source
-    , from_python_registration const& converters)
+    , registration const& converters)
 {    
     rvalue_from_python_chain const* chain = converters.rvalue_chain;
     

@@ -15,15 +15,12 @@
 
 namespace boost { namespace python { namespace converter {
 
-struct from_python_registration;
+struct registration;
 
 // This namespace acts as a sort of singleton
 namespace registry
 {
-  BOOST_PYTHON_DECL from_python_registration const& from_python_converters(type_info);
-  
-  BOOST_PYTHON_DECL to_python_function_t const&
-  get_to_python_function(type_info);
+  BOOST_PYTHON_DECL registration const& lookup(type_info);
   
   BOOST_PYTHON_DECL void insert(to_python_function_t, type_info);
 

@@ -7,7 +7,7 @@
 # define TO_PYTHON_CONVERTER_DWA200221_HPP
 
 # include <boost/python/converter/registry.hpp>
-# include <boost/python/converter/to_python_function.hpp>
+# include <boost/python/converter/to_python_function_type.hpp>
 # include <boost/python/type_id.hpp>
 
 namespace boost { namespace python { 

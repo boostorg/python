@@ -8,7 +8,7 @@
 
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/python/converter/registry.hpp>
-# include <boost/python/converter/to_python_function.hpp>
+# include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/builtin_converters.hpp>
 # include <boost/python/converter/object_manager.hpp>
 # include <boost/mpl/select_type.hpp>
@@ -65,13 +65,13 @@ namespace detail
   template <class T>
   inline bool registry_to_python_value<T>::convertible()
   {
-      return converter::to_python_function<argument_type>::value != 0;
+      return converter::registered<argument_type>::converters.to_python != 0;
   }
 
   template <class T>
   inline PyObject* registry_to_python_value<T>::operator()(argument_type x) const
   {
-      return converter::to_python_function<argument_type>::value(&x);
+      return converter::registered<argument_type>::converters.to_python(&x);
   }
 
   template <class T>

@@ -8,12 +8,11 @@
 
 # include <boost/python/converter/callback_from_python_base.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
-# include <boost/python/converter/from_python.hpp>
+# include <boost/python/converter/registered.hpp>
+# include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/call_traits.hpp>
 # include <boost/python/detail/void_return.hpp>
-# include <boost/python/converter/from_python.hpp>
-# include <boost/python/converter/pointee_from_python.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -93,7 +92,7 @@ namespace detail
   template <class T>
   inline return_rvalue_from_python<T>::return_rvalue_from_python()
       : m_data(
-          const_cast<from_python_registration*>(&from_python<T>::converters)
+          const_cast<registration*>(&registered<T>::converters)
           )
   {
   }
@@ -109,14 +108,14 @@ namespace detail
   inline T return_reference_from_python<T>::operator()(PyObject* obj) const
   {
       return python::detail::void_ptr_to_reference(
-          callback_convert_reference(obj, from_python<T>::converters)
+          callback_convert_reference(obj, registered<T>::converters)
           , (T(*)())0);
   }
 
   template <class T>
   inline T return_pointer_from_python<T>::operator()(PyObject* obj) const
   {
-      return T(callback_convert_pointer(obj, pointee_from_python<T>::converters));
+      return T(callback_convert_pointer(obj, registered_pointee<T>::converters));
   }
 }
   

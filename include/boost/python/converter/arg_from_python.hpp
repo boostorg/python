@@ -14,8 +14,8 @@
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/converter/registry.hpp>
-# include <boost/python/converter/from_python.hpp>
-# include <boost/python/converter/pointee_from_python.hpp>
+# include <boost/python/converter/registered.hpp>
+# include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/python/back_reference.hpp>
 # include <boost/python/detail/referent_storage.hpp>
@@ -229,7 +229,7 @@ inline pointer_cref_arg_from_python<T>::pointer_cref_arg_from_python(PyObject* p
     // a U object.
     python::detail::write_void_ptr_reference(
         m_result.bytes
-        , p == Py_None ? p : converter::get_lvalue_from_python(p, pointee_from_python<T>::converters)
+        , p == Py_None ? p : converter::get_lvalue_from_python(p, registered_pointee<T>::converters)
         , (T(*)())0);
 }
 
@@ -252,7 +252,7 @@ inline T pointer_cref_arg_from_python<T>::operator()(PyObject* p) const
 template <class T>
 inline pointer_arg_from_python<T>::pointer_arg_from_python(PyObject* p)
     : arg_lvalue_from_python_base(
-        p == Py_None ? p : converter::get_lvalue_from_python(p, pointee_from_python<T>::converters))
+        p == Py_None ? p : converter::get_lvalue_from_python(p, registered_pointee<T>::converters))
 {
 }
 
@@ -266,7 +266,7 @@ inline T pointer_arg_from_python<T>::operator()(PyObject* p) const
 //
 template <class T>
 inline reference_arg_from_python<T>::reference_arg_from_python(PyObject* p)
-    : arg_lvalue_from_python_base(converter::get_lvalue_from_python(p,from_python<T>::converters))
+    : arg_lvalue_from_python_base(converter::get_lvalue_from_python(p,registered<T>::converters))
 {
 }
 
@@ -281,7 +281,7 @@ inline T reference_arg_from_python<T>::operator()(PyObject*) const
 //
 template <class T>
 inline arg_rvalue_from_python<T>::arg_rvalue_from_python(PyObject* obj)
-    : m_data(converter::rvalue_from_python_stage1(obj, from_python<T>::converters))
+    : m_data(converter::rvalue_from_python_stage1(obj, registered<T>::converters))
 {
 }
 
