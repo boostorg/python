@@ -5,153 +5,176 @@
     <title>Building an Extension Module</title>
 
     <div>
-      <h1><img width="277" height="86" id="_x0000_i1025" align="center" src=
+      <h1><img width="277" height="86" align="center" src=
       "../../../c++boost.gif" alt="c++boost.gif (8819 bytes)">Building an
       Extension Module</h1>
 
       <p>The build process for Boost is currently undergoing some evolution,
       and, it is to be hoped, improvement. The following facts may help:
 
+      <hr>
+      Makefiles for various platforms and a Visual Studio project
+      reside in the Boost subdirectory <tt>libs/python/build</tt>.
+      Build targets include:
+
       <ul>
-        <li>
-          Makefiles for various platforms reside in the Boost subdirectory
-          <tt>libs/python/build</tt>: 
+        <li>The <tt>boost_python</tt> library for static linking with your
+        extension module. On the various Unices, this library will be
+        called <tt>libboost_python.a</tt>. When using Visual C++, the
+        library will be called <tt>boost_python.lib</tt>.
 
-          <ul>
-            <li><a href="../build/como.mak">como.mak</a> (Comeau C++ on Linux)
+        <p>
+        <li>A comprehensive test of Boost.Python features. This test builds
+        a Boost.Python extension module, then runs Python to import the
+        module, and runs a series of tests on it using <tt><a href=
+        "../test/doctest.py">doctest</a></tt>. Source code for the module
+        and tests is available in the Boost subdirectory
+        <tt>libs/python/test</tt>.
 
-            <li><a href="../build/linux_gcc.mak">linux_gcc.mak</a> (GCC on
-            Linux/Unix)
+        <p>
+        <li>Various examples from the Boost subdirectory
+        <tt>libs/python/example</tt>.
+        All these examples include a doctest modeled
+        on the comprehensive test above.
 
-            <li><a href="../build/gcc.mak">gcc.mak</a> (older makefile for GCC
-            on Linux/Unix. Deprecated.)
-
-            <li><a href="../build/mingw32.mak">mingw32.mak</a>
-            (highly-specialized makefile for mingw32 (Win32-targeted) GCC. Read
-            the header comment).
-
-            <li><a href="../build/tru64_cxx.mak">tru64_cxx.mak</a> (Compaq
-            Alpha).
-          </ul>
-          <br>
-
-        <li>
-          A project workspace for Microsoft Visual Studio is provided at <tt><a
-          href="../build/build.dsw">libs/python/build/build.dsw</a></tt>. The
-          include paths for this project may need to be changed for your
-          installation. They currently assume that python has been installed at
-          <tt>c:\tools\python</tt>. Three configurations of all targets are
-          supported: 
-
-          <ul>
-            <li>Release (optimization, <tt>-DNDEBUG</tt>)
-
-            <li>Debug (no optimization <tt>-D_DEBUG</tt>)
-
-            <li>DebugPython (no optimization, <tt>-D_DEBUG
-            -DBOOST_DEBUG_PYTHON</tt>)
-          </ul>
-
-          <p>When extension modules are built with Visual C++ using
-          <tt>-D_DEBUG</tt>, Python defaults to <i>force</i> linking with a
-          special debugging version of the Python DLL. Since this debug DLL
-          isn't supplied with the default Python installation for Windows,
-          Boost.Python uses <tt><a href=
-          "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a></tt>
-          to temporarily undefine <tt>_DEBUG</tt> when <tt>Python.h</tt> is
-          <tt>#include</tt>d.
-
-          <p>If you want the extra runtime checks available with the debugging
-          version of the library, <tt>#define BOOST_DEBUG_PYTHON</tt> to
-          re-enable library forcing, and link with the DebugPython version of
-          <tt>boost_python.lib</tt>. You'll need to get the debugging version
-          of the Python executable (<tt>python_d.exe</tt>) and DLL
-          (<tt>python20_d.dll</tt> or <tt>python15_d.dll</tt>). The Python
-          sources include project files for building these. If you <a href=
-          "http://www.python.org">download</a> them, change the name of the
-          top-level directory to <tt>src</tt>, and install it under
-          <tt>c:\tools\python</tt>, the workspace supplied by Boost.Python will
-          be able to use it without modification. Just open
-          <tt>c:\tools\python\src\pcbuild\pcbuild.dsw</tt> and invoke "build
-          all" to generate all the debugging targets.
-
-          <p>If you do not <tt>#define BOOST_DEBUG_PYTHON</tt>, be sure that
-          any source files <tt>#include &lt;<a href=
-          "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a>&gt;</tt>
-          instead of the usual <tt>Python.h</tt>, or you will have link
-          incompatibilities.<br>
-          <br>
-
-
-        <li>
-          The makefiles and Visual Studio project can all build at least the
-          following: 
-
-          <ul>
-            <li>The <tt>boost_python</tt> library for static linking with your
-            extension module. On the various Unices, this library will be
-            called <tt>libboost_python.a</tt>. On Win32 platforms, the library
-            will be called <tt>boost_python.lib</tt>.
-
-            <li>A comprehensive test of Boost.Python features. This test builds
-            a Boost.Python extension module, then runs Python to import the
-            module, and runs a series of tests on it using <tt><a href=
-            "../test/doctest.py">doctest</a></tt>. Source code for the module
-            and tests is available in the Boost subdirectory
-            <tt>libs/python/test</tt>.<br>
-
-
-            <li>Various examples from the Boost subdirectory
-            <tt>libs/python/example</tt>. Which examples are built currently
-            depends on the platform. The most up-to-date examples are
-            <tt>getting_started</tt><i>n</i><tt>.cpp</tt> from <a href=
-            "http://cci.lbl.gov/staff/ralf_grosse-kunstleve.html">Ralf W.
-            Grosse-Kunstleve</a>. All these examples include a doctest modeled
-            on the comprehensive test above.<br>
-            <br>
-
-          </ul>
-
-        <li>
-          If your platform isn't directly supported, you can build a static
-          library from the following source files (in the Boost subdirectory
-          <tt>libs/python/src</tt>), or compile them directly and link the
-          resulting objects into your extension module: 
-
-          <ul>
-            <li><a href=
-            "../../../libs/python/src/extension_class.cpp">extension_class.cpp</a>
-
-            <li><a href=
-            "../../../libs/python/src/functions.cpp">functions.cpp</a>
-
-            <li><a href=
-            "../../../libs/python/src/init_function.cpp">init_function.cpp</a>
-
-            <li><a href=
-            "../../../libs/python/src/module_builder.cpp">module_builder.cpp</a>
-
-            <li><a href="../../../libs/python/src/types.cpp">types.cpp</a>
-
-            <li><a href="../../../libs/python/src/objects.cpp">objects.cpp</a>
-
-            <li><a href=
-            "../../../libs/python/src/conversions.cpp">conversions.cpp</a>
-
-            <li><a href="../../../libs/python/src/classes.cpp">classes.cpp</a>
-          </ul>
       </ul>
 
-      <p>Next: <a href="enums.html">Wrapping Enums</a> Previous: <a href=
+      <hr>
+      There is a group of makefiles with support for simultaneous
+      compilation on multiple platforms and a consistent set of
+      features that build the <tt>boost_python</tt> library for static
+      linking, the comprehensive test, and all examples in
+      <tt>libs/python/example</tt>:
+
+      <ul>
+        <li><a href="../build/vc60.mak">vc60.mak</a>:
+        Visual C++ 6.0 Service Pack 4
+
+        <li><a href="../build/mingw32.mak">mingw32.mak</a>:
+        mingw32 (Win32-targeted) gcc 2.95.2
+
+        <li><a href="../build/linux_gcc.mak">linux_gcc.mak</a>:
+        gcc 2.95.2 on Linux/Unix
+
+        <li><a href="../build/tru64_cxx.mak">tru64_cxx.mak</a>:
+        Compaq Alpha using the Compaq cxx compiler
+
+        <li><a href="../build/irix_CC.mak">irix_CC.mak</a>:
+        Silicon Graphics IRIX 6.5 CC compiler
+
+      </ul>
+      <a href="http://cctbx.sourceforge.net/page_installation_adv.html#installation_boost_python"
+      >Usage of these makefiles is described here.</a>
+
+      <hr>
+      There is another group of makefiles for GNU make.
+      These makefiles are less redundant than the makefiles
+      in the group above,
+      but the list of compilation targets is not as complete
+      and there is no support for simultaneous compilation
+      on multiple platforms.
+
+      <ul>
+        <li><a href="../build/como.mak">como.mak</a>:
+        Comeau C++ on Linux
+
+        <li><a href="../build/gcc.mak">gcc.mak</a>:
+        GCC on Linux/Unix.
+
+      </ul>
+
+      <hr>
+      A project workspace for Microsoft Visual Studio is provided at <tt><a
+      href="../build/build.dsw">libs/python/build/build.dsw</a></tt>. The
+      include paths for this project may need to be changed for your
+      installation. They currently assume that python has been installed at
+      <tt>c:\tools\python</tt>. Three configurations of all targets are
+      supported:
+
+      <ul>
+        <li>Release (optimization, <tt>-DNDEBUG</tt>)
+
+        <li>Debug (no optimization <tt>-D_DEBUG</tt>)
+
+        <li>DebugPython (no optimization, <tt>-D_DEBUG
+        -DBOOST_DEBUG_PYTHON</tt>)
+      </ul>
+
+      <p>When extension modules are built with Visual C++ using
+      <tt>-D_DEBUG</tt>, Python defaults to <i>force</i> linking with a
+      special debugging version of the Python DLL. Since this debug DLL
+      isn't supplied with the default Python installation for Windows,
+      Boost.Python uses <tt><a href=
+      "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a></tt>
+      to temporarily undefine <tt>_DEBUG</tt> when <tt>Python.h</tt> is
+      <tt>#include</tt>d.
+
+      <p>If you want the extra runtime checks available with the debugging
+      version of the library, <tt>#define BOOST_DEBUG_PYTHON</tt> to
+      re-enable library forcing, and link with the DebugPython version of
+      <tt>boost_python.lib</tt>. You'll need to get the debugging version
+      of the Python executable (<tt>python_d.exe</tt>) and DLL
+      (<tt>python20_d.dll</tt> or <tt>python15_d.dll</tt>). The Python
+      sources include project files for building these. If you <a href=
+      "http://www.python.org">download</a> them, change the name of the
+      top-level directory to <tt>src</tt>, and install it under
+      <tt>c:\tools\python</tt>, the workspace supplied by Boost.Python will
+      be able to use it without modification. Just open
+      <tt>c:\tools\python\src\pcbuild\pcbuild.dsw</tt> and invoke "build
+      all" to generate all the debugging targets.
+
+      <p>If you do not <tt>#define BOOST_DEBUG_PYTHON</tt>, be sure that
+      any source files <tt>#include &lt;<a href=
+          "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a>&gt;</tt>
+      instead of the usual <tt>Python.h</tt>, or you will have link
+      incompatibilities.<br>
+
+      <hr>
+      If your platform isn't directly supported, you can build a static
+      library from the following source files (in the Boost subdirectory
+      <tt>libs/python/src</tt>), or compile them directly and link the
+      resulting objects into your extension module:
+
+      <ul>
+        <li><a href=
+        "../../../libs/python/src/classes.cpp">classes.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/conversions.cpp">conversions.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/cross_module.cpp">cross_module.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/extension_class.cpp">extension_class.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/functions.cpp">functions.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/init_function.cpp">init_function.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/module_builder.cpp">module_builder.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/objects.cpp">objects.cpp</a>
+
+        <li><a href=
+        "../../../libs/python/src/types.cpp">types.cpp</a>
+      </ul>
+
+      <hr>
+      Next: <a href="enums.html">Wrapping Enums</a> Previous: <a href=
       "under-the-hood.html">A Peek Under the Hood</a> Up: <a href=
       "index.html">Top</a>
 
+      <hr>
       <p>&copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
       sell and distribute this document is granted provided this copyright
       notice appears in all copies. This document is provided ``as is'' without
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
 
-      <p>Updated: Mar 6, 2001
+      <p>Updated: Apr 17, 2001 (R.W. Grosse-Kunstleve)
     </div>
-
