@@ -27,6 +27,7 @@ def gen_extclass(args):
 # include <boost/python/detail/init_function.hpp>
 # include <typeinfo>
 # include <boost/smart_ptr.hpp>
+# include <boost/type_traits.hpp>
 
 namespace boost { namespace python {
 
@@ -138,6 +139,26 @@ class class_registry
     static std::vector<derived_class_info> static_derived_class_info;
 };
 
+template <bool is_pointer>
+struct is_null_helper
+{
+    template <class Ptr>
+    static bool test(Ptr x) { return x == 0; }
+};
+
+template <>
+struct is_null_helper<false>
+{
+    template <class Ptr>
+    static bool test(const Ptr& x) { return x.get() == 0; }
+};
+
+template <class Ptr>
+bool is_null(const Ptr& x)
+{
+    return is_null_helper<(is_pointer<Ptr>::value)>::test(x);
+};
+
 }}} // namespace boost::python::detail
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
@@ -183,9 +204,9 @@ class python_extension_class_converters
                 new boost::python::detail::instance_value_holder<T,U>(result.get(), x)));
         return result.release();
     }
-    
-    // Convert to T*
-    friend T* from_python(PyObject* obj, boost::python::type<T*>)
+
+    friend
+    T* non_null_from_python(PyObject* obj, boost::python::type<T*>)
     {
         // downcast to an extension_instance, then find the actual T
         boost::python::detail::extension_instance* self = boost::python::detail::get_extension_instance(obj);
@@ -206,9 +227,18 @@ class python_extension_class_converters
         throw boost::python::argument_error();
     }
 
-    // Convert to PtrType, where PtrType can be dereferenced to obtain a T.
+    // Convert to T*
+    friend T* from_python(PyObject* obj, boost::python::type<T*>)
+    {
+        if (obj == Py_None)
+            return 0;
+        else
+            return non_null_from_python(obj, boost::python::type<T*>());
+    }
+
+    // Extract from obj a mutable reference to the PtrType object which is holding a T.
     template <class PtrType>
-    static PtrType& ptr_from_python(PyObject* obj, boost::python::type<PtrType>)
+    static PtrType& smart_ptr_reference(PyObject* obj, boost::python::type<PtrType>)
     {
         // downcast to an extension_instance, then find the actual T
         boost::python::detail::extension_instance* self = boost::python::detail::get_extension_instance(obj);
@@ -225,9 +255,27 @@ class python_extension_class_converters
         throw boost::python::argument_error();
     }
 
+    // Extract from obj a constant reference to the PtrType object which is holding a T.
+    // If obj is None, the reference denotes a default-constructed PtrType
     template <class PtrType>
-    static PyObject* ptr_to_python(PtrType x)
+    static const PtrType& smart_ptr_value(PyObject* obj, boost::python::type<PtrType>)
     {
+        if (obj == Py_None)
+        {
+            static PtrType null_ptr;
+            return null_ptr;
+        }
+        return smart_ptr_reference(obj, boost::python::type<PtrType>());
+    }
+        
+    template <class PtrType>
+    static PyObject* smart_ptr_to_python(PtrType x)
+    {
+        if (boost::python::detail::is_null(x))
+        {
+            return boost::python::detail::none();
+        }
+        
         boost::python::reference<boost::python::detail::extension_instance> result(create_instance());
         result->add_implementation(
             std::auto_ptr<boost::python::detail::instance_holder_base>(
@@ -259,7 +307,7 @@ class python_extension_class_converters
  
     // Convert to T&
     friend T& from_python(PyObject* p, boost::python::type<T&>)
-        { return *boost::python::detail::check_non_null(from_python(p, boost::python::type<T*>())); }
+        { return *boost::python::detail::check_non_null(non_null_from_python(p, boost::python::type<T*>())); }
 
     // Convert to const T&
     friend const T& from_python(PyObject* p, boost::python::type<const T&>)
@@ -270,28 +318,28 @@ class python_extension_class_converters
         { return from_python(p, boost::python::type<T&>()); }
 
     friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T>&>)
-        { return ptr_from_python(p, boost::python::type<std::auto_ptr<T> >()); }
+        { return smart_ptr_reference(p, boost::python::type<std::auto_ptr<T> >()); }
     
-    friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >)
-        { return ptr_from_python(p, boost::python::type<std::auto_ptr<T> >()); }
+    friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >)
+        { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
     
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>)
-        { return ptr_from_python(p, boost::python::type<std::auto_ptr<T> >()); }
+        { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
 
     friend PyObject* to_python(std::auto_ptr<T> x)
-        { return ptr_to_python(x); }
+        { return smart_ptr_to_python(x); }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&>)
-        { return ptr_from_python(p, boost::python::type<boost::shared_ptr<T> >()); }
+        { return smart_ptr_reference(p, boost::python::type<boost::shared_ptr<T> >()); }
     
-    friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >)
-        { return ptr_from_python(p, boost::python::type<boost::shared_ptr<T> >()); }
+    friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >)
+        { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
     
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>)
-        { return ptr_from_python(p, boost::python::type<boost::shared_ptr<T> >()); }
+        { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
 
     friend PyObject* to_python(boost::shared_ptr<T> x)
-        { return ptr_to_python(x); }
+        { return smart_ptr_to_python(x); }
 };
 
 // Convert T to_python, instantiated on demand and only if there isn't a
