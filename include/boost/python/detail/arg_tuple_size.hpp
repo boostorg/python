@@ -14,8 +14,9 @@
 # include <boost/config.hpp>
 # include <boost/python/detail/char_array.hpp>
 # include <boost/python/detail/preprocessor.hpp>
-# include <boost/mpl/aux_/preprocessor.hpp>
 # include <boost/preprocessor/comma_if.hpp>
+# include <boost/preprocessor/enum_params.hpp>
+# include <boost/preprocessor/cat.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -33,18 +34,18 @@ template <class F> struct arg_tuple_size;
 
 // Specializations for function pointers
 #  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
+template <class R BOOST_PP_COMMA_IF(args) BOOST_PP_ENUM_PARAMS(args, class A)>      \
 struct arg_tuple_size<BOOST_PYTHON_FN(*,0,args)>                                                \
 {                                                                                               \
     BOOST_STATIC_CONSTANT(std::size_t, value = args);                                           \
 };
 
 // Specializations for member function pointers
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                     \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>     \
-struct arg_tuple_size<BOOST_PYTHON_FN(A0::*,1,args) cv()>                      \
-{                                                                       \
-    BOOST_STATIC_CONSTANT(std::size_t, value = args);                   \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)             \
+template <class R, BOOST_PP_ENUM_PARAMS(args, class A)>         \
+struct arg_tuple_size<BOOST_PYTHON_FN(A0::*,1,args) cv()>       \
+{                                                               \
+    BOOST_STATIC_CONSTANT(std::size_t, value = args);           \
 };
 
 # else
@@ -60,12 +61,12 @@ struct arg_tuple_size<BOOST_PYTHON_FN(A0::*,1,args) cv()>                      \
 // their return value is used to discriminate between various free
 // and member function pointers at compile-time.
 
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                                         \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PF(args, ignored)                         \
+template <class R BOOST_PP_COMMA_IF(args) BOOST_PP_ENUM_PARAMS(args, class A)>  \
 char_array<args> arg_tuple_size_helper(BOOST_PYTHON_FN(*,0,args));
 
-#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                 \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)> \
+#  define BOOST_PYTHON_ARG_TUPLE_SIZE_PMF(args, cv)                             \
+template <class R, BOOST_PP_ENUM_PARAMS(args, class A)>                         \
 char_array<args> arg_tuple_size_helper(BOOST_PYTHON_FN(A0::*,1,args)cv());
     
 # endif
