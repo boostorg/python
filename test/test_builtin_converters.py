@@ -61,19 +61,15 @@ r"""
 ... else: print 'expected an OverflowError!'
 
 
->>> abs(rewrap_value_float(4.2) - 4.2) < .000001
-1
+>>> assert abs(rewrap_value_float(4.2) - 4.2) < .000001
 >>> rewrap_value_double(4.2) - 4.2
 0.0
 >>> rewrap_value_long_double(4.2) - 4.2
 0.0
 
->>> abs(rewrap_value_complex_float(4+.2j) - (4+.2j)) < .000001
-1
->>> abs(rewrap_value_complex_double(4+.2j) - (4+.2j)) < .000001
-1
->>> abs(rewrap_value_complex_long_double(4+.2j) - (4+.2j)) < .000001
-1
+>>> assert abs(rewrap_value_complex_float(4+.2j) - (4+.2j)) < .000001
+>>> assert abs(rewrap_value_complex_double(4+.2j) - (4+.2j)) < .000001
+>>> assert abs(rewrap_value_complex_long_double(4+.2j) - (4+.2j)) < .000001
 
 >>> rewrap_value_cstring('hello, world')
 'hello, world'
@@ -136,19 +132,15 @@ r"""
 42L
 
 
->>> abs(rewrap_const_reference_float(4.2) - 4.2) < .000001
-1
+>>> assert abs(rewrap_const_reference_float(4.2) - 4.2) < .000001
 >>> rewrap_const_reference_double(4.2) - 4.2
 0.0
 >>> rewrap_const_reference_long_double(4.2) - 4.2
 0.0
 
->>> abs(rewrap_const_reference_complex_float(4+.2j) - (4+.2j)) < .000001
-1
->>> abs(rewrap_const_reference_complex_double(4+.2j) - (4+.2j)) < .000001
-1
->>> abs(rewrap_const_reference_complex_long_double(4+.2j) - (4+.2j)) < .000001
-1
+>>> assert abs(rewrap_const_reference_complex_float(4+.2j) - (4+.2j)) < .000001
+>>> assert abs(rewrap_const_reference_complex_double(4+.2j) - (4+.2j)) < .000001
+>>> assert abs(rewrap_const_reference_complex_long_double(4+.2j) - (4+.2j)) < .000001
 
 >>> rewrap_const_reference_cstring('hello, world')
 'hello, world'
@@ -221,11 +213,9 @@ Check that classic classes also work
 ... else: print 'expected a TypeError exception'
 
 # show that arbitrary handle<T> instantiations can be returned
->>> get_type(1) is type(1)
-1
+>>> assert get_type(1) is type(1)
 
->>> return_null_handle() is None
-1
+>>> assert return_null_handle() is None
 """
 
 def run(args = None):

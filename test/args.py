@@ -1,6 +1,9 @@
 """
 >>> from args_ext import *
 
+>>> raw(3, 4, foo = 'bar', baz = 42)
+((3, 4), {'foo': 'bar', 'baz': 42})
+
 >>> f(x= 1, y = 3, z = 'hello')
 (1, 3.0, 'hello')
 
@@ -101,6 +104,11 @@
 
 >>> inner(n = 1, self = q).value()
 1
+
+>>> y = Y(value = 33)
+>>> y.raw(this = 1, that = 'the other')[1]
+{'this': 1, 'that': 'the other'}
+
 """
 def run(args = None):
     import sys

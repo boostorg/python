@@ -132,7 +132,9 @@ namespace detail
         must_be_derived_class_member(Default const&)
         {
             typedef typename assertion<mpl::not_<is_same<Default,Fn> > >::failed test0;
+# if !BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
             typedef typename assertion<is_polymorphic<T> >::failed test1;
+# endif 
             typedef typename assertion<is_member_function_pointer<Fn> >::failed test2;
             not_a_derived_class_member<Default>(Fn());
         }

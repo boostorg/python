@@ -39,10 +39,15 @@ function::function(
         unsigned keyword_offset
             = m_max_arity > num_keywords ? m_max_arity - num_keywords : 0;
 
-            
-        m_arg_names = object(handle<>(PyTuple_New(m_max_arity)));
-        for (unsigned j = 0; j < keyword_offset; ++j)
-            PyTuple_SET_ITEM(m_arg_names.ptr(), j, incref(Py_None));
+
+        unsigned tuple_size = num_keywords ? m_max_arity : 0;
+        m_arg_names = object(handle<>(PyTuple_New(tuple_size)));
+
+        if (num_keywords != 0)
+        {
+            for (unsigned j = 0; j < keyword_offset; ++j)
+                PyTuple_SET_ITEM(m_arg_names.ptr(), j, incref(Py_None));
+        }
         
         for (unsigned i = 0; i < num_keywords; ++i)
         {
@@ -68,7 +73,7 @@ function::function(
 function::~function()
 {
 }
-    
+
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
     std::size_t nargs = PyTuple_GET_SIZE(args);
@@ -76,47 +81,68 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     std::size_t total_args = nargs + nkeywords;
     
     function const* f = this;
+
+    // Try overloads looking for a match
     do
     {
         // Check for a plausible number of arguments
         if (total_args >= f->m_min_arity && total_args <= f->m_max_arity)
         {
+            // This will be the args that actually get passed
             handle<> args2(allow_null(borrowed(args)));
-            if (nkeywords > 0)
+
+            if (nkeywords > 0) // Keyword arguments were supplied
             {
-                if (!f->m_arg_names
-                    || static_cast<std::size_t>(PyTuple_Size(f->m_arg_names.ptr())) < total_args)
+                if (f->m_arg_names.ptr() == Py_None) // this overload doesn't accept keywords
                 {
                     args2 = handle<>(); // signal failure
                 }
                 else
                 {
-                    // build a new arg tuple
-                    args2 = handle<>(PyTuple_New(total_args));
+                    std::size_t max_args
+                        = static_cast<std::size_t>(PyTuple_Size(f->m_arg_names.ptr()));
 
-                    // Fill in the positional arguments
-                    for (std::size_t i = 0; i < nargs; ++i)
-                        PyTuple_SET_ITEM(args2.get(), i, incref(PyTuple_GET_ITEM(args, i)));
-
-                    // Grab remaining arguments by name from the keyword dictionary
-                    for (std::size_t j = nargs; j < total_args; ++j)
+                    // "all keywords are none" is a special case
+                    // indicating we will accept any number of keyword
+                    // arguments
+                    if (max_args == 0)
                     {
-                        PyObject* value = PyDict_GetItem(
-                            keywords, PyTuple_GET_ITEM(f->m_arg_names.ptr(), j));
-                        
-                        if (!value)
+                        // no argument preprocessing
+                    }
+                    else if (max_args < total_args)
+                    {
+                        args2 = handle<>();
+                    }
+                    else
+                    {
+                        // build a new arg tuple
+                        args2 = handle<>(PyTuple_New(total_args));
+
+                        // Fill in the positional arguments
+                        for (std::size_t i = 0; i < nargs; ++i)
+                            PyTuple_SET_ITEM(args2.get(), i, incref(PyTuple_GET_ITEM(args, i)));
+
+                        // Grab remaining arguments by name from the keyword dictionary
+                        for (std::size_t j = nargs; j < total_args; ++j)
                         {
-                            PyErr_Clear();
-                            args2 = handle<>();
-                            break;
+                            PyObject* value = PyDict_GetItem(
+                                keywords, PyTuple_GET_ITEM(f->m_arg_names.ptr(), j));
+                        
+                            if (!value)
+                            {
+                                PyErr_Clear();
+                                args2 = handle<>();
+                                break;
+                            }
+                            PyTuple_SET_ITEM(args2.get(), j, incref(value));
                         }
-                        PyTuple_SET_ITEM(args2.get(), j, incref(value));
                     }
                 }
             }
             
-            // Call the function
-            PyObject* result = args2 ? f->m_fn(args2.get(), 0) : 0;
+            // Call the function.  Pass keywords in case it's a
+            // function accepting any number of keywords
+            PyObject* result = args2 ? f->m_fn(args2.get(), keywords) : 0;
             
             // If the result is NULL but no error was set, m_fn failed
             // the argument-matching test.
@@ -482,4 +508,20 @@ handle<> function_handle_impl(py_function const& f, unsigned min_arity, unsigned
             new function(f, min_arity, max_arity, 0, 0)));
 }
 
-}}} // namespace boost::python::objects
+}
+
+namespace detail
+{
+  object BOOST_PYTHON_DECL make_raw_function(objects::py_function f, std::size_t min_args)
+  {
+      static keyword k;
+    
+      return objects::function_object(
+          f
+          , min_args
+          , std::numeric_limits<std::size_t>::max()
+          , keyword_range(&k,&k));
+  }
+}
+
+}} // namespace boost::python::objects

@@ -48,8 +48,14 @@ struct make_ptr_instance
     }
     
     template <class U>
-    static inline PyTypeObject* get_derived_class_object(mpl::false_, U*)
+    static inline PyTypeObject* get_derived_class_object(mpl::false_, U* x)
     {
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+        if (typeid(*x) != typeid(U))
+            return get_derived_class_object(mpl::true_(), x);
+# else
+        (void)x;
+# endif 
         return 0;
     }
 };

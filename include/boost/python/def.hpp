@@ -76,12 +76,17 @@ namespace detail
       detail::define_with_defaults(
           name, stubs, current, detail::get_signature(sig));
   }
+
+  template <class T>
+  object make_function1(T fn, ...) { return make_function(fn); }
+
+  object make_function1(object const& x, object const*) { return x; }
 }
 
 template <class Fn>
 void def(char const* name, Fn fn)
 {
-    detail::scope_setattr_doc(name, boost::python::make_function(fn), 0);
+    detail::scope_setattr_doc(name, detail::make_function1(fn, &fn), 0);
 }
 
 template <class Arg1T, class Arg2T>

@@ -26,7 +26,7 @@ struct X : test_class<>
     typedef test_class<> base_t;
     
     X(int x) : base_t(x) {}
-    X const operator+(X const& r) { return X(value() + r.value()); }
+    X const operator+(X const& r) const { return X(value() + r.value()); }
 };
 
 X operator-(X const& l, X const& r) { return X(l.value() - r.value()); }
