@@ -11,6 +11,8 @@
 >>> class A1(abstract):
 ...     def f(self, y):
 ...         return y.value() * 2
+...     def g(self, y):
+...         return self
 
 >>> class A2(abstract):
 ...     pass
@@ -22,15 +24,16 @@
 
 
 #
-# Test abstract with f overridden
+# Test abstract with f,g overridden
 #
 >>> a1 = A1(42)
 >>> a1.value()
 42
 
-# Call f indirectly from C++
+# Call f,g indirectly from C++
 >>> a1.call_f(y1)
 32
+>>> assert type(a1.call_g(y1)) is abstract
 
 # Call f directly from Python
 >>> a1.f(y2)

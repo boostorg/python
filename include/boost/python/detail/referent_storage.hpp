@@ -67,7 +67,9 @@ union aligned_storage
 template <class T>
 struct referent_storage
 {
-    typedef aligned_storage<referent_size<T>::value> type;
+    typedef aligned_storage<
+        ::boost::python::detail::referent_size<T>::value
+    > type;
 };
 
 }}} // namespace boost::python::detail

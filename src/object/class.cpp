@@ -437,7 +437,7 @@ namespace objects
   {
     // Find a registered class object corresponding to id. Return a
     // null handle if no such class is registered.
-    inline type_handle query_class(class_id id)
+    inline type_handle query_class(type_info id)
     {
         converter::registration const* p = converter::registry::query(id);
         return type_handle(
@@ -448,7 +448,7 @@ namespace objects
 
     // Find a registered class corresponding to id. If not found,
     // throw an appropriate exception.
-    type_handle get_class(class_id id)
+    type_handle get_class(type_info id)
     {
         type_handle result(query_class(id));
 
@@ -473,7 +473,7 @@ namespace objects
     //             rest corresponding to its declared bases.
     //
     inline object
-    new_class(char const* name, std::size_t num_types, class_id const* const types, char const* doc)
+    new_class(char const* name, std::size_t num_types, type_info const* const types, char const* doc)
     {
       assert(num_types >= 1);
       
@@ -510,7 +510,7 @@ namespace objects
   }
   
   class_base::class_base(
-      char const* name, std::size_t num_types, class_id const* const types, char const* doc)
+      char const* name, std::size_t num_types, type_info const* const types, char const* doc)
       : object(new_class(name, num_types, types, doc))
   {
       // Insert the new class object in the registry
@@ -630,7 +630,7 @@ namespace objects
               ));
   }
 
-  BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
+  BOOST_PYTHON_DECL type_handle registered_class_object(type_info id)
   {
       return query_class(id);
   }

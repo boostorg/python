@@ -10,6 +10,8 @@
 'yes'
 >>> is_long('20')
 0
+
+>>> x = Y(4294967295)
 '''
 
 def run(args = None):

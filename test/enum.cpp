@@ -40,9 +40,16 @@ BOOST_PYTHON_MODULE(enum_ext)
     
     def("identity", identity_);
 
+#if BOOST_WORKAROUND(__MWERKS__, <=0x2407)
+    color colorized::*px = &colorized::x;
+    class_<colorized>("colorized")
+        .def_readwrite("x", px)
+        ;
+#else 
     class_<colorized>("colorized")
         .def_readwrite("x", &colorized::x)
         ;
+#endif 
 }
 
 #include "module_tail.cpp"

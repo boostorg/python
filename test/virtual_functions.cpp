@@ -6,6 +6,7 @@
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/return_internal_reference.hpp>
 #include <boost/python/call_method.hpp>
 #include <boost/ref.hpp>
 #include <boost/utility.hpp>
@@ -39,6 +40,8 @@ struct abstract : X
     abstract(int x) : X(x) {};
     int call_f(Y const& y) { return f(y); }
     virtual int f(Y const& y) = 0;
+    abstract& call_g(Y const& y) { return g(y); }
+    virtual abstract& g(Y const& y) = 0;
 };
 
 struct concrete : X
@@ -57,6 +60,11 @@ struct abstract_callback : abstract
     int f(Y const& y)
     {
         return call_method<int>(self, "f", boost::ref(y));
+    }
+
+    abstract& g(Y const& y)
+    {
+        return call_method<abstract&>(self, "g", boost::ref(y));
     }
 
     PyObject* self;
@@ -101,6 +109,7 @@ BOOST_PYTHON_MODULE(virtual_functions_ext)
             
         .def("value", &abstract::value)
         .def("call_f", &abstract::call_f)
+        .def("call_g", &abstract::call_g, return_internal_reference<>())
         .def("set", &abstract::set)
         ;
         

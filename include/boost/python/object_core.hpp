@@ -12,11 +12,14 @@
 # include <boost/python/handle_fwd.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/python/slice_nil.hpp>
-# include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/tag.hpp>
+
+# include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/detail/dependent.hpp>
+
+# include <boost/python/object/forward.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/debug/line.hpp>
@@ -81,7 +84,7 @@ namespace api
   };
 # endif 
 
-  template <bool is_proxy, bool is_object_manager>  struct object_initializer;
+  template <class T> struct object_initializer;
   
   class object;
   typedef PyObject* (object::*bool_type)() const;
@@ -211,19 +214,35 @@ namespace api
    public:
       // default constructor creates a None object
       object();
+      
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
-          : object_base(
-              object_initializer<
-                 is_proxy<T>::value
-                 , converter::is_object_manager<T>::value
-              >::get(&x, detail::convertible<object const*>::check(&x)))
+        : object_base(
+            object_initializer<
+                BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
+            >::get(
+                do_unforward(x)
+              , detail::convertible<object const*>::check(
+                    to_ptr(
+                        do_unforward(x)
+                    )
+                )
+          ))
       {
       }
 
       // Throw error_already_set() if the handle is null.
       BOOST_PYTHON_DECL explicit object(handle<> const&);
+   private:
+      template <class T>
+      static T const* to_ptr(T const&) { return 0; }
+      
+      template <class T>
+      typename objects::unforward_cref<T>::type do_unforward(T const& x)
+      {
+          return x;
+      }
 
    public: // implementation detail -- for internal use only
       explicit object(detail::borrowed_reference);
@@ -264,47 +283,55 @@ namespace api
   // based on whether T is a proxy or derived from object
   //
   template <bool is_proxy = false, bool is_object_manager = false>
-  struct object_initializer
+  struct object_initializer_impl
   {
       static PyObject*
-      get(object const* x, detail::yes_convertible)
+      get(object const& x, detail::yes_convertible)
       {
-          return python::incref(x->ptr());
+          return python::incref(x.ptr());
       }
       
       template <class T>
       static PyObject*
-      get(T const* x, detail::no_convertible)
+      get(T const& x, detail::no_convertible)
       {
-          return python::incref(converter::arg_to_python<T>(*x).get());
+          return python::incref(converter::arg_to_python<T>(x).get());
       }
   };
       
   template <>
-  struct object_initializer<true, false>
+  struct object_initializer_impl<true, false>
   {
       template <class Policies>
       static PyObject* 
-      get(proxy<Policies> const* x, detail::no_convertible)
+      get(proxy<Policies> const& x, detail::no_convertible)
       {
-          return python::incref(x->operator object().ptr());
+          return python::incref(x.operator object().ptr());
       }
   };
 
   template <>
-  struct object_initializer<false, true>
+  struct object_initializer_impl<false, true>
   {
       template <class T>
       static PyObject*
-      get(T const* x, ...)
+      get(T const& x, ...)
       {
-          return python::incref(get_managed_object(*x, tag));
+          return python::incref(get_managed_object(x, tag));
       }
   };
 
   template <>
-  struct object_initializer<true, true>
+  struct object_initializer_impl<true, true>
   {}; // empty implementation should cause an error
+
+  template <class T>
+  struct object_initializer : object_initializer_impl<
+      is_proxy<T>::value
+    , converter::is_object_manager<T>::value
+  >
+  {};
+
 }
 using api::object;
 template <class T> struct extract;

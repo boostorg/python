@@ -14,6 +14,7 @@
 # include <boost/python/detail/force_instantiate.hpp>
 
 # include <boost/type_traits/add_pointer.hpp>
+# include <boost/type_traits/is_polymorphic.hpp>
 
 # include <boost/mpl/for_each.hpp>
 
@@ -58,11 +59,15 @@ struct register_base_of
         register_conversion<Derived,Base>(false);
 
         // Register the down-cast, if appropriate.
-        mpl::if_c<
-            is_polymorphic<Base>::value
-            , register_downcast<Base,Derived>
-            , do_nothing
-            >::type::execute();
+        mpl::if_<
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+            mpl::true_
+# else
+            is_polymorphic<Base>
+# endif 
+          , register_downcast<Base,Derived>
+          , do_nothing
+        >::type::execute();
     }
 };
 

@@ -6,15 +6,14 @@
 #ifndef DESTROY_DWA2002221_HPP
 # define DESTROY_DWA2002221_HPP
 
-# include <boost/type_traits/composite_traits.hpp>
-# include <boost/type_traits/object_traits.hpp>
+# include <boost/type_traits/is_array.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
-template <bool array, bool trivial_destructor> struct value_destroyer;
-
+template <bool array> struct value_destroyer;
+    
 template <>
-struct value_destroyer<false,false>
+struct value_destroyer<false>
 {
     template <class T>
     static void execute(T const volatile* p)
@@ -24,40 +23,23 @@ struct value_destroyer<false,false>
 };
 
 template <>
-struct value_destroyer<true,false>
+struct value_destroyer<true>
 {
     template <class A, class T>
     static void execute(A*, T const volatile* const first)
     {
         for (T const volatile* p = first; p != first + sizeof(A)/sizeof(T); ++p)
+        {
             value_destroyer<
                 boost::is_array<T>::value
-                ,boost::has_trivial_destructor<T>::value
-                >::execute(p);
+            >::execute(p);
+        }
     }
     
     template <class T>
     static void execute(T const volatile* p)
     {
         execute(p, *p);
-    }
-};
-
-template <>
-struct value_destroyer<true,true>
-{
-    template <class T>
-    static void execute(T const volatile*)
-    {
-    }
-};
-
-template <>
-struct value_destroyer<false,true>
-{
-    template <class T>
-    static void execute(T const volatile*)
-    {
     }
 };
 
@@ -68,8 +50,7 @@ inline void destroy_referent_impl(void* p, T& (*)())
     // must come *before* T for metrowerks
     value_destroyer<
          (boost::is_array<T>::value)
-        ,(boost::has_trivial_destructor<T>::value)
-        >::execute((const volatile T*)p);
+    >::execute((const volatile T*)p);
 }
 
 template <class T>

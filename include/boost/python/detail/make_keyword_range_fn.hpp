@@ -34,17 +34,15 @@ object make_keyword_range_function(F f, Policies const& policies, keyword_range 
 // constructor.
 //
 // Holder and ArgList are intended to be explicitly specified. 
-template <class ArgList, class Holder, class CallPolicies>
+template <class ArgList, class Arity, class Holder, class CallPolicies>
 object make_keyword_range_constructor(
     CallPolicies const& policies        // The CallPolicies with which to invoke the Holder's constructor
     , detail::keyword_range const& kw   // The (possibly empty) set of associated argument keywords
     , Holder* = 0                       
-    , ArgList* = 0)
+    , ArgList* = 0, Arity* = 0)
 {
-    BOOST_STATIC_CONSTANT(unsigned, arity = mpl::size<ArgList>::value);
-    
     return detail::make_keyword_range_function(
-        objects::make_holder<arity>
+        objects::make_holder<Arity::value>
             ::template apply<Holder,ArgList>::execute
         , policies
         , kw);

@@ -1,19 +1,6 @@
 #include <boost/python/detail/destroy.hpp>
 #include <cassert>
 
-struct bar;
-
-namespace boost
-{
-  // lie to the library about bar so we can show that its destructor is optimized away.
-  template <>
-  struct has_trivial_destructor<bar>
-  {
-      BOOST_STATIC_CONSTANT(bool, value=true);
-  };
-}
-
-
 int count;
 int marks[] = {
     -1
@@ -32,8 +19,6 @@ struct foo
     }
     int n;
 };
-
-struct bar : foo {};
 
 void assert_destructions(int n)
 {
@@ -60,21 +45,6 @@ int main()
     typedef foo y[2][2];
     x* f3 = new y;
     boost::python::detail::destroy_referent<y&>(f3);
-    assert_destructions(7);
-
-    bar* b1 = new bar;
-    boost::python::detail::destroy_referent<bar&>(b1);
-    assert_destructions(7);
-    
-    bar* b2 = new bar[2];
-    typedef bar xb[2];
-    
-    boost::python::detail::destroy_referent<xb&>(b2);
-    assert_destructions(7);
-
-    typedef bar yb[2][2];
-    xb* b3 = new yb;
-    boost::python::detail::destroy_referent<yb&>(b3);
     assert_destructions(7);
 
     return 0;

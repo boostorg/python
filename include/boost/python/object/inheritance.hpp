@@ -26,11 +26,7 @@ BOOST_PYTHON_DECL void register_dynamic_id_aux(
     class_id static_id, dynamic_id_function get_dynamic_id);
 
 BOOST_PYTHON_DECL void add_cast(
-    class_id src_t, class_id dst_t, void* (*cast)(void*), bool polymorphic);
-
-BOOST_PYTHON_DECL void* find_static_type(void* p, class_id src, class_id dst);
-
-BOOST_PYTHON_DECL void* find_dynamic_type(void* p, class_id src, class_id dst);
+    class_id src_t, class_id dst_t, void* (*cast)(void*), bool is_downcast);
 
 //
 // a generator with an execute() function which, given a source type
@@ -62,12 +58,12 @@ struct non_polymorphic_id_generator
 // Now the generalized selector
 template <class T>
 struct dynamic_id_generator
-{
-    typedef typename mpl::if_c<
-        is_polymorphic<T>::value
-        , polymorphic_id_generator<T>
-        , non_polymorphic_id_generator<T> >::type type;
-};
+  : mpl::if_<
+        boost::is_polymorphic<T>
+        , boost::python::objects::polymorphic_id_generator<T>
+        , boost::python::objects::non_polymorphic_id_generator<T>
+    >
+{};
 
 // Register the dynamic id function for T with the type-conversion
 // system.
@@ -108,45 +104,28 @@ struct implicit_cast_generator
 
 template <class Source, class Target>
 struct cast_generator
+  : mpl::if_<
+        is_base_and_derived<Target,Source>
+      , implicit_cast_generator<Source,Target>
+      , dynamic_cast_generator<Source,Target>
+    >
 {
-    // It's OK to return false, since we can always cast up with
-    // dynamic_cast<> if neccessary.
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-    BOOST_STATIC_CONSTANT(bool, is_upcast = false);
-# else 
-    BOOST_STATIC_CONSTANT(
-        bool, is_upcast = (
-            is_base_and_derived<Target,Source>::value
-            ));
-# endif 
-
-    typedef typename mpl::if_c<
-        is_upcast
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-        // grab a few more implicit_cast cases for CodeWarrior
-        || !is_polymorphic<Source>::value
-        || !is_polymorphic<Target>::value
-# endif 
-        , implicit_cast_generator<Source,Target>
-        , dynamic_cast_generator<Source,Target>
-    >::type type;
 };
 
 template <class Source, class Target>
 inline void register_conversion(
-    // We need this parameter because CWPro7 can't determine
-    // which is the base reliably.
-    bool is_downcast = !cast_generator<Source,Target>::is_upcast
-
-    // These parameters shouldn't be used, they're an MSVC bug workaround
+    bool is_downcast = ::boost::is_base_and_derived<Source,Target>::value
+    // These parameters shouldn't be used; they're an MSVC bug workaround
     , Source* = 0, Target* = 0)
 {
     typedef typename cast_generator<Source,Target>::type generator;
-    
-    add_cast(python::type_id<Source>()
-             , python::type_id<Target>()
-             , &generator::execute
-             , is_downcast);
+
+    add_cast(
+        python::type_id<Source>()
+      , python::type_id<Target>()
+      , &generator::execute
+      , is_downcast
+    );
 }
 
 }}} // namespace boost::python::object

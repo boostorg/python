@@ -7,10 +7,9 @@
 # define FORWARD_DWA20011215_HPP
 
 # include <boost/mpl/if.hpp>
-# include <boost/type_traits/object_traits.hpp>
-# include <boost/type_traits/composite_traits.hpp>
-# include <boost/type_traits/transform_traits.hpp>
+# include <boost/type_traits/is_scalar.hpp>
 # include <boost/type_traits/add_const.hpp>
+# include <boost/type_traits/add_reference.hpp>
 # include <boost/ref.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -24,7 +23,7 @@ struct reference_to_value
     typedef typename add_reference<typename add_const<T>::type>::type reference;
     
     reference_to_value(reference x) : m_value(x) {}
-    operator reference() const { return m_value; }
+    reference get() const { return m_value; }
  private:
     reference m_value;
 };
@@ -34,27 +33,43 @@ struct reference_to_value
 // is T.
 template <class T>
 struct forward
-    : mpl::if_c<
-        is_scalar<T>::value
+    : mpl::if_<
+        is_scalar<T>
         , T
-        , reference_to_value<T> >
+        , reference_to_value<T>
+      >
 {
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template<typename T>
-class unforward
+struct unforward
 {
- public:
     typedef typename unwrap_reference<T>::type& type;
 };
 
 template<typename T>
-class unforward<reference_to_value<T> >
+struct unforward<reference_to_value<T> >
 {
- public:
     typedef T type;
 };
+
+template <typename T>
+struct unforward_cref
+  : add_reference<
+        typename add_const<
+            typename unwrap_reference<T>::type
+        >::type
+    >
+{
+};
+
+template<typename T>
+struct unforward_cref<reference_to_value<T> >
+  : add_reference<typename add_const<T>::type>
+{
+};
+
 # else // no partial specialization
 
 namespace detail
@@ -87,25 +102,80 @@ namespace detail
       };
   };
 
-  template<typename T>
-  class is_reference_to_value
+  template<bool wrapped = false>
+  struct cref_unforwarder
   {
-   public:
+      template <class T>
+      struct apply
+        : add_reference<
+              typename add_const<
+                  typename unwrap_reference<T>::type
+              >::type
+          >
+      {          
+      };
+  };
+      
+  template<>
+  struct cref_unforwarder<true>
+  {
+      template <class T>
+      struct apply
+          : add_reference<
+                typename add_const<
+                    typename T::reference
+                >::type
+            >
+      {
+      };
+  };
+
+  template<typename T>
+  struct is_reference_to_value
+  {
       BOOST_STATIC_CONSTANT(
           bool, value = (
               sizeof(is_reference_to_value_test(boost::type<T>()))
               == sizeof(yes_reference_to_value_t)));
+      typedef mpl::bool_<value> type;
   };
 }
 
 template <typename T>
-class unforward
+struct unforward
     : public detail::unforwarder<
         detail::is_reference_to_value<T>::value
       >::template apply<T>
 {};
 
+template <typename T>
+struct unforward_cref
+    : public detail::cref_unforwarder<
+        detail::is_reference_to_value<T>::value
+      >::template apply<T>
+{};
+
 # endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+
+template <class T>
+typename reference_to_value<T>::reference
+do_unforward(reference_to_value<T> const& x, int)
+{
+    return x.get();
+}
+
+template <class T>
+typename reference_wrapper<T>::type&
+do_unforward(reference_wrapper<T> const& x, int)
+{
+    return x.get();
+}
+
+template <class T>
+T const& do_unforward(T const& x, ...)
+{
+    return x;
+}
 
 }}} // namespace boost::python::objects
 

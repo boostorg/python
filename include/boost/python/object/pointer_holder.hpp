@@ -13,7 +13,7 @@
 
 #  include <boost/python/instance_holder.hpp>
 #  include <boost/python/type_id.hpp>
-#  include <boost/python/object/inheritance.hpp>
+#  include <boost/python/object/inheritance_query.hpp>
 #  include <boost/python/object/forward.hpp>
 #  include <boost/python/pointee.hpp>
 #  include <boost/python/detail/force_instantiate.hpp>
@@ -43,7 +43,11 @@ bool is_null(T* p, int)
     return p == 0;
 }
 
-#  define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)(a##n)
+#  if BOOST_WORKAROUND(__GNUC__, == 2)
+#   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)objects::do_unforward(a##n,0)
+#  else
+#   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) objects::do_unforward(a##n,0)
+#  endif 
 
 template <class Pointer, class Value>
 struct pointer_holder : instance_holder

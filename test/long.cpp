@@ -7,6 +7,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/long.hpp>
+#include <boost/python/class.hpp>
 #include <cassert>
 
 using namespace boost::python;
@@ -39,6 +40,14 @@ int is_long2(char const*)
     return 0;
 }
 
+// tests for accepting objects (and derived classes) in constructors
+// from "Milind Patil" <milind_patil-at-hotmail.com>
+
+struct Y
+{
+    Y(boost::python::long_) {}
+};
+
 BOOST_PYTHON_MODULE(long_ext)
 {
     def("new_long", new_long);
@@ -46,6 +55,8 @@ BOOST_PYTHON_MODULE(long_ext)
     def("longify_string", longify_string);
     def("is_long", is_long1);
     def("is_long", is_long2);
+    
+    class_< Y >("Y", init< boost::python::long_ >())
         ;
 }
 

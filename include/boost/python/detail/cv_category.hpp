@@ -24,9 +24,12 @@ typedef cv_tag<true,true> const_volatile_;
 template <class T>
 struct cv_category
 {
-    BOOST_STATIC_CONSTANT(bool, c = is_const<T>::value);
-    BOOST_STATIC_CONSTANT(bool, v = is_volatile<T>::value);
-    typedef cv_tag<c,v> type;
+//    BOOST_STATIC_CONSTANT(bool, c = is_const<T>::value);
+//    BOOST_STATIC_CONSTANT(bool, v = is_volatile<T>::value);
+    typedef cv_tag<
+        ::boost::is_const<T>::value
+      , ::boost::is_volatile<T>::value
+    > type;
 };
 
 }}} // namespace boost::python::detail

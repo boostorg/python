@@ -27,7 +27,7 @@
 #  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 # define BOOST_PYTHON_LIST_INC(n)        \
-   BOOST_PP_CAT(mpl::list, BOOST_PP_INC(n))
+   BOOST_PP_CAT(mpl::vector, BOOST_PP_INC(n))
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {

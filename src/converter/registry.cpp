@@ -92,10 +92,16 @@ namespace // <unnamed>
       std::cout << "looking up " << type
                 << (p == entries().end() || p->target_type != type
                     ? "...NOT found\n" : "...found\n");
-#  endif 
-      return const_cast<entry*>(
-          &*entries().insert(entry(type)).first
-          );
+#  endif
+      std::pair<registry_t::const_iterator,bool> pos_ins
+          = entries().insert(entry(type));
+      
+#  if __MWERKS__ >= 0x3000
+      // do a little invariant checking if a change was made
+      if ( pos_ins.second )
+          assert(entries().invariants());
+#  endif
+      return const_cast<entry*>(&*pos_ins.first);
   }
 } // namespace <unnamed>
 

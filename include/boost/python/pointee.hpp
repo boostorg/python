@@ -31,7 +31,9 @@ namespace detail
 
 template <class T>
 struct pointee
-    : detail::pointee_impl<is_pointer<T>::value>::template apply<T>
+    : detail::pointee_impl<
+        ::boost::is_pointer<T>::value
+      >::template apply<T>
 {
 };
 

@@ -51,6 +51,35 @@ struct Var : VarBase
 int Var::static1 = 0;
 Y Var::static2(0);
 
+// Compilability regression tests
+namespace
+{
+  struct trivial
+  {
+    trivial() : value(123) {}
+    double value;
+  };
+
+  struct Color3
+  {
+    static const Color3 black;
+  };
+
+  const Color3 Color3::black;
+
+  void compilability_test()
+  {
+    class_<trivial>("trivial")
+      .add_property("property", make_getter(&trivial::value, return_value_policy<return_by_value>()))
+      .def_readonly("readonly", &trivial::value)
+    ;
+
+    class_< Color3 >("Color3", init< const Color3 & >())
+        .def_readonly("BLACK", &Color3::black)   // line 17
+        ;
+  }
+}
+
 BOOST_PYTHON_MODULE(data_members_ext)
 {
     class_<X>("X", init<int>())
