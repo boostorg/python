@@ -105,7 +105,7 @@ using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
    module("my_module")
-      .def("make_foo", make_foo)
+      .def("make_foo", make_foo, return_value_policy&lt;manage_new_object&gt;)
       .add(
          class_&lt;Foo&gt;()
             .def("get_x", &amp;Foo::get_x)
