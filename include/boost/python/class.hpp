@@ -6,7 +6,6 @@
 #ifndef CLASS_DWA200216_HPP
 # define CLASS_DWA200216_HPP
 
-# include <boost/python/module.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/type_id.hpp>
@@ -84,26 +83,26 @@ template <
     , class Bases = mpl::type_list<>::type
     , class HolderGenerator = objects::value_holder_generator
     >
-class class_ : objects::class_base
+class class_ : private objects::class_base
 {
     typedef class_<T,Bases,HolderGenerator> self;
  public:
 
-    // Construct with the module and automatically derive the class
-    // name
-    class_(module&);
+    // Automatically derive the class name - only works on some
+    // compilers because type_info::name is sometimes mangled (gcc)
+    class_();
     
-    // Construct with the module and class name.  [ Would have used a
-    // default argument but gcc-2.95.2 choked on typeid(T).name() as a
-    // default parameter value]
-    class_(module&, char const* name);
+    // Construct with the class name.  [ Would have used a default
+    // argument but gcc-2.95.2 choked on typeid(T).name() as a default
+    // parameter value]
+    class_(char const* name);
 
 
     // Wrap a member function or a non-member function which can take
     // a T, T cv&, or T cv* as its first parameter, or a callable
     // python object.
     template <class F>
-    self& def(F f, char const* name)
+    self& def(char const* name, F f)
     {
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
@@ -117,7 +116,7 @@ class class_ : objects::class_base
     template <class Args>
     self& def_init(Args const& = Args())
     {
-        def(make_constructor<T,Args,HolderGenerator>(), "__init__");
+        def("__init__", make_constructor<T,Args,HolderGenerator>());
         return *this;
     }
 
@@ -127,6 +126,9 @@ class class_ : objects::class_base
         this->def_init(mpl::type_list<>::type());
         return *this;
     }
+
+    // return the underlying object
+    ref object() const;
 
  private: // types
     typedef objects::class_id class_id;
@@ -160,9 +162,8 @@ class class_ : objects::class_base
 // implementations
 //
 template <class T, class Bases, class HolderGenerator>
-inline class_<T, Bases, HolderGenerator>::class_(
-    module& m)
-    : class_base(m, typeid(T).name(), id_vector::size, id_vector().ids)
+inline class_<T, Bases, HolderGenerator>::class_()
+    : class_base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
     // Bring the class converters into existence. This static object
     // will survive until the shared library this module lives in is
@@ -171,14 +172,19 @@ inline class_<T, Bases, HolderGenerator>::class_(
 }
 
 template <class T, class Bases, class HolderGenerator>
-inline class_<T, Bases, HolderGenerator>::class_(
-    module& m, char const* name)
-    : class_base(m, name, id_vector::size, id_vector().ids)
+inline class_<T, Bases, HolderGenerator>::class_(char const* name)
+    : class_base(name, id_vector::size, id_vector().ids)
 {
     // Bring the class converters into existence. This static object
     // will survive until the shared library this module lives in is
     // unloaded (that doesn't happen until Python terminates).
     static objects::class_converters<T,Bases> converters(object());
+}
+
+template <class T, class Bases, class HolderGenerator>
+inline ref class_<T, Bases, HolderGenerator>::object() const
+{
+    return this->class_base::object();
 }
 
 }} // namespace boost::python

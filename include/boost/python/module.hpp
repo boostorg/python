@@ -15,6 +15,8 @@
 
 namespace boost { namespace python {
 
+template <class T, class Bases, class HolderGenerator> class class_;
+
 class BOOST_PYTHON_DECL module_base
 {
  public:
@@ -23,18 +25,12 @@ class BOOST_PYTHON_DECL module_base
     ~module_base();
 
     // Add elements to the module
-    void add(PyObject* x, const char* name);
-    void add(PyTypeObject* x, const char* name = 0);
-    void add(ref const& x, const char*name);
-
-    // Return true iff a module is currently being built.
-    static bool initializing();
+    void setattr(const char* name, PyObject*);
+    void setattr(const char* name, ref const&);
+    void add(PyTypeObject* x); // just use the type's name
+    void add_type(ref);
     
-    // Return the name of the module currently being built.
-    // REQUIRES: initializing() == true
-    static string name();
-
-    // Return a pointer to the Python module object being built
+    // Return a reference to the Python module object being built
     ref module() const;
 
  private:
@@ -48,17 +44,34 @@ class module : public module_base
     module(const char* name)
         : module_base(name) {}
 
+    // Add elements to the module
+    module& setattr(const char* name, PyObject*);
+    module& setattr(const char* name, PyTypeObject*);
+    module& setattr(const char* name, ref const&);
+    module& add(PyTypeObject* x); // just use the type's name
+    
+    template <class T, class Bases, class HolderGenerator>
+    module& add(class_<T,Bases,HolderGenerator> const& c)
+    {
+        std::cout << "adding " << typeid(T).name() << " to module" << std::endl << std::flush;
+        Py_INCREF(c.object());
+        this->add_type(c.object());
+        return *this;
+    }
+    
 # if 0
     template <class Fn>
-    void def_raw(Fn fn, const char* name)
+    void def_raw(char const* name, Fn fn)
     {
         add(detail::new_raw_arguments_function(fn), name);
     }
-# endif 
+# endif
+    
     template <class Fn>
-    void def(Fn fn, const char* name)
+    module& def(char const* name, Fn fn)
     {
-        this->add(boost::python::make_function(fn), name);
+        this->setattr(name, boost::python::make_function(fn));
+        return *this;
     }
 };
 
@@ -68,6 +81,30 @@ class module : public module_base
 inline ref module_base::module() const
 {
     return m_module;
+}
+
+inline module& module::setattr(const char* name, PyObject* x)
+{
+    this->module_base::setattr(name, x);
+    return *this;
+}
+
+inline module& module::setattr(const char* name, PyTypeObject* x)
+{
+    this->module_base::setattr(name, (PyObject*)x);
+    return *this;
+}
+
+inline module& module::setattr(const char* name, ref const& x)
+{
+    this->module_base::setattr(name, x);
+    return *this;
+}
+
+inline module& module::add(PyTypeObject* x)
+{
+    this->module_base::add(x);
+    return *this;
 }
 
 }} // namespace boost::python

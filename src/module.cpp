@@ -10,53 +10,38 @@
 
 namespace boost { namespace python {
 
-namespace {
-  ref name_holder;
-}
-
-bool module_base::initializing()
-{
-    return name_holder.get() != 0;
-}
-
-string module_base::name()
-{
-    // If this fails, you haven't created a module object
-    assert(initializing());
-    return string(name_holder);
-}
-
 module_base::module_base(const char* name)
     : m_module(
         Py_InitModule(const_cast<char*>(name), initial_methods)
         , ref::increment_count)
 {
-    // If this fails, you've created more than 1 module object in your module    
-    assert(name_holder.get() == 0);
-    name_holder = ref(PyObject_GetAttrString(
-                          m_module.get() , const_cast<char*>("__name__")));
 }
 
 module_base::~module_base()
 {
-    name_holder.reset();
 }
 
-void module_base::add(PyObject* x, const char* name)
+void module_base::setattr(const char* name, PyObject* x)
 {
-    add(ref(x), name);
+    setattr(name, ref(x));
 }
 
-void module_base::add(ref const& x, const char* name)
+void module_base::setattr(char const* name, ref const& x)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
     objects::function::add_to_namespace(m_module, name, x);
 }
 
-void module_base::add(PyTypeObject* x, const char* name /*= 0*/)
+void module_base::add(PyTypeObject* x)
 {
-    this->add((PyObject*)x, name ? name : x->tp_name);
+    this->setattr(x->tp_name, (PyObject*)x);
+}
+
+void module_base::add_type(ref x)
+{
+    assert(PyObject_TypeCheck(x.get(), &PyType_Type));
+    add((PyTypeObject*)x.release());
 }
 
 PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };

@@ -11,7 +11,6 @@
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/bind.hpp>
-#include <boost/python/detail/wrap_python.hpp>
 #include <functional>
 #include <vector>
 
@@ -190,11 +189,11 @@ namespace
 
       std::vector<entry>::const_iterator p
           = boost::detail::lower_bound(start, finish, id);
-      
+
       if (p == finish && p->key != id)
       {
           string report("extension class wrapper for base class ");
-          (report += id.name()) += "has not been created yet";
+          (report += id.name()) += " has not been created yet";
           PyErr_SetObject(PyExc_RuntimeError, report.get());
           throw error_already_set();
       }
@@ -212,7 +211,7 @@ namespace
 }
 
 class_base::class_base(
-    module& m, char const* name, std::size_t num_types, class_id const* const types)
+    char const* name, std::size_t num_types, class_id const* const types)
 {
     class_registry& r = registry();
     assert(num_types >= 1);
@@ -234,7 +233,6 @@ class_base::class_base(
     
     m_object = ref(PyObject_CallObject(class_metatype().get(), args.get()));
     r.set(types[0], m_object);
-    m.add(m_object, name);
 }
 
 }}} // namespace boost::python::objects

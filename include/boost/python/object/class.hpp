@@ -30,8 +30,7 @@ struct BOOST_PYTHON_DECL class_base : noncopyable
 {
     // constructor
     class_base(
-        module& name_space              // Which name space the class will live in
-        , char const* name              // The name of the class
+        char const* name              // The name of the class
         
         , std::size_t num_types         // A list of class_ids. The first is the type
         , class_id const*const types    // this is wrapping. The rest are the types of
