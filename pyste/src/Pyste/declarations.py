@@ -198,7 +198,7 @@ class Function(Declaration):
     @ivar _parameters: list of L{Type} instances.
     @ivar _throws: exception specifiers or None 
     '''
-    
+
     def __init__(self, name, namespace, result, params, throws=None): 
         Declaration.__init__(self, name, namespace)
         # the result type: instance of Type, or None (constructors)            

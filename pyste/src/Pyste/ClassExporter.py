@@ -218,6 +218,8 @@ class ClassExporter(Exporter):
             for base in level:
                 if base.visibility == Scope.public and base.name in exported_names:
                     exported.append(base.name)
+            if exported:
+                break
         if exported:
             code = namespaces.python + 'bases< %s > ' %  (', '.join(exported))
             self.Add('template', code)         

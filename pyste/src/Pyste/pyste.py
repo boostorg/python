@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 from declarations import Typedef
 
-__version__ = '0.9.16'
+__version__ = '0.9.18'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -193,8 +193,7 @@ def CreateContext():
     context['manage_new_object'] = manage_new_object
     # utils
     context['Wrapper'] = exporterutils.FunctionWrapper
-    context['declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration')
-    context['global_declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration-outside')
+    context['declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration-outside')
     context['module_code'] = lambda code: infos.CodeInfo(code, 'module')
     return context                                        
 

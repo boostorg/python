@@ -1,3 +1,6 @@
+19 August 2003
+Fixed a bug related to the generation of the bases<> template.
+
 17 August 2003
 Added support for insertion of user code in the generated code.
 

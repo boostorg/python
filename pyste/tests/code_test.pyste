@@ -1,6 +1,6 @@
 Class('A', 'code_test.h')
 Include('string')
-global_declaration_code('''
+declaration_code('''
 int get(A& a) { return a.x; }
 
 std::string foo() { return "Hello!"; }
