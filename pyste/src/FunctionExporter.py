@@ -25,7 +25,11 @@ class FunctionExporter(Exporter):
 
     def CheckPolicy(self, func):
         'Warns the user if this function needs a policy'            
+        def IsString(type):
+            return type.const and type.name == 'char' and isinstance(type, PointerType)    
         needs_policy = isinstance(func.result, (ReferenceType, PointerType))
+        if IsString(func.result):
+            needs_policy = False
         if needs_policy and self.info.policy is None:
             print '---> Error: Function "%s" needs a policy.' % func.FullName() 
             print 
