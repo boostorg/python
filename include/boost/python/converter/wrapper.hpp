@@ -54,8 +54,9 @@ wrapper<T>::wrapper()
 template <class T>
 PyObject* wrapper<T>::do_conversion(wrap_base const& handle_, source_holder_base const& data_) const
 {
-    wrap_more_<T> const& handle = static_cast<wrap_more_<T> const&>(handle_);
-    source_holder<T> const& data = static_cast<source_holder<T> const&>(data_);
+    // Casting pointers instead of references suppresses a CWPro7 bug.
+    wrap_more_<T> const& handle = *static_cast<wrap_more_<T> const*>(&handle_);
+    source_holder<T> const& data = *static_cast<source_holder<T> const*>(&data_);
     if (handle.target() == 0)
     {
         handle.hold_result(convert(data.value));
