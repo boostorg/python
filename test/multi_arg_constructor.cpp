@@ -5,6 +5,7 @@ struct A
 {
     A(const double, const double, const double, const double, const double
       , const double, const double
+      , const double, const double
         ) {}
 };
 
@@ -17,6 +18,7 @@ BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
   
     .add(class_<A, shared_ptr<A> >("A")
          .def_init(args<double, double, double, double, double
+                   , double, double
                    , double, double
                    >())
         )
