@@ -170,6 +170,11 @@ inline PyObject* to_python(double d)
     return PyFloat_FromDouble(d);
 }
 
+inline PyObject* to_python(float f)
+{
+    return PyFloat_FromDouble(f);
+}
+
 inline PyObject* to_python(long l)
 {
 	return PyInt_FromLong(l);
@@ -180,19 +185,9 @@ inline PyObject* to_python(int x)
 	return PyInt_FromLong(x);
 }
 
-inline int from_python(PyObject* p, py::Type<const int&>)
-{
-    return from_python(p, py::Type<int>());
-}
-
 inline PyObject* to_python(short x)
 {
 	return PyInt_FromLong(x);
-}
-
-inline short from_python(PyObject* p, py::Type<const short&>)
-{
-    return from_python(p, py::Type<short>());
 }
 
 inline PyObject* to_python(bool b)
@@ -200,17 +195,11 @@ inline PyObject* to_python(bool b)
 	return PyInt_FromLong(b);
 }
 
-inline bool from_python(PyObject* p, py::Type<const bool&>)
-{
-    return from_python(p, py::Type<bool>());
-}
-
 inline PyObject* to_python(void)
 {
     return py::none();
 }
 
-// const char*
 inline PyObject* to_python(const char* s)
 {
 	return PyString_FromString(s);
@@ -232,6 +221,41 @@ inline PyObject* from_python(PyObject* p, py::Type<PyObject*>)
     return p;
 }
 
+inline const char* from_python(PyObject* p, py::Type<const char* const&>)
+{
+    return from_python(p, py::Type<const char*>());
+}
+
+inline double from_python(PyObject* p, py::Type<const double&>)
+{
+    return from_python(p, py::Type<double>());
+}
+
+inline float from_python(PyObject* p, py::Type<const float&>)
+{
+    return from_python(p, py::Type<float>());
+}
+
+inline int from_python(PyObject* p, py::Type<const int&>)
+{
+    return from_python(p, py::Type<int>());
+}
+
+inline short from_python(PyObject* p, py::Type<const short&>)
+{
+    return from_python(p, py::Type<short>());
+}
+
+inline long from_python(PyObject* p, py::Type<const long&>)
+{
+    return from_python(p, py::Type<long>());
+}
+
+inline bool from_python(PyObject* p, py::Type<const bool&>)
+{
+    return from_python(p, py::Type<bool>());
+}
+
 inline unsigned int from_python(PyObject* p, py::Type<const unsigned int&>)
 {
     return from_python(p, py::Type<unsigned int>());
@@ -245,11 +269,6 @@ inline unsigned short from_python(PyObject* p, py::Type<const unsigned short&>)
 inline unsigned long from_python(PyObject* p, py::Type<const unsigned long&>)
 {
     return from_python(p, py::Type<unsigned long>());
-}
-
-inline long from_python(PyObject* p, py::Type<const long&>)
-{
-    return from_python(p, py::Type<long>());
 }
 
 
