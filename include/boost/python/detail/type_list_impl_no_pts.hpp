@@ -95,9 +95,9 @@ struct type_list_impl_chooser<N>
         >
     struct result_
     {
-        typedef BOOST_PP_CAT(mpl::list,N)<
+        typedef typename BOOST_PP_CAT(mpl::list,N)<
             BOOST_PP_ENUM_PARAMS(N, T)
-            > type;
+            >::type type;
     };
 };
 
