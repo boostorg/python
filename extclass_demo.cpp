@@ -532,12 +532,21 @@ struct Fubar {
 
 /************************************************************/
 /*                                                          */
+/*                   This test from Mark Evans              */
+/*                                                          */
+/************************************************************/
+double sizelist(py::List list) { return list.size(); }
+
+/************************************************************/
+/*                                                          */
 /*                       init the module                    */
 /*                                                          */
 /************************************************************/
 
 void init_module(py::Module& m)
 {
+    m.def(sizelist, "sizelist");
+    
     py::ClassWrapper<Fubar> fubar(m, "Fubar");
     fubar.def(py::Constructor<Foo&>());
     fubar.def(py::Constructor<int>());
