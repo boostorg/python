@@ -12,7 +12,7 @@
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/forward.hpp>
 # include <boost/type.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/mpl/apply.hpp>
 # include <boost/python/detail/pointee.hpp>
 # include <boost/python/detail/preprocessor.hpp>
