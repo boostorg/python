@@ -11,6 +11,7 @@
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/reference_existing_object.hpp>
 #include <boost/python/call.hpp>
+#include <boost/python/object.hpp>
 
 using namespace boost::python;
 
@@ -51,12 +52,12 @@ void apply_void_X_ref(PyObject* f, X& x)
     call<void>(f, boost::ref(x));
 }
 
-X& apply_X_ref_pyobject(PyObject* f, PyObject* obj)
+X& apply_X_ref_handle(PyObject* f, handle<> obj)
 {
     return call<X&>(f, obj);
 }
 
-X* apply_X_ptr_pyobject(PyObject* f, PyObject* obj)
+X* apply_X_ptr_handle_cref(PyObject* f, handle<> const& obj)
 {
     return call<X*>(f, obj);
 }
@@ -83,7 +84,7 @@ char const* apply_cstring_cstring(PyObject* f, char const* s)
 
 char const* apply_cstring_pyobject(PyObject* f, PyObject* s)
 {
-    return call<char const*>(f, s);
+    return call<char const*>(f, borrowed(s));
 }
 
 char apply_char_char(PyObject* f, char c)
@@ -96,11 +97,25 @@ char const* apply_to_string_literal(PyObject* f)
     return call<char const*>(f, "hello, world");
 }
 
+handle<> apply_to_own_type(handle<> x)
+{
+    // Tests that we can return handle<> from a callback and that we
+    // can pass arbitrary handle<T>.
+    return call<handle<> >(x.get(), type_handle(borrowed(x->ob_type)));
+}
+
+object apply_object_object(PyObject* f, object x)
+{
+    return call<object>(f, x);
+}
+
 int X::counter;
 
 BOOST_PYTHON_MODULE_INIT(callbacks_ext)
 {
     boost::python::module("callbacks_ext")
+        .def("apply_object_object", apply_object_object)
+        .def("apply_to_own_type", apply_to_own_type)
         .def("apply_int_int", apply_int_int)
         .def("apply_void_int", apply_void_int)
         .def("apply_X_X", apply_X_X)
@@ -109,10 +124,10 @@ BOOST_PYTHON_MODULE_INIT(callbacks_ext)
         .def("apply_void_X_ptr", apply_void_X_ptr)
         .def("apply_void_X_deep_ptr", apply_void_X_deep_ptr)
         
-        .def("apply_X_ptr_pyobject", apply_X_ptr_pyobject
+        .def("apply_X_ptr_handle_cref", apply_X_ptr_handle_cref
              , return_value_policy<reference_existing_object>())
         
-        .def("apply_X_ref_pyobject", apply_X_ref_pyobject
+        .def("apply_X_ref_handle", apply_X_ref_handle
              , return_value_policy<reference_existing_object>())
         
         .def("apply_cstring_cstring", apply_cstring_cstring)

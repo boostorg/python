@@ -9,38 +9,13 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type.hpp>
+# include <boost/python/base_type_traits.hpp>
+# include <boost/python/detail/convertible.hpp>
 
 namespace boost { namespace python { 
 
-template <class T> struct base_type_traits;
-
-template <>
-struct base_type_traits<PyObject>
-{
-    typedef PyObject type;
-};
-
-template <>
-struct base_type_traits<PyTypeObject>
-{
-    typedef PyObject type;
-};
-
 namespace detail
 {
-  typedef char* yes_convertible;
-  typedef int* no_convertible;
-
-  typedef char* yes_python_object;
-  typedef int* no_python_object;
-
-  template <class Target>
-  struct convertible
-  {
-      static inline yes_convertible check(Target) { return 0; }
-      static inline no_convertible check(...) { return 0; }
-  };
-
   template <class Target>
   inline Target* upcast(Target* p, yes_convertible)
   {

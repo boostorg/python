@@ -14,7 +14,7 @@ namespace boost { namespace python { namespace detail {
 
 module_base::module_base(const char* name)
     : m_module(
-        borrow(Py_InitModule(const_cast<char*>(name), initial_methods))
+        python::borrowed(Py_InitModule(const_cast<char*>(name), initial_methods))
         )
 {
 }

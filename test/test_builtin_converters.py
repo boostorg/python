@@ -73,6 +73,12 @@
 >>> rewrap_value_string('yo, wassup?')
 'yo, wassup?'
 
+>>> rewrap_value_handle(1)
+1
+>>> x = 'hi'
+>>> assert rewrap_value_handle(x) is x
+>>> assert rewrap_value_object(x) is x
+
   Note that we can currently get a mutable pointer into an immutable
   Python string:
   
@@ -134,6 +140,13 @@
 >>> rewrap_const_reference_string('yo, wassup?')
 'yo, wassup?'
 
+>>> rewrap_const_reference_handle(1)
+1
+>>> x = 'hi'
+>>> assert rewrap_const_reference_handle(x) is x
+>>> assert rewrap_const_reference_object(x) is x
+>>> assert rewrap_reference_object(x) is x
+
 
 Check that None <==> NULL
 
@@ -180,6 +193,13 @@ Check that classic classes also work
 >>> abs(rewrap_value_complex_double(FortyTwo()) - (4+.2j)) < .000001
 1
 
+# show that arbitrary handle<T> instantiations can be returned
+>>> get_type(1) is type(1)
+1
+
+>>> try: return_null_handle()
+... except: pass
+... else: print 'expectd an exception'
 """
 
 def run(args = None):

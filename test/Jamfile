@@ -1,8 +1,11 @@
 subproject libs/python/test ;
 
 # bring in the rules for python
-SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
-include <module@>python.jam ;
+SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+include python.jam ;
+# bring in rules for testing
+SEARCH on testing.jam = $(BOOST_BUILD_PATH) ;
+include testing.jam ;
 
 local PYTHON_V1_PROPERTIES = $(PYTHON_PROPERTIES) ;
 local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
@@ -58,6 +61,7 @@ bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters
 bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
+bpl-test object ;
 bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;
@@ -76,44 +80,44 @@ if $(TEST_BIENSTMAN_NON_BUGS)
 }
 
 # --- unit tests of library components ---
-unit-test indirect_traits_test
-  : indirect_traits_test.cpp : <sysinclude>$(BOOST_ROOT) ;
-unit-test destroy_test
-  : destroy_test.cpp : <sysinclude>$(BOOST_ROOT)  ;
-unit-test pointer_type_id_test
-  : pointer_type_id_test.cpp : <sysinclude>$(BOOST_ROOT) ;
+run indirect_traits_test.cpp ;
+run destroy_test.cpp ;
+run pointer_type_id_test.cpp ;
+run member_function_cast.cpp ;
+run bases.cpp ;
+run if_else.cpp ;
+run pointee.cpp ;
+run result.cpp ;
+compile borrowed.cpp : $(PYTHON_PROPERTIES) ;
+compile object_manager.cpp : $(PYTHON_PROPERTIES) ;
 
-unit-test member_function_cast
-  : member_function_cast.cpp : <sysinclude>$(BOOST_ROOT) ;
-
-unit-test bases
-  : bases.cpp : <sysinclude>$(BOOST_ROOT) ;
-
-unit-test if_else
-  : if_else.cpp : <sysinclude>$(BOOST_ROOT) ;
-
-unit-test pointee
-  : pointee.cpp : <sysinclude>$(BOOST_ROOT) ;
-
-unit-test result
-  : result.cpp : <sysinclude>$(BOOST_ROOT) ;
-
-unit-test upcast
-  : upcast.cpp
-  : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES) ;
-
-unit-test select_holder
-  : select_holder.cpp
-  : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)
-;
-
-unit-test select_from_python_test
-  : select_from_python_test.cpp 
-    ../src/converter/type_id.cpp
-
-  : <sysinclude>$(BOOST_ROOT) 
-    [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
+run upcast.cpp
+  : # command-line args
+  : # input files
+  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
     <define>BOOST_PYTHON_STATIC_LIB
     ;
+
+run select_holder.cpp
+  : # command-line args
+  : # input files
+  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
+    <define>BOOST_PYTHON_STATIC_LIB
+    ;
+
+
+run select_from_python_test.cpp ../src/converter/type_id.cpp
+  : # command-line args
+  : # input files
+  : [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
+    <define>BOOST_PYTHON_STATIC_LIB
+    ;
+
+if $(TEST_EXPECTED_FAILURES)
+{
+    compile-fail ./raw_pyobject_fail1.cpp : $(PYTHON_PROPERTIES) ;
+    compile-fail ./raw_pyobject_fail2.cpp : $(PYTHON_PROPERTIES) ;
+    compile-fail ./object_fail1.cpp : $(PYTHON_PROPERTIES) ;
+}
 
 

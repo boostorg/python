@@ -110,7 +110,7 @@ namespace objects
           if (PyType_Ready(&class_metatype_object))
               return type_handle();
       }
-      return type_handle(borrow(&class_metatype_object));
+      return type_handle(borrowed(&class_metatype_object));
   }
   extern "C"
   {
@@ -181,7 +181,7 @@ namespace objects
           if (PyType_Ready(&class_type_object))
               return type_handle();
       }
-      return type_handle(borrow(&class_type_object));
+      return type_handle(borrowed(&class_type_object));
   }
 
   BOOST_PYTHON_DECL void*

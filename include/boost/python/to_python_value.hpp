@@ -10,34 +10,84 @@
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/to_python_function.hpp>
 # include <boost/python/converter/builtin_converters.hpp>
+# include <boost/python/converter/object_manager.hpp>
+# include <boost/mpl/select_type.hpp>
+# include <boost/type_traits/ice.hpp>
+# include <boost/python/refcount.hpp>
 
 namespace boost { namespace python { 
 
-template <class T>
-struct to_python_value
+namespace detail
 {
-    typedef typename add_reference<
-        typename add_const<T>::type
-    >::type argument_type;
+  template <class T>
+  struct object_manager_to_python_value
+  {
+      typedef typename add_reference<
+          typename add_const<T>::type
+      >::type argument_type;
     
-    static bool convertible();
-    PyObject* operator()(argument_type) const;
-};
+      static bool convertible();
+      PyObject* operator()(argument_type) const;
+  };
 
-
-template <class T>
-bool to_python_value<T>::convertible()
-{
-    // if this assert fires, our static variable hasn't been set up yet.
-    return converter::to_python_function<argument_type>::value != 0;
+  
+  template <class T>
+  struct registry_to_python_value
+  {
+      typedef typename add_reference<
+          typename add_const<T>::type
+      >::type argument_type;
+    
+      static bool convertible();
+      PyObject* operator()(argument_type) const;
+  };
 }
 
 template <class T>
-PyObject* to_python_value<T>::operator()(argument_type x) const
+struct to_python_value
+    : mpl::select_type<
+          boost::type_traits::ice_or<
+              converter::is_object_manager<T>::value
+            , converter::is_reference_to_object_manager<T>::value
+            >::value
+
+        , detail::object_manager_to_python_value<T>
+        , detail::registry_to_python_value<T>
+      >::type
 {
-    // This might be further optimized on platforms which dynamically
-    // link without specific imports/exports
-    return converter::to_python_function<argument_type>::value(&x);
+};
+
+//
+// implementation 
+//
+namespace detail
+{
+  template <class T>
+  inline bool registry_to_python_value<T>::convertible()
+  {
+      return converter::to_python_function<argument_type>::value != 0;
+  }
+
+  template <class T>
+  inline PyObject* registry_to_python_value<T>::operator()(argument_type x) const
+  {
+      return converter::to_python_function<argument_type>::value(&x);
+  }
+
+  template <class T>
+  inline bool object_manager_to_python_value<T>::convertible()
+  {
+      return true;
+  }
+
+  template <class T>
+  inline PyObject* object_manager_to_python_value<T>::operator()(argument_type x) const
+  {
+      return python::upcast<PyObject>(
+          python::xincref(
+              converter::get_managed_object(x))
+          );
+  }
 }
 
 }} // namespace boost::python

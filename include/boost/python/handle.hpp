@@ -9,43 +9,13 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/cast.hpp>
 # include <boost/python/errors.hpp>
+# include <boost/python/borrowed.hpp>
+# include <boost/python/handle_fwd.hpp>
+# include <boost/python/refcount.hpp>
 
 namespace boost { namespace python { 
 
-template <class T>
-inline T* incref(T* p)
-{
-    Py_INCREF(python::upcast<PyObject>(p));
-    return p;
-}
-
-template <class T>
-inline T* xincref(T* p)
-{
-    Py_XINCREF(python::upcast<PyObject>(p));
-    return p;
-}
-
-template <class T>
-inline void decref(T* p)
-{
-    Py_DECREF(python::upcast<PyObject>(p));
-}
-
-template <class T>
-inline void xdecref(T* p)
-{
-    Py_XDECREF(python::upcast<PyObject>(p));
-}
-
-template <class T> struct borrowed;
 template <class T> struct null_ok;
-
-template <class T>
-inline borrowed<T>* borrow(T* p)
-{
-    return (borrowed<T>*)p;
-}
 
 template <class T>
 inline null_ok<T>* allow_null(T* p)
@@ -56,19 +26,19 @@ inline null_ok<T>* allow_null(T* p)
 namespace detail
 {
   template <class T>
-  inline T* manage_ptr(borrowed<null_ok<T> >* p, int)
+  inline T* manage_ptr(detail::borrowed<null_ok<T> >* p, int)
   {
       return python::xincref((T*)p);
   }
   
   template <class T>
-  inline T* manage_ptr(null_ok<borrowed<T> >* p, int)
+  inline T* manage_ptr(null_ok<detail::borrowed<T> >* p, int)
   {
       return python::xincref((T*)p);
   }
   
   template <class T>
-  inline T* manage_ptr(borrowed<T>* p, long)
+  inline T* manage_ptr(detail::borrowed<T>* p, long)
   {
       return python::incref(expect_non_null((T*)p));
   }
@@ -84,31 +54,9 @@ namespace detail
   {
       return expect_non_null(p);
   }
-
-#if 0
-  template <class T>
-  struct handle_proxy
-      : handle_proxy<typename base_type_traits<T>::type>
-  {
-      typedef typename base_type_traits<T>::type base_t;
-      handle_proxy(PyObject* p)
-          : handle_proxy<base_t>(p)
-      {}
-      operator T*() const { return python::downcast<T>(m_p); }
-  };
-
-  template <>
-  struct handle_proxy<PyObject>
-  {
-      handle_proxy(PyObject* p) : m_p(p) {}
-      operator PyObject*() const { return (PyObject*)m_p; }
-   private:
-      PyObject* m_p;
-  };
-#endif 
 }
 
-template <class T = PyObject>
+template <class T>
 class handle
 {
     typedef T* (handle::*bool_type);
@@ -153,6 +101,7 @@ class handle
     }
     
     T* operator-> () const;
+    T& operator* () const;
     T* get() const;
     T* release();
     
@@ -167,6 +116,79 @@ class handle
 };
 
 typedef handle<PyTypeObject> type_handle;
+
+//
+// Converter specializations
+//
+template <class T> struct arg_from_python;
+template <>
+struct arg_from_python<handle<> >
+{
+    typedef handle<> result_type;
+    
+    arg_from_python(PyObject*);
+    bool convertible() const;
+    handle<> operator()(PyObject* x) const;
+};
+
+template <>
+struct arg_from_python<handle<> const&>
+    : arg_from_python<handle<> >
+{
+    arg_from_python(PyObject*);
+};
+
+namespace converter
+{
+  template <class T> struct return_from_python;
+
+  template <>
+  struct return_from_python<handle<> >
+  {
+      typedef handle<> result_type;
+      result_type operator()(PyObject* x) const;
+  };
+}
+
+//
+// Compile-time introspection
+//
+# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+template<typename T>
+class is_handle
+{
+ public:
+    BOOST_STATIC_CONSTANT(bool, value = false); 
+};
+
+template<typename T>
+class is_handle<handle<T> >
+{
+ public:
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+# else
+namespace detail
+{
+  typedef char (&yes_handle_t)[1];
+  typedef char (&no_handle_t)[2];
+      
+  no_handle_t is_handle_test(...);
+
+  template<typename T>
+  yes_handle_t is_handle_test(boost::type< handle<T> >);
+}
+
+template<typename T>
+class is_handle
+{
+ public:
+    BOOST_STATIC_CONSTANT(
+        bool, value = (
+            sizeof(detail::is_handle_test(boost::type<T>()))
+            == sizeof(detail::yes_handle_t)));
+};
+# endif
 
 //
 // implementations
@@ -198,6 +220,12 @@ inline T* handle<T>::operator->() const
 }
 
 template <class T>
+inline T& handle<T>::operator*() const
+{
+    return *m_p;
+}
+
+template <class T>
 inline T* handle<T>::get() const
 {
     return m_p;
@@ -215,6 +243,35 @@ inline T* handle<T>::release()
     T* result = m_p;
     m_p = 0;
     return result;
+}
+
+//
+// Converter specialization implementation
+//
+inline arg_from_python<handle<> >::arg_from_python(PyObject*)
+{}
+
+inline bool arg_from_python<handle<> >::convertible() const
+{
+    return true;
+}
+
+inline handle<> arg_from_python<handle<> >::operator()(PyObject* x) const
+{
+    return handle<>(python::borrowed(python::allow_null(x)));
+}
+
+inline arg_from_python<handle<> const&>::arg_from_python(PyObject*)
+    : arg_from_python<handle<> >(0)
+{}
+
+namespace converter
+{
+  inline handle<>
+  return_from_python<handle<> >::operator()(PyObject* x) const
+  {
+      return handle<>(x);
+  }
 }
 
 }} // namespace boost::python

@@ -26,7 +26,7 @@ struct is_reference_to_const<T const&>
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
-#   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13012108 // vc7.01 alpha workaround
+#   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13102140 // vc7.01 alpha workaround
 template<class T>
 struct is_reference_to_const<T const volatile&>
 {
@@ -121,7 +121,7 @@ struct is_reference_to_volatile<T volatile&>
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
-#   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13012108 // vc7.01 alpha workaround
+#   if defined(BOOST_MSVC) && _MSC_FULL_VER <= 13102140 // vc7.01 alpha workaround
 template <class T>
 struct is_reference_to_volatile<T const volatile&>
 {

@@ -7,6 +7,10 @@
 # define RETURN_FROM_PYTHON_DWA200265_HPP
 
 # include <boost/python/converter/callback_from_python_base.hpp>
+# include <boost/python/converter/from_python_data.hpp>
+# include <boost/python/converter/rvalue_from_python_chain.hpp>
+# include <boost/python/converter/lvalue_from_python_chain.hpp>
+# include <boost/python/detail/void_ptr.hpp>
 
 namespace boost { namespace python { namespace converter { 
 

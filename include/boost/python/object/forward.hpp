@@ -61,7 +61,7 @@ namespace detail
   no_reference_to_value_t is_reference_to_value_test(...);
 
   template<typename T>
-  yes_reference_to_value_t is_reference_to_value_test(type< reference_to_value<T> >);
+  yes_reference_to_value_t is_reference_to_value_test(boost::type< reference_to_value<T> >);
 
   template<bool wrapped>
   struct unforwarder
@@ -89,7 +89,7 @@ namespace detail
    public:
       BOOST_STATIC_CONSTANT(
           bool, value = (
-              sizeof(is_reference_to_value_test(type<T>()))
+              sizeof(is_reference_to_value_test(boost::type<T>()))
               == sizeof(yes_reference_to_value_t)));
   };
 }

@@ -35,7 +35,11 @@ namespace detail
   
   arg_to_python_base::arg_to_python_base(
       void const volatile* source, to_python_function_t converter)
+# if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13102140
       : handle<>(convert(source, converter))
+# else
+      : m_ptr(convert(source, converter))
+# endif 
   {
   }
 

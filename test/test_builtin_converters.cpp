@@ -6,6 +6,9 @@
 #include <string>
 #include <boost/python/module.hpp>
 #include <complex>
+#include <boost/python/handle.hpp>
+#include <boost/python/cast.hpp>
+#include <boost/python/object.hpp>
 
 template <class T>
 struct by_value
@@ -25,11 +28,37 @@ struct by_const_reference
     }
 };
 
+template <class T>
+struct by_reference
+{
+    static T rewrap(T& x)
+    {
+        return x;
+    }
+};
+
+using boost::python::handle;
+using boost::python::object;
+using boost::python::borrowed;
+
+// Used to test that arbitrary handle<>s can be returned
+handle<PyTypeObject> get_type(handle<> x)
+{
+    return handle<PyTypeObject>(borrowed(x->ob_type));
+}
+
+handle<> return_null_handle()
+{
+    return handle<>();
+}
+
 char const* rewrap_value_mutable_cstring(char* x) { return x; }
 
 BOOST_PYTHON_MODULE_INIT(builtin_converters)
 {
     boost::python::module("builtin_converters")
+        .def("get_type", get_type)
+        .def("return_null_handle", return_null_handle)
         
         .def("rewrap_value_bool", by_value<bool>::rewrap)
         .def("rewrap_value_char", by_value<char>::rewrap)
@@ -53,6 +82,8 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters)
         .def("rewrap_value_complex_long_double", by_value<std::complex<long double> >::rewrap)
         .def("rewrap_value_string", by_value<std::string>::rewrap)
         .def("rewrap_value_cstring", by_value<char const*>::rewrap)
+        .def("rewrap_value_handle", by_value<handle<> >::rewrap)
+        .def("rewrap_value_object", by_value<object>::rewrap)
 
         // Expose this to illustrate our failings ;-). See test_builtin_converters.py
         .def("rewrap_value_mutable_cstring", rewrap_value_mutable_cstring)
@@ -80,6 +111,11 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters)
         .def("rewrap_const_reference_complex_long_double", by_const_reference<std::complex<long double> >::rewrap)
         .def("rewrap_const_reference_string", by_const_reference<std::string>::rewrap)
         .def("rewrap_const_reference_cstring", by_const_reference<char const*>::rewrap)
+        .def("rewrap_const_reference_handle", by_const_reference<handle<> >::rewrap)
+        .def("rewrap_const_reference_object", by_const_reference<object>::rewrap)
+
+
+        .def("rewrap_reference_object", by_reference<object>::rewrap)
         
         ;
 }

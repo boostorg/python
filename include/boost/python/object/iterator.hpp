@@ -174,7 +174,7 @@ namespace detail
           // Build and convert the iterator_range<>.
           return cr(
               iterator_range<NextPolicies,Iterator>(
-                  handle<>(python::borrow(arg0))
+                  handle<>(python::borrowed(arg0))
                   , get_start(x), get_finish(x)));
       }
   };

@@ -18,7 +18,7 @@
 namespace boost { namespace python {
 
 objects_base::objects_base(handle<> const& p)
-    : m_p(borrow(p.get())) // Do the null check here
+    : m_p(borrowed(p.get())) // Do the null check here
 {}
     
 // Return a reference to the held object
@@ -72,7 +72,7 @@ std::size_t tuple_base::size() const
 
 handle<> tuple_base::operator[](std::size_t pos) const
 {
-    return handle<>(borrow(PyTuple_GetItem(get(), static_cast<int>(pos))));
+    return handle<>(borrowed(PyTuple_GetItem(get(), static_cast<int>(pos))));
 }
 
 void tuple_base::set_item(std::size_t pos, const handle<>& rhs)
@@ -146,7 +146,7 @@ const char* string::c_str() const
 
 void string::intern()
 { // UNTESTED!!
-    *this = string(handle<>(borrow(PyString_InternFromString(c_str()))));
+    *this = string(handle<>(borrowed(PyString_InternFromString(c_str()))));
 }
 
 string& string::operator*=(unsigned int repeat_count)
@@ -214,7 +214,7 @@ handle<> dictionary_base::get_item(const handle<>& key, const handle<>& default_
     if (value_or_null == 0 && !PyErr_Occurred())
         return default_;
     else
-        return handle<>(borrow(value_or_null)); // Will throw if there was another error
+        return handle<>(borrowed(value_or_null)); // Will throw if there was another error
 }
         
 void dictionary_base::set_item(const handle<>& key, const handle<>& value)
@@ -310,7 +310,7 @@ std::size_t list_base::size() const
 
 handle<> list_base::operator[](std::size_t pos) const
 {
-    return handle<>(borrow(PyList_GetItem(get(), pos)));
+    return handle<>(borrowed(PyList_GetItem(get(), pos)));
 }
 
 list_proxy list_base::operator[](std::size_t pos)
@@ -370,12 +370,12 @@ const handle<>& list_proxy::operator=(const handle<>& rhs)
 
 list_proxy::operator handle<>() const
 {
-    return handle<>(borrow(PyList_GetItem(m_list.get(), m_index)));
+    return handle<>(borrowed(PyList_GetItem(m_list.get(), m_index)));
 }
 
 handle<> list_base::get_item(std::size_t pos) const
 {
-    return handle<>(borrow(PyList_GetItem(this->get(), pos)));
+    return handle<>(borrowed(PyList_GetItem(this->get(), pos)));
 }
 
 void list_base::set_item(std::size_t pos, const handle<>& rhs)

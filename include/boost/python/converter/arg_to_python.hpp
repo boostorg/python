@@ -10,7 +10,11 @@
 # include <boost/python/converter/to_python_function.hpp>
 # include <boost/python/converter/pointee_to_python_function.hpp>
 # include <boost/python/converter/arg_to_python_base.hpp>
+# include <boost/python/converter/object_manager.hpp>
 # include <boost/python/to_python_indirect.hpp>
+# include <boost/type_traits/cv_traits.hpp>
+# include <boost/python/detail/convertible.hpp>
+# include <boost/python/base_type_traits.hpp>
 // Bring in specializations
 # include <boost/python/converter/builtin_converters.hpp>
 
@@ -51,9 +55,27 @@ namespace detail
       static PyObject* get_object(Ptr p);
   };
 
+  // Convert types that manage a Python object to_python
+  template <class T>
+  struct object_manager_arg_to_python
+  {
+      object_manager_arg_to_python(T const& x) : m_src(x) {}
+      
+      PyObject* get() const
+      {
+          return python::upcast<PyObject>(converter::get_managed_object(m_src));
+      }
+      
+   private:
+      T const& m_src;
+  };
+
   template <class T>
   struct select_arg_to_python
   {
+      BOOST_STATIC_CONSTANT(
+          bool, manager = is_object_manager<T>::value);
+      
       BOOST_STATIC_CONSTANT(
           bool, ptr = is_pointer<T>::value);
       
@@ -67,15 +89,19 @@ namespace detail
       typedef typename unwrap_pointer<T>::type unwrapped_ptr;
 
       typedef typename mpl::select_type<
-          ptr
-          , pointer_deep_arg_to_python<T>
+          manager
+          , object_manager_arg_to_python<T>
           , typename mpl::select_type<
-              ptr_wrapper
-              , pointer_shallow_arg_to_python<unwrapped_ptr>
+              ptr
+              , pointer_deep_arg_to_python<T>
               , typename mpl::select_type<
-                  ref_wrapper
-                  , reference_arg_to_python<unwrapped_referent>
-                  , value_arg_to_python<T>
+                  ptr_wrapper
+                  , pointer_shallow_arg_to_python<unwrapped_ptr>
+                  , typename mpl::select_type<
+                      ref_wrapper
+                      , reference_arg_to_python<unwrapped_referent>
+                      , value_arg_to_python<T>
+                    >::type
                 >::type
             >::type
         >::type type;
@@ -108,6 +134,39 @@ struct arg_to_python
 //
 namespace detail
 {
+  // reject_raw_object_ptr -- cause a compile-time error if the user
+  // should pass a raw Python object pointer
+  using python::detail::yes_convertible;
+  using python::detail::no_convertible;
+  using python::detail::unspecialized;
+  
+  template <class T> struct cannot_convert_raw_PyObject;
+
+  template <class T, class Convertibility>
+  struct reject_raw_object_helper
+  {
+      static void error(Convertibility)
+      {
+          cannot_convert_raw_PyObject<T*>::to_python_use_handle_instead();
+      }
+      static void error(...) {}
+  };
+  
+  template <class T>
+  inline void reject_raw_object_ptr(T*)
+  {
+      reject_raw_object_helper<T,yes_convertible>::error(
+          python::detail::convertible<PyObject const volatile*>::check((T*)0));
+      
+      typedef typename remove_cv<T>::type value_type;
+      
+      reject_raw_object_helper<T,no_convertible>::error(
+          python::detail::convertible<unspecialized*>::check(
+              (base_type_traits<value_type>*)0
+              ));
+  }
+  // ---------
+      
   template <class T>
   inline value_arg_to_python<T>::value_arg_to_python(T const& x)
       : arg_to_python_base(&x, to_python_function<T>::value)
@@ -118,6 +177,7 @@ namespace detail
   inline pointer_deep_arg_to_python<Ptr>::pointer_deep_arg_to_python(Ptr x)
       : arg_to_python_base(x, pointee_to_python_function<Ptr>::value)
   {
+      detail::reject_raw_object_ptr((Ptr)0);
   }
 
   template <class T>
@@ -131,14 +191,16 @@ namespace detail
 
   template <class T>
   inline reference_arg_to_python<T>::reference_arg_to_python(T& x)
-      : handle<>(get_object(x))
+      : handle<>(reference_arg_to_python<T>::get_object(x))
   {
   }
 
   template <class Ptr>
   inline pointer_shallow_arg_to_python<Ptr>::pointer_shallow_arg_to_python(Ptr x)
-      : handle<>(get_object(x))
-  {}
+      : handle<>(pointer_shallow_arg_to_python<Ptr>::get_object(x))
+  {
+      detail::reject_raw_object_ptr((Ptr)0);
+  }
 
   template <class Ptr>
   inline PyObject* pointer_shallow_arg_to_python<Ptr>::get_object(Ptr x)

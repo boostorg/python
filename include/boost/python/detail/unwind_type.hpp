@@ -133,7 +133,7 @@ struct unwind_helper2<reference_to_pointer_>
 // why bother?
 template <class Generator, class U>
 inline typename Generator::result_type
-unwind_type(type<U>*p = 0, Generator* = 0)
+unwind_type(boost::type<U>*p = 0, Generator* = 0)
 {
     BOOST_STATIC_CONSTANT(int, indirection
                           = (is_pointer<U>::value ? pointer_ : 0)

@@ -13,9 +13,18 @@ namespace boost { namespace python { namespace converter {
 
 namespace detail
 {
-  struct BOOST_PYTHON_DECL arg_to_python_base : handle<>
+  struct BOOST_PYTHON_DECL arg_to_python_base
+# if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13102140
+      : handle<>
+# endif 
   {
       arg_to_python_base(void const volatile* source, to_python_function_t);
+# if defined(BOOST_MSVC) && _MSC_FULL_VER == 13102140
+      PyObject* get() const { return m_ptr.get(); }
+      PyObject* release() { return m_ptr.release(); }
+   private:
+      handle<> m_ptr;
+# endif 
   };
 }
 
