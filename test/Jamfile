@@ -116,6 +116,12 @@ run select_from_python_test.cpp ../src/converter/type_id.cpp
   : $(UNIT_TEST_PROPERTIES)
     ;
 
+run select_arg_to_python_test.cpp ../src/converter/type_id.cpp
+  : # command-line args
+  : # input files
+  : $(UNIT_TEST_PROPERTIES)
+    ;
+
 if $(TEST_EXPECTED_FAILURES)
 {
     compile-fail ./raw_pyobject_fail1.cpp : $(PYTHON_PROPERTIES) ;

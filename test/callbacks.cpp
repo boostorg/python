@@ -14,6 +14,7 @@
 #include <boost/python/object.hpp>
 
 using namespace boost::python;
+BOOST_STATIC_ASSERT(converter::is_object_manager<handle<> >::value);
 
 int apply_int_int(PyObject* f, int x)
 {
