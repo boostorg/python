@@ -1,3 +1,6 @@
+// Example by Nicholas K. Sauter & Ralf W. Grosse-Kunstleve.
+// Comprehensive operator overloading for two vector types and scalars.
+
 #include "dvect.h"
 #include "ivect.h"
 #include <boost/python/class_builder.hpp>
@@ -236,10 +239,10 @@ namespace {
 
 } // namespace <anonymous>
 
-BOOST_PYTHON_MODULE_INIT(richcmp)
+BOOST_PYTHON_MODULE_INIT(richcmp3)
 {
   try {
-    boost::python::module_builder this_module("richcmp");
+    boost::python::module_builder this_module("richcmp3");
     // The actual work is done in separate function in order
     // to suppress a bogus VC60 warning.
     init_module(this_module);

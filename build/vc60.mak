@@ -47,7 +47,7 @@ all: boost_python.lib \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
-     richcmp.pyd
+     richcmp1.pyd richcmp2.pyd richcmp3.pyd
 
 boost_python.lib: $(OBJ)
 	$(LD) -lib /nologo /out:boost_python.lib $(OBJ)
@@ -91,8 +91,14 @@ ivect.pyd: $(OBJ) ivect.obj
 dvect.pyd: $(OBJ) dvect.obj
 	$(LD) $(LDOPTS) $(OBJ) dvect.obj $(PYLIB) /export:initdvect /out:"dvect.pyd"
 
-richcmp.pyd: $(OBJ) richcmp.obj
-	$(LD) $(LDOPTS) $(OBJ) richcmp.obj $(PYLIB) /export:initrichcmp /out:"richcmp.pyd"
+richcmp1.pyd: $(OBJ) richcmp1.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp1.obj $(PYLIB) /export:initrichcmp1 /out:"richcmp1.pyd"
+
+richcmp2.pyd: $(OBJ) richcmp2.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp2.obj $(PYLIB) /export:initrichcmp2 /out:"richcmp2.pyd"
+
+richcmp3.pyd: $(OBJ) richcmp3.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp3.obj $(PYLIB) /export:initrichcmp3 /out:"richcmp3.pyd"
 
 .cpp.obj:
 	$(CPP) $(CPPOPTS) /c $*.cpp

@@ -47,7 +47,7 @@ DEPOBJ=$(OBJ) \
        pickle1.o pickle2.o pickle3.o \
        noncopyable_export.o noncopyable_import.o \
        ivect.o dvect.o \
-       richcmp.o
+       richcmp1.o richcmp2.o richcmp3.o
 
 .SUFFIXES: .o .cpp
 
@@ -60,7 +60,7 @@ all: libboost_python.a \
      pickle1.so pickle2.so pickle3.so \
      noncopyable_export.so noncopyable_import.so \
      ivect.so dvect.so \
-     richcmp.so
+     richcmp1.so richcmp2.so richcmp3.so
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a
@@ -107,8 +107,14 @@ ivect.so: $(OBJ) ivect.o
 dvect.so: $(OBJ) dvect.o
 	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) dvect.o -o dvect.so
 
-richcmp.so: $(OBJ) richcmp.o
-	$(LD) $(LDOPTS) $(OBJ) richcmp.o -o richcmp.so
+richcmp1.so: $(OBJ) richcmp1.o
+	$(LD) $(LDOPTS) $(OBJ) richcmp1.o -o richcmp1.so
+
+richcmp2.so: $(OBJ) richcmp2.o
+	$(LD) $(LDOPTS) $(OBJ) richcmp2.o -o richcmp2.so
+
+richcmp3.so: $(OBJ) richcmp3.o
+	$(LD) $(LDOPTS) $(OBJ) richcmp3.o -o richcmp3.so
 
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
@@ -140,7 +146,9 @@ clean:
 	rm -f noncopyable_import.o noncopyable_import.so
 	rm -f ivect.o ivect.so
 	rm -f dvect.o dvect.so
-	rm -f richcmp.o richcmp.so
+	rm -f richcmp1.o richcmp1.so
+	rm -f richcmp2.o richcmp2.so
+	rm -f richcmp3.o richcmp3.so
 	rm -f so_locations *.pyc
 	rm -rf ii_files
 

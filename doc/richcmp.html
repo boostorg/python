@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+
+<title>Rich Comparisons</title>
+
+<div>
+
+<img src="../../../c++boost.gif"
+     alt="c++boost.gif (8819 bytes)"
+     align="center"
+     width="277" height="86">
+
+<hr>
+<h1>Rich Comparisons</h1>
+
+<hr>
+In Python versions up to and including Python 2.0, support for
+implementing comparisons on user-defined classes and extension types
+was quite simple. Classes could implement a <tt>__cmp__</tt> method
+that was given two instances of a class as arguments, and could only
+return <tt>0</tt> if they were equal or <tt>+1</tt> or <tt>-1</tt> if
+they were not. The method could not raise an exception or return
+anything other than an integer value.
+In Python 2.1, <b>Rich Comparisons</b> were added (see
+<a href="http://python.sourceforge.net/peps/pep-0207.html">PEP 207</a>).
+Python classes can now individually overload each of the &lt;, &lt;=,
+&gt;, &gt;=, ==, and != operations.
+
+<p>
+For more detailed information, search for "rich comparison"
+<a href="http://www.python.org/doc/current/ref/customization.html"
+>here</a>.
+
+<p>
+Boost.Python supports both automatic overloading and manual overloading
+of the Rich Comparison operators. The <b>compile-time</b> support is
+independent of the Python version that is used when compiling
+Boost.Python extension modules. That is, <tt>op_lt</tt> for example can
+always be used, and the C++ <tt>operator&lt;</tt> will always be bound
+to the Python method <tt>__lt__</tt>. However, the <b>run-time</b>
+behavior will depend on the Python version.
+
+<p>
+With Python versions before 2.1, the Rich Comparison operators will not
+be called by Python when any of the six comparison operators
+(<tt>&lt;</tt>, <tt>&lt;=</tt>, <tt>==</tt>, <tt>!=</tt>,
+<tt>&gt;</tt>, <tt>&gt;=</tt>) is used in an expression. The only way
+to access the corresponding methods is to call them explicitly, e.g.
+<tt>a.__lt__(b)</tt>. Only with Python versions 2.1 or higher will
+expressions like <tt>a &lt; b</tt> work as expected.
+
+<p>
+To support Rich Comparisions, the Python C API was modified between
+Python versions 2.0 and 2.1. A new slot was introduced in the
+<tt>PyTypeObject</tt> structure: <tt>tp_richcompare</tt>. For backwards
+compatibility, a flag (<tt>Py_TPFLAGS_HAVE_RICHCOMPARE</tt>) has to be
+set to signal to the Python interpreter that Rich Comparisions are
+supported by a particular type.
+There is only one flag for all the six comparison operators.
+When any of the six operators is wrapped automatically or
+manually, Boost.Python will set this flag. Attempts to use comparison
+operators at the Python level that are not defined at the C++ level
+will then lead to an <tt>AttributeError</tt>. That is, in general all six
+operators should be supplied. Automatically wrapped operators and
+manually wrapped operators can be mixed. For example:<pre>
+    boost::python::class_builder&lt;code&gt; py_code(this_module, "code");
+
+    py_code.def(boost::python::constructor&lt;&gt;());
+    py_code.def(boost::python::constructor&lt;int&gt;());
+    py_code.def(boost::python::operators&lt;(  boost::python::op_eq
+                                          | boost::python::op_ne)&gt;());
+    py_code.def(NotImplemented, "__lt__");
+    py_code.def(NotImplemented, "__le__");
+    py_code.def(NotImplemented, "__gt__");
+    py_code.def(NotImplemented, "__ge__");
+</pre>
+
+<tt>NotImplemented</tt> is a simple free function:<pre>
+  boost::python::ref
+  NotImplemented(const code&amp;, const code&amp;) {
+    return
+    boost::python::ref(Py_NotImplemented, boost::python::ref::increment_count);
+  }
+</pre>
+
+See also:
+<ul>
+<li><a href="../example/richcmp1.cpp"><tt>../example/richcmp1.cpp</tt></a>
+<li><a href="../example/richcmp2.cpp"><tt>../example/richcmp2.cpp</tt></a>
+<li><a href="../example/richcmp3.cpp"><tt>../example/richcmp3.cpp</tt></a>
+</ul>
+
+<hr>
+&copy; Copyright Nicholas K. Sauter &amp; Ralf W. Grosse-Kunstleve 2001.
+Permission to copy, use, modify, sell and distribute this document is
+granted provided this copyright notice appears in all copies. This
+document is provided "as is" without express or implied warranty, and
+with no claim as to its suitability for any purpose.
+
+<p>
+Updated: July 2001
+
+</div>

@@ -61,12 +61,26 @@
         <dd>
           Create a string representation which is suitable for printing.
         <dt>
+          <b><tt class='method'>__lt__</tt></b>(<i>self, other</i>)
+        <dt>
+          <b><tt class='method'>__le__</tt></b>(<i>self, other</i>)
+        <dt>
+          <b><tt class='method'>__eq__</tt></b>(<i>self, other</i>)
+        <dt>
+          <b><tt class='method'>__ne__</tt></b>(<i>self, other</i>)
+        <dt>
+          <b><tt class='method'>__gt__</tt></b>(<i>self, other</i>)
+        <dt>
+          <b><tt class='method'>__ge__</tt></b>(<i>self, other</i>)
+        <dd>
+	  Rich Comparison methods.
+          New in Python 2.1.
+          See <a href="richcmp.html">Rich Comparisons</a>.
+        <dt>
           <b><tt class='method'>__cmp__</tt></b>(<i>self, other</i>)
         <dd>
-          Three-way compare function, used to implement comparison operators
-          (&lt; etc.) Should return a negative integer if <code> self < other
-          </code> , zero if <code> self == other </code> , a positive integer if
-          <code> self > other </code>.
+	  Three-way compare function.
+          See <a href="richcmp.html">Rich Comparisons</a>.
         <dt>
           <b><tt class='method'>__hash__</tt></b>(<i>self</i>)
         <dd>
@@ -544,17 +558,42 @@ Note that "__rrpow__" is an extension not present in plain Python.
             <code>__cmp__, __rcmp__</code>
           <td>
             <code>cmp(left, right)</code><br>
-             <code>left &lt; right</code><br>
-             <code>left &lt;= right</code><br>
-             <code>left &gt; right</code><br>
-             <code>left &gt;= right</code><br>
-             <code>left == right</code><br>
-             <code>left != right</code>
+            <br>See <a href="richcmp.html">Rich Comparisons</a>.
           <td>
             <code>op_cmp</code>
           <td>
             <code>cpp_left &lt; cpp_right </code>
         <br><code>cpp_right &lt; cpp_left</code>
+        <tr>
+          <td>
+                <code>__lt__</code>
+            <br><code>__le__</code>
+            <br><code>__eq__</code>
+            <br><code>__ne__</code>
+            <br><code>__gt__</code>
+            <br><code>__ge__</code>
+          <td>
+                <code>left &lt; right</code>
+            <br><code>left &lt;= right</code>
+            <br><code>left == right</code>
+            <br><code>left != right</code>
+            <br><code>left &gt; right</code>
+            <br><code>left &gt;= right</code>
+            <br>See <a href="richcmp.html">Rich Comparisons</a>
+          <td>
+                <code>op_lt</code>
+            <br><code>op_le</code>
+            <br><code>op_eq</code>
+            <br><code>op_ne</code>
+            <br><code>op_gt</code>
+            <br><code>op_ge</code>
+          <td>
+                <code>cpp_left &lt; cpp_right </code>
+            <br><code>cpp_left &lt;= cpp_right </code>
+            <br><code>cpp_left == cpp_right </code>
+            <br><code>cpp_left != cpp_right </code>
+            <br><code>cpp_left &gt; cpp_right </code>
+            <br><code>cpp_left &gt;= cpp_right </code>
 
         <tr>
           <td>

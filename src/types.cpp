@@ -457,20 +457,15 @@ void create_method_table_if_null(T*& table)
     }
 }
 
-#define ENABLE_RICHCOMPARE_CAPABILITY \
-        dest->tp_richcompare = &do_instance_richcompare; \
-        dest->tp_flags |= Py_TPFLAGS_HAVE_RICHCOMPARE; \
-        return true
-
 bool add_capability_richcompare(type_object_base::capability capability, PyTypeObject* dest)
 {
     assert(dest != 0);
     if (capability == type_object_base::richcompare) {
 #if PYTHON_API_VERSION >= 1010
-      ENABLE_RICHCOMPARE_CAPABILITY;  
-#else
-      return true;
+      dest->tp_richcompare = &do_instance_richcompare;
+      dest->tp_flags |= Py_TPFLAGS_HAVE_RICHCOMPARE;
 #endif
+      return true;
     }
     
     return false;

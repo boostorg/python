@@ -63,7 +63,7 @@ all: libboost_python.a \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
-     richcmp.pyd
+     richcmp1.pyd richcmp2.pyd richcmp3.pyd
 
 libboost_python.a: $(OBJ)
 	del libboost_python.a
@@ -150,11 +150,23 @@ dvect.pyd: $(OBJ) dvect.o
           --def dvect.def \
           $(OBJ) dvect.o $(PYLIB)
 
-richcmp.pyd: $(OBJ) richcmp.o
+richcmp1.pyd: $(OBJ) richcmp1.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname richcmp.pyd \
-          --def richcmp.def \
-          $(OBJ) richcmp.o $(PYLIB)
+          --dllname richcmp1.pyd \
+          --def richcmp1.def \
+          $(OBJ) richcmp1.o $(PYLIB)
+
+richcmp2.pyd: $(OBJ) richcmp2.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname richcmp2.pyd \
+          --def richcmp2.def \
+          $(OBJ) richcmp2.o $(PYLIB)
+
+richcmp3.pyd: $(OBJ) richcmp3.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname richcmp3.pyd \
+          --def richcmp3.def \
+          $(OBJ) richcmp3.o $(PYLIB)
 
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
