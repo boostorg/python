@@ -8,6 +8,7 @@
 //  producing this work.
 //
 //  Revision History:
+//  23 Jan 2001 - Another stupid typo fix by Ralf W. Grosse-Kunstleve (David Abrahams)
 //  20 Jan 2001 - Added a fix from Ralf W. Grosse-Kunstleve (David Abrahams)
 #ifndef OPERATORS_UK112000_H_
 #define OPERATORS_UK112000_H_
@@ -20,7 +21,7 @@
 // strstream instead. Also, GCC 2.95.2 doesn't have sstream.
 # if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
 #  define BOOST_PYTHON_USE_SSTREAM
-# endi
+# endif
 
 #if defined(BOOST_PYTHON_USE_SSTREAM)
 #  include <sstream>
