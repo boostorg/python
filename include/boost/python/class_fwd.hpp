@@ -18,9 +18,10 @@ namespace detail
 
 template <
     class T // class being wrapped
-    , class X1 = detail::not_specified
-    , class X2 = detail::not_specified
-    , class X3 = detail::not_specified
+    // arbitrarily-ordered optional arguments. Full qualification needed for MSVC6
+    , class X1 = ::boost::python::detail::not_specified
+    , class X2 = ::boost::python::detail::not_specified
+    , class X3 = ::boost::python::detail::not_specified
     >
 class class_;
 
