@@ -8,6 +8,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/none.hpp>
 # include <string>
+# include <complex>
 
 namespace boost { namespace python {
 
@@ -58,6 +59,9 @@ BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, x ? x : detail::none())
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<float>, PyComplex_FromDoubles(x.real(), x.imag()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<double>, PyComplex_FromDoubles(x.real(), x.imag()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::complex<long double>, PyComplex_FromDoubles(x.real(), x.imag()))
 
 namespace converter
 { 

@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <string>
 #include <boost/python/module.hpp>
-
+#include <complex>
 
 template <class T>
 struct by_value
@@ -41,6 +41,9 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters_ext)
         .def("rewrap_value_float", by_value<float>::rewrap)
         .def("rewrap_value_double", by_value<double>::rewrap)
         .def("rewrap_value_long_double", by_value<long double>::rewrap)
+        .def("rewrap_value_complex_float", by_value<std::complex<float> >::rewrap)
+        .def("rewrap_value_complex_double", by_value<std::complex<double> >::rewrap)
+        .def("rewrap_value_complex_long_double", by_value<std::complex<long double> >::rewrap)
         .def("rewrap_value_string", by_value<std::string>::rewrap)
         .def("rewrap_value_cstring", by_value<char const*>::rewrap)
 
@@ -57,6 +60,9 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters_ext)
         .def("rewrap_const_reference_float", by_const_reference<float>::rewrap)
         .def("rewrap_const_reference_double", by_const_reference<double>::rewrap)
         .def("rewrap_const_reference_long_double", by_const_reference<long double>::rewrap)
+        .def("rewrap_const_reference_complex_float", by_const_reference<std::complex<float> >::rewrap)
+        .def("rewrap_const_reference_complex_double", by_const_reference<std::complex<double> >::rewrap)
+        .def("rewrap_const_reference_complex_long_double", by_const_reference<std::complex<long double> >::rewrap)
         .def("rewrap_const_reference_string", by_const_reference<std::string>::rewrap)
         .def("rewrap_const_reference_cstring", by_const_reference<char const*>::rewrap)
         

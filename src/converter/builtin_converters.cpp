@@ -10,8 +10,10 @@
 #include <boost/python/converter/from_python_data.hpp>
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/reference.hpp>
+#include <boost/python/errors.hpp>
 #include <boost/cast.hpp>
 #include <string>
+#include <complex>
 
 namespace boost { namespace python { namespace converter {
 
@@ -73,15 +75,18 @@ namespace
 
           // For floating types, return the float conversion slot to avoid
           // creating a new object. We'll handle that below
-          if (PyObject_TypeCheck(obj, &PyFloat_Type) && number_methods->nb_float)
+          if (PyFloat_Check(obj))
               return &number_methods->nb_float;
-      
+
+          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__int__"))
+              return 0;
+          
           return &number_methods->nb_int;
       }
       
       static long extract(PyObject* intermediate)
       {
-          if (PyObject_TypeCheck(intermediate, &PyFloat_Type))
+          if (PyFloat_Check(intermediate))
           {
               return numeric_cast<long>(PyFloat_AS_DOUBLE(intermediate));
           }
@@ -93,22 +98,23 @@ namespace
   };
 
 
-  // identity_unaryfunc/non_null -- manufacture a unaryfunc "slot"
-  // which just returns its argument. Used for bool conversions, since
-  // all Python objects are directly convertible to bool
+  // identity_unaryfunc/py_object_identity -- manufacture a unaryfunc
+  // "slot" which just returns its argument. Used for bool
+  // conversions, since all Python objects are directly convertible to
+  // bool
   extern "C" PyObject* identity_unaryfunc(PyObject* x)
   {
       Py_INCREF(x);
       return x;
   }
-  unaryfunc non_null = identity_unaryfunc;
+  unaryfunc py_object_identity = identity_unaryfunc;
 
   // A SlotPolicy for extracting bool from a Python object
   struct bool_rvalue_from_python
   {
       static unaryfunc* get_slot(PyObject*)
       {
-          return &non_null;
+          return &py_object_identity;
       }
       
       static bool extract(PyObject* intermediate)
@@ -127,17 +133,19 @@ namespace
               return 0;
 
           // For integer types, return the tp_int conversion slot to avoid
-          // creating a new object. We'll handle that in
-          // py_float_or_int_as_double, below
-          if (PyObject_TypeCheck(obj, &PyInt_Type) && number_methods->nb_int)
+          // creating a new object. We'll handle that below
+          if (PyInt_Check(obj))
               return &number_methods->nb_int;
       
+          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__float__"))
+              return 0;
+          
           return &number_methods->nb_float;
       }
       
       static double extract(PyObject* intermediate)
       {
-          if (PyObject_TypeCheck(intermediate, &PyInt_Type))
+          if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
           }
@@ -154,6 +162,9 @@ namespace
       // If the underlying object is "string-able" this will succeed
       static unaryfunc* get_slot(PyObject* obj)
       {
+          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__str__"))
+              return 0;
+          
           return &obj->ob_type->tp_str;
       };
 
@@ -161,6 +172,64 @@ namespace
       static char const* extract(PyObject* intermediate)
       {
           return PyString_AsString(intermediate);
+      }
+  };
+
+
+  // identity_unaryfunc/non_null -- manufacture a unaryfunc "slot"
+  // which just returns its argument. Used for bool conversions, since
+  // all Python objects are directly convertible to bool
+  extern "C" PyObject* to_complex_unaryfunc(PyObject* x)
+  {
+      return PyObject_CallMethod(x, "__complex__", const_cast<char*>("()"));
+  }
+  unaryfunc py_object_to_complex = to_complex_unaryfunc;
+
+  struct complex_rvalue_from_python
+  {
+      static unaryfunc* get_slot(PyObject* obj)
+      {
+
+          if (PyComplex_Check(obj))
+              return &py_object_identity;
+
+          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          
+          // For integer types, return the tp_int conversion slot to avoid
+          // creating a new object. We'll handle that below
+          if (PyInt_Check(obj) && number_methods)
+              return &number_methods->nb_int;
+      
+          if (PyFloat_Check(obj) && number_methods)
+              return &number_methods->nb_float;
+      
+          if (!PyObject_HasAttrString((PyObject*)obj, "__complex__"))
+              return 0;
+          
+          return &py_object_to_complex;
+      }
+      
+      static std::complex<double> extract(PyObject* intermediate)
+      {
+          if (PyComplex_Check(intermediate))
+          {
+              return std::complex<double>(
+                  PyComplex_RealAsDouble(intermediate)
+                  , PyComplex_ImagAsDouble(intermediate));
+          }
+          else if (PyInt_Check(intermediate))
+          {
+              return PyInt_AS_LONG(intermediate);
+          }
+          else if (PyFloat_Check(intermediate))
+          {
+              return PyFloat_AS_DOUBLE(intermediate);
+          }
+          else
+          {
+              PyErr_SetString(PyExc_TypeError, "__complex__ method did not return a Complex object");
+              throw error_already_set();
+          }
       }
   };
 } 
@@ -183,6 +252,10 @@ void initialize_builtin_converters()
     slot_rvalue_from_python<float,float_rvalue_from_python>();
     slot_rvalue_from_python<double,float_rvalue_from_python>();
     slot_rvalue_from_python<long double,float_rvalue_from_python>();
+    
+    slot_rvalue_from_python<std::complex<float>,complex_rvalue_from_python>();
+    slot_rvalue_from_python<std::complex<double>,complex_rvalue_from_python>();
+    slot_rvalue_from_python<std::complex<long double>,complex_rvalue_from_python>();
     
     // Add an lvalue converter for char which gets us char const*
     registry::insert(convert_to_cstring,undecorated_type_id<char>());

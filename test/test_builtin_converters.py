@@ -30,6 +30,13 @@
 >>> rewrap_value_long_double(4.2) - 4.2
 0.0
 
+>>> abs(rewrap_value_complex_float(4+.2j) - (4+.2j)) < .000001
+1
+>>> abs(rewrap_value_complex_double(4+.2j) - (4+.2j)) < .000001
+1
+>>> abs(rewrap_value_complex_long_double(4+.2j) - (4+.2j)) < .000001
+1
+
 >>> rewrap_value_cstring('hello, world')
 'hello, world'
 >>> rewrap_value_string('yo, wassup?')
@@ -57,12 +64,20 @@
 42
 >>> rewrap_const_reference_unsigned_long(42)
 42
+
 >>> abs(rewrap_const_reference_float(4.2) - 4.2) < .000001
 1
 >>> rewrap_const_reference_double(4.2) - 4.2
 0.0
 >>> rewrap_const_reference_long_double(4.2) - 4.2
 0.0
+
+>>> abs(rewrap_const_reference_complex_float(4+.2j) - (4+.2j)) < .000001
+1
+>>> abs(rewrap_const_reference_complex_double(4+.2j) - (4+.2j)) < .000001
+1
+>>> abs(rewrap_const_reference_complex_long_double(4+.2j) - (4+.2j)) < .000001
+1
 
 >>> rewrap_const_reference_cstring('hello, world')
 'hello, world'
@@ -82,6 +97,27 @@ Now check implicit conversions between floating/integer types
 
 >>> rewrap_value_int(42.0)
 42
+
+Check that classic classes also work
+
+>>> class FortyTwo:
+...     def __int__(self):
+...         return 42
+...     def __float__(self):
+...         return 42.0
+...     def __complex__(self):
+...         return complex(4+.2j)
+...     def __str__(self):
+...         return '42'
+
+>>> rewrap_const_reference_float(FortyTwo())
+42.0
+>>> rewrap_value_int(FortyTwo())
+42
+>>> rewrap_const_reference_string(FortyTwo())
+'42'
+>>> abs(rewrap_value_complex_double(FortyTwo()) - (4+.2j)) < .000001
+1
 
 """
 def run(args = None):
