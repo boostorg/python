@@ -52,7 +52,8 @@ OBJ = classes.o conversions.o extension_class.o functions.o \
 all: libboost_python.a \
      abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
-     getting_started4.pyd getting_started5.pyd \
+     simple_vector.pyd \
+     do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd
@@ -94,17 +95,17 @@ getting_started3.pyd: $(OBJ) getting_started3.o
           --def getting_started3.def \
           $(OBJ) getting_started3.o $(PYLIB)
 
-getting_started4.pyd: $(OBJ) getting_started4.o
+simple_vector.pyd: $(OBJ) simple_vector.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname getting_started4.pyd \
-          --def getting_started4.def \
-          $(OBJ) getting_started4.o $(PYLIB)
+          --dllname simple_vector.pyd \
+          --def simple_vector.def \
+          $(OBJ) simple_vector.o $(PYLIB)
 
-getting_started5.pyd: $(OBJ) getting_started5.o
+do_it_yourself_converters.pyd: $(OBJ) do_it_yourself_converters.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname getting_started5.pyd \
-          --def getting_started5.def \
-          $(OBJ) getting_started5.o $(PYLIB)
+          --dllname do_it_yourself_converters.pyd \
+          --def do_it_yourself_converters.def \
+          $(OBJ) do_it_yourself_converters.o $(PYLIB)
 
 pickle1.pyd: $(OBJ) pickle1.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -157,8 +158,8 @@ test:
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_getting_started3.py
-	$(PYEXE) test_getting_started4.py
-	$(PYEXE) test_getting_started5.py
+	$(PYEXE) test_simple_vector.py
+	$(PYEXE) test_do_it_yourself_converters.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
