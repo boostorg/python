@@ -55,7 +55,7 @@ namespace detail
   no_back_reference_t is_back_reference_test(...);
 
   template<typename T>
-  yes_back_reference_t is_back_reference_test(type< back_reference<T> >);
+  yes_back_reference_t is_back_reference_test(boost::type< back_reference<T> >);
 }
 
 template<typename T>
@@ -64,7 +64,7 @@ class is_back_reference
  public:
     BOOST_STATIC_CONSTANT(
         bool, value = (
-            sizeof(detail::is_back_reference_test(type<T>()))
+            sizeof(detail::is_back_reference_test(boost::type<T>()))
             == sizeof(detail::yes_back_reference_t)));
 };
 
@@ -75,7 +75,7 @@ class is_back_reference
 //
 template <class T>
 back_reference<T>::back_reference(PyObject* p, T x)
-    : m_reference(python::borrow(p))
+    : m_reference(python::borrowed(p))
       , m_value(x)
 {
 }
