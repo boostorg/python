@@ -82,7 +82,7 @@ PyTypeObject life_support_type = {
 PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)
 {
     if (nurse == Py_None)
-        return incref(nurse);
+        return nurse;
     
     if (life_support_type.ob_type == 0)
     {
