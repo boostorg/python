@@ -1,5 +1,6 @@
 '''
->>> import bienstman1_ext
+>>> from bienstman1_ext import *
+>>> # from Numeric import *
 '''
 def run(args = None):
     import sys

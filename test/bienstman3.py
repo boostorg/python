@@ -1,5 +1,5 @@
 '''
->>> import bienstman2_ext
+>>> from bienstman3_ext import *
 '''
 def run(args = None):
     import sys
