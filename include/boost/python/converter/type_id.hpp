@@ -44,6 +44,9 @@ struct undecorated_type_id_t : totally_ordered<undecorated_type_id_t>
 #  endif
     
     undecorated_type_id_t(base_id_t);
+    
+    // default constructor for use in BGL graph internal properties
+    undecorated_type_id_t() {} 
 
     bool operator<(undecorated_type_id_t const& rhs) const;
     bool operator==(undecorated_type_id_t const& rhs) const;
