@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/export.hpp>
+#include <boost/python/detail/config.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/object/class.hpp>
@@ -23,7 +23,6 @@ holder_base::~holder_base()
 {
 }
 
-//BOOST_PYTHON_EXPORT
 PyTypeObject class_metatype_object = {
     PyObject_HEAD_INIT(0)//&PyType_Type)
         0,
@@ -68,7 +67,6 @@ PyTypeObject class_metatype_object = {
         // PyType_GenericNew                       /* tp_new */
 };
 
-//BOOST_PYTHON_EXPORT
 PyTypeObject class_type_object = {
     PyObject_HEAD_INIT(0) //&class_metatype_object)
         0,
@@ -112,7 +110,7 @@ PyTypeObject class_type_object = {
         PyType_GenericNew
 };
 
-BOOST_PYTHON_EXPORT PyTypeObject* class_metatype()
+BOOST_PYTHON_DECL PyTypeObject* class_metatype()
 {
     if (class_metatype_object.tp_dict == 0)
     {
@@ -125,7 +123,7 @@ BOOST_PYTHON_EXPORT PyTypeObject* class_metatype()
     return &class_metatype_object;
 }
 
-BOOST_PYTHON_EXPORT PyTypeObject* class_type()
+BOOST_PYTHON_DECL PyTypeObject* class_type()
 {
     if (class_type_object.tp_dict == 0)
     {
@@ -145,7 +143,7 @@ void holder_base::install(PyObject* self)
     ((instance*)self)->objects = this;
 }
 
-BOOST_PYTHON_EXPORT holder_base*
+BOOST_PYTHON_DECL holder_base*
 find_holder_impl(PyObject* inst, converter::type_id_t type)
 {
     if (inst->ob_type->ob_type != &class_metatype_object)

@@ -19,7 +19,7 @@ bool type_id_before::operator()(type_id_t const& x, type_id_t const&  y) const
     return x < y;
 }
 
-BOOST_PYTHON_EXPORT std::ostream& operator<<(std::ostream& os, type_id_t const& x)
+BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_id_t const& x)
 {
 #  ifdef BOOST_PYTHON_TYPE_ID_NAME
     os << x.m_base_type;
