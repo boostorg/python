@@ -25,9 +25,15 @@ struct default_call_policies;
 
 namespace detail
 {
+  // tuple_extract<Tuple,Predicate>::extract(t) returns the first
+  // element of a Tuple whose type E satisfies the given Predicate
+  // applied to add_reference<E>. The Predicate must be an MPL
+  // metafunction class.
   template <class Tuple, class Predicate>
   struct tuple_extract;
-  
+
+  // Implementation class for when the tuple's head type does not
+  // satisfy the Predicate
   template <bool matched>
   struct tuple_extract_impl
   {
@@ -42,25 +48,28 @@ namespace detail
           }
       };
   };
-  
+
+  // Implementation specialization for when the tuple's head type
+  // satisfies the predicate
   template <>
   struct tuple_extract_impl<false>
   {
       template <class Tuple, class Predicate>
       struct apply
-          : tuple_extract<typename Tuple::tail_type, Predicate>
       {
-          // All of this forwarding would be unneeded if tuples were
-          // derived from their tails.
-          typedef tuple_extract<typename Tuple::tail_type, Predicate> base;
-          typedef typename base::result_type result_type;
+          // recursive application of tuple_extract on the tail of the tuple
+          typedef tuple_extract<typename Tuple::tail_type, Predicate> next;
+          typedef typename next::result_type result_type;
+          
           static result_type extract(Tuple const& x)
           {
-              return base::extract(x.get_tail());
+              return next::extract(x.get_tail());
           }
       };
   };
 
+  // A metafunction which selects a version of tuple_extract_impl to
+  // use for the implementation of tuple_extract
   template <class Tuple, class Predicate>
   struct tuple_extract_base_select
   {
@@ -79,15 +88,24 @@ namespace detail
   {
   };
 
+
+  //
+  // Specialized extractors for the docstring, keywords, CallPolicies,
+  // and default implementation of virtual functions
+  //
+
   template <class Tuple>
   struct doc_extract
       : tuple_extract<
-      Tuple,
-      mpl::logical_not<
-        is_reference_to_class<
-          mpl::_1
+        Tuple,
+        mpl::logical_not<
+           mpl::logical_or<
+              is_reference_to_class<mpl::_1>
+              , is_reference_to_function_pointer<mpl::_1 >
+              , is_reference_to_function<mpl::_1 >
+           >
         >
-      > >
+     >
   {
   };
   
@@ -122,17 +140,50 @@ namespace detail
   {
   };
 
-  template <class T1, class T2 = not_specified, class T3 = not_specified>
+  //
+  // A helper class for decoding the optional arguments to def()
+  // invocations, which can be supplied in any order and are
+  // discriminated by their type properties. The template parameters
+  // are expected to be the types of the actual (optional) arguments
+  // passed to def().
+  //
+  template <class T1, class T2 = not_specified, class T3 = not_specified, class T4 = not_specified>
   struct def_helper
   {
+      // A tuple type which begins with references to the supplied
+      // arguments and ends with actual representatives of the default
+      // types.
       typedef boost::tuples::tuple<
-          T1 const&, T2 const&, T3 const&, default_call_policies, keywords<0>, char const*, void(*)()
+          T1 const&
+          , T2 const&
+          , T3 const&
+          , T4 const&
+          , default_call_policies
+          , keywords<0>
+          , char const*
+          , void(*)()   // A function pointer type which is never an
+                        // appropriate default implementation
           > all_t;
 
-      def_helper(T1 const& a1) : m_all(a1,m_nil,m_nil) {}
-      def_helper(T1 const& a1, T2 const& a2) : m_all(a1,a2,m_nil) {}
-      def_helper(T1 const& a1, T2 const& a2, T3 const& a3) : m_all(a1,a2,a3) {}
+      // Constructors; these initialize an member of the tuple type
+      // shown above.
+      def_helper(T1 const& a1) : m_all(a1,m_nil,m_nil,m_nil) {}
+      def_helper(T1 const& a1, T2 const& a2) : m_all(a1,a2,m_nil,m_nil) {}
+      def_helper(T1 const& a1, T2 const& a2, T3 const& a3) : m_all(a1,a2,a3,m_nil) {}
+      def_helper(T1 const& a1, T2 const& a2, T3 const& a3, T4 const& a4) : m_all(a1,a2,a3,a4) {}
 
+   private: // type
+      typedef typename default_implementation_extract<all_t>::result_type default_implementation_t;
+
+   public: // Constant which can be used for static assertions. Users
+           // must not supply a default implementation for non-class
+           // methods.
+      BOOST_STATIC_CONSTANT(
+          bool, has_default_implementation = (
+              !is_same<default_implementation_t, void(*)()>::value));
+      
+   public: // Extractor functions which pull the appropriate value out
+           // of the tuple
       char const* doc() const
       {
           return doc_extract<all_t>::extract(m_all);
@@ -148,22 +199,15 @@ namespace detail
           return policy_extract<all_t>::extract(m_all);
       }
 
-   private:
-      typedef typename default_implementation_extract<all_t>::result_type default_implementation_t;
-   public:
-      BOOST_STATIC_CONSTANT(
-          bool, has_default_implementation = (
-              !is_same<default_implementation_t, tuples::null_type>::value));
-      
       default_implementation_t default_implementation() const
       {
           return policy_extract<all_t>::extract(m_all);
       }
       
-      all_t m_all;
-      not_specified m_nil;
+   private: // data members
+      all_t m_all; 
+      not_specified m_nil; // for filling in not_specified slots
   };
-# undef BOOST_PYTHON_DEF_HELPER_TAIL
 }
 
 }} // namespace boost::python::detail
