@@ -1,26 +1,22 @@
-<indexing.Vector object at 0x007B57E0>
+#
+# Sample output from the testindexing.py script, using python_d
+# (Python interpreter debug build) for reference leak detection
+#
+
+refcount: 8837
+<indexing.Vector object at 0x00804EC8>
 1 2 3
 1 2 3
 copy is 2, v[1] is 2
 copy is 3, v[1] is 3
 copy is 5, v[1] is 5
 slice[0] is 5, copy is 5, v[1] is 5
-slice[0] is 5, copy is 5, v[1] is 6
-slice[0] is 5, copy is 5, v[1] is 7
-slice[0] is 9, copy is 9, v[1] is 7
+slice[0] is 6, copy is 6, v[1] is 6
+slice[0] is 7, copy is 7, v[1] is 7
+slice[0] is 9, copy is 7, v[1] is 7
 =============
-<indexing.ProxyVector object at 0x007B57E0>
-1 2 3
-1 2 3
-copy is 2, v[1] is 2
-copy is 3, v[1] is 3
-copy is 3, v[1] is 5
-slice[0] is 5, copy is 5, v[1] is 5
-slice[0] is 5, copy is 5, v[1] is 6
-slice[0] is 5, copy is 5, v[1] is 7
-slice[0] is 9, copy is 5, v[1] is 7
-=============
-<indexing.PointerVector object at 0x007B57E0>
+refcount: 8837
+<indexing.ProxyVector object at 0x00804EC8>
 1 2 3
 1 2 3
 copy is 2, v[1] is 2
@@ -31,6 +27,19 @@ slice[0] is 6, copy is 6, v[1] is 6
 slice[0] is 6, copy is 6, v[1] is 7
 slice[0] is 9, copy is 6, v[1] is 7
 =============
+refcount: 8837
+<indexing.PointerVector object at 0x00804EC8>
+1 2 3
+1 2 3
+copy is 2, v[1] is 2
+copy is 3, v[1] is 3
+copy is 3, v[1] is 5
+slice[0] is 5, copy is 5, v[1] is 5
+slice[0] is 6, copy is 6, v[1] is 6
+slice[0] is 6, copy is 6, v[1] is 7
+slice[0] is 9, copy is 6, v[1] is 7
+=============
+refcount: 8837
 []
 1 2 3
 1 2 3
@@ -42,3 +51,7 @@ slice[0] is 6, copy is 6, v[1] is 6
 slice[0] is 6, copy is 6, v[1] is 7
 slice[0] is 9, copy is 6, v[1] is 7
 =============
+refcount: 8837
+Adding parser accelerators ...
+Done.
+[4120 refs]
