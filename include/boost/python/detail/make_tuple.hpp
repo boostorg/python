@@ -22,7 +22,7 @@
     make_tuple(BOOST_PYTHON_BINARY_ENUM(N, A, const& a))
     {
         tuple result((detail::new_reference)::PyTuple_New(N));
-        BOOST_PP_REPEAT(N, BOOST_PYTHON_MAKE_TUPLE_ARG, _)
+        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_MAKE_TUPLE_ARG, _)
         return result;
     }
 

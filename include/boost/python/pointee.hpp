@@ -7,6 +7,7 @@
 # define POINTEE_DWA2002323_HPP
 
 # include <boost/type_traits/object_traits.hpp>
+# include <boost/type_traits/remove_pointer.hpp>
 
 namespace boost { namespace python {
 

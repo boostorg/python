@@ -30,6 +30,10 @@
 #  define BOOST_PYTHON_MAX_ARITY 15
 # endif
 
+# ifndef BOOST_PYTHON_MAX_BASES
+#  define BOOST_PYTHON_MAX_BASES 10
+# endif 
+
 # define BOOST_PYTHON_CV_QUALIFIER(i)                          \
     BOOST_PYTHON_APPLY(                                        \
         BOOST_PP_TUPLE_ELEM(4, i, BOOST_PYTHON_CV_QUALIFIER_I) \

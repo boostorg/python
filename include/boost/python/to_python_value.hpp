@@ -11,7 +11,7 @@
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/builtin_converters.hpp>
 # include <boost/python/converter/object_manager.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/python/tag.hpp>
@@ -46,7 +46,7 @@ namespace detail
 
 template <class T>
 struct to_python_value
-    : mpl::select_type<
+    : mpl::if_c<
           boost::type_traits::ice_or<
               converter::is_object_manager<T>::value
             , converter::is_reference_to_object_manager<T>::value

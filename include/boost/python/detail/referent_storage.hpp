@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #ifndef REFERENT_STORAGE_DWA200278_HPP
 # define REFERENT_STORAGE_DWA200278_HPP
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <cstddef>
 
 namespace boost { namespace python { namespace detail {
@@ -16,7 +16,7 @@ typedef int (alignment_dummy::*member_ptr);
 typedef int (alignment_dummy::*member_function_ptr)();
 
 # define BOOST_PYTHON_ALIGNER(T, n)                     \
-        typename mpl::select_type<                      \
+        typename mpl::if_c<                             \
            sizeof(T) <= size, T, char>::type t##n
 
 // Storage for size bytes, aligned to all fundamental types no larger than size

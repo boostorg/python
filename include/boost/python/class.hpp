@@ -20,7 +20,7 @@
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/mpl/bool_t.hpp>
+# include <boost/mpl/bool_c.hpp>
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/python/object/make_instance.hpp>
@@ -40,7 +40,22 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  struct write_type_id;
+  // This function object is used with mpl::for_each to write the id
+  // of the type a pointer to which is passed as its 2nd compile-time
+  // argument. into the iterator pointed to by its runtime argument
+  struct write_type_id
+  {
+      write_type_id(type_info**p) : p(p) {}
+      
+      // Here's the runtime behavior
+      template <class T>
+      void operator()(T*) const
+      {
+          *(*p)++ = type_id<T>();
+      };
+
+      type_info** p;
+  };
 
   template <class T, class Prev = detail::not_specified>
   struct select_held_type;
@@ -56,7 +71,7 @@ namespace detail
   // to the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class SelectHolder>
-  static inline void register_copy_constructor(mpl::bool_t<true> const&, SelectHolder const& , T* = 0)
+  static inline void register_copy_constructor(mpl::bool_c<true> const&, SelectHolder const& , T* = 0)
   {
       typedef typename SelectHolder::type holder;
       force_instantiate(objects::class_wrapper<T,holder, objects::make_instance<T,holder> >());
@@ -65,12 +80,20 @@ namespace detail
 
   // Tag dispatched to have no effect.
   template <class T, class SelectHolder>
-  static inline void register_copy_constructor(mpl::bool_t<false> const&, SelectHolder const&, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_c<false> const&, SelectHolder const&, T* = 0)
   {
       SelectHolder::register_();
   }
 
-  template <class T> int assert_default_constructible(T const&);
+  template <class T>
+  struct assert_default_constructible
+  {
+      static int check2(T const&);
+      static int check()
+      {
+          return sizeof(check2(T()));
+      }
+  };
 }
 
 //
@@ -118,7 +141,7 @@ class class_ : public objects::class_base
 
             // Write the rest of the elements into succeeding positions.
             type_info* p = ids + 1;
-            mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
+            mpl::for_each(detail::write_type_id(&p), (bases*)0, (add_pointer<mpl::_>*)0);
         }
 
         BOOST_STATIC_CONSTANT(
@@ -265,7 +288,8 @@ class class_ : public objects::class_base
     // Define the default constructor.
     self& def_init()
     {
-        this->def_init(mpl::type_list<>::type());
+        detail::assert_default_constructible<T>::check();
+        this->def_init(mpl::list0<>::type());
         return *this;
     }
 
@@ -392,7 +416,7 @@ inline void class_<T,X1,X2,X3>::register_() const
     objects::register_class_from_python<T,bases>();
 
     detail::register_copy_constructor<T>(
-        mpl::bool_t<is_copyable>()
+        mpl::bool_c<is_copyable>()
         , holder_selector::execute((held_type*)0)
         );
 }
@@ -404,7 +428,6 @@ inline class_<T,X1,X2,X3>::class_()
     : base(typeid(T).name(), id_vector::size, id_vector().ids)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
     this->set_instance_size(holder_selector::additional_size());
 }
@@ -422,7 +445,6 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
     this->def_init();
     this->set_instance_size(holder_selector::additional_size());
 }
@@ -445,28 +467,6 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
 
 namespace detail
 {
-  // This is an mpl BinaryMetaFunction object with a runtime behavior,
-  // which is to write the id of the type which is passed as its 2nd
-  // compile-time argument into the iterator pointed to by its runtime
-  // argument
-  struct write_type_id
-  {
-      // The first argument is Ignored because mpl::for_each is still
-      // currently an accumulate (reduce) implementation.
-      template <class Ignored, class T> struct apply
-      {
-          // also an artifact of accumulate-based for_each
-          typedef void type;
-
-          // Here's the runtime behavior
-          static void execute(type_info** p)
-          {
-              *(*p)++ = type_id<T>();
-          }
-      };
-  };
-
-
   template <class T1, class T2, class T3>
   struct has_noncopyable
       : type_traits::ice_or<
@@ -478,7 +478,7 @@ namespace detail
 
     template <class T, class Prev>
     struct select_held_type
-        : mpl::select_type<
+        : mpl::if_c<
             type_traits::ice_or<
                  specifies_bases<T>::value
                , is_same<T,noncopyable>::value

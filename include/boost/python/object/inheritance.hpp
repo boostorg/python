@@ -8,7 +8,7 @@
 
 # include <boost/python/type_id.hpp>
 # include <boost/shared_ptr.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/type_traits/object_traits.hpp>
 
 namespace boost { namespace python { namespace objects {
@@ -80,7 +80,7 @@ struct non_polymorphic_id_generator
 template <class T>
 struct dynamic_id_generator
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_polymorphic<T>::value
         , polymorphic_id_generator<T>
         , non_polymorphic_id_generator<T> >::type type;
@@ -133,7 +133,7 @@ struct cast_generator
             is_base_and_derived<Target,Source>::value
             ));
 
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_upcast
 # if defined(__MWERKS__) && __MWERKS__ <= 0x2406
         // grab a few more implicit_cast cases for CodeWarrior

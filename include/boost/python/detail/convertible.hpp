@@ -7,7 +7,7 @@
 # define CONVERTIBLE_DWA2002614_HPP
 
 # if defined(__EDG_VERSION__) && __EDG_VERSION__ <= 241
-#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/if.hpp>
 #  include <boost/type_traits/conversion_traits.hpp>
 # endif 
 
@@ -26,7 +26,7 @@ struct convertible
     static inline yes_convertible check(Target) { return 0; }
 # else
     template <class X>
-    static inline typename mpl::select_type<
+    static inline typename mpl::if_c<
         is_convertible<X,Target>::value
         , yes_convertible
         , no_convertible

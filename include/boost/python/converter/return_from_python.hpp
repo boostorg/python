@@ -63,13 +63,13 @@ namespace detail
       BOOST_STATIC_CONSTANT(
           bool, ref = is_reference<T>::value);
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           obj_mgr
           , return_object_manager_from_python<T>
-          , typename mpl::select_type<
+          , typename mpl::if_c<
               ptr
               , return_pointer_from_python<T>
-              , typename mpl::select_type<
+              , typename mpl::if_c<
                   ref
                   , return_reference_from_python<T>
                   , return_rvalue_from_python<T>

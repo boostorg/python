@@ -22,7 +22,7 @@
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
 
-#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/if.hpp>
 #  include <boost/mpl/apply.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>
@@ -131,7 +131,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 # endif
     pointer_holder(PyObject* BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
         : m_p(new Value(
-                BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+                BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             ))
     {}
 
@@ -149,7 +149,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
     pointer_holder_back_reference(
         PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
         : m_p(new held_type(
-                    p BOOST_PP_COMMA_IF(N) BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+                    p BOOST_PP_COMMA_IF(N) BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             ))
     {}
 

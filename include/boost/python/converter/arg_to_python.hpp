@@ -109,22 +109,22 @@ namespace detail
       typedef typename unwrap_reference<T>::type unwrapped_referent;
       typedef typename unwrap_pointer<T>::type unwrapped_ptr;
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           is_string
           , arg_to_python<char const*>
-          , typename mpl::select_type<
+          , typename mpl::if_c<
               function
               , function_arg_to_python<T>
-              , typename mpl::select_type<
+              , typename mpl::if_c<
                   manager
                   , object_manager_arg_to_python<T>
-                  , typename mpl::select_type<
+                  , typename mpl::if_c<
                       ptr
                       , pointer_deep_arg_to_python<T>
-                      , typename mpl::select_type<
+                      , typename mpl::if_c<
                           ptr_wrapper
                           , pointer_shallow_arg_to_python<unwrapped_ptr>
-                          , typename mpl::select_type<
+                          , typename mpl::if_c<
                               ref_wrapper
                               , reference_arg_to_python<unwrapped_referent>
                               , value_arg_to_python<T>
