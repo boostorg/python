@@ -12,11 +12,11 @@
 <h2>Inheritance in Python</h2>
 
       <p>
-         Py_cpp extension classes support single and multiple-inheritance in
-         Python, just like regular Python classes. You can mix built-in Python
-         classes with py_cpp extension classes in a derived class' tuple of
-         bases. Whenever a py_cpp extension class is among the bases for a new
-         class in Python, the result is an extension class:
+         Boost.Python extension classes support single and multiple-inheritance in
+         Python, just like regular Python classes. You can arbitrarily mix
+         built-in Python classes with extension classes in a derived class'
+         tuple of bases. Whenever a Boost.Python extension class is among the bases for a
+         new class in Python, the result is an extension class:
 <blockquote>
 <pre>
 &gt;&gt;&gt; class MyPythonClass:
@@ -37,7 +37,7 @@
 
 <h2><a name="implicit_conversion">Reflecting C++ Inheritance Relationships</a></h2>
       <p>
-        Py_cpp also allows us to represent C++ inheritance relationships so that
+        Boost.Python also allows us to represent C++ inheritance relationships so that
         wrapped derived classes may be passed where values, pointers, or
         references to a base class are expected as arguments. The
         <code>declare_base</code> member function of
@@ -71,22 +71,22 @@ int get_derived_x(const Derived& d) {
     return d.x;
 }
     <hr>
-#include <boost/python/class_builder.hpp>
-extern "C"
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-void initmy_module()
+#include &lt;boost/python/class_builder.hpp&gt;
+
+// namespace alias for code brevity
+namespace python = boost::python;
+
+BOOST_PYTHON_MODULE_INIT(my_module)
 {
     try
     {
-       boost::python::module_builder my_module("my_module");
+       python::module_builder my_module("my_module");
 
-       boost::python::class_builder&lt;Base&gt; base_class(my_module, "Base");
-       base_class.def(boost::python::constructor&lt;void&gt;());
+       python::class_builder&lt;Base&gt; base_class(my_module, "Base");
+       base_class.def(python::constructor&lt;void&gt;());
 
-       boost::python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived");
-       derived_class.def(boost::python::constructor&lt;void&gt;());
+       python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived");
+       derived_class.def(python::constructor&lt;void&gt;());
        <b>// Establish the inheritance relationship between Base and Derived
        derived_class.declare_base(base_class);</b>
 
@@ -96,7 +96,7 @@ void initmy_module()
     }
     catch(...)
     {
-       boost::python::handle_exception();    // Deal with the exception for Python
+       python::handle_exception();    // Deal with the exception for Python
     }
 }
 </pre>
@@ -111,11 +111,19 @@ void initmy_module()
 &gt;&gt;&gt; derived = Derived()
 &gt;&gt;&gt; get_name(base)
 'Base'
-</pre><i>objects of wrapped class Derived may be passed where Base is expected</i><pre>
+</pre>
+</blockquote>
+<i>objects of wrapped class Derived may be passed where Base is expected</i>
+<blockquote>
+<pre>
 &gt;&gt;&gt; get_name(derived) 
 'Derived'
-</pre><i>objects of wrapped class Derived can be passed where Derived is 
-expected but where type information has been lost.</i><pre>
+</pre>
+</blockquote>
+<i>objects of wrapped class Derived can be passed where Derived is 
+expected but where type information has been lost.</i>
+<blockquote>
+<pre>
 &gt;&gt;&gt; get_derived_x(derived_as_base()) 
 -1
 </pre>
@@ -135,12 +143,12 @@ struct Base2 {};
 struct Derived2 { int f(); };
 <hr>
    ...
-   boost::python::class_builder&lt;Base&gt; base2_class(my_module, "Base2");
-   base2_class.def(boost::python::constructor&lt;void&gt;());
+   python::class_builder&lt;Base&gt; base2_class(my_module, "Base2");
+   base2_class.def(python::constructor&lt;void&gt;());
 
-   boost::python::class_builder&lt;Derived2&gt; derived2_class(my_module, "Derived2");
-   derived2_class.def(boost::python::constructor&lt;void&gt;());
-   derived_class.declare_base(base_class, <b>boost::python::without_downcast</b>);
+   python::class_builder&lt;Derived2&gt; derived2_class(my_module, "Derived2");
+   derived2_class.def(python::constructor&lt;void&gt;());
+   derived_class.declare_base(base_class, <b>python::without_downcast</b>);
 </pre>
 </blockquote>
 
@@ -150,8 +158,8 @@ struct Derived2 { int f(); };
  references, or values.
 
       <p>
+         Next: <a href="special.html">Special Method and Operator Support</a>
          Previous: <a href="overloading.html">Function Overloading</a>
-         Next: <a href="special.html">Special Method Names</a>
          Up: <a href="index.html">Top</a>
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
