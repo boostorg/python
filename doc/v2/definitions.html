@@ -34,26 +34,49 @@
       hidden "<code>this</code>" argument to member functions is not counted
       when specifying arity</dt>
 
+      <dd><br>
+      </dd>
+
       <dt><b><a name="ntbs">ntbs</a>:</b> Null-Terminated Byte String, or
       `C'-string. C++ string literals are <strong>ntbs</strong>es. An
       <strong>ntbs</strong> must never be null.</dt>
 
+      <dd><br>
+      </dd>
+
       <dt><b><a name="raise">raise</a>:</b> Exceptions in Python are
-      &quot;raised&quot;, not &quot;thrown&quot;, as they are in
-      C++. When this documentation says that some Python exception is
-      &quot;raised&quot; in the context of C++ code, it means that the
-      corresponding Python exception is set via the <a
-      href="http://www.python.org/doc/current/api/exceptionHandling.html">Python/'C'
-      API</a>, and <code><a
-      href="errors.html#throw_error_already_set-spec">throw_error_already_set</a>()</code>
+      "raised", not "thrown", as they are in C++. When this documentation
+      says that some Python exception is "raised" in the context of C++ code,
+      it means that the corresponding Python exception is set via the <a
+      href=
+      "http://www.python.org/doc/current/api/exceptionHandling.html">Python/'C'
+      API</a>, and <code><a href=
+      "errors.html#throw_error_already_set-spec">throw_error_already_set</a>()</code>
       is called.</dt>
 
+      <dd><br>
+      </dd>
+
+      <dt><b><a name="POD">POD</a>:</b> A technical term from the C++
+      standard. Short for "Plain Ol'Data": A POD-struct is an aggregate class
+      that has no non-static data members of type pointer to member,
+      non-POD-struct, non-POD-union (or array of such types) or reference,
+      and has no user-defined copy assign- ment operator and no user-defined
+      destructor. Similarly, a POD-union is an aggregate union that has no
+      non-static data members of type pointer to member, non-POD-struct,
+      non-POD-union (or array of such types) or reference, and has no
+      user-defined copy assignment operator and no user-defined destructor. A
+      POD class is a class that is either a POD-struct or a POD-union. An
+      aggregate is an array or a class (clause 9) with no user-declared
+      constructors (12.1), no private or protected non-static data members
+      (clause 11), no base classes (clause 10), and no virtual functions
+      (10.3).</dt>
     </dl>
     <hr>
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     30 September, 2002 
+     03 October, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
