@@ -147,7 +147,7 @@ namespace boost { namespace python {
 
         typedef typename mpl::if_<
             mpl::bool_<NoSlice>
-          , detail::slice_helper<
+          , detail::no_slice_helper<
                 Container
               , DerivedPolicies
               , proxy_handler
@@ -185,6 +185,7 @@ namespace boost { namespace python {
         static void 
         extension_def(Class& cl)
         {
+            // default.
             // no more extensions
         }
 
@@ -250,7 +251,7 @@ namespace boost { namespace python {
             }
             
             Index index = DerivedPolicies::convert_index(container, i);
-            proxy_handler::base_erase_indexes(container, index, index+1);
+            proxy_handler::base_erase_index(container, index, mpl::bool_<NoSlice>());
             DerivedPolicies::delete_item(container, index);
         } 
 

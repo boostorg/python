@@ -28,13 +28,14 @@ namespace boost { namespace python { namespace detail {
         //  This functor compares a proxy and an index.
         //  This is used by proxy_group::first_proxy to
         //  get first proxy with index i.
-        
+                
         template <class Index>
         bool operator()(PyObject* prox, Index i) const
         {
             typedef typename Proxy::policies_type policies_type;
+            Proxy& proxy = extract<Proxy&>(prox)();
             return policies_type::
-                compare_index(extract<Proxy&>(prox)().get_index(), i);
+                compare_index(proxy.get_container(), proxy.get_index(), i);
         }
     };        
  
@@ -93,8 +94,32 @@ namespace boost { namespace python { namespace detail {
         }
 
         void
+        erase(index_type i, mpl::false_)
+        {
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+            // Erase the proxy with index i 
+            replace(i, i, 0);
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+        }
+
+        void
+        erase(index_type i, mpl::true_)
+        {
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+            // Erase the proxy with index i 
+            
+            iterator iter = first_proxy(i);
+            if (iter != proxies.end()
+                && extract<Proxy&>(*iter)().get_index() == i)
+                proxies.erase(iter);
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
+        }
+
+        void
         erase(index_type from, index_type to)
         {
+            // note: this cannot be called when container is not sliceable
+            
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Erase all proxies with indexes from..to 
             replace(from, to, 0);
@@ -107,6 +132,8 @@ namespace boost { namespace python { namespace detail {
             index_type to, 
             typename std::vector<PyObject*>::size_type len)
         {
+            // note: this cannot be called when container is not sliceable
+
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Erase all proxies with indexes from..to.
             // Adjust the displaced indexes such that the
@@ -138,8 +165,11 @@ namespace boost { namespace python { namespace detail {
             {
                 extract<Proxy&> p(*right);
                 p().set_index(
-                    policies_type::adjust_index(
-                        extract<Proxy&>(*right)().get_index(), from, to, len));
+                    extract<Proxy&>(*right)().get_index() 
+                        - (typename Proxy::container_type::difference_type(to) 
+                        - from - len)
+                    );
+                    
                 ++right;
             }
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
@@ -225,6 +255,19 @@ namespace boost { namespace python { namespace detail {
             links[&container].add(prox);
         }
         
+        template <class NoSlice>
+        void erase(Container& container, index_type i, NoSlice no_slice)
+        {
+            // Erase the proxy with index i 
+            typename links_t::iterator r = links.find(&container);
+            if (r != links.end())
+            {
+                r->second.erase(i, no_slice);
+                if (r->second.size() == 0)
+                    links.erase(r);
+            }
+        }
+        
         void
         erase(Container& container, index_type from, index_type to)
         {
@@ -293,7 +336,8 @@ namespace boost { namespace python { namespace detail {
     public:
     
         typedef Index index_type;
-        typedef typename Container::value_type element_type;
+        typedef Container container_type;
+        typedef typename Policies::data_type element_type;
         typedef Policies policies_type;
         typedef container_element<Container, Index, Policies> self_t;
         typedef proxy_group<self_t> links_type;
@@ -417,6 +461,13 @@ namespace boost { namespace python { namespace detail {
         {
         }
 
+        template <class NoSlice>
+        static void
+        base_erase_index(
+            Container& container, Index i, NoSlice no_slice)
+        {
+        }
+        
         static void
         base_erase_indexes(Container& container, Index from, Index to)
         {
@@ -464,6 +515,14 @@ namespace boost { namespace python { namespace detail {
             Index to, Index n)
         {
             ContainerElement::get_links().replace(container, from, to, n);
+        }
+        
+        template <class NoSlice>
+        static void
+        base_erase_index(
+            Container& container, Index i, NoSlice no_slice)
+        {
+            ContainerElement::get_links().erase(container, i, no_slice);
         }
         
         static void
@@ -617,8 +676,8 @@ namespace boost { namespace python { namespace detail {
 
   }}  // namespace python::detail
 
-    template <class Container, class Index, class Policies> 
-    inline typename Container::value_type* 
+    template <class Container, class Index, class Policies>
+    inline typename Policies::data_type* 
     get_pointer(
         python::detail::container_element<Container, Index, Policies> const& p)
     {

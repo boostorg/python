@@ -140,7 +140,7 @@ namespace boost { namespace python {
         }
       
         static bool 
-        compare_index(index_type a, index_type b)
+        compare_index(Container& container, index_type a, index_type b)
         {
             return a < b;
         }
@@ -166,14 +166,7 @@ namespace boost { namespace python {
             throw_error_already_set();
             return index_type();
         }
-        
-        static index_type
-        adjust_index(index_type current, index_type from, 
-            index_type to, size_type len)
-        { 
-            return current - (difference_type(to) - from - len);
-        }
-        
+      
         static void 
         append(Container& container, data_type const& v)
         { 
