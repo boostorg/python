@@ -851,7 +851,13 @@ CompareIntPairPythonClass::CompareIntPairPythonClass()
 
 
 #if defined(_WIN32)
+# ifdef __MWERKS__
+#  pragma ANSI_strict off
+# endif
 # include <windows.h>
+# ifdef __MWERKS__
+#  pragma ANSI_strict reset
+# endif
 extern "C" BOOL WINAPI DllMain ( HINSTANCE hInst, DWORD wDataSeg, LPVOID lpvReserved );
 
 # ifdef PY_COMPILER_IS_MSVC
