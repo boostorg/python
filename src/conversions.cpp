@@ -19,9 +19,7 @@
 #include <boost/function.hpp>
 #include <typeinfo>
 #include <exception>
-#ifndef BOOST_NO_LIMITS
-# include <boost/cast.hpp>
-#endif
+#include <boost/cast.hpp>
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
@@ -53,19 +51,11 @@ T integer_from_python(PyObject* p, boost::python::type<T>)
 {
     const long long_result = from_python(p, boost::python::type<long>());
 
-#ifndef BOOST_NO_LIMITS
     try
     {
         return boost::numeric_cast<T>(long_result);
     }
     catch(const boost::bad_numeric_cast&)
-#else
-    if (static_cast<T>(long_result) == long_result)
-    {
-        return static_cast<T>(long_result);
-    }
-    else
-#endif
     {
         char buffer[256];
         const char message[] = "%ld out of range for %s";
@@ -73,7 +63,7 @@ T integer_from_python(PyObject* p, boost::python::type<T>)
         PyErr_SetString(PyExc_ValueError, buffer);
         throw boost::python::argument_error();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2407
     return 0; // Not smart enough to know that the catch clause always rethrows
 #endif
 }
@@ -83,16 +73,11 @@ PyObject* integer_to_python(T value)
 {
     long value_as_long;
 
-#ifndef BOOST_NO_LIMITS
     try
     {
         value_as_long = boost::numeric_cast<long>(value);
     }
     catch(const boost::bad_numeric_cast&)
-#else
-    value_as_long = static_cast<long>(value);
-    if (value_as_long != value)
-#endif
     {
         const char message[] = "value out of range for Python int";
         PyErr_SetString(PyExc_ValueError, message);
