@@ -82,6 +82,8 @@ to a Python object and vice versa (i.e. the <tt>to_python()</tt> and
 example:
 
 <pre>
+  #include &lt;boost/python/cross_module.hpp&gt;
+  //...
   class_builder&lt;std::vector&lt;double&gt; &gt; v_double(std_vector_module, &quot;double&quot;);
   export_converters(v_double);
 </pre>
@@ -91,6 +93,8 @@ these converters with the <tt>import_converters&lt;&gt;</tt> template.
 For example:
 
 <pre>
+  #include &lt;boost/python/cross_module.hpp&gt;
+  //...
   import_converters&lt;std::vector&lt;double&gt; &gt; v_double_converters(&quot;std_vector&quot;, &quot;double&quot;);
 </pre>
 
@@ -248,28 +252,64 @@ the Boost.Python extension module with the
 <tt>import_converters&lt;&gt;</tt> statement need to be linked against
 the object library.  Ideally one would build a shared library (e.g.
 <tt>libdvect.so</tt>, <tt>dvect.dll</tt>, etc.). However, this
-introduces the issue of getting the search path for the dynamic loading
-configured correctly. For small libraries it is therefore often more
-convenient to ignore the fact that the object files are loaded into
-memory more than once.
+introduces the issue of having to configure the search path for the
+dynamic loading correctly. For small libraries it is therefore often
+more convenient to ignore the fact that the object files are loaded
+into memory more than once.
+
+<hr>
+<h2>Summary of motivation for cross-module support</h2>
+
+The main purpose of Boost.Python's cross-module support is to allow for
+a modular system layout. With this support it is straightforward to
+reflect C++ code organization at the Python level. Without the
+cross-module support, a multi-purpose module like <tt>std_vector</tt>
+would be impractical because the entire wrapper code would somehow have
+to be duplicated in all extension modules that use it, making them
+harder to maintain and harder to build.
 
 <p>
-The main purpose of Boost.Python's support for resolving cross-module
-dependencies at runtime is to allow for a modular system layout. With
-this support it is straightforward to reflect C++ code organization at
-the Python level. Without the cross-module support, a multi-purpose
-module like <tt>std_vector</tt> would be impractical because the entire
-wrapper code would somehow have to be duplicated in all extension
-modules that use it, making them harder to maintain and harder to
-build.
+Another motivation for the cross-module support is that two extension
+modules that wrap the same class cannot both be imported into Python.
+For example, if there are two modules <tt>A</tt> and <tt>B</tt> that
+both wrap a given <tt>class X</tt>, this will work:
+
+<pre>
+import A
+x = A.X()
+</pre>
+
+This will also work:
+
+<pre>
+import B
+x = B.X()
+</pre>
+
+However, this will fail:
+
+<pre>
+import A
+import B
+python: /net/cci/rwgk/boost/boost/python/detail/extension_class.hpp:866:
+static void boost::python::detail::class_registry&lt;X&gt;::register_class(boost::python::detail::extension_class_base *):
+Assertion `static_class_object == 0' failed.
+Abort
+</pre>
+
+A good solution is to wrap <tt>class X</tt> only once. Depending on the
+situation, this could be done by module <tt>A</tt> or <tt>B</tt>, or an
+additional small extension module that only wraps and exports
+<tt>class X</tt>.
 
 <p>
-Finally, there is an important psychological component. If a group of
-classes is lumped together with many others in a huge module, the
-authors will have difficulties in being identified with their work.
-The situation is much more transparent if the work is represented by
-a module with a recognizable name. This is not just a question of
-strong egos, but also of getting credit and funding.
+Finally, there can be important psychological or political reasons for
+using the cross-module support. If a group of classes is lumped
+together with many others in a huge module, the authors will have
+difficulties in being identified with their work. The situation is
+much more transparent if the work is represented by a module with a
+recognizable name. This is not just a question of strong egos, but also
+of getting credit and funding.
 
 <hr>
 <h2>Why not use <tt>export_converters()</tt> universally?</h2>
@@ -291,6 +331,6 @@ is" without express or implied warranty, and with no claim as to its
 suitability for any purpose.
 
 <p>
-Updated: March 2001
+Updated: April 2001
 
 </div>
