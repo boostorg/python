@@ -657,7 +657,7 @@ and intuitively:
         .def(self + int())          // __add__
         .def(int() + self)          // __radd__
         .def(self - self)           // __sub__
-        .def(self - int())          // __rsub__
+        .def(self - int())          // __sub__
         .def(self += int())         // __iadd__
         .def(self -= other<int>())
         .def(self < self);          // __lt__
