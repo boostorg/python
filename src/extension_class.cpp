@@ -5,6 +5,9 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// Mar 01 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #include <boost/python/detail/extension_class.hpp>
 #include <cstring>
@@ -446,8 +449,8 @@ operator_dispatcher::operator_dispatcher(const ref& o, const ref& s)
     : m_object(o), m_self(s), m_free_list_link(0)
 
 {
-    ob_refcnt = 1;
-    ob_type = &type_obj;
+    PyObject* self = this;
+    PyObject_INIT(self, &type_obj);
 }
 
 operator_dispatcher* 
