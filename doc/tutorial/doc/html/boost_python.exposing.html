@@ -1,0 +1,326 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title> Exposing Classes</title><link rel="stylesheet" href="boostbook.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.65.1"><link rel="home" href="index.html" title="Chapter 1. Boost.Boost Python 1.0"><link rel="up" href="index.html" title="Chapter 1. Boost.Boost Python 1.0"><link rel="previous" href="boost_python.hello.html" title=" Building Hello World"><link rel="next" href="boost_python.functions.html" title="Functions"><link rel="chapter" href="index.html" title="Chapter 1. Boost.Boost Python 1.0"><link rel="subsection" href="boost_python.exposing.html#boost_python.constructors" title="Constructors"><link rel="subsection" href="boost_python.exposing.html#boost_python.class_data_members" title="Class Data Members"><link rel="subsection" href="boost_python.exposing.html#boost_python.class_properties" title="Class Properties"><link rel="subsection" href="boost_python.exposing.html#boost_python.inheritance" title="Inheritance"><link rel="subsection" href="boost_python.exposing.html#boost_python.class_virtual_functions" title="Class Virtual Functions"><link rel="subsection" href="boost_python.exposing.html#boost_python.deriving_a_python_class" title="Deriving a Python Class"><link rel="subsection" href="boost_python.exposing.html#boost_python.virtual_functions_with_default_implementations" title="Virtual Functions with Default Implementations"><link rel="subsection" href="boost_python.exposing.html#boost_python.class_operators_special_functions" title="Class Operators/Special Functions"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><table cellpadding="2" width="100%"><td valign="top"><img src="../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277" height="86"></td><td align="center"><a href="../../index.htm">Home</a></td><td align="center"><a href="libraries.html">Libraries</a></td><td align="center"><a href="../../people/people.htm">People</a></td><td align="center"><a href="../../more/faq.htm">FAQ</a></td><td align="center"><a href="../../more/index.htm">More</a></td></table><hr><div class="spirit-nav"><a accesskey="p" href="boost_python.hello.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="index.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="boost_python.functions.html"><img src="images/next.png" alt="Next"></a></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="boost_python.exposing"></a> Exposing Classes</h2></div></div><div></div></div><div class="toc"><dl><dt><span class="section"><a href="boost_python.exposing.html#boost_python.constructors">Constructors</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.class_data_members">Class Data Members</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.class_properties">Class Properties</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.inheritance">Inheritance</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.class_virtual_functions">Class Virtual Functions</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.deriving_a_python_class">Deriving a Python Class</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.virtual_functions_with_default_implementations">Virtual Functions with Default Implementations</a></span></dt><dt><span class="section"><a href="boost_python.exposing.html#boost_python.class_operators_special_functions">Class Operators/Special Functions</a></span></dt></dl></div><p>
+Now let's expose a C++ class to Python.</p><p>
+Consider a C++ class/struct that we want to expose to Python:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> World</span><span class="special">
+    {</span><span class="keyword">
+        void</span><span class="identifier"> set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">)</span><span class="special"> {</span><span class="keyword"> this</span><span class="special">-&gt;</span><span class="identifier">msg</span><span class="special"> =</span><span class="identifier"> msg</span><span class="special">;</span><span class="special"> }</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> greet</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> msg</span><span class="special">;</span><span class="special"> }</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+We can expose this to Python by writing a corresponding Boost.Python
+C++ Wrapper:</p><pre class="programlisting"><tt class="literal"><span class="preprocessor">    #include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="keyword">
+    using</span><span class="keyword"> namespace</span><span class="identifier"> boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span><span class="identifier">
+
+    BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">hello</span><span class="special">)</span><span class="special">
+    {</span><span class="identifier">
+        class_</span><span class="special">&lt;</span><span class="identifier">World</span><span class="special">&gt;(</span><span class="string">"World"</span><span class="special">)</span><span class="special">
+            .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"greet"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">greet</span><span class="special">)</span><span class="special">
+            .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"set"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">set</span><span class="special">)</span><span class="special">
+        ;</span><span class="special">
+    }</span></tt></pre><p>
+Here, we wrote a C++ class wrapper that exposes the member functions
+<tt class="literal">greet</tt> and <tt class="literal">set</tt>. Now, after building our module as a shared library, we
+may use our class <tt class="literal">World</tt> in Python. Here's a sample Python session:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> hello</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">set</span><span class="special">(</span><span class="char">'howdy'</span><span class="special">)</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="char">
+    'howdy'</span></tt></pre><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.constructors"></a>Constructors</h3></div></div><div></div></div><p>
+Our previous example didn't have any explicit constructors.
+Since <tt class="literal">World</tt> is declared as a plain struct, it has an implicit default
+constructor. Boost.Python exposes the default constructor by default,
+which is why we were able to write</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span></tt></pre><p>
+We may wish to wrap a class with a non-default constructor. Let us
+build on our previous example:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> World</span><span class="special">
+    {</span><span class="identifier">
+        World</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">):</span><span class="identifier"> msg</span><span class="special">(</span><span class="identifier">msg</span><span class="special">)</span><span class="special"> {}</span><span class="comment"> // added constructor
+</span><span class="keyword">        void</span><span class="identifier"> set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">)</span><span class="special"> {</span><span class="keyword"> this</span><span class="special">-&gt;</span><span class="identifier">msg</span><span class="special"> =</span><span class="identifier"> msg</span><span class="special">;</span><span class="special"> }</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> greet</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> msg</span><span class="special">;</span><span class="special"> }</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+This time <tt class="literal">World</tt> has no default constructor; our previous
+wrapping code would fail to compile when the library tried to expose
+it. We have to tell <tt class="literal">class_&lt;World&gt;</tt> about the constructor we want to
+expose instead.</p><pre class="programlisting"><tt class="literal"><span class="preprocessor">    #include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="keyword">
+    using</span><span class="keyword"> namespace</span><span class="identifier"> boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span><span class="identifier">
+
+    BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">hello</span><span class="special">)</span><span class="special">
+    {</span><span class="identifier">
+        class_</span><span class="special">&lt;</span><span class="identifier">World</span><span class="special">&gt;(</span><span class="string">"World"</span><span class="special">,</span><span class="identifier"> init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span><span class="special">
+            .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"greet"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">greet</span><span class="special">)</span><span class="special">
+            .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"set"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">set</span><span class="special">)</span><span class="special">
+        ;</span><span class="special">
+    }</span></tt></pre><p><tt class="literal">init&lt;std::string&gt;()</tt> exposes the constructor taking in a
+<tt class="literal">std::string</tt> (in Python, constructors are spelled
+"<tt class="literal">"__init__"</tt>").</p><p>
+We can expose additional constructors by passing more <tt class="literal">init&lt;...&gt;</tt>s to
+the <tt class="literal">def()</tt> member function. Say for example we have another World
+constructor taking in two doubles:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">World</span><span class="special">&gt;(</span><span class="string">"World"</span><span class="special">,</span><span class="identifier"> init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span><span class="keyword"> double</span><span class="special">&gt;())</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"greet"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">greet</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"set"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">set</span><span class="special">)</span><span class="special">
+    ;</span></tt></pre><p>
+On the other hand, if we do not wish to expose any constructors at
+all, we may use <tt class="literal">no_init</tt> instead:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Abstract</span><span class="special">&gt;(</span><span class="string">"Abstract"</span><span class="special">,</span><span class="identifier"> no_init</span><span class="special">)</span></tt></pre><p>
+This actually adds an <tt class="literal">__init__</tt> method which always raises a
+Python RuntimeError exception.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.class_data_members"></a>Class Data Members</h3></div></div><div></div></div><p>
+Data members may also be exposed to Python so that they can be
+accessed as attributes of the corresponding Python class. Each data
+member that we wish to be exposed may be regarded as <span class="bold"><b>read-only</b></span> or
+<span class="bold"><b>read-write</b></span>.  Consider this class <tt class="literal">Var</tt>:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Var</span><span class="special">
+    {</span><span class="identifier">
+        Var</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> name</span><span class="special">)</span><span class="special"> :</span><span class="identifier"> name</span><span class="special">(</span><span class="identifier">name</span><span class="special">),</span><span class="identifier"> value</span><span class="special">()</span><span class="special"> {}</span><span class="identifier">
+        std</span><span class="special">::</span><span class="identifier">string</span><span class="keyword"> const</span><span class="identifier"> name</span><span class="special">;</span><span class="keyword">
+        float</span><span class="identifier"> value</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+Our C++ <tt class="literal">Var</tt> class and its data members can be exposed to Python:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Var</span><span class="special">&gt;(</span><span class="string">"Var"</span><span class="special">,</span><span class="identifier"> init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span><span class="special">
+        .</span><span class="identifier">def_readonly</span><span class="special">(</span><span class="string">"name"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Var</span><span class="special">::</span><span class="identifier">name</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">def_readwrite</span><span class="special">(</span><span class="string">"value"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Var</span><span class="special">::</span><span class="identifier">value</span><span class="special">);</span></tt></pre><p>
+Then, in Python, assuming we have placed our Var class inside the namespace
+hello as we did before:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="char">'pi'</span><span class="special">)</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special"> =</span><span class="number"> 3.14</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> print</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">name</span><span class="special">,</span><span class="char"> 'is around'</span><span class="special">,</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="identifier">
+    pi</span><span class="identifier"> is</span><span class="identifier"> around</span><span class="number"> 3.14</span></tt></pre><p>
+Note that <tt class="literal">name</tt> is exposed as <span class="bold"><b>read-only</b></span> while <tt class="literal">value</tt> is exposed
+as <span class="bold"><b>read-write</b></span>.</p><pre class="programlisting"><tt class="literal">    &gt;&gt;&gt; x.name = 'e' # can't change name
+    Traceback (most recent call last):
+      File "&lt;stdin&gt;", line 1, in ?
+    AttributeError: can't set attribute
+</tt></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.class_properties"></a>Class Properties</h3></div></div><div></div></div><p>
+In C++, classes with public data members are usually frowned
+upon. Well designed classes that take advantage of encapsulation hide
+the class' data members. The only way to access the class' data is
+through access (getter/setter) functions. Access functions expose class
+properties. Here's an example:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Num</span><span class="special">
+    {</span><span class="identifier">
+        Num</span><span class="special">();</span><span class="keyword">
+        float</span><span class="identifier"> get</span><span class="special">()</span><span class="keyword"> const</span><span class="special">;</span><span class="keyword">
+        void</span><span class="identifier"> set</span><span class="special">(</span><span class="keyword">float</span><span class="identifier"> value</span><span class="special">);</span><span class="special">
+        ...</span><span class="special">
+    };</span></tt></pre><p>
+However, in Python attribute access is fine; it doesn't neccessarily break
+encapsulation to let users handle attributes directly, because the
+attributes can just be a different syntax for a method call. Wrapping our
+<tt class="literal">Num</tt> class using Boost.Python:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Num</span><span class="special">&gt;(</span><span class="string">"Num"</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"value"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">set</span><span class="special">);</span></tt></pre><p>
+And at last, in Python:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special"> =</span><span class="identifier"> Num</span><span class="special">()</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special"> =</span><span class="number"> 3.14</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special">,</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">rovalue</span><span class="special">
+    (</span><span class="number">3.14</span><span class="special">,</span><span class="number"> 3.14</span><span class="special">)</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">rovalue</span><span class="special"> =</span><span class="number"> 2.17</span>#<span class="identifier"> error</span><span class="special">!</span></tt></pre><p>
+Take note that the class property <tt class="literal">rovalue</tt> is exposed as <span class="bold"><b>read-only</b></span>
+since the <tt class="literal">rovalue</tt> setter member function is not passed in:</p><pre class="programlisting"><tt class="literal"><span class="special">    .</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span></tt></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.inheritance"></a>Inheritance</h3></div></div><div></div></div><p>
+In the previous examples, we dealt with classes that are not polymorphic.
+This is not often the case. Much of the time, we will be wrapping
+polymorphic classes and class hierarchies related by inheritance. We will
+often have to write Boost.Python wrappers for classes that are derived from
+abstract base classes.</p><p>
+Consider this trivial inheritance structure:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Base</span><span class="special"> {</span><span class="keyword"> virtual</span><span class="special"> ~</span><span class="identifier">Base</span><span class="special">();</span><span class="special"> };</span><span class="keyword">
+    struct</span><span class="identifier"> Derived</span><span class="special"> :</span><span class="identifier"> Base</span><span class="special"> {};</span></tt></pre><p>
+And a set of C++ functions operating on <tt class="literal">Base</tt> and <tt class="literal">Derived</tt> object
+instances:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    void</span><span class="identifier"> b</span><span class="special">(</span><span class="identifier">Base</span><span class="special">*);</span><span class="keyword">
+    void</span><span class="identifier"> d</span><span class="special">(</span><span class="identifier">Derived</span><span class="special">*);</span><span class="identifier">
+    Base</span><span class="special">*</span><span class="identifier"> factory</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="keyword"> new</span><span class="identifier"> Derived</span><span class="special">;</span><span class="special"> }</span></tt></pre><p>
+We've seen how we can wrap the base class <tt class="literal">Base</tt>:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span><span class="comment">
+        /*...*/</span><span class="special">
+        ;</span></tt></pre><p>
+Now we can inform Boost.Python of the inheritance relationship between
+<tt class="literal">Derived</tt> and its base class <tt class="literal">Base</tt>.  Thus:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Derived</span><span class="special">,</span><span class="identifier"> bases</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span><span class="special"> &gt;(</span><span class="string">"Derived"</span><span class="special">)</span><span class="comment">
+        /*...*/</span><span class="special">
+        ;</span></tt></pre><p>
+Doing so, we get some things for free:</p><div class="orderedlist"><ol type="1"><li>
+Derived automatically inherits all of Base's Python methods (wrapped C++ member functions)
+</li><li><span class="bold"><b>If</b></span> Base is polymorphic, <tt class="literal">Derived</tt> objects which have been passed to Python via a pointer or reference to <tt class="literal">Base</tt> can be passed where a pointer or reference to <tt class="literal">Derived</tt> is expected.
+</li></ol></div><p>
+Now, we shall expose the C++ free functions <tt class="literal">b</tt> and <tt class="literal">d</tt> and <tt class="literal">factory</tt>:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    def</span><span class="special">(</span><span class="string">"b"</span><span class="special">,</span><span class="identifier"> b</span><span class="special">);</span><span class="identifier">
+    def</span><span class="special">(</span><span class="string">"d"</span><span class="special">,</span><span class="identifier"> d</span><span class="special">);</span><span class="identifier">
+    def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span><span class="identifier"> factory</span><span class="special">);</span></tt></pre><p>
+Note that free function <tt class="literal">factory</tt> is being used to generate new
+instances of class <tt class="literal">Derived</tt>. In such cases, we use
+<tt class="literal">return_value_policy&lt;manage_new_object&gt;</tt> to instruct Python to adopt
+the pointer to <tt class="literal">Base</tt> and hold the instance in a new Python <tt class="literal">Base</tt>
+object until the the Python object is destroyed. We shall see more of
+Boost.Python <a href="call_policies.html" target="_top">
+call policies</a> later.</p><pre class="programlisting"><tt class="literal"><span class="comment">    // Tell Python to take ownership of factory's result
+</span><span class="identifier">    def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span><span class="identifier"> factory</span><span class="special">,</span><span class="identifier">
+        return_value_policy</span><span class="special">&lt;</span><span class="identifier">manage_new_object</span><span class="special">&gt;());</span></tt></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.class_virtual_functions"></a>Class Virtual Functions</h3></div></div><div></div></div><p>
+In this section, we shall learn how to make functions behave
+polymorphically through virtual functions. Continuing our example, let us
+add a virtual function to our <tt class="literal">Base</tt> class:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="keyword">
+        virtual</span><span class="keyword"> int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> =</span><span class="number"> 0</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+Since <tt class="literal">f</tt> is a pure virtual function, <tt class="literal">Base</tt> is now an abstract
+class. Given an instance of our class, the free function <tt class="literal">call_f</tt>
+calls some implementation of this virtual function in a concrete
+derived class:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    int</span><span class="identifier"> call_f</span><span class="special">(</span><span class="identifier">Base</span><span class="special">&amp;</span><span class="identifier"> b</span><span class="special">)</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> b</span><span class="special">.</span><span class="identifier">f</span><span class="special">();</span><span class="special"> }</span></tt></pre><p>
+To allow this function to be implemented in a Python derived class, we
+need to create a class wrapper:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> BaseWrap</span><span class="special"> :</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="identifier">
+        BaseWrap</span><span class="special">(</span><span class="identifier">PyObject</span><span class="special">*</span><span class="identifier"> self_</span><span class="special">)</span><span class="special">
+            :</span><span class="identifier"> self</span><span class="special">(</span><span class="identifier">self_</span><span class="special">)</span><span class="special"> {}</span><span class="keyword">
+        int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> call_method</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">self</span><span class="special">,</span><span class="string"> "f"</span><span class="special">);</span><span class="special"> }</span><span class="identifier">
+        PyObject</span><span class="special">*</span><span class="identifier"> self</span><span class="special">;</span><span class="special">
+    };</span><span class="keyword">
+
+
+    struct</span><span class="identifier"> BaseWrap</span><span class="special"> :</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="identifier">
+        BaseWrap</span><span class="special">(</span><span class="identifier">PyObject</span><span class="special">*</span><span class="identifier"> self_</span><span class="special">)</span><span class="special">
+            :</span><span class="identifier"> self</span><span class="special">(</span><span class="identifier">self_</span><span class="special">)</span><span class="special"> {}</span><span class="identifier">
+        BaseWrap</span><span class="special">(</span><span class="identifier">PyObject</span><span class="special">*</span><span class="identifier"> self_</span><span class="special">,</span><span class="identifier"> Base</span><span class="keyword"> const</span><span class="special">&amp;</span><span class="identifier"> copy</span><span class="special">)</span><span class="special">
+            :</span><span class="identifier"> Base</span><span class="special">(</span><span class="identifier">copy</span><span class="special">),</span><span class="identifier"> self</span><span class="special">(</span><span class="identifier">self_</span><span class="special">)</span><span class="special"> {}</span><span class="keyword">
+        int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> call_method</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">self</span><span class="special">,</span><span class="string"> "f"</span><span class="special">);</span><span class="special"> }</span><span class="keyword">
+        int</span><span class="identifier"> default_f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">();</span><span class="special"> }</span><span class="comment"> // &lt;&lt;=== ***ADDED***
+</span><span class="identifier">        PyObject</span><span class="special">*</span><span class="identifier"> self</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><div class="informaltable"><table class="table"><colgroup><col></colgroup><tbody><tr><td><span class="inlinemediaobject"><img src="images/lens.gif"></span><span class="bold"><b>member function and methods</b></span><p></p><p></p>
+ Python, like
+many object oriented languages uses the term <span class="bold"><b>methods</b></span>.  Methods
+correspond roughly to C++'s <span class="bold"><b>member functions</b></span></td></tr></tbody></table></div><p>
+Our class wrapper <tt class="literal">BaseWrap</tt> is derived from <tt class="literal">Base</tt>. Its overridden
+virtual member function <tt class="literal">f</tt> in effect calls the corresponding method
+of the Python object <tt class="literal">self</tt>, which is a pointer back to the Python
+<tt class="literal">Base</tt> object holding our <tt class="literal">BaseWrap</tt> instance.</p><div class="informaltable"><table class="table"><colgroup><col></colgroup><tbody><tr><td><span class="inlinemediaobject"><img src="images/note.gif"></span><span class="bold"><b>Why do we need BaseWrap?</b></span><p></p><p></p></td></tr></tbody></table></div><p><span class="emphasis"><em>You may ask</em></span>, "Why do we need the <tt class="literal">BaseWrap</tt> derived class? This could
+have been designed so that everything gets done right inside of
+Base."</p><p></p><p></p><p>
+One of the goals of Boost.Python is to be minimally intrusive on an
+existing C++ design. In principle, it should be possible to expose the
+interface for a 3rd party library without changing it. To unintrusively
+hook into the virtual functions so that a Python override may be called, we
+must use a derived class.</p><p></p><p></p><p>
+Note however that you don't need to do this to get methods overridden
+in Python to behave virtually when called <span class="emphasis"><em>from</em></span><span class="bold"><b>Python</b></span>. The only
+time you need to do the <tt class="literal">BaseWrap</tt> dance is when you have a virtual
+function that's going to be overridden in Python and called
+polymorphically <span class="emphasis"><em>from</em></span><span class="bold"><b>C++</b></span>.]</p><p>
+Wrapping <tt class="literal">Base</tt> and the free function <tt class="literal">call_f</tt>:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier"> BaseWrap</span><span class="special">,</span><span class="identifier"> boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">,</span><span class="identifier"> no_init</span><span class="special">)</span><span class="special">
+        ;</span><span class="identifier">
+    def</span><span class="special">(</span><span class="string">"call_f"</span><span class="special">,</span><span class="identifier"> call_f</span><span class="special">);</span></tt></pre><p>
+Notice that we parameterized the <tt class="literal">class_</tt> template with <tt class="literal">BaseWrap</tt> as the
+second parameter. What is <tt class="literal">noncopyable</tt>? Without it, the library will try
+to create code for converting Base return values of wrapped functions to
+Python. To do that, it needs Base's copy constructor... which isn't
+available, since Base is an abstract class.</p><p>
+In Python, let us try to instantiate our <tt class="literal">Base</tt> class:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> base</span><span class="special"> =</span><span class="identifier"> Base</span><span class="special">()</span><span class="identifier">
+    RuntimeError</span><span class="special">:</span><span class="identifier"> This</span><span class="keyword"> class</span><span class="identifier"> cannot</span><span class="identifier"> be</span><span class="identifier"> instantiated</span><span class="identifier"> from</span><span class="identifier"> Python</span></tt></pre><p>
+Why is it an error? <tt class="literal">Base</tt> is an abstract class. As such it is advisable
+to define the Python wrapper with <tt class="literal">no_init</tt> as we have done above. Doing
+so will disallow abstract base classes such as <tt class="literal">Base</tt> to be instantiated.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.deriving_a_python_class"></a>Deriving a Python Class</h3></div></div><div></div></div><p>
+Continuing, we can derive from our base class Base in Python and override
+the virtual function in Python. Before we can do that, we have to set up
+our <tt class="literal">class_</tt> wrapper as:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier"> BaseWrap</span><span class="special">,</span><span class="identifier"> boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span><span class="special">
+        ;</span></tt></pre><p>
+Otherwise, we have to suppress the Base class' <tt class="literal">no_init</tt> by adding an
+<tt class="literal">__init__()</tt> method to all our derived classes. <tt class="literal">no_init</tt> actually adds
+an <tt class="literal">__init__</tt> method that raises a Python RuntimeError exception.</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="keyword"> class</span><span class="identifier"> Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span><span class="special">
+    ...</span><span class="identifier">     def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="special">
+    ...</span><span class="keyword">         return</span><span class="number"> 42</span><span class="special">
+    ...</span></tt></pre><p>
+Cool eh? A Python class deriving from a C++ class!</p><p>
+Let's now make an instance of our Python class <tt class="literal">Derived</tt>:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> derived</span><span class="special"> =</span><span class="identifier"> Derived</span><span class="special">()</span></tt></pre><p>
+Calling <tt class="literal">derived.f()</tt>:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> derived</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span><span class="number">
+    42</span></tt></pre><p>
+Will yield the expected result. Finally, calling calling the free function
+<tt class="literal">call_f</tt> with <tt class="literal">derived</tt> as argument:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> call_f</span><span class="special">(</span><span class="identifier">derived</span><span class="special">)</span><span class="number">
+    42</span></tt></pre><p>
+Will also yield the expected result.</p><p>
+Here's what's happening:</p><div class="orderedlist"><ol type="1"><li><tt class="literal">call_f(derived)</tt> is called in Python
+</li><li>
+This corresponds to <tt class="literal">def("call_f", call_f);</tt>. Boost.Python dispatches this call.
+</li><li><tt class="literal">int call_f(Base&amp; b) { return b.f(); }</tt> accepts the call.
+</li><li>
+The overridden virtual function <tt class="literal">f</tt> of <tt class="literal">BaseWrap</tt> is called.
+</li><li><tt class="literal">call_method&lt;int&gt;(self, "f");</tt> dispatches the call back to Python.
+</li><li><tt class="literal">def f(self): return 42</tt> is finally called.
+</li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.virtual_functions_with_default_implementations"></a>Virtual Functions with Default Implementations</h3></div></div><div></div></div><p>
+Recall that in the <a href="class_virtual_functions.html" target="_top">
+previous section</a>, we
+wrapped a class with a pure virtual function that we then implemented in
+C++ or Python classes derived from it. Our base class:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="keyword">
+        virtual</span><span class="keyword"> int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> =</span><span class="number"> 0</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+had a pure virtual function <tt class="literal">f</tt>. If, however, its member function <tt class="literal">f</tt> was
+not declared as pure virtual:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="keyword">
+        virtual</span><span class="keyword"> int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="number"> 0</span><span class="special">;</span><span class="special"> }</span><span class="special">
+    };</span></tt></pre><p>
+and instead had a default implementation that returns <tt class="literal">0</tt>, as shown above,
+we need to add a forwarding function that calls the <tt class="literal">Base</tt> default virtual
+function <tt class="literal">f</tt> implementation:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    struct</span><span class="identifier"> BaseWrap</span><span class="special"> :</span><span class="identifier"> Base</span><span class="special">
+    {</span><span class="identifier">
+        BaseWrap</span><span class="special">(</span><span class="identifier">PyObject</span><span class="special">*</span><span class="identifier"> self_</span><span class="special">)</span><span class="special">
+            :</span><span class="identifier"> self</span><span class="special">(</span><span class="identifier">self_</span><span class="special">)</span><span class="special"> {}</span><span class="keyword">
+        int</span><span class="identifier"> f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> call_method</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">self</span><span class="special">,</span><span class="string"> "f"</span><span class="special">);</span><span class="special"> }</span><span class="keyword">
+        int</span><span class="identifier"> default_f</span><span class="special">()</span><span class="special"> {</span><span class="keyword"> return</span><span class="identifier"> Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">();</span><span class="special"> }</span><span class="comment"> // &lt;&lt;=== ***ADDED***
+</span><span class="identifier">        PyObject</span><span class="special">*</span><span class="identifier"> self</span><span class="special">;</span><span class="special">
+    };</span></tt></pre><p>
+Then, Boost.Python needs to keep track of 1) the dispatch function <tt class="literal">f</tt> and
+2) the forwarding function to its default implementation <tt class="literal">default_f</tt>.
+There's a special <tt class="literal">def</tt> function for this purpose. Here's how it is
+applied to our example above:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier"> BaseWrap</span><span class="special">,</span><span class="identifier"> BaseWrap</span><span class="special">,</span><span class="identifier"> boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">BaseWrap</span><span class="special">::</span><span class="identifier">default_f</span><span class="special">)</span></tt></pre><p>
+Note that we are allowing <tt class="literal">Base</tt> objects to be instantiated this time,
+unlike before where we specifically defined the <tt class="literal">class_&lt;Base&gt;</tt> with
+<tt class="literal">no_init</tt>.</p><p>
+In Python, the results would be as expected:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> base</span><span class="special"> =</span><span class="identifier"> Base</span><span class="special">()</span><span class="special">
+    &gt;&gt;&gt;</span><span class="keyword"> class</span><span class="identifier"> Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span><span class="special">
+    ...</span><span class="identifier">     def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="special">
+    ...</span><span class="keyword">         return</span><span class="number"> 42</span><span class="special">
+    ...</span><span class="special">
+    &gt;&gt;&gt;</span><span class="identifier"> derived</span><span class="special"> =</span><span class="identifier"> Derived</span><span class="special">()</span></tt></pre><p>
+Calling <tt class="literal">base.f()</tt>:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> base</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span><span class="number">
+    0</span></tt></pre><p>
+Calling <tt class="literal">derived.f()</tt>:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> derived</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span><span class="number">
+    42</span></tt></pre><p>
+Calling <tt class="literal">call_f</tt>, passing in a <tt class="literal">base</tt> object:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> call_f</span><span class="special">(</span><span class="identifier">base</span><span class="special">)</span><span class="number">
+    0</span></tt></pre><p>
+Calling <tt class="literal">call_f</tt>, passing in a <tt class="literal">derived</tt> object:</p><pre class="programlisting"><tt class="literal"><span class="special">    &gt;&gt;&gt;</span><span class="identifier"> call_f</span><span class="special">(</span><span class="identifier">derived</span><span class="special">)</span><span class="number">
+    42</span></tt></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boost_python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div><div></div></div><a name="class_operators_special_functions.python_operators"></a><h2><a name="id406432"></a>Python Operators</h2><p>
+C is well known for the abundance of operators. C++ extends this to the
+extremes by allowing operator overloading. Boost.Python takes advantage of
+this and makes it easy to wrap C++ operator-powered classes.</p><p>
+Consider a file position class <tt class="literal">FilePos</tt> and a set of operators that take
+on FilePos instances:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    class</span><span class="identifier"> FilePos</span><span class="special"> {</span><span class="comment"> /*...*/</span><span class="special"> };</span><span class="identifier">
+
+    FilePos</span><span class="keyword">     operator</span><span class="special">+(</span><span class="identifier">FilePos</span><span class="special">,</span><span class="keyword"> int</span><span class="special">);</span><span class="identifier">
+    FilePos</span><span class="keyword">     operator</span><span class="special">+(</span><span class="keyword">int</span><span class="special">,</span><span class="identifier"> FilePos</span><span class="special">);</span><span class="keyword">
+    int</span><span class="keyword">         operator</span><span class="special">-(</span><span class="identifier">FilePos</span><span class="special">,</span><span class="identifier"> FilePos</span><span class="special">);</span><span class="identifier">
+    FilePos</span><span class="keyword">     operator</span><span class="special">-(</span><span class="identifier">FilePos</span><span class="special">,</span><span class="keyword"> int</span><span class="special">);</span><span class="identifier">
+    FilePos</span><span class="special">&amp;</span><span class="keyword">    operator</span><span class="special">+=(</span><span class="identifier">FilePos</span><span class="special">&amp;,</span><span class="keyword"> int</span><span class="special">);</span><span class="identifier">
+    FilePos</span><span class="special">&amp;</span><span class="keyword">    operator</span><span class="special">-=(</span><span class="identifier">FilePos</span><span class="special">&amp;,</span><span class="keyword"> int</span><span class="special">);</span><span class="keyword">
+    bool</span><span class="keyword">        operator</span><span class="special">&lt;(</span><span class="identifier">FilePos</span><span class="special">,</span><span class="identifier"> FilePos</span><span class="special">);</span></tt></pre><p>
+The class and the various operators can be mapped to Python rather easily
+and intuitively:</p><pre class="programlisting"><tt class="literal"><span class="identifier">    class_</span><span class="special">&lt;</span><span class="identifier">FilePos</span><span class="special">&gt;(</span><span class="string">"FilePos"</span><span class="special">)</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> +</span><span class="keyword"> int</span><span class="special">())</span><span class="comment">          // __add__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="keyword">int</span><span class="special">()</span><span class="special"> +</span><span class="identifier"> self</span><span class="special">)</span><span class="comment">          // __radd__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> -</span><span class="identifier"> self</span><span class="special">)</span><span class="comment">           // __sub__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> -</span><span class="keyword"> int</span><span class="special">())</span><span class="comment">          // __sub__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> +=</span><span class="keyword"> int</span><span class="special">())</span><span class="comment">         // __iadd__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> -=</span><span class="identifier"> other</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;())</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span><span class="special"> &lt;</span><span class="identifier"> self</span><span class="special">);</span><span class="comment">          // __lt__
+</span></tt></pre><p>
+The code snippet above is very clear and needs almost no explanation at
+all. It is virtually the same as the operators' signatures. Just take
+note that <tt class="literal">self</tt> refers to FilePos object. Also, not every class <tt class="literal">T</tt> that
+you might need to interact with in an operator expression is (cheaply)
+default-constructible. You can use <tt class="literal">other&lt;T&gt;()</tt> in place of an actual
+<tt class="literal">T</tt> instance when writing "self expressions".</p><a name="class_operators_special_functions.special_methods"></a><h2><a name="id407119"></a>Special Methods</h2><p>
+Python has a few more <span class="emphasis"><em>Special Methods</em></span>. Boost.Python supports all of the
+standard special method names supported by real Python class instances. A
+similar set of intuitive interfaces can also be used to wrap C++ functions
+that correspond to these Python <span class="emphasis"><em>special functions</em></span>. Example:</p><pre class="programlisting"><tt class="literal"><span class="keyword">    class</span><span class="identifier"> Rational</span><span class="special">
+    {</span><span class="keyword"> operator</span><span class="keyword"> double</span><span class="special">()</span><span class="keyword"> const</span><span class="special">;</span><span class="special"> };</span><span class="identifier">
+
+    Rational</span><span class="identifier"> pow</span><span class="special">(</span><span class="identifier">Rational</span><span class="special">,</span><span class="identifier"> Rational</span><span class="special">);</span><span class="identifier">
+    Rational</span><span class="identifier"> abs</span><span class="special">(</span><span class="identifier">Rational</span><span class="special">);</span><span class="identifier">
+    ostream</span><span class="special">&amp;</span><span class="keyword"> operator</span><span class="special">&lt;&lt;(</span><span class="identifier">ostream</span><span class="special">&amp;,</span><span class="identifier">Rational</span><span class="special">);</span><span class="identifier">
+
+    class_</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;()</span><span class="special">
+        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">float_</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span><span class="comment">                  // __float__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">pow</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> other</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;))</span><span class="comment">    // __pow__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">abs</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span><span class="comment">                     // __abs__
+</span><span class="special">        .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">str</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span><span class="comment">                     // __str__
+</span><span class="special">        ;</span></tt></pre><p>
+Need we say more?</p><div class="informaltable"><table class="table"><colgroup><col></colgroup><tbody><tr><td><span class="inlinemediaobject"><img src="images/lens.gif"></span> What is the business of <tt class="literal">operator&lt;&lt;</tt><tt class="literal">.def(str(self))</tt>?
+Well, the method <tt class="literal">str</tt> requires the <tt class="literal">operator&lt;&lt;</tt> to do its work (i.e.
+<tt class="literal">operator&lt;&lt;</tt> is used by the method defined by def(str(self)).</td></tr></tbody></table></div></div></div><table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr><td align="left"></td><td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td></tr></table><hr><div class="spirit-nav"><a accesskey="p" href="boost_python.hello.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="index.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a><a accesskey="n" href="boost_python.functions.html"><img src="images/next.png" alt="Next"></a></div></body></html>

@@ -1,0 +1,165 @@
+/*=============================================================================
+    Copyright (c) 2002 2004 Joel de Guzman
+    http://spirit.sourceforge.net/
+
+    Use, modification and distribution is subject to the Boost Software
+    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+    http://www.boost.org/LICENSE_1_0.txt)
+=============================================================================*/
+
+/* CSS based on w3c documentation which I like a lot, and the classic Spirit
+documentation. */
+
+/* Body defaults */
+body 
+{
+    padding: 2em 1em 2em 1em;
+    background-color: #FFFFFF;
+    margin: 1em 2em 1em 2em;
+    font-family: sans-serif;
+    color: black;
+    background: white;
+}
+
+/* Paragraphs */
+p 
+{
+    text-align: justify;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { text-align: left }
+h1, h2, h3 { color: #005A9C; }
+h1 { font: 170% sans-serif }
+h2 { font: bold 140% sans-serif }
+h3 { font: 120% sans-serif }
+h4 { font: bold 100% sans-serif }
+h5 { font: italic 100% sans-serif }
+h6 { font: small-caps 100% sans-serif }
+
+/* Unordered lists */
+ul 
+{
+    list-style-image: url(images/bullet.gif);
+}
+
+/* Links */
+a 
+{
+    font-weight: bold;
+    color: #003366;
+    text-decoration: none; /* no underline */
+}
+
+/* Top page title */
+.title/*, .refnamediv h2, .standalone-title */
+{
+    font-weight:   bold;
+    font-size:     2pc;
+    margin-bottom: 1pc;
+}
+
+/* Spirit style navigation */
+.spirit-nav
+{
+    text-align: right;
+}
+
+.spirit-nav a
+{
+    color: white;
+    padding-left: 0.5em;
+}
+
+/* Program listing box */
+.programlisting /*, .table-programlisting*/
+{
+    background-color: #f5f5f5;
+    border: gray 1pt solid;
+    display: block;
+    padding-top: 4px;
+    padding-right: 4px; 
+    padding-bottom: 4px; 
+    padding-left: 4px;
+}
+
+/* Syntax Highlighting */
+.keyword        {  color: #000099}
+.identifier     {}
+.special        {  color: #800040}
+.preprocessor   {  color: #FF0000}
+.char           {  color: #6666FF; font-style: italic}
+.comment        {  font-style: italic; color: #990000}
+.string         {  font-style: italic; color: #666666}
+.number         {  color: #6666FF; font-style: italic}
+.quotes         {  color: #666666; font-style: italic; font-weight: bold}
+.copyright      {  color: #666666; font-size: small}
+.white_bkd      {  background-color: #FFFFFF}
+.dk_grey_bkd    {  background-color: #999999}
+
+/* Literals */
+tt.literal
+{
+    color: #000050
+}    
+
+/* Table of contents */
+.toc
+{
+   margin-left:   15%;
+   margin-right:  15%;
+   margin-top:    1pc;
+   margin-bottom: 0pc;
+   padding:       0.5pc;
+}
+
+.boost-toc
+{
+   float:   right;
+   padding: 0.5pc;
+}
+
+/* Tables */
+.table-title
+{
+    color: #005A9C;
+    margin-left: 8%;
+    padding-right: 0.5em; 
+    padding-left: 0.5em; 
+}
+
+.informaltable table
+{
+    margin-left: 8%;
+    margin-right: 8%;
+}
+
+div.informaltable table
+{
+    background-color: white;
+    padding-top: 4px; 
+    padding-right: 4px; 
+    padding-bottom: 4px; 
+    padding-left: 4px;
+}
+
+div.informaltable table tr td
+{
+    background-color: #D9EFFF;
+    padding-top: 0.5em; 
+    padding-right: 0.5em; 
+    padding-bottom: 0.5em; 
+    padding-left: 0.5em; 
+}
+
+/* inlined images */
+.inlinemediaobject
+{
+    padding-top: 0.5em; 
+    padding-right: 0.5em; 
+    padding-bottom: 0.5em; 
+    padding-left: 0.5em; 
+}
+
+
+

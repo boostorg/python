@@ -1,0 +1,5 @@
+project boost/libs/python/doc/tutorial/doc ;
+import boostbook : boostbook ;
+
+boostbook tutorial : tutorial.qbk.xml
+    ;
