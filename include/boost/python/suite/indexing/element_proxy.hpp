@@ -22,26 +22,19 @@
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/get_pointer.hpp>
+#include <boost/utility/addressof.hpp>
+#include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
   class element_proxy
   {
-#if defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
   public:
-#else
-    template<typename T> friend struct const_element_proxy;
-#endif
-
-    typedef ContainerProxy container_proxy_;
-    typedef typename container_proxy_::shared_proxy proxy_type;
+    typedef typename ContainerProxy::shared_proxy proxy_type;
+    typedef typename ContainerProxy::raw_value_type raw_value_type;
+    typedef typename ContainerProxy::size_type size_type;
     typedef boost::shared_ptr<proxy_type> proxy_pointer;
-    typedef typename container_proxy_::raw_value_type raw_value_type;
-    typedef typename container_proxy_::size_type size_type;
 
-    proxy_pointer m_ptr;
-
-  public:
     typedef typename proxy_type::value_type value_type;
     typedef typename proxy_type::reference reference;
     typedef typename proxy_type::pointer pointer;
@@ -52,7 +45,7 @@ namespace boost { namespace python { namespace indexing {
 
     element_proxy () : m_ptr () { }
     explicit element_proxy (proxy_type *ptr) : m_ptr (ptr) { }
-    element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
+    explicit element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
 
     explicit element_proxy (raw_value_type const &val)
       : m_ptr (new proxy_type(val))
@@ -67,20 +60,19 @@ namespace boost { namespace python { namespace indexing {
     // Implicit conversion to raw_value_type
     operator reference () const { return operator*(); }
 
-    // These are necessary (at least) while the indexing suite insists
-    // on converting the real container's value_type to the proxy
-    // container's value_type when going from Python to C++. If the
-    // suite would just pass the real container's value_type through,
-    // our implicit conversion to value_type might suffice.
-    bool operator== (value_type const &other) { return (**this) == other; }
-    bool operator!= (value_type const &other) { return (**this) != other; }
-    bool operator< (value_type const &other) { return (**this) < other; }
-    bool operator> (value_type const &other) { return (**this) > other; }
+#if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
+    // The implicit conversion doesn't work on MSVC6, so help it along
+    // a little.
+    bool operator== (value_type const &val) const { return (**this) == val; }
+    bool operator!= (value_type const &val) const { return (**this) != val; }
+    bool operator< (value_type const &val) const { return (**this) < val; }
+    bool operator> (value_type const &val) const { return (**this) > val; }
+#endif
 
     element_proxy &operator= (value_type const &copy)
     {
       proxy_type &proxy = *m_ptr;
-      container_proxy_ *container = proxy.owner();
+      ContainerProxy *container = proxy.owner();
       size_type index = proxy.index();
 
       if (container)
@@ -108,54 +100,70 @@ namespace boost { namespace python { namespace indexing {
 
     element_proxy &operator= (element_proxy const &copy)
     {
-      // This is the most dubious bit of the fudge. The indexing_suite's
-      // implementation of __setitem__ tries to pass us our value_type,
-      // which is actually of type element_proxy
+      // Required to make sorting a container_proxy work
       return (*this) = *copy;
     }
 
     size_t use_count() const { return m_ptr.use_count(); } // For debugging
+
+  private:
+    proxy_pointer m_ptr;
   };
 
   template<typename ContainerProxy>
-  struct const_element_proxy
+  class const_element_proxy
   {
-    typedef ContainerProxy container_proxy_;
-    typedef typename container_proxy_::shared_proxy proxy_type;
-    typedef boost::shared_ptr<proxy_type> proxy_pointer;
-    typedef typename container_proxy_::raw_value_type raw_value_type;
-
-    proxy_pointer m_ptr;
-
   public:
+    typedef element_proxy<ContainerProxy> base_type;
+    typedef typename base_type::proxy_type proxy_type;
+    typedef typename base_type::proxy_pointer proxy_pointer;
+    typedef typename base_type::raw_value_type raw_value_type;
+
     typedef typename proxy_type::value_type const value_type;
     typedef value_type &reference;
     typedef value_type *pointer;
-    typedef typename proxy_type::iterator_category iterator_category;
-    typedef typename proxy_type::difference_type difference_type;
+    typedef typename base_type::iterator_category iterator_category;
+    typedef typename base_type::difference_type difference_type;
 
-    const_element_proxy () : m_ptr () { }
-    explicit const_element_proxy (proxy_type *ptr) : m_ptr (ptr) { }
-    const_element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
+    const_element_proxy () : m_base () { }
+    explicit const_element_proxy (proxy_type *ptr) : m_base (ptr) { }
 
-    const_element_proxy (element_proxy<container_proxy_> const &copy)
-      : m_ptr (copy.m_ptr)
+    explicit const_element_proxy (proxy_pointer const &ptr) : m_base (ptr) {}
+
+    const_element_proxy (const_element_proxy<ContainerProxy> const &copy)
+      : m_base (copy.m_base)
+    {
+    }
+
+    const_element_proxy (element_proxy<ContainerProxy> const &copy)
+      : m_base (copy)
     {
     }
 
     explicit const_element_proxy (raw_value_type const &val)
-      : m_ptr (new proxy_type(val))
+      : m_base (new proxy_type(val))
     {
-      // Create new standalone value (i.e. detached)
     }
 
-    reference operator* () const { return m_ptr->operator*(); }
-    pointer operator-> () const { return m_ptr->operator->(); }
+    reference operator* () const { return *m_base; }
+    pointer operator-> () const { return m_base.operator->(); }
 
-    // Implicit conversion to raw_value_type
-    operator reference () const { return operator*(); }
+    // Implicit conversion to raw_value_type const &
+    operator reference () const { return *m_base; }
 
-    size_t use_count() const { return m_ptr.use_count(); } // For debugging
+#if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
+    // The implicit conversion doesn't work on MSVC6, so help it along
+    // a little.
+    bool operator== (value_type const &val) const { return m_base == val; }
+    bool operator!= (value_type const &val) const { return m_base != val; }
+    bool operator< (value_type const &val) const { return m_base < val; }
+    bool operator> (value_type const &val) const { return m_base > val; }
+#endif
+
+    size_t use_count() const { return m_base.use_count(); } // For debugging
+
+  private:
+    base_type m_base;
   };
 
 #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
@@ -166,12 +174,12 @@ namespace boost { namespace python { namespace indexing {
   typename ContainerProxy::raw_value_type *
   get_pointer (python::indexing::element_proxy<ContainerProxy> const &proxy)
   {
-    return &(*proxy);
+    return ::boost::addressof (*proxy);
   }
 
 #ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
     // Don't hide these other get_pointer overloads
-    using boost::python::get_pointer;
+    using boost::get_pointer;
 }} // namespace python::indexing
 #endif 
 }
