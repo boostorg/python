@@ -9,7 +9,7 @@
 # include <boost/python/detail/prefix.hpp>
 
 # include <boost/python/default_call_policies.hpp>
-# include <boost/python/args_fwd.hpp>
+# include <boost/python/args.hpp>
 # include <boost/python/detail/caller.hpp>
 
 # include <boost/python/object/function_object.hpp>
@@ -64,13 +64,41 @@ namespace detail
           detail::caller<F,ConverterGenerators,CallPolicies,Sig>(f, p)
         , kw);
   }
-}
 
-// make_function --
-//
-// These overloaded functions wrap a function or member function
-// pointer as a Python object, using optional CallPolicies and
-// Keywords.
+  // { Helpers for make_function when called with 3 arguments.  These
+  //   dispatch functions are used to discriminate between the cases
+  //   when the 3rd argument is keywords or when it is a signature.
+  //
+  template <class F, class CallPolicies, class Keywords>
+  object make_function_dispatch(F f, CallPolicies const& policies, Keywords const& kw, mpl::true_)
+  {
+      return detail::make_function_aux(
+          f
+        , policies
+        , detail::args_from_python()
+        , detail::get_signature(f)
+        , kw.range()
+        , mpl::int_<Keywords::size>()
+      );
+  }
+
+  template <class F, class CallPolicies, class Signature>
+  object make_function_dispatch(F f, CallPolicies const& policies, Signature const& sig, mpl::false_)
+  {
+      return detail::make_function_aux(
+          f
+        , policies
+        , detail::args_from_python()
+        , sig
+      );
+  }
+  // }
+  
+ }
+
+// { These overloaded functions wrap a function or member function
+//   pointer as a Python object, using optional CallPolicies,
+//   Keywords, and/or Signature.
 template <class F>
 object make_function(F f)
 {
@@ -85,18 +113,42 @@ object make_function(F f, CallPolicies const& policies)
         f,policies,detail::args_from_python(), detail::get_signature(f));
 }
 
-template <class F, class CallPolicies, class Keywords>
-object make_function(F f, CallPolicies const& policies, Keywords const& keywords)
+template <class F, class CallPolicies, class KeywordsOrSignature>
+object make_function(
+    F f
+  , CallPolicies const& policies
+  , KeywordsOrSignature const& keywords_or_signature)
+{
+    typedef typename
+        detail::is_reference_to_keywords<KeywordsOrSignature&>::type
+        is_kw;
+    
+    return detail::make_function_dispatch(
+        f
+      , policies
+      , keywords_or_signature
+      , is_kw()
+    );
+}
+
+template <class F, class CallPolicies, class Keywords, class Signature>
+object make_function(
+    F f
+  , CallPolicies const& policies
+  , Keywords const& kw
+  , Signature const& sig
+ )
 {
     return detail::make_function_aux(
-        f
+          f
         , policies
         , detail::args_from_python()
-        , detail::get_signature(f)
-        , keywords.range()
+        , sig
+        , kw.range()
         , mpl::int_<Keywords::size>()
-        );
+      );
 }
+// }
 
 }} 
 

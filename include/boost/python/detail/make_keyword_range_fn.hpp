@@ -21,12 +21,29 @@ namespace boost { namespace python { namespace detail {
 // F. This version is needed when defining functions with default
 // arguments, because compile-time information about the number of
 // keywords is missing for all but the initial function definition.
+//
+// {
 template <class F, class Policies>
-object make_keyword_range_function(F f, Policies const& policies, keyword_range const& kw)
+object make_keyword_range_function(
+    F f
+  , Policies const& policies
+  , keyword_range const& kw)
 {
     return detail::make_function_aux(
         f, policies, args_from_python(), detail::get_signature(f), kw, mpl::int_<0>());
 }
+
+template <class F, class Policies, class Signature>
+object make_keyword_range_function(
+    F f
+  , Policies const& policies
+  , keyword_range const& kw
+  , Signature const& sig)
+{
+    return detail::make_function_aux(
+        f, policies, args_from_python(), sig, kw, mpl::int_<0>());
+}
+// }
 
 // Builds an '__init__' function which inserts the given Holder type
 // in a wrapped C++ class instance. ArgList is an MPL type sequence

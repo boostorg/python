@@ -161,7 +161,6 @@ local UNIT_TEST_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_
 run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
 run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor : : : $(UNIT_TEST_PROPERTIES) ;
-run member_function_cast.cpp ;
 run bases.cpp : : : $(UNIT_TEST_PROPERTIES) ;
 run if_else.cpp ;
 run pointee.cpp : : : $(UNIT_TEST_PROPERTIES) ;

@@ -29,7 +29,6 @@
 
 # include <boost/python/detail/overloads_fwd.hpp>
 # include <boost/python/detail/operator_id.hpp>
-# include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
 
@@ -363,56 +362,28 @@ class class_ : public objects::class_base
     template <class Get>
     self& add_property(char const* name, Get fget)
     {
-        base::add_property(
-            name
-            , object(
-                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
-                )
-            );
-        
+        base::add_property(name, make_fn(fget));
         return *this;
     }
 
     template <class Get, class Set>
     self& add_property(char const* name, Get fget, Set fset)
     {
-        base::add_property(
-            name
-            , object(
-                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
-                )
-            , object(
-                detail::member_function_cast<T,Set>::stage1(fset).stage2((T*)0).stage3(fset)
-                )
-            );
+        base::add_property(name, make_fn(fget), make_fn(fset));
         return *this;
     }
         
     template <class Get>
     self& add_static_property(char const* name, Get fget)
     {
-        base::add_static_property(
-            name
-            , object(
-                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
-                )
-            );
-        
+        base::add_static_property(name, object(fget));
         return *this;
     }
 
     template <class Get, class Set>
     self& add_static_property(char const* name, Get fget, Set fset)
     {
-        base::add_static_property(
-            name
-            , object(
-                detail::member_function_cast<T,Get>::stage1(fget).stage2((T*)0).stage3(fget)
-                )
-            , object(
-                detail::member_function_cast<T,Set>::stage1(fset).stage2((T*)0).stage3(fset)
-                )
-            );
+        base::add_static_property(name, object(fget), object(fset));
         return *this;
     }
         
@@ -444,6 +415,30 @@ class class_ : public objects::class_base
     }
  private: // helper functions
 
+
+    // Builds a method for this class around the given [member]
+    // function pointer or object, appropriately adjusting the type of
+    // the first signature argument so that if f is a member of a
+    // (possibly not wrapped) base class of T, an lvalue argument of
+    // type T will be required.
+    //
+    // {
+    template <class F>
+    object make_fn(F const& f)
+    {
+        return make_function(f, default_call_policies(), detail::get_signature(f, (T*)0));
+    }
+
+    object
+# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    const&
+# endif 
+    make_fn(object const& x)
+    {
+        return x;
+    }
+    // }
+    
     template <class D, class B>
     self& def_readonly_impl(
         char const* name, D B::*pm_ BOOST_PYTHON_YES_DATA_MEMBER)
@@ -501,12 +496,16 @@ class class_ : public objects::class_base
     )
     {
         objects::add_to_namespace(
-            *this, name,
-            make_function(
-                // This bit of nastiness casts F to a member function of T if possible.
-                detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
-                , helper.policies(), helper.keywords())
-            , helper.doc());
+            *this
+          , name
+          , make_function(
+                fn
+              , helper.policies()
+              , helper.keywords()
+              , detail::get_signature(fn, (T*)0)
+            )
+          , helper.doc()
+        );
 
         this->def_default(name, fn, helper, mpl::bool_<Helper::has_default_implementation>());
     }

@@ -25,6 +25,7 @@ struct P
 {
     virtual ~P(){}
     virtual std::string f() = 0;
+    std::string g() { return "P::g()"; }
 };
 
 struct PCallback : P, Callback
@@ -37,7 +38,7 @@ struct PCallback : P, Callback
     }
 };
 
-struct Q : P
+struct Q : virtual P
 {
     std::string f() { return "Q::f()"; } 
 };
@@ -155,6 +156,7 @@ BOOST_PYTHON_MODULE_INIT(polymorphism_ext)
         ;
 
     class_<Q, bases<P> >("Q")
+        .def("g", &P::g) // make sure virtual inheritance doesn't interfere
         ;
 }
 

@@ -44,9 +44,9 @@ namespace detail
       >::type type;
   };
 
-  // Given an MPL sequence representing a signature, returns a new MPL
-  // sequence whose return type is replaced by void, and whose first
-  // argument is replaced by C&.
+  // Given an MPL sequence representing a member function [object]
+  // signature, returns a new MPL sequence whose return type is
+  // replaced by void, and whose first argument is replaced by C&.
   template <class C, class S>
   typename replace_front2<S,void,C&>::type
   error_signature(S BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(C))
@@ -97,10 +97,9 @@ namespace detail
           // Add the default implementation which raises the exception
           c.def(
               name
-            , detail::make_function_aux(
+            , make_function(
                   detail::nullary_function_adaptor<void(*)()>(pure_virtual_called)
                 , default_call_policies()
-                , args_from_python()
                 , detail::error_signature<held_t>(detail::get_signature(m_pmf))
               )
           );
