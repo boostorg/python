@@ -159,7 +159,7 @@ def ParseArguments():
     if not files:
         Usage() 
     if not module:
-        module = os.path.splitext(files[0])[0]
+        module = os.path.splitext(os.path.basename(files[0]))[0]
     if not out:
         out = module
         if not multiple:

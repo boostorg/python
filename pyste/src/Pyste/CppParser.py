@@ -111,7 +111,7 @@ class CppParser:
             includes = self._IncludeParams(filename)
             defines = self._DefineParams()
             # call gccxml
-            cmd = 'gccxml %s %s %s -fxml=%s'
+            cmd = 'gccxml %s %s "%s" -fxml=%s'
             filename = self.Unixfy(filename)
             xmlfile = self.Unixfy(xmlfile)
             status = os.system(cmd % (includes, defines, filename, xmlfile))

@@ -11,5 +11,4 @@
 
 - args() support
 
-- --file-list, allowing the user to pass the filename of a file with the pyste
-  files
+- set policies to methods with the same name

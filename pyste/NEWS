@@ -1,3 +1,11 @@
+27 May 2004
+Applied patch by Paul Bridger that solves a problem on windows regarding 
+spaces on paths. Thanks Paul!
+
+Applied another patch that fixes the module name if pyste is run from
+another directory of where the .pyste file is located. Patch contributted 
+by Paul Bridger.
+
 17 May 2004
 Applied a patch by Roman Yakovenko that makes the export of unnamed enums
 better. Thanks Roman!
