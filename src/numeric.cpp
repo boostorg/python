@@ -21,8 +21,8 @@ namespace
   std::string type_name;
 
   handle<> array_module;
-  object array_type;
-  object array_function;
+  handle<> array_type;
+  handle<> array_function;
 
   void throw_load_failure()
   {
@@ -56,12 +56,12 @@ namespace
 
               if (type && PyType_Check(type))
               {
-                  array_type = object(detail::new_non_null_reference(type));
+                  array_type = handle<>(type);
                   PyObject* function = ::PyObject_GetAttrString(module, const_cast<char*>("array"));
                   
                   if (function && PyCallable_Check(function))
                   {
-                      array_function = object(detail::new_reference(function));
+                      array_function = handle<>(function);
                       state = succeeded;
                   }
               }
@@ -78,10 +78,10 @@ namespace
       return false;
   }
 
-  object const& demand_array_function()
+  object demand_array_function()
   {
       load(true);
-      return array_function;
+      return object(array_function);
   }
 }
 
@@ -99,7 +99,7 @@ namespace aux
   {
       if (!load(false))
           return false;
-      return ::PyObject_IsInstance(obj, array_type.ptr());
+      return ::PyObject_IsInstance(obj, array_type.get());
   }
 
   python::detail::new_non_null_reference
@@ -107,21 +107,21 @@ namespace aux
   {
       load(true);
       return detail::new_non_null_reference(
-          pytype_check(downcast<PyTypeObject>(array_type.ptr()), obj));
+          pytype_check(downcast<PyTypeObject>(array_type.get()), obj));
   }
 
 
 # define BOOST_PYTHON_AS_OBJECT(z, n, _) object(x##n)
-# define BOOST_PP_LOCAL_MACRO(n)                                                        \
-    array_base::array_base(BOOST_PP_ENUM_PARAMS(n, object const& x))                    \
-        : object((load(true), array_function)(BOOST_PP_ENUM_PARAMS(n, x)))              \
+# define BOOST_PP_LOCAL_MACRO(n)                                        \
+    array_base::array_base(BOOST_PP_ENUM_PARAMS(n, object const& x))    \
+        : object(demand_array_function()(BOOST_PP_ENUM_PARAMS(n, x)))   \
     {}
 # define BOOST_PP_LOCAL_LIMITS (1, 6)
 # include BOOST_PP_LOCAL_ITERATE()
 # undef BOOST_PYTHON_AS_OBJECT
 
     array_base::array_base(BOOST_PP_ENUM_PARAMS(7, object const& x))
-        : object((load(true), array_type)(BOOST_PP_ENUM_PARAMS(7, x)))
+        : object(demand_array_function()(BOOST_PP_ENUM_PARAMS(7, x)))
     {}
 
   object array_base::argmax(long axis)
