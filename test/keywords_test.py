@@ -48,6 +48,9 @@
 >>> f.set(1,n="1")
 >>> f.a(), f.b(), f.n()
 (1, 0.0, '1')
+>>> f.set2(b=2.0,n="2",a=2)
+>>> f.a(), f.b(), f.n()
+(2, 2.0, '2')
 
 # lets see how badly we've broken the 'regular' functions
 >>> f = Bar()

@@ -47,6 +47,21 @@ namespace detail
       }
 
       keyword elements[nkeywords];
+
+      keywords<nkeywords+1> operator,(arg const &k) const
+      {
+          keywords<nkeywords> const& l = *static_cast<keywords<nkeywords> const*>(this);
+          python::detail::keywords<nkeywords+1> res;
+          std::copy(l.elements, l.elements+nkeywords, res.elements);
+          res.elements[nkeywords] = k.elements[0];
+          return res;
+      }
+      
+      keywords<nkeywords + 1>
+      operator,(char const *name) const
+      {
+          return this->operator,(python::arg(name));
+      }
   };
   
   template <std::size_t nkeywords>
@@ -76,15 +91,6 @@ namespace detail
       }
   };
 
-  template <std::size_t nkeywords>
-  keywords<nkeywords+1> operator,(keywords<nkeywords> const& l, const keywords<1> &k)
-  {
-      python::detail::keywords<nkeywords+1> res;
-      std::copy(l.elements, l.elements+nkeywords, res.elements);
-      res.elements[nkeywords] = k.elements[0];
-      return res;
-  }
-      
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template<typename T>
   struct is_keywords
@@ -134,16 +140,6 @@ namespace detail
       BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
   };
 # endif 
-}
-
-namespace detail
-{
-  template <std::size_t nkeywords>
-  inline keywords<nkeywords + 1>
-  operator,(keywords<nkeywords> const& l, char *name)
-  {
-      return l.operator,(arg(name));
-  }
 }
 
 inline detail::keywords<1> args(char const* name)
