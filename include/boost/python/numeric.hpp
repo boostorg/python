@@ -201,7 +201,7 @@ class array : public aux::array_base
 # define BOOST_PP_LOCAL_MACRO(n)                                        \
     template <BOOST_PP_ENUM_PARAMS(n, class T)>                         \
     explicit array(BOOST_PP_ENUM_BINARY_PARAMS(n, T, const& x))         \
-    : array_base(BOOST_PP_ENUM(n, BOOST_PYTHON_ENUM_AS_OBJECT, x))      \
+    : base(BOOST_PP_ENUM(n, BOOST_PYTHON_ENUM_AS_OBJECT, x))            \
     {}
 # define BOOST_PP_LOCAL_LIMITS (1, 7)
 # include BOOST_PP_LOCAL_ITERATE()
