@@ -125,7 +125,7 @@ namespace detail {
 
         //  Case 1: default case, just push T to the back of ListT
 
-        template <typename ListT, typename T>
+        template <class ListT, class T>
         struct apply {
 
             typedef typename boost::mpl::push_back<ListT, T>::sequence sequence;
@@ -134,7 +134,7 @@ namespace detail {
 
     struct append_to_init_helper2 {
 
-        template <typename ListT, typename T>
+        template <class ListT, class T>
         struct apply {
 
         //  Case 2: optional case, T is an optional, append all
@@ -153,14 +153,14 @@ namespace detail {
 
         //  Case 3: nil case, we found a nil, do nothing
 
-        template <typename ListT, typename T>
+        template <class ListT, class T>
         struct apply {
 
             typedef ListT sequence;
         };
     };
 
-    template <typename ListT, typename T>
+    template <class ListT, class T>
     struct append_to_init {
 
         typedef typename boost::mpl::select_type
@@ -192,7 +192,7 @@ namespace detail {
     template <int N>
     struct check_init_params_helper {
 
-        template <typename ListT>
+        template <class ListT>
         struct apply {
 
         //  case where size of sequence is not zero
@@ -221,7 +221,7 @@ namespace detail {
 
         //  case where size of sequence is zero
 
-        template <typename ListT>
+        template <class ListT>
         struct apply {
 
             enum { is_ok = true };
@@ -252,20 +252,20 @@ namespace detail {
     //      init<int, string, optional<char, long, double> >::value == 3
     //
     ///////////////////////////////////////////////////////////////////////////
-    template <typename T>
+    template <class T>
     struct count_optionals1 {
 
         BOOST_STATIC_CONSTANT(int, value = 0);
     };
 
-    template <typename T>
+    template <class T>
     struct count_optionals2 {
 
         BOOST_STATIC_CONSTANT(
             int, value = boost::mpl::size<typename T::sequence>::value);
     };
 
-    template <typename T>
+    template <class T>
     struct count_optionals
     :   boost::mpl::select_type
         <

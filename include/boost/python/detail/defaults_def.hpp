@@ -34,7 +34,7 @@ namespace objects
 
 namespace detail {
 
-template <typename Func, class CallPolicies, class NameSpaceT>
+template <class Func, class CallPolicies, class NameSpaceT>
 static void name_space_def(
     NameSpaceT& name_space,
     char const* name,
@@ -48,7 +48,7 @@ static void name_space_def(
         name, f, policies, doc);
 }
 
-template <typename Func, class CallPolicies>
+template <class Func, class CallPolicies>
 static void name_space_def(
     object& name_space,
     char const* name,
@@ -59,12 +59,12 @@ static void name_space_def(
     )
 {
     scope within(name_space);
-    
+
     def(name, f, policies, doc);
 }
 
 // For backward compatibility
-template <typename Func, class CallPolicies, class NameSpaceT>
+template <class Func, class CallPolicies, class NameSpaceT>
 static void name_space_def(
     NameSpaceT& name_space,
     char const* name,
@@ -133,14 +133,19 @@ struct define_stub_function {};
     template <int N>
     struct define_with_defaults_helper {
 
-        template <typename StubsT, typename NameSpaceT>
+        template <class StubsT, class CallPolicies, class NameSpaceT>
         static void
-        def(char const* name, StubsT stubs, NameSpaceT& name_space, char const* doc)
+        def(
+            char const* name,
+            StubsT stubs,
+            CallPolicies const& policies,
+            NameSpaceT& name_space,
+            char const* doc)
         {
             //  define the NTH stub function of stubs
-            define_stub_function<N>::define(name, stubs, name_space, doc);
+            define_stub_function<N>::define(name, stubs, policies, name_space, doc);
             //  call the next define_with_defaults_helper
-            define_with_defaults_helper<N-1>::def(name, stubs, name_space, doc);
+            define_with_defaults_helper<N-1>::def(name, stubs, policies, name_space, doc);
         }
     };
 
@@ -148,12 +153,17 @@ struct define_stub_function {};
     template <>
     struct define_with_defaults_helper<0> {
 
-        template <typename StubsT, typename NameSpaceT>
+        template <class StubsT, class CallPolicies, class NameSpaceT>
         static void
-        def(char const* name, StubsT stubs, NameSpaceT& name_space, char const* doc)
+        def(
+            char const* name,
+            StubsT stubs,
+            CallPolicies const& policies,
+            NameSpaceT& name_space,
+            char const* doc)
         {
             //  define the Oth stub function of stubs
-            define_stub_function<0>::define(name, stubs, name_space, doc);
+            define_stub_function<0>::define(name, stubs, policies, name_space, doc);
             //  return
         }
     };
@@ -162,11 +172,12 @@ struct define_stub_function {};
 //
 //  define_with_defaults
 //
-//      1. char const* name:    function name that will be visible to python
-//      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
-//      3. NameSpaceT& name_space:     a python::class_ or python::module instance
-//      4. SigT sig:            Function signature typelist (see defaults_gen.hpp)
-//      5. char const* name:    doc string
+//      1. char const* name:        function name that will be visible to python
+//      2. StubsT:                  a function stubs struct (see defaults_gen.hpp)
+//      3. CallPolicies& policies:  Call policies
+//      4. NameSpaceT& name_space:  a python::class_ or python::module instance
+//      5. SigT sig:                Function signature typelist (see defaults_gen.hpp)
+//      6. char const* name:        doc string
 //
 //  This is the main entry point. This function recursively defines all
 //  stub functions of StubT (see defaults_gen.hpp) in NameSpaceT name_space which
@@ -179,11 +190,12 @@ struct define_stub_function {};
 //      void C::foo(int)    mpl::type_list<void, C, int>
 //
 ///////////////////////////////////////////////////////////////////////////////
-    template <typename StubsT, typename NameSpaceT, typename SigT>
+    template <class StubsT, class CallPolicies, class NameSpaceT, class SigT>
     inline void
     define_with_defaults(
         char const* name,
         StubsT,
+        CallPolicies const& policies,
         NameSpaceT& name_space,
         SigT sig,
         char const* doc)
@@ -204,7 +216,7 @@ struct define_stub_function {};
 
         typedef typename stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def
-            (name, gen_type(), name_space, doc);
+            (name, gen_type(), policies, name_space, doc);
     }
 
 } // namespace detail
@@ -220,10 +232,11 @@ struct define_stub_function {};
 
 template <>
 struct define_stub_function<BOOST_PP_ITERATION()> {
-    template <typename StubsT, typename NameSpaceT>
+    template <class StubsT, class CallPolicies, class NameSpaceT>
     static void define(
         char const* name,
         StubsT,
+        CallPolicies const& policies,
         NameSpaceT& name_space,
         char const* doc
     )
@@ -231,7 +244,7 @@ struct define_stub_function<BOOST_PP_ITERATION()> {
         detail::name_space_def(name_space,
             name,
             &StubsT::BOOST_PP_CAT(func_, BOOST_PP_ITERATION()),
-            default_call_policies(),
+            policies,
             doc, &name_space);
     }
 };

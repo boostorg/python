@@ -126,7 +126,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_3_stubs, foo, 2, 3)
 
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
-    def("foo", foo, foo_stubs());
+    def("foo", foo, foo_stubs(), default_call_policies());
     def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
 
     // Show that this works with the old obsolete module version of def().
@@ -147,7 +147,7 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
 # endif
 	.def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
-        .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
+        .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs(), default_call_policies())
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(list, list, bool) const)0, X_foo_3_stubs())
         ;

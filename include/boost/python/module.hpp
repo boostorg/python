@@ -89,7 +89,9 @@ class module : public detail::module_base
     {
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
-        detail::define_with_defaults(name, stubs, *this, detail::get_signature(sig), doc);
+        detail::define_with_defaults(
+            name, stubs, default_call_policies(),
+            *this, detail::get_signature(sig), doc);
     }
 };
 

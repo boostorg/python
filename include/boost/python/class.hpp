@@ -175,9 +175,37 @@ class class_ : public objects::class_base
     }
 
     template <class Arg1T, class Arg2T>
-    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, char const* doc = 0)
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2)
     {
-        dispatch_def(name, arg1, arg2, doc, &arg2);
+        //  The arguments may be:
+        //  arg1:   function    or  signature
+        //  arg2:   policy      or  docstring   or  stubs
+
+        dispatch_def(&arg2, name, arg1, arg2, (char*)0);
+        return *this;
+    }
+
+    template <class Arg1T, class Arg2T, class Arg3T>
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3)
+    {
+        //  The arguments may be:
+        //  arg1:   function    or  signature
+        //  arg2:   policy      or  docstring   or  stubs
+        //  arg3:   policy      or  docstring
+
+        dispatch_def(&arg2, name, arg1, arg2, arg3);
+        return *this;
+    }
+
+    template <class Arg1T, class Arg2T, class Arg3T>
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, char const* doc)
+    {
+        //  The arguments are definitely:
+        //  arg1:   signature
+        //  arg2:   stubs
+        //  arg3:   policy
+
+        dispatch_def(&arg2, name, arg1, arg2, arg3, doc);
         return *this;
     }
 
@@ -302,30 +330,37 @@ class class_ : public objects::class_base
 
     template <class Fn, class CallPolicyOrDoc>
     void dispatch_def(
+        void const*,
         char const* name,
         Fn fn,
         CallPolicyOrDoc const& policy_or_doc,
-        char const* doc,
-        void const*)
+        char const* doc)
     {
         typedef detail::def_helper<CallPolicyOrDoc> helper;
 
         this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc), helper::get_doc(policy_or_doc, doc), &fn);
+            name, fn, helper::get_policy(policy_or_doc),
+            helper::get_doc(policy_or_doc, doc), &fn);
 
     }
 
-    template <typename StubsT, typename SigT>
+    template <class StubsT, class SigT, class CallPolicyOrDoc>
     void dispatch_def(
+        detail::func_stubs_base const*,
         char const* name,
         SigT sig,
         StubsT const& stubs,
-        char const* doc,
-        detail::func_stubs_base const*)
+        CallPolicyOrDoc const& policy_or_doc,
+        char const* doc = 0)
     {
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
-        detail::define_with_defaults(name, stubs, *this, detail::get_signature(sig), doc);
+        detail::define_with_defaults(
+            name, stubs, helper::get_policy(policy_or_doc),
+            *this, detail::get_signature(sig),
+            helper::get_doc(policy_or_doc, doc));
     }
 };
 
