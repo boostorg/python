@@ -50,8 +50,8 @@ struct world_callback : hello::world
 
     // <a name=
 "default_implementation">Something Python can call</a> in case there is no override of get()
-    const char* default_get() const
-        { return this-&gt;hello::world::get(); }
+    const char* default_get(hello::world* self) const
+        { return self-&gt;hello::world::get(); }
  private:
     PyObject* m_self; // A way to hold onto the Python object
 };
@@ -97,7 +97,8 @@ world_class.def(&amp;hello::world::get, "get", &amp;world_callback::default_get)
       inside of <code>hello::world</code>." One of the goals of py_cpp is to be
       minimally intrusive on an existing C++ design. In principle, it should be
       possible to expose the interface for a 3rd party library without changing
-      it.
+      it. To unintrusively hook into the virtual functions so that a Python
+      override may be called, we must use a derived class.
     <h2>
       Pure Virtual Functions
     </h2>
@@ -162,7 +163,7 @@ AttributeError: pure
     </blockquote>
     <p>
       Prev: <a href="example1.html">A Simple Example Using py_cpp</a> Next: <a
-      href="under-the-hood.html">A Peek Under the Hood</a> Up: <a href= 
+      href="overloading.html">Function Overloading</a> Up: <a href= 
       "py_cpp.html">Top</a>
     <p>
       &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
@@ -171,5 +172,5 @@ AttributeError: pure
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
     <p>
-      Updated: Sept 30, 2000
+      Updated: Oct 30, 2000
 
