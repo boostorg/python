@@ -66,7 +66,7 @@ T* check_non_null(T* p)
     return p;
 }
 
-template <class T> class held_instance;
+template <class Held> class held_instance;
 
 typedef void* (*conversion_function_ptr)(void*);
 
@@ -613,15 +613,15 @@ class extension_class
 
 // A simple wrapper over a T which allows us to use extension_class<T> with a
 // single template parameter only. See extension_class<T>, above.
-template <class T>
-class held_instance : public T
+template <class Held>
+class held_instance : public Held
 {
     // There are no member functions: we want to avoid inadvertently overriding
-    // any virtual functions in T.
+    // any virtual functions in Held.
 public:"""
         + gen_functions("""%{
     template <%(class A%n%:, %)>%}
-    held_instance(PyObject*%(, A%n% a%n%)) : T(%(a%n%:, %)) {}""", args)
+    held_instance(PyObject*%(, A%n% a%n%)) : Held(%(a%n%:, %)) {}""", args)
         + """
 };
 
