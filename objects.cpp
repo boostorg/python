@@ -234,11 +234,11 @@ Ptr Dict::operator[](Ptr key) const {
 }
 
     
-Ptr Dict::get_item(const Ptr& key, const Ptr& _default /* = Ptr() */)
+Ptr Dict::get_item(const Ptr& key, const Ptr& default_ /* = Ptr() */)
 {
     PyObject* value_or_null = PyDict_GetItem(get(), key.get());
     if (value_or_null == 0 && !PyErr_Occurred())
-        return _default;
+        return default_;
     else
         return Ptr(value_or_null, Ptr::borrowed); // Will throw if there was another error
 }
