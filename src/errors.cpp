@@ -17,7 +17,7 @@
 namespace boost { namespace python {
 
 // IMPORTANT: this function may only be called from within a catch block!
-BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> const& f)
+BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
 {
     try
     {
