@@ -631,7 +631,7 @@ functions so that a Python override may be called:</para>
 </programlisting>
 <para>
 Notice too that in addition to inheriting from <code><phrase role="identifier">Base</phrase></code>, we also multiply-
-inherited <code><phrase role="identifier">wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase></code> (See <ulink url="../../../v2//wrapper.html">Wrapper</ulink>). The
+inherited <code><phrase role="identifier">wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase></code> (See <ulink url="../../../v2/wrapper.html">Wrapper</ulink>). The
 <code><phrase role="identifier">wrapper</phrase></code> template makes the job of wrapping classes that are meant to
 overridden in Python, easier.</para>
 <informaltable frame="all">

@@ -509,7 +509,7 @@ functions so that a Python override may be called:
     };
 
 Notice too that in addition to inheriting from `Base`, we also multiply-
-inherited `wrapper<Base>` (See [@../../../v2//wrapper.html Wrapper]). The
+inherited `wrapper<Base>` (See [@../../../v2/wrapper.html Wrapper]). The
 `wrapper` template makes the job of wrapping classes that are meant to
 overridden in Python, easier.
 
