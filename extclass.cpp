@@ -8,6 +8,7 @@
 
 #include "extclass.h"
 #include <cstring>
+#include <iostream>
 
 namespace py {
 
@@ -342,7 +343,7 @@ PyTypeObject operator_dispatcher::type_object =
 { 
     PyObject_HEAD_INIT(&PyType_Type) 
     0, 
-    "operator_dispatcher", 
+    const_cast<char*>("operator_dispatcher"), 
     sizeof(operator_dispatcher), 
     0, 
     (destructor)&operator_dispatcher::dealloc, 
@@ -361,7 +362,11 @@ PyTypeObject operator_dispatcher::type_object =
     0, 
     0, 
     0, 
-    0 
+    0,
+    0,
+    0,
+    0,
+    0
 }; 
 
 PyNumberMethods operator_dispatcher::number_methods = 
@@ -557,7 +562,7 @@ int operator_dispatcher::unwrap_pow_args(PyObject * left, PyObject * right, PyOb
     
     if(mwrapper->object->ob_type == &operator_dispatcher::type_object)
     {
-        mwrapper = static_cast<operator_dispatcher *>(mwrapper->object);
+        mwrapper = PyPtr<operator_dispatcher>(static_cast<operator_dispatcher *>(mwrapper->object));
     }
     
     if(lwrapper->self != 0)
