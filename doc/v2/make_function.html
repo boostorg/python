@@ -66,9 +66,13 @@ template &lt;class F, class Policies&gt;
 <a href=
 "object.html#object-spec">object</a> make_function(F f, Policies const&amp; policies)
 
-template &lt;class F, class Policies, class Keywords&gt;
+template &lt;class F, class Policies, class KeywordsOrSignature&gt;
 <a href=
-"object.html#object-spec">object</a> make_function(F f, Policies const&amp; policies, Keywords const&amp; keywords)
+"object.html#object-spec">object</a> make_function(F f, Policies const&amp; policies, KeywordsOrSignature const&amp; ks)
+
+template &lt;class F, class Policies, class Keywords, class Signature&gt;
+<a href=
+"object.html#object-spec">object</a> make_function(F f, Policies const&amp; policies, Keywords const&amp; kw, Signature const&amp; sig)
 </pre>
 
     <dl class="function-semantics">
@@ -82,19 +86,41 @@ template &lt;class F, class Policies, class Keywords&gt;
 
       <dt><b>Effects:</b> Creates a Python callable object which, when called
       from Python, converts its arguments to C++ and calls <code>f</code>. If
-      <code>F</code> is a pointer-to-member-function type, the target object
-      of the function call (<code>*this</code>) will be taken from the first
-      Python argument, and subsequent Python arguments will be used as the
-      arguments to <code>f</code>. If <code>policies</code> are supplied, it
+      <code>F</code> is a pointer-to-member-function type, the target
+      object of the function call (<code>*this</code>) will be taken
+      from the first Python argument, and subsequent Python arguments
+      will be used as the arguments
+      to <code>f</code>. <ul>
+<li>        If <code>policies</code> are supplied, it
       will be applied to the function as described <a href=
-      "CallPolicies.html">here</a>. If <code>keywords</code> are
+      "CallPolicies.html">here</a>. 
+<li>If <code>keywords</code> are
       supplied, the keywords will be applied in order to the final
-      arguments of the resulting function.</dt>
+      arguments of the resulting function.  
+<li>If <code>Signature</code>
+      is supplied, it should be an instance of an <a
+      href="../../mpl/doc/ref/Sequence.html">MPL front-extensible
+      sequence</a> representing the function's return type followed by
+      its argument types.  Pass a <code>Signature</code> when wrapping
+      function object types whose signatures can't be deduced, or when
+      you wish to override the types which will be passed to the
+      wrapped function.
+</ul></dt>
 
       <dt><b>Returns:</b> An instance of <a href=
       "object.html#object-spec">object</a> which holds the new Python
       callable object.</dt>
+
+      <dt><b>Caveats:</b> An argument of pointer type may
+      be <code>0</code> if <code>None</code> is passed from Python.
+      An argument type which is a constant reference may refer to a
+      temporary which was created from the Python object for just the
+      duration of the call to the wrapped function, for example
+      a <code>std::vector</code> conjured up by the conversion process
+      from a Python list.  Use a non-<code>const</code> reference
+      argument when a persistent lvalue is required.
     </dl>
+
 <pre>
 <a name=
 "make_constructor-spec"></a>template &lt;class T, class ArgList, class Generator&gt;
