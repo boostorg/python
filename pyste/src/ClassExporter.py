@@ -195,6 +195,12 @@ class ClassExporter(Exporter):
         
         constructors = [x for x in self.public_members if isinstance(x, Constructor)]
         self.constructors = constructors[:]
+        # don't export the copy constructor if the class is abstract
+        if self.class_.abstract:
+            for cons in constructors:
+                if cons.IsCopy():
+                    constructors.remove(cons)
+                    break
         if not constructors:
             # declare no_init
             self.Add('constructor', py_ns + 'no_init') 
@@ -334,7 +340,7 @@ class ClassExporter(Exporter):
     def ExportVirtualMethods(self):        
         # check if this class has any virtual methods
         has_virtual_methods = False
-        for member in self.public_members:
+        for member in self.class_.members:
             if type(member) == Method and member.virtual:
                 has_virtual_methods = True
                 break
@@ -676,9 +682,10 @@ class _VirtualWrapperGenerator(object):
 
     def VirtualMethods(self):
         def IsVirtual(m):
-            return type(m) == Method and m.virtual and m.visibility == Scope.public
+            return type(m) == Method and m.virtual        
         return [m for m in self.class_.members if IsVirtual(m)]
-    
+        
+    		
     
     def Constructors(self):
         def IsValid(m):
@@ -689,8 +696,9 @@ class _VirtualWrapperGenerator(object):
     def GenerateDefinitions(self):
         defs = []
         for method in self.VirtualMethods():
-            if not self.info[method.name].exclude:
-                defs.extend(self.MethodDefinition(method))            
+            if method.visibility == Scope.public:
+                if not self.info[method.name].exclude:
+                    defs.extend(self.MethodDefinition(method))            
         return defs
 
         
