@@ -12,6 +12,8 @@
 # include <boost/python/indexing/detail/indexing_suite_detail.hpp>
 # include <boost/python/return_internal_reference.hpp>
 # include <boost/python/iterator.hpp>
+# include <boost/mpl/or.hpp>
+# include <boost/mpl/not.hpp>
 
 namespace boost { namespace python {
             
@@ -112,34 +114,28 @@ namespace boost { namespace python {
     {
     private:
         
-        typedef boost::mpl::or_<
-              boost::mpl::bool_<NoProxy>
-            , boost::mpl::or_<
-                  boost::is_integral<Element> 
-                , boost::is_float<Element> 
-                , boost::is_pointer<Element>
-                , boost::is_member_pointer<Element>
-                , boost::is_enum<Element>
-            > 
-        > no_proxy;
+        typedef mpl::or_<
+            mpl::bool_<NoProxy>
+          , mpl::not_<is_class<Element> > > 
+        no_proxy;
                     
         typedef detail::container_element<Container, Index, DerivedPolicies>
             container_element_t;
        
-        typedef typename boost::mpl::if_<
-              no_proxy
-            , iterator<Container>
-            , iterator<Container, return_internal_reference<> > >::type
+        typedef typename mpl::if_<
+            no_proxy
+          , iterator<Container>
+          , iterator<Container, return_internal_reference<> > >::type
         def_iterator;
     
         static void
-        register_container_element(boost::mpl::false_)
+        register_container_element(mpl::false_)
         { 
             register_ptr_to_python<container_element_t>();
         }
         
         static void
-        register_container_element(boost::mpl::true_)
+        register_container_element(mpl::true_)
         { 
         }
 
@@ -169,7 +165,7 @@ namespace boost { namespace python {
         static object
         base_get_item_(
             back_reference<Container&> const& container, 
-            PyObject* i, boost::mpl::false_)
+            PyObject* i, mpl::false_)
         { 
             // Proxy  
             Index idx = DerivedPolicies::convert_index(container.get(), i);
@@ -192,7 +188,7 @@ namespace boost { namespace python {
         static object
         base_get_item_(
             back_reference<Container&> const& container, 
-            PyObject* i, boost::mpl::true_)
+            PyObject* i, mpl::true_)
         { 
             // No Proxy
             return object(
@@ -276,7 +272,7 @@ namespace boost { namespace python {
         static void
         base_replace_indexes(
             Container& container, Index from, 
-            Index to, Index n, boost::mpl::false_)
+            Index to, Index n, mpl::false_)
         {
             //  Proxy
             container_element_t::get_links().replace(container, from, to, n);
@@ -285,14 +281,14 @@ namespace boost { namespace python {
         static void
         base_replace_indexes(
             Container& container, Index from, 
-            Index to, Index n, boost::mpl::true_)
+            Index to, Index n, mpl::true_)
         {
             //  No Proxy
         }
         
         static void
         base_erase_indexes(
-            Container& container, Index from, Index to, boost::mpl::false_)
+            Container& container, Index from, Index to, mpl::false_)
         {
             //  Proxy
             container_element_t::get_links().erase(container, from, to);
@@ -300,7 +296,7 @@ namespace boost { namespace python {
 
         static void
         base_erase_indexes(
-            Container& container, Index from, Index to, boost::mpl::true_)
+            Container& container, Index from, Index to, mpl::true_)
         {
             //  No Proxy
         }
