@@ -21,6 +21,7 @@
 #ifndef BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
 #define BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
 
+#include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace indexing {
