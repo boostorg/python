@@ -81,7 +81,9 @@
 #  define BOOST_PYTHON_STATIC_LINK
 #endif
 
-#if defined(__MWERKS__)
+#if defined(__MWERKS__) \
+  || (defined(__DECCXX_VER) && __DECCXX_VER <= 60590002) \
+  || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730)
 # define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #endif
 
