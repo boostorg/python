@@ -94,7 +94,7 @@ namespace {
   //
   // where R is an integer type.
   template <class R, class F>
-  typename value_holder<R> int_call_holder(PyObject* obj, F f)
+  value_holder<R> int_call_holder(PyObject* obj, F f)
   {
       return value_holder<R>(
           
