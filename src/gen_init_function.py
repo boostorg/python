@@ -4,7 +4,7 @@ import string
 def gen_init_function(args):
 
     return (
-"""//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+"""//  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
@@ -95,11 +95,14 @@ namespace detail {
       typedef void const_reference;
   };
 
+  struct reference_parameter_base {};
+
   template <class T>
   class reference_parameter
+      : public reference_parameter_base
   {
-      typedef typename parameter_traits<T>::const_reference const_reference;
    public:
+      typedef typename parameter_traits<T>::const_reference const_reference;
       reference_parameter(const_reference value)
           : value(value) {}
       operator const_reference() { return value; }
@@ -107,6 +110,51 @@ namespace detail {
       const_reference value;
   };
 
+# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+  template <class T>
+  struct unwrap_parameter
+  {
+      typedef typename boost::add_reference<T>::type type;
+  };
+
+  template <class T>
+  struct unwrap_parameter<reference_parameter<T> >
+  {
+      typedef typename reference_parameter<T>::const_reference type;
+  };
+# else
+  template <bool is_wrapped>
+  struct unwrap_parameter_helper
+  {
+      template <class T>
+      struct apply
+      {
+          typedef typename T::const_reference type;
+      };
+  };
+
+  template <>
+  struct unwrap_parameter_helper<false>
+  {
+      template <class T>
+      struct apply
+      {
+          typedef typename add_reference<T>::type type;
+      };
+  };
+
+  template <class T>
+  struct unwrap_parameter
+  {
+      BOOST_STATIC_CONSTANT(
+          bool, is_wrapped = (is_base_and_derived<T,reference_parameter_base>::value));
+      
+      typedef typename unwrap_parameter_helper<
+          is_wrapped
+      >::template apply<T>::type type;
+  };
+# endif 
+  
 class extension_instance;
 class instance_holder_base;
 

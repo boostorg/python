@@ -59,17 +59,9 @@ public:
     reference(const reference& rhs)
         : m_p(rhs.m_p)
     {
-        Py_XINCREF(object());
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(m_p);
     }
-
-#if !defined(BOOST_MSVC6_OR_EARLIER)
-    template <class T2>
-    reference(const reference<T2>& rhs)
-        : m_p(rhs.object())
-    {
-        Py_XINCREF(object());
-    }
-#endif
 
     reference() : m_p(0) {}
     
@@ -81,85 +73,140 @@ public:
     
     template <class T2>
     explicit reference(T2* x)
-        : m_p(expect_non_null(x)) {}
+        : m_p(expect_non_null(x))
+    {
+        assert(m_p->ob_refcnt > 0);
+    }
 
     template <class T2>
     reference(T2* x, increment_count_t)
-        : m_p(expect_non_null(x)) { Py_INCREF(object()); }
+        : m_p(expect_non_null(x))
+    {
+        assert(m_p->ob_refcnt > 0);
+        Py_INCREF(m_p);
+    }
     
     template <class T2>
     reference(T2* x, allow_null)
-        : m_p(x) {}
+        : m_p(x)
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+    }
 
     template <class T2>
     reference(T2* x, allow_null, increment_count_t)
-        : m_p(x) { Py_XINCREF(object()); }
+        : m_p(x)
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(m_p);
+    }
     
     template <class T2>
     reference(T2* x, increment_count_t, allow_null)
-        : m_p(x) { Py_XINCREF(object()); }
-    
-#if !defined(BOOST_MSVC6_OR_EARLIER)
-    template <class T2>
-    reference& operator=(const reference<T2>& rhs)
+        : m_p(x)
     {
-        Py_XDECREF(object());
-        m_p = rhs.m_p;
-        Py_XINCREF(object());
-        return *this;
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(m_p);
     }
-#endif
-
+    
     reference& operator=(const reference& rhs)
     {
+        assert(rhs.m_p == 0 || rhs.m_p->ob_refcnt > 0);
         Py_XINCREF(static_cast<PyObject*>(rhs.m_p));
-        Py_XDECREF(object());
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
         m_p = rhs.m_p;
         return *this;
     }
     
     ~reference()
     {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
         Py_XDECREF(m_p);
     }
     
-    T& operator*() const { return *m_p; }
+    T& operator*() const
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        return *m_p;
+    }
     
     // MSVC doesn't like boost::dereferencable unless T has a default
     // constructor, so operator-> must be defined by hand :(
-    T* operator->() const { return &**this; } 
+    T* operator->() const
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        return &**this;
+    } 
     
-    T* get() const { return m_p; }
+    T* get() const
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        return m_p;
+    }
 
     T* release()
     {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
         T* p = m_p;
         m_p = 0;
         return p;
     }
 
     void reset()
-        { Py_XDECREF(m_p); m_p = 0; }
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = 0;
+    }
     
     template <class T2>
     void reset(T2* x)
-        { Py_XDECREF(m_p); m_p = expect_non_null(x);}
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = expect_non_null(x);
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+    }
 
     template <class T2>
     void reset(T2* x, increment_count_t)
-        { Py_XDECREF(m_p); m_p = expect_non_null(x); Py_INCREF(object()); }
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = expect_non_null(x);
+        assert(m_p->ob_refcnt > 0);
+        Py_INCREF(m_p);
+    }
     
     template <class T2>
     void reset(T2* x, allow_null)
-        { Py_XDECREF(m_p); m_p = x;}
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = x;
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+    }
 
     template <class T2>
     void reset(T2* x, allow_null, increment_count_t)
-        { Py_XDECREF(m_p); m_p = x; Py_XINCREF(object()); }
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = x;
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(m_p);
+    }
     
     template <class T2>
     void reset(T2* x, increment_count_t, allow_null)
-        { Py_XDECREF(m_p); m_p = x; Py_XINCREF(object()); }
+    {
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XDECREF(m_p);
+        m_p = x;
+        assert(m_p == 0 || m_p->ob_refcnt > 0);
+        Py_XINCREF(m_p);
+    }
     
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
 private:

@@ -1,4 +1,4 @@
-//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+//  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
@@ -727,25 +727,80 @@ class held_instance : public Held
 public:
     held_instance(PyObject*) : Held() {}
     template <class A1>
-    held_instance(PyObject*, A1 a1) : Held(a1) {}
+    held_instance(PyObject*, A1 a1) : Held(
+        typename unwrap_parameter<A1>::type(a1)) {}
     template <class A1, class A2>
-    held_instance(PyObject*, A1 a1, A2 a2) : Held(a1, a2) {}
+    held_instance(PyObject*, A1 a1, A2 a2) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)) {}
     template <class A1, class A2, class A3>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3) : Held(a1, a2, a3) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)) {}
     template <class A1, class A2, class A3, class A4>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : Held(a1, a2, a3, a4) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)) {}
     template <class A1, class A2, class A3, class A4, class A5>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : Held(a1, a2, a3, a4, a5) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : Held(a1, a2, a3, a4, a5, a6) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)
+        , typename unwrap_parameter<A6>::type(a6)) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : Held(a1, a2, a3, a4, a5, a6, a7) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)
+        , typename unwrap_parameter<A6>::type(a6)
+        , typename unwrap_parameter<A7>::type(a7)) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : Held(a1, a2, a3, a4, a5, a6, a7, a8) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)
+        , typename unwrap_parameter<A6>::type(a6)
+        , typename unwrap_parameter<A7>::type(a7)
+        , typename unwrap_parameter<A8>::type(a8)) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : Held(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)
+        , typename unwrap_parameter<A6>::type(a6)
+        , typename unwrap_parameter<A7>::type(a7)
+        , typename unwrap_parameter<A8>::type(a8)
+        , typename unwrap_parameter<A9>::type(a9)) {}
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : Held(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : Held(
+        typename unwrap_parameter<A1>::type(a1)
+        , typename unwrap_parameter<A2>::type(a2)
+        , typename unwrap_parameter<A3>::type(a3)
+        , typename unwrap_parameter<A4>::type(a4)
+        , typename unwrap_parameter<A5>::type(a5)
+        , typename unwrap_parameter<A6>::type(a6)
+        , typename unwrap_parameter<A7>::type(a7)
+        , typename unwrap_parameter<A8>::type(a8)
+        , typename unwrap_parameter<A9>::type(a9)
+        , typename unwrap_parameter<A10>::type(a10)) {}
 };
 
 // Abstract base class for all obj holders. Base for template class
