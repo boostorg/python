@@ -48,6 +48,7 @@
 # include <boost/python/other.hpp>
 # include <boost/python/overloads.hpp>
 # include <boost/python/pointee.hpp>
+# include <boost/python/pure_virtual.hpp>
 # include <boost/python/ptr.hpp>
 # include <boost/python/reference_existing_object.hpp>
 # include <boost/python/register_ptr_to_python.hpp>

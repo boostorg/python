@@ -9,6 +9,8 @@
 # include <boost/python/detail/prefix.hpp>
 # include <boost/preprocessor/iteration/local.hpp>
 # include <boost/preprocessor/facilities/intercept.hpp>
+# include <boost/preprocessor/repetition/enum_params.hpp>
+# include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
