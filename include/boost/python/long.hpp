@@ -7,7 +7,7 @@
 # define LONG_DWA2002627_HPP
 
 # include <boost/python/object.hpp>
-# include <boost/python/converter/pytype_extract_object_manager.hpp>
+# include <boost/python/converter/pytype_object_manager_traits.hpp>
 
 namespace boost { namespace python { 
 
@@ -44,8 +44,8 @@ class long_ : public object
 namespace converter
 {
   template <>
-  struct extract_object_manager<long_>
-      : pytype_extract_object_manager<&PyLong_Type,long_>
+  struct object_manager_traits<long_>
+      : pytype_object_manager_traits<&PyLong_Type,long_>
   {
   };
 }

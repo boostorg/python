@@ -39,13 +39,15 @@ namespace boost { namespace python { namespace converter {
 //
 //   X::is_specialized == true
 //
-//   T(X::execute(p)) - constructs a T object from p, or throws a
-//   TypeError exception if p doesn't have an appropriate type.
+//   T(X::adopt(p)) - constructs a T object, stealing a reference to
+//   p, or throws a TypeError exception if p doesn't have an
+//   appropriate type.
 //
-//   X::check(p), convertible to bool. True iff T(X::execute(p)) will
+//   X::check(p), convertible to bool. True iff T(X::construct(p)) will
 //   not throw.
+//
 template <class T>
-struct extract_object_manager
+struct object_manager_traits
 {
     BOOST_STATIC_CONSTANT(bool, is_specialized = false);
 };
@@ -58,9 +60,9 @@ struct is_object_manager
     // handle the cases that would otherwise require partial specialization
     BOOST_STATIC_CONSTANT(bool, hdl = is_handle<T>::value);
     BOOST_STATIC_CONSTANT(bool, borrowed = python::detail::is_borrowed_ptr<T>::value);
-    BOOST_STATIC_CONSTANT(bool, extract_specialized = extract_object_manager<T>::is_specialized);
+    BOOST_STATIC_CONSTANT(bool, traits_specialized = object_manager_traits<T>::is_specialized);
  public:
-    BOOST_STATIC_CONSTANT(bool, value = (hdl | borrowed | extract_specialized));
+    BOOST_STATIC_CONSTANT(bool, value = (hdl | borrowed | traits_specialized));
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION

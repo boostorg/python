@@ -3,8 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef PYTYPE_EXTRACT_OBJECT_MANAGER_DWA2002716_HPP
-# define PYTYPE_EXTRACT_OBJECT_MANAGER_DWA2002716_HPP
+#ifndef PYTYPE_OBJECT_MANAGER_TRAITS_DWA2002716_HPP
+# define PYTYPE_OBJECT_MANAGER_TRAITS_DWA2002716_HPP
 
 # include <boost/python/converter/pytype_result_from_python.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
@@ -15,16 +15,16 @@ namespace boost { namespace python { namespace converter {
 
 // Provide a forward declaration as a convenience for clients, who all
 // need it.
-template <class T> struct extract_object_manager;
+template <class T> struct object_manager_traits;
 
-// Derive specializations of extract_object_manager from this class
+// Derive specializations of object_manager_traits from this class
 // when T is an object manager for a particular Python type hierarchy.
 //
 template <PyTypeObject* pytype, class T>
-struct pytype_extract_object_manager
+struct pytype_object_manager_traits
 {
     BOOST_STATIC_CONSTANT(bool, is_specialized = true);
-    static inline python::detail::new_reference execute(PyObject*);
+    static inline python::detail::new_reference adopt(PyObject*);
     static inline bool check(PyObject* x);
 };
 
@@ -32,17 +32,17 @@ struct pytype_extract_object_manager
 // implementations
 //
 template <PyTypeObject* pytype, class T>
-inline python::detail::new_reference pytype_extract_object_manager<pytype,T>::execute(PyObject* x)
+inline python::detail::new_reference pytype_object_manager_traits<pytype,T>::adopt(PyObject* x)
 {
     return pytype_result_from_python(pytype, x);
 }
 
 template <PyTypeObject* pytype, class T>
-inline bool pytype_extract_object_manager<pytype,T>::check(PyObject* x)
+inline bool pytype_object_manager_traits<pytype,T>::check(PyObject* x)
 {
     return ::PyObject_IsInstance(x, python::upcast<PyObject>(pytype));
 }
 
 }}} // namespace boost::python::converter
 
-#endif // PYTYPE_EXTRACT_OBJECT_MANAGER_DWA2002716_HPP
+#endif // PYTYPE_OBJECT_MANAGER_TRAITS_DWA2002716_HPP

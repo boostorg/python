@@ -57,7 +57,7 @@ inline object_manager_value_arg_from_python<T>::object_manager_value_arg_from_py
 template <class T>
 inline bool object_manager_value_arg_from_python<T>::convertible() const
 {
-    return extract_object_manager<T>::check(m_source);
+    return object_manager_traits<T>::check(m_source);
 }
 
 template <class T>
@@ -83,7 +83,7 @@ namespace detail
   template <class T>
   inline bool object_manager_ref_check(T const& x)
   {
-      return extract_object_manager<T>::check((get_managed_object)(x));
+      return object_manager_traits<T>::check((get_managed_object)(x));
   }
 }
 

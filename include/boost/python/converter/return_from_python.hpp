@@ -140,7 +140,7 @@ namespace detail
   inline T return_object_manager_from_python<T>::operator()(PyObject* obj) const
   {
       return T(
-          extract_object_manager<T>::execute(obj)
+          object_manager_traits<T>::adopt(obj)
           );
   }
 }

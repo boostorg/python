@@ -7,7 +7,7 @@
 # define LIST_DWA2002627_HPP
 
 # include <boost/python/object.hpp>
-# include <boost/python/converter/pytype_extract_object_manager.hpp>
+# include <boost/python/converter/pytype_object_manager_traits.hpp>
 
 namespace boost { namespace python { 
 
@@ -106,8 +106,8 @@ class list : public object
 namespace converter
 {
   template <>
-  struct extract_object_manager<list>
-      : pytype_extract_object_manager<&PyList_Type,list>
+  struct object_manager_traits<list>
+      : pytype_object_manager_traits<&PyList_Type,list>
   {
   };
 }

@@ -14,7 +14,6 @@
 # include <boost/python/slice_nil.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
-# include <boost/python/converter/always_extract_object_manager.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
@@ -275,19 +274,6 @@ namespace api
 using api::object;
 
 //
-// Converter Specializations
-//
-namespace converter
-{
-  template <>
-  struct extract_object_manager<object>
-      : always_extract_object_manager
-  {
-      static python::detail::borrowed_reference execute(PyObject* x);
-  };
-}
-
-//
 // implementation
 //
 
@@ -343,11 +329,17 @@ inline PyObject* api::object_base::ptr() const
 //
 namespace converter
 {
-  inline python::detail::borrowed_reference
-  extract_object_manager<object>::execute(PyObject* x)
+  template <>
+  struct object_manager_traits<object>
   {
-      return python::detail::borrowed_reference(python::incref(x));
-  }
+      BOOST_STATIC_CONSTANT(bool, is_specialized = true);
+      static bool check(PyObject*) { return true; }
+      
+      static python::detail::new_non_null_reference adopt(PyObject* x)
+      {
+          return python::detail::new_non_null_reference(x);
+      }
+  };
   
   inline PyObject* get_managed_object(object const& x)
   {
