@@ -18,7 +18,6 @@
 # include <boost/python/init.hpp>
 # include <boost/python/args_fwd.hpp>
 
-# include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/is_same.hpp>
 # include <boost/type_traits/is_convertible.hpp>
 # include <boost/type_traits/is_member_function_pointer.hpp>
@@ -28,6 +27,7 @@
 # include <boost/mpl/for_each.hpp>
 # include <boost/mpl/bool_c.hpp>
 # include <boost/mpl/logical/not.hpp>
+# include <boost/mpl/logical/or.hpp>
 
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
@@ -44,6 +44,7 @@
 # include <boost/python/detail/force_instantiate.hpp>
 
 # include <boost/utility.hpp>
+# include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python {
 
@@ -474,7 +475,13 @@ inline void class_<T,X1,X2,X3>::register_() const
 
     detail::register_class_to_python<T>(
         mpl::bool_c<is_copyable>()
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
         , holder_selector::execute((held_type*)0)
+# elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+        , holder_selector::type()
+# else 
+        , typename holder_selector::type()
+# endif 
         );
 }
 
@@ -484,7 +491,11 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
 {
     this->register_();
     this->set_instance_size(holder_selector::additional_size());
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
     holder_selector::execute((held_type*)0).assert_default_constructible();
+# else 
+    holder_selector::type::assert_default_constructible();
+# endif 
     this->def(init<>());
 }
 
@@ -508,20 +519,21 @@ namespace detail
 {
   template <class T1, class T2, class T3>
   struct has_noncopyable
-      : type_traits::ice_or<
-        is_same<T1,noncopyable>::value
-      , is_same<T2,noncopyable>::value
-      , is_same<T3,noncopyable>::value>
+      : mpl::logical_or<
+          is_same<T1,noncopyable>
+        , is_same<T2,noncopyable>
+        , is_same<T3,noncopyable>
+      >
   {};
 
 
     template <class T, class Prev>
     struct select_held_type
-        : mpl::if_c<
-            type_traits::ice_or<
-                 specifies_bases<T>::value
-               , is_same<T,noncopyable>::value
-            >::value
+        : mpl::if_<
+             mpl::logical_or<
+                 specifies_bases<T>
+               , is_same<T,noncopyable>
+            >
             , Prev
             , T
           >

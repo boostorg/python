@@ -15,11 +15,16 @@
 # include <boost/python/object/make_ptr_instance.hpp>
 # include <boost/python/object/instance.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
+
 # include <boost/type.hpp>
-# include <boost/mpl/if.hpp>
-# include <boost/type_traits/same_traits.hpp>
-# include <boost/type_traits/alignment_traits.hpp>
+
 # include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/if.hpp>
+
+# include <boost/type_traits/same_traits.hpp>
+# include <boost/type_traits/is_base_and_derived.hpp>
+# include <boost/type_traits/alignment_traits.hpp>
+
 # include <cstddef>
 
 namespace boost { namespace python { namespace objects {
@@ -159,9 +164,16 @@ struct select_holder
     // instances to hold the C++ instance data.
     static inline std::size_t additional_size()
     {
-        return additional_size_helper(execute((Held*)0));
+        return additional_size_helper(
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
+            execute((Held*)0)
+# else
+            type()
+# endif 
+            );
     }
 
+ # if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
     // These overloads are an elaborate workaround for deficient
     // compilers:
     //
@@ -194,6 +206,17 @@ struct select_holder
     {
         return detail::select_pointer_holder<T,Held>();
     }
+#  else
+    typedef typename mpl::if_<
+        is_same<Held, python::detail::not_specified>
+      , detail::select_value_holder<T,T>
+      , typename mpl::if_<
+            is_base_and_derived<T, Held>
+          , detail::select_value_holder<T,Held>
+          , detail::select_pointer_holder<T, Held>
+        >::type
+    >::type type;
+#  endif 
     
  private:
     template <class Selector>

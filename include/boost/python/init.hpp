@@ -323,8 +323,12 @@ namespace detail
             detail::make_keyword_range_constructor<args>(
                 policies
                 , keywords_
+#    if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
                 // Using runtime type selection works around a CWPro7 bug.
                 , holder_selector_t::execute((held_type_t*)0).get()
+#    else
+                , holder_selector_t::type::get()
+#    endif 
                 )
             , doc
             );
