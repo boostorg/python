@@ -11,6 +11,7 @@
 # include <boost/python/converter/handle.hpp>
 # include <boost/python/converter/registration.hpp>
 # include <boost/python/converter/type_id.hpp>
+# include <boost/python/converter/unwrapper_select.hpp>
 # include <boost/python/export.hpp>
 
 namespace boost { namespace python { namespace converter { 
@@ -55,7 +56,7 @@ struct unwrap_more_ : unwrap_base
     // unspecified storage which may be allocated by the unwrapper to
     // do value conversions.
     mutable void* m_storage;
-    friend class unwrapper<T>;
+    typedef typename unwrapper_select<T>::type unwrapper_t;
 };
 
 // specialization for PyObject*
@@ -142,32 +143,6 @@ unwrap_more_<T>::unwrap_more_(PyObject* source)
 {
 }
 
-# if 0
-template <>
-inline unwrap_more_<PyObject*>::unwrap_more_(PyObject* source, handle& prev)
-    : unwrap_base(source, m_unwrapper, prev)
-{
-}
-
-template <>
-inline unwrap_more_<PyObject*>::unwrap_more_(PyObject* source)
-    : unwrap_base(source, m_unwrapper)
-
-{
-}
-
-template <>
-inline PyObject* unwrap_more_<PyObject*>::operator*()
-{
-    return source();
-}
-
-template <>
-inline bool unwrap_more_<PyObject*>::convertible(PyObject*) const
-{
-    return true;
-}
-# endif 
 template <class T>
 inline unwrap_<T>::unwrap_(PyObject* source)
     : unwrap_more_<T>(source)
@@ -178,7 +153,7 @@ template <class T>
 T unwrap_more_<T>::operator*()
 {
     return static_cast<unwrapper<T>*>(
-        get_body())->do_conversion(this);
+        get_body())->convert(this->m_source, this->m_storage);
 }
 
 template <class T>
