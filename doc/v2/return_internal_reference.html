@@ -55,7 +55,8 @@
     argument or from the target of a member function to be returned
     safely without making a copy of the referent. The default for its
     first template argument handles the common case where the
-    containing object is the target (<code>*this</code>) of a wrapped member function.
+    containing object is the target (<code>*this</code>) of a wrapped
+    member function.
 
     <h2><a name="classes"></a>Classes</h2>
 
@@ -84,7 +85,10 @@
         <td>The index of the parameter which contains the object to
         which the reference or pointer is being returned. If used to
         wrap a member function, parameter 1 is the target object
-        (<code>*this</code>).
+        (<code>*this</code>). Note that if the target Python object
+        type doesn't support weak references, a Python
+        <code>TypeError</code> exception will be raised when the
+        function being wrapped is called.
 
         <td>1
 
@@ -125,7 +129,7 @@ PyObject* postcall(PyObject* args, PyObject* result);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code><a href="http://www.python.org/doc/current/api/tupleObjects.html#l2h-476">PyTuple_Check</a>(args) != 0</code>
+      <dt><b>Requires:</b> <code><a href="http://www.python.org/doc/2.2/api/tupleObjects.html#l2h-476">PyTuple_Check</a>(args) != 0</code>
 
       <dt><b>Returns:</b> <code><a href="make_custodian_and_ward.html#make_custodian_and_ward_postcall-spec-statics">make_custodian_and_ward_postcall::postcall(args, result)</a></code>
     </dl>
