@@ -116,7 +116,7 @@ PyTypeObject opaque_pointer_converter<Pointer>::type_object =
 // MSC works without this workaround, but needs another one ...
 # define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)  \
 BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(Pointee)
-# else
+# elif BOOST_WORKAROUND(__GNUC__, < 3)
 # define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)  \
 namespace boost { namespace python {                       \
     template<>                                             \
@@ -127,6 +127,19 @@ namespace boost { namespace python {                       \
     inline type_info type_id<const volatile Pointee &>() { \
         return type_info (typeid (Pointee *));             \
     }                                                      \
+}}
+# else
+# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee) \
+namespace boost { namespace python {                      \
+    template<>                                            \
+    inline type_info type_id(boost::type<Pointee>*) {     \
+        return type_info (typeid (Pointee *));            \
+    }                                                     \
+    template<>                                            \
+    inline type_info type_id(                             \
+        boost::type<const volatile Pointee &>*) {         \
+        return type_info (typeid (Pointee *));            \
+    }                                                     \
 }}
 # endif
 # endif	// OPAQUE_POINTER_CONVERTER_HPP_
