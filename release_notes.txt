@@ -1,3 +1,38 @@
+2000-11-12 13:08
+
+    Added enum_as_int_converters for easier enum wrapping
+
+    Introduced new conversion namespace macros:
+        PY_BEGIN_CONVERSION_NAMESPACE,
+        PY_END_CONVERSION_NAMESPACE,
+        PY_CONVERSION
+
+    callback.h, gen_callback.py:
+        Added call() function so that a regular python function (as opposed to
+         method or other function-as-attribute) can be called.
+
+         Added newlines for readability.
+
+    class_wrapper.h:
+        Fixed a bug in add(), which allows non-method class attributes
+
+    Ullrich has added def_raw for simple varargs and keyword support.
+
+    Fixed version number check for __MWERKS__
+    
+    Added tests for enums and non-method class attributes
+
+    objects.h/objects.cpp:
+        Added py::String operator*= and operator* for repetition
+
+        Change Dict::items(), keys(), and values() to return a List
+
+        Added template versions of set_item, etc., methods so that users can optionally
+        use C++ types that have to_python() functions as parameters.
+
+        Changed various Ptr by-value parameters to const Ptr&
+
+
 ======= Release =======
 2000-11-06 0:22 
     Lots of documentation updates
