@@ -622,11 +622,11 @@ form that can be stored on disk or sent over a network connection. The
 serialized object (most often a plain string) can be retrieved and
 converted back to the original object. A good serialization system will
 automatically convert entire object hierarchies. Python's standard
-``pickle`` module is such a system.  It leverages the language's
-virtually unlimited runtime introspection facilities for serializing
-practically arbitrary user-defined objects. With a few simple and
-unintrusive provisions this powerful machinery can be extended to work
-for wrapped C++ objects. Here is a simple example::
+``pickle`` module is such a system.  It leverages the language's strong
+runtime introspection facilities for serializing practically arbitrary
+user-defined objects. With a few simple and unintrusive provisions this
+powerful machinery can be extended to also work for wrapped C++ objects.
+Here is an example::
 
     #include <string>
 
@@ -661,19 +661,33 @@ Now let's create a ``World`` object and put it to rest on disk::
     >>> a_world = hello.World("howdy")
     >>> pickle.dump(a_world, open("my_world", "w"))
 
-Resurrecting the ``World`` object in a different process is equally easy::
+In a potentially *different script* on a potentially *different
+computer* with a potentially *different operating system*::
 
     >>> import pickle
     >>> resurrected_world = pickle.load(open("my_world", "r"))
     >>> resurrected_world.greet()
     'howdy'
 
-Boost.Python's ``pickle_suite`` fully supports the documented
-``pickle`` protocols. Of course ``cPickle`` can also be used for faster
-processing. Enabling serialization of more complex C++ objects requires
-a little more work than is shown in this example, but the ``object``
-interface (see next section) greatly helps in keeping the code
-manageable.
+Of course the ``cPickle`` module can also be used for faster
+processing.
+
+Boost.Python's ``pickle_suite`` fully supports the ``pickle`` protocol
+defined in the standard Python documentation. There is a one-to-one
+correspondence between the standard pickling methods (``__getinitargs__``,
+``__getstate__``, ``__setstate__``) and the functions defined by the
+user in the class derived from ``pickle_suite`` (``getinitargs``,
+``getstate``, ``setstate``). The ``class_::def_pickle()`` member function
+is used to establish the Python bindings for all user-defined functions
+simultaneously. Correct signatures for these functions are enforced at
+compile time. Non-sensical combinations of the three pickle functions
+are also rejected at compile time. These measures are designed to
+help the user in avoiding obvious errors.
+
+Enabling serialization of more complex C++ objects requires a little
+more work than is shown in the example above. Fortunately the
+``object`` interface (see next section) greatly helps in keeping the
+code manageable.
 
 ------------------
  Object interface
@@ -693,37 +707,21 @@ Boost.Python provides a type ``object`` which is essentially a high
 level wrapper around ``PyObject*``. ``object`` automates reference
 counting as much as possible. It also provides the facilities for
 converting arbitrary C++ types to Python objects and vice versa.
-This should significantly reduce the learning effort for prospective
+This significantly reduces the learning effort for prospective
 extension module writers.
 
-To illustrate, this Python code snippet::
+Creating an ``object`` from any other type is extremely simple::
 
-    def f(x, y):
-         if (y == 'foo'):
-             x[3:7] = 'bar'
-         else:
-             x.items += y(3, x)
-         return x
+    object o(3);
 
-Can be rewritten in C++ using Boost.Python facilities::
-
-    object f(object x, object y) {
-         if (y == "foo")
-             x.slice(3,7) = "bar";
-         else
-             x.attr("items") += y(3, x);
-         return x;
-    }
+``object`` has templated interactions with all other types, with
+automatic to-python conversions. It happens so naturally that it's
+easily overlooked.
 
 The ``extract<T>`` class template can be used to convert Python objects
 to C++ types::
 
-    object o(3);
     double x = extract<double>(o);
-
-If the C++ type cannot be extracted an appropriate exception is thrown
-(``extract<T>`` provides facilities for avoiding exceptions if this is
-desired).
 
 All registered user-defined conversions are automatically accessible
 through the ``object`` interface. With reference to the ``World`` class
@@ -731,6 +729,22 @@ defined in previous examples::
 
     object as_python_object(World("howdy"));
     World back_as_c_plus_plus_object = extract<World>(as_python_object);
+
+If a C++ type cannot be converted to a Python object an appropriate
+exception is thrown at runtime.  Similarly, an appropriate exception is
+thrown if a C++ type cannot be extracted from a Python object.
+``extract<T>`` provides facilities for avoiding exceptions if this is
+desired.
+
+The ``object::attr()`` member function is available for accessing
+and manipulating attributes of Python objects. For example::
+
+    object planet(World());
+    planet.attr("set")("howdy");
+
+``planet.attr("set")`` returns a callable ``object``.  ``"howdy"`` is
+converted to a Python string object which is then passed as an argument
+to the ``set`` method.
 
 The ``object`` type is accompanied by a set of derived types
 that mirror the Python built-in types such as ``list``, ``dict``,
@@ -741,6 +755,8 @@ manipulation of these high-level types from C++::
     d["some"] = "thing";
     d["lucky_number"] = 13;
     list l = d.keys();
+
+This almost looks and works like regular Python code, but it is pure C++.
 
 =================
  Thinking hybrid
@@ -765,7 +781,7 @@ clear that a pure Python implementation is too slow for numerically
 intensive production code.
 
 Boost.Python enables us to *think hybrid* when developing new
-applications. For example, Python can be used for rapidly prototyping a
+applications. Python can be used for rapidly prototyping a
 new application. Python's ease of use and the large pool of standard
 libraries give us a head start on the way to a first working system. If
 necessary, the working procedure can be used to discover the
@@ -808,7 +824,13 @@ parsing the C++ code to be interfaced to Python, yet the interface
 definitions are concise and maintainable. Freed from most of the
 development-time penalties of crossing a language boundary, software
 designers can take full advantage of two rich and complimentary
-language environments.
+language environments. In practice it turns out that some things are
+very difficult to do with pure Python/C (e.g. an efficient array
+library with an intuitive interface in the compiled language) and
+others are very difficult to do with pure C++ (e.g. serialization).
+If one has the luxury of being able to design a software system as a
+hybrid system from the ground up there are many new ways of avoiding
+road blocks in one language or the other.
 
 .. I'm not ready to give up on all of this quite yet
 
