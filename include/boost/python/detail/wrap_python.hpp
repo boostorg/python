@@ -20,6 +20,19 @@
 // 04 Mar 01  Rolled in some changes from the Dragon fork (Dave Abrahams)
 // 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
 
+#ifdef _DEBUG
+# ifndef BOOST_DEBUG_PYTHON
+#  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
+#  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
+# endif
+#endif
+
+# include <pyconfig.h>
+# if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION == 741
+#  undef _POSIX_C_SOURCE
+#  undef _XOPEN_SOURCE
+# endif
+
 //
 // Python's LongObject.h helpfully #defines ULONGLONG_MAX for us,
 // which confuses Boost's config
@@ -42,13 +55,6 @@
 
 #if PY_MAJOR_VERSION<2 || PY_MAJOR_VERSION==2 && PY_MINOR_VERSION<2
 #error Python 2.2 or higher is required for this version of Boost.Python.
-#endif
-
-#ifdef _DEBUG
-# ifndef BOOST_DEBUG_PYTHON
-#  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
-#  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
-# endif
 #endif
 
 //
