@@ -9,7 +9,13 @@
 namespace boost { namespace python { namespace detail { 
 
 template <class T, class Arg>
-void construct_pointee(void* storage, Arg& x, T const volatile*)
+void construct_pointee(void* storage, Arg& x
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+                       , T const volatile*
+# else 
+                       , T const*
+# endif 
+    )
 {
     new (storage) T(x);
 }
