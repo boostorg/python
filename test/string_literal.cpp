@@ -3,10 +3,18 @@
 #include <boost/static_assert.hpp>
 #include <boost/python/detail/string_literal.hpp>
 
+using namespace boost::python::detail;
+    
+
+template <class T>
+void expect_string_literal(T const&)
+{
+    BOOST_STATIC_ASSERT(is_string_literal<T const>::value);
+}
+
 int main()
 {
-    using namespace boost::python::detail;
-    
+    expect_string_literal("hello");
     BOOST_STATIC_ASSERT(!is_string_literal<int*&>::value);
     BOOST_STATIC_ASSERT(!is_string_literal<int* const&>::value);
     BOOST_STATIC_ASSERT(!is_string_literal<int*volatile&>::value);
