@@ -84,13 +84,7 @@ lib libboost_python : ../src/$(CPP_SOURCES).cpp
     <shared-linkable>true
     $(PYTHON_PROPERTIES) ;
 
-dll libboost_python$(SUFDLL[1]) : ../src/$(CPP_SOURCES).cpp
-	# requirements
-	: $(BOOST_PYTHON_INCLUDES)
-	<shared-linkable>true
-	<define>BOOST_RE_BUILD_DLL=1
-	$(PYTHON_PROPERTIES) ;
-
+    
 ############# comprehensive module and test ###########
 bpl-test boost_python_test
       : ../test/comprehensive.cpp ;
