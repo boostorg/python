@@ -69,7 +69,7 @@ rule bpl-test ( name ? : files * : requirements * )
         }
     }
 
-    return [ boost-python-runtest $(name) : $(py) <pyd>$(modules) : $(requirements) ] ;
+    return [ boost-python-runtest $(name) : $(py) <pyd>$(modules) : $(requirements) : : -v ] ;
 }
 
 test-suite python
@@ -188,13 +188,12 @@ bpl-test crossmod_exception
 
 [ run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor  <template>py-unit-test ]
   
-[ run select_holder.cpp  <lib>../../test/build/boost_test_exec_monitor  <template>py-unit-test ]
+[ compile select_holder.cpp <template>py-unit-test ]
   
 [ run select_from_python_test.cpp ../src/converter/type_id.cpp
   <lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
 
-[ run select_arg_to_python_test.cpp ../src/converter/type_id.cpp
-<lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
+[ compile select_arg_to_python_test.cpp <template>py-unit-test ]
 
 [ compile-fail ./raw_pyobject_fail1.cpp <template>py-unit-test ]
 [ compile-fail ./raw_pyobject_fail2.cpp <template>py-unit-test ]

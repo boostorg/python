@@ -253,17 +253,16 @@ bjam -sTOOLS=<i><a href=
 </pre>
     </blockquote>
     This will update all of the Boost.Python v1 test and example targets. The
-    tests are relatively quiet by default. To get more-verbose output, you
+    tests are relatively verbose by default. To get less-verbose output, you
     might try 
 
     <blockquote>
 <pre>
 bjam -sTOOLS=<i><a href=
-"../../../more/getting_started.html#Tools">toolset</a></i> -sPYTHON_TEST_ARGS=-v test
+"../../../more/getting_started.html#Tools">toolset</a></i> -sPYTHON_TEST_ARGS= test
 </pre>
     </blockquote>
-    which will print each test's Python code with the expected output as it
-    passes. 
+    By default, <code>PYTHON_TEST_ARGS</code> is set to <code>-v</code>.
 
     <h2><a name="building_ext">Building your Extension Module</a></h2>
     Though there are other approaches, the smoothest and most reliable way to
