@@ -15,6 +15,10 @@
 //  To use the Python debugging library, #define BOOST_DEBUG_PYTHON on the
 //  compiler command-line.
 
+// Revision History:
+// 04 Mar 01  Rolled in some changes from the Dragon fork (Dave Abrahams)
+// 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
+
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
 #  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
@@ -61,6 +65,8 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
+# elif defined(_MSC_VER)
+#  include <limits> // prevents Python.h from defining LONGLONG_MAX, LONGLONG_MIN, and ULONGLONG_MAX
 # endif
 
 #endif // _WIN32
@@ -76,3 +82,7 @@ typedef int pid_t;
 # define _DEBUG
 #endif
 
+#if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
+# define PyObject_INIT(op, typeobj) \
+	( (op)->ob_type = (typeobj), _Py_NewReference((PyObject *)(op)), (op) )
+#endif

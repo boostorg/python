@@ -1,3 +1,6 @@
+// Revision History:
+// Mar 03 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
+
 #ifndef CLASS_WRAPPER_DWA101000_H_
 # define CLASS_WRAPPER_DWA101000_H_
 
