@@ -6,6 +6,7 @@
 #ifndef CLASS_DWA200216_HPP
 # define CLASS_DWA200216_HPP
 
+# include <boost/python/class_fwd.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/type_id.hpp>
@@ -14,7 +15,7 @@
 # include <boost/python/object/class_converters.hpp>
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/mpl/type_list.hpp>
+# include <boost/python/detail/type_list.hpp>
 
 namespace // put some convenience classes into the unnamed namespace for the user
 {
@@ -80,8 +81,8 @@ namespace detail
 //
 template <
     class T // class being wrapped
-    , class Bases = mpl::type_list<>::type
-    , class HolderGenerator = objects::value_holder_generator
+    , class Bases
+    , class HolderGenerator
     >
 class class_ : private objects::class_base
 {

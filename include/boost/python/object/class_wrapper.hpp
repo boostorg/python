@@ -25,9 +25,9 @@ struct class_wrapper
     
     static PyObject* convert(T const& x)
     {
-        // Don't call the type to do the construction, since that
-        // would require the registration of an __init__ copy
-        // constructor. Instead, just construct the object in place.
+        // Don't call the type directly to do the construction, since
+        // that would require the registration of an appropriate
+        // __init__ function.
         PyObject* raw_result = m_class_object->tp_alloc(m_class_object, 0);
 
         if (raw_result == 0)
@@ -37,8 +37,6 @@ struct class_wrapper
         // exceptions.
         ref result(raw_result, ref::allow_null());
 
-        ((instance*)raw_result)->objects = 0;
-        
         // Build a value_holder to contain the object using the copy
         // constructor
         value_holder<T>* p = new value_holder<T>(raw_result, cref(x));

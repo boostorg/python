@@ -12,10 +12,9 @@
 # include <boost/python/make_function.hpp>
 # include <boost/python/objects.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/class_fwd.hpp>
 
 namespace boost { namespace python {
-
-template <class T, class Bases, class HolderGenerator> class class_;
 
 class BOOST_PYTHON_DECL module_base
 {
