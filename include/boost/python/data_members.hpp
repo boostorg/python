@@ -261,7 +261,7 @@ namespace detail
   
   // Handle non-member pointers
   template <class D, class Policies>
-  inline object make_setter(D* p, Policies const& policies, int)
+  inline object make_setter(D* p, Policies const& policies, mpl::false_, int)
   {
       return objects::function_object(
           objects::py_function(
@@ -275,7 +275,7 @@ namespace detail
 
   // Handle pointers-to-members
   template <class C, class D, class Policies>
-  inline object make_setter(D C::*pm, Policies const& policies, int)
+  inline object make_setter(D C::*pm, Policies const& policies, mpl::true_, int)
   {
       return objects::function_object(
           objects::py_function(
@@ -289,9 +289,9 @@ namespace detail
 
   // Handle references
   template <class D, class Policies>
-  inline object make_setter(D& x, Policies const& policies, ...)
+  inline object make_setter(D& x, Policies const& policies, mpl::false_, ...)
   {
-      return detail::make_setter(&x, policies, 0L);
+      return detail::make_setter(&x, policies, mpl::false_(), 0L);
   }
 }
 
@@ -340,13 +340,13 @@ inline object make_getter(D const& d)
 template <class D, class Policies>
 inline object make_setter(D& x, Policies const& policies)
 {
-    return detail::make_setter(x, policies, 0);
+    return detail::make_setter(x, policies, is_member_pointer<D>(), 0);
 }
 
 template <class D, class Policies>
 inline object make_setter(D const& x, Policies const& policies)
 {
-    return detail::make_setter(x, policies, 0);
+    return detail::make_setter(x, policies, is_member_pointer<D>(), 0);
 }
 
 template <class D>
