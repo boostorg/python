@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 import declarations
 
-__version__ = '0.9.24'
+__version__ = '0.9.25'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -182,6 +182,7 @@ def CreateContext():
     context['holder'] = infos.holder
     context['add_method'] = infos.add_method
     context['final'] = infos.final
+    context['export_values'] = infos.export_values
     # policies
     context['return_internal_reference'] = return_internal_reference
     context['with_custodian_and_ward'] = with_custodian_and_ward

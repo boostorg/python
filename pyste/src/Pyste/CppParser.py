@@ -55,7 +55,7 @@ class CppParser:
         if not filedir:
             filedir = '.'
         includes.insert(0, filedir)
-        includes = ['-I "%s"' % x for x in includes]
+        includes = ['-I "%s"' % self.Unixfy(x) for x in includes]
         return ' '.join(includes)
 
 
@@ -88,6 +88,10 @@ class CppParser:
         return temp
 
 
+    def Unixfy(self, path):
+        return path.replace('\\', '/')
+
+
     def ParseWithGCCXML(self, header, tail):
         '''Parses the given header using gccxml and GCCXMLParser.
         '''
@@ -103,6 +107,8 @@ class CppParser:
             defines = self._DefineParams()
             # call gccxml
             cmd = 'gccxml %s %s %s -fxml=%s'
+            filename = self.Unixfy(filename)
+            xmlfile = self.Unixfy(xmlfile)
             status = os.system(cmd % (includes, defines, filename, xmlfile))
             if status != 0 or not os.path.isfile(xmlfile):
                 raise CppParserError, 'Error executing gccxml'

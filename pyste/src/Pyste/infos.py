@@ -125,6 +125,7 @@ class EnumInfo(DeclarationInfo):
         self._Attribute('name', name)
         self._Attribute('include', include)
         self._Attribute('exclude', False)
+        self._Attribute('export_values', False)
         exporter = EnumExporter(InfoWrapper(self))
         if exporter not in exporters.exporters: 
             exporters.exporters.append(exporter)
@@ -236,3 +237,7 @@ def add_method(info, name, rename=None):
 
 def final(info):
     info._Attribute('no_override', True)
+
+
+def export_values(info):
+    info._Attribute('export_values', True)

@@ -1,3 +1,6 @@
+19 September 2003
+Better support for unnamed enums, plus they are by default exported to the parent's namespace. Normal enums can have the same behaviour using the function export_values on the Enum object.
+
 10 September 2003
 A new variable is accessible in the Pyste files: INTERFACE_FILE contains the 
 full path of the pyste file.
