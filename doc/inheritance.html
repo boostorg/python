@@ -78,26 +78,19 @@ namespace python = boost::python;
 
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
-    try
-    {
-       python::module_builder my_module("my_module");
-
-       python::class_builder&lt;Base&gt; base_class(my_module, "Base");
-       base_class.def(python::constructor&lt;void&gt;());
-
-       python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived");
-       derived_class.def(python::constructor&lt;void&gt;());
-       <b>// Establish the inheritance relationship between Base and Derived
-       derived_class.declare_base(base_class);</b>
-
-       my_module.def(derived_as_base, "derived_as_base");
-       my_module.def(get_name, "get_name");
-       my_module.def(get_derived_x, "get_derived_x");
-    }
-    catch(...)
-    {
-       python::handle_exception();    // Deal with the exception for Python
-    }
+    python::module_builder my_module("my_module");                            
+                                                                              
+    python::class_builder&lt;Base&gt; base_class(my_module, "Base");          
+    base_class.def(python::constructor&lt;void&gt;());                        
+                                                                              
+    python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived"); 
+    derived_class.def(python::constructor&lt;void&gt;());                     
+    <b>// Establish the inheritance relationship between Base and Derived     
+    derived_class.declare_base(base_class);</b>                               
+                                                                              
+    my_module.def(derived_as_base, "derived_as_base");                        
+    my_module.def(get_name, "get_name");                                      
+    my_module.def(get_derived_x, "get_derived_x"); 
 }
 </pre>
 </blockquote>

@@ -151,16 +151,9 @@ struct baz_callback {
 
 BOOST_PYTHON_MODULE_INIT(foobar)
 {
-    try
-    {
-       boost::python::module_builder foobar("foobar");
-       boost::python::class_builder&lt;baz,baz_callback&gt; baz_class("baz");
-       baz_class.def(&amp;baz::calls_pure, "calls_pure");
-    }
-    catch(...)
-    {
-       boost::python::handle_exception();    // Deal with the exception for Python
-    }
+     boost::python::module_builder foobar("foobar");                          
+     boost::python::class_builder&lt;baz,baz_callback&gt; baz_class("baz");   
+     baz_class.def(&amp;baz::calls_pure, "calls_pure"); 
 }
 </pre>
     </blockquote>
