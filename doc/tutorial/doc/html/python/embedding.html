@@ -11,12 +11,12 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
-<td align="center"><a href="../../../index.htm">Home</a></td>
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../libraries.html">Libraries</a></td>
-<td align="center"><a href="../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
-<td align="center"><a href="../../../more/index.htm">More</a></td>
+<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </table>
 <hr>
 <div class="spirit-nav">
@@ -42,7 +42,7 @@ the gaps. However, Boost.Python already makes embedding a lot easier and,
 in a future version, it may become unnecessary to touch the Python/C API at
 all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png"></span></p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id428755"></a>Building embedded programs</h2>
+<a name="id441693"></a>Building embedded programs</h2>
 <p>
 To be able to use embedding in your programs, they have to be linked to
 both Boost.Python's and Python's static link library.</p>
@@ -51,7 +51,8 @@ Boost.Python's static link library comes in two variants. Both are located
 in Boost's <tt class="literal">/libs/python/build/bin-stage</tt> subdirectory. On Windows, the
 variants are called <tt class="literal">boost_python.lib</tt> (for release builds) and
 <tt class="literal">boost_python_debug.lib</tt> (for debugging). If you can't find the libraries,
-you probably haven't built Boost.Python yet. See <a href="../../../../building.html%20Building" target="_top">and Testing</a> on how to do this.</p>
+you probably haven't built Boost.Python yet. See 
+<a href="../../../../building.html" target="_top">Building and Testing</a> on how to do this.</p>
 <p>
 Python's static link library can be found in the <tt class="literal">/libs</tt> subdirectory of
 your Python directory. On Windows it is called pythonXY.lib where X.Y is
@@ -77,7 +78,7 @@ In a Jamfile, all the above boils down to:</p>
         &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </tt></pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id428846"></a>Getting started</h2>
+<a name="id441784"></a>Getting started</h2>
 <p>
 Being able to build is nice, but there is nothing to build yet. Embedding
 the Python interpreter into one of your C++ programs requires these 4
@@ -115,10 +116,10 @@ There is a difference however. While the reference-counting is fully
 automatic in Python, the Python/C API requires you to do it
 <a href="http://www.python.org/doc/current/api/refcounts.html" target="_top">by hand</a>. This is
 messy and especially hard to get right in the presence of C++ exceptions.
-Fortunately Boost.Python provides the <a href="../../v2/handle.html" target="_top">handle</a> and
+Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a> and
 <a href="../../../../v2/object.html" target="_top">object</a> class templates to automate the process.</p>
 <a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id428977"></a>Reference-counting handles and objects</h2>
+<a name="id441916"></a>Reference-counting handles and objects</h2>
 <p>
 There are two ways in which a function in the Python/C API can return a
 <tt class="literal">PyObject*</tt>: as a <span class="emphasis"><em>borrowed reference</em></span> or as a <span class="emphasis"><em>new reference</em></span>. Which of
@@ -151,7 +152,7 @@ discuss in the next section.</p>
 </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id429281"></a>Running Python code</h2>
+<a name="id442219"></a>Running Python code</h2>
 <p>
 To run Python code from C++ there is a family of functions in the API
 starting with the PyRun prefix. You can find the full list of these
@@ -166,7 +167,7 @@ The <tt class="literal">start</tt> parameter is the start symbol from the Python
 for interpreting the code. The possible values are:</p>
 <div class="informaltable">
 <h4>
-<a name="id429442"></a><span class="table-title">Start symbols</span>
+<a name="id442380"></a><span class="table-title">Start symbols</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -229,12 +230,12 @@ containing a phrase that is well-known in programming circles.</p>
 do this, the the returned object would be kept alive unnecessarily. Unless
 you want to be a Dr. Frankenstein, always wrap <tt class="literal">PyObject*</tt>s in <tt class="literal">handle</tt>s.</p>
 <a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id429881"></a>Beyond handles</h2>
+<a name="id442819"></a>Beyond handles</h2>
 <p>
 It's nice that <tt class="literal">handle</tt> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the <a href="object.html" target="_top">previous section</a>: the aptly
+above, and in the <a href="../object.html" target="_top">previous section</a>: the aptly
 named <tt class="literal">object</tt> class and it's derivatives. We've already seen that they
 can be constructed from a <tt class="literal">handle</tt>. The following examples should further
 illustrate this fact:</p>
@@ -271,7 +272,7 @@ int</span><span class="identifier"> five_squared</span><span class="special"> =<
 take into account the different functions that <tt class="literal">object</tt> and <tt class="literal">handle</tt>
 perform.</p>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id430451"></a>Exception handling</h2>
+<a name="id443389"></a>Exception handling</h2>
 <p>
 If an exception occurs in the execution of some Python code, the <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a> 
 function returns a null pointer. Constructing a <tt class="literal">handle</tt> out of this null 
@@ -320,7 +321,7 @@ standard exceptions</a>:</p>
 exception handling functions listed <a href="http://www.python.org/doc/api/exceptionHandling.html" target="_top">here</a>.)</p>
 <p>
 If you'd rather not have <tt class="literal">handle</tt> throw a C++ exception when it is constructed, you 
-can use the <a href="../../v2/handle.html#allow_null-spec" target="_top">allow_null</a> function in the same 
+can use the <a href="../../../../v2/handle.html#allow_null-spec" target="_top">allow_null</a> function in the same 
 way you'd use borrowed:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">handle</span><span class="special">&lt;&gt;</span><span class="identifier"> result</span><span class="special">((</span><span class="identifier">allow_null</span><span class="special">(</span><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span><span class="string">
     "5/0"</span><span class="special">
