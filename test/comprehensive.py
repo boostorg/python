@@ -1070,6 +1070,39 @@ test methodologies for wrapping functions that return a pointer
     3
     >>> eo.second
     1
+
+======== test [plain] char converters ==============
+    >>> get_plain_char()
+    'x'
+    >>> use_plain_char('a')
+    'aaa'
+    >>> use_const_plain_char('b')
+    'bbbbb'
+
+======== test std::complex converters ==============
+    >>> c = dpolar(3, 5)
+    >>> type(c)
+    <type 'complex'>
+    >>> '%.3g' % (dreal(c))
+    '0.851'
+    >>> '%.3g' % (dimag(c))
+    '-2.88'
+    >>> '%.3g' % (freal(c))
+    '0.851'
+    >>> '%.3g' % (fimag(c))
+    '-2.88'
+    >>> c = fpolar(7, 13)
+    >>> type(c)
+    <type 'complex'>
+    >>> '%.3g' % (fimag(c))
+    '2.94'
+    >>> '%.3g' % (freal(c))
+    '6.35'
+    >>> '%.3g' % (dimag(c))
+    '2.94'
+    >>> '%.3g' % (dreal(c))
+    '6.35'
+
 '''
 
 from test import *

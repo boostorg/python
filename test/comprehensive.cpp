@@ -815,6 +815,25 @@ namespace bpl_test {
           w.set_secret_number(number);
   }
 
+  // Test plain char converters.
+  char get_plain_char() { return 'x'; }
+  std::string use_plain_char(char c) { return std::string(3, c); }
+  std::string use_const_plain_char(const char c) { return std::string(5, c); }
+
+  // Test std::complex<double> converters.
+  std::complex<double> dpolar(double rho, double theta) {
+    return std::polar(rho, theta);
+  }
+  double dreal(const std::complex<double>& c) { return c.real(); }
+  double dimag(std::complex<double> c) { return c.imag(); }
+
+  // Test std::complex<float> converters.
+  std::complex<float> fpolar(float rho, float theta) {
+    return std::polar(rho, theta);
+  }
+  double freal(const std::complex<float>& c) { return c.real(); }
+  double fimag(std::complex<float> c) { return c.imag(); }
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -1036,6 +1055,21 @@ void init_module(boost::python::module_builder& m)
     world_class.def(world_getinitargs, "__getinitargs__");
     world_class.def(world_getstate, "__getstate__");
     world_class.def(world_setstate, "__setstate__");
+
+    // Test plain char converters.
+    m.def(get_plain_char, "get_plain_char");
+    m.def(use_plain_char, "use_plain_char");
+    m.def(use_const_plain_char, "use_const_plain_char");
+
+    // Test std::complex<double> converters.
+    m.def(dpolar, "dpolar");
+    m.def(dreal, "dreal");
+    m.def(dimag, "dimag");
+
+    // Test std::complex<float> converters.
+    m.def(fpolar, "fpolar");
+    m.def(freal, "freal");
+    m.def(fimag, "fimag");
 }
 
 PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary& keywords)
