@@ -39,7 +39,7 @@ class Foo                // prohibit copying, proving that it doesn't choke
     void set(long x);     // change the held value
 
     // These two call virtual functions
-    const char* call_pure();                    // call a pure virtual fuction
+    std::string call_pure();                    // call a pure virtual fuction
     int call_add_len(const char* s) const;      // virtual function with a default implementation
 
  private:
@@ -47,7 +47,7 @@ class Foo                // prohibit copying, proving that it doesn't choke
     virtual int add_len(const char* s) const;
     
     // Derived classes can do whatever they want here, but they must do something!
-    virtual const char* pure() const = 0;     
+    virtual std::string pure() const = 0;     
 
  public: // friend declarations
     // If you have private virtual functions such as add_len which you want to
@@ -177,7 +177,7 @@ class FooCallback : public Foo
     // Since Foo::pure() is pure virtual, we don't need a corresponding
     // default_pure(). A failure to override it in Python will result in an
     // exception at runtime when pure() is called.
-    const char* pure() const;
+    std::string pure() const;
 
  private: // Required boilerplate if functions will be overridden
     PyObject* m_self; // No, we don't want a py::Ptr here, or we'd get an ownership cycle.
