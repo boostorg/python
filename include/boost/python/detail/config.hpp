@@ -15,6 +15,19 @@
 # include <boost/config.hpp>
 # include <cstddef>
 
+# ifdef BOOST_NO_OPERATORS_IN_NAMESPACE
+   // A gcc bug forces some symbols into the global namespace
+#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
+#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE
+#  define BOOST_PYTHON_CONVERSION
+#  define BOOST_PYTHON_IMPORT_CONVERSION(x) using ::x
+# else
+#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
+#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
+#  define BOOST_PYTHON_CONVERSION boost::python
+#  define BOOST_PYTHON_IMPORT_CONVERSION(x) void never_defined() // so we can follow the macro with a ';'
+# endif
+
 # if defined(BOOST_MSVC)
 #  if _MSC_VER <= 1200
 #   define BOOST_MSVC6_OR_EARLIER 1
@@ -22,16 +35,6 @@
 
 # pragma warning (disable : 4786)
 
-# endif
-
-# if defined(BOOST_PYTHON_USE_FRIEND_KOENIG_LOOKUP)
-// for compilers that support Koenig lookup
-#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
-#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
-# else
-// for compilers that do not support Koenig lookup for friend functions
-#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
-#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE
 # endif
 
 // Work around the broken library implementation/strict ansi checking on some
