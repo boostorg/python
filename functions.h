@@ -91,6 +91,7 @@ class BoundFunction : public PythonObject
     
     BoundFunction(Ptr target, Ptr fn);
     PyObject* call(PyObject*args, PyObject* keywords) const;
+    PyObject* getattr(const char* name);
     
  private:
     struct TypeObject;
