@@ -154,6 +154,7 @@ class PyExtensionClassConverters
             if (held != 0)
                 return held->target();
 
+            // see extclass.cpp for an explanation of try_class_conversions()
             void * target = py::ClassRegistry<T>::class_object()->try_class_conversions(*p);
             if(target) 
                 return static_cast<T *>(target);
@@ -401,11 +402,13 @@ class ExtensionClass
         this->def_setter(pm, name);
     }
         
-    // declare the given class a base class of this and register 
-    // conversion functions
+    // declare the given class a base class of this one and register 
+    // up and down conversion functions
     template <class S, class V>
     void declare_base(ExtensionClass<S, V> * base)
     {
+        // see extclass.cpp for an explanation of why we need to register
+        // conversion functions
         detail::BaseClassInfo baseInfo(base, 
                             &detail::DefineConversion<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
@@ -416,11 +419,13 @@ class ExtensionClass
         ClassRegistry<S>::register_derived_class(derivedInfo);
     }
         
-    // declare the given class a base class of this and register 
-    // only upcast function
+    // declare the given class a base class of this one and register 
+    // only up conversion function
     template <class S, class V>
     void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
     {
+        // see extclass.cpp for an explanation of why we need to register
+        // conversion functions
         detail::BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
         add_base(Ptr(as_object(base), Ptr::new_ref));
@@ -435,6 +440,8 @@ class ExtensionClass
     
     virtual std::vector<detail::BaseClassInfo> const & base_classes() const;
     virtual std::vector<detail::DerivedClassInfo> const & derived_classes() const;
+
+    // the purpose of this function is explained in extclass.cpp
     virtual void * convert_from_holder(InstanceHolderBase * v) const;
 
     template <class Signature>
