@@ -16,6 +16,7 @@
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
 #include <boost/python/dict.hpp>
+#include <boost/python/str.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 #include <vector>
@@ -192,16 +193,16 @@ namespace objects
   }
 
 
-static PyGetSetDef instance_getsets[] = {
-	{"__dict__",  instance_get_dict,  instance_set_dict, NULL},
-	{0}
-};
+  static PyGetSetDef instance_getsets[] = {
+      {"__dict__",  instance_get_dict,  instance_set_dict, NULL},
+      {0}
+  };
 
   
-static PyMemberDef instance_members[] = {
-	{"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0},
-	{0}
-};
+  static PyMemberDef instance_members[] = {
+      {"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0},
+      {0}
+  };
 
   static PyTypeObject class_type_object = {
       PyObject_HEAD_INIT(0) //&class_metatype_object)
@@ -275,6 +276,20 @@ static PyMemberDef instance_members[] = {
       return 0;
   }
 
+  object module_prefix()
+  {
+      object result(
+          PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
+          ? object(scope().attr("__name__"))
+          : api::getattr(scope(), "__module__", str())
+          );
+
+      if (result)
+          result += '.';
+      
+      return result;
+  }
+
   namespace
   {
     // Find a registered class object corresponding to id. Return a
@@ -303,21 +318,17 @@ static PyMemberDef instance_members[] = {
         }
         return result;
     }
-  }
 
-  // class_base constructor
-  //
-  // name -      the name of the new Python class
-  //
-  // num_types - one more than the number of declared bases
-  //
-  // types -     array of python::type_info, the first item
-  //             corresponding to the class being created, and the
-  //             rest corresponding to its declared bases.
-  //
-
-  namespace
-  {
+    // class_base constructor
+    //
+    // name -      the name of the new Python class
+    //
+    // num_types - one more than the number of declared bases
+    //
+    // types -     array of python::type_info, the first item
+    //             corresponding to the class being created, and the
+    //             rest corresponding to its declared bases.
+    //
     inline object
     new_class(char const* name, std::size_t num_types, class_id const* const types)
     {
@@ -336,17 +347,8 @@ static PyMemberDef instance_members[] = {
           PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(c.release()));
       }
 
-      object module_name(
-          PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
-          ? object(scope().attr("__name__"))
-          : api::getattr(scope(), "__module__", object(""))
-          );
-
-      if (module_name)
-          module_name += '.';
-      
       // Call the class metatype to create a new class
-      object result = object(class_metatype())(module_name + name, bases, dict());
+      object result = object(class_metatype())(module_prefix() + name, bases, dict());
       assert(PyType_IsSubtype(result.ptr()->ob_type, &PyType_Type));
       
       if (scope().ptr() != Py_None)

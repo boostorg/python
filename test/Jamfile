@@ -54,6 +54,7 @@ rule bpl-test ( name ? : files * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+bpl-test enum ;
 bpl-test minimal ;
 bpl-test docstring ;
 bpl-test exception_translator ;

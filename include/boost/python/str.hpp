@@ -18,6 +18,8 @@ namespace boost { namespace python {
 class str : public object
 {
  public:
+    BOOST_PYTHON_DECL str(); // new str
+    
     BOOST_PYTHON_DECL str(const char* s); // new str
     explicit BOOST_PYTHON_DECL str(object_cref other);
 

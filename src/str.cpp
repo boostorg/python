@@ -10,6 +10,10 @@ BOOST_PYTHON_DECL detail::new_reference str::call(object const& arg_)
         arg_.ptr());
 } 
 
+BOOST_PYTHON_DECL str::str()
+    : object(detail::new_reference(PyString_FromString("")))
+{}
+
 BOOST_PYTHON_DECL str::str(const char* s)
     : object(detail::new_reference(PyString_FromString(s)))
 {}
