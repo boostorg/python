@@ -75,7 +75,13 @@ namespace
 
           // Get the location in which to construct
           void* storage = ((rvalue_from_python_storage<T>*)data)->storage.bytes;
+#if defined(__GNUC__) && \
+      (__GNUC__ == 3 && __GNUC_MINOR__ == 3 && __GNUC_PATCHLEVEL__ == 1)
+
+          new (storage) T(SlotPolicy::extract(intermediate.get()));
+#else
           new (storage) T(static_cast<T>(SlotPolicy::extract(intermediate.get())));
+#endif
 
           // record successful construction
           data->convertible = storage;
