@@ -31,7 +31,6 @@ body_sections = (
 # include <boost/config.hpp>
 # include "signatures.h"
 # include "none.h"
-# include "objects.h"
 
 namespace python {
 
@@ -57,25 +56,9 @@ struct caller<void>
 ''',
 '''};
 
-namespace detail
-{
-                     
-// create signature tuples
-inline''',
-'''
-// member functions
-''',
-'''
-// const member functions
-''',
-'''
-// free functions
-''',
-'''} // namespace detail
+}
 
-} // namespace python
-
-#endif // CALLER_DWA05090_H_
+#endif
 ''')
 
 #'
@@ -101,34 +84,6 @@ free_function = '''%{    template <%(class A%n%:, %)>
         %2f(%(from_python(a%n, type<A%n>())%:,
                         %))%3
     }
-
-'''
-
-function_signature = '''%{template <%}%(class A%n%:, %)%{>%}
-PyObject* function_signature(%(type<A%n>%:, %)) {
-%(    static const bool is_plain_A%n = BOOST_PYTHON_IS_PLAIN(A%n);
-%)    tuple result(%x);
-%(    result.set_item(%N, python_type_name_selector<is_plain_A%n>::get(type<A%n>()));
-%)
-    return result.reference().release();
-}
-
-'''
-
-member_function_signature = '''template <class R, class T%(, class A%n%)>
-inline PyObject* function_signature(R (T::*pmf)(%(A%n%:, %))%1) {
-    return function_signature(
-        python::type<T>()%(,
-        python::type<A%n>()%));
-}
-
-'''
-
-free_function_signature = '''template <class R%(, class A%n%)>
-inline PyObject* function_signature(R (*f)(%(A%n%:, %))) {
-    return function_signature(%(
-        python::type<A%n>()%:,%));
-}
 
 '''
 
@@ -163,16 +118,6 @@ def gen_caller(member_function_args, free_function_args = None):
             + gen_functions(free_function, free_function_args,
                             'void', '', return_none)
             + body_sections[6]
-
-            # create lists describing the function signatures
-            + gen_functions(function_signature, free_function_args)
-            + body_sections[7]
-            + gen_functions(member_function_signature, member_function_args, '')
-            + body_sections[8]
-            + gen_functions(member_function_signature, member_function_args, ' const')
-            + body_sections[9]
-            + gen_functions(free_function_signature, free_function_args)
-            + body_sections[10]
             )
 
 if __name__ == '__main__':

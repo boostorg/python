@@ -197,7 +197,8 @@ namespace detail
 
       };
   };
-  
+
+
 // Fully specialize define_operator for all operators defined in operator_id above.
 // Every specialization defines one function object for normal operator calls and one
 // for operator calls with operands reversed ("__r*__" function variants).
@@ -213,20 +214,15 @@ namespace detail
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              tuple args(ref(arguments, ref::increment_count));                         \
+              tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                         \
               return BOOST_PYTHON_CONVERSION::to_python(                                          \
                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()) oper      \
                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()));        \
           }                                                                             \
                                                                                         \
-          string function_name() const                                                  \
-              { return string(name()); }                                                \
-                                                                                        \
-          PyObject* description() const                                                 \
-          {                                                                             \
-            return function_signature(python::type<Left>(), python::type<Right>());     \
-          }                                                                             \
+          const char* description() const                                               \
+              { return "__" #id "__"; }                                                 \
       };                                                                                \
                                                                                         \
       template <class Right, class Left>                                                \
@@ -234,20 +230,15 @@ namespace detail
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              tuple args(ref(arguments, ref::increment_count));                         \
+              tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                         \
-              return BOOST_PYTHON_CONVERSION::to_python(                                \
+              return BOOST_PYTHON_CONVERSION::to_python(                                          \
                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()) oper      \
                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()));        \
           }                                                                             \
                                                                                         \
-          string function_name() const                                                  \
-              { return string(rname()); }                                               \
-                                                                                        \
-          PyObject* description() const                                                 \
-          {                                                                             \
-            return function_signature(python::type<Left>(), python::type<Right>());     \
-          }                                                                             \
+          const char* description() const                                               \
+              { return "__r" #id "__"; }                                                \
                                                                                         \
       };                                                                                \
                                                                                         \
@@ -264,19 +255,14 @@ namespace detail
       {                                                                                         \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
           {                                                                                     \
-              tuple args(ref(arguments, ref::increment_count));                                 \
+              tuple args(ref(arguments, ref::increment_count));                                         \
                                                                                                 \
-              return BOOST_PYTHON_CONVERSION::to_python(                                        \
+              return BOOST_PYTHON_CONVERSION::to_python(                                                  \
                   oper(BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<operand>())));        \
           }                                                                                     \
                                                                                                 \
-          string function_name() const                                                          \
-              { return string(name()); }                                                 \
-                                                                                                \
-          PyObject* description() const                                                         \
-          {                                                                                     \
-            return function_signature(python::type<operand>());   \
-          }                                                                                     \
+          const char* description() const                                                       \
+              { return "__" #id "__"; }                                                         \
       };                                                                                        \
                                                                                                 \
       static const char * name() { return "__" #id "__"; }                                      \
@@ -331,13 +317,8 @@ namespace detail
                    BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()))); 
           }
 
-          string function_name() const  
-              { return string(name()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
+          const char* description() const
+              { return "__pow__"; }
 
       };
 
@@ -350,7 +331,7 @@ namespace detail
 
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
-                  PyErr_SetString(PyExc_TypeError, "'__pow__' expected 2 arguments, got 3.");
+                  PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
                   throw argument_error();
               }
 
@@ -359,13 +340,8 @@ namespace detail
                    BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()))); 
           }
 
-          string function_name() const  
-              { return string(rname()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
+          const char* description() const
+              { return "__rpow__"; }
 
       };
 
@@ -398,13 +374,8 @@ namespace detail
               return res; 
           }
 
-          string function_name() const  
-              { return string(name()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
+          const char* description() const
+              { return "__divmod__"; }
 
       };
 
@@ -428,13 +399,9 @@ namespace detail
               return res; 
           }
 
-          string function_name() const  
-              { return string(rname()); } 
+          const char* description() const
+              { return "__rdivmod__"; }
 
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
       };
 
       static const char * name() { return "__divmod__"; }
@@ -463,13 +430,8 @@ namespace detail
                            0) ; 
           }
 
-          string function_name() const  
-              { return string(name()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
+          const char* description() const
+              { return "__cmp__"; }
 
       };
 
@@ -490,13 +452,8 @@ namespace detail
                            0) ; 
           }
 
-          string function_name() const  
-              { return string(rname()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<Left>(), python::type<Right>());
-          }
+          const char* description() const
+              { return "__rcmp__"; }
 
       };
 
@@ -531,13 +488,8 @@ namespace detail
 #endif
           }
 
-          string function_name() const  
-              { return string(name()); } 
-
-          PyObject* description() const 
-          {
-            return function_signature(python::type<operand>());
-          }
+          const char* description() const
+              { return "__str__"; }
 
       };
 

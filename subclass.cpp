@@ -67,7 +67,7 @@ namespace {
 
   ref global_class_reduce()
   {
-      static ref result(detail::new_wrapped_function(class_reduce, "__reduce__"));
+      static ref result(detail::new_wrapped_function(class_reduce));
       return result;
   }
   
@@ -111,7 +111,7 @@ namespace {
 
   ref global_instance_reduce()
   {
-      static ref result(detail::new_wrapped_function(instance_reduce, "__reduce__"));
+      static ref result(detail::new_wrapped_function(instance_reduce));
       return result;
   }
 }
@@ -226,20 +226,13 @@ namespace detail {
   // Mostly copied wholesale from Python's classobject.c
   PyObject* class_base::repr() const
   {
-      unsigned long address = reinterpret_cast<unsigned long>(this);
-      string result = string("<extension class %s at %lx>") % tuple(complete_class_name(), address);
-      return result.reference().release();
-  }
-
-
-  // Mostly copied wholesale from Python's classobject.c
-  string class_base::complete_class_name() const
-  {
       PyObject *mod = PyDict_GetItemString(
           m_name_space.get(), const_cast<char*>("__module__"));
-      return (mod == NULL || !PyString_Check(mod))
-                ? m_name
-                : string("%s.%s") % tuple(ref(mod, ref::increment_count), m_name);
+      unsigned long address = reinterpret_cast<unsigned long>(this);
+      string result = (mod == NULL || !PyString_Check(mod))
+                ? string("<extension class %s at %lx>") % tuple(m_name, address)
+                : string("<extension class %s.%s at %lx>") % tuple(ref(mod, ref::increment_count), m_name, address);
+      return result.reference().release();
   }
 
 

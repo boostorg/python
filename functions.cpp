@@ -11,35 +11,13 @@
 #include "singleton.h"
 #include "objects.h"
 #include "errors.h"
-#include "extclass.h"
 
 namespace python { namespace detail {
 
-string argument_tuple_as_string(tuple arguments)
-{
-    string result("(");
-    for (std::size_t i = 0; i < arguments.size(); ++i)
-    {
-        if (i != 0)
-            result += ", ";
-        if(arguments[i]->ob_type->ob_type == extension_meta_class())
-        {
-            result += downcast<class_base>(arguments[i]->ob_type).get()->complete_class_name();
-        }
-        else
-        {
-            result += arguments[i]->ob_type->tp_name;
-        }
-    }
-    result += ")";
-    return result;
-}
-
 struct function::type_object :
-        singleton<function::type_object, getattrable<callable<python::detail::type_object<function> > > >
+        singleton<function::type_object, callable<python::detail::type_object<function> > >
 {
-    type_object() : singleton_base(&PyType_Type) 
-    {}
+    type_object() : singleton_base(&PyType_Type) {}
 };
 
 
@@ -78,38 +56,6 @@ function::function()
 {
 }
 
-PyObject* function::getattr(const char * name) const
-{
-    if(strcmp(name, "__signatures__") == 0)
-    {
-        list signatures;
-        for (const function* f = this; f != 0; f = f->m_overloads.get())
-        {
-            signatures.push_back(f->description());
-        }
-        return signatures.reference().release();
-        
-    } 
-    else if(strcmp(name, "__name__") == 0)
-    {
-        return function_name().reference().release();
-        
-    } 
-    else if(strcmp(name, "__dict__") == 0)
-    {
-        dictionary items;
-        items.set_item(string("__name__"), detail::none());
-        items.set_item(string("__signatures__"), detail::none());
-        return items.reference().release();
-        
-    } 
-    else
-    {
-        PyErr_SetString(PyExc_AttributeError, name);
-        return 0;
-    }
-}
-
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
     for (const function* f = this; f != 0; f = f->m_overloads.get())
@@ -123,26 +69,6 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
         }
         catch(const argument_error&)
         {
-            if(m_overloads.get() == 0 && rephrase_argument_error() &&
-               PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_TypeError))
-            {
-                PyErr_Clear();
-                string message("");
-                string name(this->function_name());
-                if(name.size() != 0)
-                {
-                    message += "'";
-                    message += name;
-                    message += "' ";
-                }
-                message += "expected argument(s) ";
-                message += description_as_string();
-                message += ",\nbut got ";
-                tuple arguments(ref(args, ref::increment_count));
-                message += argument_types_as_string(arguments);
-                message += " instead.";
-                PyErr_SetObject(PyExc_TypeError, message.get());
-            }
         }
     }
 
@@ -150,50 +76,25 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
         return 0;
 
     PyErr_Clear();
-    string message("No variant of overloaded function");
-    string name(this->function_name());
-    
-    if(name.size() != 0)
-    {
-        message += " '";
-        message += name;
-        message += "'";
-    }
-    message += " matches argument(s):\n";
-    
+    string message("No overloaded functions match (");
     tuple arguments(ref(args, ref::increment_count));
-    message += argument_types_as_string(arguments);
+    for (std::size_t i = 0; i < arguments.size(); ++i)
+    {
+        if (i != 0)
+            message += ", ";
+        message += arguments[i]->ob_type->tp_name;
+    }
 
-    message += "\nCandidates are:\n";
+    message += "). Candidates are:\n";
     for (const function* f1 = this; f1 != 0; f1 = f1->m_overloads.get())
     {
         if (f1 != this)
             message += "\n";
-        message += f1->description_as_string();
+        message += f1->description();
     }
 
     PyErr_SetObject(PyExc_TypeError, message.get());
     return 0;
-}
-
-string function::description_as_string() const
-{
-    string result("(");
-    tuple arguments(ref(this->description()));
-    for (std::size_t i = 0; i < arguments.size(); ++i)
-    {
-        if (i != 0)
-            result += ", ";
-        result += string(arguments[i]);
-    }
-
-    result += ")";
-    return result;
-}
-
-string function::argument_types_as_string(tuple arguments) const
-{
-    return argument_tuple_as_string(arguments);
 }
 
 bound_function* bound_function::create(const ref& target, const ref& fn)

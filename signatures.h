@@ -18,7 +18,7 @@ namespace detail {
 // A stand-in for the built-in void. This one can be passed to functions and
 // (under MSVC, which has a bug, be used as a default template type parameter).
 struct void_t {};
-} // namespace detail
+}
 
 // An envelope in which type information can be delivered for the purposes
 // of selecting an overloaded from_python() function. This is needed to work

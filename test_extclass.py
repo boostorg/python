@@ -10,18 +10,15 @@ r'''
 Automatic checking of the number and type of arguments. Foo's constructor takes
 a single long parameter. 
 
-    >>> try: ext = Foo()
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'demo.Foo.__init__' expected argument\(s\) \(int\),\n"
-    ... "but got \(\) instead.", str(err))
-    ... else: print 'no exception'
+    >>> ext = Foo()
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: function requires exactly 1 argument; 0 given
 
     >>> try: ext = Foo('foo')
     ... except TypeError, err:
     ...     assert re.match(
-    ... "'demo.Foo.__init__' expected argument\(s\) \(int\),\n"
-    ... "but got \(string\) instead.", str(err))
+    ... '(illegal argument type for built-in operation)|(an integer is required)', str(err))
     ... else: print 'no exception'
 
     >>> ext = Foo(1)
@@ -163,16 +160,10 @@ a Bar parameter:
 
 But objects not derived from Bar cannot:
 
-    >>> try: baz.pass_bar(baz)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'pass_bar' expected argument\(s\) \(demo.Baz, demo.Bar\),\n"
-    ... "but got \(demo.Baz, demo.Baz\) instead.", str(err))
-    ... else: print 'no exception'
-
-(this error was:
-TypeError: extension class 'Baz' is not convertible into 'Bar'.
-)
+    >>> baz.pass_bar(baz)
+    Traceback (innermost last):
+        ...
+    TypeError: extension class 'Baz' is not convertible into 'Bar'.
 
 The clone function on Baz returns a smart pointer; we wrap it into an
 extension_instance and  make it look just like any other Baz obj.
@@ -363,11 +354,7 @@ Some simple overloading tests:
     >>> try: r = Range('yikes')
     ... except TypeError, e:
     ...     assert re.match(
-    ... "No variant of overloaded function 'demo.Range.__init__' matches argument\(s\):\n"
-    ... "\(string\)\n"
-    ... "Candidates are:\n"
-    ... "\(int\)\n"
-    ... "\(int, int\)",
+    ... 'No overloaded functions match [(]Range, string[)]\. Candidates are:\n.*\n.*',
     ...  str(e))
     ... else: print 'no exception'
     
@@ -577,17 +564,7 @@ Testing overloaded free functions
     15
     >>> try: overloaded(1, 'foo')
     ... except TypeError, err:
-    ...     assert re.match(
-    ... "No variant of overloaded function 'overloaded' matches argument\(s\):\n"
-    ... "\(int, string\)\n"
-    ... "Candidates are:\n"
-    ... "\(\)\n"
-    ... "\(int\)\n"
-    ... "\(string\)\n"
-    ... "\(int, int\)\n"
-    ... "\(int, int, int\)\n"
-    ... "\(int, int, int, int\)\n"
-    ... "\(int, int, int, int, int\)",
+    ...     assert re.match("No overloaded functions match \(int, string\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
@@ -617,17 +594,7 @@ Testing overloaded constructors
     5
     >>> try: over = OverloadTest(1, 'foo')
     ... except TypeError, err:
-    ...     assert re.match(
-    ... "No variant of overloaded function 'demo.OverloadTest.__init__' matches argument\(s\):\n"
-    ... "\(int, string\)\n"
-    ... "Candidates are:\n"
-    ... "\(\)\n"
-    ... "\(demo.OverloadTest\)\n"
-    ... "\(int\)\n"
-    ... "\(int, int\)\n"
-    ... "\(int, int, int\)\n"
-    ... "\(int, int, int, int\)\n"
-    ... "\(int, int, int, int, int\)",
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
@@ -649,35 +616,16 @@ Testing overloaded methods
     5
     >>> try: over.overloaded(1,'foo')
     ... except TypeError, err:
-    ...     assert re.match(
-    ... "No variant of overloaded function 'overloaded' matches argument\(s\):\n"
-    ... "\(demo.OverloadTest, int, string\)\n"
-    ... "Candidates are:\n"
-    ... "\(demo.OverloadTest\)\n"
-    ... "\(demo.OverloadTest, int\)\n"
-    ... "\(demo.OverloadTest, int, int\)\n"
-    ... "\(demo.OverloadTest, int, int, int\)\n"
-    ... "\(demo.OverloadTest, int, int, int, int\)\n"
-    ... "\(demo.OverloadTest, int, int, int, int, int\)",
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
 
 Testing base class conversions
 
-    >>> try: testUpcast(over)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'testUpcast' expected argument\(s\) \(demo.Base\),\n"
-    ... "but got \(demo.OverloadTest\) instead.",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
-
-(this error was:
-TypeError: extension class 'OverloadTest' is not convertible into 'Base'.
-)
-
+    >>> testUpcast(over)
+    Traceback (innermost last):
+    TypeError: extension class 'OverloadTest' is not convertible into 'Base'.
     >>> der1 = Derived1(333)
     >>> der1.x()
     333
@@ -686,37 +634,18 @@ TypeError: extension class 'OverloadTest' is not convertible into 'Base'.
     >>> der1 = derived1Factory(1000)
     >>> testDowncast1(der1)
     1000
-    >>> try: testDowncast2(der1)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'testDowncast2' expected argument\(s\) \(demo.Derived2\),\n"
-    ... "but got \(demo.Base\) instead.",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
-
-(this error was:
+    >>> testDowncast2(der1)
+    Traceback (innermost last):
     TypeError: extension class 'Base' is not convertible into 'Derived2'.
-)
-
     >>> der2 = Derived2(444)
     >>> der2.x()
     444
     >>> testUpcast(der2)
     444
     >>> der2 = derived2Factory(1111)
-    >>> try: testDowncast2(der2)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'testDowncast2' expected argument\(s\) \(demo.Derived2\),\n"
-    ... "but got \(demo.Base\) instead.",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
-
-(this error was:
+    >>> testDowncast2(der2)
+    Traceback (innermost last):
     TypeError: extension class 'Base' is not convertible into 'Derived2'.
-)
     
 Testing interaction between callbacks, base declarations, and overloading
 - testCallback() calls callback() (within C++)
@@ -727,14 +656,10 @@ Testing interaction between callbacks, base declarations, and overloading
     >>> c = CallbackTest()
     >>> c.testCallback(1)
     2
-    >>> try: c.testCallback('foo')
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'testCallback' expected argument\(s\) \(demo.CallbackTestBase, int\),\n"
-    ... "but got \(demo.CallbackTest, string\) instead.",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
+    >>> c.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
     >>> c.callback(1)
     2
     >>> c.callback('foo')
@@ -753,14 +678,10 @@ Testing interaction between callbacks, base declarations, and overloading
     -1
     >>> r.callback('foo')
     'foo 1'
-    >>> try: r.testCallback('foo')
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "'testCallback' expected argument\(s\) \(demo.CallbackTestBase, int\),\n"
-    ... "but got \(demo.RedefineCallback, string\) instead.",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
+    >>> r.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
     >>> r.testCallback(1)
     -1
     >>> testCallback(r, 1)
@@ -1048,33 +969,15 @@ test inheritB2
     >>> j = pow(i, 5)
     >>> j.i()
     32
-    >>> try: j = pow(i, 5, k)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "No variant of overloaded function '__pow__' matches argument\(s\):\n"
-    ... "\(demo.Int, int, demo.Int\)\n"
-    ... "Candidates are:\n"
-    ... "\(demo.Int, demo.Int\)\n"
-    ... "\(demo.Int, demo.Int, demo.Int\)\n"
-    ... "\(demo.Int, int\)",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
-    >>> try: j = pow(i, 5, 5)
-    ... except TypeError, err:
-    ...     assert re.match(
-    ... "No variant of overloaded function '__pow__' matches argument\(s\):\n"
-    ... "\(demo.Int, int, int\)\n"
-    ... "Candidates are:\n"
-    ... "\(demo.Int, demo.Int\)\n"
-    ... "\(demo.Int, demo.Int, demo.Int\)\n"
-    ... "\(demo.Int, int\)",
-    ...                     str(err))
-    ... else:
-    ...     print 'no exception'
+    >>> j = pow(i, 5, k)
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for pow()
+    >>> j = pow(i, 5, 5)
+    Traceback (innermost last):
+    TypeError: bad operand type(s) for pow()
     >>> j = i/1
     Traceback (innermost last):
-    TypeError: __div__(demo.Int, int) undefined.
+    TypeError: bad operand type(s) for /
     >>> j = 1+i
     >>> j.i()
     3
@@ -1090,10 +993,10 @@ test inheritB2
     -1
     >>> j = 1/i
     Traceback (innermost last):
-    TypeError: __rdiv__(demo.Int, int) undefined.
+    TypeError: bad operand type(s) for /
     >>> pow(1,i)
     Traceback (innermost last):
-    TypeError: __rpow__(demo.Int, int) undefined.
+    TypeError: bad operand type(s) for pow()
 
 Test operator export to a subclass
 

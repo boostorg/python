@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file generated for 5-argument member functions and 6-argument free
+//  This file generated for 10-argument member functions and 11-argument free
 //  functions by gen_caller.python
 
 #ifndef CALLER_DWA05090_H_
@@ -17,7 +17,6 @@
 # include <boost/config.hpp>
 # include "signatures.h"
 # include "none.h"
-# include "objects.h"
 
 namespace python {
 
@@ -104,6 +103,126 @@ struct caller
                         from_python(a5, type<A5>())));
     }
 
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>())));
+    }
+
 
     template <class T>
     static PyObject* call(R (T::*pmf)() const, PyObject* args, PyObject* /* keywords */ ) {
@@ -182,6 +301,126 @@ struct caller
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>())));
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(R (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>())));
     }
 
     // Free functions
@@ -267,6 +506,126 @@ struct caller
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>())));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(R (*f)(A1, A2, A3, A4, A5, A6, A7), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>())));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(R (*f)(A1, A2, A3, A4, A5, A6, A7, A8), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>())));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(R (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>())));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(R (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>())));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10, class A11>
+    static PyObject* call(R (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        PyObject* a11;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10, &a11))
+            return 0;
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>()),
+                        from_python(a11, type<A11>())));
     }
 
 };
@@ -359,6 +718,131 @@ struct caller<void>
         return detail::none();
     }
 
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>()));
+        return detail::none();
+    }
+
 
     template <class T>
     static PyObject* call(void (T::*pmf)() const, PyObject* args, PyObject* /* keywords */ ) {
@@ -442,6 +926,131 @@ struct caller<void>
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()));
+        return detail::none();
+    }
+
+    template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(void (T::*pmf)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10) const, PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        (target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>()));
         return detail::none();
     }
 
@@ -538,270 +1147,133 @@ struct caller<void>
         return detail::none();
     }
 
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static PyObject* call(void (*f)(A1, A2, A3, A4, A5, A6, A7), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7))
+            return 0;
+        f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()));
+        return detail::none();
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static PyObject* call(void (*f)(A1, A2, A3, A4, A5, A6, A7, A8), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
+            return 0;
+        f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()));
+        return detail::none();
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static PyObject* call(void (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
+            return 0;
+        f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()));
+        return detail::none();
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static PyObject* call(void (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
+            return 0;
+        f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>()));
+        return detail::none();
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10, class A11>
+    static PyObject* call(void (*f)(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11), PyObject* args, PyObject* /* keywords */ ) {
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        PyObject* a4;
+        PyObject* a5;
+        PyObject* a6;
+        PyObject* a7;
+        PyObject* a8;
+        PyObject* a9;
+        PyObject* a10;
+        PyObject* a11;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10, &a11))
+            return 0;
+        f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>()),
+                        from_python(a3, type<A3>()),
+                        from_python(a4, type<A4>()),
+                        from_python(a5, type<A5>()),
+                        from_python(a6, type<A6>()),
+                        from_python(a7, type<A7>()),
+                        from_python(a8, type<A8>()),
+                        from_python(a9, type<A9>()),
+                        from_python(a10, type<A10>()),
+                        from_python(a11, type<A11>()));
+        return detail::none();
+    }
+
 };
 
-namespace detail
-{
-                     
-// create signature tuples
-inline
-PyObject* function_signature() {
-    tuple result(0);
-
-    return result.reference().release();
 }
 
-template <class A1>
-PyObject* function_signature(type<A1>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    tuple result(1);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2>
-PyObject* function_signature(type<A1>, type<A2>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    tuple result(2);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    tuple result(3);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    tuple result(4);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4, class A5>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>, type<A5>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    static const bool is_plain_A5 = BOOST_PYTHON_IS_PLAIN(A5);
-    tuple result(5);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-    result.set_item(4, python_type_name_selector<is_plain_A5>::get(type<A5>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4, class A5, class A6>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>, type<A5>, type<A6>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    static const bool is_plain_A5 = BOOST_PYTHON_IS_PLAIN(A5);
-    static const bool is_plain_A6 = BOOST_PYTHON_IS_PLAIN(A6);
-    tuple result(6);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-    result.set_item(4, python_type_name_selector<is_plain_A5>::get(type<A5>()));
-    result.set_item(5, python_type_name_selector<is_plain_A6>::get(type<A6>()));
-
-    return result.reference().release();
-}
-
-
-// member functions
-template <class R, class T>
-inline PyObject* function_signature(R (T::*pmf)()) {
-    return function_signature(
-        python::type<T>());
-}
-
-template <class R, class T, class A1>
-inline PyObject* function_signature(R (T::*pmf)(A1)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>());
-}
-
-template <class R, class T, class A1, class A2>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>());
-}
-
-template <class R, class T, class A1, class A2, class A3>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
-}
-
-template <class R, class T, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
-}
-
-template <class R, class T, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
-}
-
-
-// const member functions
-template <class R, class T>
-inline PyObject* function_signature(R (T::*pmf)() const) {
-    return function_signature(
-        python::type<T>());
-}
-
-template <class R, class T, class A1>
-inline PyObject* function_signature(R (T::*pmf)(A1) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>());
-}
-
-template <class R, class T, class A1, class A2>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>());
-}
-
-template <class R, class T, class A1, class A2, class A3>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
-}
-
-template <class R, class T, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
-}
-
-template <class R, class T, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
-}
-
-
-// free functions
-template <class R>
-inline PyObject* function_signature(R (*f)()) {
-    return function_signature();
-}
-
-template <class R, class A1>
-inline PyObject* function_signature(R (*f)(A1)) {
-    return function_signature(
-        python::type<A1>());
-}
-
-template <class R, class A1, class A2>
-inline PyObject* function_signature(R (*f)(A1, A2)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>());
-}
-
-template <class R, class A1, class A2, class A3>
-inline PyObject* function_signature(R (*f)(A1, A2, A3)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
-}
-
-template <class R, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
-}
-
-template <class R, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
-}
-
-template <class R, class A1, class A2, class A3, class A4, class A5, class A6>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5, A6)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>(),
-        python::type<A6>());
-}
-
-} // namespace detail
-
-} // namespace python
-
-#endif // CALLER_DWA05090_H_
-
+#endif
