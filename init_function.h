@@ -20,11 +20,31 @@ namespace py {
 
 namespace detail {
 
-#ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-
   // parameter_traits - so far, this is a way to pass a const T& when we can be
   // sure T is not a reference type, and a raw T otherwise. This should be
-  // rolled into boost::call_traits.
+  // rolled into boost::call_traits. Ordinarily, parameter_traits would be
+  // written:
+  //
+  //    template <class T> struct parameter_traits
+  //    {
+  //        typedef const T& const_reference;
+  //    };
+  //
+  //    template <class T> struct parameter_traits<T&>
+  //    {
+  //        typedef T& const_reference;
+  //    };
+  //
+  //    template <> struct parameter_traits<void>
+  //    {
+  //        typedef void const_reference;
+  //    };
+  //
+  // ...but since we can't partially specialize on reference types, we need this
+  // long-winded but equivalent incantation.
+
+  // const_ref_selector -- an implementation detail of parameter_traits (below). This uses
+  // the usual "poor man's partial specialization" hack for MSVC. 
   template <bool is_ref>
   struct const_ref_selector
   {
@@ -55,26 +75,13 @@ namespace detail {
    private:
       typedef const_ref_selector<boost::is_reference<T>::value> selector;
    public:
-      typedef typename selector::const_ref<T>::type const_reference;
+      typedef typename selector::template const_ref<T>::type const_reference;
   };
 # ifdef BOOST_MSVC
 #  pragma warning(pop)
 # endif // BOOST_MSVC
 
-#else
-  template <class T>
-  struct parameter_traits
-  {
-      typedef const T& const_reference;
-  };
-
-  template <class T>
-  struct parameter_traits<T&>
-  {
-      typedef T& const_reference;
-  };
-#endif
-
+  // Full spcialization for void
   template <>
   struct parameter_traits<void>
   {
