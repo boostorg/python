@@ -24,19 +24,21 @@
 #include <memory>
 
 namespace boost { namespace python { namespace indexing {
-  struct python_iterator
+  struct BOOST_PYTHON_DECL python_iterator
   {
     virtual ~python_iterator ();
     virtual bool next () = 0;
     virtual boost::python::object current() const = 0;
   };
 
-  std::auto_ptr<python_iterator> make_iterator (boost::python::object);
+  BOOST_PYTHON_DECL
+  std::auto_ptr<python_iterator>
+  make_iterator (boost::python::object);
   // Returns null auto_ptr if object does not provide __iter__ nor
   // __getitem__, otherwise a pointer to a suitable implementation of
   // python_iterator
 
-  struct python_getitem_iterator : public python_iterator
+  struct BOOST_PYTHON_DECL python_getitem_iterator : public python_iterator
   {
   public:
     python_getitem_iterator (boost::python::object);
@@ -49,7 +51,7 @@ namespace boost { namespace python { namespace indexing {
     boost::python::object mCurrent;
   };
 
-  struct python_iter_iterator : public python_iterator
+  struct BOOST_PYTHON_DECL python_iter_iterator : public python_iterator
   {
   public:
     python_iter_iterator (boost::python::object);
