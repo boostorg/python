@@ -8,26 +8,35 @@
 
 namespace boost { namespace python {
 
-class tuple : public object
+namespace detail
 {
- public:
-    // tuple() -> an empty tuple
-    BOOST_PYTHON_DECL tuple();
+  struct BOOST_PYTHON_DECL tuple_base : object
+  {
+   protected:
+      tuple_base();
+      tuple_base(object_cref sequence);
+      
+      BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(tuple_base, object)
 
-    // tuple(sequence) -> tuple initialized from sequence's items
-    BOOST_PYTHON_DECL tuple(object_cref sequence);
+   private:
+      static detail::new_reference call(object const&);
+  };
+}
+
+class tuple : public detail::tuple_base
+{
+    typedef detail::tuple_base base;
+ public:
+    tuple() {}
 
     template <class T>
     explicit tuple(T const& sequence)
-        : object(tuple::call(object(sequence)))
+        : tuple_base(object(sequence))
     {
     }
 
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(tuple, object)
-
- private:
-    static BOOST_PYTHON_DECL detail::new_reference call(object const&);
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(tuple, base)
 };
 
 //

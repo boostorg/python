@@ -11,31 +11,43 @@
 
 namespace boost { namespace python { 
 
-class long_ : public object
+namespace detail
 {
+  struct BOOST_PYTHON_DECL long_base : object
+  {
+   protected:
+      long_base(); // new long_
+      explicit long_base(object_cref rhs);
+      explicit long_base(object_cref rhs, object_cref base);
+      
+      BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_base, object)
+          
+   private:
+      static detail::new_non_null_reference call(object const&);
+      static detail::new_non_null_reference call(object const&, object const&);
+  };
+}
+
+class long_ : public detail::long_base
+{
+    typedef detail::long_base base;
  public:
-    BOOST_PYTHON_DECL long_(); // new long_
-    explicit BOOST_PYTHON_DECL long_(object_cref rhs);
+    long_() {} // new long_
 
     template <class T>
     explicit long_(T const& rhs)
-        : object(long_::call(object(rhs)))
+        : base(object(rhs))
     {
     }
-
-    explicit BOOST_PYTHON_DECL long_(object_cref rhs, object_cref base);
 
     template <class T, class U>
     explicit long_(T const& rhs, U const& base)
-        : object(long_::call(object(rhs), object(base)))
+        : base(object(rhs), object(base))
     {
     }
- public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_, object)
     
- private:
-    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);
-    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&, object const&);
+ public: // implementation detail -- for internal use only
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_, base)
 };
 
 //

@@ -12,7 +12,7 @@
 
 namespace boost { namespace python
 {
-  struct instance_holder;
+  struct BOOST_PYTHON_DECL instance_holder;
 }} // namespace boost::python
 
 namespace boost { namespace python { namespace objects { 
