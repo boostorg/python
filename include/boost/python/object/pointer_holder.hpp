@@ -33,7 +33,7 @@
 namespace boost { namespace python { namespace objects {
 
 template <class T>
-typename bool is_null(T const& p, ...)
+bool is_null(T const& p, ...)
 {
     return p.get() == 0;
 }
