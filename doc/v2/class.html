@@ -82,8 +82,7 @@
 
   <h2><a name="classes"></a>Classes</h2>
 
-    <h3><a name="class_-spec"></a>Class template <code>class_&lt;T, Bases, <a
-    href="HolderGenerator.html">HolderGenerator</a>&gt;</code></h3>
+    <h3><a name="class_-spec"></a>Class template <code>class_&lt;T, <font color="#007f00">Bases, HeldType, NonCopyable</font>&gt;</code></h3>
 
     <p>Creates a Python class associated with the C++ type passed as
     its first parameter. Although it has four template parameters,
@@ -182,7 +181,7 @@
   <code>T</code> instances where a smart pointer-to-<code>T</code> is
   expected. Smart pointers such as <code>std::auto_ptr&lt;&gt;</code>
   or <code><a
-  href="../../../smart_ptr/shared_ptr.html">boost::shared_ptr&lt;&gt;</a></code>
+  href="../../../smart_ptr/shared_ptr.htm">boost::shared_ptr&lt;&gt;</a></code>
   which contain a nested type <code>element_type</code> designating
   the referent type are automatically supported; additional smart
   pointer types can be supported by specializing <a
@@ -231,6 +230,10 @@ namespace boost { namespace python
 
     template &lt;class Fn, class CallPolies&gt;
     class_&amp; def(char const* name, Fn fn, CallPolies);
+
+    // exposing operators
+    template &lt;<i>unspecified</i>&gt;
+    class_&amp; def(<a href="operators.html#operator_-spec">detail::operator_</a>&lt;unspecified&gt;);
 
     // exposing data members
     template &lt;class D&gt;
@@ -361,6 +364,19 @@ class_&amp; def(char const* name, Fn f, CallPolicies policies);
       <code>name</code>. If the extension class already has an attribute named
       <code><i>name</i></code>, the usual <a href=
       "overloading.html">overloading procedure</a> applies.
+
+      <dt><b>Returns:</b> <code>*this</code>
+    </dl>
+
+<pre>
+template &lt;<i>unspecified</i>&gt;
+class_&amp; def(<a href="operators.html#operator_-spec">detail::operator_</a>&lt;unspecified&gt;);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Effects:</b> Adds a Python <a
+    href="http://www.python.org/doc/ref/specialnames.html">special
+    method</a> as described <a href="operators.html">here</a>.
 
       <dt><b>Returns:</b> <code>*this</code>
     </dl>
