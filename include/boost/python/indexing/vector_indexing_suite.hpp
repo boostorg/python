@@ -124,7 +124,7 @@ namespace boost { namespace python {
                 long index = i();
                 if (index < 0)
                     index += DerivedPolicies::size(container);
-                if (index >= container.size() || index < 0)
+                if (index >= long(container.size()) || index < 0)
                 {
                     PyErr_SetString(PyExc_IndexError, "Index out of range");
                     throw_error_already_set();

@@ -10,6 +10,7 @@
 # include <boost/python/class.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/indexing/detail/indexing_suite_detail.hpp>
+# include <boost/python/iterator.hpp>
 
 namespace boost { namespace python {
             
@@ -119,8 +120,9 @@ namespace boost { namespace python {
             // Hook into the class_ generic visitation .def function
             register_ptr_to_python<container_element_t>();
             
-            Container::iterator(Container::*begin_)() = &Container::begin;
-            Container::iterator(Container::*end_)() = &Container::end;
+            typedef typename Container::iterator iterator;
+            iterator(Container::*begin_)() = &Container::begin;
+            iterator(Container::*end_)() = &Container::end;
 
             cl
                 .def("__len__", base_size)
