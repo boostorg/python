@@ -65,20 +65,6 @@ struct instance
     instance_holder* objects;
 };
 
-// Given an undecorated type_id, find the instance data which
-// corresponds to it, or return 0 in case no such type is held.
-BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, converter::undecorated_type_id_t);
-
-// This produces a function with the right signature for use in from_python conversions
-template <class T>
-struct instance_finder
-{
-    static inline void* execute(PyObject* p)
-    {
-        return find_instance_impl(p, converter::undecorated_type_id<T>());
-    }
-};
-
 BOOST_PYTHON_DECL ref class_metatype();
 BOOST_PYTHON_DECL ref class_type();
 

@@ -10,6 +10,7 @@
 # include <boost/mpl/for_each.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/converter/registry.hpp>
+# include <boost/python/object/find_instance.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -89,9 +90,7 @@ template <class Derived, class Bases>
 class_converters<Derived,Bases>::class_converters(ref const& type_object)
     : m_wrapper(type_object)
 {
-    converter::registry::insert(
-        &instance_finder<Derived>::execute
-        , converter::undecorated_type_id<Derived>());
+    (void)instance_finder<Derived>::registration;
     
     // register all up/downcasts here
     register_dynamic_id<Derived>();
