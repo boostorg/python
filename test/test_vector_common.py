@@ -72,7 +72,7 @@ Got expected exception
 >>> v[-2:-1] = []                    # Delete slice via __setitem__
 >>> print [ x for x in v ]
 [1, 2, 4, 5, 6, 7, 8]
->>> v [-2:-1] = [9, 10]              # Replace and insert via slice
+>>> v [-2:-1] = [element_type(9), element_type(10)] # Replace, insert via slice
 >>> print [ x for x in v ]
 [1, 2, 4, 5, 6, 9, 10, 8]
 >>> try:
