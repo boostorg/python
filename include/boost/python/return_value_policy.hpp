@@ -9,8 +9,8 @@
 
 namespace boost { namespace python { 
 
-template <class ResultConverterGenerator, class Base = default_call_policies>
-struct return_value_policy : Base
+template <class ResultConverterGenerator, class BasePolicy_ = default_call_policies>
+struct return_value_policy : BasePolicy_
 {
     typedef ResultConverterGenerator result_converter;
 };

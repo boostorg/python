@@ -11,14 +11,14 @@
 
 namespace boost { namespace python { 
 
-template <std::size_t custodian, std::size_t ward, class Base = default_call_policies>
-struct with_custodian_and_ward : Base
+template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
+struct with_custodian_and_ward : BasePolicy_
 {
     static bool precall(PyObject* args);
 };
 
-template <std::size_t custodian, std::size_t ward, class Base = default_call_policies>
-struct with_custodian_and_ward_postcall : Base
+template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
+struct with_custodian_and_ward_postcall : BasePolicy_
 {
     static PyObject* postcall(PyObject* args, PyObject* result);
 };
@@ -26,8 +26,8 @@ struct with_custodian_and_ward_postcall : Base
 //
 // implementations
 //
-template <std::size_t custodian, std::size_t ward, class Base>
-bool with_custodian_and_ward<custodian,ward,Base>::precall(PyObject* args_)
+template <std::size_t custodian, std::size_t ward, class BasePolicy_>
+bool with_custodian_and_ward<custodian,ward,BasePolicy_>::precall(PyObject* args_)
 {
     BOOST_STATIC_ASSERT(custodian != ward);
     BOOST_STATIC_ASSERT(custodian > 0);
@@ -42,7 +42,7 @@ bool with_custodian_and_ward<custodian,ward,Base>::precall(PyObject* args_)
     if (life_support == 0)
         return false;
     
-    bool result = Base::precall(args_);
+    bool result = BasePolicy_::precall(args_);
     
     if (!result)
         Py_XDECREF(life_support);
@@ -50,8 +50,8 @@ bool with_custodian_and_ward<custodian,ward,Base>::precall(PyObject* args_)
     return result;
 }
 
-template <std::size_t custodian, std::size_t ward, class Base>
-PyObject* with_custodian_and_ward_postcall<custodian,ward,Base>::postcall(PyObject* args_, PyObject* result)
+template <std::size_t custodian, std::size_t ward, class BasePolicy_>
+PyObject* with_custodian_and_ward_postcall<custodian,ward,BasePolicy_>::postcall(PyObject* args_, PyObject* result)
 {
     BOOST_STATIC_ASSERT(custodian != ward);
     
@@ -61,7 +61,7 @@ PyObject* with_custodian_and_ward_postcall<custodian,ward,Base>::postcall(PyObje
     PyObject* nurse = custodian > 0 ? PyTuple_GetItem(args_, custodian - 1) : result;
     if (nurse == 0) return 0;
     
-    result = Base::postcall(args_, result);
+    result = BasePolicy_::postcall(args_, result);
     if (result == 0)
         return 0;
             

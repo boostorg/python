@@ -23,9 +23,9 @@ namespace detail
   ;
 }
 
-template <std::size_t owner_arg = 1, class Base = default_call_policies>
+template <std::size_t owner_arg = 1, class BasePolicy_ = default_call_policies>
 struct return_internal_reference
-    : with_custodian_and_ward_postcall<0, owner_arg, Base>
+    : with_custodian_and_ward_postcall<0, owner_arg, BasePolicy_>
 {
  private:
     BOOST_STATIC_CONSTANT(bool, legal = owner_arg > 0);
