@@ -1,4 +1,8 @@
 #!/usr/bin/python
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
 
 import os
 import glob
@@ -13,7 +17,7 @@ if sys.platform == 'win32':
     
     includes = '-ID:/programming/libraries/boost-cvs/boost -ID:/Bin/Python/include'
     build_pyste_cmd = 'python ../src/Pyste/pyste.py --cache-dir=cache %s ' % includes
-    compile_single_cmd = 'icl /nologo /GR /GX -c %s -I. ' % includes
+    compile_single_cmd = 'cl /nologo /GR /GX -c %s -I. ' % includes
     link_single_cmd = 'link /nologo /DLL '\
         '/libpath:D:/programming/libraries/boost-cvs/lib /libpath:D:/Bin/Python/libs '\
         'boost_python.lib python23.lib /out:_%s.dll '
