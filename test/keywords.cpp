@@ -93,6 +93,8 @@ BOOST_PYTHON_MODULE(keywords)
 
       .def("set", &Foo::set, (arg("a") = 0, arg("b") = 0.0, arg("n") = std::string()) )
        
+      .def("set2", &Foo::set, (arg("a"), "b", "n") )
+       
       .def("a", &Foo::geta)
       .def("b", &Foo::getb)
       .def("n", &Foo::getn)
