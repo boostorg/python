@@ -1748,7 +1748,7 @@ Now, we create this directory structure for our Python package:
 
 The file [^__init__.py] is what tells Python that the directory [^sounds/] is
 actually a Python package. It can be a empty file, but can also perform some
-magic, that will be showed later. 
+magic, that will be shown later. 
 
 Now our package is ready. All the user has to do is put [^sounds] into his
 [@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH] and fire up the interpreter:
