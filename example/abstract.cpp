@@ -21,9 +21,7 @@ struct Abstract_callback: Abstract
     PyObject * m_self;
 };
 
-extern "C"
-DL_EXPORT(void)
-initabstract()
+BOOST_PYTHON_MODULE_INIT(abstract)
 {
     boost::python::module_builder a("abstract");
 
