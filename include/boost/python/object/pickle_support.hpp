@@ -58,13 +58,15 @@ namespace detail {
       cl.def("__getinitargs__", getinitargs_fn);
     }
 
-    template <class Class_, class Tgetstate, class Tsetstate, class Ttuple>
+    template <class Class_,
+              class Rgetstate, class Tgetstate,
+              class Tsetstate, class Ttuple>
     static
     void
     register_(
       Class_& cl,
       inaccessible* (*getinitargs_fn)(),
-      tuple (*getstate_fn)(Tgetstate),
+      Rgetstate (*getstate_fn)(Tgetstate),
       void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
@@ -74,13 +76,15 @@ namespace detail {
     }
 
     template <class Class_,
-              class Tgetinitargs, class Tgetstate, class Tsetstate, class Ttuple>
+              class Tgetinitargs,
+              class Rgetstate, class Tgetstate,
+              class Tsetstate, class Ttuple>
     static
     void
     register_(
       Class_& cl,
       tuple (*getinitargs_fn)(Tgetinitargs),
-      tuple (*getstate_fn)(Tgetstate),
+      Rgetstate (*getstate_fn)(Tgetstate),
       void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
