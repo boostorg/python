@@ -6,6 +6,7 @@
 #ifndef ARGS_FWD_DWA2002927_HPP
 # define ARGS_FWD_DWA2002927_HPP
 
+# include <boost/python/handle.hpp>
 # include <boost/config.hpp>
 # include <cstddef>
 # include <utility>
@@ -14,7 +15,12 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  struct keyword;
+  struct keyword
+  {
+      char const* name;
+      handle<> default_value;
+  };
+  
   template <std::size_t nkeywords = 0> struct keywords;
   
   typedef std::pair<keyword const*, keyword const*> keyword_range;
