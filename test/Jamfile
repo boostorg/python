@@ -55,6 +55,12 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+run ../test/embedding.cpp <dll>../build/boost_python
+  : # program args
+  : # input files
+  : # requirements
+  $(PYTHON_PROPERTIES) ;
+
 bpl-test auto_ptr ;
 bpl-test minimal ;
 bpl-test args ;
