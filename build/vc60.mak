@@ -21,7 +21,7 @@ PYEXE="C:\Python21\python.exe"
 PYINC=/I"C:\Python21\include"
 PYLIB="C:\Python21\libs\python21.lib"
 
-STDOPTS=/nologo /MD /GR /GX /Zm200 /DBOOST_PYTHON_STATIC_LIB
+STDOPTS=/nologo /MD /GR /GX /Zm300 /DBOOST_PYTHON_STATIC_LIB
 WARNOPTS=
 OPTOPTS=
 
