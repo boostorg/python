@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>
+      py_cpp Python/C++ binding documentation
+    </title>
+    <h1>
+       <img src="../../../c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277"
+      align="center" height="86"> py_cpp<a href="#naming_contest">*</a>
+    </h1>
+
+    <p>
+       The source code for py_cpp, including a MSVC demo project is available <a
+      href="py_cpp_20001106.zip">here</a>. 
+
+<h2>Synopsis</h2>
+    <p>
+       py_cpp is a system for quickly and easily interfacing C++ code with <a
+      href="http:www.python.org">Python</a> such that the Python interface is
+      very similar to the C++ interface. It is designed to be minimally
+      intrusive on your C++ design. In most cases, you should not have to alter
+      your C++ classes in any way in order to use them with py_cpp. The system
+      <em>should</em> simply &ldquo;reflect&rdquo; your C++ classes and functions into
+      Python. The major features of py_cpp include support for:
+<ul>
+<li><a href="inheritance.hml">Subclassing extension types in Python</a>
+<li><a href="overriding.html">Overriding virtual functions in Python</a>
+<li><a href="overloading.html">[Member] function Overloading</a>
+<li><a href="special.html#numeric_auto">Automatic wrapping of numeric operators</a>
+</ul>
+among others.
+
+
+<h2>Supported Platforms</h2>
+<p>py_cpp has been tested in the following configurations:
+
+<ul>
+<li>Against Python 1.5.2 using the following compiler/library: 
+
+  <ul>
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a> 
+
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>/<a
+  href="http://www.stlport.org">STLport 4.0</a> 
+
+  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a> [by <a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich
+  Koethe</a>]
+
+  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a>/<a href="http://www.stlport.org">STLport 4.0</a>
+
+  <li>Compaq C++ V6.2-024 for Digital UNIX V5.0 Rev. 910 (an <a
+  href="http://www.edg.com/">EDG</a>-based compiler) with <a
+  href="http://www.stlport.org/beta.html">STLport-4.1b3</a> [by <a
+  href="mailto:rwgk@cci.lbl.gov">Ralf W. Grosse-Kunstleve</a>] 
+
+  <li>An upcoming release of <a href="http://www.metrowerks.com/products/windows/">Metrowerks CodeWarrior
+        Pro6 for Windows</a> (the first release has a bug that's fatal to py_cpp)
+  </ul>
+<br>
+<li>Against Python 2.0 using the following compiler/library combinations:
+<ul>
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a> [by
+  <a href="mailto:aleaxit@yahoo.com">Alex Martelli</a>]
+</ul>
+</ul>
+
+<p>Py_cpp requires the <a href="http://www.boost.org">boost</a> libraries, and is
+      has been accepted for inclusion into the boost libraries pending &ldquo;boostification&ldquo;
+      (completion of the documentation, change in some naming conventions and
+      resolution of some namespace issues).
+
+<h2>Credits</h2>
+<ul>
+      <li><a href="mailto:abrahams@mediaone.net">David Abrahams</a> originated
+      and wrote py_cpp.
+
+      <li><a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich Koethe</a>
+      had independently developed a similar system. When he discovered py_cpp,
+      he generously contributed countless hours of coding and much insight into
+      improving it. He is responsible for an early version of the support for <a
+      href="overloading.html">function overloading</a> and wrote the support for
+      <a href="inheritance.html#implicit_conversion">reflecting C++ inheritance
+      relationships</a>. He has helped to improve error-reporting from both
+      Python and C++, and has designed an extremely easy-to-use way of 
+      exposing <a href="special.html#numeric">numeric operators</a>, including
+      a way to avoid explicit coercion by means of overloading.
+
+      <li>The members of the boost mailing list and the Python community supplied
+      invaluable early feedback. In particular, Ron Clarke, Mark Evans, Anton
+      Gluck, Ralf W. Grosse-Kunstleve, Prabhu Ramachandran, and Barry Scott took
+      the brave step of trying to use py_cpp while it was still in early stages
+      of development.
+
+      <li>The development of py_cpp wouldn't have been
+      possible without the generous support of <a href="http://www.dragonsys.com/">Dragon Systems/Lernout and
+      Hauspie, Inc</a> who supported its development as an open-source project.
+</ul>
+
+    <h2>Table of Contents</h2>
+
+    <ol>
+      <li><a href="extending.html">A Brief Introduction to writing Python
+        extension modules</a>
+
+      <li><a href="comparisons.html">Comparisons between py_cpp and other
+        systems for extending Python</a>
+
+      <li><a href="example1.html">A Simple Example Using py_cpp</a>
+
+      <li><a href="overriding.html">Overridable Virtual Functions</a>
+
+      <li><a href="overloading.html">Function Overloading</a>
+
+      <li><a href="inheritance.html">Inheritance</a>
+
+      <li><a href="special.html">Special Method and Operator Support</a>
+
+      <li><a href="under-the-hood.html">A Peek Under the Hood</a>
+
+      <li><a href="building.html">Building a Module with Py_cpp</a>
+
+      <li>Advanced Topics
+
+        <ol>
+          <li>class_builder&lt;&gt;
+
+          <li><a href="enums.html">enums</a>
+
+          <li>References
+
+          <li><a href="pointers.html">Pointers and Smart Pointers</a>
+
+          <li>Built-in Python Types
+
+          <li>Other Extension Types
+
+          <li>Templates
+        </ol>
+          
+</ol>  
+ 
+    <p>
+       More sophisticated examples are given in
+      <code>extclass_demo.cpp</code>, <code> extclass_demo.h</code>, and <code>
+      test_extclass.py</code> in the <a href="py_cpp.tgz">source code
+      archive</a>. There's much more here, and much more documentation to
+      come...
+    <p>
+       Questions should be directed to <a href= 
+      "http://www.egroups.com/list/boost">the boost mailing list</a>.
+
+    <h2>Naming Contest</h2>
+
+    <p>
+       Yes, I know py_cpp is a lousy name. Problem is, the best names my puny
+      imagination can muster (IDLE and GRAIL) are taken, so I'm holding a
+      naming contest. First prize? You get to pick the name&lt;0.2wink&gt; and
+      you will be credited in the documentation. Names that have been suggested
+      so far include:
+    <ul>
+      <li>
+        Py++
+      <li>
+        Python++
+      <li>
+        Coil
+      <li>
+        SnakeSkin
+      <li>
+        CCCP - <b>C</b>onvert <b>C</b>++ <b>
+        C</b>lasses to <b>P</b>ython
+      <li>
+        C<sup>3</sup>PO - <b>C</b>onvert <b>C</b>++
+        <b>C</b>lasses to <b>P</b>ython <b>
+        O</b>bjects
+      <li>
+        PALIN - <b>P</b>ython <b>
+        A</b>ugmented-<b>L</b>anguage <b>
+        IN</b>tegration
+      <li>
+        CLEESE - <b>C</b>++ <b>L</b>anguage <b>E</b>xtension <b>E</b>nvironment
+        <b>S</b>upremely <b>E</b>asy
+      <li>
+        JONES - <b>J</b>ust <b>O</b>bscenely <b>N</b>eat <b>E</b>xtension
+        <b>S</b>ystem
+      <li>
+        C-thru
+      <li>
+        SeamlessC
+      <li>
+        BorderCrossing
+      <li>
+        Perseus (because he solved a hairy problem involving snakes by using
+        reflection and was invisible most of the time).
+    </ul>
+    Please <a href="http://www.egroups.com/list/boost">post</a> or send <a
+    href="http:mailto:abrahams@mediaone.net">me</a> your suggestions!<br>
+     <br>
+     
+    <p>
+       &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+      sell and distribute this document is granted provided this copyright
+      notice appears in all copies. This document is provided &ldquo;as is&rdquo; without
+      express or implied warranty, and with no claim as to its suitability for
+      any purpose.
+    <p>
+       Updated: Nov 26, 2000
+

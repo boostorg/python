@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+    <title>
+      Comparisons with Other Systems
+    </title>
+    <div>
+      <h1>
+         <img width="277" height="86" id="_x0000_i1025" align="center"
+        src="../../../c++boost.gif" alt= "c++boost.gif (8819 bytes)">Comparisons with
+        Other Systems
+      </h1>
+      
+      <h2>CXX</h2>
+      <p>
+        Like py_cpp, <a href="http://cxx.sourceforge.net/">CXX</a> attempts to
+        provide a C++-oriented interface to Python. In most cases, like py_cpp,
+        it relieves the user from worrying about reference-counts. As far as I
+        can tell, there is no support for subclassing C++ extension types in
+        Python. An even more-significant difference is that a user's C++ code is
+        still basically &ldquo;dealing with Python objects&rdquo;, though they are wrapped
+        in C++ classes. This means such jobs as argument parsing and conversion
+        are still left to be done explicitly by the user. 
+
+     <p>
+        CXX claims to interoperate well with the C++ Standard Library
+        (a.k.a. STL) by providing iterators into Python Lists and Dictionaries,
+        but the claim is unfortunately unsupportable. The problem is that in
+        general, access to Python sequence and mapping elements through
+        iterators requires the use of proxy objects as the return value of
+        iterator dereference operations. This usage conflicts with the basic
+        ForwardIterator requirements in <a
+        href="http://anubis.dkuug.dk/jtc1/sc22/open/n2356/lib-iterators.html#lib.forward.iterators">
+        section 24.1.3 of the standard</a> (dereferencing must produce a
+        reference). Although you may be able to use these iterators with some
+        operations in some standard library implementations, it is neither
+        guaranteed to work nor portable.
+
+      <p>
+        As far as I can tell, CXX enables one to write what is essentially
+        idiomatic Python code in C++, manipulating Python objects through the
+        same fully-generic interfaces we use in Python. I think it would be fair
+        to say that while you're not programming directly to the &ldquo;bare
+        metal&rdquo; with CXX, in comparison to py_cpp, it presents a low-level
+        interface to Python. That use is also supported by the py_cpp object
+        wrappers.
+
+      <p>
+        <a href="mailto:dubois1@llnl.gov">Paul F. Dubois</a>, the original
+        author of CXX, has told me that what I've described is only half of the
+        picture with CXX, but I never understood his explanation well-enough to
+        fill in the other half. Here is his response to the commentary above:
+
+<blockquote>
+&ldquo;My intention with CXX was not to do what you are doing. It was to enable a
+person to write an extension directly in C++ rather than C. I figured others had
+the wrapping business covered. I thought maybe CXX would provide an easier
+target language for those making wrappers, but I never explored
+that.&rdquo;<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
+</blockquote>
+
+      <h2>SWIG</h2>
+      <p>
+        <a href= "http://www.swig.org/">SWIG</a> is an impressively mature tool
+        for exporting an existing ANSI 'C' interface into various scripting
+        languages. Swig relies on a parser to read your source code and produce
+        additional source code files which can be compiled into a Python (or
+        Perl or Tcl) extension module. It has been successfully used to create
+        many Python extension modules. Like py_cpp, SWIG is trying to allow an
+        existing interface to be wrapped with little or no change to the
+        existing code. The documentation says &ldquo;SWIG parses a form of ANSI C
+        syntax that has been extended with a number of special directives. As a
+        result, interfaces are usually built by grabbing a header file and
+        tweaking it a little bit.&rdquo; For C++ interfaces, the tweaking has often
+        proven to amount to more than just a little bit. One user
+        writes:
+
+        <blockquote> &ldquo;The problem with swig (when I used it) is that it
+        couldnt handle templates, didnt do func overloading properly etc.  For
+        ANSI C libraries this was fine.  But for usual C++ code this was a
+        problem.  Simple things work.  But for anything very complicated (or
+        realistic), one had to write code by hand.  I believe py_cpp doesn't have
+        this problem[<a href="#sic">sic</a>]...  IMHO overloaded functions are very important to
+        wrap correctly.&rdquo;<br><i>-Prabhu Ramachandran</i>
+        </blockquote>
+        
+      <p>
+        By contrast, py_cpp doesn't attempt to parse C++ - the problem is simply
+        too complex to do correctly. <a name="sic">Technically</a>, one does
+        write code by hand to use py_cpp. The goal, however, has been to make
+        that code nearly as simple as listing the names of the classes and
+        member functions you want to expose in Python.
+
+      <h2>SIP</h2> 
+      <p>
+        <a
+        href="http://www.thekompany.com/projects/pykde/background.php3?dhtml_ok=1">SIP</a>
+        is a system similar to SWIG, though seemingly more
+        C++-oriented. The author says that like py_cpp, SIP supports overriding
+        extension class member functions in Python subclasses. It appears to
+        have been designed specifically to directly support some features of
+        PyQt/PyKDE, which is its primary client. Documentation is almost
+        entirely missing at the time of this writing, so a detailed comparison
+        is difficult.
+
+      <h2>ILU</h2>
+      <p>
+        <a
+        href="http://www.cl.cam.ac.uk/Research/Rainbow/projects/origami/ilu-1.8-manual">ILU</a>
+        is a very ambitious project which tries to describe a module's interface
+        (types and functions) in terms of an <a
+        href="http://www.cl.cam.ac.uk/Research/Rainbow/projects/origami/ilu-1.8-manual/manual_2.html">Interface
+        Specification Language</a> (ISL) so that it can be uniformly interfaced
+        to a wide range of computer languages, including Common Lisp, C++, C,
+        Modula-3, and Python. ILU can parse the ISL to generate a C++ language
+        header file describing the interface, of which the user is expected to
+        provide an implementation. Unlike py_cpp, this means that the system
+        imposes implementation details on your C++ code at the deepest level. It
+        is worth noting that some of the C++ names generated by ILU are supposed
+        to be reserved to the C++ implementation. It is unclear from the
+        documentation whether ILU supports overriding C++ virtual functions in Python.
+        
+      <h2>GRAD</h2>
+      <p>
+      <a
+      href="http://www.python.org/workshops/1996-11/papers/GRAD/html/GRADcover.html">GRAD</a>
+      is another very ambitious project aimed at generating Python wrappers for
+      interfaces written in &ldquo;legacy languages&rdquo;, among which C++ is the first one
+      implemented. Like SWIG, it aims to parse source code and automatically
+      generate wrappers, though it appears to take a more sophisticated approach
+      to parsing in general and C++ in particular, so it should do a much better
+      job with C++. It appears to support function overloading. The
+      documentation is missing a lot of information I'd like to see, so it is
+      difficult to give an accurate and fair assessment. I am left with the
+      following questions:
+<ul>
+<li>Does it support overriding of virtual functions?
+<li>What about overriding private or protected virtual functions (the documentation indicates
+that only public interfaces are supported)?
+<li>Which C++ language constructs are supportd?
+<li>Does it support implicit conversions between wrapped C++ classes that have
+an inheritance relationship?
+<li>Does it support smart pointers?
+</ul>
+      <p>
+        Anyone in the possession of the answers to these questions will earn my
+        gratitude for a write-up <code>;-)</code>
+
+      <h2>Zope ExtensionClasses</h2>
+      <p>
+         <a href="http:http://www.digicool.com/releases/ExtensionClass">
+        ExtensionClasses in Zope</a> use the same underlying mechanism as py_cpp
+        to support subclassing of extension types in Python, including
+        multiple-inheritance. Both systems support pickling/unpickling of
+        extension class instances in very similar ways. Both systems rely on the
+        same &ldquo;<a
+        href="http://www.python.org/workshops/1994-11/BuiltInClasses/Welcome.html">Don
+        Beaudry Hack</a>&rdquo; that also inspired Don's MESS System.
+      <p>
+        The major differences are:
+      <ul>
+        <li>
+          py_cpp lifts the burden on the user to parse and convert function
+          argument types. Zope provides no such facility.
+        <li>
+          py_cpp lifts the burden on the user to maintain Python
+          reference-counts.
+        <li>
+          py_cpp supports function overloading; Zope does not.
+        <li>
+          py_cpp supplies a simple mechanism for exposing read-only and
+          read/write access to data members of the wrapped C++ type as Python
+          attributes.
+        <li>
+          Writing a Zope ExtensionClass is significantly more complex than
+          exposing a C++ class to python using py_cpp (mostly a summary of the
+          previous 4 items). <a href= 
+          "http://www.digicool.com/releases/ExtensionClass/MultiMapping.html">A
+          Zope Example</a> illustrates the differences.
+        <li>
+          Zope's ExtensionClasses are specifically motivated by &ldquo;the need for a
+          C-based persistence mechanism&rdquo;. Py_cpp's are motivated by the desire
+          to simply reflect a C++ API into Python with as little modification as
+          possible.
+        <li>
+          The following Zope restriction does not apply to py_cpp: &ldquo;At most one
+          base extension direct or indirect super class may define C data
+          members. If an extension subclass inherits from multiple base
+          extension classes, then all but one must be mix-in classes that
+          provide extension methods but no data.&rdquo;
+        <li>
+          Zope requires use of the somewhat funky inheritedAttribute (search for
+          &ldquo;inheritedAttribute&rdquo; on <a
+          href="http://www.digicool.com/releases/ExtensionClass">this page</a>)
+          method to access base class methods. In py_cpp, base class methods can
+          be accessed in the usual way by writing
+          &ldquo;<code>BaseClass.method</code>&rdquo;.
+        <li>
+          Zope supplies some creative but esoteric idioms such as <a href= 
+          "http://www.digicool.com/releases/ExtensionClass/Acquisition.html">
+          Acquisition</a>. No specific support for this is built into py_cpp.
+        <li>
+          Zope's ComputedAttribute support is designed to be used from Python.
+          <a href="special.html#getter_setter">The analogous feature of
+          py_cpp</a> can be used from C++ or Python. The feature is arguably
+          easier to use in py_cpp.
+      </ul>
+      <p>
+        Previous: <a href="extending.html">A Brief Introduction to writing Python Extension Modules</a>
+        Next: <a href="example1.html">A Simple Example Using py_cpp</a>
+        Up: <a href="index.html">Top</a>
+      <p>
+         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+        sell and distribute this document is granted provided this copyright
+        notice appears in all copies. This document is provided &ldquo;as is&rdquo; without
+        express or implied warranty, and with no claim as to its suitability
+        for any purpose.
+      <p>
+         Updated: Nov 26, 2000
+    </div>
+
