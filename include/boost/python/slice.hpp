@@ -109,7 +109,7 @@ class slice : public detail::slice_base
 	};
 	
 	template<typename RandomAccessIterator>
-	range<RandomAccessIterator>
+	slice::range<RandomAccessIterator>
 	get_indicies( const RandomAccessIterator& begin, 
 		const RandomAccessIterator& end) const
 	{
