@@ -23,7 +23,7 @@ struct class_wrapper
     {
 # ifndef NDEBUG
         assert(type_->ob_type == (PyTypeObject*)class_metatype().get());
-# endif NDEBUG 
+# endif // NDEBUG 
     }
     
     PyObject* convert(T const& x) const
