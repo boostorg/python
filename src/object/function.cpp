@@ -267,8 +267,8 @@ void function::add_to_namespace(
         {
             // Binary operators need an additional overload which
             // returns NotImplemented, so that Python will try the
-            // lxxx functions on the other operand. We add this when
-            // no overloads for the operator already exist.
+            // __rxxx__ functions on the other operand. We add this
+            // when no overloads for the operator already exist.
             new_func->add_overload(not_implemented_function());
         }
 
