@@ -60,9 +60,11 @@ There is only one flag for all the six comparison operators.
 When any of the six operators is wrapped automatically or
 manually, Boost.Python will set this flag. Attempts to use comparison
 operators at the Python level that are not defined at the C++ level
-will then lead to an <tt>AttributeError</tt>. That is, in general all six
-operators should be supplied. Automatically wrapped operators and
-manually wrapped operators can be mixed. For example:<pre>
+will then lead to an <tt>AttributeError</tt> when the Python 2.1
+(or higher) interpreter tries, e.g., <tt>a.__lt__(b)</tt>. That
+is, in general all six operators should be supplied. Automatically
+wrapped operators and manually wrapped operators can be mixed. For
+example:<pre>
     boost::python::class_builder&lt;code&gt; py_code(this_module, "code");
 
     py_code.def(boost::python::constructor&lt;&gt;());
@@ -75,7 +77,8 @@ manually wrapped operators can be mixed. For example:<pre>
     py_code.def(NotImplemented, "__ge__");
 </pre>
 
-<tt>NotImplemented</tt> is a simple free function:<pre>
+<tt>NotImplemented</tt> is a simple free function that (currently) has
+to be provided by the user. For example:<pre>
   boost::python::ref
   NotImplemented(const code&amp;, const code&amp;) {
     return
