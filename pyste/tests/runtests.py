@@ -11,4 +11,5 @@ if __name__ == '__main__':
         module = __import__(os.path.splitext(name)[0])
         tests.append(loader.loadTestsFromModule(module))
     runner = unittest.TextTestRunner()
-    runner.run(unittest.TestSuite(tests))
+    result = runner.run(unittest.TestSuite(tests))
+    sys.exit(not result.wasSuccessful())    
