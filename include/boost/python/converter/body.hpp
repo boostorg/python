@@ -5,20 +5,19 @@
 // to its suitability for any purpose.
 #ifndef BODY_DWA2001127_HPP
 # define BODY_DWA2001127_HPP
-# include <boost/config.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/python/converter/type_id.hpp>
-# include <boost/python/export.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_EXPORT handle;
+struct BOOST_PYTHON_DECL handle;
 
 namespace registry
 {
   class entry;
 }
 
-struct BOOST_PYTHON_EXPORT body
+struct BOOST_PYTHON_DECL body
 {
  public:
     body(type_id_t key);

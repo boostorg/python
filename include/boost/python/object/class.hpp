@@ -7,7 +7,7 @@
 # define CLASS_DWA20011214_HPP
 
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/iterator_adaptors.hpp>
@@ -17,7 +17,7 @@ namespace boost { namespace python { namespace object {
 template <class T> struct holder;
 
 // Base class for all holders
-struct BOOST_PYTHON_EXPORT holder_base : noncopyable
+struct BOOST_PYTHON_DECL holder_base : noncopyable
 {
  public:
     holder_base(converter::type_id_t id);
@@ -68,7 +68,7 @@ struct instance
     holder_base* objects;
 };
 
-BOOST_PYTHON_EXPORT holder_base* find_holder_impl(PyObject*, converter::type_id_t);
+BOOST_PYTHON_DECL holder_base* find_holder_impl(PyObject*, converter::type_id_t);
 
 template <class T>
 holder<T>* find_holder(PyObject* p, T* = 0)
@@ -76,8 +76,8 @@ holder<T>* find_holder(PyObject* p, T* = 0)
     return static_cast<holder<T>*>(find_holder_impl(p, converter::type_id<T>()));
 }
 
-BOOST_PYTHON_EXPORT PyTypeObject* class_metatype();
-BOOST_PYTHON_EXPORT PyTypeObject* class_type();
+BOOST_PYTHON_DECL PyTypeObject* class_metatype();
+BOOST_PYTHON_DECL PyTypeObject* class_type();
 
 //
 // implementation

@@ -5,12 +5,11 @@
 //  to its suitability for any purpose.
 #ifndef TYPE_ID_DWA20011127_HPP
 # define TYPE_ID_DWA20011127_HPP
-# include <boost/config.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
-# include <boost/python/export.hpp>
 # include <boost/operators.hpp>
 # include <typeinfo>
 # include <iosfwd>
@@ -48,7 +47,7 @@ typedef std::type_info const* base_id_t;
 
     bool operator<(type_id_t const& rhs) const;
     bool operator==(type_id_t const& rhs) const;
-    friend BOOST_PYTHON_EXPORT std::ostream& operator<<(std::ostream&, type_id_t const&);
+    friend BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
     
  private:
     decoration m_decoration;
@@ -188,12 +187,12 @@ type_id_t type_id(detail::dummy<T>* = 0)
 }
 # endif 
 
-struct BOOST_PYTHON_EXPORT type_id_before
+struct BOOST_PYTHON_DECL type_id_before
 {
     bool operator()(type_id_t const& x, type_id_t const& y) const;
 };
 
-BOOST_PYTHON_EXPORT std::ostream& operator<<(std::ostream&, type_id_t const&);
+BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
 
 }}} // namespace boost::python::converter
 

@@ -5,19 +5,18 @@
 // to its suitability for any purpose.
 #ifndef HANDLE_DWA20011130_HPP
 # define HANDLE_DWA20011130_HPP
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/export.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_EXPORT body;
+struct BOOST_PYTHON_DECL body;
 
 // The common base class for unwrap_ and wrap_ handle objects. They
 // share a common base so that handles can be linked into a chain
 // within a function wrapper which is managed by a single object.
-struct BOOST_PYTHON_EXPORT handle : boost::noncopyable
+struct BOOST_PYTHON_DECL handle : boost::noncopyable
 {
  public: // member functions
 

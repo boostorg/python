@@ -9,13 +9,13 @@
 # include <boost/python/converter/handle.hpp>
 # include <boost/python/converter/body.hpp>
 # include <boost/python/converter/wrapper.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/python/converter/source_holder.hpp>
 # include <cassert>
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_EXPORT wrapper_base;
+struct BOOST_PYTHON_DECL wrapper_base;
 
 template <class T> struct wrapper;
 

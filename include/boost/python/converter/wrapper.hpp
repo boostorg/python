@@ -5,13 +5,12 @@
 // to its suitability for any purpose.
 #ifndef WRAPPER_DWA2001127_HPP
 # define WRAPPER_DWA2001127_HPP
-# include <boost/config.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/body.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/wrap.hpp>
 # include <boost/python/converter/source_holder.hpp>
-# include <boost/python/export.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -19,7 +18,7 @@ struct source_holder_base;
 struct wrap_base;
 template <class T> struct wrap_more_;
 
-struct BOOST_PYTHON_EXPORT wrapper_base : body
+struct BOOST_PYTHON_DECL wrapper_base : body
 {
  public:
     wrapper_base(type_id_t); // registers

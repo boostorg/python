@@ -7,7 +7,7 @@
 # define FUNCTION_DWA20011214_HPP
 
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/export.hpp>
+# include <boost/python/detail/config.hpp>
 # include <boost/function.hpp>
 
 namespace boost { namespace python { namespace object { 
@@ -15,7 +15,7 @@ namespace boost { namespace python { namespace object {
 // We use boost::function to avoid generating lots of virtual tables
 typedef boost::function2<PyObject*, PyObject*, PyObject*> py_function;
 
-struct BOOST_PYTHON_EXPORT function : PyObject
+struct BOOST_PYTHON_DECL function : PyObject
 {
     function(py_function);
     ~function();
@@ -25,7 +25,7 @@ struct BOOST_PYTHON_EXPORT function : PyObject
     py_function m_fn;
 };
 
-extern BOOST_PYTHON_EXPORT PyTypeObject function_type;
+extern BOOST_PYTHON_DECL PyTypeObject function_type;
 
 //
 // implementations
