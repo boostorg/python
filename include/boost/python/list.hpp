@@ -13,11 +13,6 @@ namespace boost { namespace python {
 
 class list : public object
 {
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
-      typedef object const& object_cref;
-# else 
-      typedef object object_cref;
-# endif
  public:
     BOOST_PYTHON_DECL list(); // new list
     explicit BOOST_PYTHON_DECL list(object_cref sequence); // new list initialized from sequence's items
