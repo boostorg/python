@@ -1,30 +1,29 @@
 Better python and C++ exception handling/error reporting.
 long long support
 use Python generic numeric coercion in from_python() for C++ numeric types
-Document error-handling
 Consider renaming PyPtr to Reference.
 Report Cygwin linker memory issues
-Remove one level of indirection on type objects (no vtbl?).
-Specializations of Caller<> for commmon combinations of argument types (?)
 pickling support
 Make abstract classes non-instantiable (?)
 Support for Python LONG types in Objects.h
 Concept checking for to_python<T>() template function (Ullrich did this)
-Reference-counting for UniquePodSet?
 Throw TypeError after asserting when objects from objects.cpp detect a type mismatch.
-Collect common code into a nice shared library.
+Add callback-through-function ability to callback.h
+Fix repr() for extension classes to print
+    <extension_class /module-name/./class-name/ at /address/>
 
 Testing
     Python 2.0
     object revival in __del__
     More thorough tests of objects.h/cpp classes
 
+Optimizations
+    Reference-counting for UniquePodSet?
+    Remove one level of indirection on type objects (no vtbl?).
+    Specializations of Caller<> for commmon combinations of argument types (?)
+    Collect common code into a nice shared library.
+        
 Documentation:
-    building
-
-    overloading and the overload resolution mechanism
-
-    special member functions
 
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
@@ -50,7 +49,7 @@ Documentation:
 
     Multiple inheritance
 
-    Correct Zope slander re: MI.
+    Smart pointers
 
     exception handling
 
@@ -66,8 +65,32 @@ Documentation:
         Private virtual functions with default implementations
 
         extending multiple-argument support using gen_all.py
+
+        Calling back into Python:
+          // caveat: UNTESTED!
+          #include <py_cpp/pyptr.h>
+          #include <py_cpp/callback.h>
+          #include <py_cpp/py.h>
+          #include <Python.h>
+          int main()
+          {
+             try {
+                 py::Ptr module(PyImport_ImportModule("weapons"));
+                 const int strength = 10;
+                 const char* manufacturer = "Vordon Empire";
+                 py::Ptr a_blaster(py::Callback<py::Ptr>::call_method(
+                          module.get(), "Blaster", strength, manufacturer));
+                 py::Callback<void>::call_method(a_blaster.get(), "Fire");
+                 int old_strength = py::Callback<int>::call_method(a_blaster.get(), "get_strength");
+                 py::Callback<void>::call_method(a_blaster.get(), "set_strength", 5);
+             }
+             catch(...)
+             {
+             }
+          }
+
     
-    limitations
+    Fancy wrapping tricks
         templates
             Yes. If you look at the examples in extclass_demo.cpp you'll see that I have
             exposed several template instantiations (e.g. std::pair<int,int>) in Python.
@@ -104,16 +127,98 @@ Documentation:
             For example, you could use this to convert Python lists to/from
             std::vector<T> automatically.
 
+        Types that are already wrapped by other libraries
+                It's not documented yet, but you should be able to use a raw PyObject* or a
+                py::Ptr as one parameter to your C++ function. Then you can manipulate it as
+                any other generic Python object.
+
+                Alternatively, If the NTL gives you a C/C++ interface, you can also write
+                your own converter function:
+
+                    some_ntl_type& from_python(PyObject* p, py::Type<some_NTL_type&>)
+                    {
+                        // an Example implementation. Basically, you need
+                        // to extract the NTL type from the PyObject*.
+                        if (p->ob_type != NTL_long_type) {
+                            PyErr_SetString(PyExc_TypeErr, "NTL long required");
+                            throw py::ArgumentError();
+                        }
+                        return *static_cast<some_NTL_type*>(p);
+                    }
+
+                then the C++ functions you're wrapping can take a some_NTL_type& parameter
+                directly.
+
         enums
+
+            To handle this case, you need to decide how you want the enum to show up in
+            Python (since Python doesn't have enums). If you are satisfied with a Python
+            int as a way to get your enum value, you can write a simple from_python()
+            function in namespace py::
+
+            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+            namespace py {
+            #endif
+
+            mynamespace::SomeMeasure from_python(PyObject* x,
+                 py::Type<mynamespace::SomeMeasure>)
+            {
+                return static_cast<mynamespace::SomeMeasure>(
+                  from_python(x, py::Type<unsigned long>()));
+            }
+
+            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+            }
+            #endif
+
+            You may also want to add a bunch of lines like this to your module
+            initialization:
+             mymodule.add(PyInt_FromLong(case1), "case1");
+             mymodule.add(PyInt_FromLong(case2), "case2");
+            ...
+
+        raw C++ arrays
+            You could expose a function like this one to get the desired effect:
+
+            #include <py_cpp/objects.h>
+            void set_len(UnitCell& x, py::Tuple tuple)
+            {
+                double len[3];
+                for (std::size_t i =0; i < 3; ++i)
+                    len[i] = py::from_python(tuple[i].get(), py::Type<double>());
+                x.set_len(len);
+            }
+
+        "Thin converting wrappers" for constructors
+
+            hijack some of the functionality
+            described in the section on Overridable Virtual Functions (even though you
+            don't have any virtual functions). I suggest this workaround:
+
+            struct UnitCellWrapper : UnitCell
+            {
+                UnitCellWrapper(PyObject* self, py::Tuple x, py::Tuple y)
+                    : UnitCell(from_python(x[1], py::Type<double>()),
+                                    from_python(x[2], py::Type<double>()),
+                                    from_python(x[3], py::Type<double>()),
+                                    from_python(y[1], py::Type<double>()),
+                                    from_python(y[2], py::Type<double>()),
+                                    from_python(y[3], py::Type<double>()))
+                {}
+            }
+
+            py::ClassWrapper<UnitCell, UnitCellWrapper> unit_cell_class;
+            unit_cell_class.def(py::Constructor<py::Tuple, py::Tuple>());
+            ...
+
+        returning references to wrapped objects
 
         the importance of declaration order of ClassWrappers/ExtensionInstances
 
         out parameters and non-const pointers
 
-        returning references to wrapped objects
-
+    Miscellaneous
         About the vc6 project and the debug build
-
         About doctest.py
 
 Boost remarks:
