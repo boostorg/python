@@ -59,31 +59,40 @@ void test()
 //- INITIALIZATION -----------------------------------------------------------//
 
     // Register the module with the interpreter
-    PyImport_AppendInittab("embedded_hello", initembedded_hello);
+    if (PyImport_AppendInittab("embedded_hello", initembedded_hello) == -1)
+        throw std::exception("Failed to add embedded_hello to the interpreters "
+                             "builtin modules");
 
     // Initialize the interpreter
     Py_Initialize();
 
-    // Load the module
-    PyObject* main_module    = PyImport_AddModule("__main__");
-    PyObject* main_namespace = PyModule_GetDict(main_module);
-    Py_INCREF(main_namespace);
+    // Retrieve the main module
+    python::handle<> main_module(
+        python::borrowed(PyImport_AddModule("__main__")) );
+
+    // Retrieve the main modules namespace
+    python::handle<> main_namespace(
+        python::borrowed(PyModule_GetDict(main_module.get())) );
 
     // Define the derived class in Python.
     // (You'll normally want to put this in a .py file.)
-    PyObject* result = PyRun_String(
+    python::handle<> result(
+        PyRun_String(
         "from embedded_hello import *        \n"
         "class PythonDerived(Base):          \n"
         "    def hello(self):                \n"
         "        return 'Hello from Python!' \n", 
-        Py_file_input, main_namespace, main_namespace);
-    Py_XDECREF(result);
+        Py_file_input, main_namespace.get(), main_namespace.get())
+        );
+    // Result is not needed
+    result.reset();
 
     // Extract the raw Python object representing the just defined derived class
-    python::handle<PyObject> class_ptr(PyRun_String("PythonDerived\n", Py_eval_input, 
-                                                    main_namespace, main_namespace));
+    python::handle<> class_ptr( 
+        PyRun_String("PythonDerived\n", Py_eval_input, 
+                     main_namespace.get(), main_namespace.get()) );
 
-    // Wrap the raw Python object in a Boost.Python object using a handle
+    // Wrap the raw Python object in a Boost.Python object
     python::object PythonDerived(class_ptr);
 
 //- MAIN PROGRAM -------------------------------------------------------------//
@@ -92,7 +101,7 @@ void test()
     CppDerived cpp;
     std::cout << cpp.hello() << std::endl;
 
-    // But now creating and using instances of the Python class is just
+    // But now creating and using instances of the Python class is almost 
     // as easy!
     python::object py_base = PythonDerived();
     Base& py = python::extract<Base&>(py_base)();
