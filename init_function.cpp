@@ -33,4 +33,24 @@ namespace python { namespace detail {
       return none();
   }
 
+string init::description_as_string() const
+{
+    tuple arguments(ref(this->description()));
+    string result("(");
+    for (std::size_t i = 1; i < arguments.size(); ++i)
+    {
+        if (i != 1)
+            result += ", ";
+        result += string(arguments[i]);
+    }
+
+    result += ")";
+    return result;
+}
+
+string init::argument_types_as_string(tuple arguments) const
+{
+    return argument_tuple_as_string(arguments.slice(1,arguments.size()));
+}
+
 }} // namespace python::detail

@@ -18,8 +18,6 @@ namespace python {
 
 class module_builder
 {
-    typedef PyObject * (*raw_function_ptr)(python::tuple const &, python::dictionary const &);
-    
  public:
     // Create a module. REQUIRES: only one module_builder is created per module.
     module_builder(const char* name);
@@ -32,13 +30,13 @@ class module_builder
     template <class Fn>
     void def_raw(Fn fn, const char* name)
     {
-        add(detail::new_raw_arguments_function(fn), name);
+        add(detail::new_raw_arguments_function(fn, name), name);
     }
     
     template <class Fn>
     void def(Fn fn, const char* name)
     {
-        add(detail::new_wrapped_function(fn), name);
+        add(detail::new_wrapped_function(fn, name), name);
     }
 
     static string name();

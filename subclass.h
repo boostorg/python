@@ -97,6 +97,9 @@ namespace detail {
       int setattr(const char* name, PyObject* value);
       PyObject* repr() const;
       void add_base(ref base);
+      
+      // get the complete class name (i.e. "module.class")
+      virtual string complete_class_name() const;
 
    protected:
       bool initialize_instance(instance* obj, PyObject* args, PyObject* keywords);

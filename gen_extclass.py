@@ -138,6 +138,39 @@ class class_registry
     static std::vector<derived_class_info> static_derived_class_info;
 };
 
+template <class T, class H>
+no_t* is_plain_aux(type<instance_value_holder<T, H> >);
+
+template <class T, class H>
+string forward_python_type_name(python::type<instance_value_holder<T, H> >)
+{ 
+    static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+    return python_type_name_selector<is_plain>::get(python::type<T>()); 
+}
+
+template <class T, class H>
+no_t* is_plain_aux(type<instance_ptr_holder<T, H> >);
+
+template <class T, class H>
+string forward_python_type_name(python::type<instance_ptr_holder<T, H> >)
+{ 
+    static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+    return python_type_name_selector<is_plain>::get(python::type<T>()); 
+}
+
+template <class T>
+string python_type_name(type<T>)
+{ 
+    if(class_registry<T>::class_object() == 0)
+    {
+        return string("UnknownType");
+    }
+    else
+    {
+        return class_registry<T>::class_object()->complete_class_name(); 
+    }
+}
+
 }} // namespace python::detail
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
@@ -319,7 +352,9 @@ class read_only_setattr_function : public function
  public:
     read_only_setattr_function(const char* name);
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
-    const char* description() const;
+    PyObject* description() const;
+    string function_name() const
+        { return m_name; }
  private:
     string m_name;
 };
@@ -433,7 +468,7 @@ class extension_class
     template <class Fn>
     inline void def_raw(Fn fn, const char* name)
     {
-        this->add_method(new_raw_arguments_function(fn), name);
+        this->add_method(new_raw_arguments_function(fn, name), name);
     }
 
     // define member functions. In fact this works for free functions, too -
@@ -443,7 +478,7 @@ class extension_class
     template <class Fn>
     inline void def(Fn fn, const char* name)
     {
-        this->add_method(new_wrapped_function(fn), name);
+        this->add_method(new_wrapped_function(fn, name), name);
     }
 
     // Define a virtual member function with a default implementation.
@@ -452,7 +487,7 @@ class extension_class
     template <class Fn, class DefaultFn>
     inline void def(Fn fn, const char* name, DefaultFn default_fn)
     {
-        this->add_method(new_virtual_function(type<T>(), fn, default_fn), name);
+        this->add_method(new_virtual_function(type<T>(), fn, default_fn, name), name);
     }
 
     // Provide a function which implements x.<name>, reading from the given
@@ -460,7 +495,7 @@ class extension_class
     template <class MemberType>
     inline void def_getter(MemberType T::*pm, const char* name)
     {
-        this->add_getter_method(new getter_function<T, MemberType>(pm), name);
+        this->add_getter_method(new getter_function<T, MemberType>(pm, name), name);
     }
     
     // Provide a function which implements assignment to x.<name>, writing to
@@ -468,7 +503,7 @@ class extension_class
     template <class MemberType>
     inline void def_setter(MemberType T::*pm, const char* name)
     {
-        this->add_setter_method(new setter_function<T, MemberType>(pm), name);
+        this->add_setter_method(new setter_function<T, MemberType>(pm, name), name);
     }
     
     // Expose the given member (pm) of the T obj as a read-only attribute

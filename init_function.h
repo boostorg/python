@@ -110,11 +110,6 @@ template <class T, class A1, class A2> struct init2;
 template <class T, class A1, class A2, class A3> struct init3;
 template <class T, class A1, class A2, class A3, class A4> struct init4;
 template <class T, class A1, class A2, class A3, class A4, class A5> struct init5;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6> struct Init6;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> struct Init7;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> struct Init8;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9> struct Init9;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> struct Init10;
 
 template <class T>
 struct init_function
@@ -162,71 +157,6 @@ struct init_function
                        detail::parameter_traits<A4>::const_reference,
                        detail::parameter_traits<A5>::const_reference>;
     }
-
-    template <class A1, class A2, class A3, class A4, class A5, class A6>
-    static init* create(signature6<A1, A2, A3, A4, A5, A6>) {
-        return new Init6<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference>;
-    }
-
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    static init* create(signature7<A1, A2, A3, A4, A5, A6, A7>) {
-        return new Init7<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference>;
-    }
-
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    static init* create(signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
-        return new Init8<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference>;
-    }
-
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    static init* create(signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
-        return new Init9<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference,
-                       detail::parameter_traits<A9>::const_reference>;
-    }
-
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    static init* create(signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
-        return new Init10<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference,
-                       detail::parameter_traits<A9>::const_reference,
-                       detail::parameter_traits<A10>::const_reference>;
-    }
 };
 
 class init : public function
@@ -235,6 +165,8 @@ private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
+    string description_as_string() const;
+    string argument_types_as_string(tuple args) const;
 };
 
 
@@ -248,8 +180,19 @@ struct init0 : init
         return new T(self
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&)).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>()); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };
 
 template <class T, class A1>
@@ -264,8 +207,20 @@ struct init1 : init
             python::detail::reference_parameter<A1>(from_python(a1, type<A1>()))
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1)).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>(), 
+                                  python::type<A1>()); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };
 
 template <class T, class A1, class A2>
@@ -282,8 +237,21 @@ struct init2 : init
             python::detail::reference_parameter<A2>(from_python(a2, type<A2>()))
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2)).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>(), 
+                                  python::type<A1>(), 
+                                  python::type<A2>()); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };
 
 template <class T, class A1, class A2, class A3>
@@ -302,8 +270,22 @@ struct init3 : init
             python::detail::reference_parameter<A3>(from_python(a3, type<A3>()))
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3)).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>(), 
+                                  python::type<A1>(), 
+                                  python::type<A2>(), 
+                                  python::type<A3>()); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };
 
 template <class T, class A1, class A2, class A3, class A4>
@@ -324,8 +306,23 @@ struct init4 : init
             python::detail::reference_parameter<A4>(from_python(a4, type<A4>()))
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4)).name(); }
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>(), 
+                                  python::type<A1>(), 
+                                  python::type<A2>(), 
+                                  python::type<A3>(), 
+                                  python::type<A4>()); 
+    }
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
+    }
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5>
@@ -348,160 +345,27 @@ struct init5 : init
             python::detail::reference_parameter<A5>(from_python(a5, type<A5>()))
             );
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5)).name(); }
-};
-
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
-struct Init6 : init
-{
-    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
-    {
-        PyObject* a1;
-        PyObject* a2;
-        PyObject* a3;
-        PyObject* a4;
-        PyObject* a5;
-        PyObject* a6;
-        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6))
-            throw argument_error();
-        return new T(self,
-            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
-            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
-            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
-            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
-            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
-            python::detail::reference_parameter<A6>(from_python(a6, type<A6>()))
-            );
+    
+    PyObject* description() const
+    { 
+        return function_signature(python::type<T>(), 
+                                  python::type<A1>(), 
+                                  python::type<A2>(), 
+                                  python::type<A3>(), 
+                                  python::type<A4>(), 
+                                  python::type<A5>()); 
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6)).name(); }
-};
-
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-struct Init7 : init
-{
-    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
-    {
-        PyObject* a1;
-        PyObject* a2;
-        PyObject* a3;
-        PyObject* a4;
-        PyObject* a5;
-        PyObject* a6;
-        PyObject* a7;
-        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7))
-            throw argument_error();
-        return new T(self,
-            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
-            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
-            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
-            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
-            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
-            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
-            python::detail::reference_parameter<A7>(from_python(a7, type<A7>()))
-            );
+    
+    string function_name() const
+    { 
+        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
+        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        result += ".__init__";
+        return result; 
     }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6, A7)).name(); }
-};
-
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-struct Init8 : init
-{
-    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
-    {
-        PyObject* a1;
-        PyObject* a2;
-        PyObject* a3;
-        PyObject* a4;
-        PyObject* a5;
-        PyObject* a6;
-        PyObject* a7;
-        PyObject* a8;
-        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
-            throw argument_error();
-        return new T(self,
-            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
-            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
-            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
-            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
-            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
-            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
-            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
-            python::detail::reference_parameter<A8>(from_python(a8, type<A8>()))
-            );
-    }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6, A7, A8)).name(); }
-};
-
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-struct Init9 : init
-{
-    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
-    {
-        PyObject* a1;
-        PyObject* a2;
-        PyObject* a3;
-        PyObject* a4;
-        PyObject* a5;
-        PyObject* a6;
-        PyObject* a7;
-        PyObject* a8;
-        PyObject* a9;
-        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
-            throw argument_error();
-        return new T(self,
-            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
-            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
-            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
-            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
-            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
-            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
-            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
-            python::detail::reference_parameter<A8>(from_python(a8, type<A8>())),
-            python::detail::reference_parameter<A9>(from_python(a9, type<A9>()))
-            );
-    }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6, A7, A8, A9)).name(); }
-};
-
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-struct Init10 : init
-{
-    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
-    {
-        PyObject* a1;
-        PyObject* a2;
-        PyObject* a3;
-        PyObject* a4;
-        PyObject* a5;
-        PyObject* a6;
-        PyObject* a7;
-        PyObject* a8;
-        PyObject* a9;
-        PyObject* a10;
-        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
-            throw argument_error();
-        return new T(self,
-            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
-            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
-            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
-            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
-            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
-            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
-            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
-            python::detail::reference_parameter<A8>(from_python(a8, type<A8>())),
-            python::detail::reference_parameter<A9>(from_python(a9, type<A9>())),
-            python::detail::reference_parameter<A10>(from_python(a10, type<A10>()))
-            );
-    }
-    const char* description() const
-        { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)).name(); }
 };
 
 }} // namespace python::detail
 
 #endif // INIT_FUNCTION_DWA052000_H_
+
