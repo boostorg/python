@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <meta name="generator" content="Microsoft FrontPage 5.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+
+    <title>Boost.Python - &lt;boost/python/def_visitor.hpp&gt;</title>
+
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
+
+        <td valign="top">
+          <h1 align="center"><a href="../index.html"><font size="7">Boost.Python</font></a></h1>
+
+          <h2 align="center">Header &lt;boost/python/def_visitor.hpp&gt;</h2>
+    </table>
+    <hr>
+
+    <h2>Contents</h2>
+
+    <dl class="page-index">
+      <dt><a href="#introduction">Introduction</a>
+
+      <dt><a href="#classes">Classes</a>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#def_visitor-spec">Class <code>def_visitor</code></a><dd>
+          <a href="#def_visitor-spec-synopsis">Class <code>def_visitor</code> synopsis</a>
+          </dd>
+        </dl>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#my_def_visitor-spec">Class <code>my_def_visitor</code></a>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#my_def_visitor-spec-synopsis">Class my_def_visitor synopsis</a>
+
+              <dt><a href="#my_def_visitor-spec-observers">Class my_def_visitor observer functions</a>
+
+              </dl>
+        </dl>
+
+      
+  <dt><a href="#examples">Example</a>
+</dl>
+    <hr>
+
+    <h2><a name="introduction"></a>Introduction</h2>
+
+    <p><code>&lt;boost/python/def_visitor.hpp&gt;</code> provides a generic visitation 
+    interface through which the <a href="class.html">class_</a> <b>def</b> 
+    member functionality can be extended non-intrusively to avoid cluttering the
+    <a href="class.html">class_</a> interface. It declares the <code>def_visitor&lt;T&gt;
+    </code>class template, which is parameterized on the derived type T, which 
+    provides the actual <b>def</b> functionality through its <b>visit</b> member 
+    functions.<h2><a name="classes"></a>Classes</h2>
+
+    <h3><a name="def_visitor-spec"></a>Class template <code>def_visitor&lt;DerivedVisitor&gt;</code></h3>
+
+    <p>The class def_visitor is a base class paramaterized by its derived class. 
+    The def_visitor class is a protocol class. It's derived class, 
+    DerivedVisitor, is expected to have a member function visit. The def_visitor 
+    class is never instantiated directly. Instead, an instance of its subclass, 
+    DerivedVisitor,&nbsp; is passed on as an argument to the
+    <a href="class.html">class_</a> def member function.<h4>
+<a name="def_visitor-spec-synopsis"></a>Class <code>def_visitor </code>synopsis</h4>
+<pre>namespace boost { namespace python {
+
+    template &lt;class DerivedVisitor&gt;
+    class def_visitor {};
+}</pre>
+
+    
+<h3><a name="my_def_visitor-spec"></a>Class <tt>my_</tt><code>def_visitor</code></h3>
+
+    <p>A prototypical derived class of def_visitor. This client supplied class 
+    is expected to<ul>
+  <li>be privately derived from def_visitor</li>
+  <li>grant friend access to def_visitor_access</li>
+  <li>define either or both visit member functions.</li>
+  </ul>
+
+    <h4><a name="my_def_visitor-spec-synopsis"></a>Class <code>my_def_visitor </code> synopsis</h4>
+<pre>    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+    {
+        friend class def_visitor_access;
+
+        template &lt;class classT&gt;
+        void visit(classT&amp; c) const;
+
+        template &lt;class classT, class OptionalArgs&gt;
+        void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;
+    };
+</pre>
+
+    <h4><a name="my_def_visitor-spec-observers"></a>Class <code>my_def_visitor </code>
+    observer functions</h4>
+<pre>template &lt;class classT&gt;
+void visit(classT&amp; c) const;</pre>
+<dl class="function-semantics">
+  <dt><b>Requires:</b> c is an instance of a <a href="class.html">class_</a>&nbsp; 
+    being wrapped to Python. This is a client supplied function.
+  <dt><b>Effects:</b> A call to c.def(visitor), where c is a class_ instance and 
+    visitor is a def_visitor derived class forwards to this visitor's visit member 
+    function.
+  <dt><b> Rationale:</b> Allows my_def_visitor to non-intrusively add functionality 
+    to the <a href="class.html">class_</a> def member function.
+</dl>
+
+    <pre>template &lt;class classT, class OptionalArgs&gt;
+void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;</pre>
+<dl class="function-semantics">
+  <dt><b>Requires:</b> c is an instance of a <a href="class.html">class_</a>&nbsp; 
+    being wrapped to Python. name is a client supplied name. This is a client 
+    supplied function.
+  <dt><b>Effects:</b> A call to c.def(name, visitor) or c.def(name, visitor, options), 
+    where c is a class_ instance and visitor is a def_visitor derived class forwards 
+    to this visitor's visit member function.
+  <dt><b>Rationale:</b> Allows my_def_visitor to non-intrusively add functionality 
+    to the <a href="class.html">class_</a> def member function.
+</dl>
+
+    <h2><a name="examples"></a>Example</h2>
+
+    
+<pre>    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+    {
+        friend class def_visitor_access;
+
+        template &lt;class classT&gt;
+        void visit(classT&amp; c) const
+        {
+            c
+                .def(&quot;foo&quot;, &amp;my_def_visitor::foo)
+                .def(&quot;bar&quot;, &amp;my_def_visitor::bar)
+            ;
+        }
+
+        static void foo(object self);
+        static void bar(object self);
+    };
+
+    class X {/*...*/};
+
+    BOOST_PYTHON_MODULE(my_ext)
+    { 
+        class_&lt;X&gt;(&quot;X&quot;)
+            .def(my_def_visitor())
+        ;
+    }
+</pre>
+  <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->27 August, 2003<!--webbot bot="Timestamp" endspan i-checksum="34484" -->
+  </p>
+
+
+    <p><i>&copy; Copyright Joel de Guzman 2003. All Rights Reserved.</i>
