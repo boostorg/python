@@ -48,6 +48,7 @@ BOOST_TT_BROKEN_COMPILER_SPEC (int_wrapper)
 inline bool operator== (int_wrapper const &lhs, int_wrapper const &rhs);
 inline bool operator!= (int_wrapper const &lhs, int_wrapper const &rhs);
 inline bool operator< (int_wrapper const &lhs, int_wrapper const &rhs);
+inline bool operator> (int_wrapper const &lhs, int_wrapper const &rhs);
 inline int compare (int_wrapper const &lhs, int_wrapper const &rhs);
 
 //
@@ -157,6 +158,11 @@ bool operator!= (int_wrapper const &lhs, int_wrapper const &rhs)
 bool operator< (int_wrapper const &lhs, int_wrapper const &rhs)
 {
   return lhs.m_int < rhs.m_int;
+}
+
+bool operator> (int_wrapper const &lhs, int_wrapper const &rhs)
+{
+  return lhs.m_int > rhs.m_int;
 }
 
 int compare (int_wrapper const &lhs, int_wrapper const &rhs)
