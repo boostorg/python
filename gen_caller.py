@@ -89,7 +89,7 @@ free_function = '''%{    template <%(class A%n%:, %)>
 
 def gen_caller(member_function_args, free_function_args = None):
     if free_function_args is None:
-        free_function_args = member_function_args
+        free_function_args = member_function_args + 1
 
     return_none = ''';
         return none();'''
