@@ -104,6 +104,11 @@ Tuple::Tuple(Ptr p)
     : Object(p)
 {
     assert(accepts(p));
+    if (!accepts(p))
+    {
+        PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
+        throw ErrorAlreadySet();
+    }
 }
 
 PyTypeObject* Tuple::type_object()
@@ -149,7 +154,15 @@ Tuple& Tuple::operator+=(const Tuple& rhs)
 // Construct from an owned PyObject*.
 // Precondition: p must point to a python string.
 String::String(Ptr p)
-    : Object(p) { assert(accepts(p)); }
+    : Object(p)
+{
+    assert(accepts(p));
+    if (!accepts(p))
+    {
+        PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
+        throw ErrorAlreadySet();
+    }
+}
     
 String::String(const char* s)
     : Object(Ptr(PyString_FromString(s))) {}
@@ -196,7 +209,15 @@ void String::intern()
 }
 
 Dict::Dict(Ptr p)
-    : Object(p) { assert(accepts(p)); }
+    : Object(p)
+{
+    assert(accepts(p));
+    if (!accepts(p))
+    {
+        PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
+        throw ErrorAlreadySet();
+    }
+}
 
 Dict::Dict()
     : Object(Ptr(PyDict_New())) {}
@@ -336,6 +357,11 @@ List::List(Ptr p)
     : Object(p)
 {
     assert(accepts(p));
+    if (!accepts(p))
+    {
+        PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
+        throw ErrorAlreadySet();
+    }
 }
 
 List::List(std::size_t sz)
