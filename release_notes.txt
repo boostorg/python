@@ -1,3 +1,11 @@
+2000-11-22 10:00
+    Ullrich fixed bug in operator_dispatcher<op_long>.
+    
+2000-11-21 10:00
+    Changed all class and function names into lower_case.
+    
+    Ullrich updated documentation for operator wrapping.
+    
 2000-11-20 10:00
     Ullrich renamed ExtensionClass:register_coerce() into 
     ExtensionClass:def_standard_coerce() and made it public
