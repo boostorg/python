@@ -45,13 +45,13 @@
               <dt><a href="#instance_holder-spec-synopsis">Class
               <code>instance_holder</code> synopsis</a>
 
-              <dt><a href="#instance_holderspec-ctors">Class
+              <dt><a href="#instance_holder-spec-ctors">Class
               <code>instance_holder</code> destructor</a>
 
-              <dt><a href="#instance_holderspec-modifiers">Class
+              <dt><a href="#instance_holder-spec-modifiers">Class
               <code>instance_holder</code> modifier functions</a>
 
-              <dt><a href="#instance_holderspec-observers">Class
+              <dt><a href="#instance_holder-spec-observers">Class
               <code>instance_holder</code> observer functions</a>
             </dl>
         </dl>
@@ -112,7 +112,7 @@ namespace boost { namespace python
 }}
 </pre>
 
-    <h4><a name="instance_holderspec-ctors">Class <code>instance_holder</code>
+    <h4><a name="instance_holder-spec-ctors">Class <code>instance_holder</code>
     destructor</a></h4>
 <pre>
 virtual ~instance_holder();
@@ -122,7 +122,7 @@ virtual ~instance_holder();
       <dt><b>Effects:</b> destroys the object
     </dl>
 
-    <h4><a name="instance_holderspec-modifiers">Class
+    <h4><a name="instance_holder-spec-modifiers">Class
     <code>instance_holder</code> modifiers</a></h4>
 <pre>
 void install(PyObject* inst) throw();
@@ -137,7 +137,7 @@ void install(PyObject* inst) throw();
       <dt><b>Throws:</b> nothing
     </dl>
 
-    <h4><a name="instance_holderspec-observers">Class <code>instance_holder</code>
+    <h4><a name="instance_holder-spec-observers">Class <code>instance_holder</code>
     observers</a></h4>
 <pre>
 virtual void* holds(type_info x) = 0;
@@ -199,7 +199,7 @@ struct pointer_holder : instance_holder
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     19 November, 2002 
+     29 May, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 
 

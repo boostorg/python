@@ -26,11 +26,11 @@
 
 
       <dt><a href="#classes">Classes</a>
-
       <dd>
-        <dl class="page-index">
-          <dt><a href="#with_custodian_and_ward-spec">Class Template <code>with_custodian_and_ward</code></a>
 
+        <dl class="page-index">
+
+          <dt><a href="#with_custodian_and_ward-spec">Class Template <code>with_custodian_and_ward</code></a>
           <dd>
             <dl class="page-index">
 
@@ -39,6 +39,17 @@
 
               <dt><a href="#with_custodian_and_ward-spec-statics">Class
               <code>with_custodian_and_ward</code> static functions</a>
+            </dl>
+
+          <dt><a href="#with_custodian_and_ward_postcall-spec">Class Template <code>with_custodian_and_ward_postcall</code></a>
+          <dd>
+            <dl class="page-index">
+
+              <dt><a href="#with_custodian_and_ward_postcall-spec-synopsis">Class Template
+              <code>with_custodian_and_ward_postcall</code> synopsis</a>
+
+              <dt><a href="#with_custodian_and_ward_postcall-spec-statics">Class
+              <code>with_custodian_and_ward_postcall</code> static functions</a>
             </dl>
         </dl>
 
@@ -141,8 +152,8 @@ namespace boost { namespace python
 }}
 </pre>
 
-    <h4><a name="default_call_policies-spec-statics"></a>Class
-    <code>default_call_policies</code> static functions</h4>
+    <h4><a name="with_custodian_and_ward-spec-statics"></a>Class
+    <code>with_custodian_and_ward</code> static functions</h4>
 
 <pre>
 bool precall(PyObject* args);
@@ -229,8 +240,8 @@ namespace boost { namespace python
 }}
 </pre>
 
-    <h4><a name="default_call_policies-spec-statics"></a>Class
-    <code>default_call_policies</code> static functions</h4>
+    <h4><a name="with_custodian_and_ward_postcall-spec-statics"></a>Class
+    <code>with_custodian_and_ward_postcall</code> static functions</h4>
 
 <pre>
 PyObject* postcall(PyObject* args, PyObject* result);
@@ -260,9 +271,9 @@ to implement <code><a
 href="return_internal_reference.html#return_internal_reference-spec">return_internal_reference</a></code>
 
 <pre>
-template <std::size_t owner_arg = 1, class Base = default_call_policies>
+template &lt;std::size_t owner_arg = 1, class Base = default_call_policies&gt;
 struct return_internal_reference
-    : with_custodian_and_ward_postcall<0, owner_arg, Base>
+    : with_custodian_and_ward_postcall&lt;0, owner_arg, Base&gt;
 {
    typedef <a href="reference_existing_object.html#reference_existing_object-spec">reference_existing_object</a> result_converter;
 };
@@ -270,7 +281,7 @@ struct return_internal_reference
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-    19 February, 2002
+    29 May, 2002
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 
     <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
