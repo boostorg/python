@@ -120,8 +120,9 @@ void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) con
     being wrapped to Python. name is a client supplied name. This is a client 
     supplied function.
   <dt><b>Effects:</b> A call to c.def(name, visitor) or c.def(name, visitor, options), 
-    where c is a class_ instance and visitor is a def_visitor derived class forwards 
-    to this visitor's visit member function.
+    where c is a class_ instance, visitor is a def_visitor derived class and options 
+    are context specific optional arguments, forwards to this visitor's visit 
+    member function.
   <dt><b>Rationale:</b> Allows my_def_visitor to non-intrusively add functionality 
     to the <a href="class.html">class_</a> def member function.
 </dl>
