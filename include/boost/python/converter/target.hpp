@@ -33,8 +33,6 @@ namespace boost { namespace python { namespace converter {
 //    importantly, avoids having to dynamically allocate room for
 //    an lvalue of types which can be cheaply copied.
 //
-// In the tables below, "cv" stands for the set of all possible
-// cv-qualifications.
 
 // Target                Source
 // int                   int
@@ -46,10 +44,16 @@ namespace boost { namespace python { namespace converter {
 // On compilers supporting partial specialization:
 //
 // Target                Source
-// T                     T&
-// T cv&                 T&
-// T cv*                 T*
-// T cv*const&           T*
+// T                     T const&
+// T&                    T&
+// T const&              T const&
+// T volatile            T&
+// T const volatile&     T const&
+// T*                    T*
+// T const*              T const*
+// T volatile            T*
+// T const volatile*     T const*
+// T cv*const&           same as T cv*
 // T cv*&                T*& <- should this be legal?
 // T cv*volatile&        T*& <- should this be legal?
 // T cv*const volatile&  T*& <- should this be legal?
@@ -75,7 +79,11 @@ struct target
     typedef typename mpl::select_type<
         use_identity
         , T
-        , typename add_reference<typename remove_cv<T>::type>::type 
+        , typename add_reference<
+                typename add_const<
+                        typename remove_volatile<T>::type
+                >::type
+          >::type
     >::type type;
 };
 
@@ -86,13 +94,23 @@ struct target
 template <class T>
 struct target<T&>
 {
-    typedef typename remove_cv<T>::type& type;
+    typedef typename remove_volatile<T>::type& type;
+};
+
+template <class T>
+struct target<T const&>
+{
+    typedef typename boost::mpl::select_type<
+        is_scalar<T>::value
+        , typename remove_cv<T>::type
+        , typename remove_volatile<T>::type const&
+    >::type type;
 };
 
 template <class T>
 struct target<T*>
 {
-    typedef typename remove_cv<T>::type* type;
+    typedef typename remove_volatile<T>::type* type;
 };
 
 // Handle T*-cv for completeness. Function arguments in a signature
@@ -102,19 +120,19 @@ struct target<T*>
 template <class T>
 struct target<T* const>
 {
-    typedef typename remove_cv<T>::type* type;
+    typedef typename remove_volatile<T>::type* type;
 };
 
 template <class T>
 struct target<T* volatile>
 {
-    typedef typename remove_cv<T>::type* type;
+    typedef typename remove_volatile<T>::type* type;
 };
 
 template <class T>
 struct target<T* const volatile>
 {
-    typedef typename remove_cv<T>::type* type;
+    typedef typename remove_volatile<T>::type* type;
 };
 
 // non-const references to pointers should be handled by the
@@ -122,7 +140,7 @@ struct target<T* const volatile>
 template <class T>
 struct target<T* const&>
 {
-    typedef typename remove_cv<T>::type* type;
+    typedef typename remove_volatile<T>::type* type;
 };
 # endif
 
