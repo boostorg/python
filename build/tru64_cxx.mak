@@ -17,17 +17,17 @@ PYINC= -I/usr/local/Python-1.5.2/include/python1.5
 #PYEXE= /usr/local/Python-2.0/bin/python
 #PYINC= -I/usr/local/Python-2.0/include/python2.0
 #STLPORTINC= -I/usr/local/STLport-4.1b3/stlport
+#STLPORTINC= -I/usr/local/STLport-4.1b4/stlport
+#STLPORTINC= -I/net/anaconda/scratch1/rwgk/STLport-4.1b5/stlport
 #STLPORTOPTS= \
 # -D__USE_STD_IOSTREAM \
 # -D__STL_NO_SGI_IOSTREAMS \
 # -D__STL_USE_NATIVE_STRING \
 # -D__STL_NO_NEW_C_HEADERS \
 # -D_RWSTD_COMPILE_INSTANTIATE=1
-#STLPORTINC= -I/usr/local/STLport-4.1b4/stlport
-#STLPORTOPTS= -D__NO_USE_STD_IOSTREAM -D__STL_NO_SGI_IOSTREAMS
 STLPORTINC= -I/net/cci/xp/C++_C_headers
 
-STDOPTS= -std strict_ansi
+STDOPTS= -std strict_ansi -DBOOST_PYTHON_TRU64_CXX_PROBLEM
 WARNOPTS= -msg_disable 186,450,1115
 # use -msg_display_number to obtain integer tags for -msg_disable
 
@@ -61,10 +61,8 @@ all: libboost_python.a \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so \
      pickle1.so pickle2.so pickle3.so \
-     noncopyable_export.so
-
-#     noncopyable_import.so \
-#     ivect.so dvect.so
+     noncopyable_export.so noncopyable_import.so \
+     ivect.so dvect.so
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a

@@ -85,11 +85,21 @@ class python_import_extension_class_converters
     }
 
     friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p);
+#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
+        PyErr_SetString(PyExc_RuntimeError, "not implemented");
+        throw import_error();
+#else
+        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p); // XXX tru64_cxx: no suitable copy constructor
+#endif
     }
 
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p);
+#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
+        PyErr_SetString(PyExc_RuntimeError, "not implemented");
+        throw import_error();
+#else
+        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p); // XXX tru64_cxx: no suitable copy constructor
+#endif
     }
 
     friend PyObject* to_python(std::auto_ptr<T> x) {
@@ -101,11 +111,21 @@ class python_import_extension_class_converters
     }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p);
+#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
+        PyErr_SetString(PyExc_RuntimeError, "not implemented");
+        throw import_error();
+#else
+        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p); // XXX tru64_cxx: initial value of reference to non-const must be an lvalue
+#endif
     }
 
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p);
+#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
+        PyErr_SetString(PyExc_RuntimeError, "not implemented");
+        throw import_error();
+#else
+        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p); // XXX tru64_cxx: returning reference to local temporary
+#endif
     }
 
     friend PyObject* to_python(boost::shared_ptr<T> x) {
