@@ -16,8 +16,12 @@
 //  compiler command-line.
 
 // Revision History:
+// 05 Mar 01  Suppress warnings under Cygwin with Python 2.0 (Dave Abrahams)
 // 04 Mar 01  Rolled in some changes from the Dragon fork (Dave Abrahams)
 // 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
+
+
+#include <patchlevel.h>
 
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
@@ -37,9 +41,11 @@ typedef int pid_t;
 #  define WORD_BIT 32
 #  define hypot _hypot
 #  include <stdio.h>
-#  define HAVE_CLOCK
-#  define HAVE_STRFTIME
-#  define HAVE_STRERROR
+#  if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
+#   define HAVE_CLOCK
+#   define HAVE_STRFTIME
+#   define HAVE_STRERROR
+#  endif
 #  define NT_THREADS
 #  define WITH_THREAD
 #  ifndef NETSCAPE_PI
