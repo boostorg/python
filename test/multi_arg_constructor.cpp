@@ -14,13 +14,10 @@ BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
   using namespace boost::python;
   using boost::shared_ptr;
 
-  module("multi_arg_constructor_ext")
-  
-    .add(class_<A, shared_ptr<A> >(
-             "A"
-             , args<double, double, double, double, double, double, double, double, double>()
-             )
-        )
+  class_<A, shared_ptr<A> >(
+      "A"
+      , args<double, double, double, double, double, double, double, double, double>()
+      )
       ;
 
 }

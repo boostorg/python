@@ -15,15 +15,7 @@ BOOST_PYTHON_MODULE_INIT(bienstman3_ext)
 {
   using namespace boost::python;
 
-  module m("bienstman3_ext");
-  
-  m
-    .add(
-      class_<V, boost::noncopyable>("V", no_init)
-      )
+  class_<V, boost::noncopyable>("V", no_init);
+  class_<B>("B", args<const V&>());
 
-    .add(
-      class_<B>("B", args<const V&>())
-      )
-    ;
 }

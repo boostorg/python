@@ -15,15 +15,10 @@ BOOST_PYTHON_MODULE_INIT(bienstman2_ext)
 {
   using namespace boost::python;
 
-  module m("bienstman2_ext");
-  
-  m
-    .add(class_<C>("C"))
-    .add(class_<D>("D"))
-    .add(
-      class_<E>("E")
+  class_<C>("C");
+  class_<D>("D");
+  class_<E>("E")
       .def("fe",  &E::fe)  // this compiles.
-      .def("fe2", &E::fe2) // this doesn't.
-      )
-    ;
+      .def("fe2", &E::fe2) // this doesn't... well, now it does ;-)
+      ;
 }

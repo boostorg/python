@@ -74,51 +74,51 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
 {
     module("iterator_ext")
         .def("range", &::range)
-        .add(
-            class_<list_int>("list_int")
-            .def("push_back", push_back)
-            .def("back", back)
-            .def("__iter__", iterator<list_int>())
-            )
-        .add(
-            class_<list_range>("list_range")
+        ;
 
-            // We can specify data members
-            .def("__iter__"
-                 , range(&list_range::first, &list_range::second))
-            )
-        .add(
-            class_<two_lists>("two_lists")
+    class_<list_int>("list_int")
+        .def("push_back", push_back)
+        .def("back", back)
+        .def("__iter__", iterator<list_int>())
+        ;
 
-            // We can spcify member functions
-            .add_property(
-                "primes"
-                , range(&two_lists::one_begin, &two_lists::one_end))
+    class_<list_range>("list_range")
 
-            // Prove that we can explicitly specify call policies
-            .add_property(
-                "evens"
-                , range<return_value_policy<copy_non_const_reference> >(
-                    &two_lists::two_begin, &two_lists::two_end))
+        // We can specify data members
+        .def("__iter__"
+             , range(&list_range::first, &list_range::second))
+        ;
 
-            // Prove that we can specify call policies and target
-            .add_property(
-                "twosies"
-                , range<return_value_policy<copy_non_const_reference>, two_lists>(
-                    // And we can use adaptable function objects when
-                    // partial specialization is available.
+    class_<two_lists>("two_lists")
+
+        // We can spcify member functions
+        .add_property(
+            "primes"
+            , range(&two_lists::one_begin, &two_lists::one_end))
+
+        // Prove that we can explicitly specify call policies
+        .add_property(
+            "evens"
+            , range<return_value_policy<copy_non_const_reference> >(
+                &two_lists::two_begin, &two_lists::two_end))
+
+        // Prove that we can specify call policies and target
+        .add_property(
+            "twosies"
+            , range<return_value_policy<copy_non_const_reference>, two_lists>(
+                // And we can use adaptable function objects when
+                // partial specialization is available.
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-                    two_lists::two_start()
+                two_lists::two_start()
 # else
-                    &two_lists::two_begin
+                &two_lists::two_begin
 # endif 
-                    , &two_lists::two_end))
-            )
-        .add(
-            class_<list_list>("list_list")
-            .def("push_back", push_list_back)
-            .def("__iter__", iterator<list_list,return_internal_reference<> >())
-            )
+                , &two_lists::two_end))
+        ;
+
+    class_<list_list>("list_list")
+        .def("push_back", push_list_back)
+        .def("__iter__", iterator<list_list,return_internal_reference<> >())
         ;
 }
 

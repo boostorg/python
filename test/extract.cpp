@@ -99,12 +99,6 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
 {
     implicitly_convertible<int, X>();
     
-    class_<X> x_class("X", args<int>());
-    
-    x_class
-        .def( "__repr__", x_rep)
-        ;
-        
     module("extract_ext")
         .def("extract_bool", extract_bool)
         .def("extract_list", extract_list)
@@ -124,12 +118,15 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
         .def("check_X_ptr", check_X_ptr)
         .def("check_X_ref", check_X_ref)
 
-        .add(x_class)
         .def("double_X", double_X)
 
         .def("count_Xs", &X::count)
         ;
 
+    object x_class(
+        class_<X>("X", args<int>())
+            .def( "__repr__", x_rep));
+        
     // Instantiate an X object through the Python interface
     object x_obj = x_class(3);
 

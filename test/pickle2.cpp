@@ -89,13 +89,11 @@ namespace { // Avoid cluttering the global namespace.
 
 BOOST_PYTHON_MODULE_INIT(pickle2_ext)
 {
-  boost::python::module("pickle2_ext")
-    .add(boost::python::class_<world>("world"
-                                      , boost::python::args<const std::string&>())
-      .def("greet", &world::greet)
-      .def("get_secret_number", &world::get_secret_number)
-      .def("set_secret_number", &world::set_secret_number)
-      .def_pickle(world_pickle_suite())
-    )
-  ;
+    boost::python::class_<world>(
+        "world", boost::python::args<const std::string&>())
+        .def("greet", &world::greet)
+        .def("get_secret_number", &world::get_secret_number)
+        .def("set_secret_number", &world::set_secret_number)
+        .def_pickle(world_pickle_suite())
+        ;
 }

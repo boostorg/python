@@ -58,31 +58,28 @@ std::ostream& operator<<(std::ostream& s, X const& x)
 
 BOOST_PYTHON_MODULE_INIT(operators_ext)
 {
-    module("operators_ext")
-        .add(
-            class_<X>("X", args<int>())
-            .def("value", &X::value)
-            .def(self - self)
-            .def(self - int())
-            .def(other<int>() - self)
-            .def(-self)
-            .def(self < other<int>())
-            .def(self < self)
-            .def(1 < self)
-            .def(self -= self)
-            .def(abs(self))
-            .def(str(self))
+    class_<X>("X", args<int>())
+        .def("value", &X::value)
+        .def(self - self)
+        .def(self - int())
+        .def(other<int>() - self)
+        .def(-self)
+        .def(self < other<int>())
+        .def(self < self)
+        .def(1 < self)
+        .def(self -= self)
+        .def(abs(self))
+        .def(str(self))
             
-            .def(pow(self,self))
-            .def(pow(self,int()))
-            .def(pow(int(),self))
-            )
-        .add(
-            class_<test_class<1> >("Z", args<int>())
-            .def(int_(self))
-            .def(float_(self))
-            .def(complex_(self))
-            )
+        .def(pow(self,self))
+        .def(pow(self,int()))
+        .def(pow(int(),self))
+        ;
+
+    class_<test_class<1> >("Z", args<int>())
+        .def(int_(self))
+        .def(float_(self))
+        .def(complex_(self))
         ;
 }
 

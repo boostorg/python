@@ -21,15 +21,16 @@ BOOST_PYTHON_MODULE_INIT(bienstman4_ext)
 
   implicitly_convertible<Type1,Term>();
 
-  module("bienstman4_ext")
-    .add(class_<Expression>("Expression")
-         .def("add", &Expression::add))
-    .add(class_<Type1>("T1")
-    .add(class_<Term>("Term"
-                      , args<Type1&>()))
-    ;
+  class_<Expression>("Expression")
+      .def("add", &Expression::add)
+      ;
   
-
+  class_<Type1>("T1")
+      ;
+  
+  class_<Term>("Term", args<Type1&>())
+      ;
+  
   Type1 t1;
   Expression e;
   e.add(t1);

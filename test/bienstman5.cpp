@@ -15,15 +15,9 @@ struct M {M(const std::complex<double>&) {} };
 BOOST_PYTHON_MODULE_INIT(bienstman5_ext)
 {
   using namespace boost::python;
-  using boost::mpl::type_list;
 
-  module m("bienstman5_ext");
-  
-  m
-    .add(class_<M>("M")
-         .def_init(args<std::complex<double> const&>()))
-    ;
-  
+  class_<M>("M", args<std::complex<double> const&>())
+      ;
 }
 
 

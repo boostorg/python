@@ -48,40 +48,21 @@ public:
 
 };
 
-BOOST_PYTHON_MODULE_INIT(cltree) {
-
-  boost::python::module m("cltree");
-  m
-    .add(
-	boost::python::class_<basic>("basic")
-	.def_init(boost::python::args<>())
+BOOST_PYTHON_MODULE_INIT(cltree)
+{
+    boost::python::class_<basic>("basic")
 	.def("__repr__",&basic::repr)
-	)
-    ;
+        ;
 
-  m
-    .add(boost::python::class_<constant
-	 ,boost::python::bases<basic>
-	 ,boost::noncopyable
-	 >("constant")
-	 .def_init(boost::python::args<>())
-	 )
+    boost::python::class_<constant, boost::python::bases<basic>, boost::noncopyable>("constant")
+        ;
 
-    .add(boost::python::class_<symbol
-	 ,symbol_wrapper
-	 ,boost::noncopyable
-	 >("symbol")
-	.def_init(boost::python::args<>())
-	)
 
-    .add(boost::python::class_<variable
-	 ,boost::python::bases<basic>
-	 ,variable_wrapper
-	 //,boost::noncopyable // leads to compiler failure?!
-	 >("variable")
-	 .def_init(boost::python::args<>())
-	 )
-    ;
+    boost::python::class_<symbol, symbol_wrapper, boost::noncopyable>("symbol")
+	;
+
+    boost::python::class_<variable, boost::python::bases<basic>, variable_wrapper>("variable")
+        ;
 }
 
 #include "module_tail.cpp"
