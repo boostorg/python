@@ -20,14 +20,14 @@
     For more information refer to boost/libs/python/doc/pickle.html.
  */
 
-#include <string>
-
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/detail/api_placeholder.hpp>
+
+#include <string>
 
 namespace { // Avoid cluttering the global namespace.
 

@@ -3,9 +3,9 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <string>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <string>
 #include <complex>
 #include <boost/python/handle.hpp>
 #include <boost/python/cast.hpp>

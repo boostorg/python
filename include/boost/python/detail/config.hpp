@@ -12,6 +12,7 @@
 #ifndef CONFIG_DWA052200_H_
 # define CONFIG_DWA052200_H_
 
+# include <pyconfig.h>
 # include <boost/config.hpp>
 
 # ifdef BOOST_NO_OPERATORS_IN_NAMESPACE

@@ -6,6 +6,9 @@
 #ifndef HAS_BACK_REFERENCE_DWA2002323_HPP
 # define HAS_BACK_REFERENCE_DWA2002323_HPP
 
+#include <pyconfig.h>
+#include <boost/config.hpp>
+
 namespace boost { namespace python { 
 
 // traits class which users can specialize to indicate that a class

@@ -7,10 +7,10 @@
 // embedded_hello -- A simple Boost.Python embedding example -- by
 // Dirk Gerrits
 
-#include <iostream>
-#include <stdexcept>
 #include <boost/python.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <iostream>
+#include <stdexcept>
 
 namespace python = boost::python;
 

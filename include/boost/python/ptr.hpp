@@ -14,6 +14,7 @@
 #  pragma once
 # endif
 
+# include <pyconfig.h>
 # include <boost/config.hpp>
 # include <boost/mpl/bool.hpp>
 
