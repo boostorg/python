@@ -1175,6 +1175,18 @@ test methodologies for wrapping functions that return a pointer
     '2.94'
     >>> '%.3g' % (dreal(c))
     '6.35'
+    >>> '%.3g' % (dreal(3))
+    '3'
+    >>> '%.3g' % (dreal(3L))
+    '3'
+    >>> '%.3g' % (dreal(3.))
+    '3'
+    >>> '%.3g' % (freal(3))
+    '3'
+    >>> '%.3g' % (freal(3L))
+    '3'
+    >>> '%.3g' % (freal(3.))
+    '3'
 
 '''
 #'

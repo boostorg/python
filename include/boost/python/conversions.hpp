@@ -7,6 +7,7 @@
 //  producing this work.
 //
 // Revision History:
+// 31 Jul 01  convert int/double to complex (Peter Bienstman)
 // 04 Mar 01  Fixed std::complex<> stuff to work with MSVC (David Abrahams)
 // 03 Mar 01  added: converters for [plain] char and std::complex
 //            (Ralf W. Grosse-Kunstleve)
@@ -93,6 +94,10 @@ namespace detail {
   template <class T>
   std::complex<T> complex_from_python(PyObject* p, boost::python::type<T>)
   {
+      if (PyInt_Check(p)) return std::complex<T>(PyInt_AS_LONG(p));
+      if (PyLong_Check(p)) return std::complex<T>(PyLong_AsDouble(p));
+      if (PyFloat_Check(p)) return std::complex<T>(PyFloat_AS_DOUBLE(p));
+
       expect_complex(p);
 
       return std::complex<T>(
