@@ -184,6 +184,7 @@ namespace detail
               detail::caller<F,inner_policy,Sig>(f, inner_policy(p))
             , outer_signature()
           )
+          , kw
       );
   }
   // }
