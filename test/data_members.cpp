@@ -26,7 +26,7 @@ BOOST_PYTHON_MODULE_INIT(data_members_ext)
         .def("value", &X::value)
         .def("set", &X::set)
         .def_readonly("x", &X::x)
-        .add_property("get_fair_value", object(&get_fair_value))
+        .add_property("fair_value", &get_fair_value)
         ;
     
     class_<Y>("Y", args<int>())

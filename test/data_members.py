@@ -7,6 +7,9 @@
 ... except AttributeError: pass
 ... else: print 'no error'
 
+>>> x.fair_value
+42.0
+
 >>> y = Y(69)
 >>> y.x
 69

@@ -230,8 +230,19 @@ class class_ : public objects::class_base
     }
 
     // Property creation
-    self& add_property(char const* name, object const& fget);
-    self& add_property(char const* name, object const& fget, object const& fset);
+    template <class Get>
+    self& add_property(char const* name, Get const& fget)
+    {
+        base::add_property(name, object(fget));
+        return *this;
+    }
+    
+    template <class Get, class Set>
+    self& add_property(char const* name, Get const& fget, Set const& fset)
+    {
+        base::add_property(name, object(fget), object(fset));
+        return *this;
+    }
 
     template <class U>
     self& setattr(char const* name, U const& x)
@@ -365,20 +376,6 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
 {
     this->register_();
     this->def_no_init();
-}
-
-template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, object const& fget)
-{
-    base::add_property(name, fget);
-    return *this;
-}
-
-template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, object const& fget, object const& fset)
-{
-    base::add_property(name, fget, fset);
-    return *this;
 }
 
 namespace detail
