@@ -85,4 +85,8 @@ if [ check-python-config ]
     :
         debug release
     ;
+
+  install python lib
+    : <dll>boost_python <lib>boost_python
+    ;
 }
