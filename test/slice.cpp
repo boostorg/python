@@ -1,5 +1,6 @@
 #include <boost/python.hpp>
 #include <boost/python/slice.hpp>
+#include <vector>
 
 using namespace boost::python;
 
@@ -75,9 +76,37 @@ bool check_numeric_array_rich_slice()
 // Verify functions accepting a slice argument can be called
 bool accept_slice( slice) { return true; }
 
+int check_slice_get_indicies(const slice index)
+{
+    // A vector of integers from [-5, 5].
+    std::vector<int> coll(11);
+    typedef std::vector<int>::iterator coll_iterator;
+    
+    for (coll_iterator i = coll.begin(); i != coll.end(); ++i) {
+        *i = i - coll.begin() - 5;
+    }
+    
+    slice::range<std::vector<int>::iterator> bounds;
+    try {
+        bounds = index.get_indicies<>(coll.begin(), coll.end());
+    }
+    catch (std::invalid_argument) {
+        return 0;
+    }
+    int sum = 0;
+    while (bounds.start != bounds.stop) {
+        sum += *bounds.start;
+        std::advance( bounds.start, bounds.step);
+    }
+    sum += *bounds.start;
+    return sum;
+}
+
+
 BOOST_PYTHON_MODULE(slice_ext)
 {
     def( "accept_slice", accept_slice);
     def( "check_numeric_array_rich_slice", check_numeric_array_rich_slice);
     def( "check_string_rich_slice", check_string_rich_slice);
+    def( "check_slice_get_indicies", check_slice_get_indicies);
 }

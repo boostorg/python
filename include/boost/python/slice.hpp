@@ -16,7 +16,7 @@
 #include <algorithm>
 
 namespace boost { namespace python {
-	
+
 class slice : public object
 {
  private:
@@ -29,7 +29,8 @@ class slice : public object
 	BOOST_PYTHON_DECL
 	slice();
 
-	// Each argument must be int, slice_nil, or implicitly convertable to int
+	// Each argument must be slice_nil, or implicitly convertable to object.
+	// They should normally be integers.
 	template<typename Integer1, typename Integer2>
 	slice( Integer1 start, Integer2 stop)
 		: object( new_slice( object(start).ptr(), object(stop).ptr(), NULL))
@@ -48,9 +49,9 @@ class slice : public object
 	// equal to a default-constructed boost::python::object.
 	// If a user-defined type wishes to support slicing, then support for the 
 	// special meaning associated with negative indicies is up to the user.
-	object start();
-	object stop();
-	object step();
+	object start() const;
+	object stop() const;
+	object step() const;
 		
 	// The following algorithm is intended to automate the process of 
 	// determining a slice range when you want to fully support negative
@@ -104,7 +105,7 @@ class slice : public object
 	template<typename RandomAccessIterator>
 	range<RandomAccessIterator>
 	get_indicies( const RandomAccessIterator& begin, 
-		const RandomAccessIterator& end)
+		const RandomAccessIterator& end) const
 	{
 		// This is based loosely on PySlice_GetIndicesEx(), but it has been 
 		// carefully crafted to ensure that these iterators never fall out of

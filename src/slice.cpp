@@ -21,21 +21,21 @@ slice::slice()
 }
 
 object
-slice::start()
+slice::start() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->start));
 }
 
 object
-slice::stop()
+slice::stop() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->stop));
 }
 
 object
-slice::step()
+slice::step() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->step));

@@ -105,7 +105,7 @@ constructors<br>
 <pre>slice();<br></pre>
 <dl class="function-semantics">
   <dt><b>Effects:</b> constructs a <code>slice</code> with default stop, start, and
-step values.&nbsp; Equivalent to the slice object created by the Python
+step values.&nbsp; Equivalent to the slice object created as part of the Python
 expression <code>base[::].</code></dt>
   <dt><b>Throws:</b> nothing.</dt>
 </dl>
@@ -115,13 +115,14 @@ slice(Int1 start, Int2 stop);
 </pre>
 <dl class="function-semantics">
   <dt><b>Requires:</b> <code>start</code>, <code>stop</code>, and <code>step</code>
-are of type <code>slice_nil</code> or convertible to type <code>object</code>.</dt>
+    are of type <code><a href="object.html#slice_nil-spec">slice_nil</a></code> 
+    or convertible to type <code>object</code>.</dt>
   <dt><b>Effects:</b> constructs a new slice with default step value
 and the provided start and stop values.&nbsp; Equivalent to the slice
 object
 created by the built-in Python function <code><a
  href="http://www.python.org/doc/current/lib/built-in-funcs.html#12h-62">slice(start,stop)</a></code>,
-or the Python expression <code>base[start:stop]</code>.</dt>
+or as part of the Python expression <code>base[start:stop]</code>.</dt>
   <dt><b>Throws:</b> <code>error_already_set</code> and sets a Python <code>TypeError</code>
 exception if no conversion is possible from the arguments to type <code>object</code>.</dt>
 </dl>
@@ -129,12 +130,12 @@ exception if no conversion is possible from the arguments to type <code>object</
 template &lt;typename Int1, typename Int2, typename Int3&gt;
 slice(Int1 start, Int2 stop, Int3 step);
 </pre>
-  <dt><b>Requires:</b> <code>start</code>, <code>stop</code>, and <code>step</code> are integers, <code>slice_nil</code>, or convertible to type <code>object</code>.</dt>
+  <dt><b>Requires:</b> <code>start</code>, <code>stop</code>, and <code>step</code> are <code>slice_nil</code> or convertible to type <code>object</code>.</dt>
   <dt><b>Effects:</b> constructs a new slice with start stop and step
 values.&nbsp; Equivalent to the slice object created
 by the built-in Python function <code><a
  href="http://www.python.org/doc/current/lib/built-in-functions.html#12h-62">slice(start,stop,step)</a></code>,
-or the Python expression <code>base[start:stop:step]</code>.</dt>
+or as part of the Python expression <code>base[start:stop:step]</code>.</dt>
   <dt><b>Throws:</b> <code>error_already_set</code> and sets a Python <code>TypeError</code>
 exception if no conversion is possible from the arguments to type
 object.</dt>
@@ -142,9 +143,9 @@ object.</dt>
 observer functions<br>
 </h4>
 <pre>
-object slice::start();
-object slice::stop();
-object slice::step();
+object slice::start() const;
+object slice::stop() const;
+object slice::step() const;
 </pre>
 <dl class="function-semantics">
   <dt><b>Effects:</b> None.</dt>
@@ -153,7 +154,7 @@ object slice::step();
 the slice was created with.&nbsp;If the parameter was omitted or
 slice_nil was used when the slice was created, than that parameter will
 be a reference to PyNone and compare equal to a default-constructed
-object.&nbsp;In principal, any object may be used when creating a
+object.&nbsp; In principal, any object may be used when creating a
 slice object, but in practice they are usually integers.</dt>
 </dl>
 <br>
@@ -161,7 +162,8 @@ slice object, but in practice they are usually integers.</dt>
 template &lt;typename RandomAccessIterator&gt;
 slice::range&lt;RandomAccessIterator&gt;
 slice::get_indicies( 
-    RandomAccessIterator const&amp; begin, RandomAccessIterator const&amp; end);
+    RandomAccessIterator const&amp; begin, 
+    RandomAccessIterator const&amp; end) const;
 </pre>
 <dl class="function-semantics">
   <dt><b>Arguments:</b> A pair of STL-conforming Random Access
@@ -203,7 +205,7 @@ list odd_elements(list l)
     return l[slice(_,_,2)];
 }
 
-// Perform a multidimensional rich slice of a Numeric.array
+// Perform a multidimensional extended slice of a Numeric.array
 numeric::array even_columns(numeric::array arr)
 {
     // select every other column, starting with the second, of a 2-D array.
@@ -212,7 +214,7 @@ numeric::array even_columns(numeric::array arr)
 }
 
 // Perform a summation over a slice of a std::vector.
-double partial_sum(std::vector&lt;double&gt; const&amp; Foo, slice index)
+double partial_sum(std::vector&lt;double&gt; const&amp; Foo, const slice index)
 {
     slice::range&lt;std::vector&lt;double&gt;::const_iterator&gt; bounds;
     try {
@@ -222,7 +224,7 @@ double partial_sum(std::vector&lt;double&gt; const&amp; Foo, slice index)
         return 0.0;
     }
     double sum = 0.0;
-    while (bounds.start != bounds.end) {
+    while (bounds.start != bounds.stop) {
         sum += *bounds.start;
         std::advance( bounds.start, bounds.step);
     }
