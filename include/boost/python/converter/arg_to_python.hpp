@@ -18,6 +18,7 @@
 # include <boost/python/base_type_traits.hpp>
 // Bring in specializations
 # include <boost/python/converter/builtin_converters.hpp>
+# include <boost/python/tag.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -64,7 +65,7 @@ namespace detail
       
       PyObject* get() const
       {
-          return python::upcast<PyObject>(converter::get_managed_object(m_src));
+          return python::upcast<PyObject>(get_managed_object(m_src, tag));
       }
       
    private:

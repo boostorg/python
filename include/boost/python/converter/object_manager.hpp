@@ -8,12 +8,13 @@
 
 # include <boost/python/handle.hpp>
 # include <boost/python/cast.hpp>
+# include <boost/python/converter/pyobject_traits.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 
 // Facilities for dealing with types which always manage Python
-// objects. Some examples are object, list, et. al. Different
+// objects. Some examples are object, list, str, et. al. Different
 // to_python/from_python conversion rules apply here because in
 // contrast to other types which are typically embedded inside a
 // Python object, these are wrapped around a Python object. For most
@@ -22,47 +23,103 @@
 // Python argument, since mutating member functions on T actually only
 // modify the held Python object.
 //
-// Note also that handle<> does not qualify as an object manager because:
-//   a. It might not manage a Python object (it can be null)
-//   b. Mutating operations visible to users modify the handle<> itself.
+// handle<T> is an object manager, though strictly speaking it should
+// not be. In other words, even though mutating member functions of
+// hanlde<T> actually modify the handle<T> and not the T object,
+// handle<T>& arguments of wrapped functions will bind to "rvalues"
+// wrapping the actual Python argument, just as with other object
+// manager classes. Making an exception for handle<T> is simply not
+// worth the trouble.
+//
+// borrowed<T> cv* is an object manager so that we can use the general
+// to_python mechanisms to convert raw Python object pointers to
+// python, without the usual semantic problems of using raw pointers.
 
-namespace boost { namespace python { namespace api
+
+// Object Manager Concept requirements:
+//
+//    T is an Object Manager
+//    p is a PyObject*
+//    x is a T
+//
+//    * object_manager_traits<T>::is_specialized == true
+//
+//    * T(detail::borrowed_reference(p))
+//        Manages p without checking its type
+//
+//    * get_managed_object(x, boost::python::tag)
+//        Convertible to PyObject*
+//
+// Additional requirements if T can be converted from_python:
+//
+//    * T(object_manager_traits<T>::adopt(p))
+//        steals a reference to p, or throws a TypeError exception if
+//        p doesn't have an appropriate type. May assume p is non-null
+//
+//    * X::check(p)
+//        convertible to bool. True iff T(X::construct(p)) will not
+//        throw.
+
+// Forward declarations
+//
+namespace boost { namespace python
 {
-  class object; // forward declaration
-}}}
+  namespace api
+  {
+    class object; 
+  }
+}}
 
 namespace boost { namespace python { namespace converter { 
 
-// Used to create object managers of type T, taking ownership of a
-// given PyObject*. Specializations X must satisfy the following,
-// where p is a non-null PyObject*:
-//
-//   X::is_specialized == true
-//
-//   T(X::adopt(p)) - constructs a T object, stealing a reference to
-//   p, or throws a TypeError exception if p doesn't have an
-//   appropriate type.
-//
-//   X::check(p), convertible to bool. True iff T(X::construct(p)) will
-//   not throw.
-//
+
+// Specializations for handle<T>
 template <class T>
-struct object_manager_traits
+struct handle_object_manager_traits
+    : pyobject_traits<typename T::element_type>
 {
-    BOOST_STATIC_CONSTANT(bool, is_specialized = false);
+ private:
+  typedef pyobject_traits<typename T::element_type> base;
+  
+ public:
+  BOOST_STATIC_CONSTANT(bool, is_specialized = true);
+
+  // Initialize with a null_ok pointer for efficiency, bypassing the
+  // null check since the source is always non-null.
+  static null_ok<typename T::element_type>* adopt(PyObject* p)
+  {
+      return python::allow_null(base::checked_downcast(p));
+  }
 };
 
-// A metafunction returning true iff its argument is an object manager.
+template <class T>
+struct default_object_manager_traits
+{
+    BOOST_STATIC_CONSTANT(
+        bool, is_specialized = python::detail::is_borrowed_ptr<T>::value
+        );
+};
+
+template <class T>
+struct object_manager_traits
+    : mpl::select_type<
+         is_handle<T>::value
+       , handle_object_manager_traits<T>
+       , default_object_manager_traits<T>
+    >::type
+{
+};
+
+//
+// Traits for detecting whether a type is an object manager or a
+// (cv-qualified) reference to an object manager.
+// 
+
 template <class T>
 struct is_object_manager
 {
- private:
-    // handle the cases that would otherwise require partial specialization
-    BOOST_STATIC_CONSTANT(bool, hdl = is_handle<T>::value);
-    BOOST_STATIC_CONSTANT(bool, borrowed = python::detail::is_borrowed_ptr<T>::value);
-    BOOST_STATIC_CONSTANT(bool, traits_specialized = object_manager_traits<T>::is_specialized);
- public:
-    BOOST_STATIC_CONSTANT(bool, value = (hdl | borrowed | traits_specialized));
+    BOOST_STATIC_CONSTANT(
+        bool, value = object_manager_traits<T>::is_specialized);
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
@@ -102,83 +159,73 @@ namespace detail
   typedef char (&yes_reference_to_object_manager)[1];
   typedef char (&no_reference_to_object_manager)[2];
 
+  // A number of nastinesses go on here in order to work around MSVC6
+  // bugs.
   template <class T>
   struct is_object_manager_help
-      : mpl::select_type<
-           is_object_manager<T>::value
-           , yes_reference_to_object_manager
-           , no_reference_to_object_manager>
   {
+      typedef typename mpl::select_type<
+          is_object_manager<T>::value
+          , yes_reference_to_object_manager
+          , no_reference_to_object_manager
+          >::type type;
+
+      // If we just use the type instead of the result of calling this
+      // function, VC6 will ICE.
+      static type call();
   };
 
-  template <bool is_ref = false>
-  struct is_reference_to_object_manager_helper
+  // A set of overloads for each cv-qualification. The same argument
+  // is passed twice: the first one is used to unwind the cv*, and the
+  // second one is used to avoid relying on partial ordering for
+  // overload resolution.
+  template <class U>
+  typename is_object_manager_help<U>
+  is_object_manager_helper(U*, void*);
+  
+  template <class U>
+  typename is_object_manager_help<U>
+  is_object_manager_helper(U const*, void const*);
+  
+  template <class U>
+  typename is_object_manager_help<U>
+  is_object_manager_helper(U volatile*, void volatile*);
+  
+  template <class U>
+  typename is_object_manager_help<U>
+  is_object_manager_helper(U const volatile*, void const volatile*);
+  
+  template <class T>
+  struct is_reference_to_object_manager_nonref
   {
-      template <class T>
-      struct apply
-      {
-          static int x;
-          static no_reference_to_object_manager check(...);
-      };
+      BOOST_STATIC_CONSTANT(bool, value = false);
   };
 
-  template <class U>
-  typename is_object_manager_help<U>::type
-  is_object_manager_helper(int*, double, double, U&);
-  
-  template <class U>
-  typename is_object_manager_help<U>::type
-  is_object_manager_helper(int*, int*, double, U const&);
-  
-  template <class U>
-  typename is_object_manager_help<U>::type
-  is_object_manager_helper(int*, double, int*, U volatile&);
-  
-  template <class U>
-  typename is_object_manager_help<U>::type
-  is_object_manager_helper(int*, int*, int*, U const volatile&);
-
-  no_reference_to_object_manager is_object_manager_helper(...);
+  template <class T>
+  struct is_reference_to_object_manager_ref
+  {
+      static T sample_object;
+      BOOST_STATIC_CONSTANT(
+        bool, value
+        = (sizeof(is_object_manager_helper(&sample_object, &sample_object).call())
+            == sizeof(detail::yes_reference_to_object_manager)
+          )
+        );
+  };
 }
 
 template <class T>
 struct is_reference_to_object_manager
 {
     typedef typename mpl::select_type<
-        is_reference<T>::value, int*, double>::type r_t;
-    typedef typename mpl::select_type<
-        python::detail::is_reference_to_const<T>::value, int*, double>::type rc_t;
-    typedef typename mpl::select_type<
-        python::detail::is_reference_to_volatile<T>::value, int*, double>::type rv_t;
-    
-    typedef typename mpl::select_type<is_reference<T>::value, T, int>::type value_t;
+        is_reference<T>::value
+        , detail::is_reference_to_object_manager_ref<T>
+        , detail::is_reference_to_object_manager_nonref<T>
+    > chooser;
 
-    static value_t sample_object;
-    
-    BOOST_STATIC_CONSTANT(
-        bool, value
-        = (sizeof(detail::is_object_manager_helper(r_t(),rc_t(),rv_t(),sample_object))
-           == sizeof(detail::yes_reference_to_object_manager)
-          )
-        );
+    BOOST_STATIC_CONSTANT(bool, value = chooser::type::value);
 };
 # endif 
-
-template <class T>
-inline T* get_managed_object(handle<T> const& h)
-{
-    return h.get();
-}
-    
-template <class T>
-inline T* get_managed_object(python::detail::borrowed<T> const volatile* p)
-{
-    return (T*)p;
-}
-
-// forward declaration needed because name lookup is bound by the
-// definition context.
-PyObject* get_managed_object(python::api::object const&);
 
 }}} // namespace boost::python::converter
 

@@ -6,10 +6,11 @@
 #ifndef PYTYPE_OBJECT_MANAGER_TRAITS_DWA2002716_HPP
 # define PYTYPE_OBJECT_MANAGER_TRAITS_DWA2002716_HPP
 
-# include <boost/python/converter/pytype_result_from_python.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/cast.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/converter/pyobject_type.hpp>
+# include <boost/python/errors.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -22,10 +23,10 @@ template <class T> struct object_manager_traits;
 //
 template <PyTypeObject* pytype, class T>
 struct pytype_object_manager_traits
+    : pyobject_type<T, pytype> // provides check()
 {
     BOOST_STATIC_CONSTANT(bool, is_specialized = true);
     static inline python::detail::new_reference adopt(PyObject*);
-    static inline bool check(PyObject* x);
 };
 
 //
@@ -34,13 +35,7 @@ struct pytype_object_manager_traits
 template <PyTypeObject* pytype, class T>
 inline python::detail::new_reference pytype_object_manager_traits<pytype,T>::adopt(PyObject* x)
 {
-    return pytype_result_from_python(pytype, x);
-}
-
-template <PyTypeObject* pytype, class T>
-inline bool pytype_object_manager_traits<pytype,T>::check(PyObject* x)
-{
-    return ::PyObject_IsInstance(x, python::upcast<PyObject>(pytype));
+    return python::detail::new_reference(python::pytype_check(pytype, x));
 }
 
 }}} // namespace boost::python::converter

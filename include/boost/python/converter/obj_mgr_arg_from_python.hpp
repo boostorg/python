@@ -12,6 +12,7 @@
 # include <boost/python/detail/construct.hpp>
 # include <boost/python/converter/object_manager.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
+# include <boost/python/tag.hpp>
 
 //
 // arg_from_python converters for Python type wrappers, to be used as
@@ -31,6 +32,15 @@ struct object_manager_value_arg_from_python
     PyObject* m_source;
 };
 
+// Used for converting reference-to-object-manager arguments from
+// python. The process used here is a little bit odd. Upon
+// construction, we build the object manager object in the m_result
+// object, *forcing* it to accept the source Python object by casting
+// its pointer to detail::borrowed_reference. This is supposed to
+// bypass any type checking of the source object. The convertible
+// check then extracts the owned object and checks it. If the check
+// fails, nothing else in the program ever gets to touch this strange
+// "forced" object.
 template <class Ref>
 struct object_manager_ref_arg_from_python
 {
@@ -83,7 +93,7 @@ namespace detail
   template <class T>
   inline bool object_manager_ref_check(T const& x)
   {
-      return object_manager_traits<T>::check((get_managed_object)(x));
+      return object_manager_traits<T>::check(get_managed_object(x, tag));
   }
 }
 

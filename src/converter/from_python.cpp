@@ -257,8 +257,10 @@ BOOST_PYTHON_DECL void void_result_from_python(PyObject* o)
     Py_DECREF(expect_non_null(o));
 }
 
-BOOST_PYTHON_DECL python::detail::new_reference
-pytype_result_from_python(PyTypeObject* type_, PyObject* source)
+}
+
+BOOST_PYTHON_DECL PyObject*
+pytype_check(PyTypeObject* type_, PyObject* source)
 {
     if (!PyObject_IsInstance(source, python::upcast<PyObject>(type_)))
     {
@@ -272,7 +274,7 @@ pytype_result_from_python(PyTypeObject* type_, PyObject* source)
         PyErr_SetObject(PyExc_TypeError, msg.get());
         throw_error_already_set();
     }
-    return python::detail::new_reference(source);
+    return source;
 }
 
-}}} // namespace boost::python::converter
+}} // namespace boost::python::converter

@@ -12,6 +12,8 @@
 # include <boost/python/borrowed.hpp>
 # include <boost/python/handle_fwd.hpp>
 # include <boost/python/refcount.hpp>
+# include <boost/python/tag.hpp>
+# include <boost/python/detail/raw_pyobject.hpp>
 
 namespace boost { namespace python { 
 
@@ -60,8 +62,11 @@ template <class T>
 class handle
 {
     typedef T* (handle::*bool_type);
+
+ public: // types
+    typedef T element_type;
     
- public:
+ public: // member functions
     handle();
     ~handle();
 
@@ -111,44 +116,21 @@ class handle
     }
     bool operator! () const; // never throws
 
+ public: // implementation details -- do not touch
+    // Defining this in the class body suppresses a VC7 link failure
+    inline handle(detail::borrowed_reference x)
+        : m_p(
+            python::incref(
+                downcast<T>((PyObject*)x)
+                ))
+    {
+    }
+    
  private: // data members
     T* m_p;
 };
 
 typedef handle<PyTypeObject> type_handle;
-
-//
-// Converter specializations
-//
-template <class T> struct arg_from_python;
-template <>
-struct arg_from_python<handle<> >
-{
-    typedef handle<> result_type;
-    
-    arg_from_python(PyObject*);
-    bool convertible() const;
-    handle<> operator()(PyObject* x) const;
-};
-
-template <>
-struct arg_from_python<handle<> const&>
-    : arg_from_python<handle<> >
-{
-    arg_from_python(PyObject*);
-};
-
-namespace converter
-{
-  template <class T> struct return_from_python;
-
-  template <>
-  struct return_from_python<handle<> >
-  {
-      typedef handle<> result_type;
-      result_type operator()(PyObject* x) const;
-  };
-}
 
 //
 // Compile-time introspection
@@ -245,33 +227,12 @@ inline T* handle<T>::release()
     return result;
 }
 
-//
-// Converter specialization implementation
-//
-inline arg_from_python<handle<> >::arg_from_python(PyObject*)
-{}
-
-inline bool arg_from_python<handle<> >::convertible() const
+// Because get_managed_object must return a non-null PyObject*, we
+// return Py_None if the handle is null.
+template <class T>
+inline PyObject* get_managed_object(handle<T> const& h, tag_t)
 {
-    return true;
-}
-
-inline handle<> arg_from_python<handle<> >::operator()(PyObject* x) const
-{
-    return handle<>(python::borrowed(python::allow_null(x)));
-}
-
-inline arg_from_python<handle<> const&>::arg_from_python(PyObject*)
-    : arg_from_python<handle<> >(0)
-{}
-
-namespace converter
-{
-  inline handle<>
-  return_from_python<handle<> >::operator()(PyObject* x) const
-  {
-      return handle<>(x);
-  }
+    return h.get() ? python::upcast<PyObject>(h.get()) : Py_None;
 }
 
 }} // namespace boost::python

@@ -11,6 +11,7 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
+# include <boost/python/tag.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -98,6 +99,14 @@ class is_borrowed_ptr
 
 # endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
-}}} // namespace boost::python::detail
+}
+
+template <class T>
+inline T* get_managed_object(detail::borrowed<T> const volatile* p, tag_t)
+{
+    return (T*)p;
+}
+
+}} // namespace boost::python::detail
 
 #endif // #ifndef BORROWED_PTR_DWA20020601_HPP

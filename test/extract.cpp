@@ -34,7 +34,11 @@ boost::python::list extract_list(object x)
     return get_list();
 }
 
-char const* extract_cstring(object x) { return extract<char const*>(x); }
+char const* extract_cstring(object x)
+{
+    return extract<char const*>(x);
+}
+
 std::string extract_string(object x)
 {
     std::string s = extract<std::string>(x);
@@ -43,8 +47,7 @@ std::string extract_string(object x)
 
 std::string const& extract_string_cref(object x)
 {
-    std::string const& s = extract<std::string const&>(x);
-    return s;
+    return extract<std::string const&>(x);
 }
 
 X extract_X(object x)
@@ -84,6 +87,13 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
 {
     implicitly_convertible<int, X>();
     
+    class_<X> x_class("X");
+    
+    x_class
+        .def_init(args<int>())
+        .def( "__repr__", x_rep)
+        ;
+        
     module("extract_ext")
         .def("extract_bool", extract_bool)
         .def("extract_list", extract_list)
@@ -103,14 +113,20 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
         .def("check_X_ptr", check_X_ptr)
         .def("check_X_ref", check_X_ref)
 
+        .add(x_class)
         .def("double_X", double_X)
 
         .def("count_Xs", &X::count)
-        
-        .add(class_<X>("X")
-             .def_init(args<int>())
-             .def( "__repr__", x_rep))
         ;
+
+    // Instantiate an X object through the Python interface
+    type_handle xc1 = x_class.object();
+    object X_(xc1);
+    object x_obj = X_(3);
+
+    // Get the C++ object out of the Python object
+    X const& x = extract<X&>(x_obj);
+    assert(x.value() == 3);
 }
 
 

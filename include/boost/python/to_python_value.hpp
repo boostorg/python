@@ -14,6 +14,7 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/python/refcount.hpp>
+# include <boost/python/tag.hpp>
 
 namespace boost { namespace python { 
 
@@ -85,7 +86,7 @@ namespace detail
   {
       return python::upcast<PyObject>(
           python::xincref(
-              converter::get_managed_object(x))
+              get_managed_object(x, tag))
           );
   }
 }

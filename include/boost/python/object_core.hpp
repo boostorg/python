@@ -15,6 +15,7 @@
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
+# include <boost/python/converter/object_manager.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
 
@@ -73,7 +74,7 @@ namespace api
   };
 # endif 
 
-  template <bool is_proxy>  struct object_initializer;
+  template <bool is_proxy, bool is_object_manager>  struct object_initializer;
   
   // A way to turn a conrete type T into a type dependent on U. This
   // keeps conforming compilers from complaining about returning an
@@ -216,8 +217,11 @@ namespace api
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
-          : object_base(object_initializer<is_proxy<T>::value>::get(
-                      &x, detail::convertible<object const*>::check(&x)))
+          : object_base(
+              object_initializer<
+                 is_proxy<T>::value
+                 , converter::is_object_manager<T>::value
+              >::get(&x, detail::convertible<object const*>::check(&x)))
       {
       }
 
@@ -230,20 +234,39 @@ namespace api
       explicit object(detail::new_non_null_reference);
   };
 
-  // Derived classes will usually want these as an implementation detail
-# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived)              \
+  // Macros for forwarding constructors in classes derived from
+  // object. Derived classes will usually want these as an
+  // implementation detail
+# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived)             \
     inline explicit derived(python::detail::borrowed_reference p)       \
         : object(p) {}                                                  \
     inline explicit derived(python::detail::new_reference p)            \
         : object(p) {}                                                  \
     inline explicit derived(python::detail::new_non_null_reference p)   \
         : object(p) {}
-  
+
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
+#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_
+# else
+  // MSVC6 has a bug which causes an explicit template constructor to
+  // be preferred over an appropriate implicit conversion operator
+  // declared on the argument type. Normally, that would cause a
+  // runtime failure when using extract<T> to extract a type with a
+  // templated constructor. This additional constructor will turn that
+  // runtime failure into an ambiguity error at compile-time due to
+  // the lack of partial ordering, or at least a link-time error if no
+  // generalized template constructor is declared.
+#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived)     \
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived)          \
+    template <class T>                                          \
+    explicit derived(extract<T> const&);
+# endif
+
   //
   // object_initializer -- get the handle to construct the object with,
   // based on whether T is a proxy or derived from object
   //
-  template <bool is_proxy = false>
+  template <bool is_proxy = false, bool is_object_manager = false>
   struct object_initializer
   {
       static PyObject*
@@ -261,7 +284,7 @@ namespace api
   };
       
   template <>
-  struct object_initializer<true>
+  struct object_initializer<true, false>
   {
       template <class Policies>
       static PyObject* 
@@ -270,8 +293,24 @@ namespace api
           return python::incref(x->operator object().ptr());
       }
   };
+
+  template <>
+  struct object_initializer<false, true>
+  {
+      template <class T>
+      static PyObject*
+      get(T const* x, ...)
+      {
+          return python::incref(get_managed_object(*x, tag));
+      }
+  };
+
+  template <>
+  struct object_initializer<true, true>
+  {}; // empty implementation should cause an error
 }
 using api::object;
+template <class T> struct extract;
 
 //
 // implementation
@@ -340,11 +379,11 @@ namespace converter
           return python::detail::new_non_null_reference(x);
       }
   };
-  
-  inline PyObject* get_managed_object(object const& x)
-  {
-      return x.ptr();
-  }
+}
+
+inline PyObject* get_managed_object(object const& x, tag_t)
+{
+    return x.ptr();
 }
 
 }} // namespace boost::python
