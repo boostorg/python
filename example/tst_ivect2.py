@@ -92,7 +92,7 @@ if (__name__ == "__main__"):
       argv = []
       
       for x in sys.argv:
-        if x != '--broken_auto_ptr':
+        if x != '--broken-auto-ptr':
           argv.append(x)
       broken_auto_ptr = argv != sys.argv
       sys.argv = argv
