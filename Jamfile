@@ -13,17 +13,19 @@ PYTHON_PROPERTIES
 
 dll bpl
   : 
-  src/converter/body.cpp
-  src/converter/handle.cpp
-  src/converter/registry.cpp
-  src/converter/wrapper.cpp
-  src/converter/unwrap.cpp
-  src/converter/unwrapper.cpp
-  src/converter/type_id.cpp
-  src/object/class.cpp
-  src/object/function.cpp
-  src/errors.cpp
-  :
+    src/converter/body.cpp
+    src/converter/handle.cpp
+    src/converter/registry.cpp
+    src/converter/wrapper.cpp
+    src/converter/unwrap.cpp
+    src/converter/unwrapper.cpp
+    src/converter/type_id.cpp
+    src/object/class.cpp
+    src/object/function.cpp
+    src/errors.cpp
+    src/module.cpp
+    src/objects.cpp
+    :
   $(PYTHON_PROPERTIES)
     <define>BOOST_PYTHON_SOURCE
   ;
