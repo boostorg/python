@@ -72,12 +72,15 @@ class module : public detail::module_base
     }
 
     template <typename DerivedT, typename SigT>
-    module& def(detail::func_stubs_base<DerivedT> const& stubs, signature<SigT> sig)
+    module& def_generator(
+        char const* name,
+        detail::func_stubs_base<DerivedT> const& stubs,
+        SigT sig, char const* doc = 0)
     {
-        //  convert sig to a type_list (see signature.hpp) and call
-        //  detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
-        //  this instance, and the converted sig type_list.
-        detail::define_with_defaults(stubs.derived(), *this, detail::get_signature(sig));
+        //  convert sig to a type_list (see detail::get_signature in signature.hpp) and
+        //  call detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
+        //  this module instance, and the converted sig type_list.
+        detail::define_with_defaults(name, stubs.derived(), *this, detail::get_signature(sig), doc);
         return *this;
     }
 };

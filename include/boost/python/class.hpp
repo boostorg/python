@@ -131,16 +131,32 @@ class class_ : public objects::class_base
         return this->def(op.name(), &op_t::template apply<T>::execute);
     }
 
-
     template <typename DerivedT, typename SigT>
-    self& def(detail::func_stubs_base<DerivedT> const& stubs, signature<SigT> sig)
+    self& def_generator(
+        char const* name,
+        detail::func_stubs_base<DerivedT> const& stubs,
+        SigT sig, char const* doc = 0)
     {
-        //  convert sig to a type_list (see signature.hpp) and call
-        //  detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
-        //  this instance, and the converted sig type_list.
-        detail::define_with_defaults(stubs.derived(), *this, detail::get_signature(sig));
+        //  convert sig to a type_list (see detail::get_signature in signature.hpp) and
+        //  call detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
+        //  this class_ instance, and the converted sig type_list.
+        detail::define_with_defaults(name, stubs.derived(), *this, detail::get_signature(sig), doc);
         return *this;
     }
+
+//    template <typename DerivedT, typename F>
+//    self& def(detail::func_stubs_base<DerivedT> const& stubs, F)
+//    {
+//        //  convert signature<F> to a type_list (see signature.hpp) and call
+//        //  detail::define_with_defaults passing in the stubs (see defaults_gen.hpp),
+//        //  this class_ instance, and the converted signature<F> type_list.
+//        detail::define_with_defaults(
+//            stubs.derived(),
+//            *this,
+//            detail::get_signature(signature<F>())
+//        );
+//        return *this;
+//    }
 
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.

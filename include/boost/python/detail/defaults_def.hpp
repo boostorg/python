@@ -37,11 +37,12 @@ namespace detail {
 //
 //  The set of overloaded functions (define_stub_function) expects:
 //
-//      1. char const* name:    a python function name
+//      1. char const* name:    function name that will be visible to python
 //      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
 //      3. HolderT& holder:     a python::class_ or python::module instance
 //      4. int_t<N>:            the Nth overloaded function (StubsT::func_N)
 //                                  (see defaults_gen.hpp)
+//      5. char const* name:    doc string
 //
 ///////////////////////////////////////////////////////////////////////////////
 #define BPL_IMPL_STUB_FUNC_DEF(INDEX, DATA)                                     \
@@ -53,10 +54,15 @@ namespace detail {
         char const* name,                                                       \
         StubsT,                                                                 \
         HolderT& holder,                                                        \
-        boost::mpl::int_t<INDEX>                                                \
+        boost::mpl::int_t<INDEX>,                                               \
+        char const* doc                                                         \
     )                                                                           \
     {                                                                           \
-        holder.def(name, &StubsT::BOOST_PP_CAT(func_, INDEX));                  \
+        holder.def(                                                             \
+            name,                                                               \
+            &StubsT::BOOST_PP_CAT(func_, INDEX),                                \
+            default_call_policies(),                                            \
+            doc);                                                               \
     }                                                                           \
 
 BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
@@ -71,9 +77,10 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 //  terminal case define_with_defaults_helper<0>. The struct and its
 //  specialization has a sole static member function def that expects:
 //
-//      1. char const* name:    a python function name
+//      1. char const* name:    function name that will be visible to python
 //      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
 //      3. HolderT& holder:     a python::class_ or python::module instance
+//      4. char const* name:    doc string
 //
 //  The def static member function calls a corresponding
 //  define_stub_function<N>. The general case recursively calls
@@ -86,12 +93,12 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 
         template <typename StubsT, typename HolderT>
         static void
-        def(char const* name, StubsT stubs, HolderT& holder)
+        def(char const* name, StubsT stubs, HolderT& holder, char const* doc)
         {
             //  define the NTH stub function of stubs
-            define_stub_function(name, stubs, holder, boost::mpl::int_t<N>());
+            define_stub_function(name, stubs, holder, boost::mpl::int_t<N>(), doc);
             //  call the next define_with_defaults_helper
-            define_with_defaults_helper<N-1>::def(name, stubs, holder);
+            define_with_defaults_helper<N-1>::def(name, stubs, holder, doc);
         }
     };
 
@@ -101,10 +108,10 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 
         template <typename StubsT, typename HolderT>
         static void
-        def(char const* name, StubsT stubs, HolderT& holder)
+        def(char const* name, StubsT stubs, HolderT& holder, char const* doc)
         {
             //  define the Oth stub function of stubs
-            define_stub_function(name, stubs, holder, boost::mpl::int_t<0>());
+            define_stub_function(name, stubs, holder, boost::mpl::int_t<0>(), doc);
             //  return
         }
     };
@@ -112,6 +119,12 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  define_with_defaults
+//
+//      1. char const* name:    function name that will be visible to python
+//      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
+//      3. HolderT& holder:     a python::class_ or python::module instance
+//      4. SigT sig:            Function signature typelist (see defaults_gen.hpp)
+//      5. char const* name:    doc string
 //
 //  This is the main entry point. This function recursively defines all
 //  stub functions of StubT (see defaults_gen.hpp) in HolderT holder which
@@ -126,7 +139,12 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 ///////////////////////////////////////////////////////////////////////////////
     template <typename StubsT, typename HolderT, typename SigT>
     inline void
-    define_with_defaults(StubsT, HolderT& holder, SigT sig)
+    define_with_defaults(
+        char const* name,
+        StubsT,
+        HolderT& holder,
+        SigT sig,
+        char const* doc)
     {
         typedef typename mpl::select_type
         <
@@ -137,11 +155,11 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
         ::type stubs_type;
 
         BOOST_STATIC_ASSERT(
-            (stubs_type::max_args + 1) == boost::mpl::size<SigT>::value);
+            (stubs_type::max_args + 1) <= boost::mpl::size<SigT>::value);
 
         typedef stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def
-            (stubs_type::name(), gen_type(), holder);
+            (name, gen_type(), holder, doc);
     }
 
 } // namespace detail

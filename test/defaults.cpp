@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
-#include <sstream>
+#include <boost/python/list.hpp>
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
 # include <iostream> // works around a KCC intermediate code generation bug
@@ -15,50 +15,97 @@ using namespace boost::python;
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
-
-std::string
-foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
+object
+bar(int a, char b, std::string c, double d)
 {
-    std::stringstream stream;
-    stream << "int("    << a << "); ";
-    stream << "char("   << b << "); ";
-    stream << "string(" << c  << "); ";
-    stream << "double(" << d << "); ";
-    return stream.str();
+    list abcd;
+    abcd.append(a);
+    abcd.append(b);
+    abcd.append(c);
+    abcd.append(d);
+    return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
 }
 
-BOOST_PYTHON_FUNCTION_GEN(foo_stubs, foo, 1, 4)
+object
+bar(int a, char b, std::string c)
+{
+    list abcd;
+    abcd.append(a);
+    abcd.append(b);
+    abcd.append(c);
+    abcd.append(0.0);
+    return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
+}
+
+object
+bar(int a, char b)
+{
+    list abcd;
+    abcd.append(a);
+    abcd.append(b);
+    abcd.append("default");
+    abcd.append(0.0);
+    return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
+}
+
+object
+bar(int a)
+{
+    list abcd;
+    abcd.append(a);
+    abcd.append('D');
+    abcd.append("default");
+    abcd.append(0.0);
+    return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
+}
+
+BOOST_PYTHON_FUNCTION_GENERATOR(bar_stubs, bar, 1, 4)
+
+///////////////////////////////////////////////////////////////////////////////
+object
+foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
+{
+    list abcd;
+    abcd.append(a);
+    abcd.append(b);
+    abcd.append(c);
+    abcd.append(d);
+    return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
+}
+
+BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
 
 struct X {
 
-    std::string
+    object
     bar(int a, char b = 'D', std::string c = "default", double d = 0.0) const
     {
-        std::stringstream stream;
-        stream << "int("    << a << "); ";
-        stream << "char("   << b << "); ";
-        stream << "string(" << c  << "); ";
-        stream << "double(" << d << "); ";
-        return stream.str();
+        list abcd;
+        abcd.append(a);
+        abcd.append(b);
+        abcd.append(c);
+        abcd.append(d);
+        return "int(%s); char(%s); string(%s); double(%s); " % tuple(abcd);
     }
 };
 
-BOOST_PYTHON_MEMBER_FUNCTION_GEN(X_bar_stubs, bar, 1, 4)
+BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar_stubs, bar, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
 
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
     module      m("defaults_ext");
-    m.def(foo_stubs(), signature<std::string(*)(int, char, std::string, double)>());
+    m.def_generator("foo", foo_stubs(), foo);
+    m.def_generator("bar", bar_stubs(), signature<object(*)(int, char, std::string, double)>());
 
     class_<X>   xc("X");
     m.add(xc);
 
     xc.def_init();
-    xc.def(X_bar_stubs(), signature<std::string(X::*)(int, char, std::string, double)>());
+    xc.def_generator("bar", X_bar_stubs(), X::bar);
 }
 
 #include "module_tail.cpp"

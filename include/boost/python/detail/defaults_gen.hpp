@@ -99,9 +99,6 @@ struct func_stubs_base {
         BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));            \
         BOOST_STATIC_CONSTANT(int, max_args = n_funcs);                         \
                                                                                 \
-        static char const*                                                      \
-        name() { return BOOST_PP_STRINGIZE(FNAME); }                            \
-                                                                                \
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
@@ -152,9 +149,6 @@ struct func_stubs_base {
                                                                                 \
         BOOST_STATIC_CONSTANT(int, n_funcs = BOOST_PP_INC(N_DFLTS));            \
         BOOST_STATIC_CONSTANT(int, max_args = n_funcs + 1);                     \
-                                                                                \
-        static char const*                                                      \
-        name() { return BOOST_PP_STRINGIZE(FNAME); }                            \
                                                                                 \
         template <typename SigT>                                                \
         struct gen {                                                            \
@@ -266,8 +260,6 @@ struct func_stubs_base {
 //
 //          static const int n_funcs = 4;
 //          static const int max_args = n_funcs;
-//
-//          static char const* name() { return "foo"; }
 //
 //          template <typename SigT>
 //          struct gen {
