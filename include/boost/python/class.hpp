@@ -90,7 +90,7 @@ class class_ : objects::class_base
  public:
 
     // Construct with the module and class name
-    class_(module&, char const* name);
+    class_(module&, char const* name = typeid(T).name());
 
     // Wrap a member function or a non-member function which can take
     // a T, T cv&, or T cv* as its first parameter, or a callable
@@ -152,7 +152,7 @@ class class_ : objects::class_base
 //
 template <class T, class Bases, class HolderGenerator>
 inline class_<T, Bases, HolderGenerator>::class_(
-    module& m, char const* name = typeid(T).name())
+    module& m, char const* name)
     : class_base(m, name, id_vector::size, id_vector().ids)
 {
     // Bring the class converters into existence. This static object
