@@ -627,7 +627,7 @@ handle<> function_handle_impl(py_function const& f)
             new function(f, 0, 0)));
 }
 
-}
+} // namespace objects
 
 namespace detail
 {
@@ -639,6 +639,11 @@ namespace detail
           f
           , keyword_range(&k,&k));
   }
+  void BOOST_PYTHON_DECL pure_virtual_called()
+  {
+      PyErr_SetString(PyExc_RuntimeError, "Pure virtual function called");
+      throw_error_already_set();
+  }
 }
 
-}} // namespace boost::python::objects
+}} // namespace boost::python

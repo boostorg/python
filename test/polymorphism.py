@@ -46,7 +46,22 @@ class PolymorphTest(unittest.TestCase):
    def test_wrapper_downcast(self):
       a = pass_a(D())
       self.failUnlessEqual('D::g()', a.g())
-   
+
+   def test_pure_virtual(self):
+      p = P()
+      self.assertRaises(RuntimeError, p.f)
+      
+      q = Q()
+      self.failUnlessEqual ('Q::f()', q.f())
+      
+      class R(P):
+         def f(self):
+            return 'R.f'
+
+      r = R()
+      self.failUnlessEqual ('R.f', r.f())
+      
+                        
 if __name__ == "__main__":
    
    # remove the option which upsets unittest
