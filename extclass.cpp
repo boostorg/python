@@ -242,8 +242,11 @@ void* ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) cons
     void* result = try_derived_class_conversions(object);
     if(result) 
         return result;
-    
-    return try_base_class_conversions(object);
+        
+    if(!object->held_by_value())
+        return try_base_class_conversions(object);
+    else
+        return 0;
 }
 
 void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object) const
