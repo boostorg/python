@@ -1,5 +1,9 @@
 # Usage:
 #
+#   Create a new empty directory anywhere (preferably not in the boost tree).
+#   Copy this Makefile to that new directory and rename it to "Makefile"
+#   Adjust the pathnames below.
+#
 #   make copy          Copy the sources and tests
 #   make               Compile all sources
 #   make test          Run doctest tests
