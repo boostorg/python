@@ -15,6 +15,7 @@
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/lvalue_from_python_chain.hpp>
 # include <boost/python/converter/rvalue_from_python_chain.hpp>
+# include <boost/python/detail/void_ptr.hpp>
 
 namespace boost { namespace python { namespace converter {
 
@@ -143,12 +144,6 @@ inline void*const& from_python_base::result() const
 
 namespace detail
 {
-  template <class U>
-  inline U& void_ptr_to_reference(void const volatile* p, U&(*)())
-  {
-      return *(U*)p;
-  }
-
   template <class T>
   struct null_ptr_owner
   {
@@ -161,27 +156,12 @@ namespace detail
   {
       return null_ptr_owner<U>::value;
   }
-
-  template <class T>
-  inline void write_void_ptr(void const volatile* storage, void* ptr, T*)
-  {
-      *(T**)storage = (T*)ptr;
-  }
-
-  // writes U(ptr) into the storage
-  template <class U>
-  inline void write_void_ptr_reference(void const volatile* storage, void* ptr, U&(*)())
-  {
-      // stripping CV qualification suppresses warnings on older EDGs
-      typedef typename remove_cv<U>::type u_stripped; 
-      write_void_ptr(storage, ptr, u_stripped(0));
-  }
 }
 
 template <class T>
 inline pointer_const_reference_from_python<T>::pointer_const_reference_from_python(PyObject* p)
 {
-    detail::write_void_ptr_reference(
+    python::detail::write_void_ptr_reference(
         m_result.bytes
         , p == Py_None ? p : find(p, lvalue_from_python_chain<T>::value)
         , (T(*)())0);
@@ -190,14 +170,14 @@ inline pointer_const_reference_from_python<T>::pointer_const_reference_from_pyth
 template <class T>
 inline bool pointer_const_reference_from_python<T>::convertible() const
 {
-    return detail::void_ptr_to_reference(m_result.bytes, (T(*)())0) != 0;
+    return python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0) != 0;
 }
 template <class T>
 inline T pointer_const_reference_from_python<T>::operator()(PyObject* p) const
 {
     return (p == Py_None)
         ? detail::null_ptr_reference((T(*)())0)
-        : detail::void_ptr_to_reference(m_result.bytes, (T(*)())0);
+        : python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0);
 }
 
 // --------
@@ -225,7 +205,7 @@ inline reference_from_python<T>::reference_from_python(PyObject* p)
 template <class T>
 inline T reference_from_python<T>::operator()(PyObject*) const
 {
-    return detail::void_ptr_to_reference(result(), (T(*)())0);
+    return python::detail::void_ptr_to_reference(result(), (T(*)())0);
 }
 
 // -------
@@ -249,7 +229,7 @@ rvalue_from_python<T>::operator()(PyObject* p)
     if (m_data.stage1.construct != 0)
         m_data.stage1.construct(p, &m_data.stage1);
     
-    return detail::void_ptr_to_reference(m_data.stage1.convertible, (result_type(*)())0);
+    return python::detail::void_ptr_to_reference(m_data.stage1.convertible, (result_type(*)())0);
 }
 
 }}} // namespace boost::python::converter
