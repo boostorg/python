@@ -6,8 +6,8 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
+#include <boost/python/object/function_object.hpp>
 #include <boost/python/detail/module_base.hpp>
-#include <boost/python/object/function.hpp>
 #include <boost/python/cast.hpp>
 #include <boost/python/scope.hpp>
 #include <boost/python/borrowed.hpp>
@@ -35,7 +35,7 @@ void module_base::setattr_doc(const char* name, python::object const& x, char co
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
-    objects::function::add_to_namespace(python::object(m_module), name, x, doc);
+    objects::add_to_namespace(python::object(m_module), name, x, doc);
 }
 
 void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& x, char const* doc)
@@ -43,7 +43,7 @@ void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& x, char
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
     scope current;
-    objects::function::add_to_namespace(current, name, x, doc);
+    objects::add_to_namespace(current, name, x, doc);
 }
 
 void module_base::add(type_handle const& x)

@@ -34,6 +34,7 @@
 # include <boost/python/detail/defaults_def.hpp>
 # include <boost/python/signature.hpp>
 # include <boost/python/init.hpp>
+# include <boost/python/args_fwd.hpp>
 
 namespace boost { namespace python {
 
@@ -120,8 +121,9 @@ template <
 class class_ : public objects::class_base
 {
  public: // types
-   typedef objects::class_base base;
-
+    typedef objects::class_base base;
+    typedef T wrapped_type;
+    
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
 
@@ -201,7 +203,7 @@ class class_ : public objects::class_base
     template <class F>
     self& def(char const* name, F f)
     {
-        this->def_impl(name, f, default_call_policies(), 0, &f);
+        this->def_impl(name, f, detail::keywords<>(), default_call_policies(), 0, &f);
         return *this;
     }
 
@@ -233,6 +235,13 @@ class class_ : public objects::class_base
         //      def(name, function, doc_string, policy)
 
         dispatch_def(&arg2, name, arg1, arg2, arg3);
+        return *this;
+    }
+
+    template <class Arg1T, class Arg2T, class Arg3T, class Arg4T>
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, Arg4T const& arg4)
+    {
+        dispatch_def(&arg2, name, arg1, arg2, arg3, arg4);
         return *this;
     }
 
@@ -297,22 +306,32 @@ class class_ : public objects::class_base
 
  private: // helper functions
 
-    template <class Fn, class Policies>
-    inline void def_impl(char const* name, Fn fn, Policies const& policies
-                         , char const* doc, ...)
+    template <class Fn, class Policies, class Keywords>
+    inline void def_impl(
+        char const* name
+        , Fn fn
+        , Keywords const& keywords
+        , Policies const& policies
+        , char const* doc
+        , ...)
     {
         objects::add_to_namespace(
             *this, name,
             make_function(
-                    // This bit of nastiness casts F to a member function of T if possible.
+                // This bit of nastiness casts F to a member function of T if possible.
                 detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
-                , policies)
+                , policies, keywords)
             , doc);
     }
 
     template <class F>
-    inline void def_impl(char const* name, F f, default_call_policies const&
-                         , char const* doc, object const*)
+    inline void def_impl(
+        char const* name
+        , F f
+        , detail::keywords<> const&
+        , default_call_policies const&
+        , char const* doc
+        , object const*)
     {
         objects::add_to_namespace(*this, name, f, doc);
     }
@@ -332,33 +351,60 @@ class class_ : public objects::class_base
             name, overloads, *this, detail::get_signature(sig));
     }
 
-    template <class Fn, class CallPolicyOrDoc>
+    template <class Fn, class A1>
     void dispatch_def(
         void const*,
         char const* name,
         Fn fn,
-        CallPolicyOrDoc const& policy_or_doc)
+        A1 const& a1)
     {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        detail::def_helper<A1> helper(a1);
+      
         this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc),
-            helper::get_doc(policy_or_doc, 0), &fn);
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
 
     }
 
-    template <class Fn, class CallPolicyOrDoc1, class CallPolicyOrDoc2>
+    template <class Fn, class A1, class A2>
     void dispatch_def(
         void const*,
         char const* name,
         Fn fn,
-        CallPolicyOrDoc1 const& policy_or_doc1,
-        CallPolicyOrDoc2 const& policy_or_doc2)
+        A1 const& a1,
+        A2 const& a2)
     {
-        typedef detail::def_helper<CallPolicyOrDoc1> helper;
-
+        detail::def_helper<A1,A2> helper(a1,a2);
+      
         this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc1, policy_or_doc2),
-            helper::get_doc(policy_or_doc1, policy_or_doc2), &fn);
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
+    }
+
+    template <class Fn, class A1, class A2, class A3>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        A1 const& a1,
+        A2 const& a2,
+        A3 const& a3
+        )
+    {
+        detail::def_helper<A1,A2,A3> helper(a1,a2,a3);
+      
+        this->def_impl(
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
     }
 };
 

@@ -19,9 +19,11 @@
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/iterate.hpp>
 #include <boost/python/class_fwd.hpp>
-#include <boost/python/object/function.hpp>
 #include <boost/python/scope.hpp>
 #include <boost/preprocessor/debug/line.hpp>
+#include <boost/python/detail/scope.hpp>
+#include <boost/python/detail/make_keyword_range_fn.hpp>
+#include <boost/python/object/add_to_namespace.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
@@ -33,78 +35,92 @@ namespace objects
   struct class_base;
 }
 
-namespace detail {
-
-template <class Func, class CallPolicies, class NameSpaceT>
-static void name_space_def(
-    NameSpaceT& name_space,
-    char const* name,
-    Func f,
-    CallPolicies const& policies,
-    char const* doc,
-    objects::class_base*
-    )
+namespace detail
 {
-    name_space.def(
-        name, f, policies, doc);
-}
+  template <class T, class F> struct member_function_cast;
+  
+  template <class Func, class CallPolicies, class NameSpaceT>
+  static void name_space_def(
+      NameSpaceT& name_space
+      , char const* name
+      , Func f
+      , keyword_range const& kw
+      , CallPolicies const& policies
+      , char const* doc
+      , objects::class_base*
+      )
+  {
+      typedef typename NameSpaceT::wrapped_type wrapped_type;
+      
+      objects::add_to_namespace(
+          name_space, name,
+          make_keyword_range_function(
+                // This bit of nastiness casts F to a member function of T if possible.
+                member_function_cast<wrapped_type,Func>::stage1(f).stage2((wrapped_type*)0).stage3(f)
+                , policies, kw)
+            , doc);
+  }
 
-template <class Func, class CallPolicies>
-static void name_space_def(
-    object& name_space,
-    char const* name,
-    Func f,
-    CallPolicies const& policies,
-    char const* doc,
-    ...
-    )
-{
-    scope within(name_space);
+  template <class Func, class CallPolicies>
+  static void name_space_def(
+      object& name_space
+      , char const* name
+      , Func f
+      , keyword_range const& kw
+      , CallPolicies const& policies
+      , char const* doc
+      , ...
+      )
+  {
+      scope within(name_space);
 
-    def(name, f, policies, doc);
-}
+      detail::scope_setattr_doc(
+          name
+          , detail::make_keyword_range_function(f, policies, kw)
+          , doc);
+  }
 
-// For backward compatibility
-template <class Func, class CallPolicies, class NameSpaceT>
-static void name_space_def(
-    NameSpaceT& name_space,
-    char const* name,
-    Func f,
-    CallPolicies const& policies,
-    char const* doc,
-    module*
-    )
-{
-    name_space.def(
-        name, f, policies, doc);
-}
+  // For backward compatibility
+  template <class Func, class CallPolicies, class NameSpaceT>
+  static void name_space_def(
+      NameSpaceT& name_space
+      , char const* name
+      , Func f
+      , keyword_range const& kw // ignored
+      , CallPolicies const& policies
+      , char const* doc
+      , module*
+      )
+  {
+      name_space.def(name, f, policies, doc);
+  }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  This Boost PP code generates expansions for
-//
-//      template <typename StubsT, typename NameSpaceT>
-//      inline void
-//      define_stub_function(
-//          char const* name, StubsT s, NameSpaceT& name_space, mpl::int_c<N>)
-//      {
-//          name_space.def(name, &StubsT::func_N);
-//      }
-//
-//  where N runs from 0 to BOOST_PYTHON_MAX_ARITY
-//
-//  The set of overloaded functions (define_stub_function) expects:
-//
-//      1. char const* name:    function name that will be visible to python
-//      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
-//      3. NameSpaceT& name_space:     a python::class_ or python::module instance
-//      4. int_t<N>:            the Nth overloaded function (StubsT::func_N)
-//                                  (see defaults_gen.hpp)
-//      5. char const* name:    doc string
-//
-///////////////////////////////////////////////////////////////////////////////
-template <int N>
-struct define_stub_function {};
+  ///////////////////////////////////////////////////////////////////////////////
+  //
+  //  This Boost PP code generates expansions for
+  //
+  //      template <typename OverloadsT, typename NameSpaceT>
+  //      inline void
+  //      define_stub_function(
+  //          char const* name, OverloadsT s, NameSpaceT& name_space, mpl::int_c<N>)
+  //      {
+  //          name_space.def(name, &OverloadsT::func_N);
+  //      }
+  //
+  //  where N runs from 0 to BOOST_PYTHON_MAX_ARITY
+  //
+  //  The set of overloaded functions (define_stub_function) expects:
+  //
+  //      1. char const* name:        function name that will be visible to python
+  //      2. OverloadsT:              a function overloads struct (see defaults_gen.hpp)
+  //      3. NameSpaceT& name_space:  a python::class_ or python::module instance
+  //      4. int_t<N>:                the Nth overloaded function (OverloadsT::func_N)
+  //                                  (see defaults_gen.hpp)
+  //      5. char const* name:        doc string
+  //
+  ///////////////////////////////////////////////////////////////////////////////
+  template <int N>
+  struct define_stub_function {};
 
 #define BOOST_PP_ITERATION_PARAMS_1                                             \
     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/defaults_def.hpp>))
@@ -120,10 +136,10 @@ struct define_stub_function {};
 //  terminal case define_with_defaults_helper<0>. The struct and its
 //  specialization has a sole static member function def that expects:
 //
-//      1. char const* name:    function name that will be visible to python
-//      2. StubsT:              a function stubs struct (see defaults_gen.hpp)
-//      3. NameSpaceT& name_space:     a python::class_ or python::module instance
-//      4. char const* name:    doc string
+//      1. char const* name:        function name that will be visible to python
+//      2. OverloadsT:              a function overloads struct (see defaults_gen.hpp)
+//      3. NameSpaceT& name_space:  a python::class_ or python::module instance
+//      4. char const* name:        doc string
 //
 //  The def static member function calls a corresponding
 //  define_stub_function<N>. The general case recursively calls
@@ -139,14 +155,19 @@ struct define_stub_function {};
         def(
             char const* name,
             StubsT stubs,
+            keyword_range kw,
             CallPolicies const& policies,
             NameSpaceT& name_space,
             char const* doc)
         {
             //  define the NTH stub function of stubs
-            define_stub_function<N>::define(name, stubs, policies, name_space, doc);
+            define_stub_function<N>::define(name, stubs, kw, policies, name_space, doc);
+            
+            if (kw.second > kw.first)
+                --kw.second;
+            
             //  call the next define_with_defaults_helper
-            define_with_defaults_helper<N-1>::def(name, stubs, policies, name_space, doc);
+            define_with_defaults_helper<N-1>::def(name, stubs, kw, policies, name_space, doc);
         }
     };
 
@@ -159,12 +180,13 @@ struct define_stub_function {};
         def(
             char const* name,
             StubsT stubs,
+            keyword_range const& kw,
             CallPolicies const& policies,
             NameSpaceT& name_space,
             char const* doc)
         {
             //  define the Oth stub function of stubs
-            define_stub_function<0>::define(name, stubs, policies, name_space, doc);
+            define_stub_function<0>::define(name, stubs, kw, policies, name_space, doc);
             //  return
         }
     };
@@ -174,7 +196,7 @@ struct define_stub_function {};
 //  define_with_defaults
 //
 //      1. char const* name:        function name that will be visible to python
-//      2. StubsT:                  a function stubs struct (see defaults_gen.hpp)
+//      2. OverloadsT:              a function overloads struct (see defaults_gen.hpp)
 //      3. CallPolicies& policies:  Call policies
 //      4. NameSpaceT& name_space:  a python::class_ or python::module instance
 //      5. SigT sig:                Function signature typelist (see defaults_gen.hpp)
@@ -191,17 +213,17 @@ struct define_stub_function {};
 //      void C::foo(int)    mpl::list<void, C, int>
 //
 ///////////////////////////////////////////////////////////////////////////////
-    template <class StubsT, class NameSpaceT, class SigT>
+    template <class OverloadsT, class NameSpaceT, class SigT>
     inline void
     define_with_defaults(
         char const* name,
-        StubsT const& stubs,
+        OverloadsT const& overloads,
         NameSpaceT& name_space,
         SigT sig)
     {
         typedef typename mpl::front<SigT>::type return_type;
-        typedef typename StubsT::void_return_type void_return_type;
-        typedef typename StubsT::non_void_return_type non_void_return_type;
+        typedef typename OverloadsT::void_return_type void_return_type;
+        typedef typename OverloadsT::non_void_return_type non_void_return_type;
 
         typedef typename mpl::if_c<
             boost::is_same<void, return_type>::value
@@ -213,8 +235,13 @@ struct define_stub_function {};
             (stubs_type::max_args) <= mpl::size<SigT>::value);
 
         typedef typename stubs_type::template gen<SigT> gen_type;
-        define_with_defaults_helper<stubs_type::n_funcs-1>::def
-            (name, gen_type(), stubs.call_policies(), name_space, stubs.doc_string());
+        define_with_defaults_helper<stubs_type::n_funcs-1>::def(
+            name
+            , gen_type()
+            , overloads.keywords()
+            , overloads.call_policies()
+            , name_space
+            , overloads.doc_string());
     }
 
 } // namespace detail
@@ -232,17 +259,21 @@ template <>
 struct define_stub_function<BOOST_PP_ITERATION()> {
     template <class StubsT, class CallPolicies, class NameSpaceT>
     static void define(
-        char const* name,
-        StubsT,
-        CallPolicies const& policies,
-        NameSpaceT& name_space,
-        char const* doc)
+        char const* name
+        , StubsT const&
+        , keyword_range const& kw
+        , CallPolicies const& policies
+        , NameSpaceT& name_space
+        , char const* doc)
     {
-        detail::name_space_def(name_space,
-            name,
-            &StubsT::BOOST_PP_CAT(func_, BOOST_PP_ITERATION()),
-            policies,
-            doc, &name_space);
+        detail::name_space_def(
+            name_space
+            , name
+            , &StubsT::BOOST_PP_CAT(func_, BOOST_PP_ITERATION())
+            , kw
+            , policies
+            , doc
+            , &name_space);
     }
 };
 

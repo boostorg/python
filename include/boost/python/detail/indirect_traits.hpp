@@ -16,6 +16,8 @@
 # include <boost/type_traits/remove_reference.hpp>
 # include <boost/type_traits/remove_pointer.hpp>
 # include <boost/mpl/if.hpp>
+# include <boost/mpl/bool_c.hpp>
+# include <boost/mpl/aux_/lambda_support.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -163,6 +165,8 @@ struct is_reference_to_class
              >::value
          >::value)
         );
+    typedef mpl::bool_c<value> type;
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
 };
 
 template <class T>
@@ -343,7 +347,6 @@ struct is_reference_to_volatile
 {
 };
 
-
 template <typename V>
 typename is_pointer_help<V>::type reference_to_pointer_helper(V&);
 outer_no_type reference_to_pointer_helper(...);
@@ -370,8 +373,10 @@ struct is_reference_to_class
     BOOST_STATIC_CONSTANT(
         bool, value
         = (is_reference<T>::value
-           && sizeof(reference_to_class_helper(t)) == sizeof(inner_yes_type))
+           & (sizeof(reference_to_class_helper(t)) == sizeof(inner_yes_type)))
         );
+    typedef mpl::bool_c<value> type;
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_class,(T))
 };
 
 template <typename V>

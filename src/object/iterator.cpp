@@ -5,7 +5,6 @@
 // to its suitability for any purpose.
 
 #include <boost/python/object/iterator_core.hpp>
-#include <boost/python/object/function.hpp>
 #include <boost/python/object/function_object.hpp>
 #include <boost/bind.hpp>
 

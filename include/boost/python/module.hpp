@@ -71,11 +71,12 @@ class module : public detail::module_base
         char const* doc,
         void const*)
     {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        detail::def_helper<CallPolicyOrDoc,char const*> helper(policy_or_doc, doc);
 
         this->setattr_doc(
-            name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
-            helper::get_doc(policy_or_doc, doc));
+            name
+            , boost::python::make_function(fn, helper.policies())
+            , helper.doc());
     }
 
     template <typename StubsT, typename SigT>

@@ -8,17 +8,36 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/function/function2.hpp>
 # include <boost/python/object_core.hpp>
+# include <boost/python/args_fwd.hpp>
+# include <boost/python/object/py_function.hpp>
 
-namespace boost { namespace python { namespace objects { 
+namespace boost { namespace python {
 
-BOOST_PYTHON_DECL api::object function_object_impl(boost::function2<PyObject*, PyObject*, PyObject*> const& f, unsigned min_args, unsigned max_args = 0);
+namespace objects
+{ 
+  BOOST_PYTHON_DECL api::object function_object(
+      py_function const& f
+      , unsigned min_arity, unsigned max_arity
+      , python::detail::keyword_range const&);
 
-template <class F>
-inline object function_object(F const& f, unsigned min_args, unsigned max_args = 0)
-{
-    return objects::function_object_impl(boost::function2<PyObject*, PyObject*, PyObject*>(f), min_args, max_args);
+  BOOST_PYTHON_DECL api::object function_object(
+      py_function const& f
+      , unsigned arity
+      , python::detail::keyword_range const&);
+
+  BOOST_PYTHON_DECL api::object function_object(py_function const& f, unsigned arity);
+
+  // Add an attribute to the name_space with the given name. If it is
+  // a Boost.Python function object
+  // (boost/python/object/function.hpp), and an existing function is
+  // already there, add it as an overload.
+  BOOST_PYTHON_DECL void add_to_namespace(
+      object const& name_space, char const* name, object const& attribute);
+
+  BOOST_PYTHON_DECL void add_to_namespace(
+      object const& name_space, char const* name, object const& attribute, char const* doc);
 }
 
-}}} // namespace boost::python::objects
+}} // namespace boost::python::objects
 
 #endif // FUNCTION_OBJECT_DWA2002725_HPP

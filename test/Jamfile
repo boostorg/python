@@ -54,10 +54,10 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
-bpl-test numpy ;
-
-bpl-test enum ;
 bpl-test minimal ;
+bpl-test args ;
+bpl-test numpy ;
+bpl-test enum ;
 bpl-test docstring ;
 bpl-test exception_translator ;
 bpl-test pearu1 : test_cltree.py cltree.cpp ;
