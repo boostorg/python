@@ -180,13 +180,13 @@ namespace detail
       
   template <class T>
   inline value_arg_to_python<T>::value_arg_to_python(T const& x)
-      : arg_to_python_base(&x, registered<T>::converters.to_python)
+      : arg_to_python_base(&x, registered<T>::converters)
   {
   }
 
   template <class Ptr>
   inline pointer_deep_arg_to_python<Ptr>::pointer_deep_arg_to_python(Ptr x)
-      : arg_to_python_base(x, registered_pointee<Ptr>::converters.to_python)
+      : arg_to_python_base(x, registered_pointee<Ptr>::converters)
   {
       detail::reject_raw_object_ptr((Ptr)0);
   }

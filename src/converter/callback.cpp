@@ -19,28 +19,32 @@ namespace detail
 
   namespace
   {
-    inline PyObject* convert_to_python(void const volatile* source, to_python_function_t converter)
+    inline PyObject* convert_to_python(void const volatile* source, registration const& converters)
     {
-        if (converter == 0)
+        if (converters.to_python == 0)
         {
-            PyErr_SetString(
+            
+            PyErr_SetObject(
                 PyExc_TypeError
-                , const_cast<char*>("no to_python (by-value) converter found for type"));
+                , (object("no to_python (by-value) converter found for C++ type: ")
+                   + converters.target_type.name()).ptr()
+                );
+
             throw_error_already_set();
         }
         
         return source == 0
             ? python::detail::none()
-            : converter(const_cast<void*>(source));
+            : converters.to_python(const_cast<void*>(source));
     }
   }
   
   arg_to_python_base::arg_to_python_base(
-      void const volatile* source, to_python_function_t converter)
+      void const volatile* source, registration const& converters)
 # if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13102140
-      : handle<>(convert_to_python(source, converter))
+      : handle<>(convert_to_python(source, converters))
 # else
-      : m_ptr(convert_to_python(source, converter))
+      : m_ptr(convert_to_python(source, converters))
 # endif 
   {
   }
