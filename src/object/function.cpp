@@ -6,6 +6,8 @@
 
 #include <boost/python/object/function.hpp>
 #include <numeric>
+#include <boost/python/errors.hpp>
+#include <boost/python/objects.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -28,7 +30,7 @@ function::~function()
     
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
-    int nargs = PyTuple_GET_SIZE(args);
+    std::size_t nargs = PyTuple_GET_SIZE(args);
     function const* f = this;
     do
     {
@@ -63,6 +65,8 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
 
 void function::add_overload(function* overload)
 {
+    Py_XINCREF(overload);
+    
     function* parent = this;
     
     while (parent->m_overloads != 0)
@@ -70,6 +74,42 @@ void function::add_overload(function* overload)
         parent = parent->m_overloads;
     }
     parent->m_overloads = overload;
+}
+
+void function::add_to_namespace(
+    PyObject* name_space, char const* name_, PyObject* attribute_)
+{
+    ref attribute(attribute_, ref::increment_count);
+    string name(name_);
+    
+    if (attribute_->ob_type == &function_type)
+    {
+        PyObject* dict = 0;
+        
+        if (PyClass_Check(name_space))
+            dict = ((PyClassObject*)name_space)->cl_dict;
+        else if (PyType_Check(name_space))
+            dict = ((PyTypeObject*)name_space)->tp_dict;
+        else
+            dict = PyObject_GetAttrString(name_space, "__dict__");
+
+        if (dict == 0)
+            throw error_already_set();
+        
+        ref existing(PyObject_GetItem(dict, name.get()), ref::null_ok);
+        
+        if (existing.get() && existing->ob_type == &function_type)
+        {
+            static_cast<function*>(existing.get())->add_overload(
+                static_cast<function*>(attribute_));
+            return;
+        }
+    }
+    
+    // The PyObject_GetAttrString() call above left an active error
+    PyErr_Clear();
+    if (PyObject_SetAttr(name_space, name.get(), attribute_) < 0)
+        throw error_already_set();
 }
 
 extern "C"

@@ -7,7 +7,6 @@
 //  producing this work.
 
 #include <boost/python/module.hpp>
-#include <boost/python/errors.hpp>
 
 namespace boost { namespace python {
 
@@ -47,30 +46,14 @@ void module_base::add(PyObject* x, const char* name)
 
 void module_base::add(ref x, const char* name)
 {
-    ref f(x); // First take possession of the object.
-    if (PyObject_SetAttrString(m_module, const_cast<char*>(name), x.get()) < 0)
-        throw error_already_set();
+    // Use function::add_to_namespace to achieve overloading if
+    // appropriate.
+    objects::function::add_to_namespace(m_module, name, x.get());
 }
 
 void module_base::add(PyTypeObject* x, const char* name /*= 0*/)
 {
     this->add((PyObject*)x, name ? name : x->tp_name);
-}
-
-void module_base::add_overload(objects::function* x, const char* name)
-{
-    PyObject* existing = PyObject_HasAttrString(m_module, const_cast<char*>(name))
-        ? PyObject_GetAttrString(m_module, const_cast<char*>(name))
-        : 0;
-    
-    if (existing != 0 && existing->ob_type == &objects::function_type)
-    {
-        static_cast<objects::function*>(existing)->add_overload(x);
-    }
-    else
-    {
-        add(x, name);
-    }
 }
 
 PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };
