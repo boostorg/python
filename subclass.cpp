@@ -343,7 +343,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     }
     else
     {
-        return new BoundFunction(Ptr(this, Ptr::borrowed), class_attribute);
+        return BoundFunction::create(Ptr(this, Ptr::borrowed), class_attribute);
     }
 }
 
