@@ -13,7 +13,7 @@ namespace python {
 // Syntactic sugar to make wrapping classes more convenient
 template <class T, class U = detail::held_instance<T> >
 class class_builder
-    : PyExtensionClassConverters<T, U> // Works around MSVC6.x/GCC2.95.2 bug described below
+    : python_extension_class_converters<T, U> // Works around MSVC6.x/GCC2.95.2 bug described below
 {
  public:
     class_builder(module_builder& module, const char* name)

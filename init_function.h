@@ -164,7 +164,7 @@ struct init_function
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6>
-    static init* create(Signature6<A1, A2, A3, A4, A5, A6>) {
+    static init* create(signature6<A1, A2, A3, A4, A5, A6>) {
         return new Init6<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -175,7 +175,7 @@ struct init_function
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    static init* create(Signature7<A1, A2, A3, A4, A5, A6, A7>) {
+    static init* create(signature7<A1, A2, A3, A4, A5, A6, A7>) {
         return new Init7<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -187,7 +187,7 @@ struct init_function
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    static init* create(Signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
+    static init* create(signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
         return new Init8<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -200,7 +200,7 @@ struct init_function
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    static init* create(Signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
+    static init* create(signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
         return new Init9<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -214,7 +214,7 @@ struct init_function
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    static init* create(Signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
+    static init* create(signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
         return new Init10<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
