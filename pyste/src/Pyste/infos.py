@@ -52,7 +52,9 @@ class DeclarationInfo:
 
 
     def AddExporter(self, exporter):
-        if not exporters.importing:
+        # this was causing a much serious bug, as reported by Niall Douglas:
+        # another solution must be found!
+        #if not exporters.importing:
             if exporter not in exporters.exporters:
                 exporters.exporters.append(exporter)
             exporter.interface_file = exporters.current_interface 
