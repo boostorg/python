@@ -68,12 +68,12 @@ namespace detail
       void* result = get_lvalue_from_python(source, converters);
       if (!result)
       {
-          handle<> repr(PyObject_Repr(source));
           handle<> msg(
               ::PyString_FromFormat(
-                  "No registered converter was able to convert %s to a C++ lvalue of type %s"
-                  , PyString_AS_STRING(repr.get())
-                  , converters.target_type.name()));
+                  "No registered converter was able to extract a a C++ lvalue of type %s from this Python object of type %s"
+                  , converters.target_type.name()
+                  , source->ob_type->tp_name
+                  ));
               
           PyErr_SetObject(PyExc_TypeError, msg.get());
 
@@ -106,20 +106,29 @@ namespace detail
   {
       handle<> holder(src);
 
-      void const* converters = data.convertible;
-      data = rvalue_from_python_stage1(
-          src, *static_cast<registration const*>(converters));
+      void const* converters_ = data.convertible;
+      registration const& converters = *static_cast<registration const*>(converters_);
+      data = rvalue_from_python_stage1(src, converters);
       
       if (!data.convertible)
       {
-          PyErr_SetString(
-              PyExc_TypeError
-              , const_cast<char*>("no registered from_python lvalue or rvalue converter was able to convert object"));
+          handle<> msg(
+              ::PyString_FromFormat(
+                  "No registered converter was able to produce a C++ lvalue of type %s from this Python object of type %s"
+                  , converters.target_type.name()
+                  , src->ob_type->tp_name
+                  ));
+              
+          PyErr_SetObject(PyExc_TypeError, msg.get());
           throw_error_already_set();
       }
+
+      // If a construct function was registered (i.e. we found an
+      // rvalue conversion), call it now.
       if (data.construct != 0)
           data.construct(src, &data);
-      
+
+      // Return the address of the resulting C++ object
       return data.convertible;
   }
 
