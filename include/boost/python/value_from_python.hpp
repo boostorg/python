@@ -16,6 +16,7 @@ namespace boost { namespace python {
 template <typename T, class Derived>
 struct value_from_python
 {
+    typedef value_from_python<T,Derived> self;
     typedef converter::from_python_check from_python_check;
     
     value_from_python(from_python_check convertible)
@@ -50,13 +51,13 @@ struct value_from_python
     // Mark successful construction
     static void constructed(converter::from_python_data& data)
     {
-        data.stage1 = get_storage(data);
+        data.stage1 = self::get_storage(data);
     }
     
     inline static void destroy(converter::from_python_data& data)
     {
         // Get the location of the storage for
-        void* storage = get_storage(data);
+        void* storage = self::get_storage(data);
 
         // Check for successful construction
         if (data.stage1 == storage)

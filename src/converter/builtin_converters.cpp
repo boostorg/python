@@ -91,7 +91,8 @@ namespace
       : value_from_python<T, tp_cref_from_python<T,Convertible,TExtract> >
   {
    private:
-      typedef value_from_python<T, tp_cref_from_python<T,Convertible,TExtract> > base;
+      typedef tp_cref_from_python<T,Convertible,TExtract> self;
+      typedef value_from_python<T,tp_cref_from_python<T,Convertible,TExtract> > base;
       
    public:
       tp_cref_from_python()
@@ -102,7 +103,7 @@ namespace
       {
           unaryfunc converter = *(unaryfunc*)data.stage1;
           
-          void* storage = get_storage(data);
+          void* storage = self::get_storage(data);
           
           ref converted(converter(obj));
               
