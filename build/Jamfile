@@ -107,6 +107,14 @@ dll boost_python
 	$(PYTHON_PROPERTIES)
           ;
 
+stage bin-stage : <dll>boost_python
+    :
+        <tag><debug>"_debug"
+        <tag><debug-python>"_pydebug"
+    :
+        debug release
+    ;
+
 ############# comprehensive module and test ###########
 bpl-test boost_python_test
       : ../test/comprehensive.cpp ;
