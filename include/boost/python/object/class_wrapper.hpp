@@ -15,11 +15,11 @@ template <class T, class Holder>
 struct class_wrapper
     : to_python_converter<T,class_wrapper<T,Holder> >
 {
-    class_wrapper(handle<> const& type_)
+    class_wrapper(object const& type_)
         : m_class_object_keeper(type_)
     {
-        assert(type_->ob_type == (PyTypeObject*)class_metatype().get());
-        m_class_object = (PyTypeObject*)type_.get();
+        assert(type_.ptr()->ob_type == (PyTypeObject*)class_metatype().get());
+        m_class_object = (PyTypeObject*)type_.ptr();
     }
     
     static PyObject* convert(T const& x)
@@ -48,7 +48,7 @@ struct class_wrapper
     }
     
  private:
-    handle<> m_class_object_keeper;
+    object m_class_object_keeper;
     static PyTypeObject* m_class_object;
 };
 

@@ -47,14 +47,14 @@ namespace detail
   // to the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, handle<> const& obj, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, object const& obj, T* = 0)
   {
       objects::class_wrapper<T,Holder> x(obj);
   }
 
   // Tag dispatched to have no effect.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, handle<> const&, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, object const&, T* = 0)
   {
   }
 }
@@ -104,11 +104,13 @@ class class_ : public objects::class_base
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
         objects::function::add_to_namespace(
-            this->object(), name,
-            handle<>(detail::wrap_function(
+            *this, name
+            , object(
+                detail::new_reference(
+                    detail::wrap_function(
                     // This bit of nastiness casts F to a member function of T if possible. 
                     detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f)
-                    )));
+                        ))));
         return *this;
     }
 
@@ -132,8 +134,10 @@ class class_ : public objects::class_base
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
         objects::function::add_to_namespace(
-            this->object(), op.name(), 
-            handle<>(detail::wrap_function(&op_t::template apply<T>::execute)));
+            *this, op.name()
+            , object(
+                detail::new_reference(
+                    detail::wrap_function(&op_t::template apply<T>::execute))));
         return *this;
     }
     
@@ -255,7 +259,7 @@ inline class_<T,X1,X2,X3>::class_()
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
-        , this->object());
+        , *this);
 }
 
 template <class T, class X1, class X2, class X3>
@@ -268,7 +272,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
-        , this->object());
+        , *this);
 }
 
 

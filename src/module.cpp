@@ -37,7 +37,7 @@ void module_base::setattr(char const* name, handle<> const& x)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
-    objects::function::add_to_namespace(m_module, name, x);
+    objects::function::add_to_namespace(python::object(m_module), name, python::object(x));
 }
 
 void module_base::add(type_handle const& x)

@@ -120,9 +120,7 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
         ;
 
     // Instantiate an X object through the Python interface
-    type_handle xc1 = x_class.object();
-    object X_(xc1);
-    object x_obj = X_(3);
+    object x_obj = x_class(3);
 
     // Get the C++ object out of the Python object
     X const& x = extract<X&>(x_obj);

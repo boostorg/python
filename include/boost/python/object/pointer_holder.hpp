@@ -11,7 +11,7 @@
 
 #  include <boost/type.hpp>
 
-#  include <boost/python/object/class.hpp>
+#  include <boost/python/instance_holder.hpp>
 #  include <boost/python/type_id.hpp>
 #  include <boost/python/object/inheritance.hpp>
 #  include <boost/python/object/find_instance.hpp>

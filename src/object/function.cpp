@@ -156,12 +156,12 @@ namespace
 }
 
 void function::add_to_namespace(
-    handle<> const& name_space, char const* name_, handle<> const& attribute)
+    object const& name_space, char const* name_, object const& attribute)
 {
     str const name(name_);
-    PyObject* const ns = name_space.get();
+    PyObject* const ns = name_space.ptr();
     
-    if (attribute->ob_type == &function_type)
+    if (attribute.ptr()->ob_type == &function_type)
     {
         PyObject* dict = 0;
         
@@ -175,27 +175,27 @@ void function::add_to_namespace(
         if (dict == 0)
             throw_error_already_set();
         
-        handle<> existing( allow_null(PyObject_GetItem(dict, name.ptr())) );
+        handle<> existing( allow_null(::PyObject_GetItem(dict, name.ptr())) );
         
         if (existing.get())
         {
             if (existing->ob_type == &function_type)
             {
-                static_cast<function*>(attribute.get())->add_overload(
+                static_cast<function*>(attribute.ptr())->add_overload(
                     static_cast<function*>(existing.get()));
             }
         }
         // Binary operators need an additional overload which returns NotImplemented
         else if (is_binary_operator(name_))
         {
-            static_cast<function*>(attribute.get())->add_overload(
+            static_cast<function*>(attribute.ptr())->add_overload(
                 not_implemented_function());
         }
     }
     
     // The PyObject_GetAttrString() call above left an active error
     PyErr_Clear();
-    if (PyObject_SetAttr(ns, name.ptr(), attribute.get()) < 0)
+    if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
         throw_error_already_set();
 }
 

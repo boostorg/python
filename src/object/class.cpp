@@ -243,9 +243,12 @@ namespace objects
   //             corresponding to the class being created, and the
   //             rest corresponding to its declared bases.
   //
-  class_base::class_base(
-      char const* name, std::size_t num_types, class_id const* const types)
+
+  namespace
   {
+    inline object
+    new_class(char const* name, std::size_t num_types, class_id const* const types)
+    {
       assert(num_types >= 1);
       
       // Build a tuple of the base Python type objects. If no bases
@@ -271,14 +274,20 @@ namespace objects
       // Call the class metatype to create a new class
       PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
       assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
-      m_object = type_handle((PyTypeObject*)c);
-
+      return object(python::detail::new_reference(c));
+    }
+  }
+  
+  class_base::class_base(
+      char const* name, std::size_t num_types, class_id const* const types)
+      : object(new_class(name, num_types, types))
+  {
       // Insert the new class object in the registry
       converter::registration& converters = const_cast<converter::registration&>(
           converter::registry::lookup(types[0]));
 
       // Class object is leaked, for now
-      converters.class_object = (PyTypeObject*)incref(m_object.get());
+      converters.class_object = (PyTypeObject*)incref(this->ptr());
   }
 
   extern "C"
@@ -301,7 +310,7 @@ namespace objects
 
   void class_base::setattr(char const* name, handle<> const& x)
   {
-      if (PyObject_SetAttrString(upcast<PyObject>(object().get()), const_cast<char*>(name), x.get()) < 0)
+      if (PyObject_SetAttrString(this->ptr(), const_cast<char*>(name), x.get()) < 0)
           throw_error_already_set();
   }
 
@@ -317,7 +326,7 @@ namespace objects
 
   BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
   {
-      return objects::query_class(id);
+      return query_class(id);
   }
 } // namespace objects
 

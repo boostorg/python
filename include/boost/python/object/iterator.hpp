@@ -17,6 +17,7 @@
 # include <boost/mpl/apply.hpp>
 # include <boost/bind.hpp>
 # include <boost/bind/protect.hpp>
+# include <boost/python/detail/raw_pyobject.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -113,30 +114,28 @@ namespace detail
   // policies, creating it if neccessary. Requires: NextPolicies is
   // default-constructible.
   template <class Iterator, class NextPolicies>
-  handle<> demand_iterator_class(char const* name, Iterator* = 0, NextPolicies const& policies = NextPolicies())
+  object demand_iterator_class(char const* name, Iterator* = 0, NextPolicies const& policies = NextPolicies())
   {
       typedef iterator_range<NextPolicies,Iterator> range_;
 
       // Check the registry. If one is already registered, return it.
-      handle<> result(
+      handle<> class_obj(
           objects::registered_class_object(python::type_id<range_>()));
         
-      if (result.get() == 0)
-      {
-          // Make a callable object which can be used as the iterator's next() function.
-          handle<> next_function(
-              new objects::function(
-                  objects::py_function(
-                      bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies))
-                  , 1));
-    
-          result = class_<range_>(name)
-              .def("__iter__", identity_function())
-              .setattr("next", next_function)
-              .object();
+      if (class_obj.get() != 0)
+          return object(class_obj);
 
-      }
-      return result;
+      // Make a callable object which can be used as the iterator's next() function.
+      handle<> next_function(
+          new objects::function(
+              objects::py_function(
+                  bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies))
+              , 1));
+    
+      return class_<range_>(name)
+          .def("__iter__", identity_function())
+          .setattr("next", next_function)
+          ;
   }
 
   // This class template acts as a generator for an ordinary function
@@ -187,22 +186,23 @@ namespace detail
 // iterators for the range, and an instance of NextPolicies is used as
 // CallPolicies for the Python iterator's next() function. 
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-inline handle<> make_iterator_function(
+inline object make_iterator_function(
     Accessor1 const& get_start, Accessor2 const& get_finish
     , boost::type<Target>* = 0, NextPolicies* = 0)
 {
     typedef typename Accessor1::result_type result_type;
       
-    return handle<>(
-        new objects::function(
-            objects::py_function(
-                boost::bind(
-                    &detail::make_iterator_help<
-                    Target,result_type,Accessor1,Accessor2,NextPolicies
-                    >::create
-                    , get_start, get_finish, _1, _2)
-                )
-            ,1 ));
+    return object(
+        python::detail::new_non_null_reference(
+            new objects::function(
+                objects::py_function(
+                    boost::bind(
+                        &detail::make_iterator_help<
+                        Target,result_type,Accessor1,Accessor2,NextPolicies
+                        >::create
+                        , get_start, get_finish, _1, _2))
+                ,1 ))
+        );
 }
 
 //

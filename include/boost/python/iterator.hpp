@@ -8,6 +8,7 @@
 
 # include <boost/python/detail/target.hpp>
 # include <boost/python/object/iterator.hpp>
+# include <boost/python/object_core.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 
@@ -19,7 +20,7 @@ namespace detail
   // objects::make_iterator(...), which allows us to pass member
   // function and member data pointers.
   template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-  inline handle<> make_iterator(
+  inline object make_iterator(
       Accessor1 get_start, Accessor2 get_finish, boost::type<Target>* target = 0, NextPolicies* = 0)
   {
       return objects::make_iterator_function<NextPolicies,Target>(
@@ -70,9 +71,14 @@ struct iterators
 template <class Accessor1, class Accessor2>
 handle<> range(Accessor1 start, Accessor2 finish)
 {
-    return detail::make_iterator<objects::default_iterator_call_policies>(
-        start, finish
-        , detail::target(start));
+    return handle<>(
+        borrowed(allow_null(
+            detail::make_iterator<objects::default_iterator_call_policies>(
+                start, finish
+                , detail::target(start))
+            .ptr()
+            ))
+        );
 }
 
 // Create an iterator-building function which uses the given accessors
@@ -80,7 +86,12 @@ handle<> range(Accessor1 start, Accessor2 finish)
 template <class NextPolicies, class Accessor1, class Accessor2>
 handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 {
-    return detail::make_iterator<NextPolicies>(start, finish, detail::target(start));
+    return handle<>(
+        borrowed(
+            allow_null(
+                detail::make_iterator<NextPolicies>(start, finish, detail::target(start))
+                .ptr()
+                )));
 }
 
 // Create an iterator-building function which uses the given accessors
@@ -89,7 +100,12 @@ template <class NextPolicies, class Target, class Accessor1, class Accessor2>
 handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
 {
     typedef typename add_reference<Target>::type target;
-    return detail::make_iterator<NextPolicies, target>(start, finish);
+    return handle<>(
+        borrowed(
+            allow_null(
+                detail::make_iterator<NextPolicies, target>(start, finish)
+                .ptr()
+                )));
 }
 
 // A Python callable object which produces an iterator traversing
