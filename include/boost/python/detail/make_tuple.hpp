@@ -10,7 +10,7 @@
 
 #define N BOOST_PP_ITERATION()
 
-#define BOOST_PYTHON_MAKE_TUPLE_ARG(N, ignored)         \
+#define BOOST_PYTHON_MAKE_TUPLE_ARG(z, N, ignored)      \
     PyTuple_SET_ITEM(                                   \
         result.ptr()                                    \
         , N                                             \

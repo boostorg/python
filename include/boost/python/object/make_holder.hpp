@@ -25,11 +25,11 @@ namespace boost { namespace python { namespace objects {
 
 template <int nargs> struct make_holder;
 
-#  define BOOST_PYTHON_FORWARD_ARG(index, _)                \
+#  define BOOST_PYTHON_FORWARD_ARG(z, index, _)             \
     typedef typename mpl::at<index,ArgList>::type t##index; \
     typedef typename forward<t##index>::type f##index;
 
-#  define BOOST_PYTHON_DO_FORWARD_ARG(index, _) , f##index(a##index)
+#  define BOOST_PYTHON_DO_FORWARD_ARG(z, index, _) , f##index(a##index)
 
 // specializations...
 #  define BOOST_PP_ITERATION_PARAMS_1 (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/make_holder.hpp>))

@@ -78,10 +78,10 @@ struct returning<void>
 
 # define N BOOST_PP_ITERATION()
 
-# define BOOST_PYTHON_CALL_ARGS(n, _) \
+# define BOOST_PYTHON_CALL_ARGS(z, n, _) \
     BOOST_PP_COMMA_IF(n) c##n(PyTuple_GET_ITEM(args_, n))
     
-# define BOOST_PYTHON_CHECK_CONVERSION(n, _)                \
+# define BOOST_PYTHON_CHECK_CONVERSION(z, n, _)             \
     arg_from_python<A##n> c##n(PyTuple_GET_ITEM(args_, n)); \
     if (!c##n.convertible())                                \
         return 0;

@@ -298,7 +298,7 @@ namespace detail {
 //      last in the list.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_APPEND_TO_INIT(INDEX, D)                                   \
+#define BOOST_PYTHON_APPEND_TO_INIT(z, INDEX, D)                                \
     typedef typename detail::append_to_init                                     \
     <                                                                           \
         BOOST_PP_CAT(l, INDEX),                                                 \

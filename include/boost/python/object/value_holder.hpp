@@ -24,7 +24,7 @@
 
 namespace boost { namespace python { namespace objects { 
 
-#  define BOOST_PYTHON_UNFORWARD_LOCAL(n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)(a##n)
+#  define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)(a##n)
 
 template <class Held>
 struct value_holder : instance_holder
