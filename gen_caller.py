@@ -60,8 +60,7 @@ struct caller<void>
 namespace detail
 {
                      
-// create signature tuples
-inline''',
+''',
 '''
 // member functions
 ''',
@@ -106,9 +105,8 @@ free_function = '''%{    template <%(class A%n%:, %)>
 
 function_signature = '''%{template <%}%(class A%n%:, %)%{>%}
 PyObject* function_signature(%(type<A%n>%:, %)) {
-%(    static const bool is_plain_A%n = BOOST_PYTHON_IS_PLAIN(A%n);
-%)    tuple result(%x);
-%(    result.set_item(%N, python_type_name_selector<is_plain_A%n>::get(type<A%n>()));
+    tuple result(%x);
+%(    result.set_item(%N, get_python_type_name(type<A%n>()));
 %)
     return result.reference().release();
 }
@@ -116,18 +114,24 @@ PyObject* function_signature(%(type<A%n>%:, %)) {
 '''
 
 member_function_signature = '''template <class R, class T%(, class A%n%)>
-inline PyObject* function_signature(R (T::*pmf)(%(A%n%:, %))%1) {
-    return function_signature(
-        python::type<T>()%(,
-        python::type<A%n>()%));
+PyObject* function_signature(R (T::*pmf)(%(A%n%:, %))%1) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+%(    result = function_signature_append(result, get_python_type_name(type<A%n>()));
+%)
+    return result;
 }
 
 '''
 
 free_function_signature = '''template <class R%(, class A%n%)>
-inline PyObject* function_signature(R (*f)(%(A%n%:, %))) {
-    return function_signature(%(
-        python::type<A%n>()%:,%));
+PyObject* function_signature(R (*f)(%(A%n%:, %))) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+%(    result = function_signature_append(result, get_python_type_name(type<A%n>()));
+%)
+    return result;
 }
 
 '''
@@ -165,7 +169,7 @@ def gen_caller(member_function_args, free_function_args = None):
             + body_sections[6]
 
             # create lists describing the function signatures
-            + gen_functions(function_signature, free_function_args)
+#            + gen_functions(function_signature, free_function_args)
             + body_sections[7]
             + gen_functions(member_function_signature, member_function_args, '')
             + body_sections[8]

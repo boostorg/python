@@ -183,13 +183,12 @@ struct init0 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>()); 
+        return function_signature(get_python_type_name(python::type<T>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }
@@ -210,14 +209,13 @@ struct init1 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>(), 
-                                  python::type<A1>()); 
+        return function_signature(get_python_type_name(python::type<T>()), 
+                                  get_python_type_name(python::type<A1>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }
@@ -240,15 +238,14 @@ struct init2 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>(), 
-                                  python::type<A1>(), 
-                                  python::type<A2>()); 
+        return function_signature(get_python_type_name(python::type<T>()), 
+                                  get_python_type_name(python::type<A1>()), 
+                                  get_python_type_name(python::type<A2>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }
@@ -273,16 +270,15 @@ struct init3 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>(), 
-                                  python::type<A1>(), 
-                                  python::type<A2>(), 
-                                  python::type<A3>()); 
+        return function_signature(get_python_type_name(python::type<T>()), 
+                                  get_python_type_name(python::type<A1>()), 
+                                  get_python_type_name(python::type<A2>()), 
+                                  get_python_type_name(python::type<A3>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }
@@ -309,17 +305,16 @@ struct init4 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>(), 
-                                  python::type<A1>(), 
-                                  python::type<A2>(), 
-                                  python::type<A3>(), 
-                                  python::type<A4>()); 
+        return function_signature(get_python_type_name(python::type<T>()), 
+                                  get_python_type_name(python::type<A1>()), 
+                                  get_python_type_name(python::type<A2>()), 
+                                  get_python_type_name(python::type<A3>()), 
+                                  get_python_type_name(python::type<A4>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }
@@ -348,18 +343,17 @@ struct init5 : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>(), 
-                                  python::type<A1>(), 
-                                  python::type<A2>(), 
-                                  python::type<A3>(), 
-                                  python::type<A4>(), 
-                                  python::type<A5>()); 
+        return function_signature(get_python_type_name(python::type<T>()), 
+                                  get_python_type_name(python::type<A1>()), 
+                                  get_python_type_name(python::type<A2>()), 
+                                  get_python_type_name(python::type<A3>()), 
+                                  get_python_type_name(python::type<A4>()), 
+                                  get_python_type_name(python::type<A5>())); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }

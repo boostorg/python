@@ -150,14 +150,13 @@ struct init%x : init
     
     PyObject* description() const
     { 
-        return function_signature(python::type<T>()%(, 
-                                  python::type<A%n>()%)); 
+        return function_signature(get_python_type_name(python::type<T>())%(, 
+                                  get_python_type_name(python::type<A%n>())%)); 
     }
     
     string function_name() const
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        string result(python_type_name_selector<is_plain>::get(python::type<T>()));
+        string result(get_python_type_name(python::type<T>()));
         result += ".__init__";
         return result; 
     }

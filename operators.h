@@ -225,7 +225,8 @@ namespace detail
                                                                                         \
           PyObject* description() const                                                 \
           {                                                                             \
-            return function_signature(python::type<Left>(), python::type<Right>());     \
+            return function_signature(get_python_type_name(python::type<Left>()),       \
+                                      get_python_type_name(python::type<Right>()));     \
           }                                                                             \
       };                                                                                \
                                                                                         \
@@ -246,7 +247,8 @@ namespace detail
                                                                                         \
           PyObject* description() const                                                 \
           {                                                                             \
-            return function_signature(python::type<Left>(), python::type<Right>());     \
+            return function_signature(get_python_type_name(python::type<Left>()),       \
+                                      get_python_type_name(python::type<Right>()));     \
           }                                                                             \
                                                                                         \
       };                                                                                \
@@ -271,11 +273,11 @@ namespace detail
           }                                                                                     \
                                                                                                 \
           string function_name() const                                                          \
-              { return string(name()); }                                                 \
+              { return string(name()); }                                                        \
                                                                                                 \
           PyObject* description() const                                                         \
           {                                                                                     \
-            return function_signature(python::type<operand>());   \
+            return function_signature(get_python_type_name(python::type<operand>()));           \
           }                                                                                     \
       };                                                                                        \
                                                                                                 \
@@ -336,7 +338,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
 
       };
@@ -364,7 +367,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
 
       };
@@ -403,7 +407,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
 
       };
@@ -433,7 +438,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
       };
 
@@ -468,7 +474,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
 
       };
@@ -495,7 +502,8 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<Left>(), python::type<Right>());
+            return function_signature(get_python_type_name(python::type<Left>()),
+                                      get_python_type_name(python::type<Right>())); 
           }
 
       };
@@ -536,7 +544,7 @@ namespace detail
 
           PyObject* description() const 
           {
-            return function_signature(python::type<operand>());
+            return function_signature(get_python_type_name(python::type<operand>()));
           }
 
       };

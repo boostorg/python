@@ -482,4 +482,67 @@ list::slice_proxy::slice_proxy(const ref& list, int low, int high)
 {
 }
 
+namespace detail
+{
+
+PyObject* function_signature_append(PyObject * sig, string type_name)
+{
+    ref rsig(sig);
+    tuple old_signature(rsig);
+    tuple new_signature(old_signature.size()+1);
+    
+    int i;
+    for(i=0; i<old_signature.size(); ++i)
+    {
+        new_signature.set_item(i, old_signature[i]);
+    }
+    new_signature.set_item(i, type_name);
+    
+    return new_signature.reference().release();    
+}
+
+PyObject* function_signature(string arg0,
+                             string arg1,
+                             string arg2,
+                             string arg3,
+                             string arg4,
+                             string arg5,
+                             string arg6,
+                             string arg7,
+                             string arg8,
+                             string arg9) 
+{
+    int count = 0;
+    
+    if(arg0.size() != 0) ++count;
+    if(arg1.size() != 0) ++count;
+    if(arg2.size() != 0) ++count;
+    if(arg3.size() != 0) ++count;
+    if(arg4.size() != 0) ++count;
+    if(arg5.size() != 0) ++count;
+    if(arg6.size() != 0) ++count;
+    if(arg7.size() != 0) ++count;
+    if(arg8.size() != 0) ++count;
+    if(arg9.size() != 0) ++count;
+    tuple result(count);
+    switch(count - 1)
+    {
+        case 9: result.set_item(9, arg9);
+        case 8: result.set_item(8, arg8);
+        case 7: result.set_item(7, arg7);
+        case 6: result.set_item(6, arg6);
+        case 5: result.set_item(5, arg5);
+        case 4: result.set_item(4, arg4);
+        case 3: result.set_item(3, arg3);
+        case 2: result.set_item(2, arg2);
+        case 1: result.set_item(1, arg1);
+        case 0: result.set_item(0, arg0);
+    }
+
+    return result.reference().release();
+}
+
+    
+}  // namespace detail
+
 }

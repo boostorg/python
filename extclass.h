@@ -134,27 +134,25 @@ class class_registry
 };
 
 template <class T, class H>
-no_t* is_plain_aux(type<instance_value_holder<T, H> >);
+inline is_not_plain_t* is_plain_aux(type<instance_value_holder<T, H> >) { return 0; }
 
 template <class T, class H>
-string forward_python_type_name(python::type<instance_value_holder<T, H> >)
+inline is_not_plain_t* is_plain_aux(type<instance_ptr_holder<T, H> >) { return 0; }
+
+template <class T, class H>
+inline string get_python_type_name(python::type<instance_value_holder<T, H> >, is_not_plain_t*)
 { 
-    static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-    return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    return get_python_type_name(python::type<T>()); 
 }
 
 template <class T, class H>
-no_t* is_plain_aux(type<instance_ptr_holder<T, H> >);
-
-template <class T, class H>
-string forward_python_type_name(python::type<instance_ptr_holder<T, H> >)
+inline string get_python_type_name(python::type<instance_ptr_holder<T, H> >, is_not_plain_t*)
 { 
-    static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-    return python_type_name_selector<is_plain>::get(python::type<T>()); 
+    return get_python_type_name(python::type<T>()); 
 }
 
 template <class T>
-string python_type_name(type<T>)
+string get_python_type_name(type<T>, is_plain_t*)
 { 
     if(class_registry<T>::class_object() == 0)
     {

@@ -295,8 +295,13 @@ struct list::slice_proxy
 
 namespace detail
 {
+    typedef char is_not_plain_t[1];
+    typedef char is_plain_t[2];
+    
 #define BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(T, name) \
-    inline string python_type_name(python::type<T >) \
+    inline string get_python_type_name(python::type<T >, is_plain_t *) \
+        { return string(#name); } \
+    inline string get_python_type_name(python::type<T >, is_not_plain_t *) \
         { return string(#name); }
         
 #if 0
@@ -343,100 +348,90 @@ namespace detail
     BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(dictionary, dictionary);
     BOOST_PYTHON_OVERLOAD_TYPENAME_FUNCTION(string, string);
 
-    typedef char no_t[1];
-    typedef char yes_t[2];
-
-    yes_t* is_plain_aux(...);
+    inline is_plain_t* is_plain_aux(...) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<T *>);
+    inline is_not_plain_t* is_plain_aux(type<T *>) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<T const *>);
+    inline is_not_plain_t* is_plain_aux(type<T const *>) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<T &>);
+    inline is_not_plain_t* is_plain_aux(type<T &>) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<T const &>);
+    inline is_not_plain_t* is_plain_aux(type<T const &>) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<std::auto_ptr<T> >);
+    inline is_not_plain_t* is_plain_aux(type<std::auto_ptr<T> >) { return 0; }
 
     template <class T>
-    no_t* is_plain_aux(type<boost::shared_ptr<T> >);
+    inline is_not_plain_t* is_plain_aux(type<boost::shared_ptr<T> >) { return 0; }
     
     template <class T>
-    no_t* is_plain_aux(type<reference<T> >);
+    inline is_not_plain_t* is_plain_aux(type<reference<T> >) { return 0; }
     
-#define BOOST_PYTHON_IS_PLAIN(T) \
-    (sizeof(*python::detail::is_plain_aux(python::type<T>())) == \
-     sizeof(python::detail::yes_t))
-        
-    template <bool is_plain>
-    struct python_type_name_selector
+    template <class T>
+    inline string get_python_type_name(type<T> t)
     {
-        template <class T>
-        static string get(python::type<T> t)
-            { return python_type_name(t); }
-    };
+        return get_python_type_name(t, is_plain_aux(t));
+    }
     
     template <class T>
-    string forward_python_type_name(python::type<T&>)
+    inline string get_python_type_name(python::type<T&>, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
 
     template <class T>
-    string forward_python_type_name(python::type<const T&>)
+    inline string get_python_type_name(python::type<const T&>, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
 
     template <class T>
-    string forward_python_type_name(python::type<T*>)
+    inline string get_python_type_name(python::type<T*>, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
 
     template <class T>
-    string forward_python_type_name(python::type<const T*>)
+    inline string get_python_type_name(python::type<const T*>, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
       
     template <class T>
-    string forward_python_type_name(python::type<std::auto_ptr<T> >)
+    inline string get_python_type_name(python::type<std::auto_ptr<T> >, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
 
     template <class T>
-    string forward_python_type_name(python::type<boost::shared_ptr<T> >)
+    inline string get_python_type_name(python::type<boost::shared_ptr<T> >, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
     
     template <class T>
-    string forward_python_type_name(python::type<reference<T> >)
+    inline string get_python_type_name(python::type<reference<T> >, is_not_plain_t*)
     { 
-        static const bool is_plain = BOOST_PYTHON_IS_PLAIN(T);
-        return python_type_name_selector<is_plain>::get(python::type<T>()); 
+        return get_python_type_name(python::type<T>()); 
     }
     
-    template <>
-    struct python_type_name_selector<false>
-    {
-        template <class T>
-        static string get(python::type<T> t)
-          { return forward_python_type_name(t); }
-    };    
+    PyObject* function_signature_append(PyObject * sig, string type_name);
+    
+    PyObject* function_signature(string arg0,
+                                 string arg1 = string(""),
+                                 string arg2 = string(""),
+                                 string arg3 = string(""),
+                                 string arg4 = string(""),
+                                 string arg5 = string(""),
+                                 string arg6 = string(""),
+                                 string arg7 = string(""),
+                                 string arg8 = string(""),
+                                 string arg9 = string(""));
+   
 } // namespace detail
 
 } // namespace python

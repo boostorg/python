@@ -543,260 +543,225 @@ struct caller<void>
 namespace detail
 {
                      
-// create signature tuples
-inline
-PyObject* function_signature() {
-    tuple result(0);
-
-    return result.reference().release();
-}
-
-template <class A1>
-PyObject* function_signature(type<A1>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    tuple result(1);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2>
-PyObject* function_signature(type<A1>, type<A2>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    tuple result(2);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    tuple result(3);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    tuple result(4);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4, class A5>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>, type<A5>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    static const bool is_plain_A5 = BOOST_PYTHON_IS_PLAIN(A5);
-    tuple result(5);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-    result.set_item(4, python_type_name_selector<is_plain_A5>::get(type<A5>()));
-
-    return result.reference().release();
-}
-
-template <class A1, class A2, class A3, class A4, class A5, class A6>
-PyObject* function_signature(type<A1>, type<A2>, type<A3>, type<A4>, type<A5>, type<A6>) {
-    static const bool is_plain_A1 = BOOST_PYTHON_IS_PLAIN(A1);
-    static const bool is_plain_A2 = BOOST_PYTHON_IS_PLAIN(A2);
-    static const bool is_plain_A3 = BOOST_PYTHON_IS_PLAIN(A3);
-    static const bool is_plain_A4 = BOOST_PYTHON_IS_PLAIN(A4);
-    static const bool is_plain_A5 = BOOST_PYTHON_IS_PLAIN(A5);
-    static const bool is_plain_A6 = BOOST_PYTHON_IS_PLAIN(A6);
-    tuple result(6);
-    result.set_item(0, python_type_name_selector<is_plain_A1>::get(type<A1>()));
-    result.set_item(1, python_type_name_selector<is_plain_A2>::get(type<A2>()));
-    result.set_item(2, python_type_name_selector<is_plain_A3>::get(type<A3>()));
-    result.set_item(3, python_type_name_selector<is_plain_A4>::get(type<A4>()));
-    result.set_item(4, python_type_name_selector<is_plain_A5>::get(type<A5>()));
-    result.set_item(5, python_type_name_selector<is_plain_A6>::get(type<A6>()));
-
-    return result.reference().release();
-}
-
 
 // member functions
 template <class R, class T>
-inline PyObject* function_signature(R (T::*pmf)()) {
-    return function_signature(
-        python::type<T>());
+PyObject* function_signature(R (T::*pmf)()) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+
+    return result;
 }
 
 template <class R, class T, class A1>
-inline PyObject* function_signature(R (T::*pmf)(A1)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>());
+PyObject* function_signature(R (T::*pmf)(A1)) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>());
+PyObject* function_signature(R (T::*pmf)(A1, A2)) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3)) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4)) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5)) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5)) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+    result = function_signature_append(result, get_python_type_name(type<A5>()));
+
+    return result;
 }
 
 
 // const member functions
 template <class R, class T>
-inline PyObject* function_signature(R (T::*pmf)() const) {
-    return function_signature(
-        python::type<T>());
+PyObject* function_signature(R (T::*pmf)() const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+
+    return result;
 }
 
 template <class R, class T, class A1>
-inline PyObject* function_signature(R (T::*pmf)(A1) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>());
+PyObject* function_signature(R (T::*pmf)(A1) const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>());
+PyObject* function_signature(R (T::*pmf)(A1, A2) const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3) const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4) const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+
+    return result;
 }
 
 template <class R, class T, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5) const) {
-    return function_signature(
-        python::type<T>(),
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
+PyObject* function_signature(R (T::*pmf)(A1, A2, A3, A4, A5) const) {
+    tuple s(1);
+    s.set_item(0, get_python_type_name(type<T>()));
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+    result = function_signature_append(result, get_python_type_name(type<A5>()));
+
+    return result;
 }
 
 
 // free functions
 template <class R>
-inline PyObject* function_signature(R (*f)()) {
-    return function_signature();
+PyObject* function_signature(R (*f)()) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+
+    return result;
 }
 
 template <class R, class A1>
-inline PyObject* function_signature(R (*f)(A1)) {
-    return function_signature(
-        python::type<A1>());
+PyObject* function_signature(R (*f)(A1)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+
+    return result;
 }
 
 template <class R, class A1, class A2>
-inline PyObject* function_signature(R (*f)(A1, A2)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>());
+PyObject* function_signature(R (*f)(A1, A2)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+
+    return result;
 }
 
 template <class R, class A1, class A2, class A3>
-inline PyObject* function_signature(R (*f)(A1, A2, A3)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>());
+PyObject* function_signature(R (*f)(A1, A2, A3)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+
+    return result;
 }
 
 template <class R, class A1, class A2, class A3, class A4>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>());
+PyObject* function_signature(R (*f)(A1, A2, A3, A4)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+
+    return result;
 }
 
 template <class R, class A1, class A2, class A3, class A4, class A5>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>());
+PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+    result = function_signature_append(result, get_python_type_name(type<A5>()));
+
+    return result;
 }
 
 template <class R, class A1, class A2, class A3, class A4, class A5, class A6>
-inline PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5, A6)) {
-    return function_signature(
-        python::type<A1>(),
-        python::type<A2>(),
-        python::type<A3>(),
-        python::type<A4>(),
-        python::type<A5>(),
-        python::type<A6>());
+PyObject* function_signature(R (*f)(A1, A2, A3, A4, A5, A6)) {
+    tuple s(0);
+    PyObject * result = s.reference().release();
+    result = function_signature_append(result, get_python_type_name(type<A1>()));
+    result = function_signature_append(result, get_python_type_name(type<A2>()));
+    result = function_signature_append(result, get_python_type_name(type<A3>()));
+    result = function_signature_append(result, get_python_type_name(type<A4>()));
+    result = function_signature_append(result, get_python_type_name(type<A5>()));
+    result = function_signature_append(result, get_python_type_name(type<A6>()));
+
+    return result;
 }
 
 } // namespace detail
