@@ -31,8 +31,7 @@ class module : public detail::module_base
     template <class T, class Bases, class HolderGenerator>
     module& add(class_<T,Bases,HolderGenerator> const& c)
     {
-        Py_INCREF(c.object());
-        this->add_type(c.object());
+        this->generic_add_class(c.object());
         return *this;
     }
     

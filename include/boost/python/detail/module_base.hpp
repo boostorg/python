@@ -26,6 +26,9 @@ class BOOST_PYTHON_DECL module_base
     // Return a reference to the Python module object being built
     inline ref object() const;
 
+ protected:
+    void generic_add_class(ref class_obj);
+
  private:
     ref m_module;
     static PyMethodDef initial_methods[1];

@@ -45,6 +45,17 @@ void module_base::add_type(ref x)
     add((PyTypeObject*)x.release());
 }
 
+void module_base::generic_add_class(ref class_obj)
+{
+    Py_INCREF(class_obj.get());
+    this->add_type(class_obj);
+    ref module_name(PyObject_GetAttrString(m_module.get(),
+      const_cast<char*>("__name__")));
+    int status = PyObject_SetAttrString(class_obj.get(),
+      const_cast<char*>("__module__"), module_name.get());
+    if (status == -1) throw_error_already_set();
+}
+
 PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };
 
 }}} // namespace boost::python::detail
