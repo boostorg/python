@@ -1,0 +1,39 @@
+subproject libs/python ;
+
+# bring in the rules for python
+SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
+include <module@>python.jam ;
+
+PYTHON_PROPERTIES 
+  += <metrowerks><*><cxxflags>"-inline deferred" 
+  <cxx><*><include>$(BOOST_ROOT)/boost/compatibility/cpp_c_headers
+    <define>BOOST_PYTHON_DYNAMIC_LIB
+  ;
+
+
+dll bpl
+  : 
+  src/converter/body.cpp
+  src/converter/handle.cpp
+  src/converter/registry.cpp
+  src/converter/wrapper.cpp
+  src/converter/unwrap.cpp
+  src/converter/unwrapper.cpp
+  src/converter/type_id.cpp
+  src/object/class.cpp
+  src/object/function.cpp
+  src/errors.cpp
+  :
+  $(PYTHON_PROPERTIES)
+    <define>BOOST_PYTHON_SOURCE
+  ;
+
+extension m1 : test/m1.cpp <lib>bpl       # <define>BOOST_PYTHON_TRACE
+    : 
+    : debug-python ;
+
+extension m2 : test/m2.cpp <lib>bpl       # <define>BOOST_PYTHON_TRACE
+      : 
+      : debug-python ;
+
+boost-python-runtest try : test/newtest.py <lib>m1 <lib>m2 : : debug-python ;

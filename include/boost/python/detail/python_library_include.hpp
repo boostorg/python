@@ -1,3 +1,4 @@
+#error obsolete
 /*
  *
  * Copyright (c) 1998-2000

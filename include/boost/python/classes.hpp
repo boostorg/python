@@ -20,7 +20,7 @@
 namespace boost { namespace python {
 
 // A simple type which acts something like a built-in Python class obj.
-class instance
+class BOOST_PYTHON_DECL instance
     : public boost::python::detail::python_object
 {
  public:
@@ -105,7 +105,7 @@ class instance
 template <class T> class meta_class;
 
 namespace detail {
-  class class_base : public type_object_base
+  class BOOST_PYTHON_DECL class_base : public type_object_base
   {
    public:
       class_base(PyTypeObject* meta_class_obj, string name, tuple bases, const dictionary& name_space);
@@ -344,7 +344,7 @@ int class_t<T>::instance_mapping_ass_subscript(PyObject* obj, PyObject* key, PyO
     return 0;
 }
 
-void adjust_slice_indices(PyObject* obj, int& start, int& finish);
+void BOOST_PYTHON_DECL adjust_slice_indices(PyObject* obj, int& start, int& finish);
 
 template <class T>
 PyObject* class_t<T>::instance_sequence_slice(PyObject* obj, int start, int finish) const

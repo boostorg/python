@@ -31,7 +31,7 @@
 
 namespace boost { namespace python {
 
-tuple standard_coerce(ref l, ref r);
+BOOST_PYTHON_DECL tuple standard_coerce(ref l, ref r);
 
 namespace detail {
   

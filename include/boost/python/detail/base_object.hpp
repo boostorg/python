@@ -13,7 +13,6 @@
 # define BASE_OBJECT_DWA051600_H_
 
 # include <boost/python/detail/config.hpp>
-# include <boost/python/detail/signatures.hpp> // really just for type<>
 # include <boost/python/detail/wrap_python.hpp>
 # include <cstring>
 
@@ -45,10 +44,7 @@ template <class PythonType>
 base_object<PythonType>::base_object(PyTypeObject* type_obj)
 {
     base_python_type* bp = this;
-#if !defined(_MSC_VER) || defined(__STLPORT)
-    std::
-#endif
-        memset(bp, 0, sizeof(base_python_type));
+    BOOST_CSTD_::memset(bp, 0, sizeof(base_python_type));
     Py_INCREF(type_obj);
     PyObject_INIT(bp, type_obj);
 }

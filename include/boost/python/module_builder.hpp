@@ -16,29 +16,17 @@
 
 namespace boost { namespace python {
 
-class module_builder
+class BOOST_PYTHON_DECL module_builder_base
 {
  public:
     // Create a module. REQUIRES: only one module_builder is created per module.
-    module_builder(const char* name);
-    ~module_builder();
+    module_builder_base(const char* name);
+    ~module_builder_base();
 
     // Add elements to the module
     void add(detail::function* x, const char* name);
     void add(PyTypeObject* x, const char* name = 0);
     void add(ref x, const char*name);
-
-    template <class Fn>
-    void def_raw(Fn fn, const char* name)
-    {
-        add(detail::new_raw_arguments_function(fn), name);
-    }
-    
-    template <class Fn>
-    void def(Fn fn, const char* name)
-    {
-        add(detail::new_wrapped_function(fn), name);
-    }
 
     // Return true iff a module is currently being built.
     static bool initializing();
@@ -55,10 +43,29 @@ class module_builder
     static PyMethodDef initial_methods[1];
 };
 
+class module_builder : public module_builder_base
+{
+ public:
+    module_builder(const char* name)
+        : module_builder_base(name) {}
+
+    template <class Fn>
+    void def_raw(Fn fn, const char* name)
+    {
+        add(detail::new_raw_arguments_function(fn), name);
+    }
+    
+    template <class Fn>
+    void def(Fn fn, const char* name)
+    {
+        add(detail::new_wrapped_function(fn), name);
+    }
+};
+
 //
 // inline implementations
 //
-inline PyObject* module_builder::module() const
+inline PyObject* module_builder_base::module() const
 {
     return m_module;
 }

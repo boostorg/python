@@ -91,7 +91,7 @@ BOOST_PYTHON_MODULE_INIT(simple_vector)
       vector_double(this_module, "vector_double");
 
     vector_double.def(python::constructor<>());
-    vector_double.def(python::constructor<const int>());
+    vector_double.def(python::constructor<int>());
     vector_double.def(python::constructor<python::tuple>());
     vector_double.def(&std::vector<double>::size, "__len__");
     vector_double.def(getitem, "__getitem__");

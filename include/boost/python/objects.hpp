@@ -17,7 +17,7 @@
 
 namespace boost { namespace python {
 
-class object
+class BOOST_PYTHON_DECL object
 {
  public:
     explicit object(ref p);
@@ -32,15 +32,36 @@ class object
     ref m_p;
 };
 
-class tuple : public object
+class tuple;
+
+class BOOST_PYTHON_DECL tuple_base : public object
 {
  public:
-    explicit tuple(std::size_t n = 0);
-    explicit tuple(ref p);
+    explicit tuple_base(std::size_t n = 0);
+    explicit tuple_base(ref p);
+
+    static PyTypeObject* type_obj();
+    static bool accepts(ref p);
+    std::size_t size() const;
+    ref operator[](std::size_t pos) const;
+
+    void set_item(std::size_t pos, const ref& rhs);
+    
+    tuple slice(int low, int high) const;
+
+    friend BOOST_PYTHON_DECL tuple operator+(const tuple&, const tuple&);
+    friend BOOST_PYTHON_DECL tuple& operator+=(tuple&, const tuple&);
+};
+
+class  tuple : public tuple_base
+{
+ public:
+    explicit tuple(std::size_t n = 0) : tuple_base(n) {}
+    explicit tuple(ref p) : tuple_base(p) {}
 
     template <class First, class Second>
     tuple(const std::pair<First,Second>& x)
-        : object(ref(PyTuple_New(2)))
+        : tuple_base(ref(PyTuple_New(2)))
     {
         set_item(0, x.first);
         set_item(1, x.second);
@@ -48,7 +69,7 @@ class tuple : public object
     
     template <class First, class Second>
     tuple(const First& first, const Second& second)
-        : object(ref(PyTuple_New(2)))
+        : tuple_base(ref(PyTuple_New(2)))
     {
         set_item(0, first);
         set_item(1, second);
@@ -56,7 +77,7 @@ class tuple : public object
     
     template <class First, class Second, class Third>
     tuple(const First& first, const Second& second, const Third& third)
-        : object(ref(PyTuple_New(3)))
+        : tuple_base(ref(PyTuple_New(3)))
     {
         set_item(0, first);
         set_item(1, second);
@@ -65,7 +86,7 @@ class tuple : public object
     
     template <class First, class Second, class Third, class Fourth>
     tuple(const First& first, const Second& second, const Third& third, const Fourth& fourth)
-        : object(ref(PyTuple_New(4)))
+        : tuple_base(ref(PyTuple_New(4)))
     {
         set_item(0, first);
         set_item(1, second);
@@ -73,32 +94,31 @@ class tuple : public object
         set_item(3, fourth);
     }
     
-    static PyTypeObject* type_obj();
-    static bool accepts(ref p);
-    std::size_t size() const;
-    ref operator[](std::size_t pos) const;
-
     template <class T>
     void set_item(std::size_t pos, const T& rhs)
     {
         this->set_item(pos, make_ref(rhs));
     }
-    
-    void set_item(std::size_t pos, const ref& rhs);
-    
-    tuple slice(int low, int high) const;
 
-    friend tuple operator+(const tuple&, const tuple&);
-    tuple& operator+=(const tuple& rhs);
+    void set_item(std::size_t pos, const ref& rhs)
+    {
+        tuple_base::set_item(pos, rhs);
+    }
 };
 
-class list : public object
+class list;
+
+struct BOOST_PYTHON_DECL list_proxy;
+struct BOOST_PYTHON_DECL list_slice_proxy;
+
+class BOOST_PYTHON_DECL list_base : public object
 {
-    struct proxy;
-    struct slice_proxy;
+ protected:
+    typedef list_proxy proxy;
+    typedef list_slice_proxy slice_proxy;
  public:
-    explicit list(ref p);
-    explicit list(std::size_t sz = 0);
+    explicit list_base(ref p);
+    explicit list_base(std::size_t sz = 0);
     static PyTypeObject* type_obj();
     static bool accepts(ref p);
     std::size_t size() const;
@@ -106,26 +126,14 @@ class list : public object
     proxy operator[](std::size_t pos);
     ref get_item(std::size_t pos) const;
 
-    template <class T>
-    void set_item(std::size_t pos, const T& x)
-        { this->set_item(pos, make_ref(x)); }
     void set_item(std::size_t pos, const ref& );
     
 //    void set_item(std::size_t pos, const object& );
 
-    template <class T>
-    void insert(std::size_t index, const T& x)
-        { this->insert(index, make_ref(x)); }
     void insert(std::size_t index, const ref& item);
 
-    template <class T>
-    void push_back(const T& item)
-        { this->push_back(make_ref(item)); }
     void push_back(const ref& item);
     
-    template <class T>
-    void append(const T& item)
-        { this->append(make_ref(item)); }
     void append(const ref& item);
     
     list slice(int low, int high) const;
@@ -135,7 +143,31 @@ class list : public object
     tuple as_tuple() const;
 };
 
-class string
+class list : public list_base
+{
+ public:    
+    explicit list(ref p) : list_base(p) {}
+    explicit list(std::size_t sz = 0) : list_base(sz) {}
+    template <class T>
+    void set_item(std::size_t pos, const T& x)
+        { this->set_item(pos, make_ref(x)); }
+    template <class T>
+    void insert(std::size_t index, const T& x)
+        { this->insert(index, make_ref(x)); }
+    template <class T>
+    void push_back(const T& item)
+        { this->push_back(make_ref(item)); }
+    template <class T>
+    void append(const T& item)
+        { this->append(make_ref(item)); }
+    
+    void set_item(std::size_t pos, const ref& x) { list_base::set_item(pos, x); }
+    void insert(std::size_t index, const ref& item) { list_base::insert(index, item); }
+    void push_back(const ref& item) { list_base::push_back(item); }
+    void append(const ref& item) { list_base::append(item); }
+};
+
+class BOOST_PYTHON_DECL string
     : public object, public boost::multipliable2<string, unsigned int>
 {
  public:
@@ -175,48 +207,31 @@ class string
     friend string operator%(const string& format, const tuple& args);
 };
 
-class dictionary : public object
+class dictionary;
+
+struct BOOST_PYTHON_DECL dictionary_proxy;
+
+class BOOST_PYTHON_DECL dictionary_base : public object
 {
- private:
-    struct proxy;
+ protected:
+    typedef dictionary_proxy proxy;
     
  public:
-    explicit dictionary(ref p);
-    dictionary();
+    explicit dictionary_base(ref p);
+    dictionary_base();
     void clear();
 
     static PyTypeObject* type_obj();
     static bool accepts(ref p);
     
  public:
-    template <class Key>
-    proxy operator[](const Key& key)
-        { return this->operator[](make_ref(key)); }
     proxy operator[](ref key);
-    
-    template <class Key>
-    ref operator[](const Key& key) const
-        { return this->operator[](make_ref(key)); }
     ref operator[](ref key) const;
-
-    template <class Key>
-    ref get_item(const Key& key) const
-        { return this->get_item(make_ref(key)); }
     ref get_item(const ref& key) const;
-    
-    template <class Key, class Default>
-    ref get_item(const Key& key, const Default& default_) const
-        { return this->get_item(make_ref(key), make_ref(default_)); }
     ref get_item(const ref& key, const ref& default_) const;
     
-    template <class Key, class Value>
-    void set_item(const Key& key, const Value& value)
-        { this->set_item(make_ref(key), make_ref(value)); }
     void set_item(const ref& key, const ref& value);
 
-    template <class Key>
-    void erase(const Key& key)
-        { this->erase(make_ref(key)); }
     void erase(ref key);
 
 //    proxy operator[](const object& key);
@@ -235,7 +250,7 @@ class dictionary : public object
     // TODO: iterator support
 };
 
-struct dictionary::proxy
+struct BOOST_PYTHON_DECL dictionary_proxy
 {
     template <class T>
     const ref& operator=(const T& rhs)
@@ -244,19 +259,63 @@ struct dictionary::proxy
 
     operator ref() const;
  private:
-    friend class dictionary;
-    proxy(const ref& dict, const ref& key);
+    friend class dictionary_base;
+    dictionary_proxy(const ref& dict, const ref& key);
 
     // This is needed to work around the very strange MSVC error report that the
     // return type of the built-in operator= differs from that of the ones
     // defined above. Couldn't hurt to make these un-assignable anyway, though.
-    const ref& operator=(const proxy&); // Not actually implemented
+    const ref& operator=(const dictionary_proxy&); // Not actually implemented
  private:
     ref m_dict;
     ref m_key;
 };
 
-struct list::proxy
+class dictionary : public dictionary_base
+{
+    typedef dictionary_proxy proxy;
+ public:
+    explicit dictionary(ref p) : dictionary_base(p) {}
+    dictionary() : dictionary_base() {}
+    
+    template <class Key>
+    proxy operator[](const Key& key)
+        { return this->operator[](make_ref(key)); }
+    proxy operator[](ref key)
+    { return dictionary_base::operator[](key); }
+    
+    template <class Key>
+    ref operator[](const Key& key) const
+        { return this->operator[](make_ref(key)); }
+    ref operator[](ref key) const
+    { return dictionary_base::operator[](key); }
+
+    template <class Key>
+    ref get_item(const Key& key) const
+        { return this->get_item(make_ref(key)); }
+    ref get_item(const ref& key) const
+    { return dictionary_base::get_item(key); }
+    
+    template <class Key, class Default>
+    ref get_item(const Key& key, const Default& default_) const
+        { return this->get_item(make_ref(key), make_ref(default_)); }
+    ref get_item(const ref& key, const ref& default_) const
+    { return dictionary_base::get_item(key, default_); }
+    
+    template <class Key, class Value>
+    void set_item(const Key& key, const Value& value)
+        { this->set_item(make_ref(key), make_ref(value)); }
+    void set_item(const ref& key, const ref& value)
+    { dictionary_base::set_item(key, value); }
+
+    template <class Key>
+    void erase(const Key& key)
+        { this->erase(make_ref(key)); }
+    void erase(ref key)
+    { dictionary_base::erase(key); }
+};
+
+struct BOOST_PYTHON_DECL list_proxy
 {
     template <class T>
     const ref& operator=(const T& rhs)
@@ -266,19 +325,19 @@ struct list::proxy
     operator ref() const;
     
  private:
-    friend class list;
-    proxy(const ref& list, std::size_t index);
+    friend class list_base;
+    list_proxy(const ref& list, std::size_t index);
     
     // This is needed to work around the very strange MSVC error report that the
     // return type of the built-in operator= differs from that of the ones
     // defined above. Couldn't hurt to make these un-assignable anyway, though.
-    const ref& operator=(const proxy&); // Not actually implemented
+    const ref& operator=(const list_proxy&); // Not actually implemented
  private:
     list m_list;
     std::size_t m_index;
 };
 
-struct list::slice_proxy
+struct BOOST_PYTHON_DECL list_slice_proxy
 {
     const list& operator=(const list& rhs);
     operator ref() const;
@@ -286,8 +345,8 @@ struct list::slice_proxy
     std::size_t size() const;
     ref operator[](std::size_t pos) const;
  private:
-    friend class list;
-    slice_proxy(const ref& list, int low, int high);
+    friend class list_base;
+    list_slice_proxy(const ref& list, int low, int high);
  private:
     ref m_list;
     int m_low, m_high;
@@ -297,32 +356,32 @@ struct list::slice_proxy
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-PyObject* to_python(const boost::python::tuple&);
-boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python::tuple>);
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::tuple&);
+BOOST_PYTHON_DECL boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python::tuple>);
 
 inline boost::python::tuple from_python(PyObject* p, boost::python::type<const boost::python::tuple&>)
 {
     return from_python(p, boost::python::type<boost::python::tuple>());
 }
 
-PyObject* to_python(const boost::python::list&);
-boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list>);
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::list&);
+BOOST_PYTHON_DECL boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list>);
 
 inline boost::python::list from_python(PyObject* p, boost::python::type<const boost::python::list&>)
 {
     return from_python(p, boost::python::type<boost::python::list>());
 }
 
-PyObject* to_python(const boost::python::string&);
-boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string>);
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::string&);
+BOOST_PYTHON_DECL boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string>);
 
 inline boost::python::string from_python(PyObject* p, boost::python::type<const boost::python::string&>)
 {
     return from_python(p, boost::python::type<boost::python::string>());
 }
 
-PyObject* to_python(const boost::python::dictionary&);
-boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary>);
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::dictionary&);
+BOOST_PYTHON_DECL boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary>);
 
 inline boost::python::dictionary from_python(PyObject* p, boost::python::type<const boost::python::dictionary&>)
 {

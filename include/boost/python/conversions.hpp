@@ -122,61 +122,68 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 // Converters
 //
 PyObject* to_python(long);
-long from_python(PyObject* p, boost::python::type<long>);
+BOOST_PYTHON_DECL long from_python(PyObject* p, boost::python::type<long>);
 long from_python(PyObject* p, boost::python::type<const long&>);
 
-PyObject* to_python(unsigned long);
-unsigned long from_python(PyObject* p, boost::python::type<unsigned long>);
+BOOST_PYTHON_DECL PyObject* to_python(unsigned long);
+BOOST_PYTHON_DECL unsigned long from_python(PyObject* p, boost::python::type<unsigned long>);
 unsigned long from_python(PyObject* p, boost::python::type<const unsigned long&>);
 
 PyObject* to_python(int);
-int from_python(PyObject*, boost::python::type<int>);
+BOOST_PYTHON_DECL int from_python(PyObject*, boost::python::type<int>);
 int from_python(PyObject*, boost::python::type<const int&>);
     
-PyObject* to_python(unsigned int);
-unsigned int from_python(PyObject*, boost::python::type<unsigned int>);
+BOOST_PYTHON_DECL PyObject* to_python(unsigned int);
+BOOST_PYTHON_DECL unsigned int from_python(PyObject*, boost::python::type<unsigned int>);
 unsigned int from_python(PyObject*, boost::python::type<const unsigned int&>);
 
 PyObject* to_python(short);
-short from_python(PyObject*, boost::python::type<short>);
+BOOST_PYTHON_DECL short from_python(PyObject*, boost::python::type<short>);
 short from_python(PyObject*, boost::python::type<const short&>);
     
-PyObject* to_python(unsigned short);
-unsigned short from_python(PyObject*, boost::python::type<unsigned short>);
+BOOST_PYTHON_DECL PyObject* to_python(unsigned short);
+BOOST_PYTHON_DECL unsigned short from_python(PyObject*, boost::python::type<unsigned short>);
 unsigned short from_python(PyObject*, boost::python::type<const unsigned short&>);
 
-PyObject* to_python(char);
-char from_python(PyObject*, boost::python::type<char>);
+BOOST_PYTHON_DECL PyObject* to_python(char);
+BOOST_PYTHON_DECL char from_python(PyObject*, boost::python::type<char>);
 char from_python(PyObject*, boost::python::type<const char&>);
 
-PyObject* to_python(signed char);
-signed char from_python(PyObject*, boost::python::type<signed char>);
+BOOST_PYTHON_DECL PyObject* to_python(signed char);
+BOOST_PYTHON_DECL signed char from_python(PyObject*, boost::python::type<signed char>);
 signed char from_python(PyObject*, boost::python::type<const signed char&>);
 
-PyObject* to_python(unsigned char);
-unsigned char from_python(PyObject*, boost::python::type<unsigned char>);
+BOOST_PYTHON_DECL PyObject* to_python(unsigned char);
+BOOST_PYTHON_DECL unsigned char from_python(PyObject*, boost::python::type<unsigned char>);
 unsigned char from_python(PyObject*, boost::python::type<const unsigned char&>);
 
+# ifndef BOOST_MSVC6_OR_EARLIER
 PyObject* to_python(float);
 float from_python(PyObject*, boost::python::type<float>);
-float from_python(PyObject*, boost::python::type<const float&>);
-    
 PyObject* to_python(double);
 double from_python(PyObject*, boost::python::type<double>);
+# else
+BOOST_PYTHON_DECL PyObject* to_python(float);
+BOOST_PYTHON_DECL float from_python(PyObject*, boost::python::type<float>);
+BOOST_PYTHON_DECL PyObject* to_python(double);
+BOOST_PYTHON_DECL double from_python(PyObject*, boost::python::type<double>);
+# endif 
+float from_python(PyObject*, boost::python::type<const float&>);
+    
 double from_python(PyObject*, boost::python::type<const double&>);
     
 PyObject* to_python(bool);
-bool from_python(PyObject*, boost::python::type<bool>);
+BOOST_PYTHON_DECL bool from_python(PyObject*, boost::python::type<bool>);
 bool from_python(PyObject*, boost::python::type<const bool&>);
 
-PyObject* to_python(void);
-void from_python(PyObject*, boost::python::type<void>);
+BOOST_PYTHON_DECL PyObject* to_python(void);
+BOOST_PYTHON_DECL void from_python(PyObject*, boost::python::type<void>);
 
 PyObject* to_python(const char* s);
-const char* from_python(PyObject*, boost::python::type<const char*>);
+BOOST_PYTHON_DECL const char* from_python(PyObject*, boost::python::type<const char*>);
 
-PyObject* to_python(const std::string& s);
-std::string from_python(PyObject*, boost::python::type<std::string>);
+BOOST_PYTHON_DECL PyObject* to_python(const std::string& s);
+BOOST_PYTHON_DECL std::string from_python(PyObject*, boost::python::type<std::string>);
 std::string from_python(PyObject*, boost::python::type<const std::string&>);
 
 inline PyObject* to_python(const std::complex<float>& x)

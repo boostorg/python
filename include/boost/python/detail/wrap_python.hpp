@@ -34,36 +34,36 @@
 // Some things we need in order to get Python.h to work with compilers other
 // than MSVC on Win32
 //
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__CYGWIN__)
 # if defined(__GNUC__) && defined(__CYGWIN__)
 #  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
 typedef int pid_t;
 #   define WORD_BIT 32
 #   define hypot _hypot
 #   include <stdio.h>
+#   if PY_MAJOR_VERSION < 2
+#    define HAVE_CLOCK
+#    define HAVE_STRFTIME
+#    define HAVE_STRERROR
+#   endif
+#   define NT_THREADS
+#   define WITH_THREAD
+#   ifndef NETSCAPE_PI
+#    define USE_SOCKET
+#   endif
+
+#   ifdef USE_DL_IMPORT
+#    define DL_IMPORT(RTYPE) __declspec(dllimport) RTYPE
+#   endif
+
+#   ifdef USE_DL_EXPORT
+#    define DL_IMPORT(RTYPE) __declspec(dllexport) RTYPE
+#    define DL_EXPORT(RTYPE) __declspec(dllexport) RTYPE
+#   endif
+
+#   define HAVE_LONG_LONG 1
+#   define LONG_LONG long long
 #  endif 
-#  if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
-#   define HAVE_CLOCK
-#   define HAVE_STRFTIME
-#   define HAVE_STRERROR
-#  endif
-#  define NT_THREADS
-#  define WITH_THREAD
-#  ifndef NETSCAPE_PI
-#   define USE_SOCKET
-#  endif
-
-#  ifdef USE_DL_IMPORT
-#   define DL_IMPORT(RTYPE) __declspec(dllimport) RTYPE
-#  endif
-
-#  ifdef USE_DL_EXPORT
-#   define DL_IMPORT(RTYPE) __declspec(dllexport) RTYPE
-#   define DL_EXPORT(RTYPE) __declspec(dllexport) RTYPE
-#  endif
-
-#  define HAVE_LONG_LONG 1
-#  define LONG_LONG long long
 
 # elif defined(__MWERKS__)
 

@@ -61,6 +61,8 @@ subproject libs/python/build ;
 SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
 include <module@>python.jam ;
 
+local PYTHON_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_DYNAMIC_LIB ;
+
 #######################
 local rule bpl-test ( test-name : sources + )
 {
@@ -75,21 +77,27 @@ local rule bpl-test ( test-name : sources + )
 
 # Base names of the source files for libboost_python
 local CPP_SOURCES =
-    types classes conversions extension_class functions 
-    init_function module_builder objects  cross_module ;
+  types classes conversions extension_class functions 
+  init_function module_builder objects cross_module errors
+  ;
 
-lib libboost_python : ../src/$(CPP_SOURCES).cpp
+lib libboost_python_static : ../src/$(CPP_SOURCES).cpp
     # requirements
     : $(BOOST_PYTHON_INCLUDES)
     <shared-linkable>true
+      <define>BOOST_PYTHON_STATIC_LIB=1
     $(PYTHON_PROPERTIES) ;
 
-dll libboost_python$(SUFDLL[1]) : ../src/$(CPP_SOURCES).cpp
+dll libboost_python
+  # $(SUFDLL[1])
+    : ../src/$(CPP_SOURCES).cpp
 	# requirements
-	: $(BOOST_PYTHON_INCLUDES)
+      : $(BOOST_PYTHON_INCLUDES)
 	<shared-linkable>true
-	<define>BOOST_RE_BUILD_DLL=1
-	$(PYTHON_PROPERTIES) ;
+        <runtime-link>dynamic
+        <define>BOOST_PYTHON_HAS_DLL_RUNTIME=1
+	$(PYTHON_PROPERTIES)
+          ;
 
 ############# comprehensive module and test ###########
 bpl-test boost_python_test

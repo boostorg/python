@@ -12,6 +12,7 @@
 #define BOOST_PYTHON_SOURCE
 
 #include <boost/python/detail/extension_class.hpp>
+#include <boost/python/detail/call_object.hpp>
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
 #include <cstring>
@@ -52,7 +53,7 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python { 
 
-tuple standard_coerce(ref l, ref r)
+BOOST_PYTHON_DECL tuple standard_coerce(ref l, ref r)
 {
     // Introduced sequence points for exception-safety.
     ref first(detail::operator_dispatcher::create(l, l));
@@ -487,21 +488,15 @@ void operator_dispatcher_dealloc(PyObject* self)
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
-    PyObject* new_r = handle_exception(
-        bind(operator_dispatcher::create,
-                    ref(*r, ref::increment_count),
-                    ref()));
-    if (new_r)
-    {
-        *r = new_r;
-        return 0;
-    }
-    else
-    {
-        return -1;
-    }
-}
 
+    return handle_exception(
+        bind_return(
+            *r
+            , bind(operator_dispatcher::create,
+                   ref(*r, ref::increment_count),
+                   ref())))
+        ? -1 : 0;
+}
 
 #define PY_DEFINE_OPERATOR(id, symbol) \
     PyObject* operator_dispatcher_call_##id(PyObject* left, PyObject* right)                   \

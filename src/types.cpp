@@ -8,6 +8,7 @@
 
 #define BOOST_PYTHON_SOURCE
 
+#include <boost/python/detail/call_object.hpp>
 #include <boost/python/detail/types.hpp>
 #include <boost/python/reference.hpp> // for handle_exception()
 #include <boost/python/conversions.hpp>
@@ -25,16 +26,17 @@
 
 namespace boost { namespace python {
 
-namespace {
-
+namespace
+{
   using detail::type_object_base;
+  using detail::call_object;
+
 
   // Define a family of forwarding functions that can be called from a
   // PyTypeObject's slots. These functions dispatch through a (virtual) member
   // function pointer in the type_object_base, and handle exceptions in a
   // uniform way, preventing us from having to rewrite the dispatching code over
   // and over.
-
 
   // Given a function object f with signature
   //
@@ -43,88 +45,24 @@ namespace {
   // calls f inside of handle_exception, and returns the result. If an exception
   // is thrown by f, returns 0.
   template <class F>
-  PyObject* obj_call(PyObject* obj, F const& f)
+  PyObject* obj_call(PyObject* obj, F f)
   {
-      return handle_exception(
-          boost::bind<PyObject*>(f, static_cast<type_object_base*>(obj->ob_type), obj));
+      PyObject* result;
+      return call_object(result, obj, f) ? 0 : result;
   }
 
-
-  // int_converter<T>/value_holder<T>
-  //
-  // A simple function object which converts its argument to a PyObject*. We
-  // need this because handle_exception needs to return a PyObject*, even if the
-  // function being called is supposed to return int. It has two parts...
-
-  // holds the value actually returned by the underlying function
-  template <class T>
-  struct value_holder : PyObject
-  {
-      value_holder() : is_set(false), value(-1) {}
-
-      // Tricky constructor allows us to grab the result even if rhs == 0.
-      explicit value_holder(value_holder const* rhs)
-          : is_set(rhs ? rhs->is_set : false), value(rhs ? rhs->value : -1) {}
-
-      // true if the function object was ever called (false if an exception occurred)
-      bool is_set;
-
-      // The returned value
-      T value;
-  };
-
-  // The function object
-  template <class R>
-  struct int_converter
-  {
-      typedef PyObject* result_type;
-      
-      PyObject* operator()(R const& x)
-      {
-          m_holder.is_set = true;
-          m_holder.value = x;
-          return &m_holder; // returns
-      }
-
-      value_holder<R> m_holder;
-  };
-
-  // Call the given int-returning function object inside of handle_exception,
-  // returning a value_holder. F is a function object with "signature"
+  // Call the given integer-returning function object inside of
+  // handle_exception, returning a value_holder. F is a function
+  // object with "signature"
   //
   //     R F(PyTypeObject*, PyObject*)
   //
   // where R is an integer type.
   template <class R, class F>
-  value_holder<R> int_call_holder(PyObject* obj, F f)
+  R int_call(PyObject* obj, F f, R* = 0)
   {
-      return value_holder<R>(
-          
-          // The int_converter object containing the value_holder is valid
-          // through the life of the full-expression, so we can construct from
-          // the pointer
-          static_cast<value_holder<R>*>(
-              handle_exception(
-
-                  boost::bind<PyObject*>(
-                      // Add an int_converter back-end to f
-                      int_converter<R>()
-                      // Bind the object's type and the object itself into f
-                      , boost::bind<R>(f, static_cast<type_object_base*>(obj->ob_type), obj)
-                      )
-                  
-                  )
-              )
-          );
-  }
-
-  // Just like int_call_holder (above), but returns the integer directly. If F
-  // throws an exception, returns -1
-  template <class R, class F>
-  R int_call(PyObject* obj, F f)
-  {
-      value_holder<R> const v(int_call_holder<R>(obj, f));
-      return v.value;
+      R result;
+      return call_object(result, obj, f) ? -1 : result;
   }
 
   // Implemented in terms of obj_call, above
@@ -171,26 +109,17 @@ namespace {
 
   int call_length_function(PyObject* obj, int (type_object_base::*f)(PyObject*) const)
   {
-      value_holder<int> const r(int_call_holder<int>(obj, bind(f, _1, _2)));
-      
-      if (!r.is_set)
-      {
+      int result;
+      if (call_object(result, obj, bind(f, _1, _2)))
           return -1;
-      }
       
-      const int outcome = r.value;
-      if (outcome >= 0)
-          return outcome;
+      if (result >= 0)
+          return result;
 
       PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
       return -1;
   }
 }  // anonymous namespace
-
-namespace detail {
-  // needed by void_adaptor (see void_adaptor.hpp)
-  PyObject arbitrary_object;
-}
 
 extern "C" {
 
@@ -247,14 +176,11 @@ static PyObject* do_instance_call(PyObject* obj, PyObject* args, PyObject* keywo
 
 static void do_instance_dealloc(PyObject* obj)
 {
-    PyObject* success = handle_exception(
-        // translate the void return value of instance_dealloc into a PyObject*
-        // that can indicate no error.
-        detail::make_void_adaptor(
+    if (handle_exception(
             bind(&type_object_base::instance_dealloc
-                       , static_cast<type_object_base*>(obj->ob_type)
-                       , obj)));
-    if (!success)
+                 , static_cast<type_object_base*>(obj->ob_type)
+                 , obj))
+        )
     {
         assert(!"exception during destruction!");
     }
@@ -300,11 +226,9 @@ static PyObject* do_instance_sq_item(PyObject* obj, int index)
         return 0;
     }
 
-    return handle_exception(
-        bind(&type_object_base::instance_sequence_item
-             , static_cast<type_object_base*>(obj->ob_type)
-             , obj
-             , index));
+    return obj_call(
+        obj
+        , bind(&type_object_base::instance_sequence_item, _1, _2, index));
 }
 
 static int do_instance_mp_ass_subscript(PyObject* obj, PyObject* index, PyObject* value)

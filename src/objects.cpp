@@ -51,42 +51,42 @@ PyObject* object::get() const
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-PyObject* to_python(const boost::python::tuple& x)
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::tuple& x)
 {
     return object_to_python(x);
 }
 
-boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python::tuple> type)
+BOOST_PYTHON_DECL boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python::tuple> type)
 {
     return boost::python::object_from_python(p, type);
 }
 
-PyObject* to_python(const boost::python::list& x)
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::list& x)
 {
     return object_to_python(x);
 }
 
-boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list> type)
+BOOST_PYTHON_DECL boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list> type)
 {
     return boost::python::object_from_python(p, type);
 }
 
-PyObject* to_python(const boost::python::dictionary& x)
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::dictionary& x)
 {
     return object_to_python(x);
 }
 
-boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary> type)
+BOOST_PYTHON_DECL boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary> type)
 {
     return boost::python::object_from_python(p, type);
 }
 
-PyObject* to_python(const boost::python::string& x)
+BOOST_PYTHON_DECL PyObject* to_python(const boost::python::string& x)
 {
     return object_to_python(x);
 }
 
-boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string> type)
+BOOST_PYTHON_DECL boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string> type)
 {
     return boost::python::object_from_python(p, type);
 }
@@ -95,14 +95,14 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python {
 
-tuple::tuple(std::size_t n)
+tuple_base::tuple_base(std::size_t n)
     : object(ref(PyTuple_New(n)))
 {
     for (std::size_t i = 0; i < n; ++i)
         PyTuple_SET_ITEM(get(), i, detail::none());
 }
     
-tuple::tuple(ref p)
+tuple_base::tuple_base(ref p)
     : object(p)
 {
     assert(accepts(p));
@@ -113,28 +113,28 @@ tuple::tuple(ref p)
     }
 }
 
-PyTypeObject* tuple::type_obj()
+PyTypeObject* tuple_base::type_obj()
 {
     return &PyTuple_Type;
 }
 
-bool tuple::accepts(ref p)
+bool tuple_base::accepts(ref p)
 {
     return PyTuple_Check(p.get());
 }
 
-std::size_t tuple::size() const
+std::size_t tuple_base::size() const
 {
     return PyTuple_Size(get());
 }
 
-ref tuple::operator[](std::size_t pos) const
+ref tuple_base::operator[](std::size_t pos) const
 {
     return ref(PyTuple_GetItem(get(), static_cast<int>(pos)),
                ref::increment_count);
 }
 
-void tuple::set_item(std::size_t pos, const ref& rhs)
+void tuple_base::set_item(std::size_t pos, const ref& rhs)
 {
     int failed = PyTuple_SetItem(
         get(), static_cast<int>(pos), ref(rhs).release()); // A reference is stolen here.
@@ -142,14 +142,14 @@ void tuple::set_item(std::size_t pos, const ref& rhs)
     assert(failed == 0);
 }
 
-tuple tuple::slice(int low, int high) const
+tuple tuple_base::slice(int low, int high) const
 {
     return tuple(ref(PyTuple_GetSlice(get(), low, high)));
 }
 
-tuple& tuple::operator+=(const tuple& rhs)
+BOOST_PYTHON_DECL tuple& operator+=(tuple& self, const tuple& rhs)
 {
-    return *this = *this + rhs;
+    return self = self + rhs;
 }
 
 
@@ -216,7 +216,7 @@ string& string::operator*=(unsigned int repeat_count)
     return *this;
 }
 
-dictionary::dictionary(ref p)
+dictionary_base::dictionary_base(ref p)
     : object(p)
 {
     assert(accepts(p));
@@ -227,49 +227,49 @@ dictionary::dictionary(ref p)
     }
 }
 
-dictionary::dictionary()
+dictionary_base::dictionary_base()
     : object(ref(PyDict_New())) {}
 
-PyTypeObject* dictionary::type_obj()
+PyTypeObject* dictionary_base::type_obj()
 { return &PyDict_Type; }
 
-bool dictionary::accepts(ref p)
+bool dictionary_base::accepts(ref p)
 { return PyDict_Check(p.get()); }
 
-void dictionary::clear()
+void dictionary_base::clear()
 { PyDict_Clear(get()); }
 
-const ref& dictionary::proxy::operator=(const ref& rhs)
+const ref& dictionary_proxy::operator=(const ref& rhs)
 {
     if (PyDict_SetItem(m_dict.get(), m_key.get(), rhs.get()) == -1)
         throw error_already_set();
     return rhs;
 }
 
-dictionary::proxy::operator ref() const
+dictionary_proxy::operator ref() const
 {
     return ref(m_dict->ob_type->tp_as_mapping->mp_subscript(m_dict.get(), m_key.get()),
                ref::increment_count);
 }
 
-dictionary::proxy::proxy(const ref& dict, const ref& key)
+dictionary_proxy::dictionary_proxy(const ref& dict, const ref& key)
     : m_dict(dict), m_key(key) {}
 
-dictionary::proxy dictionary::operator[](ref key)
+dictionary_proxy dictionary_base::operator[](ref key)
 { return proxy(reference(), key); }
     
-ref dictionary::operator[](ref key) const {
+ref dictionary_base::operator[](ref key) const {
     // An odd MSVC bug causes the ".operator Ptr()" to be needed
     return proxy(reference(), key).operator ref();
 }
 
     
-ref dictionary::get_item(const ref& key) const
+ref dictionary_base::get_item(const ref& key) const
 {
     return get_item(key, ref());
 }
 
-ref dictionary::get_item(const ref& key, const ref& default_) const
+ref dictionary_base::get_item(const ref& key, const ref& default_) const
 {
     PyObject* value_or_null = PyDict_GetItem(get(), key.get());
     if (value_or_null == 0 && !PyErr_Occurred())
@@ -278,22 +278,22 @@ ref dictionary::get_item(const ref& key, const ref& default_) const
         return ref(value_or_null, ref::increment_count); // Will throw if there was another error
 }
         
-void dictionary::set_item(const ref& key, const ref& value)
+void dictionary_base::set_item(const ref& key, const ref& value)
 {
     if (PyDict_SetItem(get(), key.get(), value.get()) == -1)
         throw error_already_set();
 }
 
-void dictionary::erase(ref key) {
+void dictionary_base::erase(ref key) {
     if (PyDict_DelItem(get(), key.get()) == -1)
         throw error_already_set();
 }
 
-list dictionary::items() const { return list(ref(PyDict_Items(get()))); }
-list dictionary::keys() const { return list(ref(PyDict_Keys(get()))); }
-list dictionary::values() const { return list(ref(PyDict_Values(get()))); }
+list dictionary_base::items() const { return list(ref(PyDict_Items(get()))); }
+list dictionary_base::keys() const { return list(ref(PyDict_Keys(get()))); }
+list dictionary_base::values() const { return list(ref(PyDict_Values(get()))); }
 
-std::size_t dictionary::size() const { return static_cast<std::size_t>(PyDict_Size(get())); }
+std::size_t dictionary_base::size() const { return static_cast<std::size_t>(PyDict_Size(get())); }
 
 string operator+(string x, string y)
 {
@@ -338,7 +338,7 @@ tuple operator+(const tuple& x, const tuple& y)
 }
 
 
-list::list(ref p)
+list_base::list_base(ref p)
     : object(p)
 {
     assert(accepts(p));
@@ -349,97 +349,97 @@ list::list(ref p)
     }
 }
 
-list::list(std::size_t sz)
+list_base::list_base(std::size_t sz)
     : object(ref(PyList_New(sz)))
 {
 }
 
-PyTypeObject* list::type_obj()
+PyTypeObject* list_base::type_obj()
 {
     return &PyList_Type;
 }
 
-bool list::accepts(ref p)
+bool list_base::accepts(ref p)
 {
     return PyList_Check(p.get());
 }
 
-std::size_t list::size() const
+std::size_t list_base::size() const
 {
     return PyList_Size(get());
 }
 
-ref list::operator[](std::size_t pos) const
+ref list_base::operator[](std::size_t pos) const
 {
     return ref(PyList_GetItem(get(), pos), ref::increment_count);
 }
 
-list::proxy list::operator[](std::size_t pos)
+list_proxy list_base::operator[](std::size_t pos)
 {
     return proxy(reference(), pos);
 }
 
-void list::insert(std::size_t index, const ref& item)
+void list_base::insert(std::size_t index, const ref& item)
 {
     if (PyList_Insert(get(), index, item.get()) == -1)
         throw error_already_set();
 }
 
-void list::push_back(const ref& item)
+void list_base::push_back(const ref& item)
 {
     if (PyList_Append(get(), item.get()) == -1)
         throw error_already_set();
 }
 
-void list::append(const ref& item)
+void list_base::append(const ref& item)
 {
     this->push_back(item);
 }
 
-list list::slice(int low, int high) const
+list list_base::slice(int low, int high) const
 {
     return list(ref(PyList_GetSlice(get(), low, high)));
 }
 
-list::slice_proxy list::slice(int low, int high)
+list_slice_proxy list_base::slice(int low, int high)
 {
-    return slice_proxy(reference(), low, high);
+    return list_slice_proxy(reference(), low, high);
 }
 
-void list::sort()
+void list_base::sort()
 {
     if (PyList_Sort(get()) == -1)
         throw error_already_set();
 }
 
-void list::reverse()
+void list_base::reverse()
 {
     if (PyList_Reverse(get()) == -1)
         throw error_already_set();
 }
 
-tuple list::as_tuple() const
+tuple list_base::as_tuple() const
 {
     return tuple(ref(PyList_AsTuple(get())));
 }
 
-const ref& list::proxy::operator=(const ref& rhs)
+const ref& list_proxy::operator=(const ref& rhs)
 {
     m_list.set_item(m_index, rhs);
     return rhs;
 }
 
-list::proxy::operator ref() const
+list_proxy::operator ref() const
 {
     return ref(PyList_GetItem(m_list.get(), m_index), ref::increment_count);
 }
 
-ref list::get_item(std::size_t pos) const
+ref list_base::get_item(std::size_t pos) const
 {
     return ref(PyList_GetItem(this->get(), pos), ref::increment_count);
 }
 
-void list::set_item(std::size_t pos, const ref& rhs)
+void list_base::set_item(std::size_t pos, const ref& rhs)
 {
     int result = PyList_SetItem(this->get(), pos, rhs.get());
     if (result == -1)
@@ -447,39 +447,39 @@ void list::set_item(std::size_t pos, const ref& rhs)
     Py_INCREF(rhs.get());
 }
 
-list::proxy::proxy(const ref& list, std::size_t index)
+list_proxy::list_proxy(const ref& list, std::size_t index)
     : m_list(list), m_index(index)
 {
 }
 
-const list& list::slice_proxy::operator=(const list& rhs)
+const list& list_slice_proxy::operator=(const list& rhs)
 {
     if (PyList_SetSlice(m_list.get(), m_low, m_high, rhs.get()) == -1)
         throw error_already_set();
     return rhs;
 }
 
-list::slice_proxy::operator ref() const
+list_slice_proxy::operator ref() const
 {
     return ref(PyList_GetSlice(m_list.get(), m_low, m_high));
 }
 
-list::slice_proxy::operator list() const
+list_slice_proxy::operator list() const
 {
     return list(this->operator ref());
 }
 
-std::size_t list::slice_proxy::size() const
+std::size_t list_slice_proxy::size() const
 {
     return this->operator list().size();
 }
 
-ref list::slice_proxy::operator[](std::size_t pos) const
+ref list_slice_proxy::operator[](std::size_t pos) const
 {
     return this->operator list()[pos].operator ref();
 }
 
-list::slice_proxy::slice_proxy(const ref& list, int low, int high)
+list_slice_proxy::list_slice_proxy(const ref& list, int low, int high)
     : m_list(list), m_low(low), m_high(high)
 {
 }

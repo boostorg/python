@@ -16,19 +16,19 @@ namespace {
   ref name_holder;
 }
 
-bool module_builder::initializing()
+bool module_builder_base::initializing()
 {
     return name_holder.get() != 0;
 }
 
-string module_builder::name()
+string module_builder_base::name()
 {
     // If this fails, you haven't created a module_builder object
     assert(initializing());
     return string(name_holder);
 }
 
-module_builder::module_builder(const char* name)
+module_builder_base::module_builder_base(const char* name)
     : m_module(Py_InitModule(const_cast<char*>(name), initial_methods))
 {
     // If this fails, you've created more than 1 module_builder object in your module    
@@ -36,29 +36,29 @@ module_builder::module_builder(const char* name)
     name_holder = ref(PyObject_GetAttrString(m_module, const_cast<char*>("__name__")));
 }
 
-module_builder::~module_builder()
+module_builder_base::~module_builder_base()
 {
     name_holder.reset();
 }
 
 void
-module_builder::add(detail::function* x, const char* name)
+module_builder_base::add(detail::function* x, const char* name)
 {
     reference<detail::function> f(x); // First take possession of the object.
     detail::function::add_to_namespace(f, name, PyModule_GetDict(m_module));
 }
 
-void module_builder::add(ref x, const char* name)
+void module_builder_base::add(ref x, const char* name)
 {
 	PyObject* dictionary = PyModule_GetDict(m_module);
     PyDict_SetItemString(dictionary, const_cast<char*>(name), x.get());
 }
 
-void module_builder::add(PyTypeObject* x, const char* name /*= 0*/)
+void module_builder_base::add(PyTypeObject* x, const char* name /*= 0*/)
 {
     this->add(ref(as_object(x)), name ? name : x->tp_name);
 }
 
-PyMethodDef module_builder::initial_methods[] = { { 0, 0, 0, 0 } };
+PyMethodDef module_builder_base::initial_methods[] = { { 0, 0, 0, 0 } };
 
 }} // namespace boost::python

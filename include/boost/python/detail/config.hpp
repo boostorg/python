@@ -59,9 +59,9 @@
 
 # ifndef BOOST_PYTHON_MODULE_INIT
 #  if defined(_WIN32) || defined(__CYGWIN__)
-#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" __declspec(dllexport) void init##name() { boost::python::handle_exception(init_module_##name); } void init_module_##name()
+#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" __declspec(dllexport) void init##name() { boost::python::handle_exception(&init_module_##name); } void init_module_##name()
 #  else
-#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" void init##name() { boost::python::handle_exception(init_module_##name); } void init_module_##name()
+#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" void init##name() { boost::python::handle_exception(&init_module_##name); } void init_module_##name()
 #  endif
 # endif 
 
@@ -72,23 +72,23 @@
  ****************************************************************************/
 
 // backwards compatibility:
-#ifdef BOOST_RE_STATIC_LIB
+#ifdef BOOST_PYTHON_STATIC_LIB
 #  define BOOST_PYTHON_STATIC_LINK
 #endif
 
-#if defined(BOOST_MSVC) && defined(_DLL)
+#if defined(BOOST_MSVC) && defined(_DLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
 #  define BOOST_PYTHON_HAS_DLL_RUNTIME
 #endif
 
-#if defined(__BORLANDC__) && defined(_RTLDLL)
+#if defined(__BORLANDC__) && defined(_RTLDLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
 #  define BOOST_PYTHON_HAS_DLL_RUNTIME
 #endif
 
-#if defined(__ICL) && defined(_DLL)
+#if defined(__ICL) && defined(_DLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
 #  define BOOST_PYTHON_HAS_DLL_RUNTIME
 #endif
 
-#if defined(BOOST_PYTHON_HAS_DLL_RUNTIME) && !defined(BOOST_PYTHON_STATIC_LINK)
+#if defined(BOOST_PYTHON_DYNAMIC_LIB) && defined(_WIN32) // && !defined(BOOST_PYTHON_STATIC_LINK)
 #  if defined(BOOST_PYTHON_SOURCE)
 #     define BOOST_PYTHON_DECL __declspec(dllexport)
 #     define BOOST_PYTHON_BUILD_DLL
@@ -102,7 +102,7 @@
 #endif
 
 #if (defined(BOOST_MSVC) || defined(__BORLANDC__)) && !defined(BOOST_PYTHON_NO_LIB) && !defined(BOOST_PYTHON_SOURCE)
-#  include <boost/python/detail/python_library_include.hpp>
+// #  include <boost/python/detail/python_library_include.hpp>
 #endif
 
 // Borland C++ Fix/error check:
@@ -117,7 +117,7 @@
 #        endif
 #     endif
 #     ifndef _RTLDLL
-         // this is harmless for a staic link:
+         // this is harmless for a static link:
 #        define _RWSTD_COMPILE_INSTANTIATE
 #     endif
 #  endif

@@ -16,65 +16,16 @@
 #define BOOST_PYTHON_SOURCE
 
 #include <boost/python/conversions.hpp>
-#include <boost/python/detail/void_adaptor.hpp>
+#include <boost/function.hpp>
 #include <typeinfo>
 #include <exception>
 #ifndef BOOST_NO_LIMITS
 # include <boost/cast.hpp>
 #endif
 
-namespace boost { namespace python {
-
-// IMPORTANT: this function may only be called from within a catch block!
-PyObject* handle_exception_impl(object_functor_base const& f)
-{
-    try
-    {
-        return f();
-    }
-    catch(const boost::python::error_already_set&)
-    {
-        // The python error reporting has already been handled.
-    }
-    catch(const std::bad_alloc&)
-    {
-        PyErr_NoMemory();
-    }
-    catch(const std::exception& x)
-    {
-        PyErr_SetString(PyExc_RuntimeError, x.what());
-    }
-    catch(...)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "unidentifiable C++ exception");
-    }
-    return 0;
-}
-
-void handle_exception(void (*f)())
-{
-    handle_exception(
-        boost::python::detail::make_void_adaptor(f));
-}
-
-namespace detail {
-
-  void expect_complex(PyObject* p)
-  {
-      if (!PyComplex_Check(p))
-      {
-          PyErr_SetString(PyExc_TypeError, "expected a complex number");
-          throw boost::python::argument_error();
-      }
-  }
-
-} // namespace boost::python::detail
-
-}} // namespace boost::python
-
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-long from_python(PyObject* p, boost::python::type<long>)
+BOOST_PYTHON_DECL long from_python(PyObject* p, boost::python::type<long>)
 {
     // Why am I clearing the error here before trying to convert? I know there's a reason...
     long result;
@@ -86,7 +37,7 @@ long from_python(PyObject* p, boost::python::type<long>)
     return result;
 }
 
-double from_python(PyObject* p, boost::python::type<double>)
+BOOST_PYTHON_DECL double from_python(PyObject* p, boost::python::type<double>)
 {
     double result;
     {
@@ -151,48 +102,48 @@ PyObject* integer_to_python(T value)
     return to_python(value_as_long);
 }
 
-int from_python(PyObject* p, boost::python::type<int> type)
+BOOST_PYTHON_DECL int from_python(PyObject* p, boost::python::type<int> type)
 {
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(unsigned int i)
+BOOST_PYTHON_DECL PyObject* to_python(unsigned int i)
 {
     return integer_to_python(i);
 }
 
-unsigned int from_python(PyObject* p, boost::python::type<unsigned int> type)
+BOOST_PYTHON_DECL unsigned int from_python(PyObject* p, boost::python::type<unsigned int> type)
 {
     return integer_from_python(p, type);
 }
 
-short from_python(PyObject* p, boost::python::type<short> type)
+BOOST_PYTHON_DECL short from_python(PyObject* p, boost::python::type<short> type)
 {
     return integer_from_python(p, type);
 }
 
-float from_python(PyObject* p, boost::python::type<float>)
+BOOST_PYTHON_DECL float from_python(PyObject* p, boost::python::type<float>)
 {
     return static_cast<float>(from_python(p, boost::python::type<double>()));
 }
 
-PyObject* to_python(unsigned short i)
+BOOST_PYTHON_DECL PyObject* to_python(unsigned short i)
 {
     return integer_to_python(i);
 }
 
-unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type)
+BOOST_PYTHON_DECL unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type)
 {
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(char c)
+BOOST_PYTHON_DECL PyObject* to_python(char c)
 {
     if (c == '\0') return PyString_FromString("");
     return PyString_FromStringAndSize(&c, 1);
 }
 
-char from_python(PyObject* p, boost::python::type<char>)
+BOOST_PYTHON_DECL char from_python(PyObject* p, boost::python::type<char>)
 {
     int l = -1;
     if (PyString_Check(p)) l = PyString_Size(p);
@@ -204,37 +155,37 @@ char from_python(PyObject* p, boost::python::type<char>)
     return PyString_AsString(p)[0];
 }
 
-PyObject* to_python(unsigned char i)
+BOOST_PYTHON_DECL PyObject* to_python(unsigned char i)
 {
     return integer_to_python(i);
 }
 
-unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
+BOOST_PYTHON_DECL unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
 {
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(signed char i)
+BOOST_PYTHON_DECL PyObject* to_python(signed char i)
 {
     return integer_to_python(i);
 }
 
-signed char from_python(PyObject* p, boost::python::type<signed char> type)
+BOOST_PYTHON_DECL signed char from_python(PyObject* p, boost::python::type<signed char> type)
 {
     return integer_from_python(p, type);
 }
 
-PyObject* to_python(unsigned long x)
+BOOST_PYTHON_DECL PyObject* to_python(unsigned long x)
 {
     return integer_to_python(x);
 }
 
-unsigned long from_python(PyObject* p, boost::python::type<unsigned long> type)
+BOOST_PYTHON_DECL unsigned long from_python(PyObject* p, boost::python::type<unsigned long> type)
 {
     return integer_from_python(p, type);
 }
 
-void from_python(PyObject* p, boost::python::type<void>)
+BOOST_PYTHON_DECL void from_python(PyObject* p, boost::python::type<void>)
 {
     if (p != Py_None) {
         PyErr_SetString(PyExc_TypeError, "expected argument of type None");
@@ -242,7 +193,7 @@ void from_python(PyObject* p, boost::python::type<void>)
     }
 }
 
-const char* from_python(PyObject* p, boost::python::type<const char*>)
+BOOST_PYTHON_DECL const char* from_python(PyObject* p, boost::python::type<const char*>)
 {
     const char* s = PyString_AsString(p);
     if (!s)
@@ -250,12 +201,12 @@ const char* from_python(PyObject* p, boost::python::type<const char*>)
     return s;
 }
 
-PyObject* to_python(const std::string& s)
+BOOST_PYTHON_DECL PyObject* to_python(const std::string& s)
 {
     return PyString_FromStringAndSize(s.data(), s.size());
 }
 
-std::string from_python(PyObject* p, boost::python::type<std::string>)
+BOOST_PYTHON_DECL std::string from_python(PyObject* p, boost::python::type<std::string>)
 {
     if (! PyString_Check(p)) {
         PyErr_SetString(PyExc_TypeError, "expected a string");
@@ -264,7 +215,7 @@ std::string from_python(PyObject* p, boost::python::type<std::string>)
     return std::string(PyString_AsString(p), PyString_Size(p));
 }
 
-bool from_python(PyObject* p, boost::python::type<bool>)
+BOOST_PYTHON_DECL bool from_python(PyObject* p, boost::python::type<bool>)
 {
     int value = from_python(p, boost::python::type<int>());
     if (value == 0)
@@ -274,12 +225,12 @@ bool from_python(PyObject* p, boost::python::type<bool>)
 
 #ifdef BOOST_MSVC6_OR_EARLIER
 // An optimizer bug prevents these from being inlined.
-PyObject* to_python(double d)
+BOOST_PYTHON_DECL PyObject* to_python(double d)
 {
     return PyFloat_FromDouble(d);
 }
 
-PyObject* to_python(float f)
+BOOST_PYTHON_DECL PyObject* to_python(float f)
 {
     return PyFloat_FromDouble(f);
 }

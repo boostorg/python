@@ -31,11 +31,7 @@
 
 namespace boost { namespace python {
 
-class string;
-
 namespace detail {
-
-class instance_holder_base;
 
 class BOOST_PYTHON_DECL type_object_base : public python_type
 {

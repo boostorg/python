@@ -18,26 +18,28 @@
 # include <boost/python/class_builder.hpp>
 
 namespace boost { namespace python {
-    struct import_error : error_already_set {};
-    struct export_error : error_already_set {};
-}}
+    struct BOOST_PYTHON_DECL import_error: error_already_set {};
+    struct BOOST_PYTHON_DECL export_error : error_already_set {};
 
-namespace boost { namespace python { namespace detail {
+namespace detail
+{
 
 // Concept: throw exception if api_major is changed
 //          show warning on stderr if api_minor is changed
-const int export_converters_api_major = 4;
-const int export_converters_api_minor = 1;
-extern const char* converters_attribute_name;
-void* import_converter_object(const std::string& module_name,
-                              const std::string& py_class_name,
-                              const std::string& attribute_name);
-void check_export_converters_api(const int importing_major,
-                                 const int importing_minor,
-                                 const int imported_major,
-                                 const int imported_minor);
+  const int export_converters_api_major = 4;
+  const int export_converters_api_minor = 1;
+  extern BOOST_PYTHON_DECL const char* converters_attribute_name;
+  BOOST_PYTHON_DECL void* import_converter_object(const std::string& module_name,
+                                const std::string& py_class_name,
+                                const std::string& attribute_name);
+  BOOST_PYTHON_DECL void check_export_converters_api(const int importing_major,
+                                   const int importing_minor,
+                                   const int imported_major,
+                                   const int imported_minor);
 
-}}}
+}
+
+}} // namespace boost::python
 
 // forward declaration
 namespace boost { namespace python { namespace detail {
@@ -232,56 +234,56 @@ struct export_converter_object : export_converter_object_noncopyable<T>
     }
 };
 
-namespace detail {
+namespace detail
+{
 
 /* This class template is instantiated by import_converters<T>.
    Its purpose is to import the converter_object via the Python API.
    The actual import is only done once. The pointer to the
    imported converter object is kept in the static data member
    imported_converters.
- */
-template <class T>
-class import_extension_class
-    : public python_import_extension_class_converters<T>
-{
- public:
-    inline import_extension_class(const char* module, const char* py_class) {
-      m_module = module;
-      m_py_class = py_class;
-    }
+*/
+  template <class T>
+  class import_extension_class
+      : public python_import_extension_class_converters<T>
+  {
+   public:
+      inline import_extension_class(const char* module, const char* py_class) {
+          m_module = module;
+          m_py_class = py_class;
+      }
 
-    static boost::python::export_converter_object_base<T>* get_converters();
+      static boost::python::export_converter_object_base<T>* get_converters();
 
-  private:
-    static std::string m_module;
-    static std::string m_py_class;
-    static boost::python::export_converter_object_base<T>* imported_converters;
-};
+   private:
+      static std::string m_module;
+      static std::string m_py_class;
+      static boost::python::export_converter_object_base<T>* imported_converters;
+  };
 
-template <class T> std::string import_extension_class<T>::m_module;
-template <class T> std::string import_extension_class<T>::m_py_class;
-template <class T>
-boost::python::export_converter_object_base<T>*
-import_extension_class<T>::imported_converters = 0;
+  template <class T> std::string import_extension_class<T>::m_module;
+  template <class T> std::string import_extension_class<T>::m_py_class;
+  template <class T>
+  boost::python::export_converter_object_base<T>*
+  import_extension_class<T>::imported_converters = 0;
 
-template <class T>
-boost::python::export_converter_object_base<T>*
-import_extension_class<T>::get_converters() {
-  if (imported_converters == 0) {
-    void* cobject
-      = import_converter_object(m_module, m_py_class,
-                                converters_attribute_name);
-    imported_converters
-      = static_cast<boost::python::export_converter_object_base<T>*>(cobject);
-    check_export_converters_api(
-      export_converters_api_major,
-      export_converters_api_minor,
-      imported_converters->get_api_major(),
-      imported_converters->get_api_minor());
+  template <class T>
+  boost::python::export_converter_object_base<T>*
+  import_extension_class<T>::get_converters() {
+      if (imported_converters == 0) {
+          void* cobject
+              = import_converter_object(m_module, m_py_class,
+                                        converters_attribute_name);
+          imported_converters
+              = static_cast<boost::python::export_converter_object_base<T>*>(cobject);
+          check_export_converters_api(
+              export_converters_api_major,
+              export_converters_api_minor,
+              imported_converters->get_api_major(),
+              imported_converters->get_api_minor());
+      }
+      return imported_converters;
   }
-  return imported_converters;
-}
-
 }}} // namespace boost::python::detail
 
 namespace boost { namespace python {
