@@ -52,13 +52,13 @@ BOOST_PYTHON_MEMBER_FUNCTION_GEN(X_bar_stubs, bar, 1, 4)
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
     module      m("defaults_ext");
-    m.def(foo_stubs(), args<std::string, int, char, std::string, double>());
+    m.def(foo_stubs(), signature<std::string(*)(int, char, std::string, double)>());
 
     class_<X>   xc("X");
     m.add(xc);
 
     xc.def_init();
-    xc.def(X_bar_stubs(), args<std::string, X const&, int, char, std::string, double>());
+    xc.def(X_bar_stubs(), signature<std::string(X::*)(int, char, std::string, double)>());
 }
 
 #include "module_tail.cpp"

@@ -10,7 +10,6 @@
 #ifndef DEFAULTS_GEN_JDG20020807_HPP
 #define DEFAULTS_GEN_JDG20020807_HPP
 
-#include <boost/preprocessor/repeat_2nd.hpp>
 #include <boost/preprocessor/repeat.hpp>
 #include <boost/preprocessor/enum.hpp>
 #include <boost/preprocessor/enum_params.hpp>
@@ -22,8 +21,6 @@
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/empty.hpp>
 #include <boost/config.hpp>
-#include <boost/python/class.hpp>
-#include <boost/python/module.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {
@@ -45,18 +42,18 @@ struct func_stubs_base {
 ///////////////////////////////////////////////////////////////////////////////
 //  Temporary BOOST_PP fix before the CVS stabalizes /*$$$ FIX ME $$$*/
 
+#ifndef BOOST_PP_FIX_REPEAT_2ND
 #define BOOST_PP_FIX_REPEAT_2ND(c, m, d) /* ... */ \
     BOOST_PP_CAT(BOOST_PP_R2_, c)(m, d)            \
     /**/
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_TEMPLATE_GEN(INDEX, DATA)  typename BOOST_PP_CAT(T, INDEX)
-
 #define BPL_IMPL_TYPEDEF_GEN(INDEX, DATA)                                       \
     typedef typename boost::mpl::at                                             \
     <                                                                           \
         BOOST_PP_ADD(INDEX, DATA),                                              \
-        ArgsT                                                                   \
+        SigT                                                                    \
     >::type BOOST_PP_CAT(T, INDEX);                                             \
 
 #define BPL_IMPL_ARGS_GEN(INDEX, DATA)                                          \
@@ -93,10 +90,10 @@ struct func_stubs_base {
         static char const*                                                      \
         name() { return BOOST_PP_STRINGIZE(FNAME); }                            \
                                                                                 \
-        template <typename ArgsT>                                               \
+        template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::mpl::at<0, ArgsT>::type RT;                 \
+            typedef typename boost::mpl::at<0, SigT>::type RT;                  \
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \
@@ -118,7 +115,7 @@ struct func_stubs_base {
 #define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(INDEX, DATA)                              \
     static RT BOOST_PP_CAT(func_, INDEX)                                        \
     (                                                                           \
-        ClassT obj,                                                             \
+        ClassT& obj,                                                            \
         BOOST_PP_ENUM                                                           \
         (                                                                       \
             BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), INDEX),               \
@@ -147,11 +144,11 @@ struct func_stubs_base {
         static char const*                                                      \
         name() { return BOOST_PP_STRINGIZE(FNAME); }                            \
                                                                                 \
-        template <typename ArgsT>                                               \
+        template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::mpl::at<0, ArgsT>::type RT;                 \
-            typedef typename boost::mpl::at<1, ArgsT>::type ClassT;             \
+            typedef typename boost::mpl::at<0, SigT>::type RT;                  \
+            typedef typename boost::mpl::at<1, SigT>::type ClassT;              \
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \

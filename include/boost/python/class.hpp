@@ -29,6 +29,7 @@
 # include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/defaults_def.hpp>
+# include <boost/python/signature.hpp>
 
 namespace boost { namespace python {
 
@@ -130,6 +131,16 @@ class class_ : public objects::class_base
         return this->def(op.name(), &op_t::template apply<T>::execute);
     }
 
+
+    template <typename DerivedT, typename SigT>
+    self& def(detail::func_stubs_base<DerivedT> const& stubs, signature<SigT> sig)
+    {
+        //  JDG 8-12-2002
+        detail::define_with_defaults(stubs.derived(), *this, detail::get_signature(sig));
+        return *this;
+    }
+
+/*
     template <typename DerivedT, typename ArgsT>
     self& def(detail::func_stubs_base<DerivedT> const& stubs, ArgsT args)
     {
@@ -137,6 +148,7 @@ class class_ : public objects::class_base
         detail::define_with_defaults(stubs.derived(), *this, args);
         return *this;
     }
+*/
 
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.

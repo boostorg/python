@@ -15,8 +15,6 @@
 #include <boost/mpl/int_t.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/python/class.hpp>
-#include <boost/python/module.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
@@ -67,22 +65,22 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
     };
 
 ///////////////////////////////////////////////////////////////////////////////
-    template <typename StubsT, typename HolderT, typename ArgsT>
+    template <typename StubsT, typename HolderT, typename SigT>
     inline void
-    define_with_defaults(StubsT, HolderT& holder, ArgsT args)
+    define_with_defaults(StubsT, HolderT& holder, SigT sig)
     {
         typedef typename mpl::select_type
         <
-            boost::is_same<void, typename mpl::at<0, ArgsT>::type>::value,
+            boost::is_same<void, typename mpl::at<0, SigT>::type>::value,
             typename StubsT::v_type,
             typename StubsT::nv_type
         >
         ::type stubs_type;
 
         BOOST_STATIC_ASSERT(
-            (stubs_type::max_args + 1) == boost::mpl::size<ArgsT>::value);
+            (stubs_type::max_args + 1) == boost::mpl::size<SigT>::value);
 
-        typedef stubs_type::template gen<ArgsT> gen_type;
+        typedef stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def
             (stubs_type::name(), gen_type(), holder);
     }

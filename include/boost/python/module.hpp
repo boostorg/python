@@ -15,6 +15,7 @@
 # include <boost/python/object_core.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/defaults_def.hpp>
+# include <boost/python/signature.hpp>
 
 namespace boost { namespace python {
 
@@ -70,6 +71,15 @@ class module : public detail::module_base
         return *this;
     }
 
+    template <typename DerivedT, typename SigT>
+    module& def(detail::func_stubs_base<DerivedT> const& stubs, signature<SigT> sig)
+    {
+        //  JDG 8-12-2002
+        detail::define_with_defaults(stubs.derived(), *this, detail::get_signature(sig));
+        return *this;
+    }
+
+/*
     template <typename DerivedT, typename ArgsT>
     module& def(detail::func_stubs_base<DerivedT> const& stubs, ArgsT args)
     {
@@ -77,6 +87,7 @@ class module : public detail::module_base
         detail::define_with_defaults(stubs.derived(), *this, args);
         return *this;
     }
+*/
 };
 
 //
