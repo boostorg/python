@@ -29,7 +29,7 @@ namespace boost { namespace python { namespace objects {
 template <class Held>
 struct value_holder : instance_holder
 {
-	// Forward construction to the held object
+    // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/value_holder.hpp>, 1))
 #  include BOOST_PP_ITERATE()
 
@@ -91,15 +91,14 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
 # define N BOOST_PP_ITERATION()
 
 # if (N != 0)
-	template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
 # endif
-	value_holder(PyObject*
-					BOOST_PP_COMMA_IF(N)
-					BOOST_PYTHON_BINARY_ENUM(N, A, a))
-		: m_held(
-			BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
-			)
-	{}
+    value_holder(
+      PyObject* BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+        : m_held(
+            BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            )
+    {}
 
 # undef N
 
@@ -111,18 +110,17 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
 # define N BOOST_PP_ITERATION()
 
 # if (N != 0)
-	template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template <BOOST_PYTHON_UNARY_ENUM(N, class A)>
 # endif
-	value_holder_back_reference(PyObject* p
-					BOOST_PP_COMMA_IF(N)
-					BOOST_PYTHON_BINARY_ENUM(N, A, a))
-		: m_held(
-			p BOOST_PP_COMMA_IF(N)
-			BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
-			)
-	{
-		python::detail::force_instantiate(instance_finder<BackReferenceType>::registration);
-	}
+    value_holder_back_reference(
+        PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+        : m_held(
+            p BOOST_PP_COMMA_IF(N)
+            BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            )
+    {
+        python::detail::force_instantiate(instance_finder<BackReferenceType>::registration);
+    }
 
 # undef N
 

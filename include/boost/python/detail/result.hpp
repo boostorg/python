@@ -30,12 +30,12 @@ namespace boost { namespace python { namespace detail {
 // an AdaptableFunction object, you must pass OL as a second argument
 // to get this to work portably.
 
-#  define BOOST_PP_ITERATION_PARAMS_1 \
-	(4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/result.hpp>, BOOST_PYTHON_FUNCTION_POINTER))
+#  define BOOST_PP_ITERATION_PARAMS_1                                                                   \
+    (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/result.hpp>, BOOST_PYTHON_FUNCTION_POINTER))
 #  include BOOST_PP_ITERATE()
 
-#  define BOOST_PP_ITERATION_PARAMS_1 \
-	(4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/result.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER))
+#  define BOOST_PP_ITERATION_PARAMS_1                                                                     \
+    (4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/result.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER))
 #  include BOOST_PP_ITERATE()
 
 template <class R, class T>
