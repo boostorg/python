@@ -75,6 +75,20 @@
 >>> v_slice1[0].increment()                    # Mutate shared object
 >>> print v_slice1, v_slice2, v[1]             # Check reference to same object
 [8, 9] [8, 6] 4
+>>> v.extend ([8, 7, 6, 5, 4, 3, -1])          # Add new values, including -1
+>>> print [ x for x in v ]
+[9, 4, 8, 7, 6, 5, 4, 3, -1]
+>>> least_element = v[len(v)-1]                # Get proxy for min element
+>>> print least_element
+-1
+>>> v.sort()                                   # Sort min element to front
+>>> print [ x for x in v ]
+[-1, 3, 4, 4, 5, 6, 7, 8, 9]
+>>> print least_element, v[0]                  # Check values match
+-1 -1
+>>> v[0].increment()                           # Mutate value in container
+>>> print least_element, v[0]                  # Verify proxy still attached
+0 0
 '''
 
 def run(args = None):
