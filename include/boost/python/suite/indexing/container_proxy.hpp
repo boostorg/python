@@ -34,11 +34,13 @@
 template<typename T> struct identity {
   static T &       get(T &       obj) { return obj; }
   static T const & get(T const & obj) { return obj; }
+  // FIXME: should add copy, assign and destroy static members
 };
 
 template<typename T> struct deref {
   template<typename U> static T &       get (U &       ptr) { return *ptr; }
   template<typename U> static T const & get (U const & ptr) { return *ptr; }
+  // FIXME: should add copy, assign and destroy static members
 };
 
 template<class Container
@@ -237,6 +239,10 @@ public:
   explicit container_proxy (HeldType const &h);
   template<typename Iter> container_proxy (Iter, Iter);
 
+  container_proxy (container_proxy const &);
+  container_proxy &operator= (container_proxy const &);
+  ~container_proxy ();
+
   Container &      container();         // Should be private?
   Container const &container() const;   // Should be private?
 
@@ -326,6 +332,33 @@ container_proxy<Container, HeldType, Accessor>
   , myMap ()
 {
   insert (begin(), start, finish);
+}
+
+template<class Container, typename HeldType, class Accessor>
+container_proxy<Container, HeldType, Accessor>
+::container_proxy (container_proxy const &copy)
+  : myHeldType (copy.myHeldType)
+  , myMap ()                      // Do *not* duplicate map
+{
+}
+
+template<class Container, typename HeldType, class Accessor>
+container_proxy<Container, HeldType, Accessor> &
+container_proxy<Container, HeldType, Accessor>
+::operator= (container_proxy const &copy)
+{
+  // All of our contained values are about to be dis-owned
+  std::for_each (myMap.begin(), myMap.end(), detach_if_shared);
+  myMap.clear();
+  myHeldType = copy.myHeldType;
+}
+
+template<class Container, typename HeldType, class Accessor>
+container_proxy<Container, HeldType, Accessor>
+::~container_proxy ()
+{
+  // All of our contained values are about to be dis-owned
+  std::for_each (myMap.begin(), myMap.end(), detach_if_shared);
 }
 
 template<class Container, typename HeldType, class Accessor>
