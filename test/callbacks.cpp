@@ -5,7 +5,6 @@
 // to its suitability for any purpose.
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
-//#include <boost/python/returning.hpp>
 #include <boost/python/class.hpp>
 #include <boost/ref.hpp>
 #include <boost/python/ptr.hpp>
