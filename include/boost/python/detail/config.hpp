@@ -7,6 +7,7 @@
 //  producing this work.
 
 //  Revision History:
+//  24 May 01  friend lookup fixes (Ralf W. Grosse-Kunstleve)
 //  04 Mar 01  Some fixes so it will compile with Intel C++ (Dave Abrahams)
 
 #ifndef CONFIG_DWA052200_H_
@@ -24,14 +25,27 @@
 
 # endif
 
-# if defined(BOOST_PYTHON_USE_FRIEND_KOENIG_LOOKUP)
-// for compilers that support Koenig lookup
-#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
-#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
-# else
+# if defined(__GNUC__) && __GNUC__ < 3
+#  define BOOST_NO_FRIEND_KOENIG_LOOKUP
+# endif
+# if defined(BOOST_MSVC) && BOOST_MSVC <= 1200
+#  define BOOST_NO_FRIEND_KOENIG_LOOKUP
+# endif
+# if defined(__DECCXX_VER) && __DECCXX_VER <= 60290024
+#  define BOOST_NO_FRIEND_KOENIG_LOOKUP
+# endif
+#if defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
+#  define BOOST_NO_FRIEND_KOENIG_LOOKUP
+# endif
+
+# if defined(BOOST_NO_FRIEND_KOENIG_LOOKUP)
 // for compilers that do not support Koenig lookup for friend functions
 #  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 #  define BOOST_PYTHON_END_CONVERSION_NAMESPACE
+# else
+// for compilers that support Koenig lookup
+#  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
+#  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
 # endif
 
 // Work around the broken library implementation/strict ansi checking on some
