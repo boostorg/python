@@ -55,8 +55,151 @@ resulting DLL is now visible to Python. Here's a sample Python session:
 Now the first thing you'd want to do is to build the Hello World module and
 try it for yourself in Python. In this section, we shall outline the steps
 necessary to achieve that. We shall use the build tool that comes bundled
-with every boost distribution: [*bjam]. For a complete reference to building
-Boost.Python, check out: [@../../building.html building.html]
+with every boost distribution: [*bjam].
+
+We shall skip over the details. Our objective will be to simply create the
+hello world module and run it in Python. For a complete reference to
+building Boost.Python, check out: [@../../building.html building.html].
+After this brief ['bjam] tutorial, we should have built two DLLs:
+
+* boost_python.dll
+* hello.pyd
+
+This assumes of course that we are running on Windows.
+
+The tutorial example can be found in the directory:
+[^/libs/python/example/tutorial]. There, you can find:
+
+* hello.cpp
+* Jamfile
+
+The [^hello.cpp] file is our C++ hello world example. The [^Jamfile] is a
+minimalist ['bjam] script that builds the DLLs for us.
+
+Before anything else, you should have the bjam executable in your boost
+directory. Pre-built Boost.Jam executables are available for some
+platforms. For example, a pre-built Microsoft Windows bjam executable can
+be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip here].
+The complete list of bjam pre-built executables can be found [@../../../../../tools/build/index.html#Jam here].
+
+[h2 Lets Jam!]
+
+Here is our minimalist Jamfile:
+
+[pre
+    subproject libs/python/example/tutorial ;
+
+    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+    include python.jam ;
+
+    extension hello                     # Declare a Python extension called hello
+    :   hello.cpp                       # source
+        <dll>../../build/boost_python   # dependencies
+        ;
+]
+
+First, we need to specify our location in the boost project hierarchy.
+It so happens that the tutorial example is located in [^/libs/python/example/tutorial].
+Thus:
+
+[pre
+    subproject libs/python/example/tutorial ;
+]
+
+Then we will include the definitions needed by Python modules:
+
+[pre
+    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+    include python.jam ;
+]
+
+Finally we declare our [^hello] extension:
+
+[pre
+    extension hello                     # Declare a Python extension called hello
+    :   hello.cpp                       # source
+        <dll>../../build/boost_python   # dependencies
+        ;
+]
+
+[h2 Running bjam]
+
+['bjam] is run using your operating system's command line interpreter.
+
+[:Start it up.]
+
+Make sure that the environment is set so that we can invoke the C++
+compiler. With MSVC, that would mean running the [^Vcvars32.bat] batch
+file. For instance:
+
+    C:\Program Files\Microsoft Visual Studio\VC98\bin\Vcvars32.bat
+
+Some environment variables will have to be setup for proper building of our
+Python modules. Example:
+
+    set PYTHON_ROOT=c:/dev/tools/python
+    set PYTHON_VERSION=2.2
+
+The above assumes that the Python installation is in [^c:/dev/tools/python]
+and that we are using Python version 2.2. Be sure not to include a third
+number, e.g. [*not]  "2.2.1", even if that's the version you have.
+
+Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
+where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
+
+Finally:
+
+    bjam -sTOOLS=msvc
+
+We are again assuming that we are using Microsoft Visual C++ version 6. If
+not, then you will have to specify the appropriate tool. See
+[@../../../../../tools/build/index.html Building Boost Libraries] for
+further details.
+
+It should be building now:
+
+[pre
+    cd C:\dev\boost\libs\python\example\tutorial
+    bjam -sTOOLS=msvc
+    ...patience...
+    ...found 1703 targets...
+    ...updating 40 targets...
+]
+
+And so on... Finally:
+
+[pre
+    vc-C++ ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
+    runtime-link-dynamic\hello.obj
+    hello.cpp
+    vc-Link ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
+    runtime-link-dynamic\hello.pyd ..\..\..\..\libs\python\example\tutorial\bin\
+    hello.pyd\msvc\debug\runtime-link-dynamic\hello.lib
+       Creating library ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\
+       msvc\debug\runtime-link-dynamic\hello.lib and object ..\..\..\..\libs\python\
+       example\tutorial\bin\hello.pyd\msvc\debug\runtime-link-dynamic\hello.exp
+    ...updated 40 targets...
+]
+
+If all is well, you should now have:
+
+* boost_python.dll
+* hello.pyd
+
+[^boost_python.dll] can be found somewhere in [^libs\python\build\bin]
+while [^hello.pyd] can be found somewhere in
+[^libs\python\example\tutorial\bin]. After a successful build, you can just
+link in these DLLs with the Python interpreter. In Windows for example, you
+can simply put these libraries inside the directory where the Python
+executable is.
+
+You may now fire up Python and run our hello module:
+
+    >>> import hello
+    >>> print hello.greet()
+    hello, world
+
+[:[*There you go... Have fun!]]
 
 [page Exposing Classes]
 
