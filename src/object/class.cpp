@@ -254,10 +254,6 @@ void instance_holder::install(PyObject* self) throw()
 
 namespace objects
 {
-  extern "C" {
-      static int (*class_setattro_save)(PyObject *obj, PyObject *name, PyObject* value);
-  }
-          
 // Get the metatype object for all extension classes.
   BOOST_PYTHON_DECL type_handle class_metatype()
   {
@@ -267,7 +263,6 @@ namespace objects
           class_metatype_object.tp_base = &PyType_Type;
           if (PyType_Ready(&class_metatype_object))
               return type_handle();
-          class_setattro_save = class_metatype_object.tp_setattro;
       }
       return type_handle(borrowed(&class_metatype_object));
   }
