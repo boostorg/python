@@ -17,7 +17,6 @@
 #include <boost/python/self.hpp>
 #include <boost/python/dict.hpp>
 #include <boost/python/str.hpp>
-#include <boost/bind.hpp>
 #include <functional>
 #include <vector>
 #include <cstddef>
