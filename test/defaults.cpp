@@ -105,7 +105,7 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
     m.add(xc);
 
     xc.def_init();
-    xc.def("bar", X::bar, X_bar_stubs());
+    xc.def("bar", &X::bar, X_bar_stubs());
 }
 
 #include "module_tail.cpp"
