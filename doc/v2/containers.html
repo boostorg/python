@@ -56,6 +56,9 @@
             <a href="#policies">Using policies</a>
           </dt>
           <dt>
+            <a href="#visitor_flags">Visitor flag values</a>
+          </dt>
+          <dt>
             <a href="#extending">Extending and customizing</a>
           </dt>
           <dd>
@@ -217,9 +220,9 @@ BOOST_PYTHON_MODULE(example) {
 
     <p>
 
-      The top-level interface to the container suite is via the <a
+      The <a
       href="../../../../boost/python/suite/indexing/container_suite.hpp"><code>container_suite.hpp</code></a>
-      header which is summarized below:
+      header is summarized below:
 
     </p>
     <p>
@@ -233,12 +236,20 @@ BOOST_PYTHON_MODULE(example) {
 namespace boost { namespace python { namespace indexing {
   typedef return_value_policy&lt;return_by_value&gt; default_container_policies;
 
-  template&lt;class Container, class Algorithms = algo_selector&lt;Container&gt; &gt;
+  template&lt;class Container,
+           int Flags = 0,
+           class Algorithms = algo_selector&lt;Container&gt; &gt;
   struct container_suite
-    : public visitor&lt;Algorithms, default_container_policies&gt;
+    : public visitor&lt;Algorithms, default_container_policies, Flags&gt;
   {
+    typedef Algorithms algorithms;
+
     template&lt;typename Policy&gt;
-    static visitor&lt;Algorithms, Policy&gt; with_policies (Policy const &amp;policy);
+    static visitor&lt;Algorithms, Policy, Flags&gt;
+    with_policies (Policy const &amp;policy)
+    {
+      return visitor &lt;Algorithms, Policy&gt; (policy);
+    }
   };
 } } }
 </pre>
@@ -274,6 +285,14 @@ namespace boost { namespace python { namespace indexing {
           client-provided policies.
 
         </li>
+        <li>
+
+          The template parameter <code>Flags</code> allows client code
+          to disable unneeded features in order to reduce code
+          size. Details are provided <a
+          href="visitor_flags">below</a>.
+
+        </li>
       </ol>
 
     </p>
@@ -290,9 +309,10 @@ namespace boost { namespace python { namespace indexing {
       <code>list.hpp</code>, <code>set.hpp</code> and
       <code>map.hpp</code>. These correspond in the obvious way to the
       standard headers <code>vector</code>, <code>deque</code>,
-      etc. The header files for the <code>container_proxy</code> and
-      <code>iterator_range</code> templates provide their own support
-      implicitly.
+      etc. The header files for the <a
+      href="#container_proxy"><code>container_proxy</code></a> and <a
+      href="#iterator_range"><code>iterator_range</code></a> templates
+      provide their own support implicitly.
 
     </p>
 
@@ -367,6 +387,89 @@ namespace boost { namespace python { namespace indexing {
       applies only to the slice version of <code>__getitem__</code>,
       which generates a Python list by applying the return conversion
       policies to each element in the list.
+
+    </p>
+
+    <h2><a name="visitor_flags">Visitor Flag values</a></h2>
+
+    <p>
+
+      The <code>container_suite</code> template has an optional
+      <code>Flags</code> parameter that allows client code to disable
+      various optional features of the suite. This can lead to
+      significant savings in the size of object files and executables
+      if features such as sorting or Python slice support are not
+      needed. The <code>Flags</code> parameter (an integer) can be any
+      bitwise combination of the following values (defined in the
+      <code>boost::python::indexing</code> namespace by <a
+      href="../../../../boost/python/suite/indexing/visitor.hpp"><code>visitor.hpp</code></a>):
+
+    </p>
+
+    <p>
+
+      <table border="1">
+        <tr>
+          <th>Flag</th>
+          <th>Effect</th>
+        </tr>
+        <tr>
+
+          <td><code>disable_len</code></td>
+
+          <td>omits the Python <code>__len__</code> method</td>
+
+        </tr>
+        <tr>
+
+          <td><code>disable_slices</code></td>
+
+          <td>omits slice support code from <code>__getitem__</code>,
+          <code>__setitem__</code> and <code>__delitem__</code>.</td>
+
+        </tr>
+        <tr>
+
+          <td><code>disable_search</code></td>
+
+          <td>omits the container search methods <code>count<code>,
+          </code>index</code> and <code>__contains__</code></td>
+
+        </tr>
+        <tr>
+
+          <td><code>disable_reorder</code></td>
+
+          <td>omits the container reordering operations
+          <code>sort</code> and <code>reverse</code></td>
+
+        </tr>
+        <tr>
+
+          <td><code>disable_extend</code></td>
+
+          <td>omits the <code>extend</code> method</td>
+
+        </tr>
+        <tr>
+
+          <td><code>disable_insert</code></td>
+
+          <td>omits the <code>insert</code> method</td>
+
+        </tr>
+      </table>
+
+    </p>
+
+    <p>
+
+      Note that some containers don't support some of the optional
+      features at all, in which case the relevant flags are
+      ignored. The value <code>minimum_support</code> may be passed as
+      a flag value to disable all optional features. A simple example
+      is provided in <a
+      href="../../../../libs/python/test/test_vector_disable.cpp"><code>test_vector_disable.cpp</code></a>
 
     </p>
 
@@ -2031,38 +2134,39 @@ namespace boost { namespace python { namespace indexing {
 
     <p>
 
-      <b>Note:</b> the suite hasn't yet been tested on a compiler
-      without partial template specialization support. If you have any
-      results with such a compiler (good or bad) please report them on
-      the mailing list for the <a
-      href="http://www.python.org/sigs/c++-sig/">Python C++-SIG</a>.
+      It is possible to use the suite without partial template
+      specialization support, but the <code>algo_selector</code>
+      specializations for the standard containers does not work. To
+      avoid this problem, the client code must explicitly select the
+      <code>Algorithms</code> and <code>ContainerTraits</code>
+      instances to be used, and there are some additional support
+      templates in the container-specific header files for this
+      purpose.
+
+<pre>
+#include &lt;boost/python/suite/indexing/vector.hpp&gt;
+
+...
+
+  using namespace boost::python;
+  using namespace boost::python::indexing;
+
+  class_&lt;std::vector&lt;int&gt; &gt; ("vector_int")
+    .def (indexing::vector_suite &lt;vector &lt;int&gt; &gt;());
+</pre>
 
     </p>
 
     <p>
 
-      It should be possible to use the suite without partial template
-      specialization support. However, the <code>algo_selector</code>
-      template will not work, which also means that the default
-      template parameter for <code>container_suite</code> won't
-      work. To avoid this problem, the client code must explicitly
-      select the <code>Algorithms</code> and
-      <code>ContainerTraits</code> instances to be used. It is
-      probably easiest to use the <code>visitor</code> template
-      directly, as in the following example:
-
-<pre>
-  using namespace boost::python;
-  using namespace boost::python::indexing;
-
-  class_&lt;std::vector&lt;int&gt; &gt; ("vector_int")
-    .def (visitor &lt;
-           default_algorithms &lt;
-            default_sequence_traits &lt;
-             std::vector &lt;int&gt; &gt; &gt;,
-           return_value_policy &ltreturn_by_value&gt;
-          &gt;());
-</pre>
+      Microsoft Visual C++ 6.0 has a version of the standard
+      <code>deque</code> header that is incompatible with the
+      <code>container_proxy</code> template, since it lacks a correct
+      template version of the <code>insert</code> member function. An
+      updated copy of the <code>deque</code> header that fixes this
+      problem (among others) is available directly from <a
+      href="http://www.dinkumware.com/vc_fixes.html">Dinkumware</a>
+      (at time of writing, 2003/11/04).
 
     </p>
 
