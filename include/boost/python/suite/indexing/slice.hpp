@@ -22,7 +22,7 @@
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
-  struct slice : public boost::python::object
+  struct BOOST_PYTHON_DECL slice : public boost::python::object
   {
     //
     // *** WARNING ***
