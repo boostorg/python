@@ -66,6 +66,46 @@
 44
 >>> last_x.value()
 43
+
+>>> y = apply_X_ref_pyobject(identity, x)
+>>> assert y.value() == x.value()
+>>> increment(x)
+>>> assert y.value() == x.value()
+
+>>> y = apply_X_ptr_pyobject(identity, x)
+>>> assert y.value() == x.value()
+>>> increment(x)
+>>> assert y.value() == x.value()
+
+>>> y = apply_X_ptr_pyobject(identity, None)
+>>> y
+
+>>> def new_x(ignored):
+...     return X(666)
+...
+>>> try: apply_X_ref_pyobject(new_x, 1)
+... except ReferenceError: pass
+... else: print 'no error'
+
+>>> try: apply_X_ptr_pyobject(new_x, 1)
+... except ReferenceError: pass
+... else: print 'no error'
+
+>>> try: apply_cstring_cstring(identity, 'hello')
+... except ReferenceError: pass
+... else: print 'no error'
+
+>>> apply_char_char(identity, 'x')
+'x'
+
+>>> apply_cstring_pyobject(identity, 'hello')
+'hello'
+
+>>> apply_cstring_pyobject(identity, None)
+
+
+>>> apply_char_char(identity, 'x')
+'x'
 '''
 
 def run(args = None):
