@@ -98,6 +98,12 @@ Notes:<ul>
 
 <li>Any function added to a class whose initial argument matches the class (or
 any base) will act like a member function in Python.
+
+<li>To define a nested class, just pass the enclosing
+<tt>class_builder</tt> (instead of a <tt>module_builder</tt>) as the
+first argument to the nested <tt>class_builder</tt>'s constructor.
+
+
 </ul>
       <p>
          We can even make a subclass of <code>hello.world</code>:

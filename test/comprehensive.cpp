@@ -67,6 +67,16 @@ Foo::PythonClass::PythonClass(boost::python::module_builder& m)
     def(&Foo::add_len, "add_len", &FooCallback::default_add_len);
     
     // Since pure() is pure virtual, we are leaving it undefined.
+
+    // And the nested classes.
+    boost::python::class_builder<Foo::Foo_A> foo_a(*this, "Foo_A");
+    foo_a.def(boost::python::constructor<>());
+    foo_a.def(&Foo::Foo_A::mumble, "mumble");
+
+    boost::python::class_builder<Foo::Foo_B> foo_b(get_extension_class(),
+                                                   "Foo_B");
+    foo_b.def(boost::python::constructor<>());
+    foo_b.def(&Foo::Foo_B::mumble, "mumble");
 }
 
 BarPythonClass::BarPythonClass(boost::python::module_builder& m)
@@ -221,6 +231,16 @@ IntPair make_pair(int x, int y)
 const char* Foo::mumble()
 {
     return "mumble";
+}
+
+const char* Foo::Foo_A::mumble()
+{
+    return "mumble a";
+}
+
+const char* Foo::Foo_B::mumble()
+{
+    return "mumble b";
 }
 
 void Foo::set(long x)

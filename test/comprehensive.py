@@ -230,6 +230,14 @@ Polymorphism also works:
     >>> baz.get_foo_value(polymorphic_foo)
     1000
 
+Simple nested class test:
+    >>> foo_a = Foo.Foo_A()
+    >>> foo_a.mumble()
+    'mumble a'
+    >>> foo_b = Foo.Foo_B()
+    >>> foo_b.mumble()
+    'mumble b'
+
 Pickling tests:
 
     >>> world.__module__
@@ -343,7 +351,7 @@ Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.
     ...             '__doc__', '__module__', 'fred', 'i_am_derived_from_base']
     ... else:
     ...     assert dir(df) == [
-    ...         '__del__', '__doc__', '__init__', '__module__', 'add_len',
+    ...         'Foo_A', 'Foo_B', '__del__', '__doc__', '__init__', '__module__', 'add_len',
     ...         'call_add_len', 'call_pure', 'fred', 'mumble', 'set']
     ...     assert dir(db) == ['__doc__', '__module__', 'fred'
     ...                       , 'i_am_base', 'i_am_derived_from_base']

@@ -25,6 +25,22 @@ class class_builder
         module.add(ref(as_object(m_class.get()), ref::increment_count), name);
     }
     
+  template <class OtherT, class OtherU>
+    class_builder(class_builder<OtherT, OtherU>& cls, const char* name)
+        : m_class(new detail::extension_class<T, U>(name))
+    {
+        cls.add(ref(as_object(m_class.get()), ref::increment_count), name);
+    }
+    
+  template <class OtherT, class OtherU>
+    class_builder(detail::extension_class<OtherT, OtherU>* cls,
+                  const char* name)
+        : m_class(new detail::extension_class<T, U>(name))
+    {
+        cls->set_attribute(name,
+                           ref(as_object(m_class.get()), ref::increment_count));
+    }
+    
     ~class_builder()
     {}
 

@@ -42,6 +42,10 @@ class Foo                // prohibit copying, proving that it doesn't choke
     std::string call_pure();                    // call a pure virtual fuction
     int call_add_len(const char* s) const;      // virtual function with a default implementation
 
+    // A couple nested classs.
+    struct Foo_A { const char* mumble(); };
+    struct Foo_B { const char* mumble(); };
+
  private:
     // by default, sum the held value and the length of s
     virtual int add_len(const char* s) const;
