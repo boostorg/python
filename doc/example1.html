@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
 "http://www.w3.org/TR/REC-html40/strict.dtd">
     <title>
-      A Simple Example Using py_cpp
+      A Simple Example Using BPL
     </title>
     <div>
       <h1>
@@ -9,7 +9,7 @@
         "c++boost.gif (8819 bytes)">
       </h1>
       <h1>
-         A Simple Example Using py_cpp
+         A Simple Example Using BPL
       </h1>
       <p>
          Suppose we have the following C++ API which we want to expose in
@@ -24,20 +24,20 @@ namespace hello {
    public:
       world(int);
       ~world();
-      std::string get() const { return "hi, world"; }
+      std::string greet() const { return "hi, world"; }
     ...
   };
-  std::size_t length(const world&amp; x) { return std::strlen(x.get()); }
+  std::size_t length(const world&amp; x) { return std::strlen(x.greet()); }
 }
 
 </pre>
       </blockquote>
       <p>
          Here is the C++ code for a python module called <code>hello</code>
-        which exposes the API using py_cpp:
+        which exposes the API using BPL:
       <blockquote>
 <pre>
-#include <boost/python/class_builder.hpp>
+#include &lt;boost/python/class_builder.hpp&gt;
 // Python requires an exported function called init&lt;module-name&gt; in every
 // extension module. This is where we build the module contents.
 extern "C"
@@ -49,15 +49,15 @@ void inithello()
     try
     {
        // create an object representing this extension module
-       boost::python::module_builder hello("hello");
+       boost::python::module_builder m("hello");
        // Create the Python type object for our extension class
-       boost::python::class_builder&lt;hello::world&gt; world_class(hello, "world");
+       boost::python::class_builder&lt;hello::world&gt; world_class(m, "world");
        // Add the __init__ function
        world_class.def(boost::python::constructor&lt;int&gt;());
        // Add a regular member function
        world_class.def(&amp;hello::world::get, "get");
        // Add a regular function to the module
-       hello.def(hello::length, "length");
+       m.def(hello::length, "length");
     }
     catch(...)
     {
@@ -82,7 +82,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
 <pre>
 &gt;&gt;&gt; import hello
 &gt;&gt;&gt; hi_world = hello.world(3)
-&gt;&gt;&gt; hi_world.get()
+&gt;&gt;&gt; hi_world.greet()
 'hi, world'
 &gt;&gt;&gt; hello.length(hi_world)
 9
@@ -93,11 +93,11 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
       <blockquote>
 <pre>
 &gt;&gt;&gt; class my_subclass(hello.world):
-...     def get(self):
+...     def greet(self):
 ...         return 'hello, world'
 ...
 &gt;&gt;&gt; y = my_subclass(4)
-&gt;&gt;&gt; y.get()
+&gt;&gt;&gt; y.greet()
 'hello, world'
 </pre>
       </blockquote>
@@ -115,7 +115,8 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
         to have a <code>length()</code> of <code>12</code>? If so, <a href= 
         "overriding.html">read on</a>...
       <p>
-         Previous: <a href="comparisons.html">Comparisons with other systems</a> Next: <a href="overriding.html">Overridable virtual functions</a> Up:
+        Next: <a href="overriding.html">Overridable virtual functions</a>
+         Previous: <a href="comparisons.html">Comparisons with other systems</a>  Up:
         <a href="index.html">Top</a>
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
