@@ -140,21 +140,12 @@
       </tr>
 
       <tr>
-        <td><code>PYTHON_STDLIB_PATH</code></td>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]VERSION</code></td>
 
-        <td>path to Python standard library modules</td>
+        <td>The version of python being used under Cygwin. </td>
 
-        <td>Autoconfigured from <code>PYTHON_ROOT</code></td>
-      </tr>
+        <td>$(PYTHON_VERSION)
 
-      <tr>
-        <td><code>CYGWIN_PYTHON_ROOT</code></td>
-
-        <td>unix-style path containing the <code>include/</code>
-        directory containing
-        <code>python$(PYTHON_VERSION)/python.h</code>. </td>
-
-        <td>
         </td>
 
         <td>Use only when building with <a href=
@@ -164,20 +155,24 @@
         Python.</td> </tr>
 
       <tr>
-        <td><code>CYGWIN_PYTHON_ROOT</code></td>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]ROOT</code></td>
 
-        <td>path to the user's Cygwin Python installation</td>
+        <td>unix-style path containing the <code>include/</code>
+        directory containing
+        <code>python$(CYGWIN_PYTHON_[DEBUG_]VERSION)/python.h</code>. </td>
 
-        <td><code>/usr</code></td>
+        <td>$(PYTHON_ROOT)
+
+        </td>
 
         <td>Use only when building with <a href=
         "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
 
       <tr>
-        <td><code>CYGWIN_PYTHON_LIB_PATH</code></td>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]LIB_PATH</code></td>
 
         <td>path containing the user's Cygwin Python import lib
-        <code>libpython$(PYTHON_VERSION).dll.a</code></td>
+        <code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll.a</code></td>
 
         <td>Autoconfigured from <code>CYGWIN_PYTHON_ROOT</code></td>
 
@@ -185,10 +180,10 @@
         "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
 
       <tr>
-        <td><code>CYGWIN_PYTHON_DLL_PATH</code></td>
+        <td><code>CYGWIN_PYTHON_[DEBUG_]DLL_PATH</code></td>
 
         <td>path containing the user's Cygwin Python dll
-        (<code>libpython$(PYTHON_VERSION).dll</code>)</td>
+        (<code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll</code>)</td>
 
         <td><code>/bin</code></td>
 
