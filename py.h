@@ -17,7 +17,35 @@
 # include "errors.h"
 # include <string>
 
+PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+
+// This can be instantiated on an enum to provide the to_python/from_python
+// conversions, provided the values can fit in a long.
+template <class EnumType>
+class py_enum_as_int_converters
+{
+    friend EnumType from_python(PyObject* x, py::Type<EnumType>)
+    {
+        return static_cast<EnumType>(
+            from_python(x, py::Type<long>()));
+    }
+
+    friend EnumType from_python(PyObject* x, py::Type<const EnumType&>)
+    {
+        return static_cast<EnumType>(
+            from_python(x, py::Type<long>()));
+    }
+
+    friend PyObject* to_python(EnumType x)
+    {
+        return to_python(static_cast<long>(x));
+    }
+};
+PY_END_CONVERSION_NAMESPACE
+
 namespace py {
+template <class EnumType> class enum_as_int_converters
+    : public PY_CONVERSION::py_enum_as_int_converters<EnumType> {};
 
 template <class P, class T> class WrappedPointer;
 
@@ -42,10 +70,9 @@ inline void xdecref(T* p)
 	xdecref_impl(reinterpret_cast<PyObject*>(p_base));
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-}
-#endif
+} // namespace py
 
+PY_BEGIN_CONVERSION_NAMESPACE
 //
 // Converters
 //
@@ -293,19 +320,6 @@ inline unsigned long from_python(PyObject* p, py::Type<const unsigned long&>)
 }
 
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-namespace py {
-namespace converters { // bringing these into namespace py tended to confuse gcc;
-using ::to_python;       // they are in namespace py::converters for use by clients
-using ::from_python;
-}
-#else
-namespace converters {
-using ::py::to_python;
-using ::py::from_python;
-}
-#endif
+PY_END_CONVERSION_NAMESPACE
 
-} // namespace py
-
-#endif
+#endif // METHOD_DWA122899_H_
