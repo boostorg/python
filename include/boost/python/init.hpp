@@ -356,7 +356,7 @@ namespace detail {
         static void apply(ClassT& cl, ArgsT const& args, char const* doc)
         {
             cl.def_init(args, default_call_policies(), doc);
-            boost::mpl::pop_back<ArgsT>::sequence next;
+            typename boost::mpl::pop_back<ArgsT>::sequence next;
             define_class_init_helper<N-1>::apply(cl, next, doc);
         }
     };
