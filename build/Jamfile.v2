@@ -1,67 +1,39 @@
 import os ;
 import modules ;
 
-# Use a very crude way to sense there python is locatted
+import python ;
 
-
-local PYTHON_PATH = [ modules.peek : PYTHON_PATH ] ;
-
-if [ GLOB /usr/local/include/python2.2 : * ]
-{
-    PYTHON_PATH = /usr/local ;
-}
-else if [ GLOB /usr/include/python2.2 : * ] 
-{
-    PYTHON_PATH = /usr ;
-}
-
-if [ os.name ] in CYGWIN NT
-{
-    lib_condition = <link>shared: ;
-    defines = USE_DL_IMPORT ;
-   
-    # Declare a target for the python interpreter library
-    lib python : : <name>python22 <search>$(PYTHON_PATH)/libs ;
-    PYTHON_LIB = python ;    
-} 
-else 
-{
-   lib python : : <name>python2.2 ;
-   PYTHON_LIB = python ;    
-}
-
-
-
-if $(PYTHON_PATH) {
+if [ python.configured ] {
     
 
 project boost/python
     : source-location ../src
-        : requirements <include>$(PYTHON_PATH)/include
-          $(lib_condition)<library-path>$(PYTHON_PATH)/libs
-            <link>shared:<library>$(PYTHON_LIB)
-            <define>$(defines)
-        : usage-requirements # requirement that will be propageted to *users* of this library
-          <include>$(PYTHON_PATH)/include
+        : requirements 
+	#<include>$(PYTHON_PATH)/include
+        #  $(lib_condition)<library-path>$(PYTHON_PATH)/libs
+        #    <link>shared:<library>$(PYTHON_LIB)
+        #    <define>$(defines)
+        #: usage-requirements # requirement that will be propageted to *users* of this library
+        #  <include>$(PYTHON_PATH)/include
 
 # We have a bug which causes us to conclude that conditionalized
 # properties in this section are not free.
 #          $(lib_condition)<library-path>$(PYTHON_PATH)/lib/python2.2/config
 #            <shared>true:<find-library>$(PYTHON_LIB)
             
-          <library-path>$(PYTHON_PATH)/lib/python2.2/config
-            <library>$(PYTHON_LIB)
+        # <library-path>$(PYTHON_PATH)/lib/python2.2/config
+        #    <library>$(PYTHON_LIB)
     ;
 
 lib boost_python
     : 
     numeric.cpp
-
     list.cpp
     long.cpp
     dict.cpp
     tuple.cpp
     str.cpp
+    slice.cpp
 
     aix_init_module.cpp
     converter/from_python.cpp
@@ -80,8 +52,15 @@ lib boost_python
     object/iterator.cpp
     object_protocol.cpp
     object_operators.cpp
+    wrapper.cpp
     :   <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
+	<library>/python//python
     : <link>shared
-      ;
+    ;
+}
+else
+{
+    ECHO "warning: Python location is not configured" ;
+    ECHO "warning: the Boost.Python library won't be built" ;
 }
