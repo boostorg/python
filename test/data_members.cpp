@@ -48,7 +48,7 @@ BOOST_PYTHON_MODULE(data_members_ext)
         .def_readonly("x", &X::x)
         .add_property("fair_value", get_fair_value)
         ;
-    
+
     class_<Y>("Y", init<int>())
         .def("value", &Y::value)
         .def("set", &Y::set)
@@ -57,7 +57,12 @@ BOOST_PYTHON_MODULE(data_members_ext)
 
     class_<Var>("Var", init<std::string>())
         .def_readonly("name", &Var::name)
-        .def_readonly("name2", &Var::name2)
+        .def_readonly("name2",
+#if __MWERKS__ <= 0x2407 // Old MWerks mis-deduces the type here as `char* Var::*'
+                      (char const* Var::*)
+#endif 
+                      &Var::name2
+            )
         .def_readwrite("value", &Var::value)
         .def_readonly("y", &Var::y)
         

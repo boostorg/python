@@ -12,25 +12,6 @@
 
 namespace boost { namespace python { namespace converter { 
 
-PyObject* registration::to_python(void const volatile* source) const
-{
-    if (this->m_to_python == 0)
-    {
-        handle<> msg(
-            ::PyString_FromFormat(
-                "No to_python (by-value) converter found for C++ type: %s"
-                , this->target_type.name()));
-            
-        PyErr_SetObject(PyExc_TypeError, msg.get());
-
-        throw_error_already_set();
-    }
-        
-    return source == 0
-        ? incref(Py_None)
-        : this->m_to_python(const_cast<void*>(source));
-}
-
 namespace detail
 {
   arg_to_python_base::arg_to_python_base(

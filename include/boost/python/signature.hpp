@@ -91,7 +91,7 @@ get_signature(RT(*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)))
 # undef N
 
 # define BOOST_PP_ITERATION_PARAMS_2 \
-    (3, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/signature.hpp>))
+    (3, (0, 3, <boost/python/signature.hpp>))
 # include BOOST_PP_ITERATE()
 
 #else

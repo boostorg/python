@@ -18,7 +18,7 @@
 
 namespace boost { namespace python { namespace converter { 
 
-PyTypeObject* registration::get_class_object() const
+BOOST_PYTHON_DECL PyTypeObject* registration::get_class_object() const
 {
     if (this->m_class_object == 0)
     {
@@ -33,6 +33,24 @@ PyTypeObject* registration::get_class_object() const
     return this->m_class_object;
 }
   
+BOOST_PYTHON_DECL PyObject* registration::to_python(void const volatile* source) const
+{
+    if (this->m_to_python == 0)
+    {
+        handle<> msg(
+            ::PyString_FromFormat(
+                "No to_python (by-value) converter found for C++ type: %s"
+                , this->target_type.name()));
+            
+        PyErr_SetObject(PyExc_TypeError, msg.get());
+
+        throw_error_already_set();
+    }
+        
+    return source == 0
+        ? incref(Py_None)
+        : this->m_to_python(const_cast<void*>(source));
+}
 
 namespace // <unnamed>
 {
