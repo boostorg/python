@@ -77,21 +77,21 @@ void function::add_overload(function* overload)
 }
 
 void function::add_to_namespace(
-    PyObject* name_space, char const* name_, PyObject* attribute_)
+    ref const& name_space, char const* name_, ref const& attribute)
 {
-    ref attribute(attribute_, ref::increment_count);
-    string name(name_);
+    string const name(name_);
+    PyObject* const ns = name_space.get();
     
-    if (attribute_->ob_type == &function_type)
+    if (attribute->ob_type == &function_type)
     {
         PyObject* dict = 0;
         
-        if (PyClass_Check(name_space))
-            dict = ((PyClassObject*)name_space)->cl_dict;
-        else if (PyType_Check(name_space))
-            dict = ((PyTypeObject*)name_space)->tp_dict;
+        if (PyClass_Check(ns))
+            dict = ((PyClassObject*)ns)->cl_dict;
+        else if (PyType_Check(ns))
+            dict = ((PyTypeObject*)ns)->tp_dict;
         else
-            dict = PyObject_GetAttrString(name_space, "__dict__");
+            dict = PyObject_GetAttrString(ns, "__dict__");
 
         if (dict == 0)
             throw error_already_set();
@@ -101,14 +101,14 @@ void function::add_to_namespace(
         if (existing.get() && existing->ob_type == &function_type)
         {
             static_cast<function*>(existing.get())->add_overload(
-                static_cast<function*>(attribute_));
+                static_cast<function*>(attribute.get()));
             return;
         }
     }
     
     // The PyObject_GetAttrString() call above left an active error
     PyErr_Clear();
-    if (PyObject_SetAttr(name_space, name.get(), attribute_) < 0)
+    if (PyObject_SetAttr(ns, name.get(), attribute.get()) < 0)
         throw error_already_set();
 }
 

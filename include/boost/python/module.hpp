@@ -25,7 +25,7 @@ class BOOST_PYTHON_DECL module_base
     // Add elements to the module
     void add(PyObject* x, const char* name);
     void add(PyTypeObject* x, const char* name = 0);
-    void add(ref x, const char*name);
+    void add(ref const& x, const char*name);
 
     // Return true iff a module is currently being built.
     static bool initializing();
@@ -35,10 +35,10 @@ class BOOST_PYTHON_DECL module_base
     static string name();
 
     // Return a pointer to the Python module object being built
-    PyObject* module() const;
+    ref module() const;
 
  private:
-    PyObject* m_module;
+    ref m_module;
     static PyMethodDef initial_methods[1];
 };
 
@@ -65,7 +65,7 @@ class module : public module_base
 //
 // inline implementations
 //
-inline PyObject* module_base::module() const
+inline ref module_base::module() const
 {
     return m_module;
 }

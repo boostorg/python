@@ -27,7 +27,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     // a function object (this class), and an existing function is
     // already there, add it as an overload.
     static void add_to_namespace(
-        PyObject* name_space, char const* name, PyObject* attribute);
+        ref const& name_space, char const* name, ref const& attribute);
     
  private: // helper functions
     void argument_error(PyObject* args, PyObject* keywords) const;

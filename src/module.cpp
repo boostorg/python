@@ -27,11 +27,14 @@ string module_base::name()
 }
 
 module_base::module_base(const char* name)
-    : m_module(Py_InitModule(const_cast<char*>(name), initial_methods))
+    : m_module(
+        Py_InitModule(const_cast<char*>(name), initial_methods)
+        , ref::increment_count)
 {
     // If this fails, you've created more than 1 module object in your module    
     assert(name_holder.get() == 0);
-    name_holder = ref(PyObject_GetAttrString(m_module, const_cast<char*>("__name__")));
+    name_holder = ref(PyObject_GetAttrString(
+                          m_module.get() , const_cast<char*>("__name__")));
 }
 
 module_base::~module_base()
@@ -44,11 +47,11 @@ void module_base::add(PyObject* x, const char* name)
     add(ref(x), name);
 }
 
-void module_base::add(ref x, const char* name)
+void module_base::add(ref const& x, const char* name)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
-    objects::function::add_to_namespace(m_module, name, x.get());
+    objects::function::add_to_namespace(m_module, name, x);
 }
 
 void module_base::add(PyTypeObject* x, const char* name /*= 0*/)

@@ -100,7 +100,7 @@ class class_ : objects::class_base
     {
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
-        objects::function::add_to_namespace(this->object(), name, detail::wrap_function(f));
+        objects::function::add_to_namespace(this->object(), name, ref(detail::wrap_function(f)));
         return *this;
     }
 
