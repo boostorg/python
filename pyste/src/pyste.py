@@ -29,6 +29,17 @@ import time
 
 __VERSION__ = '0.6.4'
 
+def RecursiveIncludes(include):
+    'Return a list containg the include dir and all its subdirectories'
+    dirs = [include]
+    def visit(arg, dir, names):
+        # ignore CVS dirs
+        if os.path.split(dir)[1] != 'CVS':
+            dirs.append(dir)
+    os.path.walk(include, visit, None)
+    return dirs
+
+    
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:
         include = os.environ['INCLUDE']
@@ -46,7 +57,7 @@ def ParseArguments():
     try:
         options, files = getopt.getopt(
             sys.argv[1:], 
-            'I:D:vh', 
+            'R:I:D:vh', 
             ['module=', 'out=', 'no-using', 'pyste-ns=', 'debug', 'version', 'help'])
     except getopt.GetoptError, e:
         print
@@ -61,6 +72,8 @@ def ParseArguments():
             includes.append(value)
         elif opt == '-D':
             defines.append(value)
+        elif opt == '-R':
+            includes.extend(RecursiveIncludes(value))
         elif opt == '--module':
             module = value
         elif opt == '--out':
