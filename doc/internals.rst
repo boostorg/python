@@ -4,6 +4,7 @@
 
 .. |(logo)| image:: ../../../c++boost.gif
    :alt: Boost
+   :class: boost-logo
 
 __ ../../../index.htm
 
