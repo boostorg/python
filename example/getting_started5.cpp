@@ -97,7 +97,7 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
   {
     python::tuple result(3);
     for (int i = 0; i < 3; i++)
-      result.set_item(i, to_python(hkl.v[i]));
+      result.set_item(i, python::ref(to_python(hkl.v[i])));
     return result.reference().release();
   }
 
