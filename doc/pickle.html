@@ -132,7 +132,7 @@ Both __getinitargs__ and __getstate__ are not defined.
   this is, e.g.:
 
 <pre>
-    class_builder<your_class> py_your_class(your_module, "your_class");
+    class_builder&lt;your_class&gt; py_your_class(your_module, "your_class");
     py_your_class.dict_defines_state();
 </pre>
 
@@ -185,7 +185,7 @@ __getstate__ is defined and the instance's __dict__ is not empty.
   E.g. in C++:
 
 <pre>
-    class_builder<your_class> py_your_class(your_module, "your_class");
+    class_builder&lt;your_class&gt; py_your_class(your_module, "your_class");
     py_your_class.getstate_manages_dict();
 </pre>
 
