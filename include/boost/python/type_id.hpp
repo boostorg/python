@@ -54,7 +54,7 @@ template <class T>
 inline type_info type_id(boost::type<T>* = 0)
 {
     return type_info(
-#  if (!defined(BOOST_MSVC) || BOOST_MSVC > 1300) && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
+#  if (!defined(BOOST_MSVC) || BOOST_MSVC > 1300) && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 700)
         typeid(T)
 #  else // strip the decoration which msvc and Intel mistakenly leave in
         python::detail::msvc_typeid<T>()

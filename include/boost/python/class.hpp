@@ -9,7 +9,6 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/bases.hpp>
-# include <boost/python/args.hpp>
 
 # include <boost/python/object.hpp>
 
@@ -35,8 +34,11 @@
 # include <boost/python/detail/defaults_def.hpp>
 # include <boost/python/signature.hpp>
 # include <boost/python/init.hpp>
+# include <boost/python/args_fwd.hpp>
 
 namespace boost { namespace python {
+
+enum no_init_t { no_init };
 
 namespace detail
 {
@@ -85,7 +87,23 @@ namespace detail
       SelectHolder::register_();
   }
 
-  template <class T> int assert_default_constructible(T const&);
+  // A helpful compile-time assertion which gives a reasonable error
+  // message if T can't be default-constructed.
+  template <class T>
+  class assert_default_constructible
+  {
+      template <class U>
+      static int specify_init_arguments_or_no_init_for_class_(U const&);
+   public:
+      assert_default_constructible()
+      {
+          force_instantiate(
+              sizeof(
+                  specify_init_arguments_or_no_init_for_class_(T())
+                  ));
+                      
+      }
+  };
 }
 
 //
@@ -102,9 +120,10 @@ template <
     >
 class class_ : public objects::class_base
 {
- private: // types
-   typedef objects::class_base base;
-
+ public: // types
+    typedef objects::class_base base;
+    typedef T wrapped_type;
+    
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
 
@@ -116,11 +135,14 @@ class class_ : public objects::class_base
 
     typedef objects::select_holder<T,held_type> holder_selector;
 
+ private:
+
     typedef typename detail::select_bases<X1
             , typename detail::select_bases<X2
               , typename boost::python::detail::select_bases<X3>::type
               >::type
             >::type bases;
+
 
     // A helper class which will contain an array of id objects to be
     // passed to the base class constructor
@@ -181,7 +203,7 @@ class class_ : public objects::class_base
     template <class F>
     self& def(char const* name, F f)
     {
-        this->def_impl(name, f, default_call_policies(), 0, &f);
+        this->def_impl(name, f, detail::keywords<>(), default_call_policies(), 0, &f);
         return *this;
     }
 
@@ -199,7 +221,7 @@ class class_ : public objects::class_base
         //      def(name, function)
         //      def(name, function, policy)
         //      def(name, function, doc_string)
-        //      def(name, signature, stubs)
+        //      def(name, signature, overloads)
 
         dispatch_def(&arg2, name, arg1, arg2);
         return *this;
@@ -216,47 +238,18 @@ class class_ : public objects::class_base
         return *this;
     }
 
+    template <class Arg1T, class Arg2T, class Arg3T, class Arg4T>
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, Arg4T const& arg4)
+    {
+        dispatch_def(&arg2, name, arg1, arg2, arg3, arg4);
+        return *this;
+    }
+
     template <detail::operator_id id, class L, class R>
     self& def(detail::operator_<id,L,R> const& op)
     {
         typedef detail::operator_<id,L,R> op_t;
         return this->def(op.name(), &op_t::template apply<T>::execute);
-    }
-
-    // Define the constructor with the given Args, which should be an
-    // MPL sequence of types.
-    template <class Args>
-    self& def_init(Args const&)
-    {
-        return this->def("__init__",
-            python::make_constructor<Args>(
-                // Using runtime type selection works around a CWPro7 bug.
-                holder_selector::execute((held_type*)0).get()
-                )
-            );
-    }
-
-    template <class Args, class CallPolicyOrDoc>
-    self& def_init(Args const&, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
-    {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
-
-        return this->def(
-            "__init__",
-            python::make_constructor<Args>(
-                helper::get_policy(policy_or_doc)
-                // Using runtime type selection works around a CWPro7 bug.
-                , holder_selector::execute((held_type*)0).get()
-                )
-            , helper::get_doc(policy_or_doc, doc)
-            );
-    }
-
-    // Define the default constructor.
-    self& def_init()
-    {
-        this->def_init(mpl::list0<>::type());
-        return *this;
     }
 
     //
@@ -313,68 +306,105 @@ class class_ : public objects::class_base
 
  private: // helper functions
 
-    template <class Fn, class Policies>
-    inline void def_impl(char const* name, Fn fn, Policies const& policies
-                         , char const* doc, ...)
+    template <class Fn, class Policies, class Keywords>
+    inline void def_impl(
+        char const* name
+        , Fn fn
+        , Keywords const& keywords
+        , Policies const& policies
+        , char const* doc
+        , ...)
     {
         objects::add_to_namespace(
             *this, name,
             make_function(
-                    // This bit of nastiness casts F to a member function of T if possible.
+                // This bit of nastiness casts F to a member function of T if possible.
                 detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
-                , policies)
+                , policies, keywords)
             , doc);
     }
 
     template <class F>
-    inline void def_impl(char const* name, F f, default_call_policies const&
-                         , char const* doc, object const*)
+    inline void def_impl(
+        char const* name
+        , F f
+        , detail::keywords<> const&
+        , default_call_policies const&
+        , char const* doc
+        , object const*)
     {
         objects::add_to_namespace(*this, name, f, doc);
     }
 
     inline void register_() const;
 
-    template <class StubsT, class SigT>
+    template <class OverloadsT, class SigT>
     void dispatch_def(
         detail::overloads_base const*,
         char const* name,
         SigT sig,
-        StubsT const& stubs)
+        OverloadsT const& overloads)
     {
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
         detail::define_with_defaults(
-            name, stubs, *this, detail::get_signature(sig));
+            name, overloads, *this, detail::get_signature(sig));
     }
 
-    template <class Fn, class CallPolicyOrDoc>
+    template <class Fn, class A1>
     void dispatch_def(
         void const*,
         char const* name,
         Fn fn,
-        CallPolicyOrDoc const& policy_or_doc)
+        A1 const& a1)
     {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        detail::def_helper<A1> helper(a1);
+      
         this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc),
-            helper::get_doc(policy_or_doc, 0), &fn);
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
 
     }
 
-    template <class Fn, class CallPolicyOrDoc1, class CallPolicyOrDoc2>
+    template <class Fn, class A1, class A2>
     void dispatch_def(
         void const*,
         char const* name,
         Fn fn,
-        CallPolicyOrDoc1 const& policy_or_doc1,
-        CallPolicyOrDoc2 const& policy_or_doc2)
+        A1 const& a1,
+        A2 const& a2)
     {
-        typedef detail::def_helper<CallPolicyOrDoc1> helper;
-
+        detail::def_helper<A1,A2> helper(a1,a2);
+      
         this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc1, policy_or_doc2),
-            helper::get_doc(policy_or_doc1, policy_or_doc2), &fn);
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
+    }
+
+    template <class Fn, class A1, class A2, class A3>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        A1 const& a1,
+        A2 const& a2,
+        A3 const& a3
+        )
+    {
+        detail::def_helper<A1,A2,A3> helper(a1,a2,a3);
+      
+        this->def_impl(
+            name, fn
+            , helper.keywords()
+            , helper.policies()
+            , helper.doc()
+            , &fn);
     }
 };
 
@@ -399,8 +429,8 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
-    this->def_init();
+    detail::assert_default_constructible<T>();
+    this->def(init<>());
     this->set_instance_size(holder_selector::additional_size());
 }
 

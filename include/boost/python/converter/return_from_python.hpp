@@ -13,6 +13,7 @@
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/call_traits.hpp>
 # include <boost/python/detail/void_return.hpp>
+# include <boost/python/errors.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -141,7 +142,7 @@ namespace detail
   inline T return_object_manager_from_python<T>::operator()(PyObject* obj) const
   {
       return T(
-          object_manager_traits<T>::adopt(obj)
+          object_manager_traits<T>::adopt(expect_non_null(obj))
           );
   }
 }

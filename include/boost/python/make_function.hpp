@@ -7,6 +7,7 @@
 # define MAKE_FUNCTION_DWA20011221_HPP
 
 # include <boost/python/object/function_object.hpp>
+# include <boost/python/args_fwd.hpp>
 # include <boost/python/object/make_holder.hpp>
 # include <boost/python/detail/caller.hpp>
 # include <boost/python/detail/arg_tuple_size.hpp>
@@ -30,6 +31,20 @@ object make_function(F f, Policies const& policies)
     return objects::function_object(
         ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, policies)
         , detail::arg_tuple_size<F>::value);
+}
+
+template <class F, class Policies, class Keywords>
+object make_function(F f, Policies const& policies, Keywords const& keywords)
+{
+    enum { n_arguments = detail::arg_tuple_size<F>::value };
+    typedef typename detail::error::more_keywords_than_function_arguments<
+        Keywords::size, n_arguments
+        >::too_many_keywords assertion;
+    
+   return objects::function_object(
+        ::boost::bind<PyObject*>(detail::caller(), f, _1, _2, policies)
+        , n_arguments
+        , keywords.range());
 }
 
 template <class ArgList, class HolderGenerator>

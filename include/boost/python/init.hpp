@@ -1,16 +1,17 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Copyright David Abrahams 2002. Permission to copy, use,
-// modify, sell and distribute this software is granted provided this
-// copyright notice appears in all copies. This software is provided
-// "as is" without express or implied warranty, and with no claim as
-// to its suitability for any purpose.
+// Copyright David Abrahams 2002, Joel de Guzman, 2002. Permission to copy,
+// use, modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided "as is"
+// without express or implied warranty, and with no claim as to its
+// suitability for any purpose.
 //
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef INIT_JDG20020820_HPP
 #define INIT_JDG20020820_HPP
 
 #include <boost/python/detail/type_list.hpp>
+#include <boost/python/args_fwd.hpp>
 #include <boost/mpl/fold_backward.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/apply_if.hpp>
@@ -25,6 +26,7 @@
 #include <boost/mpl/find_if.hpp>
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/pop_front.hpp>
+#include <boost/mpl/bool_c.hpp>
 
 #include <boost/type_traits/is_same.hpp>
 
@@ -33,6 +35,8 @@
 #include <boost/preprocessor/enum_params.hpp>
 #include <boost/preprocessor/enum_params.hpp>
 #include <boost/preprocessor/repeat.hpp>
+
+#include <utility>
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT                                \
@@ -55,13 +59,22 @@
 namespace boost { namespace python {
 
 template <BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT>
-struct init; // forward declaration
+class init; // forward declaration
 
-///////////////////////////////////////
+
 template <BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT>
 struct optional; // forward declaration
 
-namespace detail {
+namespace detail
+{
+  namespace error
+  {
+    template <int keywords, int init_args>
+    struct more_keywords_than_init_arguments
+    {
+        typedef char too_many_keywords[init_args - keywords >= 0 ? 1 : -1];
+    };
+  }
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -89,7 +102,7 @@ namespace detail {
                 sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
         typedef mpl::bool_c<value> type;
 
-        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T)) // needed for MSVC & Borland
+        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T))
     };
 
     ///////////////////////////////////////
@@ -111,61 +124,114 @@ namespace detail {
     struct is_optional : is_optional_impl<T>
     {
         typedef mpl::bool_c<is_optional_impl<T>::value> type;
-        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T)) // needed for MSVC & Borland
+        BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T))
     };
     #endif // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
 } // namespace detail
 
 template <class DerivedT>
-struct init_base {
+struct init_base
+{
+    init_base(char const* doc_, detail::keyword_range const& keywords_)
+        : m_doc(doc_), m_keywords(keywords_)
+    {}
+
+    init_base(char const* doc_)
+        : m_doc(doc_)
+    {}
 
     DerivedT const& derived() const
-    { return *static_cast<DerivedT const*>(this); }
+    {
+        return *static_cast<DerivedT const*>(this);
+    }
+
+    char const* doc_string() const
+    {
+        return m_doc;
+    }
+
+    detail::keyword_range const& keywords() const
+    {
+        return m_keywords;
+    }
+
+    static default_call_policies call_policies()
+    {
+        return default_call_policies();
+    }
+
+ private: // data members
+    char const* m_doc;
+    detail::keyword_range m_keywords;
 };
 
 template <class CallPoliciesT, class InitT>
-struct init_with_call_policies
-: public init_base<init_with_call_policies<CallPoliciesT, InitT> >
+class init_with_call_policies
+    : public init_base<init_with_call_policies<CallPoliciesT, InitT> >
 {
+    typedef init_base<init_with_call_policies<CallPoliciesT, InitT> > base;
+ public:
     BOOST_STATIC_CONSTANT(int, n_arguments = InitT::n_arguments);
     BOOST_STATIC_CONSTANT(int, n_defaults = InitT::n_defaults);
 
     typedef typename InitT::reversed_args reversed_args;
 
-    init_with_call_policies(CallPoliciesT const& policies_, char const* doc_)
-    : policies(policies_), doc(doc_) {}
+    init_with_call_policies(
+        CallPoliciesT const& policies_
+        , char const* doc_
+        , detail::keyword_range const& keywords
+        )
+        : base(doc_, keywords)
+        , m_policies(policies_)
+    {}
 
-    char const* doc_string() const
-    { return doc; }
+    CallPoliciesT const& call_policies() const
+    {
+        return this->m_policies;
+    }
 
-    CallPoliciesT
-    call_policies() const
-    { return policies; }
-
-    CallPoliciesT policies;
-    char const* doc;
+ private: // data members
+    CallPoliciesT m_policies;
 };
 
 template <BOOST_PYTHON_OVERLOAD_TYPES>
-struct init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
+class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
 {
+    typedef init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> > base;
+ public:
     typedef init<BOOST_PYTHON_OVERLOAD_ARGS> self_t;
 
     init(char const* doc_ = 0)
-    : doc(doc_) {}
+        : base(doc_)
+    {
+    }
 
-    char const* doc_string() const
-    { return doc; }
+    template <class Keywords>
+    init(char const* doc_, Keywords const& kw)
+        : base(doc_, std::make_pair(kw.base(), kw.base() + Keywords::size))
+    {
+        typedef typename detail::error::more_keywords_than_init_arguments<
+            Keywords::size, n_arguments
+            >::too_many_keywords assertion;
+    }
 
-    default_call_policies
-    call_policies() const
-    { return default_call_policies(); }
+    template <class Keywords>
+    init(Keywords const& kw, char const* doc_ = 0)
+        : base(doc_, kw.range())
+    {
+        typedef typename detail::error::more_keywords_than_init_arguments<
+            Keywords::size, n_arguments
+            >::too_many_keywords assertion;
+    }
 
     template <class CallPoliciesT>
     init_with_call_policies<CallPoliciesT, self_t>
     operator[](CallPoliciesT const& policies) const
-    { return init_with_call_policies<CallPoliciesT, self_t>(policies, doc); }
+    {
+        return init_with_call_policies<CallPoliciesT, self_t>(
+            policies, this->doc_string(), this->keywords());
+    }
 
     typedef detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS> signature_;
     typedef typename mpl::end<signature_>::type finish;
@@ -213,37 +279,35 @@ struct init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
 
     // Count the maximum number of arguments
     BOOST_STATIC_CONSTANT(int, n_arguments = mpl::size<reversed_args>::value);
-
-    char const* doc;
 };
 
+#    if 1
 template <> // specialization for zero args
-struct init<> : public init_base<init<> >
+class init<> : public init_base<init<> >
 {
+    typedef init_base<init<> > base;
+ public:
     typedef init<> self_t;
 
     init(char const* doc_ = 0)
-    : doc(doc_) {}
-
-    char const* doc_string() const
-    { return doc; }
-
-    default_call_policies
-    call_policies() const
-    { return default_call_policies(); }
+        : base(doc_)
+    {
+    }
 
     template <class CallPoliciesT>
     init_with_call_policies<CallPoliciesT, self_t>
     operator[](CallPoliciesT const& policies) const
-    { return init_with_call_policies<CallPoliciesT, self_t>(policies, doc); }
+    {
+        return init_with_call_policies<CallPoliciesT, self_t>(
+            policies, this->doc_string(), this->keywords());
+    }
 
     BOOST_STATIC_CONSTANT(int, n_defaults = 0);
     BOOST_STATIC_CONSTANT(int, n_arguments = 0);
 
     typedef detail::type_list<> reversed_args;
-
-    char const* doc;
 };
+#    endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -261,7 +325,13 @@ struct optional
 namespace detail
 {
   template <class ClassT, class CallPoliciesT, class ReversedArgs>
-  void def_init_reversed(ClassT& cl, ReversedArgs const&, CallPoliciesT const& policies, char const* doc)
+  void def_init_reversed(
+      ClassT& cl
+      , ReversedArgs const&
+      , CallPoliciesT const& policies
+      , char const* doc
+      , detail::keyword_range const& keywords_
+      )
   {
       typedef typename mpl::fold<
           ReversedArgs
@@ -269,7 +339,19 @@ namespace detail
           , mpl::push_front<>
           >::type args;
 
-      cl.def_init(args(), policies, doc);
+      typedef typename ClassT::holder_selector holder_selector_t;
+      typedef typename ClassT::held_type held_type_t;
+
+      cl.def(
+            "__init__",
+            detail::make_keyword_range_constructor<args>(
+                policies
+                , keywords_
+                // Using runtime type selection works around a CWPro7 bug.
+                , holder_selector_t::execute((held_type_t*)0).get()
+                )
+            , doc
+            );
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -288,12 +370,20 @@ namespace detail
   struct define_class_init_helper {
 
       template <class ClassT, class CallPoliciesT, class ReversedArgs>
-      static void apply(ClassT& cl, CallPoliciesT const& policies, ReversedArgs const& args, char const* doc)
+      static void apply(
+          ClassT& cl
+          , CallPoliciesT const& policies
+          , ReversedArgs const& args
+          , char const* doc
+          , detail::keyword_range keywords)
       {
-          def_init_reversed(cl, args, policies, doc);
+          def_init_reversed(cl, args, policies, doc, keywords);
+
+          if (keywords.second > keywords.first)
+              --keywords.second;
 
           typename mpl::pop_front<ReversedArgs>::type next;
-          define_class_init_helper<N-1>::apply(cl, policies, next, doc);
+          define_class_init_helper<N-1>::apply(cl, policies, next, doc, keywords);
       }
   };
 
@@ -311,9 +401,14 @@ namespace detail
   struct define_class_init_helper<0> {
 
       template <class ClassT, class CallPoliciesT, class ReversedArgs>
-      static void apply(ClassT& cl, CallPoliciesT const& policies, ReversedArgs const& args, char const* doc)
+      static void apply(
+          ClassT& cl
+          , CallPoliciesT const& policies
+          , ReversedArgs const& args
+          , char const* doc
+          , detail::keyword_range const& keywords)
       {
-          def_init_reversed(cl, args, policies, doc);
+          def_init_reversed(cl, args, policies, doc, keywords);
       }
   };
 }
@@ -345,7 +440,7 @@ define_init(ClassT& cl, InitT const& i)
 {
     typedef typename InitT::reversed_args reversed_args;
     detail::define_class_init_helper<InitT::n_defaults>::apply(
-        cl, i.call_policies(), reversed_args(), i.doc_string());
+        cl, i.call_policies(), reversed_args(), i.doc_string(), i.keywords());
 }
 
 }} // namespace boost::python

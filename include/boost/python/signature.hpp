@@ -1,10 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Copyright David Abrahams 2002. Permission to copy, use,
-// modify, sell and distribute this software is granted provided this
-// copyright notice appears in all copies. This software is provided
-// "as is" without express or implied warranty, and with no claim as
-// to its suitability for any purpose.
+// Copyright David Abrahams 2002, Joel de Guzman, 2002. Permission to copy,
+// use, modify, sell and distribute this software is granted provided this
+// copyright notice appears in all copies. This software is provided "as is"
+// without express or implied warranty, and with no claim as to its
+// suitability for any purpose.
 //
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(BOOST_PP_IS_ITERATING)
@@ -129,7 +129,7 @@ get_signature(RT(ClassT::*)(BOOST_PYTHON_SIGNATURE_TYPES) const)
 #endif // N < (BOOST_PYTHON_MAX_ARITY - 2)
 
 # undef BOOST_PYTHON_SIGNATURE_PARAMS
-# undef BOOST_PYTHON_SIGNATURE_TYPES 
+# undef BOOST_PYTHON_SIGNATURE_TYPES
 # undef BOOST_PYTHON_TRAILING_SIGNATURE_TYPES
 
 #endif // !defined(BOOST_PP_IS_ITERATING)

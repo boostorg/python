@@ -6,72 +6,146 @@
 #ifndef DEF_HELPER_DWA200287_HPP
 # define DEF_HELPER_DWA200287_HPP
 
+# include <boost/python/args.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/same_traits.hpp>
-# include <boost/python/detail/string_literal.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
+# include <boost/mpl/logical/not.hpp>
+# include <boost/mpl/logical/and.hpp>
+# include <boost/type_traits/add_reference.hpp>
+# include <boost/mpl/lambda.hpp>
+# include <boost/mpl/apply.hpp>
+# include <boost/tuple/tuple.hpp>
+# include <boost/python/detail/not_specified.hpp>
 
-namespace boost { namespace python { namespace detail { 
+namespace boost { namespace python {
 
-//
-// def_helper<T> --
-//
-//      A helper for def() functions which determines how to interpret
-//      an argument of type T which could be either CallPolicies or a
-//      string literal representing a docstring.
-//
-//      Generates two static functions:
-//
-//        get_policy(x), where x is of type T, returns a policies
-//        object: either a reference to x or default_call_policies()
-//        if x is a string literal.
-//
-//        get_doc(x, s), where s convertible to char const*, returns x
-//        if x is a string literal, s otherwise.
+struct default_call_policies;
 
-template <bool is_string = false>
-struct def_helper_impl
+namespace detail
 {
-    template <class P>
-    static P const&
-    get_policy(P const& x) { return x; }
-
-    template <class P1, class P2>
-    static P1 const&
-    get_policy(P1 const& x, P2 const&) { return x; } // select left
-      
-    template <class P>
-    static char const*
-    get_doc(P const&, char const* doc) { return doc; } // select right
-};
-
-template <>
-struct def_helper_impl<true>
-{
-    static python::default_call_policies
-    get_policy(char const*)
-    { return default_call_policies(); }
-
-    template <class P1, class P2>
-    static P2 const&
-    get_policy(P1 const&, P2 const& y) { return y; } // select right
-
-    template <class P>
-    static char const*
-    get_doc(char const* doc, P const&) // select left
-    { return doc; }
-};
+  template <class Tuple, class Predicate>
+  struct tuple_extract;
   
-template <class T>
-struct def_helper
-    : def_helper_impl<
-    type_traits::ice_or<
-    is_string_literal<T const>::value
-    , is_same<T, char const*>::value
-    , is_same<T, char*>::value
->::value
->
-{};
+  template <bool matched>
+  struct tuple_extract_impl
+  {
+      template <class Tuple, class Predicate>
+      struct apply
+      {
+          typedef typename Tuple::head_type result_type;
+          
+          static typename Tuple::head_type extract(Tuple const& x)
+          {
+              return x.get_head();
+          }
+      };
+  };
+  
+  template <>
+  struct tuple_extract_impl<false>
+  {
+      template <class Tuple, class Predicate>
+      struct apply
+          : tuple_extract<typename Tuple::tail_type, Predicate>
+      {
+          // All of this forwarding would be unneeded if tuples were
+          // derived from their tails.
+          typedef tuple_extract<typename Tuple::tail_type, Predicate> base;
+          typedef typename base::result_type result_type;
+          static result_type extract(Tuple const& x)
+          {
+              return base::extract(x.get_tail());
+          }
+      };
+  };
 
-}}} // namespace boost::python::detail
+  template <class Tuple, class Predicate>
+  struct tuple_extract_base_select
+  {
+      typedef typename Tuple::head_type head_type;
+      typedef typename mpl::apply1<Predicate,head_type>::type match_t;
+      BOOST_STATIC_CONSTANT(bool, match = match_t::value);
+      typedef typename tuple_extract_impl<match>::template apply<Tuple,Predicate> type;
+  };
+  
+  template <class Tuple, class Predicate>
+  struct tuple_extract
+      : tuple_extract_base_select<
+         Tuple
+         , typename mpl::lambda<Predicate>::type
+      >::type
+  {
+  };
+
+  template <class Tuple>
+  struct doc_extract
+      : tuple_extract<
+      Tuple,
+      mpl::logical_not<
+        is_reference_to_class<
+          add_reference<mpl::_1>
+        >
+      > >
+  {
+  };
+  
+  template <class Tuple>
+  struct keyword_extract
+      : tuple_extract<Tuple, is_reference_to_keywords<add_reference<mpl::_1> > >
+  {
+  };
+
+  template <class Tuple>
+  struct policy_extract
+      : tuple_extract<
+          Tuple,
+          mpl::logical_and<
+             is_reference_to_class<add_reference<mpl::_> >
+             , mpl::logical_not<is_reference_to_keywords<add_reference<mpl::_1> > >
+          >
+        >
+  {
+  };
+
+# define BOOST_PYTHON_DEF_HELPER_TAIL default_call_policies, keywords<0>, char const*
+  template <class T1, class T2 = not_specified, class T3 = not_specified>
+  struct def_helper
+  {
+      typedef typename mpl::if_<
+          is_same<T2, not_specified>
+          , boost::tuples::tuple<T1 const&, BOOST_PYTHON_DEF_HELPER_TAIL>
+          , typename mpl::if_<
+                is_same<T3, not_specified>
+                , boost::tuples::tuple<T1 const&, T2 const&, BOOST_PYTHON_DEF_HELPER_TAIL>
+                , boost::tuples::tuple<T1 const&, T2 const&, T3 const&>
+            >::type
+         >::type all_t;
+
+      def_helper(T1 const& a1) : m_all(a1) {}
+      def_helper(T1 const& a1, T2 const& a2) : m_all(a1,a2) {}
+      def_helper(T1 const& a1, T2 const& a2, T3 const& a3) : m_all(a1,a2,a3) {}
+
+      char const* doc() const
+      {
+          return doc_extract<all_t>::extract(m_all);
+      }
+      
+      typename keyword_extract<all_t>::result_type keywords() const
+      {
+          return keyword_extract<all_t>::extract(m_all);
+      }
+      
+      typename policy_extract<all_t>::result_type policies() const
+      {
+          return policy_extract<all_t>::extract(m_all);
+      }
+      
+      all_t m_all;
+  };
+# undef BOOST_PYTHON_DEF_HELPER_TAIL
+}
+
+}} // namespace boost::python::detail
 
 #endif // DEF_HELPER_DWA200287_HPP

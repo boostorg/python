@@ -105,7 +105,7 @@ class dict : public object
     BOOST_PYTHON_DECL list values() const;
 
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dict)
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dict, object)
     
  private:
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);

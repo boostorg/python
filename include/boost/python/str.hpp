@@ -352,7 +352,7 @@ class str : public object
     BOOST_PYTHON_DECL str upper() const;
 
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(str)
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(str, object)
     
  private:
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);
