@@ -30,8 +30,8 @@ class module : public detail::module_base
     module& setattr(const char* name, handle<> const&);
     module& add(PyTypeObject* x); // just use the type's name
     
-    template <class T, class Bases, class HolderGenerator>
-    module& add(class_<T,Bases,HolderGenerator> const& c)
+    template <class T1, class T2 , class T3, class T4>
+    module& add(class_<T1,T2,T3,T4> const& c)
     {
         this->add_class(c.object());
         return *this;
