@@ -28,6 +28,13 @@ bool handle_exception(T f)
     return handle_exception_impl(function0<void>(boost::ref(f)));
 }
 
+namespace detail { inline void rethrow() { throw; } }
+
+inline void handle_exception()
+{
+    handle_exception(detail::rethrow);
+}
+
 BOOST_PYTHON_DECL PyObject* expect_non_null(PyObject* x);
 
 template <class T>
