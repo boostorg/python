@@ -34,6 +34,7 @@
 
 # include <boost/type_traits/is_same.hpp>
 # include <boost/type_traits/is_convertible.hpp>
+# include <boost/type_traits/remove_reference.hpp>
 
 # if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
 #  include <boost/type_traits/add_pointer.hpp>
@@ -217,6 +218,7 @@ namespace api
       PyObject* m_ptr;
   };
 
+# if BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template <class T, class U>
   struct is_derived_impl
   {
@@ -235,26 +237,51 @@ namespace api
   struct is_derived
     : mpl::bool_<is_derived_impl<T,U>::value>
   {};
+# else
+  template <class T, class U>
+  struct is_derived
+    : is_convertible<
+          typename remove_reference<T>::type*
+        , U const*
+      >
+  {};
+# endif 
 
   template <class T>
   typename objects::unforward_cref<T>::type do_unforward_cref(T const& x)
   {
+# if BOOST_WORKAROUND(__GNUC__, == 2)
+      typedef typename objects::unforward_cref<T>::type ret;
+      return ret(x);
+# else
       return x;
+# endif 
   }
 
+# if BOOST_WORKAROUND(__GNUC__, == 2)
+  // GCC 2.x has non-const string literals; this hacks around that problem.
+  template <unsigned N>
+  char const (& do_unforward_cref(char const(&x)[N]) )[N]
+  {
+      return x;
+  }
+# endif
+  
   class object;
   
   template <class T>
   PyObject* object_base_initializer(T const& x)
   {
+      typedef typename is_derived<
+          BOOST_DEDUCED_TYPENAME objects::unforward_cref<T>::type
+        , object
+      >::type is_obj;
+
       return object_initializer<
           BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
       >::get(
             api::do_unforward_cref(x)
-          , is_derived<
-               BOOST_DEDUCED_TYPENAME objects::unforward_cref<T>::type
-             , object
-          >()
+          , is_obj()
       );
   }
   

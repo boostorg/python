@@ -585,19 +585,14 @@ inline void class_<T,X1,X2,X3>::register_() const
     objects::register_class_from_python<T,bases>();
 
     typedef BOOST_DEDUCED_TYPENAME holder_selector::type select_holder;
-    typedef BOOST_DEDUCED_TYPENAME select_holder::type holder;
-    typedef BOOST_DEDUCED_TYPENAME holder::held_type held_t;
+    typedef BOOST_DEDUCED_TYPENAME select_holder::held_type held_t;
     
     detail::register_wrapper_class<held_t,T>();
         
     detail::register_class_to_python<T>(
         mpl::bool_<is_copyable>()
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-        , holder_selector::execute((held_type*)0)
-# else 
-        , BOOST_DEDUCED_TYPENAME holder_selector::type()
-# endif 
-        );
+      , BOOST_DEDUCED_TYPENAME holder_selector::type()
+    );
 }
 
 template <class T, class X1, class X2, class X3>
@@ -606,11 +601,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
 {
     this->register_();
     this->set_instance_size(holder_selector::additional_size());
-# if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-    holder_selector::execute((held_type*)0).assert_default_constructible();
-# else 
     holder_selector::type::assert_default_constructible();
-# endif 
     this->def(init<>());
 }
 

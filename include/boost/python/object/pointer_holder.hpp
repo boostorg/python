@@ -52,7 +52,6 @@ bool is_null(T* p, int)
 template <class Pointer, class Value>
 struct pointer_holder : instance_holder
 {
-    typedef Value held_type;
     typedef Value value_type;
     
     pointer_holder(Pointer);
@@ -75,6 +74,7 @@ template <class Pointer, class Value>
 struct pointer_holder_back_reference : instance_holder
 {
     typedef typename python::pointee<Pointer>::type held_type;
+ private:
     typedef Value value_type;
 
     // Not sure about this one -- can it work? The source object

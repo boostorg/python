@@ -109,6 +109,8 @@ namespace detail
         , value_holder<T>
       >::type type;
 
+      typedef Held held_type;
+      
       static inline void register_() {}
 
       static type* get() { return 0; }
@@ -135,6 +137,8 @@ namespace detail
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
       >::type type;
+      
+      typedef typename pointee<Ptr>::type held_type;
       
       static inline void register_()
       {

@@ -168,12 +168,12 @@ namespace boost { namespace python { namespace detail {
 
             while (right != proxies.end())
             {
+                typedef typename Proxy::container_type::difference_type difference_type;
                 extract<Proxy&> p(*right);
                 p().set_index(
                     extract<Proxy&>(*right)().get_index() 
-                        - (typename Proxy::container_type::difference_type(to) 
-                        - from - len)
-                    );
+                    - (difference_type(to) - from - len)
+                );
                     
                 ++right;
             }
