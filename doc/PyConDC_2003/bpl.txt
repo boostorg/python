@@ -828,8 +828,8 @@ as a guide to "The Zen of Python".  One of Dave's jobs was to develop
 a Python-based natural language processing system.  Since it was
 eventually going to be targeting embedded hardware, it was always
 assumed that the compute-intensive core would be rewritten in C++ to
-optimize speed and memory footprint [#1]_.  The project also wanted to
-test all of its C++ code using Python test scripts [#2]_.  The only
+optimize speed and memory footprint [#proto]_.  The project also wanted to
+test all of its C++ code using Python test scripts [#test]_.  The only
 tool we knew of for binding C++ and Python was SWIG_, and at the time
 its handling of C++ was weak.  It would be false to claim any deep
 insight into the possible advantages of Boost.Python's approach at
@@ -843,7 +843,7 @@ described in this paper, differing most-noticeably by having a
 slightly more cumbersome syntax and by lack of special support for
 operator overloading, pickling, and component-based development.
 These last three features were quickly added by Ullrich Koethe and
-Ralf Grosse-Kunstleve [#3]_, and other enthusiastic contributors arrived
+Ralf Grosse-Kunstleve [#feature]_, and other enthusiastic contributors arrived
 on the scene to contribute enhancements like support for nested
 modules and static member functions.
 
@@ -917,21 +917,31 @@ like serialization that are trivial in Python can be very difficult in
 pure C++.  Given the luxury of building a hybrid software system from
 the ground up, we can approach design with new confidence and power.
 
+===========
+ Citations
+===========
+
 .. [VELD1995] T. Veldhuizen, "Expression Templates," C++ Report,
    Vol. 7 No. 5 June 1995, pp. 26-31.
    http://osl.iu.edu/~tveldhui/papers/Expression-Templates/exprtmpl.html
 
-.. [#1] In retrospect, it seems that "thinking hybrid" from the ground up
-        might have been better for the NLP system: the natural component
-        boundaries defined by the pure python prototype turned out to be
-        inappropriate for getting the desired performance and memory footprint
-        out of the C++ core, which eventually caused some redesign overhead on
-        the Python side when the core was moved to C++.
+===========
+ Footnotes
+===========
 
-.. [#2] We also have some reservations about driving all C++ testing through a
-        Python interface, unless that's the only way it will be ultimately
-        used.  Any transition across language boundaries with such different
-        object models can inevitably mask bugs.  
+.. [#proto] In retrospect, it seems that "thinking hybrid" from the
+        ground up might have been better for the NLP system: the
+        natural component boundaries defined by the pure python
+        prototype turned out to be inappropriate for getting the
+        desired performance and memory footprint out of the C++ core,
+        which eventually caused some redesign overhead on the Python
+        side when the core was moved to C++.
 
-.. [#3] These features were expressed very differently in v1 of
+.. [#test] We also have some reservations about driving all C++
+        testing through a Python interface, unless that's the only way
+        it will be ultimately used.  Any transition across language
+        boundaries with such different object models can inevitably
+        mask bugs.
+
+.. [#feature] These features were expressed very differently in v1 of
         Boost.Python
