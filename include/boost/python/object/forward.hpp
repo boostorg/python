@@ -11,6 +11,11 @@
 # include <boost/type_traits/add_const.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/ref.hpp>
+# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+#  include <boost/type_traits/is_enum.hpp>
+#  include <boost/mpl/and.hpp>
+#  include <boost/mpl/not.hpp>
+# endif 
 
 namespace boost { namespace python { namespace objects { 
 
@@ -34,7 +39,17 @@ struct reference_to_value
 template <class T>
 struct forward
     : mpl::if_<
-        is_scalar<T>
+# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+          // vc6 chokes on unforwarding enums nested in classes
+          mpl::and_<
+              is_scalar<T>
+            , mpl::not_< 
+                  is_enum<T>
+              >
+          >
+# else 
+          is_scalar<T>
+# endif 
         , T
         , reference_to_value<T>
       >
