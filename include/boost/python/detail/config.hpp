@@ -13,7 +13,6 @@
 # define CONFIG_DWA052200_H_
 
 # include <boost/config.hpp>
-# include <cstddef>
 
 # ifdef BOOST_NO_OPERATORS_IN_NAMESPACE
    // A gcc bug forces some symbols into the global namespace
@@ -39,18 +38,6 @@
 
 #  pragma warning(disable: 985) // identifier was truncated in debug information
 
-# endif
-
-
-// Work around the broken library implementation/strict ansi checking on some
-// EDG-based compilers (e.g. alpha), which incorrectly warn that the result of
-// offsetof() is not an integer constant expression.
-# if defined(__DECCXX_VER) && __DECCXX_VER <= 60290024
-#  define BOOST_OFFSETOF(s_name, s_member) \
-        ((size_t)__INTADDR__(&(((s_name *)0)->s_member)))
-# else
-#  define BOOST_OFFSETOF(s_name, s_member) \
-        offsetof(s_name, s_member)
 # endif
 
 // The STLport puts all of the standard 'C' library names in std (as far as the
