@@ -38,15 +38,17 @@ class CppParser:
         return ' '.join(defines)
     
         
-    def UpdateCache(self, include, tail, declarations, header):
-        self._cache.append((include, tail, declarations, header))
+    def UpdateCache(self, include, tail, decl_name, declarations, header):
+        self._cache.append((include, tail, decl_name, declarations, header))
         if len(self._cache) > self._CACHE_SIZE:
             self._cache.pop(0)
 
             
-    def Cache(self, include, tail):
-        for cache_include, cache_tail, declarations, header in self._cache:
-            if cache_include == include and cache_tail == tail:
+    def Cache(self, include, tail, decl_name):
+        for cache_include, cache_tail, cache_decl, declarations, header in self._cache:
+            if cache_include == include \
+            and cache_tail == tail \
+            and cache_decl == decl_name:
                 return declarations, header
         return None
         
@@ -62,7 +64,7 @@ class CppParser:
         raise RuntimeError, 'Header file "%s" not found!' % name
     
             
-    def parse(self, include, tail=None):
+    def parse(self, include, tail=None, decl_name=None):
         '''Parses the given filename, and returns (declaration, header). The
         header returned is normally the same as the given to this method,
         except if tail is not None: in this case, the header is copied to a temp
@@ -70,7 +72,7 @@ class CppParser:
         This temp filename is then returned.
         '''        
         # check if this header was already parsed
-        cached = self.Cache(include, tail)
+        cached = self.Cache(include, tail, decl_name)
         if cached:
             return cached
         filename = self.FindFileName(include)
@@ -92,13 +94,15 @@ class CppParser:
             # call gccxml
             cmd = 'gccxml %s %s %s -fxml=%s' \
                % (includes, defines, infilename, xmlfile)
+            if decl_name is not None:
+                cmd += ' "-fxml-start=%s"' % decl_name
             status = os.system(cmd)        
             if status != 0 or not os.path.isfile(xmlfile):
                 raise CppParserError, 'Error executing gccxml'
             # parse the resulting xml
             declarations = ParseDeclarations(xmlfile)
             # cache the results
-            self.UpdateCache(include, tail, declarations, infilename)
+            self.UpdateCache(include, tail, decl_name, declarations, infilename)
             # return the declarations                         
             return declarations, infilename
         finally:

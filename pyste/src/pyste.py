@@ -114,7 +114,7 @@ def ParseArguments():
 
     
 def CreateContext():
-    'create the context where a interface file can be executed'
+    'create the context where a interface file will be executed'
     context = {}
     # infos
     context['Function'] = infos.FunctionInfo

@@ -99,7 +99,7 @@ class GCCXMLParser(object):
         restricted, id = Check(id, 'r')
         decl = self.GetDecl(id)
         if isinstance(decl, Type):
-            res = deepcopy(decl)
+            res = decl.Copy()
             if const:
                 res.const = const
             if volatile: 
@@ -259,7 +259,9 @@ class GCCXMLParser(object):
         type_ = self.GetType(element.get('type'))
         min = element.get('min')
         max = element.get('max')
-        array = ArrayType(type_.name, min, max, type_.const)
+        array = ArrayType(type_.name, type_.const)
+        array.min = min
+        array.max = max
         self.Update(id, array)
 
         

@@ -618,7 +618,7 @@ class _VirtualWrapperGenerator(object):
 
     def __init__(self, class_, bases, info):
         self.class_ = class_
-        self.bases = deepcopy(bases)
+        self.bases = bases[:]
         self.info = info
         self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
         self.virtual_methods = None

@@ -8,6 +8,8 @@ Module declarations
 class Declaration(object):
     'Represents a basic declaration.'
 
+    __slots__ = 'name namespace location incomplete'.split()
+
     def __init__(self, name, namespace):
         # the declaration name
         self.name = name
@@ -42,6 +44,7 @@ class Declaration(object):
 class Class(Declaration):
     'The declaration of a class or struct.'
     
+    __slots__= 'members abstract bases _members_count'.split()
     def __init__(self, name, namespace, members, abstract, bases):
         Declaration.__init__(self, name, namespace)
         # list of members
@@ -114,6 +117,8 @@ class Class(Declaration):
 class NestedClass(Class):
     'The declaration of a class/struct inside another class/struct.'
 
+    __slots__= 'class_ visibility'.split()
+    
     def __init__(self, name, class_, visib, members, abstract, bases):
         Class.__init__(self, name, None, members, abstract, bases)
         self.class_ = class_
@@ -128,6 +133,8 @@ class NestedClass(Class):
 class Base:
     'Represents a base class of another class.'
 
+    __slots__= 'name visibility'.split() 
+    
     def __init__(self, name, visibility=None):
         # class_ is the full name of the base class
         self.name = name
@@ -147,6 +154,8 @@ class Scope:
     
 class Function(Declaration):
     'The declaration of a function.'
+    
+    __slots__= 'result parameters'.split()
     
     def __init__(self, name, namespace, result, params):
         Declaration.__init__(self, name, namespace)
@@ -182,6 +191,7 @@ class Function(Declaration):
    
 class Operator(Function):
     'The declaration of a custom operator.'
+    
     def FullName(self):
         namespace = self.namespace or ''
         if not namespace.endswith('::'):
@@ -193,6 +203,8 @@ class Operator(Function):
 class Method(Function):
     'The declaration of a method.'
 
+    __slots__= 'visibility virtual abstract static class_ const'.split() 
+    
     def __init__(self, name, class_, result, params, visib, virtual, abstract, static, const):
         Function.__init__(self, name, None, result, params)
         self.visibility = visib
@@ -273,6 +285,8 @@ class ConverterOperator(ClassOperator):
 class Type(Declaration):
     'Represents a type.'
 
+    __slots__= 'const default volatile restricted incomplete'.split() 
+    
     def __init__(self, name, const=False, default=None, incomplete=False):
         Declaration.__init__(self, name, None)
         # whatever the type is constant or not
@@ -299,21 +313,37 @@ class Type(Declaration):
         return const + self.name
 
 
+    def Copy(self):
+        t = self.__class__(self.name, self.const, self.default, self.incomplete)
+        t.volatile = self.volatile
+        t.restricted = self.restricted
+        return t
+
 
 class ArrayType(Type):
     'Represents an array.'
 
-    def __init__(self, name, min, max, const=False):
+    __slots__= 'min max'.split() 
+    
+    def __init__(self, name, const=False, default=None, incomplete=False): 
         'min and max can be None.'
         Type.__init__(self, name, const)
-        self.min = min
-        self.max = max        
+        self.min = None
+        self.max = None        
+
+    def Copy(self):
+        t = Type.Copy(self)
+        t.min = self.min
+        t.max = self.max
+        return t 
 
 
     
 class ReferenceType(Type): 
     'A reference type.'    
 
+    __slots__= 'expand'.split() 
+    
     def __init__(self, name, const=False, default=None, incomplete=False, expandRef=True):
         Type.__init__(self, name, const, default, incomplete)
         self.expand = expandRef
@@ -327,9 +357,17 @@ class ReferenceType(Type):
         return Type.FullName(self) + expand
 
 
+    def Copy(self):
+        t = Type.Copy(self)
+        t.expand = self.expand
+        return t
+
+
 
 class PointerType(Type):
     'A pointer type.'
+    
+    __slots__= 'expand'.split() 
     
     def __init__(self, name, const=False, default=None, incomplete=False, expandPointer=False):
         Type.__init__(self, name, const, default, incomplete)
@@ -342,24 +380,31 @@ class PointerType(Type):
         if not self.expand:
             expand = ''
         return Type.FullName(self) + expand
+
+    def Copy(self):
+        t = Type.Copy(self)
+        t.expand = self.expand
+        return t 
    
 
 
 class FundamentalType(Type): 
     'One of the fundamental types (int, void...).'
 
-    def __init__(self, name, const=False):
-        Type.__init__(self, name, const)
+    def __init__(self, name, const=False, default=None, incomplete=False): 
+        Type.__init__(self, name, const, default, incomplete)
 
 
 
 class FunctionType(Type):
     'A pointer to a function.'
 
-    def __init__(self, result, params):
+    __slots__= 'result parameters name'.split() 
+    
+    def __init__(self, result, parameters):  
         Type.__init__(self, '', False)
         self.result = result
-        self.parameters = params
+        self.parameters = parameters
         self.name = self.FullName()
 
 
@@ -368,16 +413,21 @@ class FunctionType(Type):
         params = [x.FullName() for x in self.parameters]
         full += '(%s)' % ', '.join(params)        
         return full
-
+    
+    
+    def Copy(self):
+        return FunctionType(self.result, self.parameters[:])
     
 
 class MethodType(FunctionType):
     'A pointer to a member function of a class.'
 
-    def __init__(self, result, params, class_):
+    __slots__= 'result parameters class_ name'.split() 
+    
+    def __init__(self, result, parameters, class_):  
         Type.__init__(self, '', False)
         self.result = result
-        self.parameters = params
+        self.parameters = parameters
         self.class_ = class_
         self.name = self.FullName()
 
@@ -386,11 +436,15 @@ class MethodType(FunctionType):
         params = [x.FullName() for x in self.parameters]
         full += '(%s)' % ', '.join(params)
         return full
-
-
+    
+    def Copy(self):
+        return MethodType(self.result, self.parameters[:], self.class_)
+     
 
 class Variable(Declaration):
     'Represents a global variable.'
+    
+    __slots__= 'type'.split()
     
     def __init__(self, type, name, namespace):
         Declaration.__init__(self, name, namespace)
@@ -402,6 +456,8 @@ class Variable(Declaration):
 class ClassVariable(Variable):
     'Represents a class variable.'
 
+    __slots__= 'visibility static class_'.split() 
+    
     def __init__(self, type, name, class_, visib, static):
         Variable.__init__(self, type, name, None)
         self.visibility = visib
@@ -415,6 +471,8 @@ class ClassVariable(Variable):
         
     
 class Enumeration(Declaration):
+    
+    __slots__= 'values'.split()
     
     def __init__(self, name, namespace):
         Declaration.__init__(self, name, namespace)
@@ -431,6 +489,8 @@ class Enumeration(Declaration):
 
 class ClassEnumeration(Enumeration):
 
+    __slots__= 'class_ visibility'.split()
+    
     def __init__(self, name, class_, visib):
         Enumeration.__init__(self, name, None)
         self.class_ = class_
@@ -449,6 +509,8 @@ class ClassEnumeration(Enumeration):
 
 class Typedef(Declaration):
 
+    __slots__= 'type visibility'.split() 
+    
     def __init__(self, type, name, namespace):
         Declaration.__init__(self, name, namespace)
         self.type = type
@@ -462,6 +524,8 @@ class Union(Declaration):
 
 
 class ClassUnion(Union):
+
+    __slots__= 'class_ visibility'.split() 
 
     def __init__(self, name, class_, visib):
         Union.__init__(self, name, None)
