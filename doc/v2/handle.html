@@ -154,6 +154,7 @@ namespace boost { namespace python
       T* operator-&gt; () const;
       T&amp; operator* () const;
       T* get() const;
+      void reset();
       T* release();
 
       operator bool_type() const; // never throws
@@ -259,6 +260,14 @@ T* release();
     <dl class="function-semantics">
       <dt><b>Effects:</b> <code>T* x = m_p;&nbsp;m_p&nbsp;=&nbsp;0;return
       x;</code></dt>
+    </dl>
+
+<pre>
+void reset();
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Effects:</b> <code>*this&nbsp;=&nbsp;handle&lt;T&gt;();</code></dt>
     </dl>
 
     <h4><a name="handle-spec-observers">Class <code>handle</code>
