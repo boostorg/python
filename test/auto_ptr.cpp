@@ -9,8 +9,10 @@
 #include <boost/python/extract.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/implicit.hpp>
-#include "test_class.hpp"
 
+#include <boost/detail/workaround.hpp>
+
+#include "test_class.hpp"
 #include <memory>
 
 using namespace boost::python;
@@ -70,7 +72,7 @@ BOOST_PYTHON_MODULE(auto_ptr_ext)
         ;
 
     // VC6 auto_ptrs do not have converting constructors    
-#if defined(BOOST_MSVC_STD_ITERATOR)
+#if BOOST_WORKAROUND(BOOST_DINKUMWARE_STDLIB, < 306)
     scope().attr("broken_auto_ptr") = 1;
 #else
     scope().attr("broken_auto_ptr") = 0;

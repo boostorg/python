@@ -22,7 +22,7 @@
 >>> broken_auto_ptr and -1 or look(x)
 -1
 
->>> if not '--broken-auto-ptr' in sys.argv:
+>>> if not broken_auto_ptr:
 ...     try: x.value()
 ...     except TypeError: pass
 ...     else: print 'expected a TypeError exception'
