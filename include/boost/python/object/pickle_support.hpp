@@ -20,20 +20,34 @@ namespace error_messages {
 
 }
 
-class pickle_support_base
+namespace detail { struct pickle_support_registration; }
+
+struct pickle_support_base
 {
   private:
-    struct dummy_return_type_ {};
-
+    struct inaccessible {};
+    friend struct detail::pickle_support_registration;
   public:
+    static inaccessible* getinitargs() { return 0; }
+    static inaccessible* getstate() { return 0; }
+    static inaccessible* setstate() { return 0; }
+    static bool getstate_manages_dict() { return false; }
+};
+
+namespace detail {
+
+  struct pickle_support_registration
+  {
+    typedef pickle_support_base::inaccessible inaccessible;
+
     template <class Class_, class Tgetinitargs>
     static
     void
     register_(
       Class_& cl,
       tuple (*getinitargs_fn)(Tgetinitargs),
-      dummy_return_type_* (*getstate_fn)(),
-      dummy_return_type_* (*setstate_fn)(),
+      inaccessible* (*getstate_fn)(),
+      inaccessible* (*setstate_fn)(),
       bool)
     {
       cl.enable_pickle_support(false);
@@ -45,7 +59,7 @@ class pickle_support_base
     void
     register_(
       Class_& cl,
-      dummy_return_type_* (*getinitargs_fn)(),
+      inaccessible* (*getinitargs_fn)(),
       tuple (*getstate_fn)(Tgetstate),
       void (*setstate_fn)(Tsetstate, object),
       bool getstate_manages_dict)
@@ -83,13 +97,15 @@ class pickle_support_base
         error_messages::missing_pickle_support_function_or_incorrect_signature<
           Class_>::error_type error_type;
     }
+  };
 
-    static dummy_return_type_* getinitargs() { return 0; }
-    static dummy_return_type_* getstate() { return 0; }
-    static dummy_return_type_* setstate() { return 0; }
+  template <typename UserPickleSupportType>
+  struct pickle_support_finalize
+  : UserPickleSupportType,
+    pickle_support_registration
+  {};
 
-    static bool getstate_manages_dict() { return false; }
-};
+} // namespace detail
 
 }} // namespace boost::python
 
