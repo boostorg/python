@@ -333,6 +333,27 @@ struct Callback<void>
     }
 };
 
+// Make it a compile-time error to try to return a const char* from a virtual
+// function. The standard conversion
+//
+//      from_python(PyObject* string, py::Type<const char*>)
+//
+// returns a pointer to the character array which is internal to string. The
+// problem with trying to do this in a standard callback function is that the
+// Python string would likely be destroyed upon return from the calling function
+// (py::Callback<const char*>::call[_method]) when its reference count is
+// decremented. If you absolutely need to do this and you're sure it's safe (it
+// usually isn't), you can use
+//
+//      py::String result(py::Callback<py::String>::call[_method](...args...));
+//      ...result.c_str()... // access the char* array
+template <>
+struct Callback<const char*>
+{
+    // Try hard to generate a readable error message
+    typedef struct unsafe_since_python_string_may_be_destroyed {} call, call_method;
+};
+
 } // namespace py
 
 #endif // CALLBACK_DWA_052100_H_
