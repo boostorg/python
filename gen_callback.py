@@ -2,28 +2,6 @@ from gen_function import *
 import string
 
 def gen_callback(args):
-    # A template for the call_method function which we're going to generate
-    call_method = '''%{    template <%(class A%n%:, %)>
-%}    static %1 call_method(PyObject* self, const char* name%(, const A%n& a%n%))
-    {
-        %2PyEval_CallMethod(self, const_cast<char*>(name),
-                            const_cast<char*>("(%(N%))")%(,
-                            to_python(a%n)%))%3;
-    }
-
-'''
-
-    call_function = '''%{    template <%(class A%n%:, %)>
-%}    static %1 call(PyObject* self%(, const A%n& a%n%))
-    {
-        %2PyEval_CallFunction(self, const_cast<char*>("(%(N%))")%(,
-                              to_python(a%n)%))%3;
-    }
-
-'''
-    non_void = ('R', 'return from_python(expect_non_null(', '), Type<R>())')
-    void = ('void', 'expect_and_absorb_non_null(', ')')
-    
     return (
 """//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
@@ -43,16 +21,41 @@ def gen_callback(args):
 
 namespace py {
 
-// Just like the above, except we decrement p's reference count instead of returning it.
-void expect_and_absorb_non_null(PyObject* p);
+namespace detail {
+  template <class T>
+  inline void callback_adjust_refcount(PyObject*, Type<T>) {}
+  
+  inline void callback_adjust_refcount(PyObject* p, Type<PyObject*>)
+      { Py_INCREF(p); }
+}
 
 // Calling Python from C++
 template <class R>
 struct Callback
-{
-""" % args
-        + gen_functions(call_method, args, 'R', 'return from_python(expect_non_null(', '), Type<R>())')
-        + gen_functions(call_function, args, 'R', 'return from_python(expect_non_null(', '), Type<R>())')
+{""" % args
+
+    + gen_functions('''
+%{    template <%(class A%n%:, %)>
+%}    static R call_method(PyObject* self, const char* name%(, const A%n& a%n%))
+    {%(
+        Ptr p%n(to_python(a%n));%)
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(%(O%))")%(,
+                                     p%n.get()%)));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+%{    template <%(class A%n%:, %)>
+%}    static R call(PyObject* self%(, const A%n& a%n%))
+    {%(
+        Ptr p%n(to_python(a%n));%)
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
+                                       p%n.get()%)));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+''', args)
         + 
 """};
 
@@ -63,8 +66,24 @@ template <>
 struct Callback<void>
 {
 """
-        + gen_functions(call_method, args, 'void', 'expect_and_absorb_non_null(', ')')
-        + gen_functions(call_function, args, 'void', 'expect_and_absorb_non_null(', ')')
+        + gen_functions('''
+%{    template <%(class A%n%:, %)>
+%}    static void call_method(PyObject* self, const char* name%(, const A%n& a%n%))
+    {%(
+        Ptr p%n(to_python(a%n));%)
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(%(O%))")%(,
+                                     p%n.get()%)));
+    }
+
+%{    template <%(class A%n%:, %)>
+%}    static void call(PyObject* self%(, const A%n& a%n%))
+    {%(
+        Ptr p%n(to_python(a%n));%)
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
+                                       p%n.get()%)));
+    }
+''', args)
         +
 """};
 
