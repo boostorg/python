@@ -195,7 +195,13 @@ class class_ : public objects::class_base
     self& add_property(char const* name, object const& fget);
     self& add_property(char const* name, object const& fget, object const& fset);
 
-    self& setattr(char const* name, handle<> const&);
+    self& setattr(char const* name, object const&);
+
+    template <class T>
+    self& bind(char const* name, T const& x)
+    {
+        return this->setattr(name, object(x));
+    }
 
     // Pickle support
     template <typename PickleSuiteType>
@@ -288,7 +294,7 @@ inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ob
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, handle<> const& x)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, object const& x)
 {
     base::setattr(name, x);
     return *this;

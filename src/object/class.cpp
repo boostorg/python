@@ -298,29 +298,36 @@ namespace objects
 
   void class_base::add_property(char const* name, object const& fget)
   {
-      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr()));
-      setattr(name, property);
+      object property(
+          python::detail::new_reference(
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr())));
+      
+      this->setattr(name, property);
   }
 
   void class_base::add_property(char const* name, object const& fget, object const& fset)
   {
-      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr()));
-      setattr(name, property);
+      object property(
+          python::detail::new_reference(
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr())));
+      
+      this->setattr(name, property);
   }
 
-  void class_base::setattr(char const* name, handle<> const& x)
+  void class_base::setattr(char const* name, object const& x)
   {
-      if (PyObject_SetAttrString(this->ptr(), const_cast<char*>(name), x.get()) < 0)
+      if (PyObject_SetAttrString(this->ptr(), const_cast<char*>(name), x.ptr()) < 0)
           throw_error_already_set();
   }
 
   void class_base::enable_pickling(bool getstate_manages_dict)
   {
-      setattr("__reduce__", make_instance_reduce_function());
-      handle<> one(PyInt_FromLong(1));
-      setattr("__safe_for_unpickling__", one);
-      if (getstate_manages_dict) {
-        setattr("__getstate_manages_dict__", one);
+      setattr("__reduce__", object(make_instance_reduce_function()));
+      setattr("__safe_for_unpickling__", object(true));
+      
+      if (getstate_manages_dict)
+      {
+          setattr("__getstate_manages_dict__", object(true));
       }
   }
 

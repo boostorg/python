@@ -134,7 +134,7 @@ namespace detail
     
       return class_<range_>(name)
           .def("__iter__", identity_function())
-          .setattr("next", next_function)
+          .bind("next", next_function)
           ;
   }
 
