@@ -8,13 +8,9 @@
 #include <boost/python/module.hpp>
 #include "test_class.hpp"
 
-// This test shows that a class can be wrapped "as itself" but also
-// acquire a back-reference iff has_back_reference<> is appropriately
-// specialized.
 using namespace boost::python;
 
 typedef test_class<> X;
-typedef test_class<1> Y;
 
 int x_value(X const& x)
 {
@@ -34,12 +30,6 @@ BOOST_PYTHON_MODULE_INIT(implicit_ext)
             .def_init(args<int>())
             .def("value", &X::value)
             .def("set", &X::set)
-            )
-        .add(
-            class_<Y>("Y")
-            .def_init(args<int>())
-            .def("value", &Y::value)
-            .def("set", &Y::set)
             )
         ;
     implicitly_convertible<X,int>();
