@@ -99,7 +99,7 @@ class MultipleCodeUnit(object):
         for function in self.functions:
             fout.write(indent)
             fout.write('%s();\n' % function)
-        fout.write('}')
+        fout.write('}\n')
         
     
         
