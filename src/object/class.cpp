@@ -6,8 +6,14 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/object/class.hpp>
+#include <boost/python/object/class_wrapper.hpp>
+#include <boost/python/objects.hpp>
+#include <boost/python/detail/map_entry.hpp>
+#include <boost/detail/binary_search.hpp>
 #include <boost/bind.hpp>
+#include <boost/python/detail/wrap_python.hpp>
 #include <functional>
+#include <vector>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -64,6 +70,20 @@ PyTypeObject class_metatype_object = {
         // PyType_GenericNew                       /* tp_new */
 };
 
+// Get the metatype object for all extension classes.
+BOOST_PYTHON_DECL ref class_metatype()
+{
+    if (class_metatype_object.tp_dict == 0)
+    {
+        class_metatype_object.ob_type = &PyType_Type;
+        class_metatype_object.tp_base = &PyType_Type;
+        if (PyType_Ready(&class_metatype_object))
+            return ref();
+    }
+    return ref((PyObject*)&class_metatype_object, ref::increment_count);
+}
+
+// Do we really need this? I'm beginning to think we don't!
 PyTypeObject class_type_object = {
     PyObject_HEAD_INIT(0) //&class_metatype_object)
         0,
@@ -107,33 +127,21 @@ PyTypeObject class_type_object = {
         PyType_GenericNew
 };
 
-BOOST_PYTHON_DECL PyTypeObject* class_metatype()
-{
-    if (class_metatype_object.tp_dict == 0)
-    {
-        class_metatype_object.ob_type = &PyType_Type;
-        class_metatype_object.tp_base = &PyType_Type;
-        if (PyType_Ready(&class_metatype_object))
-            return 0;
-    }
-    Py_INCREF(&class_metatype_object);
-    return &class_metatype_object;
-}
-
-BOOST_PYTHON_DECL PyTypeObject* class_type()
+BOOST_PYTHON_DECL ref class_type()
 {
     if (class_type_object.tp_dict == 0)
     {
-        class_type_object.ob_type = class_metatype();
+        class_type_object.ob_type = (PyTypeObject*)class_metatype().release();
         class_type_object.tp_base = &PyBaseObject_Type;
         if (PyType_Ready(&class_type_object))
-            return 0;
+            return ref();
     }
-    Py_INCREF(&class_type_object);
-    return &class_type_object;
+    return ref((PyObject*)&class_type_object, ref::increment_count);
 }
 
-void instance_holder::install(PyObject* self)
+// Install the instance data for a C++ object into a Python instance
+// object.
+void instance_holder::install(PyObject* self) throw()
 {
     assert(self->ob_type->ob_type == &class_metatype_object);
     m_next = ((instance*)self)->objects;
@@ -155,6 +163,78 @@ find_instance_impl(PyObject* inst, converter::type_id_t type)
             return found;
     }
     return 0;
+}
+
+namespace
+{
+  struct class_registry
+  {
+   public:
+      ref get(class_id id) const;
+      void set(class_id, ref class_object);
+   private:
+      typedef detail::map_entry<class_id,ref> entry;
+      std::vector<entry> m_impl;
+  };
+
+  class_registry& registry()
+  {
+      static class_registry x;
+      return x;
+  }
+
+  ref class_registry::get(class_id id) const
+  {
+      std::vector<entry>::const_iterator start = m_impl.begin();
+      std::vector<entry>::const_iterator finish = m_impl.end();
+
+      std::vector<entry>::const_iterator p
+          = boost::detail::lower_bound(start, finish, id);
+      
+      if (p == finish && p->key != id)
+      {
+          string report("extension class wrapper for base class ");
+          (report += id.name()) += "has not been created yet";
+          PyErr_SetObject(PyExc_RuntimeError, report.get());
+          throw error_already_set();
+      }
+      return p->value;
+  }
+
+  void class_registry::set(class_id id, ref object)
+  {
+      std::vector<entry>::iterator start = m_impl.begin();
+      std::vector<entry>::iterator finish = m_impl.end();
+      m_impl.insert(
+          boost::detail::lower_bound(start, finish, id)
+          , entry(id, object));
+  }
+}
+
+class_base::class_base(
+    module& m, char const* name, std::size_t num_types, class_id const* const types)
+{
+    class_registry& r = registry();
+    assert(num_types >= 1);
+    tuple bases(std::max(num_types - 1, static_cast<std::size_t>(1)));
+    if (num_types > 1)
+    {
+        for (std::size_t i = 1; i < num_types; ++i)
+            bases.set_item(i - 1, r.get(types[i]));
+    }
+    else
+    {
+        bases.set_item(0, class_type());
+    }
+    
+    tuple args(3);
+    args.set_item(0, string(name).reference());
+    args.set_item(1, bases.reference());
+    args.set_item(2, dictionary().reference());
+    
+    m_object = ref(PyObject_CallObject(class_metatype().get(), args.get()));
+    r.set(types[0], m_object);
+    m.add(m_object, name);
 }
 
 }}} // namespace boost::python::objects

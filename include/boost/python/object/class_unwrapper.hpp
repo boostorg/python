@@ -18,14 +18,14 @@ struct class_unwrapper
     template <class Target>
     struct reference_unwrapper : converter::unwrapper<Target>
     {
-        bool convertible(PyObject* p) const
+        void* can_convert(PyObject* p) const
         {
-            return find_holder<T>(p) != 0;
+            return find_instance<T>(p);
         }
         
-        Target convert(PyObject* p, void*&) const
+        Target convert(PyObject* p, void* data, ) const
         {
-            return *find_holder<T>(p)->target();
+            return *find_instance<T>(p)->target();
         }
     };
     

@@ -8,6 +8,8 @@
 
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/type_id.hpp>
+# include <boost/python/object/inheritance.hpp>
+# include <boost/ref.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -76,9 +78,11 @@ struct value_holder_generator
 };
 
 template <class Held>
-void* value_holder<Held>::holds(converter::type_id_t x)
+void* value_holder<Held>::holds(converter::type_id_t dst_t)
 {
-    return x == converter::type_id<Held>() ? &m_held : 0;
+    converter::type_id_t src_t = converter::type_id<Held>();
+    return src_t == dst_t ? &m_held
+        : find_static_type(&m_held, src_t, dst_t);
 }
 
 }}} // namespace boost::python::objects
