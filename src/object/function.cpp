@@ -8,9 +8,7 @@
 #include <numeric>
 #include <boost/python/errors.hpp>
 #include <boost/python/objects.hpp>
-#include <boost/bind.hpp>
 #include <algorithm>
-#include <functional>
 #include <cstring>
 
 namespace boost { namespace python { namespace objects { 
@@ -113,6 +111,14 @@ namespace
       "xor__",
   };
 
+  struct less_cstring
+  {
+      bool operator()(char const* x, char const* y) const
+      {
+          return BOOST_CSTD_::strcmp(x,y) < 0;
+      }
+  };
+  
   inline bool is_binary_operator(char const* name)
   {
       return name[0] == '_'
@@ -121,8 +127,7 @@ namespace
               &binary_operator_names[0]
               , binary_operator_names + sizeof(binary_operator_names)/sizeof(*binary_operator_names)
               , name + 2
-              , bind<bool>(std::less<int>(),
-                     bind(BOOST_CSTD_::strcmp, _1, _2), 0)
+              , less_cstring()
               );
   }
 
