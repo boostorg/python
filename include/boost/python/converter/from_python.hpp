@@ -10,6 +10,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/destroy.hpp>
 # include <boost/type_traits/transform_traits.hpp>
+# include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/converter/pointer_type_id.hpp>
 # include <boost/python/converter/from_python_data.hpp>
 # include <boost/mpl/select_type.hpp>
@@ -179,7 +180,9 @@ namespace detail
   template <class U>
   inline void write_void_ptr_reference(void const volatile* storage, void* ptr, U&(*)())
   {
-      write_void_ptr(storage, ptr, U(0));
+      // stripping CV qualification suppresses warnings on older EDGs
+      typedef typename remove_cv<U>::type u_stripped; 
+      write_void_ptr(storage, ptr, u_stripped(0));
   }
 }
 
