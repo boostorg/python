@@ -11,7 +11,7 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/converter/from_python_data.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/lvalue_from_python_chain.hpp>
 # include <boost/python/converter/rvalue_from_python_chain.hpp>
@@ -100,13 +100,13 @@ struct select_from_python
         boost::python::detail::is_reference_to_non_const<T>::value
         || boost::python::detail::is_reference_to_volatile<T>::value);
 
-    typedef typename mpl::select_type<
+    typedef typename mpl::select_if_c<
         ptr
         , pointer_from_python<T>
-        , typename mpl::select_type<
+        , typename mpl::select_if_c<
              ptr_cref
              , pointer_const_reference_from_python<T>
-             , typename mpl::select_type<
+             , typename mpl::select_if_c<
                    ref
                    , reference_from_python<T>
                    , rvalue_from_python<T>
