@@ -27,6 +27,8 @@
 #include <boost/type_traits.hpp>
 #include <boost/call_traits.hpp>
 #include <algorithm>
+#include <stdexcept>
+#include <string>
 
 namespace indexing {
   template<typename T>
@@ -43,10 +45,13 @@ namespace indexing {
   {
     typedef typename ContainerTraits::container container;
     typedef typename ContainerTraits::iterator iterator;
+    typedef typename ContainerTraits::reference reference;
     typedef typename ContainerTraits::key_type key_type;
     typedef typename ContainerTraits::size_type size_type;
     typedef typename ContainerTraits::index_type index_type;
+    typedef typename ContainerTraits::value_type value_type;
 
+    typedef typename boost::call_traits<value_type>::param_type value_param;
     typedef typename boost::call_traits<key_type>::param_type key_param;
     typedef typename boost::call_traits<index_type>::param_type index_param;
 
@@ -54,9 +59,14 @@ namespace indexing {
     static iterator  find       (container &, key_param);
     static size_type count      (container &, key_param);
     static void      reverse    (container &);
-    static iterator  at         (container&, index_param);
+    static reference get        (container &, index_param);
+    static void      assign     (container &, index_param, value_param);
+    static void      push_back  (container &, value_param);
     static void      sort       (container &);
     //    static void      sort       (container &, PyObject *);
+
+    static iterator  begin      (container &c) { return c.begin(); }
+    static iterator  end        (container &c) { return c.end(); }
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -79,7 +89,7 @@ namespace indexing {
   container_algorithms<ContainerTraits>::find (container &c
 					       , key_param key)
   {
-    return std::find (c.begin(), c.end(), key);
+    return std::find (begin(c), end(c), key);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -91,18 +101,43 @@ namespace indexing {
   container_algorithms<ContainerTraits>::count (container &c
 						, key_param key)
   {
-    return std::count (c.begin(), c.end(), key);
+    return std::count (begin(c), end(c), key);
   }
 
   /////////////////////////////////////////////////////////////////////////
-  // Index into a container (iterator version)
+  // Index into a container (generic version)
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits>
-  typename container_algorithms<ContainerTraits>::iterator
-  container_algorithms<ContainerTraits>::at (container &c, index_param ix)
+  typename container_algorithms<ContainerTraits>::reference
+  container_algorithms<ContainerTraits>::get (container &c, index_param ix)
   {
-    return c.begin() + ix;
+    return c.at (ix);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Assign a value at a particular index (generic version)
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename ContainerTraits>
+  void
+  container_algorithms<ContainerTraits>::assign (container &c
+						 , index_param ix
+						 , value_param val)
+  {
+    c.at(ix) = val;
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Insert at end of a container (generic version)
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename ContainerTraits>
+  void
+  container_algorithms<ContainerTraits>::push_back (container &c
+						    , value_param v)
+  {
+    c.push_back (v);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -112,7 +147,7 @@ namespace indexing {
   template<typename ContainerTraits>
   void container_algorithms<ContainerTraits>::reverse (container &c)
   {
-    std::reverse (c.begin(), c.end());
+    std::reverse (begin(c), end(c));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -122,7 +157,7 @@ namespace indexing {
   template<typename ContainerTraits>
   void container_algorithms<ContainerTraits>::sort (container &c)
   {
-    std::sort (c.begin(), c.end());
+    std::sort (begin(c), end(c));
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -178,12 +213,53 @@ namespace indexing {
     typedef typename Parent::iterator iterator;
     typedef typename Parent::size_type size_type;
     typedef typename Parent::container container;
+    typedef typename Parent::reference reference;
     typedef typename Parent::key_param key_param;
+    typedef typename Parent::index_param index_param;
+    typedef typename Parent::value_param value_param;
+
+    static reference get        (container &, index_param);
+    static void      assign     (container &, index_param, value_param);
 
     // Use member functions for the following (hiding base class versions)
     static iterator  find  (container &, key_param);
     static size_type count (container &, key_param);
   };
+
+  /////////////////////////////////////////////////////////////////////////
+  // Index into a container (associative version)
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename ContainerTraits>
+  typename assoc_algorithms<ContainerTraits>::reference
+  assoc_algorithms<ContainerTraits>::get (container &c, index_param ix)
+  {
+    iterator iter = find (c, ix);
+
+    if (iter == end(c))
+      {
+	throw std::domain_error
+	  (std::string ("associative container: key not found"));
+      }
+
+    else
+      {
+	return iter->second;
+      }
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Assign a value at a particular index (associative version)
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename ContainerTraits>
+  void
+  assoc_algorithms<ContainerTraits>::assign (container &c
+					     , index_param ix
+					     , value_param val)
+  {
+    c[ix] = val;
+  }
 
   /////////////////////////////////////////////////////////////////////////
   // Find an element in an associative container
@@ -197,7 +273,7 @@ namespace indexing {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  // Count occurances of an element in a container (std algorithm version)
+  // Count occurances of an element in a container (associative version)
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits>
