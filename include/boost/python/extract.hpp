@@ -11,12 +11,13 @@
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
-# include <boost/python/detail/void_ptr.hpp>
 # include <boost/call_traits.hpp>
-# include <boost/python/detail/void_return.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/utility.hpp>
+# include <boost/python/detail/copy_ctor_mutates_rhs.hpp>
+# include <boost/python/detail/void_ptr.hpp>
+# include <boost/python/detail/void_return.hpp>
 
 namespace boost { namespace python {
 
@@ -53,7 +54,12 @@ namespace converter
   template <class T>
   struct extract_rvalue : private noncopyable
   {
-      typedef typename call_traits<T>::param_type result_type;
+      typedef typename mpl::if_<
+          python::detail::copy_ctor_mutates_rhs<T>
+        , T&
+        , typename call_traits<T>::param_type
+      >::type result_type;
+
       extract_rvalue(PyObject*);
 
       bool check() const;

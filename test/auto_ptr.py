@@ -13,13 +13,13 @@
 
 >>> maybe_steal(x, 1)
 42
->>> (not '--broken-auto-ptr' in sys.argv) and look(x) or -1
+>>> broken_auto_ptr and -1 or look(x)
 -1
 
 >>> x = X(69)
 >>> steal(x)
 69
->>> (not '--broken-auto-ptr' in sys.argv) and look(x) or -1
+>>> broken_auto_ptr and -1 or look(x)
 -1
 
 >>> if not '--broken-auto-ptr' in sys.argv:
@@ -46,9 +46,6 @@
 >>> y.value()
 42
 
->>> maybe_steal(y, 0)
-42
-
 >>> try: maybe_steal(y, 0)
 ... except TypeError: pass
 ... else: print 'expected a TypeError exception'
@@ -56,10 +53,10 @@
 >>> y.value()
 42
 
->>> steal(y)
+>>> broken_auto_ptr and 42 or steal(y)
 42
 
->>> if not '--broken-auto-ptr' in sys.argv:
+>>> if not broken_auto_ptr:
 ...     try: y.value()
 ...     except TypeError: pass
 ...     else: print 'expected a TypeError exception'
