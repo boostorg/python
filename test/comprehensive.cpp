@@ -15,7 +15,7 @@
 #include <math.h>  // for pow()
 #include <boost/rational.hpp>
 
-#if defined(sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
+#if defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
 inline double pow(int x, int y) { return pow(static_cast<double>(x), y); }
 #endif
 
