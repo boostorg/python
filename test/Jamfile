@@ -153,6 +153,7 @@ run result.cpp ;
 compile string_literal.cpp ;
 compile borrowed.cpp : $(UNIT_TEST_PROPERTIES) ;
 compile object_manager.cpp : $(UNIT_TEST_PROPERTIES) ;
+compile copy_ctor_mutates_rhs.cpp : $(UNIT_TEST_PROPERTIES) ;
 
 run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor
   : # command-line args

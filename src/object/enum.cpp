@@ -148,9 +148,13 @@ namespace
       dict d;
       d["__slots__"] = tuple();
       d["values"] = dict();
-          
+
+      object module_name = module_prefix();
+      if (module_name)
+          module_name += '.';
+      
       object result = (object(metatype))(
-          module_prefix() + name, make_tuple(base), d);
+          module_name + name, make_tuple(base), d);
       
       scope().attr(name) = result;
 

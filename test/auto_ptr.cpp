@@ -8,6 +8,7 @@
 #include <boost/python/class.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/implicit.hpp>
 #include "test_class.hpp"
 
 #include <memory>
@@ -15,6 +16,11 @@
 using namespace boost::python;
 
 typedef test_class<> X;
+
+struct Y : X
+{
+    Y(int n) : X(n) {};
+};
 
 int look(std::auto_ptr<X> const& x)
 {
@@ -60,6 +66,10 @@ BOOST_PYTHON_MODULE(auto_ptr_ext)
         .def("value", &X::value)
         ;
     
+    class_<Y, std::auto_ptr<Y>, bases<X>, boost::noncopyable>("X", init<int>())
+        ;
+
+    implicitly_convertible<std::auto_ptr<Y>, std::auto_ptr<X> >();
     def("look", look);
     def("steal", steal);
     def("maybe_steal", maybe_steal);
