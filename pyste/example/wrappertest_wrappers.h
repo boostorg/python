@@ -23,4 +23,6 @@ list RangeWrapper(int count){
     return VectorToList(wrappertest::Range(count));
 }
 
+int f_wrapper(wrappertest::A*) { return 10; } 
+
 #endif

@@ -13,3 +13,9 @@ list MulWrapper(wrappertest::C& c, int value){
 
 C = Class('wrappertest::C', 'wrappertest.h')
 set_wrapper(C.Mul, mul)
+
+
+A = Class('wrappertest::A', 'wrappertest.h')
+set_wrapper(A.f, 'f_wrapper')
+
+Function('wrappertest::call_foo', 'wrappertest.h')

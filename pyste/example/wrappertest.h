@@ -34,6 +34,13 @@ struct C
     }
 };
 
+
+struct A
+{
+    virtual int f() { return 1; };
+};
+
+int call_foo(A* a){ return a->f(); }
 } 
 #endif
 
