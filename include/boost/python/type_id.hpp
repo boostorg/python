@@ -78,7 +78,8 @@ inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
         );
 }
 
-#  if defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
+#  if (defined(__EDG_VERSION__) && __EDG_VERSION__ < 245) \
+   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 741)
 // Older EDG-based compilers seems to mistakenly distinguish "int" from
 // "signed int", etc., but only in typeid() expressions. However
 // though int == signed int, the "signed" decoration is propagated
