@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 from settings import namespaces
 import settings
 from utils import remove_duplicated_lines, left_equals
@@ -23,7 +28,7 @@ class SingleCodeUnit:
         # define the avaiable sections
         self.code = {}
         # include section
-        self.code['include'] = '#include <boost/python.hpp>\n'
+        self.code['include'] = ''
         # declaration section (inside namespace)        
         self.code['declaration'] = ''
         # declaration (outside namespace)
@@ -66,10 +71,23 @@ class SingleCodeUnit:
         else:
             flag = 'a'
         fout = SmartFile(self.filename, flag)
+        fout.write('\n')
         # includes
+        # boost.python header
+        fout.write(left_equals('Boost Includes'))        
+        fout.write('#include <boost/python.hpp>\n')
+        # include numerical boost for int64 definitions
+        fout.write('#include <boost/cstdint.hpp>\n') 
+        if settings.msvc:
+            # include precompiled header directive
+            fout.write('#ifdef _MSC_VER\n')
+            fout.write('#pragma hdrstop\n')
+            fout.write('#endif\n')
+        fout.write('\n')
+        # other includes        
         if self.code['include']:
+            fout.write(left_equals('Includes'))        
             includes = remove_duplicated_lines(self.code['include'])
-            fout.write('\n' + left_equals('Includes'))        
             fout.write(includes)
             fout.write(space)
         # using

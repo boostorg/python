@@ -73,26 +73,36 @@ Well, now let's fire it up:
 '''
 >python pyste.py
 
-Pyste version 0.6.5
+Pyste version 0.9.26
 
 Usage:
-    pyste [options] --module=<name> interface-files
+    pyste [options] interface-files
 
 where options are:
-    -I <path>           add an include path    
-    -D <symbol>         define symbol    
-    --multiple          create various cpps (one for each pyste file), instead
-                        of only one (useful during development)                        
-    --out               specify output filename (default: <module>.cpp)
-                        in --multiple mode, this will be a directory
-    --no-using          do not declare "using namespace boost";
-                        use explicit declarations instead
-    --pyste-ns=<name>   set the namespace where new types will be declared;
-                        default is the empty namespace
-    --debug             writes the xml for each file parsed in the current
-                        directory
-    -h, --help          print this help and exit
-    -v, --version       print version information      
+    --module=<name>         The name of the module that will be generated;
+                            defaults to the first interface filename, without
+                            the extension.
+    -I <path>               Add an include path
+    -D <symbol>             Define symbol
+    --multiple              Create various cpps, instead of only one
+                            (useful during development)
+    --out=<name>            Specify output filename (default: <module>.cpp)
+                            in --multiple mode, this will be a directory
+    --no-using              Do not declare "using namespace boost";
+                            use explicit declarations instead
+    --pyste-ns=<name>       Set the namespace where new types will be declared;
+                            default is the empty namespace
+    --debug                 Writes the xml for each file parsed in the current
+                            directory
+    --cache-dir=<dir>       Directory for cache files (speeds up future runs)
+    --only-create-cache     Recreates all caches (doesn't generate code).
+    --generate-main         Generates the _main.cpp file (in multiple mode)
+    --file-list             A file with one pyste file per line. Use as a 
+                            substitute for passing the files in the command
+                            line.
+    -h, --help              Print this help and exit
+    -v, --version           Print version information
+  
 '''                        
 ]
 
@@ -101,12 +111,6 @@ Options explained:
 The [^-I] and [^-D] are preprocessor flags, which are needed by GCCXML to parse
 the header files correctly and by Pyste to find the header files declared in the
 interface files.
-
-[^--multiple] tells Pyste to generate multiple cpps for this module (one for
-each header parsed) in the directory named by [^--out], instead of the usual
-single cpp file. This mode is useful during development of a binding, because
-you are constantly changing source files, re-generating the bindings and
-recompiling. This saves a lot of time in compiling.
 
 [^--out] names the output file (default: [^<module>.cpp]), or in multiple mode,
 names a output directory for the files (default: [^<module>]).
@@ -122,6 +126,13 @@ default, Pyste uses the empty namespace.
 [^--debug] will write in the current directory a xml file as outputted by GCCXML
 for each header parsed. Useful for bug reports.
 
+[^--file-list] names a file where each line points to a Pyste file. Use this instead 
+to pass the pyste files if you have a lot of them and your shell has some command line
+size limit.
+
+The other options are explained below, in [@#multiple_mode [*Multiple Mode]] and
+[@#cache [*Cache]].
+
 [^-h, --help, -v, --version] are self-explaining, I believe. ;)
 
 So, the usage is simple enough:
@@ -130,13 +141,7 @@ So, the usage is simple enough:
 
 will generate a file [^mymodule.cpp] in the same dir where the command was
 executed. Now you can compile the file using the same instructions of the
-[@../../doc/tutorial/doc/building_hello_world.html tutorial]. Or, if you prefer:
-
-[pre >python pyste.py --module=mymodule --multiple file.pyste file2.pyste ...]
-
-will create a directory named "mymodule" in the current directory, and will
-generate a bunch of cpp files, one for each header exported. You can then
-compile them all into a single shared library (or dll).
+[@../../doc/tutorial/doc/building_hello_world.html tutorial]. 
 
 [h2 Wait... how do I set those I and D flags?]
 
@@ -154,8 +159,61 @@ which for Visual C++ 6 is normally located at:
 with that, you should have little trouble setting up the flags.
 
 [blurb [$theme/note.gif][*A note about Psyco][br][br]
-Although you don't have to install [@http://psyco.sourceforge.net/ Psyco] to use Pyste, if you do, Pyste will make use of it to speed up the wrapper generation. Speed ups of 30% can be achieved, so it's highly recommended.
+Although you don't have to install [@http://psyco.sourceforge.net/ Psyco] to
+use Pyste, if you do, Pyste will make use of it to speed up the wrapper
+generation. Speed ups of 30% can be achieved, so it's highly recommended.
 ]
+
+
+[h2 Multiple Mode]
+
+The multiple mode is useful in large projects, where the presence of multiple
+classes in a single file makes the compilation unpractical (excessive memory
+usage, mostly). 
+
+The solution is make Pyste generate multiple files, more specifically one cpp
+file for each Pyste file. This files will contain a function named after the
+file, for instance Export_MyPysteFile, which will contain all the code to export
+the classes, enums, etc. You can pass as much files as you want this way:
+
+[pre >python pyste.py --module=mymodule file1.pyste file2.pyste]
+
+This will create the files [^mymodule/file1.cpp] and [^mymodule/file2.cpp]. You
+can then later do:
+
+[pre >python pyste.py --module=mymodule file3.pyste]
+
+and [^mymodule/file3.cpp] will be generated.
+
+But compiling and linking this files won't be sufficient to generate your
+extension. You have to also generate a file named [^main.cpp]; call pyste with
+[*all] the Pyste files of your extension, and use the [^--generate-main] option:
+
+[pre >python pyste.py --module=mymodule --generate-main file1.pyste file2.pyste file3.pyste]
+
+Now compile and link all this files together and your extension is ready for
+use.
+
+[h2 Cache]
+
+Pyste now supports a form of cache, which is a way to speed up the code
+generation. Most of the time that Pyste takes to generate the code comes from
+having to execute GCCXML (since being a front-end to GCC, it has to compile the
+header files) and reading back the XML generated. 
+
+When you use the [^--cache-dir=<dir>] option, Pyste will dump in the specified
+directory the generated XMLs to a file named after the Pyste file, with the
+extension [^.pystec].  The next time you run with this option, Pyste will use
+the cache, instead of calling GCCXML again:
+
+[pre >python pyste.py --module=mymodule --cache-dir=cache file1.pyste]
+
+Will generate [^file1.cpp] and [^cache/file1.pystec]. Next time you execute
+this command, the cache file will be used. Note that Pyste doesn't do any check
+to ensure that the cache is up to date, but you can configure your build system to do that for you.
+
+When you run Pyste with [^--only-create-cache], all the cache files will be
+created again, but no code will be generated.
 
 [page The Interface Files]
 
@@ -198,6 +256,28 @@ We create a file named [^hello.pyste] and create instances of the classes
 
 That will expose the class, the free function and the enum found in [^hello.h]. 
 
+[h2 Inheritance]
+
+Pyste automatically generates the correct code (specifying [^bases<>] in the
+[^class_] declaration) [*if] the Class() function that exports the base classes
+and their children are in the same Pyste file. If that's not the case, you have
+to indicate that there's a relationship between the Pyste files using the
+[^Import] function specifying the other Pyste file.
+
+Suppose we have two classes, [^A] and [^B], and A is a base class for B. We
+create two Pyste files:
+
+[^A.pyste]:
+
+    Class("A", "A.h")
+
+[^B.pyste]:
+
+    Import("A.pyste")
+    Class("B", "B.h")
+
+Note that we specify that [^B] needs to know about [^A] to be properly exported.
+
 [page:1 Renaming and Excluding]
 
 You can easily rename functions, classes, member functions, attributes, etc. Just use the
@@ -233,10 +313,10 @@ The string inside the brackets is the same as the name of the operator in C++.[b
 
 [h2 Virtual Member Functions]
 
-Pyste automatically generates wrappers for virtual member functions, but you
-may want to disable this behaviour (for performance reasons, or to let the
-code more clean) if you do not plan to override the functions in Python. To do
-this, use the function [^final]:
+Pyste automatically generates wrappers for virtual member functions, but you may
+want to disable this behaviour (for performance reasons, for instance) if you do
+not plan to override the functions in Python. To do this, use the function
+[^final]:
 
     C = Class('C', 'C.h')
     final(C.foo) # C::foo is a virtual member function
@@ -277,7 +357,7 @@ compile.
 
 [blurb
 [$theme/note.gif] 
-Note that, for functions that return [^const T&], the policy
+Note that for functions that return [^const T&], the policy
 [^return_value_policy<copy_const_reference>()] wil be used by default, because
 that's normally what you want. You can change it to something else if you need
 to, though.
@@ -344,9 +424,9 @@ Suppose you have this function:
 
     std::vector<std::string> names();
 
-But you don't want to export [^std::vector<std::string>], you want this function
-to return a python list of strings. Boost.Python has excellent support for
-that:
+But you don't want to [@../../doc/v2/faq.html#question2 to export std::vector<std::string>], 
+you want this function to return a python list of strings. Boost.Python has
+excellent support for things like that:
 
     list names_wrapper()
     {
@@ -445,6 +525,11 @@ the members of the header object like this:
     rename(hello.World.greet, "Greet")
     exclude(hello.World.set, "Set")
 
+[blurb    
+[$theme/note.gif] [*AllFromHeader is broken] in some cases. Until it is fixed,
+use at you own risk.
+]
+
 
 [page:1 Smart Pointers]
 
@@ -501,6 +586,7 @@ Beware of non-const global variables: changes in Python won't reflect in C++!
 If you really must change them in Python, you will have to write some accessor
 functions, and export those.
 
+
 [page:1 Adding New Methods]
 
 Suppose that you want to add a function to a class, turning it into a member
@@ -539,3 +625,35 @@ Now from Python:
     Oh no! The knights who say Ni!
 
 
+[page:1 Inserting Code]
+
+You can insert arbitrary code in the generated cpps, just use the functions
+[^declaration_code] and [^module_code]. This will insert the given string in the
+respective sections. Example:
+
+    # file A.pyste
+    Class("A", "A.h")
+    declaration_code("/* declaration_code() comes here */\n")
+    module_code("/* module_code() comes here */\n")
+
+Will generate:
+
+    // Includes ====================================================================
+    #include <boost/python.hpp>
+
+    // Using =======================================================================
+    using namespace boost::python;
+
+    // Declarations ================================================================
+
+    /* declaration_code() comes here */
+
+    // Module ======================================================================
+    BOOST_PYTHON_MODULE(A)
+    {
+        class_< A >("A", init<  >())
+            .def(init< const A& >())
+        ;
+
+    /* module_code() comes here */
+    }

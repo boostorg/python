@@ -1,3 +1,26 @@
+6 October 2003
+Fixed bug reported by Niall Douglas (using his patch) about UniqueInt not
+appearing correctly with --multiple.
+
+Added precompiled header support on windows systems (using #pragma hdrstop).
+Suggested by Niall Douglas.
+
+Fixed a bug with -I directive and AllFromHeader. Reported by Scott Snyder.
+
+4 October 2003
+Added return_self, thanks for Niall Douglas for pointing out that it was
+missing.
+
+Added --file-list, where you can pass a file where the pyste files are listed
+one per line. Also suggested by Niall Douglas.
+
+Documentation has been finally updated, after a long wait. Please let me know
+if you spot any mistake!
+
+2 October 2003
+Scott Snyder found a typo in ClassExporter that prevented -= and *= operators
+from being exported. Thanks Scott!
+
 20 September 2003
 Added return_by_value in the list of policies supported. Thanks to Niall
 Douglas for the remainder.

@@ -1,10 +1,16 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
 
 
-class Policy:
+
+class Policy(object):
     'Represents one of the call policies of boost.python.'
 
     def __init__(self):
-        raise RuntimeError, "Can't create an instance of the class Policy"
+        if type(self) is Policy:
+            raise RuntimeError, "Can't create an instance of the class Policy"
 
 
     def Code(self):
@@ -73,6 +79,11 @@ class return_value_policy(Policy):
         c = 'return_value_policy< %s' % self.which
         c += self._next()
         return c
+
+class return_self(Policy):
+
+    def Code(self):
+        return 'return_self<>'
 
 
 #  values for return_value_policy

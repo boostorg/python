@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 from Exporter import Exporter
 from settings import *
 import utils
@@ -47,44 +52,23 @@ class EnumExporter(Exporter):
             exported_names[self.enum.FullName()] = 1
 
 
-    UNIQUE_INT_EXPORTED = False
-    
     def ExportUniqueInt(self, codeunit):
-        if not EnumExporter.UNIQUE_INT_EXPORTED:
-            write = lambda s: codeunit.Write('declaration', s)
-            write('// Unique type for unnamed enums\n')
-            write('template<int num>\n')
-            write('struct UniqueInt {\n')
-            write('   int v;\n')
-            write('   enum { value=num };\n')
-            write('   UniqueInt(int v_):\n') 
-            write('       v(v_)\n')
-            write('   {}\n')
-            write('   operator int() const\n')
-            write('   { return v; }\n')
-            write('};\n')
-            EnumExporter.UNIQUE_INT_EXPORTED = True
+        write = lambda s: codeunit.Write('declaration', s)
+        write('// Unique type for unnamed enums\n')
+        write('#ifndef PYSTE_UNIQUE_INT_DEFINED\n')
+        write('#define PYSTE_UNIQUE_INT_DEFINED\n')
+        write('template<int num>\n')
+        write('struct UniqueInt {\n')
+        write('   int v;\n')
+        write('   enum { value=num };\n')
+        write('   UniqueInt(int v_):\n') 
+        write('       v(v_)\n')
+        write('   {}\n')
+        write('   operator int() const\n')
+        write('   { return v; }\n')
+        write('};\n')
+        write('#endif // PYSTE_UNIQUE_INT_DEFINED \n')
             
-
-    #def Export(self, codeunit, exported_names):
-    #    if not self.info.exclude:
-    #        indent = self.INDENT
-    #        in_indent = self.INDENT*2
-    #        rename = self.info.rename or self.enum.name
-    #        full_name = self.enum.FullName()
-    #        if rename == "$_0" or rename == '._0':
-    #            full_name = "int"
-    #            rename = "unnamed"
-    #        code = indent + namespaces.python
-    #        code += 'enum_< %s >("%s")\n' % (full_name, rename)
-    #        for name in self.enum.values:         
-    #            rename = self.info[name].rename or name
-    #            value_fullname = self.enum.ValueFullName(name)
-    #            code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
-    #        code += indent + ';\n\n'
-    #        codeunit.Write('module', code)
-    #        exported_names[self.Name()] = 1
-
 
     def Name(self):
         return self.info.name

@@ -60,10 +60,10 @@ To access the operators of a class, access the member <tt>operator</tt> like thi
 <p>
 The string inside the brackets is the same as the name of the operator in C++.<br></p>
 <a name="virtual_member_functions"></a><h2>Virtual Member Functions</h2><p>
-Pyste automatically generates wrappers for virtual member functions, but you
-may want to disable this behaviour (for performance reasons, or to let the
-code more clean) if you do not plan to override the functions in Python. To do
-this, use the function <tt>final</tt>:</p>
+Pyste automatically generates wrappers for virtual member functions, but you may
+want to disable this behaviour (for performance reasons, for instance) if you do
+not plan to override the functions in Python. To do this, use the function
+<tt>final</tt>:</p>
 <code><pre>
     <span class=identifier>C </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=literal>'C'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>)
     </span><span class=identifier>final</span><span class=special>(</span><span class=identifier>C</span><span class=special>.</span><span class=identifier>foo</span><span class=special>) </span>##<span class=identifier>C</span><span class=special>::</span><span class=identifier>foo </span><span class=identifier>is </span><span class=identifier>a </span><span class=keyword>virtual </span><span class=identifier>member </span><span class=identifier>function

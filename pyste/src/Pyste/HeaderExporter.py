@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 from Exporter import Exporter
 from ClassExporter import ClassExporter
 from FunctionExporter import FunctionExporter
@@ -33,7 +38,7 @@ class HeaderExporter(Exporter):
         header = os.path.normpath(self.parser_header)
         for decl in self.declarations:
             # check if this declaration is in the header
-            location = os.path.normpath(decl.location[0])
+            location = os.path.abspath(decl.location[0])
             if location == header and not self.IsInternalName(decl.name):
                 # ok, check the type of the declaration and export it accordingly
                 self.HandleDeclaration(decl, codeunit, exported_names)

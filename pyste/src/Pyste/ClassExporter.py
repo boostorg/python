@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 import exporters
 from Exporter import Exporter
 from declarations import *
@@ -425,7 +430,7 @@ class ClassExporter(Exporter):
                 self.Add('template', holder(self.class_.FullName()))
 
     # operators natively supported by boost
-    BOOST_SUPPORTED_OPERATORS = '+ - * / % ^ & ! ~ | < > == != <= >= << >> && || += -='\
+    BOOST_SUPPORTED_OPERATORS = '+ - * / % ^ & ! ~ | < > == != <= >= << >> && || += -= '\
         '*= /= %= ^= &= |= <<= >>='.split()
     # create a map for faster lookup
     BOOST_SUPPORTED_OPERATORS = dict(zip(BOOST_SUPPORTED_OPERATORS, range(len(BOOST_SUPPORTED_OPERATORS))))

@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 from declarations import *
 from elementtree.ElementTree import ElementTree
 from xml.parsers.expat import ExpatError
@@ -313,8 +318,14 @@ class GCCXMLParser(object):
         self.ParseClass(id, element)
 
 
+    FUNDAMENTAL_RENAME = {
+        'long long int' : 'boost::int64_t',
+        'long long unsigned int' : 'boost::uint64_t',
+    }
+
     def ParseFundamentalType(self, id, element):
         name = element.get('name')
+        name = self.FUNDAMENTAL_RENAME.get(name, name)
         type_ = FundamentalType(name)
         self.Update(id, type_)
 

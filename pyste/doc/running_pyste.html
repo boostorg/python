@@ -47,26 +47,36 @@ Well, now let's fire it up:</p>
 
 &gt;python pyste.py
 
-Pyste version 0.6.5
+Pyste version 0.9.26
 
 Usage:
-    pyste [options] --module=&lt;name&gt; interface-files
+    pyste [options] interface-files
 
 where options are:
-    -I &lt;path&gt;           add an include path    
-    -D &lt;symbol&gt;         define symbol    
-    --multiple          create various cpps (one for each pyste file), instead
-                        of only one (useful during development)                        
-    --out               specify output filename (default: &lt;module&gt;.cpp)
-                        in --multiple mode, this will be a directory
-    --no-using          do not declare &quot;using namespace boost&quot;;
-                        use explicit declarations instead
-    --pyste-ns=&lt;name&gt;   set the namespace where new types will be declared;
-                        default is the empty namespace
-    --debug             writes the xml for each file parsed in the current
-                        directory
-    -h, --help          print this help and exit
-    -v, --version       print version information      
+    --module=&lt;name&gt;         The name of the module that will be generated;
+                            defaults to the first interface filename, without
+                            the extension.
+    -I &lt;path&gt;               Add an include path
+    -D &lt;symbol&gt;             Define symbol
+    --multiple              Create various cpps, instead of only one
+                            (useful during development)
+    --out=&lt;name&gt;            Specify output filename (default: &lt;module&gt;.cpp)
+                            in --multiple mode, this will be a directory
+    --no-using              Do not declare &quot;using namespace boost&quot;;
+                            use explicit declarations instead
+    --pyste-ns=&lt;name&gt;       Set the namespace where new types will be declared;
+                            default is the empty namespace
+    --debug                 Writes the xml for each file parsed in the current
+                            directory
+    --cache-dir=&lt;dir&gt;       Directory for cache files (speeds up future runs)
+    --only-create-cache     Recreates all caches (doesn't generate code).
+    --generate-main         Generates the _main.cpp file (in multiple mode)
+    --file-list             A file with one pyste file per line. Use as a 
+                            substitute for passing the files in the command
+                            line.
+    -h, --help              Print this help and exit
+    -v, --version           Print version information
+  
                         
 </pre></code><p>
 Options explained:</p>
@@ -75,12 +85,6 @@ The <tt>-I</tt> and <tt>-D</tt> are preprocessor flags, which are needed by <a h
 GCCXML</a> to parse
 the header files correctly and by Pyste to find the header files declared in the
 interface files.</p>
-<p>
-<tt>--multiple</tt> tells Pyste to generate multiple cpps for this module (one for
-each header parsed) in the directory named by <tt>--out</tt>, instead of the usual
-single cpp file. This mode is useful during development of a binding, because
-you are constantly changing source files, re-generating the bindings and
-recompiling. This saves a lot of time in compiling.</p>
 <p>
 <tt>--out</tt> names the output file (default: <tt>&lt;module&gt;.cpp</tt>), or in multiple mode,
 names a output directory for the files (default: <tt>&lt;module&gt;</tt>).</p>
@@ -97,6 +101,15 @@ default, Pyste uses the empty namespace.</p>
 GCCXML</a>
 for each header parsed. Useful for bug reports.</p>
 <p>
+<tt>--file-list</tt> names a file where each line points to a Pyste file. Use this instead 
+to pass the pyste files if you have a lot of them and your shell has some command line
+size limit.</p>
+<p>
+The other options are explained below, in <a href="#multiple_mode">
+<b>Multiple Mode</b></a> and
+<a href="#cache">
+<b>Cache</b></a>.</p>
+<p>
 <tt>-h, --help, -v, --version</tt> are self-explaining, I believe. ;)</p>
 <p>
 So, the usage is simple enough:</p>
@@ -104,11 +117,7 @@ So, the usage is simple enough:</p>
 will generate a file <tt>mymodule.cpp</tt> in the same dir where the command was
 executed. Now you can compile the file using the same instructions of the
 <a href="../../doc/tutorial/doc/building_hello_world.html">
-tutorial</a>. Or, if you prefer:</p>
-<code><pre>&gt;python pyste.py --module=mymodule --multiple file.pyste file2.pyste ...</pre></code><p>
-will create a directory named &quot;mymodule&quot; in the current directory, and will
-generate a bunch of cpp files, one for each header exported. You can then
-compile them all into a single shared library (or dll).</p>
+tutorial</a>. </p>
 <a name="wait____how_do_i_set_those_i_and_d_flags_"></a><h2>Wait... how do I set those I and D flags?</h2><p>
 Don't worry: normally <a href="http://www.gccxml.org">
 GCCXML</a> is already configured correctly for your plataform, 
@@ -129,10 +138,52 @@ with that, you should have little trouble setting up the flags.</p>
     <td class="note_box">
 <img src="theme/note.gif"></img><b>A note about Psyco</b><br><br>
 Although you don't have to install <a href="http://psyco.sourceforge.net/">
-Psyco</a> to use Pyste, if you do, Pyste will make use of it to speed up the wrapper generation. Speed ups of 30% can be achieved, so it's highly recommended.
+Psyco</a> to
+use Pyste, if you do, Pyste will make use of it to speed up the wrapper
+generation. Speed ups of 30% can be achieved, so it's highly recommended.
     </td>
   </tr>
 </table>
+<a name="multiple_mode"></a><h2>Multiple Mode</h2><p>
+The multiple mode is useful in large projects, where the presence of multiple
+classes in a single file makes the compilation unpractical (excessive memory
+usage, mostly). </p>
+<p>
+The solution is make Pyste generate multiple files, more specifically one cpp
+file for each Pyste file. This files will contain a function named after the
+file, for instance Export_MyPysteFile, which will contain all the code to export
+the classes, enums, etc. You can pass as much files as you want this way:</p>
+<code><pre>&gt;python pyste.py --module=mymodule file1.pyste file2.pyste</pre></code><p>
+This will create the files <tt>mymodule/file1.cpp</tt> and <tt>mymodule/file2.cpp</tt>. You
+can then later do:</p>
+<code><pre>&gt;python pyste.py --module=mymodule file3.pyste</pre></code><p>
+and <tt>mymodule/file3.cpp</tt> will be generated.</p>
+<p>
+But compiling and linking this files won't be sufficient to generate your
+extension. You have to also generate a file named <tt>main.cpp</tt>; call pyste with
+<b>all</b> the Pyste files of your extension, and use the <tt>--generate-main</tt> option:</p>
+<code><pre>&gt;python pyste.py --module=mymodule --generate-main file1.pyste file2.pyste file3.pyste</pre></code><p>
+Now compile and link all this files together and your extension is ready for
+use.</p>
+<a name="cache"></a><h2>Cache</h2><p>
+Pyste now supports a form of cache, which is a way to speed up the code
+generation. Most of the time that Pyste takes to generate the code comes from
+having to execute <a href="http://www.gccxml.org">
+GCCXML</a> (since being a front-end to GCC, it has to compile the
+header files) and reading back the XML generated. </p>
+<p>
+When you use the <tt>--cache-dir=&lt;dir&gt;</tt> option, Pyste will dump in the specified
+directory the generated XMLs to a file named after the Pyste file, with the
+extension <tt>.pystec</tt>.  The next time you run with this option, Pyste will use
+the cache, instead of calling <a href="http://www.gccxml.org">
+GCCXML</a> again:</p>
+<code><pre>&gt;python pyste.py --module=mymodule --cache-dir=cache file1.pyste</pre></code><p>
+Will generate <tt>file1.cpp</tt> and <tt>cache/file1.pystec</tt>. Next time you execute
+this command, the cache file will be used. Note that Pyste doesn't do any check
+to ensure that the cache is up to date, but you can configure your build system to do that for you.</p>
+<p>
+When you run Pyste with <tt>--only-create-cache</tt>, all the cache files will be
+created again, but no code will be generated.</p>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

@@ -64,6 +64,28 @@ We create a file named <tt>hello.pyste</tt> and create instances of the classes
 </span></pre></code>
 <p>
 That will expose the class, the free function and the enum found in <tt>hello.h</tt>. </p>
+<a name="inheritance"></a><h2>Inheritance</h2><p>
+Pyste automatically generates the correct code (specifying <tt>bases&lt;&gt;</tt> in the
+<tt>class_</tt> declaration) <b>if</b> the Class() function that exports the base classes
+and their children are in the same Pyste file. If that's not the case, you have
+to indicate that there's a relationship between the Pyste files using the
+<tt>Import</tt> function specifying the other Pyste file.</p>
+<p>
+Suppose we have two classes, <tt>A</tt> and <tt>B</tt>, and A is a base class for B. We
+create two Pyste files:</p>
+<p>
+<tt>A.pyste</tt>:</p>
+<code><pre>
+    <span class=identifier>Class</span><span class=special>(</span><span class=string>&quot;A&quot;</span><span class=special>, </span><span class=string>&quot;A.h&quot;</span><span class=special>)
+</span></pre></code>
+<p>
+<tt>B.pyste</tt>:</p>
+<code><pre>
+    <span class=identifier>Import</span><span class=special>(</span><span class=string>&quot;A.pyste&quot;</span><span class=special>)
+    </span><span class=identifier>Class</span><span class=special>(</span><span class=string>&quot;B&quot;</span><span class=special>, </span><span class=string>&quot;B.h&quot;</span><span class=special>)
+</span></pre></code>
+<p>
+Note that we specify that <tt>B</tt> needs to know about <tt>A</tt> to be properly exported.</p>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

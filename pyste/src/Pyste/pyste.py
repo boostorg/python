@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 """
 Pyste version %s
 
@@ -23,6 +28,9 @@ where options are:
     --cache-dir=<dir>       Directory for cache files (speeds up future runs)
     --only-create-cache     Recreates all caches (doesn't generate code).
     --generate-main         Generates the _main.cpp file (in multiple mode)
+    --file-list             A file with one pyste file per line. Use as a 
+                            substitute for passing the files in the command
+                            line.
     -h, --help              Print this help and exit
     -v, --version           Print version information                         
 """
@@ -43,7 +51,7 @@ from CppParser import CppParser, CppParserError
 import time
 import declarations
 
-__version__ = '0.9.26'
+__version__ = '0.9.27'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -72,6 +80,19 @@ def ProcessIncludes(includes):
             index += 1
 
 
+def ReadFileList(filename):
+    f = file(filename)
+    files = []
+    try:
+        for line in f:
+            line = line.strip()
+            if line:
+                files.append(line)
+    finally:
+        f.close()
+    return files
+
+        
 def ParseArguments():
 
     def Usage():
@@ -83,7 +104,7 @@ def ParseArguments():
             sys.argv[1:], 
             'R:I:D:vh', 
             ['module=', 'multiple', 'out=', 'no-using', 'pyste-ns=', 'debug', 'cache-dir=', 
-             'only-create-cache', 'version', 'generate-main',  'help'])
+             'only-create-cache', 'version', 'generate-main', 'file-list=',  'help'])
     except getopt.GetoptError, e:
         print
         print 'ERROR:', e
@@ -122,6 +143,8 @@ def ParseArguments():
             cache_dir = value
         elif opt == '--only-create-cache':
             create_cache = True
+        elif opt == '--file-list':
+            files += ReadFileList(value)
         elif opt in ['-h', '--help']:
             Usage()
         elif opt in ['-v', '--version']:
@@ -193,6 +216,7 @@ def CreateContext():
     context['return_opaque_pointer'] = return_opaque_pointer
     context['manage_new_object'] = manage_new_object
     context['return_by_value'] = return_by_value
+    context['return_self'] = return_self
     # utils
     context['Wrapper'] = exporterutils.FunctionWrapper
     context['declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration-outside')

@@ -1,3 +1,8 @@
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# distribution is subject to the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at 
+# http:#www.boost.org/LICENSE_1_0.txt)
+
 from GCCXMLParser import ParseDeclarations
 import tempfile
 import shutil
@@ -151,7 +156,8 @@ class CppParser:
         if declarations is None:
             declarations = self.ParseWithGCCXML(header, tail)
             self.CreateCache(header, interface, tail, declarations)
-        return declarations, header
+        header_fullpath = os.path.abspath(self.FindHeader(header))
+        return declarations, header_fullpath
 
 
     def CacheFileName(self, interface):
