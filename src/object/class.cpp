@@ -205,7 +205,7 @@ namespace
       std::vector<entry>::const_iterator p
           = boost::detail::lower_bound(start, finish, id);
 
-      if (p == finish && p->key != id)
+      if (p == finish || p->key != id)
       {
           string report("extension class wrapper for base class ");
           (report += id.name()) += " has not been created yet";
