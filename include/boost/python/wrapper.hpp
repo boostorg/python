@@ -21,11 +21,12 @@ class wrapper : public detail::wrapper_base
  protected:
     override get_override(char const* name) const
     {
+        typedef detail::wrapper_base base;
         converter::registration const& r
             = converter::registered<T>::converters;
         PyTypeObject* type = r.get_class_object();
         
-        return detail::wrapper_base::get_override(name, type);
+        return this->base::get_override(name, type);
     }
 };
 
