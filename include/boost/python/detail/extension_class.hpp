@@ -38,19 +38,44 @@ template <class T> struct right_operand;
 
 enum without_downcast_t { without_downcast };
 
-namespace detail {
+namespace detail
+{
 
 // forward declarations
-class extension_instance;
-class extension_class_base;
-template <class T> class instance_holder;
-template <class T, class U> class instance_value_holder;
-template <class ref, class T> class instance_ptr_holder;
-template <class Specified> struct operand_select;
+  class extension_instance;
+  class extension_class_base;
+  template <class T> class instance_holder;
+  template <class T, class U> class instance_value_holder;
+  template <class ref, class T> class instance_ptr_holder;
+  template <class Specified> struct operand_select;
   template <long> struct choose_op;
   template <long> struct choose_rop;
   template <long> struct choose_unary_op;
   template <long> struct define_operator;
+
+  class BOOST_PYTHON_DECL extension_instance : public instance
+  {
+   public:
+      extension_instance(PyTypeObject* class_);
+      ~extension_instance();
+    
+      void add_implementation(std::auto_ptr<instance_holder_base> holder);
+
+      typedef std::vector<instance_holder_base*> held_objects;
+      const held_objects& wrapped_objects() const
+      { return m_wrapped_objects; }
+   private:
+      held_objects m_wrapped_objects;
+  };
+
+} // namespace detail
+
+# ifndef BOOST_PYTHON_NO_TEMPLATE_EXPORT
+BOOST_PYTHON_EXPORT_TEMPLATE_CLASS class_t<detail::extension_instance>;
+BOOST_PYTHON_EXPORT_TEMPLATE_CLASS meta_class<detail::extension_instance>;
+# endif 
+
+namespace detail {
 
 BOOST_PYTHON_DECL meta_class<extension_instance>* extension_meta_class();
 BOOST_PYTHON_DECL extension_instance* get_extension_instance(PyObject* p);
@@ -811,21 +836,6 @@ class instance_ptr_holder : public instance_holder<HeldType>
     bool held_by_value() { return false; }
  private:
     PtrType m_ptr;
-};
-
-class BOOST_PYTHON_DECL extension_instance : public instance
-{
- public:
-    extension_instance(PyTypeObject* class_);
-    ~extension_instance();
-    
-    void add_implementation(std::auto_ptr<instance_holder_base> holder);
-
-    typedef std::vector<instance_holder_base*> held_objects;
-    const held_objects& wrapped_objects() const
-        { return m_wrapped_objects; }
- private:
-    held_objects m_wrapped_objects;
 };
 
 //
