@@ -87,7 +87,8 @@ namespace boost { namespace python
   class enum_ : public <a href="object.html#object-spec">object</a>
   {
     enum_(char const* name);
-    inline enum_&lt;T&gt;&amp; value(char const* name, T);
+    enum_&lt;T&gt;&amp; value(char const* name, T);
+    enum_&lt;T&gt;&amp; export_values();
   };
 }}
 </pre>
