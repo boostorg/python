@@ -33,9 +33,11 @@ def run(args = None):
     
     result = doctest.testmod(sys.modules.get(__name__))
     
+    import pydoc
+    docmodule = pydoc.TextDoc().docmodule
     try:
         print 'printing module help:'
-        help(docstring_ext)
+        print docmodule(docstring_ext)
     except object, x:
         print '********* failed **********'
         print x
