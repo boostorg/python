@@ -21,9 +21,9 @@
 # include <boost/preprocessor/iteration/local.hpp>
 
 # include <boost/python/detail/mpl_lambda.hpp>
+
 # include <boost/mpl/bool.hpp>
 
-# include <boost/type.hpp>
 # include <cstddef>
 
 
