@@ -3,6 +3,9 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
+
+#include <boost/mpl/lambda.hpp> // #including this first is an intel6 workaround
+
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/instance.hpp>
 #include <boost/python/object/class_detail.hpp>

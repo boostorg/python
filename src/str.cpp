@@ -22,14 +22,6 @@ str_base::str_base(object_cref other)
     : object(str_base::call(other))
 {}
 
-namespace
-{
-  new_reference new_attr_reference(object const* obj, char const* name)
-  {
-      return new_reference(incref(object(obj->attr(name)).ptr()));
-  }
-}
-
 #define BOOST_PYTHON_FORMAT_OBJECT(z, n, data) "O"
 #define BOOST_PYTHON_OBJECT_PTR(z, n, data) , x##n .ptr()
 
@@ -320,5 +312,5 @@ BOOST_PYTHON_DEFINE_STR_METHOD(title, 0)
 BOOST_PYTHON_DEFINE_STR_METHOD(translate, 1)
 BOOST_PYTHON_DEFINE_STR_METHOD(translate, 2)
 BOOST_PYTHON_DEFINE_STR_METHOD(upper, 0)
-
+    
 }}}  // namespace boost::python

@@ -38,7 +38,6 @@
 # include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/object/class_converters.hpp>
 
-# include <boost/python/detail/string_literal.hpp>
 # include <boost/python/detail/overloads_fwd.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
@@ -59,11 +58,9 @@
 
 namespace boost { namespace python {
 
-enum no_init_t { no_init };
+template <class DerivedVisitor> struct def_visitor;
 
-struct def_arg_base {};
-template <class Derived>
-struct def_arg : def_arg_base {}; // Generic visitor
+enum no_init_t { no_init };
 
 namespace detail
 {
@@ -90,9 +87,6 @@ namespace detail
   template <class T1, class T2, class T3>
   struct has_noncopyable;
 
-  template <detail::operator_id, class L, class R>
-  struct operator_;
-  
   // Register to_python converters for a class T.  The first argument
   // will be mpl::true_ unless noncopyable was specified as a
   // class_<...> template parameter. The 2nd argument is a pointer to
@@ -249,7 +243,7 @@ class class_ : public objects::class_base
         : base(name, id_vector::size, id_vector().ids)
     {
         this->register_();
-        define_init(*this, i.derived());
+        this->def(i);
         this->set_instance_size(holder_selector::additional_size());
     }
 
@@ -259,26 +253,18 @@ class class_ : public objects::class_base
         : base(name, id_vector::size, id_vector().ids, doc)
     {
         this->register_();
-        define_init(*this, i.derived());
+        this->def(i);
         this->set_instance_size(holder_selector::additional_size());
     }
 
  public: // member functions
     
-    // Define additional constructors
-    template <class DerivedT>
-    self& def(init_base<DerivedT> const& i)
-    {
-        define_init(*this, i.derived());
-        return *this;
-    }
-
     // Generic visitation
     template <class Derived>
-    self& def(def_arg<Derived> const& visitor)
+    self& def(def_visitor<Derived> const& visitor)
     {
-         static_cast<Derived const&>(visitor).visit(*this);
-         return *this;
+        visitor.visit(*this);
+        return *this;
     }
 
     // Wrap a member function or a non-member function which can take
@@ -322,13 +308,6 @@ class class_ : public objects::class_base
             , &fn);
 
         return *this;
-    }
-
-    template <detail::operator_id id, class L, class R>
-    self& def(detail::operator_<id,L,R> const& op)
-    {
-        typedef detail::operator_<id,L,R> op_t;
-        return this->def(op.name(), &op_t::template apply<T>::execute);
     }
 
     //
@@ -476,42 +455,27 @@ class class_ : public objects::class_base
     inline void register_() const;
 
     //
-    // These three overloads discriminate between def() as applied to
-    // things which are already wrapped into callable python::object
-    // instances, a generic visitor, and everything else.
+    // These two overloads discriminate between def() as applied to a
+    // generic visitor and everything else.
     //
-    template <class F, class A1>
+    template <class Helper, class LeafVisitor, class Visitor>
     inline void def_impl(
         char const* name
-        , F f
-        , detail::def_helper<A1> const& helper
-        , object const*)
+      , LeafVisitor
+      , Helper const& helper
+      , def_visitor<Visitor> const* v
+    )
     {
-        // It's too late to specify anything other than docstrings, if
-        // the callable object is already wrapped.
-        BOOST_STATIC_ASSERT(
-            (is_same<char const*,A1>::value
-             || detail::is_string_literal<A1>::value));
-        
-        objects::add_to_namespace(*this, name, f, helper.doc());
+        v->visit(*this, name,  helper);
     }
 
-    template <class Derived, class A1>
-    inline void def_impl(
-        char const* name
-        , def_arg<Derived> const& visitor
-        , detail::def_helper<A1> const& helper
-        , def_arg_base const*)
-    {
-         static_cast<Derived const&>(visitor).visit(*this, name);
-    }
-    
     template <class Fn, class Helper>
     inline void def_impl(
         char const* name
-        , Fn fn
-        , Helper const& helper
-        , ...)
+      , Fn fn
+      , Helper const& helper
+      , ...
+    )
     {
         objects::add_to_namespace(
             *this, name,
@@ -578,9 +542,11 @@ class class_ : public objects::class_base
         , ...)
     {
         this->def_impl(
-            name, fn
-            , detail::def_helper<A1>(a1)
-            , &fn);
+            name
+          , fn
+          , detail::def_helper<A1>(a1)
+          , &fn
+        );
 
     }
 };

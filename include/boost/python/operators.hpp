@@ -8,11 +8,13 @@
 
 # include <boost/python/detail/prefix.hpp>
 
+# include <boost/python/def_visitor.hpp>
 # include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/not_specified.hpp>
 # include <boost/python/back_reference.hpp>
 # include <boost/mpl/if.hpp>
+# include <boost/mpl/apply_if.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
@@ -121,20 +123,41 @@ namespace detail
   // self_t
   template <operator_id id, class L = not_specified, class R = not_specified>
   struct operator_
-      : mpl::if_<
-            is_same<L,self_t>
-            , typename mpl::if_<
-                 is_same<R,self_t>
-                , binary_op<id>
-                , binary_op_l<id,typename unwrap_other<R>::type>
-              >::type
-            , typename mpl::if_<
-                is_same<L,not_specified>
-                , unary_op<id>
-                , binary_op_r<id,typename unwrap_other<L>::type>
-                 >::type
-          >::type
+    : def_visitor<operator_<id,L,R> >
   {
+   private:
+      template <class ClassT>
+      void visit(ClassT& cl) const
+      {
+          typedef typename mpl::apply_if<
+              is_same<L,self_t>
+            , mpl::if_<
+                  is_same<R,self_t>
+                , binary_op<id>
+                , binary_op_l<
+                      id
+                    , BOOST_DEDUCED_TYPENAME unwrap_other<R>::type
+                  >
+              >
+            , mpl::if_<
+                  is_same<L,not_specified>
+                , unary_op<id>
+                , binary_op_r<
+                      id
+                    , BOOST_DEDUCED_TYPENAME unwrap_other<L>::type
+                  >
+              >
+          >::type generator;
+      
+          cl.def(
+              generator::name()
+            , &generator::template apply<
+                 BOOST_DEDUCED_TYPENAME ClassT::wrapped_type
+              >::execute
+          );
+      }
+    
+      friend class python::def_visitor_access;
   };
 }
 

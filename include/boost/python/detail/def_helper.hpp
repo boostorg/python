@@ -18,6 +18,7 @@
 # include <boost/mpl/apply.hpp>
 # include <boost/tuple/tuple.hpp>
 # include <boost/python/detail/not_specified.hpp>
+# include <boost/python/detail/def_helper_fwd.hpp>
 
 namespace boost { namespace python {
 
@@ -143,7 +144,7 @@ namespace detail
   // are expected to be the types of the actual (optional) arguments
   // passed to def().
   //
-  template <class T1, class T2 = not_specified, class T3 = not_specified, class T4 = not_specified>
+  template <class T1, class T2, class T3, class T4>
   struct def_helper
   {
       // A tuple type which begins with references to the supplied

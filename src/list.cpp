@@ -7,6 +7,7 @@
 
 namespace boost { namespace python { namespace detail {
 
+
 detail::new_non_null_reference list_base::call(object const& arg_)
 {
     return (detail::new_non_null_reference)
@@ -37,14 +38,7 @@ void list_base::append(object_cref x)
     }
 }
 
-long list_base::count(object_cref value) const
-{
-    object result_obj(this->attr("count")(value));
-    long result = PyInt_AsLong(result_obj.ptr());
-    if (result == -1)
-        throw_error_already_set();
-    return result;
-}
+//long list_base::count(object_cref value) const;
 
 void list_base::extend(object_cref sequence)
 {
@@ -130,6 +124,17 @@ void list_base::sort()
 void list_base::sort(object_cref cmpfunc)
 {
     this->attr("sort")(cmpfunc);
+}
+
+// For some reason, moving this to the end of the TU suppresses an ICE
+// with vc6.
+long list_base::count(object_cref value) const
+{
+    object result_obj(this->attr("count")(value));
+    long result = PyInt_AsLong(result_obj.ptr());
+    if (result == -1)
+        throw_error_already_set();
+    return result;
 }
 
 }}} // namespace boost::python

@@ -17,15 +17,21 @@
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/tag.hpp>
+# include <boost/python/def_visitor.hpp>
 
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/detail/dependent.hpp>
 
 # include <boost/python/object/forward.hpp>
+# include <boost/python/object/add_to_namespace.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/debug/line.hpp>
 # include <boost/python/detail/is_xxx.hpp>
+
+# include <boost/type_traits/is_same.hpp>
+# include <boost/python/detail/string_literal.hpp>
+# include <boost/python/detail/def_helper_fwd.hpp>
 
 namespace boost { namespace python { 
 
@@ -69,7 +75,7 @@ namespace api
   typedef PyObject* (object::*bool_type)() const;
   
   template <class U>
-  class object_operators
+  class object_operators : public def_visitor<U>
   {
    protected:
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
@@ -157,7 +163,23 @@ namespace api
               slice_bound<T>::type(start)
               , slice_bound<V>::type(end));
       }
-# endif 
+# endif
+      
+   private: // def visitation for adding callable objects as class methods
+      template <class ClassT, class DocStringT>
+      void visit(ClassT& cl, char const* name, python::detail::def_helper<DocStringT> const& helper) const
+      {
+          // It's too late to specify anything other than docstrings if
+          // the callable object is already wrapped.
+          BOOST_STATIC_ASSERT(
+              (is_same<char const*,DocStringT>::value
+               || detail::is_string_literal<DocStringT>::value));
+        
+          objects::add_to_namespace(cl, name, this->derived_visitor(), helper.doc());
+      }
+
+      friend class python::def_visitor_access;
+      
    private:
      // there is a confirmed CWPro8 codegen bug here. We prevent the
      // early destruction of a temporary by binding a named object

@@ -7,7 +7,7 @@
 #ifndef INDEXING_SUITE_JDG20036_HPP
 # define INDEXING_SUITE_JDG20036_HPP
 
-# include <boost/python/class.hpp>
+# include <boost/python/def_visitor.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/indexing/detail/indexing_suite_detail.hpp>
 # include <boost/python/indexing/py_container_utils.hpp>
@@ -105,7 +105,7 @@ namespace boost { namespace python {
         , class Index = typename Container::size_type
     >
     class indexing_suite 
-        : public def_arg<
+        : public def_visitor<
             indexing_suite<
               Container
             , DerivedPolicies
@@ -162,7 +162,7 @@ namespace boost { namespace python {
               , Index> >::type
         slice_handler;
   
-    public:
+     private: // def visitation
       
         template <class Class>
         void visit(Class& cl) const
@@ -183,7 +183,9 @@ namespace boost { namespace python {
             ;         
         }        
         
-    private:
+        friend class python::def_visitor_access;
+        
+     private:
                    
         static object
         base_get_item(back_reference<Container&> container, PyObject* i)

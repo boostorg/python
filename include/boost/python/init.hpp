@@ -15,6 +15,7 @@
 #include <boost/python/detail/type_list.hpp>
 #include <boost/python/args_fwd.hpp>
 #include <boost/python/detail/make_keyword_range_fn.hpp>
+#include <boost/python/def_visitor.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/apply_if.hpp>
@@ -110,10 +111,13 @@ namespace detail
   
 #endif
 
+  template <int NDefaults>
+  struct define_class_init_helper;
+
 } // namespace detail
 
 template <class DerivedT>
-struct init_base
+struct init_base : def_visitor<DerivedT>
 {
     init_base(char const* doc_, detail::keyword_range const& keywords_)
         : m_doc(doc_), m_keywords(keywords_)
@@ -122,7 +126,7 @@ struct init_base
     init_base(char const* doc_)
         : m_doc(doc_)
     {}
-        
+
     DerivedT const& derived() const
     {
         return *static_cast<DerivedT const*>(this);
@@ -142,6 +146,39 @@ struct init_base
     {
         return default_call_policies();
     }
+
+ private:
+    //  visit
+    //
+    //      Defines a set of n_defaults + 1 constructors for its
+    //      class_<...> argument. Each constructor after the first has
+    //      one less argument to its right. Example:
+    //
+    //          init<int, optional<char, long, double> >
+    //
+    //      Defines:
+    //
+    //          __init__(int, char, long, double)
+    //          __init__(int, char, long)
+    //          __init__(int, char)
+    //          __init__(int)
+    template <class classT>
+    void visit(classT& cl) const
+    {
+        typedef typename DerivedT::signature signature;
+        typedef typename DerivedT::n_arguments n_arguments;
+        typedef typename DerivedT::n_defaults n_defaults;
+    
+        detail::define_class_init_helper<n_defaults::value>::apply(
+            cl
+          , derived().call_policies()
+          , signature()
+          , n_arguments()
+          , derived().doc_string()
+          , derived().keywords());
+    }
+    
+    friend class python::def_visitor_access;
     
  private: // data members
     char const* m_doc;
@@ -326,7 +363,8 @@ namespace detail
   //
   ///////////////////////////////////////////////////////////////////////////////
   template <int NDefaults>
-  struct define_class_init_helper {
+  struct define_class_init_helper
+  {
 
       template <class ClassT, class CallPoliciesT, class Signature, class NArgs>
       static void apply(
@@ -373,39 +411,6 @@ namespace detail
           def_init_aux(cl, args, NArgs(), policies, doc, keywords);
       }
   };
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  define_init
-//
-//      Accepts a class_ and an init-list. Defines a set of constructors for
-//      the class given the arguments. The init list (see init above) has
-//      n_defaults (number of default arguments and n_arguments (number of
-//      actual arguments). This function defines n_defaults + 1 constructors
-//      for the class. Each constructor after the first has one less argument
-//      to its right. Example:
-//
-//          init<int, default<char, long, double>
-//
-//      Defines:
-//
-//          __init__(int, char, long, double)
-//          __init__(int, char, long)
-//          __init__(int, char)
-//          __init__(int)
-//
-///////////////////////////////////////////////////////////////////////////////
-template <class ClassT, class InitT>
-void
-define_init(ClassT& cl, InitT const& i)
-{
-    typedef typename InitT::signature signature;
-    typedef typename InitT::n_arguments n_arguments;
-    typedef typename InitT::n_defaults n_defaults;
-    
-    detail::define_class_init_helper<n_defaults::value>::apply(
-        cl, i.call_policies(), signature(), n_arguments(), i.doc_string(), i.keywords());
 }
 
 }} // namespace boost::python
