@@ -1,5 +1,15 @@
 /*
     This example shows how to make an Extension Class "pickleable".
+
+    The world class below contains member data (secret_number) that
+    cannot be restored by any of the constructors. Therefore it is
+    necessary to provide the __getstate__/__setstate__ pair of pickle
+    interface methods.
+
+    The object's __dict__ is included in the result of __getstate__.
+    This requires more code (compare with pickle2.cpp), but is
+    unavoidable if the object's __dict__ is not always empty.
+
     For more information refer to boost/libs/python/doc/pickle.html.
  */
 

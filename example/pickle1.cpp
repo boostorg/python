@@ -1,5 +1,10 @@
 /*
     This example shows how to make an Extension Class "pickleable".
+
+    The world class below can be fully restored by passing the
+    appropriate argument to the constructor. Therefore it is sufficient
+    to define the pickle interface method __getinitargs__.
+
     For more information refer to boost/libs/python/doc/pickle.html.
  */
 
