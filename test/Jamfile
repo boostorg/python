@@ -7,7 +7,7 @@ include <module@>python.jam ;
 local PYTHON_V1_PROPERTIES = $(PYTHON_PROPERTIES) ;
 local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
 
-#
+# Convenience rule makes declaring tests faster
 rule bpl-test ( name ? : files * )
 {
     files ?= $(name).py $(name).cpp ;
