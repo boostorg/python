@@ -21,7 +21,9 @@
 #if BOOST_WORKAROUND(BOOST_MSVC, == 1310)
 // vc7.1 seems to require this (incorrectly) in order to use the "not" keyword
 #include <ciso646>
-#elif BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
+#elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300) \
+   || BOOST_WORKAROUND(__GNUC__, <= 2) \
+   || BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
 #define not !
 #endif
 
@@ -91,11 +93,7 @@ BOOST_PYTHON_MODULE(operators_ext)
         .def(pow(self,self))
         .def(pow(self,int()))
         .def(pow(int(),self))
-#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(__GNUC__, <= 2)
-        .def(!self)  // it doesn't know about the "not" keyword!
-#else
         .def(not self)
-#endif 
         ;
 
     class_<test_class<1> >("Z", init<int>())
