@@ -44,6 +44,8 @@ class GCCXMLParser(object):
         if hasattr(self, method):
             func = getattr(self, method)
             func(id, element)
+        else:
+            self.ParseUnknown(id, element)
 
             
     def GetElementsFromXML(self,filename):
@@ -75,7 +77,7 @@ class GCCXMLParser(object):
                 raise InvalidContextError, 'Invalid context found in the xml file.'
             else: 
                 msg = 'ID not found in elements: %s' % id
-            raise ParserError, msg
+                raise ParserError, msg
 
         elem, decl = self.elements[id]
         if decl is None:
@@ -124,6 +126,13 @@ class GCCXMLParser(object):
         element, _ = self.elements[id]
         self.elements[id] = element, decl
 
+        
+    def ParseUnknown(self, id, element):
+        name = '__Unknown_Element_%s' % id
+        namespace = '::'
+        decl = Declaration(name, namespace)
+        self.Update(id, decl)
+        
         
     def ParseNamespace(self, id, element):
         namespace = element.get('name')
