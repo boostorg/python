@@ -9,6 +9,7 @@
 
 #include <set>
 #include <stdexcept>
+#include <boost/lexical_cast.hpp>
 
 #if defined(__APPLE__) && defined(__MACH__) && defined(__GNUC__) \
  && __GNUC__ == 3 && __GNUC_MINOR__ == 3 && !defined(__APPLE_CC__)
@@ -161,8 +162,16 @@ namespace registry
       assert(slot == 0); // we have a problem otherwise
       if (slot != 0)
       {
-          throw std::runtime_error(
-              "trying to register to_python_converter for a type which already has a registered to_python_converter");
+          std::string msg(
+              "to-Python converter for "
+              + lexical_cast<std::string>(source_t)
+              + " already registered; second conversion method ignored."
+          );
+          
+          if ( ::PyErr_Warn( NULL, const_cast<char*>(msg.c_str()) ) )
+          {
+              throw_error_already_set();
+          }
       }
       slot = f;
   }
