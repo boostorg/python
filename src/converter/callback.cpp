@@ -66,6 +66,13 @@ namespace detail
       , lvalue_from_python_registration*const& converters)
   {
       ref holder(source);
+      if (source->ob_refcnt <= 2)
+      {
+          PyErr_SetString(
+              PyExc_ReferenceError
+              , const_cast<char*>("Attempt to return dangling internal reference"));
+          throw error_already_set();
+      }
       void* result = find(source, converters);
       if (!result)
       {
