@@ -72,11 +72,19 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
-#  include <pyconfig.h>
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
+#   include <config.h>
+#  else
+#   include <pyconfig.h>
+#  endif
 #  undef hypot // undo the evil #define left by Python.
 
 # elif defined(__BORLANDC__)
-#  include <pyconfig.h>
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
+#   include <config.h>
+#  else
+#   include <pyconfig.h>
+#  endif
 #  undef HAVE_HYPOT
 #  define HAVE_HYPOT 1
 # elif defined(_MSC_VER)
