@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 
 #include <boost/python/module.hpp>
+#include "test_class.hpp"
 #include <boost/python/class.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/def.hpp>
@@ -12,7 +13,6 @@
 
 #include <boost/detail/workaround.hpp>
 
-#include "test_class.hpp"
 #include <memory>
 
 using namespace boost::python;

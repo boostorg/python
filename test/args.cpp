@@ -4,6 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/module.hpp>
+#include "test_class.hpp"
 #include <boost/python/def.hpp>
 #include <boost/python/args.hpp>
 #include <boost/python/tuple.hpp>
@@ -11,7 +12,6 @@
 #include <boost/python/overloads.hpp>
 #include <boost/python/raw_function.hpp>
 #include <boost/python/return_internal_reference.hpp>
-#include "test_class.hpp"
 
 using namespace boost::python;
 
