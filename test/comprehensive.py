@@ -422,7 +422,7 @@ Some simple overloading tests:
     >>> try: r = Range('yikes')
     ... except TypeError, e:
     ...     assert re.match(
-    ... 'No overloaded functions match [(]Range, string[)]\. Candidates are:\n.*\n.*',
+    ... 'No overloaded functions match [(]Range, str[a-z]*[)]\. Candidates are:\n.*\n.*',
     ...  str(e))
     ... else: print 'no exception'
     
@@ -632,7 +632,7 @@ Testing overloaded free functions
     15
     >>> try: overloaded(1, 'foo')
     ... except TypeError, err:
-    ...     assert re.match("No overloaded functions match \(int, string\)\. Candidates are:",
+    ...     assert re.match("No overloaded functions match \(int, str[a-z]*\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
@@ -662,7 +662,7 @@ Testing overloaded constructors
     5
     >>> try: over = OverloadTest(1, 'foo')
     ... except TypeError, err:
-    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, str[a-z]*\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
@@ -684,7 +684,7 @@ Testing overloaded methods
     5
     >>> try: over.overloaded(1,'foo')
     ... except TypeError, err:
-    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, str[a-z]*\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'

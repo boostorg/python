@@ -70,6 +70,14 @@ class instance
     PyObject* oct();
     PyObject* hex();
 
+    // Rich comparisons
+    PyObject* lt(PyObject* other);
+    PyObject* le(PyObject* other);
+    PyObject* eq(PyObject* other);
+    PyObject* ne(PyObject* other);
+    PyObject* gt(PyObject* other);
+    PyObject* ge(PyObject* other);
+
  private: // noncopyable, without the size bloat
     instance(const instance&);
     void operator=(const instance&);
@@ -169,6 +177,14 @@ class class_t
     PyObject* instance_number_float(PyObject*) const;
     PyObject* instance_number_oct(PyObject*) const;
     PyObject* instance_number_hex(PyObject*) const;
+
+ private: // Implement rich comparisons
+    PyObject* instance_lt(PyObject*, PyObject*) const;
+    PyObject* instance_le(PyObject*, PyObject*) const;
+    PyObject* instance_eq(PyObject*, PyObject*) const;
+    PyObject* instance_ne(PyObject*, PyObject*) const;
+    PyObject* instance_gt(PyObject*, PyObject*) const;
+    PyObject* instance_ge(PyObject*, PyObject*) const;
     
  private: // Miscellaneous "special" methods
     PyObject* instance_call(PyObject* obj, PyObject* args, PyObject* keywords) const;
@@ -475,6 +491,42 @@ template <class T>
 PyObject* class_t<T>::instance_number_hex(PyObject* obj) const
 {
     return downcast<T>(obj)->hex();
+}
+
+template <class T>
+PyObject* class_t<T>::instance_lt(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->lt(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_le(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->le(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_eq(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->eq(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_ne(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->ne(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_gt(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->gt(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_ge(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->ge(other);
 }
 
 namespace detail {

@@ -19,12 +19,12 @@ r'''>>> import pickle3
     ...   wd.z = 3. * number
     ...   pstr = pickle.dumps(wd)
     ...   wl = pickle.loads(pstr)
-    ...   print wd.greet(), wd.get_secret_number(), wd.__dict__
-    ...   print wl.greet(), wl.get_secret_number(), wl.__dict__
-    Hello from California! 24 {'z': 72.0, 'x': 48, 'y': 'yyyyyyyyyyyyyyyyyyyyyyyy'}
-    Hello from California! 24 {'z': 72.0, 'x': 48, 'y': 'yyyyyyyyyyyyyyyyyyyyyyyy'}
-    Hello from California! 42 {'z': 126.0, 'x': 84, 'y': 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'}
-    Hello from California! 0 {'z': 126.0, 'x': 84, 'y': 'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'}
+    ...   print wd.greet(), wd.get_secret_number(), wd.x, wd.y, wd.z
+    ...   print wl.greet(), wl.get_secret_number(), wl.x, wl.y, wl.z
+    Hello from California! 24 48 yyyyyyyyyyyyyyyyyyyyyyyy 72.0
+    Hello from California! 24 48 yyyyyyyyyyyyyyyyyyyyyyyy 72.0
+    Hello from California! 42 84 yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy 126.0
+    Hello from California! 0 84 yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy 126.0
 '''
 
 def run(args = None):

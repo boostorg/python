@@ -159,6 +159,28 @@ static PyObject* do_instance_repr(PyObject* obj)
     return call(obj, &type_object_base::instance_repr);
 }
 
+static PyObject* do_instance_richcompare(PyObject* obj, PyObject* other, int d)
+{
+#if PYTHON_API_VERSION >= 1010
+    switch(d)
+    {
+        case Py_LT: 
+          return call(obj, &type_object_base::instance_lt, other);
+        case Py_LE: 
+          return call(obj, &type_object_base::instance_le, other);
+        case Py_EQ: 
+          return call(obj, &type_object_base::instance_eq, other);
+        case Py_NE: 
+          return call(obj, &type_object_base::instance_ne, other);
+        case Py_GT: 
+          return call(obj, &type_object_base::instance_gt, other);
+        case Py_GE: 
+          return call(obj, &type_object_base::instance_ge, other);
+    }
+#endif
+    return 0;
+}
+
 static int do_instance_compare(PyObject* obj, PyObject* other)
 {
     return call(obj, &type_object_base::instance_compare, other);
@@ -406,7 +428,7 @@ namespace
 bool add_capability_general(type_object_base::capability capability, PyTypeObject* dest)
 {
     assert(dest != 0);
-    
+
     switch(capability)
     {
         ENABLE_GENERAL_CAPABILITY(hash);
@@ -433,6 +455,20 @@ void create_method_table_if_null(T*& table)
     {
         detail::shared_pod_manager::make_unique_copy(table);
     }
+}
+
+bool add_capability_richcompare(type_object_base::capability capability, PyTypeObject* dest)
+{
+    assert(dest != 0);
+    if (capability == type_object_base::richcompare) {
+#if PYTHON_API_VERSION >= 1010
+      dest->tp_richcompare = &do_instance_richcompare;
+      dest->tp_flags |= Py_TPFLAGS_HAVE_RICHCOMPARE;
+#endif
+      return true;
+    }
+    
+    return false;
 }
 
 #define ENABLE_MAPPING_CAPABILITY(field) \
@@ -547,6 +583,8 @@ namespace detail  {
       PyTypeObject* dest_)
   {
     if(add_capability_general(capability, dest_))
+        return;
+    if(add_capability_richcompare(capability, dest_))
         return;
     if(add_capability_mapping(capability, dest_->tp_as_mapping))
         return;
@@ -973,6 +1011,36 @@ PyObject* type_object_base::instance_number_oct(PyObject*) const
 PyObject* type_object_base::instance_number_hex(PyObject*) const
 {
     return unimplemented("instance_number_hex");
+}
+
+PyObject* type_object_base::instance_lt(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_lt");
+}
+
+PyObject* type_object_base::instance_le(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_le");
+}
+
+PyObject* type_object_base::instance_eq(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_eq");
+}
+
+PyObject* type_object_base::instance_ne(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_ne");
+}
+
+PyObject* type_object_base::instance_gt(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_gt");
+}
+
+PyObject* type_object_base::instance_ge(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_ge");
 }
 
 }} // namespace boost::python

@@ -52,6 +52,13 @@ bpl_exa + "/tst_dvect2.py",
 bpl_exa + "/tst_ivect1.py",
 bpl_exa + "/tst_ivect2.py",
 bpl_exa + "/test_cross_module.py",
+bpl_exa + "/vector_wrapper.h",
+bpl_exa + "/richcmp1.cpp",
+bpl_exa + "/richcmp2.cpp",
+bpl_exa + "/richcmp3.cpp",
+bpl_exa + "/test_richcmp1.py",
+bpl_exa + "/test_richcmp2.py",
+bpl_exa + "/test_richcmp3.py",
 )
 
 defs = (
@@ -68,6 +75,9 @@ defs = (
 "noncopyable_import",
 "ivect",
 "dvect",
+"richcmp1",
+"richcmp2",
+"richcmp3",
 )
 
 if (__name__ == "__main__"):

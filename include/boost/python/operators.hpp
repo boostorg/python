@@ -65,7 +65,13 @@ enum operator_id
     op_long = 0x20000, 
     op_float = 0x40000, 
     op_str = 0x80000,
-    op_cmp = 0x100000 
+    op_cmp = 0x100000,
+    op_gt = 0x200000,
+    op_ge = 0x400000,
+    op_lt = 0x800000,
+    op_le = 0x1000000,
+    op_eq = 0x2000000,
+    op_ne = 0x4000000
 };
 
 // Wrap the operators given by "which". Usage:
@@ -301,6 +307,12 @@ namespace detail
   PY_DEFINE_BINARY_OPERATORS(and, &);
   PY_DEFINE_BINARY_OPERATORS(xor, ^);
   PY_DEFINE_BINARY_OPERATORS(or, |);
+  PY_DEFINE_BINARY_OPERATORS(gt, >);
+  PY_DEFINE_BINARY_OPERATORS(ge, >=);
+  PY_DEFINE_BINARY_OPERATORS(lt, <);
+  PY_DEFINE_BINARY_OPERATORS(le, <=);
+  PY_DEFINE_BINARY_OPERATORS(eq, ==);
+  PY_DEFINE_BINARY_OPERATORS(ne, !=);
 
   PY_DEFINE_UNARY_OPERATORS(neg, -);
   PY_DEFINE_UNARY_OPERATORS(pos, +);

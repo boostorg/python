@@ -616,6 +616,12 @@ class extension_class
         choose_op<(which & op_and)>::template args<Operand>::add(this);
         choose_op<(which & op_xor)>::template args<Operand>::add(this);
         choose_op<(which & op_or)>::template args<Operand>::add(this);
+        choose_op<(which & op_gt)>::template args<Operand>::add(this);
+        choose_op<(which & op_ge)>::template args<Operand>::add(this);
+        choose_op<(which & op_lt)>::template args<Operand>::add(this);
+        choose_op<(which & op_le)>::template args<Operand>::add(this);
+        choose_op<(which & op_eq)>::template args<Operand>::add(this);
+        choose_op<(which & op_ne)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_neg)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_pos)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_abs)>::template args<Operand>::add(this);
@@ -645,6 +651,12 @@ class extension_class
         choose_op<(which & op_xor)>::template args<Left,Right>::add(this);
         choose_op<(which & op_or)>::template args<Left,Right>::add(this);
         choose_op<(which & op_cmp)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_gt)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_ge)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_lt)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_le)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_eq)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_ne)>::template args<Left,Right>::add(this);
     }
     
     template <long which, class Left, class Right>

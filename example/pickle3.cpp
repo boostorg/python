@@ -106,7 +106,7 @@ namespace {
   {
       if(args.size() != 1 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-          throw boost::python::argument_error();
+          throw boost::python::error_already_set();
       }
       const world& w = from_python(args[0].get(), type<const world&>());
       ref mydict = getattr(args[0], "__dict__");
@@ -122,7 +122,7 @@ namespace {
   {
       if(args.size() != 2 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-          throw boost::python::argument_error();
+          throw boost::python::error_already_set();
       }
       world& w = from_python(args[0].get(), type<world&>());
       ref mydict = getattr(args[0], "__dict__");

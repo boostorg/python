@@ -17,6 +17,9 @@ BOOST_UNIX=$(HOME)/boost
 PYEXE="C:\Program files\Python\python.exe"
 PYINC=/I"C:\Program files\Python\include"
 PYLIB="C:\Program files\Python\libs\python15.lib"
+#PYEXE="C:\Python21\python.exe"
+#PYINC=/I"C:\Python21\include"
+#PYLIB="C:\Python21\libs\python21.lib"
 
 STDOPTS=/nologo /MD /GR /GX /Zm200
 WARNOPTS=
@@ -43,7 +46,8 @@ all: boost_python.lib \
      do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
-     ivect.pyd dvect.pyd
+     ivect.pyd dvect.pyd \
+     richcmp1.pyd richcmp2.pyd richcmp3.pyd
 
 boost_python.lib: $(OBJ)
 	$(LD) -lib /nologo /out:boost_python.lib $(OBJ)
@@ -87,6 +91,15 @@ ivect.pyd: $(OBJ) ivect.obj
 dvect.pyd: $(OBJ) dvect.obj
 	$(LD) $(LDOPTS) $(OBJ) dvect.obj $(PYLIB) /export:initdvect /out:"dvect.pyd"
 
+richcmp1.pyd: $(OBJ) richcmp1.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp1.obj $(PYLIB) /export:initrichcmp1 /out:"richcmp1.pyd"
+
+richcmp2.pyd: $(OBJ) richcmp2.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp2.obj $(PYLIB) /export:initrichcmp2 /out:"richcmp2.pyd"
+
+richcmp3.pyd: $(OBJ) richcmp3.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp3.obj $(PYLIB) /export:initrichcmp3 /out:"richcmp3.pyd"
+
 .cpp.obj:
 	$(CPP) $(CPPOPTS) /c $*.cpp
 
@@ -101,14 +114,17 @@ test:
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
 	$(PYEXE) test_cross_module.py --broken-auto-ptr
+	$(PYEXE) test_richcmp1.py
+	$(PYEXE) test_richcmp2.py
+	$(PYEXE) test_richcmp3.py
 
 clean:
-	del *.obj
-	del *.lib
-	del *.exp
-	del *.idb
-	del *.pyd
-	del *.pyc
+	-del *.obj
+	-del *.lib
+	-del *.exp
+	-del *.idb
+	-del *.pyd
+	-del *.pyc
 
 softlinks:
 	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) softlinks
