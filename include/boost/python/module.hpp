@@ -31,7 +31,7 @@ class module : public detail::module_base
     template <class T>
     module& setattr(const char* name, T const& x)
     {
-        this->module_base::setattr_doc(name, python::object(x), 0);
+        this->base::setattr_doc(name, python::object(x), 0);
         return *this;
     }
 
