@@ -38,7 +38,7 @@ OBJ=classes.obj conversions.obj extension_class.obj functions.obj \
 all: boost_python.lib \
      boost_python_test.pyd \
      abstract.pyd \
-     getting_started1.pyd getting_started2.pyd getting_started3.pyd \
+     getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
      do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
@@ -59,9 +59,6 @@ getting_started1.pyd: $(OBJ) getting_started1.obj
 
 getting_started2.pyd: $(OBJ) getting_started2.obj
 	$(LD) $(LDOPTS) $(OBJ) getting_started2.obj $(PYLIB) /export:initgetting_started2 /out:"getting_started2.pyd"
-
-getting_started3.pyd: $(OBJ) getting_started3.obj
-	$(LD) $(LDOPTS) $(OBJ) getting_started3.obj $(PYLIB) /export:initgetting_started3 /out:"getting_started3.pyd"
 
 simple_vector.pyd: $(OBJ) simple_vector.obj
 	$(LD) $(LDOPTS) $(OBJ) simple_vector.obj $(PYLIB) /export:initsimple_vector /out:"simple_vector.pyd"
@@ -98,7 +95,6 @@ test:
 	$(PYEXE) test_abstract.py
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
-	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_simple_vector.py
 	$(PYEXE) test_do_it_yourself_converters.py
 	$(PYEXE) test_pickle1.py

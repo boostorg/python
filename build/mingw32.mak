@@ -57,7 +57,7 @@ OBJ=classes.o conversions.o extension_class.o functions.o \
 
 all: libboost_python.a \
      abstract.pyd \
-     getting_started1.pyd getting_started2.pyd getting_started3.pyd \
+     getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
      do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
@@ -94,12 +94,6 @@ getting_started2.pyd: $(OBJ) getting_started2.o
           --dllname getting_started2.pyd \
           --def getting_started2.def \
           $(OBJ) getting_started2.o $(PYLIB)
-
-getting_started3.pyd: $(OBJ) getting_started3.o
-	dllwrap $(DLLWRAPOPTS) \
-          --dllname getting_started3.pyd \
-          --def getting_started3.def \
-          $(OBJ) getting_started3.o $(PYLIB)
 
 simple_vector.pyd: $(OBJ) simple_vector.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -163,7 +157,6 @@ test:
 	$(PYEXE) test_abstract.py
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
-	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_simple_vector.py
 	$(PYEXE) test_do_it_yourself_converters.py
 	$(PYEXE) test_pickle1.py

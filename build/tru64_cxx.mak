@@ -52,7 +52,7 @@ OBJ=classes.o conversions.o extension_class.o functions.o \
 DEPOBJ=$(OBJ) \
        comprehensive.o \
        abstract.o \
-       getting_started1.o getting_started2.o getting_started3.o \
+       getting_started1.o getting_started2.o \
        simple_vector.o \
        do_it_yourself_converters.o \
        pickle1.o pickle2.o pickle3.o \
@@ -64,7 +64,7 @@ DEPOBJ=$(OBJ) \
 all: libboost_python.a \
      boost_python_test.so \
      abstract.so \
-     getting_started1.so getting_started2.so getting_started3.so \
+     getting_started1.so getting_started2.so \
      simple_vector.so \
      do_it_yourself_converters.so \
      pickle1.so pickle2.so pickle3.so \
@@ -90,9 +90,6 @@ getting_started1.so: $(OBJ) getting_started1.o
 
 getting_started2.so: $(OBJ) getting_started2.o
 	$(LD) $(LDOPTS) $(OBJ) getting_started2.o -o getting_started2.so
-
-getting_started3.so: $(OBJ) getting_started3.o
-	$(LD) $(LDOPTS) $(OBJ) getting_started3.o -o getting_started3.so
 
 simple_vector.so: $(OBJ) simple_vector.o
 	$(LD) $(LDOPTS) $(OBJ) simple_vector.o -o simple_vector.so
@@ -131,7 +128,6 @@ test:
 	$(PYEXE) test_abstract.py
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
-	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_simple_vector.py
 	$(PYEXE) test_do_it_yourself_converters.py
 	$(PYEXE) test_pickle1.py
@@ -145,7 +141,6 @@ clean:
 	rm -f abstract.o abstract.so
 	rm -f getting_started1.o getting_started1.so
 	rm -f getting_started2.o getting_started2.so
-	rm -f getting_started3.o getting_started3.so
 	rm -f simple_vector.o simple_vector.so
 	rm -f do_it_yourself_converters.o do_it_yourself_converters.so
 	rm -f pickle1.o pickle1.so
