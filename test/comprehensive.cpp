@@ -1131,11 +1131,7 @@ void init_module()
     boost_python_test.add(new boost::python::meta_class<boost::python::instance>);
 }
 
-extern "C"
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-void initboost_python_test()
+BOOST_PYTHON_MODULE_INIT(boost_python_test)
 {
     try {
         bpl_test::init_module();
