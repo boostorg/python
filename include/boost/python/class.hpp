@@ -127,6 +127,7 @@ class class_ : objects::class_base
     // passed to the base class constructor
     struct id_vector
     {
+        typedef objects::class_id class_id;
         id_vector()
         {
             // Stick the derived class id into the first element of the array
