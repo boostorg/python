@@ -211,14 +211,16 @@ class class_ : public objects::class_base
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
 
+    // held_type - either T, a class derived from T or a smart pointer
+    // to a (class derived from) T.    
     typedef typename detail::select_held_type<
         X1, typename detail::select_held_type<
         X2, typename detail::select_held_type<
         X3
     >::type>::type>::type held_type;
 
-    typedef objects::select_holder<T,held_type> holder_selector;
-
+    typedef objects::select_holder<T,held_type> select_holder;
+    
  private: // types
 
     typedef typename detail::select_bases<X1
@@ -264,9 +266,8 @@ class class_ : public objects::class_base
     inline class_(char const* name, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids)
     {
-        this->register_();
+        this->register_holder();
         this->def(i);
-        this->set_instance_size(holder_selector::additional_size());
     }
 
     // Construct with class name, docstring and init<> function
@@ -274,9 +275,8 @@ class class_ : public objects::class_base
     inline class_(char const* name, char const* doc, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids, doc)
     {
-        this->register_();
+        this->register_holder();
         this->def(i);
-        this->set_instance_size(holder_selector::additional_size());
     }
 
  public: // member functions
@@ -475,7 +475,8 @@ class class_ : public objects::class_base
     }
 
     inline void register_() const;
-
+    inline void register_holder();
+    
     //
     // These two overloads discriminate between def() as applied to a
     // generic visitor and everything else.
@@ -584,14 +585,22 @@ inline void class_<T,X1,X2,X3>::register_() const
 {
     objects::register_class_from_python<T,bases>();
 
-    typedef BOOST_DEDUCED_TYPENAME holder_selector::type select_holder;
     typedef BOOST_DEDUCED_TYPENAME select_holder::held_type held_t;
-    
     detail::register_wrapper_class<held_t,T>();
-        
+    
     detail::register_class_to_python<T>(
         mpl::bool_<is_copyable>()
-      , BOOST_DEDUCED_TYPENAME holder_selector::type()
+      , select_holder()
+    );
+}
+
+template <class T, class X1, class X2, class X3>
+inline void class_<T,X1,X2,X3>::register_holder()
+{
+    this->register_();
+    typedef typename select_holder::type holder;
+    this->set_instance_size(
+        objects::additional_instance_size<holder>::value
     );
 }
 
@@ -599,9 +608,8 @@ template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
-    this->register_();
-    this->set_instance_size(holder_selector::additional_size());
-    holder_selector::type::assert_default_constructible();
+    this->register_holder();
+    select_holder::assert_default_constructible();
     this->def(init<>());
 }
 
@@ -633,18 +641,18 @@ namespace detail
   {};
 
 
-    template <class T, class Prev>
-    struct select_held_type
-        : mpl::if_<
-             mpl::or_<
-                 specifies_bases<T>
-               , is_same<T,noncopyable>
-            >
-            , Prev
-            , T
-          >
-    {
-    };
+  template <class T, class Prev>
+  struct select_held_type
+    : mpl::if_<
+          mpl::or_<
+              specifies_bases<T>
+            , is_same<T,noncopyable>
+              >
+        , Prev
+        , T
+      >
+  {
+  };
 }
 
 }} // namespace boost::python
