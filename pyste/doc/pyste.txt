@@ -288,7 +288,7 @@ a python list of strings. Boost.Python has an excellent support for that:
     {
         list result;
         vector<string> v = names();
-        // put each string in the vector in the list
+        // put each string from the vector in the list
         return result;
     }
     
@@ -328,13 +328,20 @@ Boost.Python:
 
     list names_wrapper(C* c)
     {
-        // same as before, calling c->names() and converting result to a list
+        // same as before, calling c->names() and converting result to a list 
     }
 
 And then in the interface file:
 
     C = Class("C", "test.h")
     set_wrapper(C.names, "names_wrapper")
+
+[blurb 
+[$theme/note.gif]Even though Boost.Python accepts either a pointer or a
+reference to the class in wrappers for member functions as the first parameter,
+Pyste expects them to be a [*pointer]. Doing otherwise will prevent your
+code to compile when you set a wrapper for a virtual method.
+]
 
 [page:1 Exporting All Declarations from a Header]
 

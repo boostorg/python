@@ -38,7 +38,7 @@ Boost.Python</a> has an excellent support for that:</p>
     {
         </span><span class=identifier>list </span><span class=identifier>result</span><span class=special>;
         </span><span class=identifier>vector</span><span class=special>&lt;</span><span class=identifier>string</span><span class=special>&gt; </span><span class=identifier>v </span><span class=special>= </span><span class=identifier>names</span><span class=special>();
-        // </span><span class=identifier>put </span><span class=identifier>each </span><span class=identifier>string </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>vector </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>list
+        // </span><span class=identifier>put </span><span class=identifier>each </span><span class=identifier>string </span><span class=identifier>from </span><span class=identifier>the </span><span class=identifier>vector </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>list
         </span><span class=keyword>return </span><span class=identifier>result</span><span class=special>;
     }
     
@@ -82,7 +82,7 @@ Boost.Python</a>:</p>
 
     </span><span class=identifier>list </span><span class=identifier>names_wrapper</span><span class=special>(</span><span class=identifier>C</span><span class=special>* </span><span class=identifier>c</span><span class=special>)
     {
-        // </span><span class=identifier>same </span><span class=identifier>as </span><span class=identifier>before</span><span class=special>, </span><span class=identifier>calling </span><span class=identifier>c</span><span class=special>-&gt;</span><span class=identifier>names</span><span class=special>() </span><span class=keyword>and </span><span class=identifier>converting </span><span class=identifier>result </span><span class=identifier>to </span><span class=identifier>a </span><span class=identifier>list
+        // </span><span class=identifier>same </span><span class=identifier>as </span><span class=identifier>before</span><span class=special>, </span><span class=identifier>calling </span><span class=identifier>c</span><span class=special>-&gt;</span><span class=identifier>names</span><span class=special>() </span><span class=keyword>and </span><span class=identifier>converting </span><span class=identifier>result </span><span class=identifier>to </span><span class=identifier>a </span><span class=identifier>list 
     </span><span class=special>}
 </span></pre></code>
 <p>
@@ -91,6 +91,18 @@ And then in the interface file:</p>
     <span class=identifier>C </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=string>&quot;C&quot;</span><span class=special>, </span><span class=string>&quot;test.h&quot;</span><span class=special>)
     </span><span class=identifier>set_wrapper</span><span class=special>(</span><span class=identifier>C</span><span class=special>.</span><span class=identifier>names</span><span class=special>, </span><span class=string>&quot;names_wrapper&quot;</span><span class=special>)
 </span></pre></code>
+<table width="80%" border="0" align="center">
+  <tr>
+    <td class="note_box">
+
+<img src="theme/note.gif"></img>Even though <a href="../../index.html">
+Boost.Python</a> accepts either a pointer or a
+reference to the class in wrappers for member functions as the first parameter,
+Pyste expects them to be a <b>pointer</b>. Doing otherwise will prevent your
+code to compile when you set a wrapper for a virtual method.
+    </td>
+  </tr>
+</table>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
