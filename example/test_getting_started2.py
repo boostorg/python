@@ -1,11 +1,21 @@
-r'''>>> import getting_started2
-    >>> w = getting_started2.world('California')
-    >>> print w.greet()
-    Hello from California!
-    >>> print getting_started2.invite(w)
-    Hello from California! Please come soon!
-    >>> print w.invite()
-    Hello from California! Please come soon!
+r'''>>> from getting_started2 import *
+    >>> hi = hello('California')
+    >>> hi.greet()
+    'Hello from California'
+    >>> invite(hi)
+    'Hello from California! Please come soon!'
+    >>> hi.invite()
+    'Hello from California! Please come soon!'
+
+    >>> class wordy(hello):
+    ...     def greet(self):
+    ...         return hello.greet(self) + ', where the weather is fine'
+    ...
+    >>> hi2 = wordy('Florida')
+    >>> hi2.greet()
+    'Hello from Florida, where the weather is fine'
+    >>> invite(hi2)
+    'Hello from Florida! Please come soon!'
 '''
 
 def run(args = None):

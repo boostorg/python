@@ -74,9 +74,7 @@ namespace { // Avoid cluttering the global namespace.
   }
 }
 
-extern "C"
-DL_EXPORT(void)
-initgetting_started4()
+BOOST_PYTHON_MODULE_INIT(getting_started4)
 {
   try
   {

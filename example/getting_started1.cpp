@@ -12,9 +12,7 @@ namespace python = boost::python;
 
 // Python requires an exported function called init<module-name> in every
 // extension module. This is where we build the module contents.
-extern "C"
-DL_EXPORT(void)
-initgetting_started1()
+BOOST_PYTHON_MODULE_INIT(getting_started1)
 {
   try
   {
