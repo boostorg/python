@@ -1,7 +1,7 @@
 '''
 >>> from object_ext import *
 
->>> class(ref_to_noncopyable())
+>>> type(ref_to_noncopyable())
 object_ext.NotCopyable
 
 >>> def print1(x):
