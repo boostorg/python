@@ -11,11 +11,14 @@
 # include <boost/python/object_items.hpp>
 # include <boost/python/object_operators.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python { namespace api {
 
 class string;
-class type;
+class type_object;
 
-}} // namespace boost::python
+template <class T>
+type_object type(T const&);
+
+}}} // namespace boost::python::api
 
 #endif // OBJECT_DWA2002612_HPP
