@@ -1,4 +1,3 @@
-//
 // Header file container_proxy.hpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -155,11 +154,11 @@ namespace boost { namespace python { namespace indexing {
     void detach_proxies (size_type from, size_type to);
     // Call before overwriting element(s) in the raw container
 
-    void detach_and_forget_proxies (size_type from, size_type to);
-    // Call before erasing elements from the raw container
+    void prepare_erase (size_type from, size_type to);
+    // Call before erasing elements directly from the raw container
 
-    void insert_proxies (size_type from, size_type to);
-    // Call after inserting elements into the raw container
+    void notify_insertion (size_type from, size_type to);
+    // Call after inserting elements directly into the raw container
 
   public:
     // Convenient replacement of elements (automatic proxy detachment)
@@ -379,7 +378,7 @@ namespace boost { namespace python { namespace indexing {
     assert (to.ptr == this);
 
     // Detach and remove the proxies for the about-to-be-erased elements
-    detach_and_forget_proxies (from.index, to.index);
+    prepare_erase (from.index, to.index);
 
     // Erase the elements from the real container
     raw_iterator result
@@ -539,7 +538,7 @@ namespace boost { namespace python { namespace indexing {
 
   template<class Container, class Holder, class Generator>
   void container_proxy<Container, Holder, Generator>
-  ::detach_and_forget_proxies (size_type from_index, size_type to_index)
+  ::prepare_erase (size_type from_index, size_type to_index)
   {
     difference_type deleting = to_index - from_index;
     pointer_iterator erase_begin = m_proxies.begin() + from_index;
@@ -556,7 +555,7 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  void container_proxy<Container, Holder, Generator>::insert_proxies (
+  void container_proxy<Container, Holder, Generator>::notify_insertion (
       size_type from_index, size_type to_index)
   {
     size_type count = to_index - from_index;
