@@ -172,4 +172,6 @@ def _run(args = None):
 if __name__ == '__main__':
     print "running..."
     import sys
-    sys.exit(_run())
+    status = _run()
+    if (status == 0): print "Done."
+    sys.exit(status)

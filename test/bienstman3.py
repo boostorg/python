@@ -22,4 +22,6 @@ def run(args = None):
 if __name__ == '__main__':
     print "running..."
     import sys
-    sys.exit(run()[0])
+    status = run()[0]
+    if (status == 0): print "Done."
+    sys.exit(status)
