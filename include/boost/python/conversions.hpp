@@ -19,7 +19,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/detail/signatures.hpp>
-# include <boost/smart_ptr.hpp>
+# include <boost/shared_ptr.hpp>
 # include <boost/python/errors.hpp>
 # include <string>
 

@@ -26,7 +26,7 @@
 # include <memory>
 # include <boost/python/detail/init_function.hpp>
 # include <typeinfo>
-# include <boost/smart_ptr.hpp>
+# include <boost/shared_ptr.hpp>
 # include <boost/type_traits.hpp>
 
 namespace boost { namespace python {

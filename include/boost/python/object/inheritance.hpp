@@ -7,7 +7,7 @@
 # define INHERITANCE_DWA200216_HPP
 
 # include <boost/python/converter/type_id.hpp>
-# include <boost/smart_ptr.hpp>
+# include <boost/shared_ptr.hpp>
 
 namespace boost { namespace python { namespace objects {
 

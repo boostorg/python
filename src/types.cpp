@@ -19,7 +19,6 @@
 #include <vector>
 #include <cstddef>
 #include <stdexcept>
-#include <boost/smart_ptr.hpp>
 #include <boost/python/objects.hpp>
 #include <boost/type_traits/alignment_traits.hpp>
 #include <boost/bind.hpp>
