@@ -10,11 +10,13 @@
 # include <boost/preprocessor/tuple/to_list.hpp>
 # include <boost/preprocessor/tuple/elem.hpp>
 # include <boost/preprocessor/list/for_each.hpp>
+# include <boost/preprocessor/repeat_from_to.hpp>
 # include <boost/preprocessor/repeat_from_to_2nd.hpp>
 # include <boost/preprocessor/inc.hpp>
 # include <boost/preprocessor/empty.hpp>
 # include <boost/preprocessor/enum.hpp>
-# include <boost/preprocessor/expr_if.hpp>
+# include <boost/preprocessor/comma_if.hpp>
+# include <boost/preprocessor/comparison/not_equal.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -63,8 +65,17 @@ namespace boost { namespace python { namespace detail {
 # define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
 #endif 
 
-# define BOOST_PYTHON_FN(inner,start,count) \
-    R(inner)(BOOST_MPL_TEMPLATE_PARAMETERS(start,count,A))
+# define BOOST_PYTHON_PROJECT_1ST(a1,a2) a1
+# define BOOST_PYTHON_PROJECT_2ND(a1,a2) a2
+
+# define BOOST_PYTHON_APPEND_PARAM_INDEX(index, param_start_pair)               \
+     BOOST_PP_COMMA_IF(                                                         \
+        BOOST_PP_NOT_EQUAL(index, BOOST_PYTHON_PROJECT_2ND param_start_pair))   \
+     BOOST_PP_CAT(BOOST_PYTHON_PROJECT_1ST param_start_pair,index)
+
+# define BOOST_PYTHON_FN(inner,start,count)                     \
+    R(inner)(BOOST_PP_REPEAT_FROM_TO(                           \
+        start,count,BOOST_PYTHON_APPEND_PARAM_INDEX,(A,start)))
 
 # define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)           \
     BOOST_PP_REPEAT_FROM_TO_2ND(                                \
@@ -90,9 +101,6 @@ namespace boost { namespace python { namespace detail {
   BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2,1,Pair),Index)
 
 #define BOOST_PYTHON_ENUM_PARAMS2(N, Pair) BOOST_PP_ENUM(N, BOOST_PYTHON_NUMBER_PAIR, Pair)
-
-# define BOOST_PYTHON_PROJECT_1ST(a1,a2) a1
-# define BOOST_PYTHON_PROJECT_2ND(a1,a2) a2
 
 }}} // namespace boost::python::detail
 

@@ -8,7 +8,7 @@
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/function_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -150,7 +150,7 @@ typedef char (&outer_no_type)[1];
 template <typename V>
 struct is_const_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::select_if_c<
         is_const<V>::value
         , inner_yes_type
         , inner_no_type
@@ -160,7 +160,7 @@ struct is_const_help
 template <typename V>
 struct is_volatile_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::select_if_c<
         is_volatile<V>::value
         , inner_yes_type
         , inner_no_type
@@ -170,7 +170,7 @@ struct is_volatile_help
 template <typename V>
 struct is_pointer_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::select_if_c<
         is_pointer<V>::value
         , inner_yes_type
         , inner_no_type
