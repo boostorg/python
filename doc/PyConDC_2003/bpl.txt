@@ -845,10 +845,9 @@ described in this paper, differing most-noticeably by having a
 slightly more cumbersome syntax and by lack of special support for
 operator overloading, pickling, and component-based development.
 These last three features were quickly added by Ullrich Koethe and
-Ralf Grosse-Kunstleve (albeit in a very different form), and other
-enthusiastic contributors arrived on the scene to contribute
-enhancements like support for nested modules and static member
-functions.
+Ralf Grosse-Kunstleve [#3]_, and other enthusiastic contributors arrived
+on the scene to contribute enhancements like support for nested
+modules and static member functions.
 
 By early 2001 development had stabilized and few new features were
 being added, however a disturbing new fact came to light: Ralf had
@@ -893,8 +892,8 @@ polymorphism and smart pointers.  Peter Dimov's ingenious
 ``boost::shared_ptr`` design in particular has allowed us to give the
 hybrid developer a consistent interface for moving objects back and
 forth across the language barrier without loss of information.  At
-first we were concerned that its increased power and complexity of the
-Boost.Python v2 implementation would discourage contributors, but the
+first, we were concerned that the sophistication and complexity of the
+Boost.Python v2 implementation might discourage contributors, but the
 emergence of Pyste_ and several other significant feature
 contributions have laid those fears to rest.  Daily questions on the
 Python C++-sig and a backlog of desired improvements show that the
@@ -944,3 +943,5 @@ the ground up, we can approach design with new confidence and power.
         used.  Any transition across language boundaries with such different
         object models can inevitably mask bugs.  
 
+.. [#3] These features were expressed very differently in v1 of
+        Boost.Python
