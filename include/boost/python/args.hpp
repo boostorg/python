@@ -15,6 +15,7 @@
 
 #  include <boost/preprocessor/cat.hpp>
 #  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/debug/line.hpp>
 
 namespace boost { namespace python {
 

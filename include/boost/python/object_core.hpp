@@ -18,6 +18,7 @@
 # include <boost/python/detail/dependent.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
+# include <boost/preprocessor/debug/line.hpp>
 
 namespace boost { namespace python { 
 

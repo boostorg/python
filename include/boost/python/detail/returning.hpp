@@ -24,6 +24,7 @@
 #  include <boost/preprocessor/inc.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
+#  include <boost/preprocessor/debug/line.hpp>
 
 #  include <boost/mpl/apply.hpp>
 

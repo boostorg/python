@@ -20,6 +20,7 @@
 #  include <boost/python/pointee.hpp>
 #  include <boost/python/detail/force_instantiate.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
+#  include <boost/preprocessor/debug/line.hpp>
 
 #  include <boost/mpl/select_type.hpp>
 #  include <boost/mpl/apply.hpp>

@@ -19,6 +19,7 @@
 #include <boost/preprocessor/arithmetic/sub.hpp>
 #include <boost/preprocessor/iterate.hpp>
 #include <boost/mpl/type_list.hpp>
+#include <boost/preprocessor/debug/line.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {

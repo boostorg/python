@@ -21,6 +21,7 @@
 #include <boost/python/class_fwd.hpp>
 #include <boost/python/object/function.hpp>
 #include <boost/python/scope.hpp>
+#include <boost/preprocessor/debug/line.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {

@@ -22,6 +22,7 @@
 # include <boost/preprocessor/cat.hpp>
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/dec.hpp>
+# include <boost/preprocessor/debug/line.hpp>
 
 # include <boost/mpl/type_list.hpp>
 
