@@ -47,22 +47,31 @@ R call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp
   <dt><b>Effects:</b> Invokes <code>callable(a1,&nbsp;a2,&nbsp;...a<i>n</i>)</code> in
   Python, where <code>a1</code>...<code>a<i>n</i></code> are the arguments to
   <code>call()</code>, converted to Python objects.
-  <dt><b>Postconditions:</b> {{text}}</dt>
-  <dt><b>Returns:</b> The result of the Python call, converted to the
-  C++ type <code>R</code>.</dt>
+  <dt><b>Returns:</b> The result of the Python call, converted to the C++ type <code>R</code>.</dt>
 
 </dt>
-  <dt><b>Rationale:</b> 
-
+  <dt><b>Rationale:</b> For a complete semantic description of and
+  rationale, see <a href="callbacks.html">this page</a>.
 </dt>
 </dl>
 
 <h2><a name="examples"></a>Example(s)</h2>
 
-<p>{{Example(s)}}</p>
+The following C++ function applies a Python callable object to its two
+arguments and returns the result. If a Python exception is raised or
+the result can't be converted to a <code>double</code>, an exception
+is thrown.
+
+<pre>
+double apply2(PyObject* func, double x, double y)
+{
+   return boost::python::call&lt;double&gt;(func, x, y);
+}
+</pre>
+
 <p>Revised 
   <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  05 November, 2002 
+  9 May, 2002 <!-- Luann's birthday! -->
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 </p>
 <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave Abrahams</a> 
