@@ -68,8 +68,11 @@ int test_main(int, char * [])
     return 0;
 }
 
-// This definition is needed for MinGW 2.95.2 and KCC on OSF for some reason
+#if !defined(_WIN32) || defined(__GNUC__)
+// This definition is needed for MinGW 2.95.2 and KCC on OSF for some
+// reason, but will break other Win32 compilers.
 namespace boost { namespace python
 {
-  bool BOOST_PYTHON_DECL handle_exception_impl(boost::function0<void>) { return false; }
+  bool handle_exception_impl(boost::function0<void>) { return false; }
 }}
+#endif 
