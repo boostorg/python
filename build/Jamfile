@@ -151,6 +151,7 @@ rule boost-python
                 # standard requirements
                 $(BOOST_PYTHON_INCLUDES)
                 <msvc><*><library-path>$(PYTHON_LIB_PATH)
+                <intel-win32><*><library-path>$(PYTHON_LIB_PATH)
                 <metrowerks><*><library-file>$(PYTHON_LIB_PATH)/python$(PYTHON_VERSION_NODOT)$(debug).lib
                 <gcc><*><library-file>$(PYTHON_LIBS)
                 $(PYTHON_PROPERTIES)
@@ -239,6 +240,7 @@ rule python-runtest-aux # target : sources
     switch $(<)
     {
         case <*\\\\msvc\\\\*>* : ARGS on $(<) += --broken-auto-ptr ;
+        case <*\\\\intel-win32\\\\*>* : ARGS on $(<) += --broken-auto-ptr ;
     }
 
     # compute the PYTHONPATH environment variable that will allow the test to
