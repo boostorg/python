@@ -27,7 +27,7 @@ Python. Leveraging the full power of C++ compile-time introspection
 and of recently developed metaprogramming techniques, this is achieved
 entirely in pure C++, without introducing a new syntax.
 Boost.Python's rich set of features and high-level interface make it
-possible to engineer hybrid software systems from the ground up,
+possible to engineer packages from the ground up as hybrid systems,
 giving programmers easy and coherent access to both the efficient
 compile-time polymorphism of C++ and the extremely convenient run-time
 polymorphism of Python.
@@ -102,7 +102,7 @@ many of these other systems.  That said, Boost.Python attempts to
 maximize convenience and flexibility without introducing a separate
 wrapping language.  Instead, it presents the user with a high-level
 C++ interface for wrapping C++ classes and functions, managing much of
-the complexity behind-the-scense with static metaprogramming.
+the complexity behind-the-scenes with static metaprogramming.
 Boost.Python also goes beyond the scope of earlier systems by
 providing:
 
@@ -135,7 +135,7 @@ This approach leads to *user guided wrapping*: as much information is
 extracted directly from the source code to be wrapped as is possible
 within the framework of pure C++, and some additional information is
 supplied explicitly by the user.  Mostly the guidance is mechanical
-and little real intervention is required.  Because there the interface
+and little real intervention is required.  Because the interface
 specification is written in the same full-featured language as the
 code being exposed, the user has unprecedented power available when
 she does need to take control.
