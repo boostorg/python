@@ -81,7 +81,7 @@ bool check_numeric_array_rich_slice()
 // Verify functions accepting a slice argument can be called
 bool accept_slice( slice) { return true; }
 
-#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+#if BOOST_WORKAROUND( BOOST_MSVC, <= 1400)
 int check_slice_get_indicies(slice index);
 #endif
 int check_slice_get_indicies(const slice index)
