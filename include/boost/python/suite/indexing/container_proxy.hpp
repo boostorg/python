@@ -176,7 +176,8 @@ namespace boost { namespace python { namespace indexing {
 
   private:
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
-    typedef typename Generator::apply<pointer_impl>::type pointer_container;
+    typedef typename Generator::template apply<pointer_impl>::type
+        pointer_container;
     typedef typename pointer_container::iterator pointer_iterator;
 
   private:
