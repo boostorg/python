@@ -22,16 +22,36 @@
         are still left to be done explicitly by the user. This is not entirely a
         bad thing, as you can do some Pythonic things with CXX (e.g. variable
         and keyword arguments) that I haven't yet figured out how to enable with
-        py_cpp. As far as I can tell, also CXX enables one to write what is
-        essentially idiomatic Python code in C++, manipulating Python objects
-        through the same fully-generic interfaces we use in Python. That use is
-        also supported (less-well) by the py_cpp object wrappers. <a
-        href="mailto:dubois1@llnl.gov">Paul F. Dubois</a>, the CXX maintainer,
-        has told me that what I've described is only half of the picture with
-        CXX, but I never understood his explanation well-enough to fill in the
-        other half. I hope that you, dear reader, may be able to help me
-        complete my comparitive analysis of CXX.
+        py_cpp. 
+      <p>
+        As far as I can tell, CXX enables one to write what is essentially
+        idiomatic Python code in C++, manipulating Python objects through the
+        same fully-generic interfaces we use in Python. That use is also
+        supported by the py_cpp object wrappers. CXX claims to interoperate well
+        with the C++ Standard Library (a.k.a. STL) by providing iterators into
+        Python Lists and Dictionaries, but the claim is unfortunately
+        unsupportable. The problem is that in general, access to Python sequence and
+        mapping elements through iterators requires the use of Proxy objects as
+        the return value of iterator dereference operations. This usage
+        conflicts with the basic ForwardIterator requirements in <a
+        href="http://anubis.dkuug.dk/jtc1/sc22/open/n2356/lib-iterators.html#lib.forward.iterators">
+        section 24.1.3 of the standard</a> (dereferencing must produce a
+        reference). Although you may be able to use these iterators with some
+        operations in some standard library implementations, it is neither
+        guaranteed to work nor portable.
+      <p>
+        <a href="mailto:dubois1@llnl.gov">Paul F. Dubois</a>, the original
+        author of CXX, has told me that what I've described is only half of the
+        picture with CXX, but I never understood his explanation well-enough to
+        fill in the other half. Here is his response to the commentary above:
 
+<blockquote>
+"My intention with CXX was not to do what you are doing. It was to enable a
+person to write an extension directly in C++ rather than C. I figured others had
+the wrapping business covered. I thought maybe CXX would provide an easier
+target language for those making wrappers, but I never explored
+that."<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
+</blockquote>
 
       <h2>SWIG</h2>
       <p>
@@ -47,21 +67,23 @@
         result, interfaces are usually built by grabbing a header file and
         tweaking it a little bit." For C++ interfaces, the tweaking has often
         proven to amount to more than just a little bit. One user
-        writes:<blockquote> "The problem with swig (when I used it) is that it
+        writes:
+
+        <blockquote> "The problem with swig (when I used it) is that it
         couldnt handle templates, didnt do func overloading properly etc.  For
         ANSI C libraries this was fine.  But for usual C++ code this was a
         problem.  Simple things work.  But for anything very complicated (or
-        realistic), one had to write code by hand.  I believe py_cpp doesnt have
-        this problem[sic]...  IMHO overloaded functions are very important to
+        realistic), one had to write code by hand.  I believe py_cpp doesn't have
+        this problem[<a href="#sic">sic</a>]...  IMHO overloaded functions are very important to
         wrap correctly."<br><i>-Prabhu Ramachandran</i>
         </blockquote>
         
       <p>
         By contrast, py_cpp doesn't attempt to parse C++ - the problem is simply
-        too complex to do correctly. Technically, one does write code by hand to
-        use py_cpp. The goal, however, has been to make that code nearly as
-        simple as listing the names of the classes and member functions you want
-        to expose in Python.
+        too complex to do correctly. <a name="sic">Technically</a>, one does
+        write code by hand to use py_cpp. The goal, however, has been to make
+        that code nearly as simple as listing the names of the classes and
+        member functions you want to expose in Python.
 
       <h2>SIP</h2> 
       <p>
@@ -92,6 +114,32 @@
         to be reserved to the C++ implementation. It is unclear from the
         documentation whether ILU supports overriding C++ virtual functions in Python.
         
+      <h2>GRAD</h2>
+      <p>
+      <a
+      href="http://www.python.org/workshops/1996-11/papers/GRAD/html/GRADcover.html">GRAD</a>
+      is another very ambitious project aimed at generating Python wrappers for
+      interfaces written in "legacy languages", among which C++ is the first one
+      implemented. Like SWIG, it aims to parse source code and automatically
+      generate wrappers, though it appears to take a more sophisticated approach
+      to parsing in general and C++ in particular, so it should do a much better
+      job with C++. It appears to support function overloading. The
+      documentation is missing a lot of information I'd like to see, so it is
+      difficult to give an accurate and fair assessment. I am left with the
+      following questions:
+<ul>
+<li>Does it support overriding of virtual functions?
+<li>What about overriding private or protected virtual functions (the documentation indicates
+that only public interfaces are supported)?
+<li>Which C++ language constructs are supportd?
+<li>Does it support implicit conversions between wrapped C++ classes that have
+an inheritance relationship?
+<li>Does it support smart pointers?
+</ul>
+      <p>
+        Anyone in the possession of the answers to these questions will earn my
+        gratitude for a write-up <code>;-)</code>
+
       <h2>Zope ExtensionClasses</h2>
       <p>
          <a href="http:http://www.digicool.com/releases/ExtensionClass">
@@ -136,13 +184,12 @@
           extension classes, then all but one must be mix-in classes that
           provide extension methods but no data."
         <li>
-          Zope's Extension SubClasses admit multiple-inheritance from both Zope
-          ExtensionClasses <i>and</i> Python classes. This capability is currently
-          not available in py_cpp.
-        <li>
-          Zope supplies the standard special Python class attributes __doc__,
-          __name__, __bases__, __dict__, and __module__ on its
-          ExtensionClasses; py_cpp does not (coming soon)
+          Zope requires use of the somewhat funky inheritedAttribute (search for
+          "inheritedAttribute" on <a
+          href="http://www.digicool.com/releases/ExtensionClass">this page</a>)
+          method to access base class methods. In py_cpp, base class methods can
+          be accessed in the usual way by writing
+          "<code>BaseClass.method</code>".
         <li>
           Zope supplies some creative but esoteric idioms such as <a href= 
           "http://www.digicool.com/releases/ExtensionClass/Acquisition.html">
@@ -154,13 +201,6 @@
           easier to use in py_cpp.
       </ul>
       <p>
-        Also, the Zope docs say: "The first superclass listed in the class
-        statement defining an extension subclass must be either a base
-        extension class or an extension subclass. This restriction will be
-        removed in Python-1.5." I believe that this promise was made
-        prematurely. I have looked at the Python 1.5.2 source code and I don't
-        believe it is possible to deliver on it.
-      <p>
         Previous: <a href="extending.html">A Brief Introduction to writing Python Extension Modules</a>
         Next: <a href="example1.html">A Simple Example Using py_cpp</a>
         Up: <a href="py_cpp.html">Top</a>
@@ -171,6 +211,6 @@
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>
-         Updated: Oct 18, 2000
+         Updated: Oct 30, 2000
     </div>
 
