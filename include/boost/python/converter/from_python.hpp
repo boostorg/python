@@ -40,7 +40,7 @@ struct pointer_const_reference_from_python
     bool convertible() const;
     
  private:
-    detail::referent_storage<T>::type m_result;
+    typename detail::referent_storage<T>::type m_result;
     
     static lvalue_from_python_registration*& chain;
 };
