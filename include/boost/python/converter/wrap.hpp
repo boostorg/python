@@ -11,11 +11,11 @@
 # include <boost/python/converter/wrapper.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/python/converter/source_holder.hpp>
+# include <boost/python/converter/wrapper_base.hpp>
 # include <cassert>
 
 namespace boost { namespace python { namespace converter { 
 
-struct BOOST_PYTHON_DECL wrapper_base;
 extern BOOST_PYTHON_DECL body& identity_wrapper;
 
 template <class T> struct wrapper;

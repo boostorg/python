@@ -16,7 +16,9 @@
 # include <cassert>
 # include <boost/python/detail/signatures.hpp>
 # include <boost/python/errors.hpp>
-# include <boost/python/conversions.hpp>
+
+# ifndef BOOST_PYTHON_V2
+#  include <boost/python/conversions.hpp>
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
@@ -35,14 +37,19 @@ struct py_ptr_conversions : Base
 };
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
+# endif
 
 namespace boost { namespace python {
 
+# ifndef BOOST_PYTHON_V2
 BOOST_PYTHON_IMPORT_CONVERSION(py_ptr_conversions);
+# endif 
 
 template <class T>
 class reference
+# ifndef BOOST_PYTHON_V2
     : public py_ptr_conversions<reference<T>, T>
+# endif 
 {
 public:
     typedef T value_type;
@@ -165,11 +172,13 @@ private:
 
 typedef reference<PyObject> ref;
 
+#ifndef BOOST_PYTHON_V2
 template <class T>
 ref make_ref(const T& x)
 {
     return ref(to_python(x));
 }
+#endif 
 
 }} // namespace boost::python
 

@@ -18,7 +18,7 @@ namespace boost { namespace python { namespace converter {
 
 namespace // <unnamed>
 {
-  typedef std::map<type_id_t, registry::entry, type_id_before> registry_t;
+  typedef std::map<type_id_t, registry::entry> registry_t;
   
   registry_t& entries()
   {

@@ -32,24 +32,43 @@ namespace detail
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
 
-# if 1
+// type ids which represent the same information as std::type_info
+// (i.e. the top-level reference and cv-qualifiers are stripped), but
+// which works across shared libraries.
+struct undecorated_type_id_t : totally_ordered<undecorated_type_id_t>
+{
+#  ifdef BOOST_PYTHON_TYPE_ID_NAME
+    typedef char const* base_id_t;
+#  else
+    typedef std::type_info const* base_id_t;
+#  endif
+    
+    undecorated_type_id_t(base_id_t);
+
+    bool operator<(undecorated_type_id_t const& rhs) const;
+    bool operator==(undecorated_type_id_t const& rhs) const;
+    
+    friend BOOST_PYTHON_DECL std::ostream& operator<<(
+        std::ostream&, undecorated_type_id_t const&);
+    
+ private: // data members
+    base_id_t m_base_type;
+};
+
 struct type_id_t : totally_ordered<type_id_t>
 {
     enum decoration { const_ = 0x1, volatile_ = 0x2, reference = 0x4 };
     
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
-typedef char const* base_id_t;
-#  else
-typedef std::type_info const* base_id_t;
-#  endif
-    
-    type_id_t(base_id_t, decoration decoration);
+    type_id_t(undecorated_type_id_t, decoration decoration);
 
     bool operator<(type_id_t const& rhs) const;
     bool operator==(type_id_t const& rhs) const;
     friend BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
     
- private:
+ private: // type
+    typedef undecorated_type_id_t base_id_t;
+    
+ private: // data members
     decoration m_decoration;
     base_id_t m_base_type;
 };
@@ -129,14 +148,22 @@ struct is_reference_to_volatile
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION 
 
 template <class T>
-inline type_id_t type_id(detail::dummy<T>* = 0)
+inline undecorated_type_id_t undecorated_type_id(detail::dummy<T>* = 0)
 {
-    return type_id_t(
+    return undecorated_type_id_t(
 #  ifdef BOOST_PYTHON_TYPE_ID_NAME
         typeid(T).name()
 #  else
         &typeid(T)
-#  endif 
+#  endif
+        );
+}
+
+template <class T>
+inline type_id_t type_id(detail::dummy<T>* = 0)
+{
+    return type_id_t(
+        undecorated_type_id<T>()
         , type_id_t::decoration(
             (is_const<T>::value || is_reference_to_const<T>::value
              ? type_id_t::const_ : 0)
@@ -147,51 +174,48 @@ inline type_id_t type_id(detail::dummy<T>* = 0)
         );
 }
 
-inline type_id_t::type_id_t(base_id_t base_t, decoration decoration)
+inline undecorated_type_id_t::undecorated_type_id_t(base_id_t base_t)
+    : m_base_type(base_t)
+{
+}
+
+inline type_id_t::type_id_t(undecorated_type_id_t base_t, decoration decoration)
     : m_decoration(decoration)
     , m_base_type(base_t)
 {
+}
+
+inline bool undecorated_type_id_t::operator<(undecorated_type_id_t const& rhs) const
+{
+#  ifdef BOOST_PYTHON_TYPE_ID_NAME
+    return std::strcmp(m_base_type, rhs.m_base_type) < 0;
+#  else
+    return m_base_type->before(*rhs.m_base_type);
+#  endif 
 }
 
 inline bool type_id_t::operator<(type_id_t const& rhs) const
 {
     return m_decoration < rhs.m_decoration
         || m_decoration == rhs.m_decoration
+           && m_base_type < rhs.m_base_type;
+}
+
+inline bool undecorated_type_id_t::operator==(undecorated_type_id_t const& rhs) const
+{
 #  ifdef BOOST_PYTHON_TYPE_ID_NAME
-           && std::strcmp(m_base_type, rhs.m_base_type) < 0;
+    return !std::strcmp(m_base_type, rhs.m_base_type);
 #  else
-           && m_base_type->before(*rhs.m_base_type);
+    return *m_base_type == *rhs.m_base_type;
 #  endif 
 }
 
 inline bool type_id_t::operator==(type_id_t const& rhs) const
 {
-    return m_decoration == rhs.m_decoration
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
-        && !std::strcmp(m_base_type, rhs.m_base_type);
-#  else
-        && *m_base_type == *rhs.m_base_type;
-#  endif 
+    return m_decoration == rhs.m_decoration && m_base_type == rhs.m_base_type;
 }
 
-# else 
-// This is the type which is used to identify a type
-typedef char const* type_id_t;
-
-// This is a workaround for a silly MSVC bug
-// Converts a compile-time type to its corresponding runtime identifier.
-template <class T>
-type_id_t type_id(detail::dummy<T>* = 0)
-{
-    return typeid(T).name();
-}
-# endif 
-
-struct BOOST_PYTHON_DECL type_id_before
-{
-    bool operator()(type_id_t const& x, type_id_t const& y) const;
-};
-
+BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, undecorated_type_id_t const&);
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
 
 }}} // namespace boost::python::converter

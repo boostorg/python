@@ -13,19 +13,18 @@
 
 namespace boost { namespace python { namespace converter { 
 
-#if 1
-bool type_id_before::operator()(type_id_t const& x, type_id_t const&  y) const
+BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, undecorated_type_id_t const& x)
 {
-    return x < y;
+#  ifdef BOOST_PYTHON_TYPE_ID_NAME
+    return os << x.m_base_type;
+#  else
+    return os << x.m_base_type->name();
+#  endif 
 }
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_id_t const& x)
 {
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
     os << x.m_base_type;
-#  else
-    os << x.m_base_type->name();
-#  endif 
     // VC6 mistakenly distinguishes typeid(X) from typeid(X const)
     // from typeid(X&)...  so the name is already correct. I have it
     // from Jason Shirk that VC7.0 has the same bug but it will be
@@ -40,28 +39,5 @@ BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_id_t const& x)
 # endif 
     return os;
 }
-
-#else 
-bool type_id_before::operator()(type_id_t const& x, type_id_t const&  y) const
-{
-    for (;;)
-    {
-        if (*y == 0)
-        {
-            return 0;
-        }
-        else if (*x == 0)
-        {
-            return 1;
-        }
-        else if (*x != *y)
-        {
-            return *x < *y;
-        }
-        ++x;
-        ++y;
-    }
-}
-#endif
 
 }}} // namespace boost::python::converter

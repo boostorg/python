@@ -89,7 +89,7 @@ struct unwrap_more_<PyObject*>
     {
     }
  private:
-    static BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*> m_unwrapper;
+    static BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*>& m_unwrapper;
 };
 
 template <class T>

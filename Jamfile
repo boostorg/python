@@ -8,6 +8,7 @@ PYTHON_PROPERTIES
   += <metrowerks><*><cxxflags>"-inline deferred" 
   <cxx><*><include>$(BOOST_ROOT)/boost/compatibility/cpp_c_headers
     <define>BOOST_PYTHON_DYNAMIC_LIB
+      <define>BOOST_PYTHON_V2
   ;
 
 
@@ -22,6 +23,7 @@ dll bpl
     src/converter/type_id.cpp
     src/object/class.cpp
     src/object/function.cpp
+    # src/object/inheritance.cpp
     src/errors.cpp
     src/module.cpp
     src/objects.cpp

@@ -17,6 +17,7 @@ namespace
   };
   
   pyobject_unwrapper static_unwrapper;
+  std::pair<unwrapper_base*,void*> unwrapper_pair(&static_unwrapper,&static_unwrapper);  
 
   pyobject_unwrapper::pyobject_unwrapper()
       : unwrapper_base(type_id<PyObject*>())
@@ -29,7 +30,7 @@ namespace
   }
 }
 
-BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*>
-unwrap_more_<PyObject*>::m_unwrapper(&static_unwrapper,&static_unwrapper);
+BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*>&
+unwrap_more_<PyObject*>::m_unwrapper = unwrapper_pair;
 
 }}} // namespace boost::python::converter

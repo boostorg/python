@@ -5,27 +5,13 @@
 // to its suitability for any purpose.
 #ifndef WRAPPER_DWA2001127_HPP
 # define WRAPPER_DWA2001127_HPP
-# include <boost/python/detail/config.hpp>
+# include <boost/python/converter/wrapper_base.hpp>
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/converter/body.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/wrap.hpp>
 # include <boost/python/converter/source_holder.hpp>
 
 namespace boost { namespace python { namespace converter { 
-
-struct source_holder_base;
-struct wrap_base;
-template <class T> struct wrap_more_;
-
-struct BOOST_PYTHON_DECL wrapper_base : body
-{
- public:
-    wrapper_base(type_id_t); // registers
-    ~wrapper_base();         // unregisters
-    
-    virtual PyObject* do_conversion(wrap_base const&, source_holder_base const&) const = 0;
-};
 
 extern BOOST_PYTHON_DECL body& identity_wrapper;
 
