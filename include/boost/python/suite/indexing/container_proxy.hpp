@@ -150,7 +150,6 @@ namespace boost { namespace python { namespace indexing {
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
     typedef std::map<size_type, pointer_impl> MapType;
     typedef typename MapType::iterator MapIterator;
-    typedef typename MapType::reverse_iterator ReverseIterator;
     typedef typename MapType::value_type MapEntry;
 
   private:
@@ -158,11 +157,9 @@ namespace boost { namespace python { namespace indexing {
 
     static void detach_if_shared (MapEntry const &);
 
-    template<typename Iter>
-    void adjustIndexes (Iter, Iter, long offset);
-
-    void erase_helper (MapIterator);
-    void erase_helper (ReverseIterator);
+    void adjustIndexes (MapIterator start, MapIterator end, long offset);
+    void adjustIndexesReverse (MapIterator start, MapIterator end, long offset);
+    void adjustIndex (MapIterator, long offset);
 
   private:
     held_type myHeldObj;
@@ -309,7 +306,7 @@ namespace boost { namespace python { namespace indexing {
       {
         // Proxy for the first index only
         MapIterator temp (iter1);
-        adjustIndexes (iter1, ++temp, distance);
+        adjustIndexes (iter1, ++temp, distance); // Exactly one element
       }
 
     else if ((iter1 == myMap.end()) && (iter2 != myMap.end()))
@@ -371,10 +368,10 @@ namespace boost { namespace python { namespace indexing {
   {
     assert (iter.ptr == this);
 
-    // Adjust indexes (backwards) down to iter.index
-    adjustIndexes (myMap.rbegin()
-                   , ReverseIterator (myMap.lower_bound (iter.index))
-                   , 1);
+    // Adjust indexes from iter.index onwards, since insert goes before this element
+    adjustIndexesReverse (myMap.lower_bound (iter.index)
+			  , myMap.end()
+			  , 1);
 
     // Insert the element into the real container
     raw_iterator result
@@ -404,10 +401,10 @@ namespace boost { namespace python { namespace indexing {
 
     assert (iter.ptr == this);
 
-    // Adjust indexes (backwards) down to iter.index
-    adjustIndexes (myMap.rbegin()
-                   , ReverseIterator (myMap.lower_bound (iter.index))
-                   , std::distance (from, to));
+    // Adjust indexes from iter.index onwanrds (insert goes before this element)
+    adjustIndexesReverse (myMap.lower_bound (iter.index)
+			  , myMap.end()
+			  , std::distance (from, to));
 
     // Insert the element into the real container
     raw_container().insert (raw_container().begin() + iter.index, from, to);
@@ -476,58 +473,78 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder>
-  template<typename Iter>
   void
   container_proxy<Container, Holder>
-  ::adjustIndexes (Iter from, Iter to, long offset)
+  ::adjustIndex (MapIterator iter, long offset)
   {
-    // Adjust indexes in the given range of proxies by the given offset.
-    // The adjustment is done by erasing and re-inserting the entries
-    // in the map.
-    //
-    // Could provide a hint iterator to the map insertion calls, except
-    // in the case that "from" is right at the start of the container
-    // (the hint must be the element *before* the one to be inserted,
-    // and there is no element before the first one). This would mean
-    // additional complexity to deal with the special case somehow.
+    pointer_impl ptr (iter->second);  // Copy the shared pointer
+    myMap.erase (iter);               // Remove the map copy of it
 
-    while (from != to)
+    if (!ptr.unique())
       {
-        Iter next (from);
-        ++next;  // Find next element before invalidating the current one
+	// Reinsert only if there are other pointers "out there"
+	// referring to the shared proxy
 
-        pointer_impl ptr (from->second);  // Copy the shared pointer
-        erase_helper (from);              // Remove the map copy of it
-
-        if (!ptr.unique())
-          {
-            // Reinsert only if there are other pointers "out there"
-            // referring to the shared proxy
-
-            ptr->myIndex += offset;
-            myMap.insert (typename MapType::value_type (ptr->myIndex, ptr));
-          }
-
-        from = next;
+	ptr->myIndex += offset;
+	myMap.insert (typename MapType::value_type (ptr->myIndex, ptr));
       }
   }
 
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::erase_helper (MapIterator iter)
+  ::adjustIndexes (MapIterator low_bound, MapIterator high_bound, long offset)
   {
-    myMap.erase (iter);
+    // Adjust indexes in the given range of proxies by the given offset.
+    // The adjustment is done by erasing and re-inserting the entries
+    // in the map.
+    //
+    // Could provide a hint iterator to the map insertion calls, except
+    // in the case that "low_bound" is right at the start of the container
+    // (the hint must be the element *before* the one to be inserted,
+    // and there is no element before the first one). This would mean
+    // additional complexity to deal with the special case somehow.
+
+    while (low_bound != high_bound)
+      {
+        MapIterator next (low_bound);
+	++next;  // Find next node before erasing the current target
+
+	adjustIndex (low_bound, offset);
+
+        low_bound = next;
+      }
   }
 
-  template<class Container, class Holder>
+  template <class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::erase_helper (ReverseIterator iter)
+  ::adjustIndexesReverse (MapIterator low_bound
+			  , MapIterator high_bound
+			  , long offset)
   {
-    ++iter;
-    myMap.erase (iter.base());
+    while (low_bound != high_bound)
+      {
+	--high_bound;  // Adjust now because high_bound is one-past-the-end
+
+	if (high_bound == low_bound)
+	  {
+	    adjustIndex (high_bound, offset);  // Last one to adjust
+	  }
+
+	else
+	  {
+	    MapIterator temp (high_bound);
+	    --temp;   // Find previous node before doing erase
+
+	    adjustIndex (high_bound, offset);   // Do erase
+
+	    high_bound = temp;
+	    ++high_bound;   // Make one-past-the-end again
+	  }
+      }
   }
+
 } } }
 
 #endif // container_proxy_rmg_20030826_included
