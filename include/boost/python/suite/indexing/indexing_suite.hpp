@@ -105,7 +105,7 @@ namespace boost { namespace python {
         , class Index = typename Container::size_type
     >
     class indexing_suite 
-        : public def_arg<
+        : public def_visitor<
             indexing_suite<
               Container
             , DerivedPolicies
