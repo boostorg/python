@@ -164,16 +164,8 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
 
     class_<X>("X")
 
-# if (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
         .def(init<int, optional<char, std::string, double> >("doc of init"))
         .def(init<std::string, bool>()[default_call_policies()]) // what's a good policy here?
-# else
-        .def_init(args<int>(), "doc of init")
-        .def_init(args<int, char>(), "doc of init")
-        .def_init(args<int, char, std::string>(), "doc of init")
-        .def_init(args<int, char, std::string, double>(), "doc of init")
-        .def_init(args<std::string, bool>())
-# endif
         .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
         .def("bar2", &X::bar2, X_bar_stubs2("doc of X::bar2")[return_internal_reference<>()])
