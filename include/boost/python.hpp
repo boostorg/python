@@ -59,4 +59,4 @@
 # include <boost/python/type_id.hpp>
 # include <boost/python/with_custodian_and_ward.hpp>
 
-#endif PYTHON_DWA2002810_HPP
+#endif // PYTHON_DWA2002810_HPP
