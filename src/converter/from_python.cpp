@@ -9,6 +9,7 @@
 #include <boost/python/converter/rvalue_from_python_data.hpp>
 #include <boost/python/handle.hpp>
 #include <boost/python/detail/raw_pyobject.hpp>
+#include <boost/python/cast.hpp>
 #include <vector>
 #include <algorithm>
 
@@ -222,15 +223,15 @@ BOOST_PYTHON_DECL void void_result_from_python(PyObject* o)
 }
 
 BOOST_PYTHON_DECL python::detail::new_reference
-pytype_result_from_python(PyTypeObject* type, PyObject* source)
+pytype_result_from_python(PyTypeObject* type_, PyObject* source)
 {
-    if (!PyType_IsSubtype(source->ob_type, type))
+    if (!PyObject_IsInstance(source, python::upcast<PyObject>(type_)))
     {
         handle<> keeper(source);
         handle<> msg(
             ::PyString_FromFormat(
                 "Expecting a Python %s return type, but got an object of type %s instead"
-                , type
+                , type_
                 , source->ob_type->tp_name
                 ));
         PyErr_SetObject(PyExc_TypeError, msg.get());
