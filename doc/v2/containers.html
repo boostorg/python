@@ -1456,7 +1456,17 @@ template&lt;typename P&gt; struct deref {
 
     <p>
 
-      It is possible to use the suite without partial template
+      <b>Note:</b> the suite hasn't yet been tested on a compiler
+      without partial template specialization support. If you have any
+      results with such a compiler (good or bad) please report them on
+      the mailing list for the <a
+      href="http://www.python.org/sigs/c++-sig/">Python C++-SIG</a>.
+
+    </p>
+
+    <p>
+
+      It should be possible to use the suite without partial template
       specialization support. However, the <code>algo_selector</code>
       template will not work, which also means that the default
       template parameter for <code>container_suite</code> won't
