@@ -127,8 +127,6 @@ namespace
       cast_graph& topology() { return m_topology; }
       cast_graph const& topology() const { return m_topology; }
 
-      std::size_t known_vertices() const { return m_known_vertices; }
-
       smart_graph()
           : m_known_vertices(0)
       {}
