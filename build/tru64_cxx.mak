@@ -41,55 +41,9 @@ LDOPTS= -shared -expect_unresolved 'Py*' -expect_unresolved '_Py*'
 
 #HIDDEN= -hidden
 
-BPL_SRC = $(BOOST)/libs/python/src
-BPL_TST = $(BOOST)/libs/python/test
-BPL_EXA = $(BOOST)/libs/python/example
-SOFTLINKS = \
-$(BPL_SRC)/classes.cpp \
-$(BPL_SRC)/conversions.cpp \
-$(BPL_SRC)/extension_class.cpp \
-$(BPL_SRC)/functions.cpp \
-$(BPL_SRC)/init_function.cpp \
-$(BPL_SRC)/module_builder.cpp \
-$(BPL_SRC)/objects.cpp \
-$(BPL_SRC)/types.cpp \
-$(BPL_SRC)/x_class_builder.cpp \
-$(BPL_TST)/comprehensive.cpp \
-$(BPL_TST)/comprehensive.hpp \
-$(BPL_TST)/comprehensive.py \
-$(BPL_TST)/doctest.py \
-$(BPL_EXA)/abstract.cpp \
-$(BPL_EXA)/getting_started1.cpp \
-$(BPL_EXA)/getting_started2.cpp \
-$(BPL_EXA)/getting_started3.cpp \
-$(BPL_EXA)/getting_started4.cpp \
-$(BPL_EXA)/getting_started5.cpp \
-$(BPL_EXA)/pickle1.cpp \
-$(BPL_EXA)/pickle2.cpp \
-$(BPL_EXA)/pickle3.cpp \
-$(BPL_EXA)/test_abstract.py \
-$(BPL_EXA)/test_getting_started1.py \
-$(BPL_EXA)/test_getting_started2.py \
-$(BPL_EXA)/test_getting_started3.py \
-$(BPL_EXA)/test_getting_started4.py \
-$(BPL_EXA)/test_getting_started5.py \
-$(BPL_EXA)/test_pickle1.py \
-$(BPL_EXA)/test_pickle2.py \
-$(BPL_EXA)/test_pickle3.py \
-$(BPL_EXA)/noncopyable.h \
-$(BPL_EXA)/noncopyable_export.cpp \
-$(BPL_EXA)/noncopyable_import.cpp \
-$(BPL_EXA)/tst_noncopyable.py \
-$(BPL_EXA)/ivect.h \
-$(BPL_EXA)/ivect.cpp \
-$(BPL_EXA)/dvect.h \
-$(BPL_EXA)/dvect.cpp \
-$(BPL_EXA)/tst_ivect.py \
-$(BPL_EXA)/tst_dvect.py
-
 OBJ = classes.o conversions.o extension_class.o functions.o \
       init_function.o module_builder.o \
-      objects.o types.o x_class_builder.o
+      objects.o types.o cross_module.o
 DEPOBJ= $(OBJ) \
         comprehensive.o \
         abstract.o \
@@ -107,32 +61,10 @@ all: libboost_python.a \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so \
      pickle1.so pickle2.so pickle3.so \
-     noncopyable_export.so noncopyable_import.so \
-     ivect.so dvect.so
+     noncopyable_export.so
 
-softlinks:
-	@ for pn in $(SOFTLINKS); \
-	  do \
-            bn=`basename "$$pn"`; \
-	    if [ ! -e "$$bn" ]; then \
-              echo "ln -s $$pn ."; \
-	      ln -s "$$pn" .; \
-            else \
-              echo "info: no softlink created (file exists): $$bn"; \
-	    fi; \
-	  done
-
-unlink:
-	@ for pn in $(SOFTLINKS); \
-	  do \
-            bn=`basename "$$pn"`; \
-	    if [ -L "$$bn" ]; then \
-              echo "rm $$bn"; \
-              rm "$$bn"; \
-            elif [ -e "$$bn" ]; then \
-              echo "info: not a softlink: $$bn"; \
-	    fi; \
-	  done
+#     noncopyable_import.so \
+#     ivect.so dvect.so
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a
@@ -224,6 +156,18 @@ clean:
 	rm -f dvect.o dvect.so
 	rm -f so_locations *.pyc
 	rm -rf cxx_repository
+
+softlinks:
+	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks
+
+unlink:
+	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) unlink
+
+cp:
+	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) cp
+
+rm:
+	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) rm
 
 depend:
 	@ cat Makefile.nodepend; \
