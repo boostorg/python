@@ -177,7 +177,7 @@ bpl-test crossmod_exception
 
 [ run indirect_traits_test.cpp ]
 [ run destroy_test.cpp ]
-[ run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
+[ run pointer_type_id_test.cpp <template>py-unit-test ]
 [ run bases.cpp  <template>py-unit-test ]
 [ run if_else.cpp ]
 [ run pointee.cpp  <template>py-unit-test ]
@@ -188,12 +188,12 @@ bpl-test crossmod_exception
 [ compile object_manager.cpp   <template>py-unit-test ]
 [ compile copy_ctor_mutates_rhs.cpp   <template>py-unit-test ]
 
-[ run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor  <template>py-unit-test ]
+[ run upcast.cpp <template>py-unit-test ]
   
 [ compile select_holder.cpp <template>py-unit-test ]
   
 [ run select_from_python_test.cpp ../src/converter/type_id.cpp
-  <lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
+  <template>py-unit-test ]
 
 [ compile select_arg_to_python_test.cpp <template>py-unit-test ]
 
