@@ -77,7 +77,7 @@ struct return_from_python<void>
     
     result_type operator()(PyObject* x) const
     {
-        converter::void_from_python(x);
+        (void_result_from_python)(x);
 # ifdef BOOST_NO_VOID_RETURNS
         return result_type();
 # endif 
@@ -101,21 +101,24 @@ namespace detail
   inline typename return_rvalue_from_python<T>::result_type
   return_rvalue_from_python<T>::operator()(PyObject* obj)
   {
-      return *(T*)rvalue_from_python_stage2(obj, m_data.stage1, m_data.storage.bytes);
+      return *(T*)
+          (rvalue_result_from_python)(obj, m_data.stage1);
   }
 
   template <class T>
   inline T return_reference_from_python<T>::operator()(PyObject* obj) const
   {
       return python::detail::void_ptr_to_reference(
-          reference_from_python(obj, registered<T>::converters)
+          (reference_result_from_python)(obj, registered<T>::converters)
           , (T(*)())0);
   }
 
   template <class T>
   inline T return_pointer_from_python<T>::operator()(PyObject* obj) const
   {
-      return T(pointer_from_python(obj, registered_pointee<T>::converters));
+      return T(
+          (pointer_result_from_python)(obj, registered_pointee<T>::converters)
+          );
   }
 }
   

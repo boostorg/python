@@ -38,6 +38,11 @@ object apply_object_list(object f, list x)
     return f(x);
 }
 
+list apply_list_list(object f, list x)
+{
+    return call<list>(f.ptr(), x);
+}
+
 void append_object(list& x, object y)
 {
     x.append(y);
@@ -126,6 +131,7 @@ BOOST_PYTHON_MODULE_INIT(list_ext)
         .def("listify", listify)
         .def("listify_string", listify_string)
         .def("apply_object_list", apply_object_list)
+        .def("apply_list_list", apply_list_list)
         
         .def("append_object", append_object)
         .def("append_list", append_list)

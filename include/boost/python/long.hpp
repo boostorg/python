@@ -8,6 +8,7 @@
 
 # include <boost/python/object.hpp>
 # include <boost/python/converter/pytype_arg_from_python.hpp>
+# include <boost/python/converter/pytype_result_from_python.hpp>
 
 namespace boost { namespace python { 
 
@@ -91,7 +92,7 @@ namespace converter
       
       result_type operator()(PyObject* x) const
       {
-          return long_(python::detail::new_reference(x));
+          return long_((pytype_result_from_python)(&PyLong_Type, x));
       }
   };
 }

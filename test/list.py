@@ -20,9 +20,17 @@ X(22)
 
   5 is not convertible to a list
 
->>> try: apply_object_list(identity, 5)
+>>> try: result = apply_object_list(identity, 5)
 ... except TypeError: pass
-... else: print 'expected an exception'
+... else: print 'expected an exception, got', result, 'instead'
+
+>>> assert apply_list_list(identity, letters) is letters
+
+  5 is not convertible to a list as a return value
+
+>>> try: result = apply_list_list(len, letters)
+... except TypeError: pass
+... else: print 'expected an exception, got', result, 'instead'
 
 >>> append_object(letters, '.')
 >>> letters
@@ -37,6 +45,24 @@ X(22)
 >>> append_list(letters, [1,2])
 >>> letters
 ['h', 'e', 'l', 'l', 'o', '.', [1, 2]]
+
+    Check that subclass functions are properly called
+    
+>>> class mylist(list):
+...     def append(self, o):
+...         list.append(self, o)
+...         if not hasattr(self, 'nappends'):
+...             self.nappends = 1
+...         else:
+...             self.nappends += 1
+...
+>>> l2 = mylist()
+>>> append_object(l2, 'hello')
+>>> append_object(l2, 'world')
+>>> l2
+['hello', 'world']
+>>> l2.nappends
+2
 
 >>> def printer(*args):
 ...     for x in args: print x,

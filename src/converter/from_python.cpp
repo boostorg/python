@@ -8,11 +8,28 @@
 #include <boost/python/converter/registrations.hpp>
 #include <boost/python/converter/rvalue_from_python_data.hpp>
 #include <boost/python/handle.hpp>
+#include <boost/python/detail/raw_pyobject.hpp>
 #include <vector>
 #include <algorithm>
 
 namespace boost { namespace python { namespace converter { 
 
+// rvalue_from_python_stage1 -- do the first stage of a conversion
+// from a Python object to a C++ rvalue.
+//
+//    source     - the Python object to be converted
+//    converters - the registry entry for the target type T
+//
+// Postcondition: where x is the result, one of:
+//
+//   1. x.convertible == 0, indicating failure
+//
+//   2. x.construct == 0, x.convertible is the address of an object of
+//      type T. Indicates a successful lvalue conversion
+//
+//   3. where y is of type rvalue_from_python_data<T>,
+//      x.construct(source, y) attempts to construct an object of type T
+//      in y. Indicates an rvalue converter was found
 BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source
     , registration const& converters)
@@ -34,20 +51,36 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     return data;
 }
 
-BOOST_PYTHON_DECL void* rvalue_from_python_stage2(
-    PyObject* src, rvalue_from_python_stage1_data& data, void* storage)
+// rvalue_result_from_python -- return the address of a C++ object which
+// can be used as the result of calling a Python function.
+//
+//      src  - the Python object to be converted
+//
+//      data - a reference to the base part of a
+//             rvalue_from_python_data<T> object, where T is the
+//             target type of the conversion.
+//
+// Requires: data.convertible == &registered<T>::converters
+//
+BOOST_PYTHON_DECL void* rvalue_result_from_python(
+    PyObject* src, rvalue_from_python_stage1_data& data)
 {
+    // Take possession of the source object.
     handle<> holder(src);
 
+    // Retrieve the registration
+    // Cast in two steps for less-capable compilers
     void const* converters_ = data.convertible;
     registration const& converters = *static_cast<registration const*>(converters_);
+
+    // Look for an eligible converter
     data = rvalue_from_python_stage1(src, converters);
       
     if (!data.convertible)
     {
         handle<> msg(
             ::PyString_FromFormat(
-                "No registered converter was able to produce a C++ lvalue of type %s from this Python object of type %s"
+                "No registered converter was able to produce a C++ rvalue of type %s from this Python object of type %s"
                 , converters.target_type.name()
                 , src->ob_type->tp_name
                 ));
@@ -130,7 +163,7 @@ BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
     return chain;
 }
 
-BOOST_PYTHON_DECL void* reference_from_python(
+BOOST_PYTHON_DECL void* reference_result_from_python(
     PyObject* source
     , registration const& converters)
 {
@@ -163,7 +196,7 @@ BOOST_PYTHON_DECL void* reference_from_python(
     return result;
 }
   
-BOOST_PYTHON_DECL void* pointer_from_python(
+BOOST_PYTHON_DECL void* pointer_result_from_python(
     PyObject* source
     , registration const& converters)
 {
@@ -172,7 +205,7 @@ BOOST_PYTHON_DECL void* pointer_from_python(
         Py_DECREF(source);
         return 0;
     }
-    return reference_from_python(source, converters);
+    return reference_result_from_python(source, converters);
 }
   
 BOOST_PYTHON_DECL void throw_no_class_registered()
@@ -183,9 +216,27 @@ BOOST_PYTHON_DECL void throw_no_class_registered()
     throw_error_already_set();
 }
   
-BOOST_PYTHON_DECL void void_from_python(PyObject* o)
+BOOST_PYTHON_DECL void void_result_from_python(PyObject* o)
 {
     Py_DECREF(expect_non_null(o));
+}
+
+BOOST_PYTHON_DECL python::detail::new_reference
+pytype_result_from_python(PyTypeObject* type, PyObject* source)
+{
+    if (!PyType_IsSubtype(source->ob_type, type))
+    {
+        handle<> keeper(source);
+        handle<> msg(
+            ::PyString_FromFormat(
+                "Expecting a Python %s return type, but got an object of type %s instead"
+                , type
+                , source->ob_type->tp_name
+                ));
+        PyErr_SetObject(PyExc_TypeError, msg.get());
+        throw_error_already_set();
+    }
+    return python::detail::new_reference(source);
 }
 
 }}} // namespace boost::python::converter
