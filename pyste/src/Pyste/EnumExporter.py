@@ -32,7 +32,7 @@ class EnumExporter(Exporter):
             full_name = self.enum.FullName()
             unnamed_enum = False
             if rename.startswith('$_') or rename.startswith('._'):
-                unique_number = int(rename[2:])
+                unique_number = hash(self.info.include)
                 unnamed_enum = True
                 self.ExportUniqueInt(codeunit)
                 full_name = namespaces.pyste + 'UniqueInt<%d>' % unique_number
