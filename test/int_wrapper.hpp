@@ -26,8 +26,8 @@
 struct int_wrapper {
   static bool our_trace_flag;
   static unsigned our_object_counter;
-  int mObjNumber;
-  int mI;
+  int m_obj_number;
+  int m_int;
 
   inline int_wrapper ();
   inline explicit int_wrapper (int i);
@@ -35,7 +35,7 @@ struct int_wrapper {
   inline int_wrapper &operator= (int_wrapper const &other);
   inline ~int_wrapper ();
 
-  inline void increment();
+  inline void increment (int);
 
   inline operator boost::shared_ptr<int_wrapper> () const;
 
@@ -58,36 +58,36 @@ inline std::ostream &operator<< (std::ostream &strm, int_wrapper const &iw);
 // 
 
 int_wrapper::int_wrapper ()
-  : mObjNumber (our_object_counter++)
-  , mI (0)
+  : m_obj_number (our_object_counter++)
+  , m_int (0)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u ()\n", mObjNumber);
+      printf ("int_wrapper %u ()\n", m_obj_number);
     }
 }
 
 int_wrapper::int_wrapper (int i)
-  : mObjNumber (our_object_counter++)
-  , mI (i)
+  : m_obj_number (our_object_counter++)
+  , m_int (i)
 {
   if (our_trace_flag)
     {
       printf ("int_wrapper %u (%d)\n"
-              , mObjNumber
-              , mI);
+              , m_obj_number
+              , m_int);
     }
 }
 
 int_wrapper::int_wrapper (int_wrapper const &other)
-  : mObjNumber (our_object_counter++)
-  , mI (other.mI)
+  : m_obj_number (our_object_counter++)
+  , m_int (other.m_int)
 {
   if (our_trace_flag)
     {
       printf ("int_wrapper %u (int_wrapper %u)\n"
-              , mObjNumber
-              , other.mObjNumber);
+              , m_obj_number
+              , other.m_obj_number);
     }
 }
 
@@ -96,11 +96,11 @@ int_wrapper &int_wrapper::operator= (int_wrapper const &other)
   if (our_trace_flag)
     {
       printf ("int_wrapper %u = int_wrapper %u\n"
-              , mObjNumber
-              , other.mObjNumber);
+              , m_obj_number
+              , other.m_obj_number);
     }
 
-  mI = other.mI;
+  m_int = other.m_int;
 
   return *this;
 }
@@ -109,27 +109,27 @@ int_wrapper::~int_wrapper ()
 {
   if (our_trace_flag)
     {
-      printf ("~int_wrapper %u\n", mObjNumber);
+      printf ("~int_wrapper %u\n", m_obj_number);
     }
 
-  mI = 0xbaaaaaad;
+  m_int = 0xbaaaaaad;
 }
 
-void int_wrapper::increment()
+void int_wrapper::increment(int change)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u::increment\n", mObjNumber);
+      printf ("int_wrapper %u::increment(%d)\n", m_obj_number, change);
     }
 
-  ++mI;
+  m_int += change;
 }
 
 int_wrapper::operator boost::shared_ptr<int_wrapper> () const
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u shared_ptr conversion\n", mObjNumber);
+      printf ("int_wrapper %u shared_ptr conversion\n", m_obj_number);
     }
 
   return boost::shared_ptr<int_wrapper> (new int_wrapper (*this));
@@ -142,17 +142,17 @@ void int_wrapper::setTrace (bool onoff)
 
 bool operator== (int_wrapper const &lhs, int_wrapper const &rhs)
 {
-  return lhs.mI == rhs.mI;
+  return lhs.m_int == rhs.m_int;
 }
 
 bool operator!= (int_wrapper const &lhs, int_wrapper const &rhs)
 {
-  return lhs.mI != rhs.mI;
+  return lhs.m_int != rhs.m_int;
 }
 
 bool operator< (int_wrapper const &lhs, int_wrapper const &rhs)
 {
-  return lhs.mI < rhs.mI;
+  return lhs.m_int < rhs.m_int;
 }
 
 int compare (int_wrapper const &lhs, int_wrapper const &rhs)
@@ -175,7 +175,7 @@ int compare (int_wrapper const &lhs, int_wrapper const &rhs)
 
 std::ostream &operator<< (std::ostream &strm, int_wrapper const &iw)
 {
-  strm << iw.mI;
+  strm << iw.m_int;
   return strm;
 }
 
