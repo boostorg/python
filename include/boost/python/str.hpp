@@ -134,11 +134,11 @@ class str : public detail::str_base
  public:
     str() {} // new str
     
-    str(const char* s) : str_base(s) {} // new str
+    str(const char* s) : base(s) {} // new str
     
     template <class T>
     explicit str(T const& other)
-        : str_base(object(other))
+        : base(object(other))
     {
     }
 

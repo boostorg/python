@@ -31,7 +31,7 @@ class tuple : public detail::tuple_base
 
     template <class T>
     explicit tuple(T const& sequence)
-        : tuple_base(object(sequence))
+        : base(object(sequence))
     {
     }
 
