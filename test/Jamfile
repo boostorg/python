@@ -59,7 +59,9 @@ run ../test/embedding.cpp <dll>../build/boost_python
   : # program args
   : # input files
   : # requirements
-  $(PYTHON_PROPERTIES) ;
+  $(PYTHON_PROPERTIES)
+    <library-path>$(PYTHON_LIB_PATH)
+    <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
 
 bpl-test polymorphism ;
 bpl-test auto_ptr ;
