@@ -253,12 +253,9 @@ class ClassExporter(Exporter):
         
         constructors = [x for x in self.public_members if isinstance(x, Constructor)]
         self.constructors = constructors[:]
-        # don't export the copy constructor if the class is abstract
+        # don't export constructors if the class is abstract
         if self.class_.abstract:
-            for cons in constructors:
-                if cons.IsCopy():
-                    constructors.remove(cons)
-                    break
+            constructors = []
         if not constructors:
             # declare no_init
             self.Add('constructor', py_ns + 'no_init') 
