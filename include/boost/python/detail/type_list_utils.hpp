@@ -72,12 +72,11 @@ namespace boost { namespace python { namespace detail {
 #else // defined(BOOST_PP_IS_ITERATING)
 
 # define N BOOST_PP_ITERATION()
-# define MAX BOOST_PYTHON_MAX_ARITY
 
-#  if (N < MAX-1)
+#  if (N < BOOST_PYTHON_MAX_ARITY-1)
 
-    template <BOOST_PP_ENUM_PARAMS(MAX, class A)>
-    struct type_at<N, boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(MAX, A)> >
+    template <BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class A)>
+    struct type_at<N, boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, A)> >
     {
         typedef BOOST_PP_CAT(A, N) type;
     };
@@ -88,7 +87,7 @@ namespace boost { namespace python { namespace detail {
 //        typedef boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A) BOOST_PP_COMMA_IF(N) T> sequence;
 //    };
 
-#  if (N > 0)
+#   if (N > 0)
 
 //    template <BOOST_PP_ENUM_PARAMS(N, class A)>
 //    struct pop_front<boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A)> >
@@ -102,7 +101,7 @@ namespace boost { namespace python { namespace detail {
 //        typedef boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(N), A)> sequence;
 //    };
 
-#  endif
+#   endif
 #  endif
 
     template <BOOST_PP_ENUM_PARAMS(N, class A)>
@@ -112,6 +111,5 @@ namespace boost { namespace python { namespace detail {
     };
 
 # undef N
-# undef MAX
 
 #endif // !defined(BOOST_PP_IS_ITERATING)
