@@ -41,13 +41,10 @@ void assert_same(U* = 0, T* = 0)
 template <class T, class Held, class Holder>
 void assert_holder(T* = 0, Held* = 0, Holder* = 0)
 {
+    typedef typename boost::python::objects::select_holder<T,Held>::type h;
     assert_same<Holder>(
-#if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-        boost::python::objects::select_holder<T,Held>::execute((Held*)0).get()
-#else
-        boost::python::objects::select_holder<T,Held>::type::get()
-#endif 
-        );
+        (h*)0
+    );
 }
 
 int test_main(int, char * [])
