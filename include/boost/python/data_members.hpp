@@ -231,7 +231,7 @@ inline object make_getter(D& x)
     return detail::make_getter(x, detail::not_specified(), 0L);
 }
 
-# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+# if !(BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(__EDG_VERSION__, <= 238))
 template <class D>
 inline object make_getter(D const& x)
 {
@@ -257,7 +257,7 @@ inline object make_setter(D& x)
     return detail::make_setter(x, default_call_policies(), 0L);
 }
 
-# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+# if !(BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(__EDG_VERSION__, <= 238))
 template <class D>
 inline object make_setter(D const& x)
 {
