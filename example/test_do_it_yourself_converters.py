@@ -16,7 +16,8 @@ def run(args = None):
         import sys
         sys.argv = args
     import doctest, test_do_it_yourself_converters
-    doctest.testmod(test_do_it_yourself_converters)
+    return doctest.testmod(test_do_it_yourself_converters)
 
 if __name__ == '__main__':
-    run()
+    import sys
+    sys.exit(run()[0])

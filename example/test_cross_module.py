@@ -133,7 +133,8 @@ def run(args = None):
         import sys
         sys.argv = args
     import doctest, test_cross_module
-    doctest.testmod(test_cross_module)
+    return doctest.testmod(test_cross_module)
 
 if __name__ == '__main__':
-    run()
+    import sys
+    sys.exit(run())

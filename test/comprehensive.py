@@ -1188,7 +1188,7 @@ def run(args = None):
     if args is not None:
         sys.argv = args
     import doctest, comprehensive
-    doctest.testmod(comprehensive)
+    return doctest.testmod(comprehensive)
     
 if __name__ == '__main__':
-    run()
+    sys.exit(run()[0])

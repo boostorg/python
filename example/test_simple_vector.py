@@ -34,7 +34,9 @@ def run(args = None):
         import sys
         sys.argv = args
     import doctest, test_simple_vector
-    doctest.testmod(test_simple_vector)
+    return doctest.testmod(test_simple_vector)
 
 if __name__ == '__main__':
-    run()
+    import sys
+    sys.exit(run()[0])
+
