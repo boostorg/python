@@ -20,8 +20,18 @@ int x_value(X const& x)
 
 X make_x(int n) { return X(n); }
 
+
+// foo/bar -- a regression for a vc7 bug workaround
+struct bar {};
+struct foo
+{
+    virtual void f() = 0;
+    operator bar() const { return bar(); }
+};
+
 BOOST_PYTHON_MODULE(implicit_ext)
 {
+    implicitly_convertible<foo,bar>();
     implicitly_convertible<int,X>();
     
     def("x_value", x_value);

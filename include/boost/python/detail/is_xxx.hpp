@@ -12,6 +12,7 @@
 
 # if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 # include <boost/type_traits/is_reference.hpp>
+# include <boost/type_traits/add_reference.hpp>
 
 #  define BOOST_PYTHON_IS_XXX_DEF(name, qualified_name, nargs)      \
 template <class X_>                                                 \
@@ -20,7 +21,7 @@ struct is_##name                                                    \
     typedef char yes;                                               \
     typedef char (&no)[2];                                          \
                                                                     \
-    static X_ dummy;                                                \
+    static typename add_reference<X_>::type dummy;                  \
                                                                     \
     template < BOOST_PP_ENUM_PARAMS_Z(1, nargs, class U) >          \
     static yes test(                                                \
