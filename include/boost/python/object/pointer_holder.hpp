@@ -63,7 +63,7 @@ struct pointer_holder_back_reference : instance_holder
     
     // Forward construction to the held object
 # ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/pointer_holder_back_reference.hpp>
+#  include <boost/python/preprocessed/ptr_holder_back_reference.hpp>
 # endif
     
 # define BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE(nargs, ignored)   \
