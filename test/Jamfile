@@ -120,8 +120,7 @@ if $(TEST_BIENSTMAN_NON_BUGS)
 
 # --- unit tests of library components ---
 
-local UNIT_TEST_PROPERTIES =
-  [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB ;
+local UNIT_TEST_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION ;
 
 run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
