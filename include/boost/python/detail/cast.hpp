@@ -9,8 +9,9 @@
 #ifndef CAST_DWA052500_H_
 # define CAST_DWA052500_H_
 
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/operators.hpp>
+# ifndef BOOST_PYTHON_V2
+#  include <boost/python/detail/wrap_python.hpp>
+#  include <boost/operators.hpp>
 
 namespace boost { namespace python {
 
@@ -74,5 +75,7 @@ struct downcast
 };
 
 }} // namespace boost::python
+
+# endif // BOOST_PYTHON_V2
 
 #endif // CAST_DWA052500_H_

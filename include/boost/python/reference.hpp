@@ -14,8 +14,10 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/cast.hpp>
 # include <cassert>
+# include <cstddef>
 # include <boost/python/detail/signatures.hpp>
 # include <boost/python/errors.hpp>
+# include <boost/python/detail/cast.hpp>
 
 # ifndef BOOST_PYTHON_V2
 #  include <boost/python/conversions.hpp>
@@ -165,7 +167,14 @@ private:
 #endif
 
     inline PyObject* object() const
-        { return as_object(m_p); }
+        {
+#ifdef BOOST_PYTHON_V2
+            return (PyObject*)(
+                (char*)&m_p->ob_type - offsetof(PyObject,ob_type));
+#else 
+            return as_object(m_p);
+#endif 
+        }
 
     T* m_p;
 };
