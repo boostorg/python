@@ -1,4 +1,3 @@
-//
 // Module test_container_proxy.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -168,8 +167,8 @@ void test_indirect_proxy ()
   BOOST_CHECK (ref2 == int_wrapper (5));
 
   // Notify proxy of insert in raw container (*after* insert)
-  raw_container.insert (raw_container.begin(), int_wrapper(1));
-  proxy_container.insert_proxies (0, 1);
+  raw_container.insert (raw_container.begin(), int_wrapper(7));
+  proxy_container.notify_insertion (0, 1);
   BOOST_CHECK (proxy_container.is_valid());
   BOOST_CHECK (ref2.use_count() == 2);   // Still attached
   static_cast<int_wrapper &>(proxy_container[3]).increment (5);
@@ -178,14 +177,14 @@ void test_indirect_proxy ()
   // Create reference to about-to-be-erased value
   reference ref0 (proxy_container[0]);
   BOOST_CHECK (ref0.use_count() == 2);
-  BOOST_CHECK (ref0 == int_wrapper (1));
+  BOOST_CHECK (ref0 == int_wrapper (7));
 
   // Notify proxy of erase in raw container (*before* erase)
-  proxy_container.detach_and_forget_proxies (0, 2);
+  proxy_container.prepare_erase (0, 2);
   raw_container.erase (raw_container.begin(), raw_container.begin() + 2);
   BOOST_CHECK (proxy_container.is_valid());
   BOOST_CHECK (ref0.use_count() == 1);  // Ref to erased value detached
-  BOOST_CHECK (ref0 == int_wrapper (1)); // Value copied before erase
+  BOOST_CHECK (ref0 == int_wrapper (7)); // Value copied before erase
   BOOST_CHECK (ref2.use_count() == 2);  // Other ref still attached
   static_cast<int_wrapper &>(proxy_container[1]).increment (5);
   BOOST_CHECK (ref2 == int_wrapper (15));
