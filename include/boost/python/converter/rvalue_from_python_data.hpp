@@ -83,25 +83,25 @@ struct rvalue_from_python_storage
 // Augments rvalue_from_python_storage<T> with a destructor. If
 // stage1.convertible == storage.bytes, it indicates that an object of
 // remove_reference<T>::type has been constructed in storage and
-// should will be destroyed in ~rvalue_data(). It is crucial that
-// successful rvalue conversions establish this equality and that
-// unsuccessful ones do not.
+// should will be destroyed in ~rvalue_from_python_data(). It is
+// crucial that successful rvalue conversions establish this equality
+// and that unsuccessful ones do not.
 template <class T>
-struct rvalue_data : rvalue_from_python_storage<T>
+struct rvalue_from_python_data : rvalue_from_python_storage<T>
 {
     // This must always be a POD struct with m_data its first member.
     BOOST_STATIC_ASSERT(offsetof(rvalue_from_python_storage<T>,stage1) == 0);
     
     // The usual constructor 
-    rvalue_data(rvalue_from_python_stage1_data const&);
+    rvalue_from_python_data(rvalue_from_python_stage1_data const&);
 
     // This constructor just sets m_convertible -- used by
     // implicitly_convertible<> to perform the final step of the
     // conversion, where the construct() function is already known.
-    rvalue_data(void* convertible);
+    rvalue_from_python_data(void* convertible);
 
     // Destroys any object constructed in the storage.
-    ~rvalue_data();
+    ~rvalue_from_python_data();
  private:
     typedef typename add_reference<typename add_cv<T>::type>::type ref_type;
 };
@@ -110,19 +110,19 @@ struct rvalue_data : rvalue_from_python_storage<T>
 // Implementataions
 //
 template <class T>
-inline rvalue_data<T>::rvalue_data(rvalue_from_python_stage1_data const& stage1)
+inline rvalue_from_python_data<T>::rvalue_from_python_data(rvalue_from_python_stage1_data const& stage1)
 {
     this->stage1 = stage1;
 }
 
 template <class T>
-inline rvalue_data<T>::rvalue_data(void* convertible)
+inline rvalue_from_python_data<T>::rvalue_from_python_data(void* convertible)
 {
     this->stage1.convertible = convertible;
 }
 
 template <class T>
-inline rvalue_data<T>::~rvalue_data()
+inline rvalue_from_python_data<T>::~rvalue_from_python_data()
 {
     if (this->stage1.convertible == this->storage.bytes)
         python::detail::destroy_reference<ref_type>(this->storage.bytes);

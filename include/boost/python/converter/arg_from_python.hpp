@@ -111,7 +111,7 @@ struct arg_rvalue_from_python
     result_type operator()(PyObject*);
     
  private:
-    rvalue_data<result_type> m_data;
+    rvalue_from_python_data<result_type> m_data;
 };
 
 

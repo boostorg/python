@@ -41,7 +41,7 @@ namespace detail
       return_rvalue_from_python();
       result_type operator()(PyObject*);
    private:
-      rvalue_data<T> m_data;
+      rvalue_from_python_data<T> m_data;
   };
   
   template <class T>

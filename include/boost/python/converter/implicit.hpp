@@ -28,7 +28,7 @@ struct implicit
             = static_cast<rvalue_from_python_registration*>(data->convertible);
 
         // Call the convertible function again
-        rvalue_data<Source> intermediate_data(registration->convertible(obj));
+        rvalue_from_python_data<Source> intermediate_data(registration->convertible(obj));
           
         // Use the result to construct the source type if the first
         // converter was an rvalue converter.
