@@ -25,6 +25,7 @@
 
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/debug/line.hpp>
+# include <boost/python/detail/is_xxx.hpp>
 
 namespace boost { namespace python { 
 
@@ -60,31 +61,7 @@ namespace api
   //
   // is_proxy -- proxy type detection
   //
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-  template <class T>
-  struct is_proxy
-  {
-      BOOST_STATIC_CONSTANT(bool, value = false);
-  };
-  template <class T>
-  struct is_proxy<proxy<T> >
-  {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
-# else
-  typedef char yes_proxy;
-  typedef char (&no_proxy)[2];
-  template <class T>
-  yes_proxy is_proxy_helper(boost::type<proxy<T> >*);
-  no_proxy is_proxy_helper(...);
-  template <class T>
-  struct is_proxy
-  {
-      BOOST_STATIC_CONSTANT(
-          bool, value = (sizeof(is_proxy_helper((boost::type<T>*)0))
-                         == sizeof(yes_proxy)));
-  };
-# endif 
+  BOOST_PYTHON_IS_XXX_DEF(proxy, boost::python::api::proxy, 1)
 
   template <class T> struct object_initializer;
   
