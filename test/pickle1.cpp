@@ -32,7 +32,7 @@ namespace {
       std::string get_country() const { return country; }
   };
 
-  struct world_pickle_group : boost::python::pickle_group
+  struct world_pickle_suite : boost::python::pickle_suite
   {
     static
     boost::python::tuple
@@ -54,7 +54,7 @@ BOOST_PYTHON_MODULE_INIT(pickle1_ext)
     .add(class_<world>("world")
       .def_init(args<const std::string&>())
       .def("greet", &world::greet)
-      .def_pickle(world_pickle_group())
+      .def_pickle(world_pickle_suite())
     )
   ;
 }

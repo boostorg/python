@@ -197,15 +197,15 @@ class class_ : public objects::class_base
     self& setattr(char const* name, handle<> const&);
 
     // Pickle support
-    template <typename PickleGroupType>
-    self& def_pickle(PickleGroupType)
+    template <typename PickleSuiteType>
+    self& def_pickle(PickleSuiteType)
     {
-      detail::pickle_group_finalize<PickleGroupType>::register_(
+      detail::pickle_suite_finalize<PickleSuiteType>::register_(
         *this,
-        &PickleGroupType::getinitargs,
-        &PickleGroupType::getstate,
-        &PickleGroupType::setstate,
-        PickleGroupType::getstate_manages_dict());
+        &PickleSuiteType::getinitargs,
+        &PickleSuiteType::getstate,
+        &PickleSuiteType::setstate,
+        PickleSuiteType::getstate_manages_dict());
       return *this;
     }
 

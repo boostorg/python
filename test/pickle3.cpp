@@ -43,7 +43,7 @@ namespace { // Avoid cluttering the global namespace.
       int secret_number;
   };
 
-  struct world_pickle_group : boost::python::pickle_group
+  struct world_pickle_suite : boost::python::pickle_suite
   {
     static
     boost::python::tuple
@@ -101,7 +101,7 @@ BOOST_PYTHON_MODULE_INIT(pickle3_ext)
       .def("greet", &world::greet)
       .def("get_secret_number", &world::get_secret_number)
       .def("set_secret_number", &world::set_secret_number)
-      .def_pickle(world_pickle_group())
+      .def_pickle(world_pickle_suite())
     )
   ;
 }
