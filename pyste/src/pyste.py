@@ -34,7 +34,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.6.5'
+__VERSION__ = '0.6.6'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -137,6 +137,7 @@ def CreateContext():
     context['reference_existing_object'] = reference_existing_object
     context['copy_const_reference'] = copy_const_reference
     context['copy_non_const_reference'] = copy_non_const_reference
+    context['return_opaque_pointer'] = return_opaque_pointer
     context['manage_new_object'] = manage_new_object
     # utils
     context['Wrapper'] = exporterutils.FunctionWrapper
