@@ -269,9 +269,10 @@ namespace boost { namespace python
 
     // property creation
     template &lt;class Get&gt;
-    void add_property(char const* name, Get const&amp; fget);
+    void add_property(char const* name, Get const&amp; fget, char const* doc=0);
     template &lt;class Get, class Set&gt;
-    void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
+    void add_property(
+    	char const* name, Get const&amp; fget, Set const&amp; fset, char const* doc=0);
 
     template &lt;class Get&gt;
     void add_static_property(char const* name, Get const&amp; fget);
@@ -564,14 +565,15 @@ class_&amp; setattr(char const* name, U const&amp; u);
      
 <pre>
 template &lt;class Get&gt;
-void add_property(char const* name, Get const&amp; fget);
+void add_property(char const* name, Get const&amp; fget, char const* doc=0);
 template &lt;class Get, class Set&gt;
-void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
+void add_property(
+	char const* name, Get const&amp; fget, Set const&amp; fset, char const* doc=0);
 </pre>
 
     <dl class="function-semantics">
       <dt><b>Requires:</b> <code>name</code> is an <a href=
-      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
+      "definitions.html#ntbs">ntbs</a> which conform to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
       naming rules</a>.</dt>
 
@@ -580,9 +582,9 @@ void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
       class instance, passing <code><a href=
       "object.html#object-spec-ctors">object</a>(fget)</code> (and <code><a
       href="object.html#object-spec-ctors">object</a>(fset)</code> in the
-      second form) to its constructor, then adds that property to the Python
-      class object under construction with the given attribute
-      <code>name</code>.</dt>
+      second form) with an (optional) docstring <code>doc</code> to its constructor,
+      then adds that property to the Python class object under construction 
+      with the given attribute <code>name</code>.</dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
@@ -622,7 +624,7 @@ void add_static_property(char const* name, Get const&amp; fget, Set const&amp; f
     <br>
 <pre>
 template &lt;class D&gt;
-class_&amp; def_readonly(char const* name, D T::*pm);
+class_&amp; def_readonly(char const* name, D T::*pm, char const* doc=0);
 template &lt;class D&gt;
 class_&amp; def_readonly(char const* name, D const&amp; d);
 </pre>
@@ -631,14 +633,14 @@ class_&amp; def_readonly(char const* name, D const&amp; d);
       <dt><b>Requires:</b> <code>name</code> is an <a href=
       "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
       "http://www.python.org/doc/current/ref/identifiers.html">identifier
-      naming rules</a>.</dt>
+      naming rules</a>. <code>doc</code> is also an ntbs.</dt>
 
       <dt><b>Effects:</b></dt>
 
       <dd>
 <pre>
 this-&gt;add_property(name, <a href=
-"data_members.html#make_getter-spec">make_getter</a>(pm));
+"data_members.html#make_getter-spec">make_getter</a>(pm), doc);
 </pre>
         and 
 <pre>
@@ -657,7 +659,7 @@ this-&gt;add_static_property(name, <a href=
     </dl>
 <pre>
 template &lt;class D&gt;
-class_&amp; def_readwrite(char const* name, D T::*pm);
+class_&amp; def_readwrite(char const* name, D T::*pm, char const* doc=0);
 template &lt;class D&gt;
 class_&amp; def_readwrite(char const* name, D&amp; d);
 </pre>
@@ -669,7 +671,7 @@ class_&amp; def_readwrite(char const* name, D&amp; d);
 <pre>
 this-&gt;add_property(name, <a href=
 "data_members.html#make_getter-spec">make_getter</a>(pm), <a href=
-"data_members.html#make_setter-spec">make_setter</a>(pm));
+"data_members.html#make_setter-spec">make_setter</a>(pm), doc);
 </pre>
         and 
 <pre>

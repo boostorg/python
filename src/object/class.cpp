@@ -535,20 +535,22 @@ namespace objects
       this->attr("__instance_size__") = instance_size;
   }
   
-  void class_base::add_property(char const* name, object const& fget)
+  void class_base::add_property(
+    char const* name, object const& fget, char const* docstr)
   {
       object property(
           (python::detail::new_reference)
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr()));
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "Osss", fget.ptr(), 0, 0, docstr));
       
       this->setattr(name, property);
   }
 
-  void class_base::add_property(char const* name, object const& fget, object const& fset)
+  void class_base::add_property(
+    char const* name, object const& fget, object const& fset, char const* docstr)
   {
       object property(
           (python::detail::new_reference)
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr()));
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OOss", fget.ptr(), fset.ptr(), 0, docstr));
       
       this->setattr(name, property);
   }

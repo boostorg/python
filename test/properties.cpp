@@ -64,8 +64,11 @@ BOOST_PYTHON_MODULE(properties_ext)
     class_<X>("X", init<int>() )
         //defining read only property
         .add_property( "value_r", &X::get_value )
+        .add_property( "value_r_ds", &X::get_value, "value_r_ds is read-only")
         //defining read \ write property 
         .add_property( "value_rw", &X::get_value, &X::set_value )
+        .add_property( "value_rw_ds", &X::get_value, &X::set_value, 
+            "value_rw_ds is read-write")
         //defining read \ write property using make_getter and make_setter
         .add_property( "value_direct", 
                         make_getter( &X::m_value, return_by_value_t() ),

@@ -79,6 +79,11 @@ after creating second intstance of X instances count is 2
 
 >>> del x2
 >>> assert x1.instance_count == 1
+
+>>> assert properties.X.value_r_ds.__doc__ == "value_r_ds is read-only"
+
+>>> assert properties.X.value_rw_ds.__doc__ == "value_rw_ds is read-write"
+
 """
 
 #import sys; sys.path.append(r'P:\Actimize4.0\smart_const\py_smart_const___Win32_Debug')
