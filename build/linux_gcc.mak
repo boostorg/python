@@ -44,7 +44,7 @@ DEPOBJ=$(OBJ) \
        abstract.o \
        getting_started1.o getting_started2.o \
        simple_vector.o \
-       do_it_yourself_converters.o \
+       do_it_yourself_convts.o \
        pickle1.o pickle2.o pickle3.o \
        noncopyable_export.o noncopyable_import.o \
        ivect.o dvect.o \
@@ -57,7 +57,7 @@ all: libboost_python.a \
      abstract.so \
      getting_started1.so getting_started2.so \
      simple_vector.so \
-     do_it_yourself_converters.so \
+     do_it_yourself_convts.so \
      pickle1.so pickle2.so pickle3.so \
      noncopyable_export.so noncopyable_import.so \
      ivect.so dvect.so \
@@ -82,8 +82,8 @@ getting_started2.so: $(OBJ) getting_started2.o
 simple_vector.so: $(OBJ) simple_vector.o
 	$(LD) $(LDOPTS) $(OBJ) simple_vector.o -o simple_vector.so
 
-do_it_yourself_converters.so: $(OBJ) do_it_yourself_converters.o
-	$(LD) $(LDOPTS) $(OBJ) do_it_yourself_converters.o -o do_it_yourself_converters.so
+do_it_yourself_convts.so: $(OBJ) do_it_yourself_convts.o
+	$(LD) $(LDOPTS) $(OBJ) do_it_yourself_convts.o -o do_it_yourself_convts.so
 
 pickle1.so: $(OBJ) pickle1.o
 	$(LD) $(LDOPTS) $(OBJ) pickle1.o -o pickle1.so
@@ -126,7 +126,7 @@ test:
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_simple_vector.py
-	$(PYEXE) test_do_it_yourself_converters.py
+	$(PYEXE) test_do_it_yourself_convts.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
@@ -142,7 +142,7 @@ clean:
 	rm -f getting_started1.o getting_started1.so
 	rm -f getting_started2.o getting_started2.so
 	rm -f simple_vector.o simple_vector.so
-	rm -f do_it_yourself_converters.o do_it_yourself_converters.so
+	rm -f do_it_yourself_convts.o do_it_yourself_convts.so
 	rm -f pickle1.o pickle1.so
 	rm -f pickle2.o pickle2.so
 	rm -f pickle3.o pickle3.so

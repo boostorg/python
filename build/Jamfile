@@ -25,7 +25,7 @@
 #         getting_started1      -
 #         getting_started2      -
 #         simple_vector         -
-#         do_it_yourself_converters -
+#         do_it_yourself_convts -
 #         pickle1               -
 #         pickle2               -
 #         pickle3               -
@@ -215,7 +215,7 @@ boost-python-example-test abstract ;
 boost-python-example-test getting_started1 ;
 boost-python-example-test getting_started2 ;
 boost-python-example-test simple_vector ;
-boost-python-example-test do_it_yourself_converters ;
+boost-python-example-test do_it_yourself_convts ;
 boost-python-example-test pickle1 ;
 boost-python-example-test pickle2 ;
 boost-python-example-test pickle3 ;

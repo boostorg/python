@@ -1,5 +1,5 @@
-r'''>>> import do_it_yourself_converters
-    >>> ixset = do_it_yourself_converters.IndexingSet()
+r'''>>> import do_it_yourself_convts
+    >>> ixset = do_it_yourself_convts.IndexingSet()
     >>> ixset.add((1,2,3))
     >>> ixset.add((4,5,6))
     >>> ixset.add((7,8,9))
@@ -15,8 +15,8 @@ def run(args = None):
     if args is not None:
         import sys
         sys.argv = args
-    import doctest, test_do_it_yourself_converters
-    return doctest.testmod(test_do_it_yourself_converters)
+    import doctest, test_do_it_yourself_convts
+    return doctest.testmod(test_do_it_yourself_convts)
 
 if __name__ == '__main__':
     import sys

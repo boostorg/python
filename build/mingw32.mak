@@ -59,7 +59,7 @@ all: libboost_python.a \
      abstract.pyd \
      getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
-     do_it_yourself_converters.pyd \
+     do_it_yourself_convts.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
@@ -102,11 +102,11 @@ simple_vector.pyd: $(OBJ) simple_vector.o
           --def simple_vector.def \
           $(OBJ) simple_vector.o $(PYLIB)
 
-do_it_yourself_converters.pyd: $(OBJ) do_it_yourself_converters.o
+do_it_yourself_convts.pyd: $(OBJ) do_it_yourself_convts.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname do_it_yourself_converters.pyd \
-          --def do_it_yourself_converters.def \
-          $(OBJ) do_it_yourself_converters.o $(PYLIB)
+          --dllname do_it_yourself_convts.pyd \
+          --def do_it_yourself_convts.def \
+          $(OBJ) do_it_yourself_convts.o $(PYLIB)
 
 pickle1.pyd: $(OBJ) pickle1.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -177,7 +177,7 @@ test:
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_simple_vector.py
-	$(PYEXE) test_do_it_yourself_converters.py
+	$(PYEXE) test_do_it_yourself_convts.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py

@@ -43,7 +43,7 @@ all: boost_python.lib \
      abstract.pyd \
      getting_started1.pyd getting_started2.pyd \
      simple_vector.pyd \
-     do_it_yourself_converters.pyd \
+     do_it_yourself_convts.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd \
@@ -67,8 +67,8 @@ getting_started2.pyd: $(OBJ) getting_started2.obj
 simple_vector.pyd: $(OBJ) simple_vector.obj
 	$(LD) $(LDOPTS) $(OBJ) simple_vector.obj $(PYLIB) /export:initsimple_vector /out:"simple_vector.pyd"
 
-do_it_yourself_converters.pyd: $(OBJ) do_it_yourself_converters.obj
-	$(LD) $(LDOPTS) $(OBJ) do_it_yourself_converters.obj $(PYLIB) /export:initdo_it_yourself_converters /out:"do_it_yourself_converters.pyd"
+do_it_yourself_convts.pyd: $(OBJ) do_it_yourself_convts.obj
+	$(LD) $(LDOPTS) $(OBJ) do_it_yourself_convts.obj $(PYLIB) /export:initdo_it_yourself_convts /out:"do_it_yourself_convts.pyd"
 
 pickle1.pyd: $(OBJ) pickle1.obj
 	$(LD) $(LDOPTS) $(OBJ) pickle1.obj $(PYLIB) /export:initpickle1 /out:"pickle1.pyd"
@@ -109,7 +109,7 @@ test:
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_simple_vector.py
-	$(PYEXE) test_do_it_yourself_converters.py
+	$(PYEXE) test_do_it_yourself_convts.py
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py

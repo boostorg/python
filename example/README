@@ -10,7 +10,7 @@ See also: libs/python/doc/pickle.html
 Other advanced concepts are introduced by:
   abstract.cpp
   simple_vector.cpp
-  do_it_yourself_converters.cpp
+  do_it_yourself_convts.cpp
 
 Examples for the cross-module support are provided by:
   noncopyable_export.cpp
