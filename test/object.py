@@ -62,6 +62,8 @@
 >>> obj_const_getitem(d, 'foo')
 1
 >>> obj_setitem42(d, 'foo')
+>>> obj_getitem(d, 'foo')
+42
 >>> d['foo']
 42
 >>> obj_moveitem(d, 'foo', 'bar')
@@ -92,6 +94,22 @@
 >>> class X: pass
 ...
 >>> assert check_inplace(range(3), X())
+
+
+       Now make sure that object is actually managing reference counts
+       
+>>> import weakref
+>>> class Z: pass
+...
+>>> z = Z()
+>>> def death(r): print 'death'
+...
+>>> r = weakref.ref(z, death)
+>>> z.foo = 1
+>>> obj_getattr(z, 'foo')
+1
+>>> del z
+death
 '''
 
 def run(args = None):

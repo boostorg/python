@@ -164,35 +164,32 @@ namespace api
                              
       const_object_slice slice(object_cref, slice_nil) const;
       object_slice slice(object_cref, slice_nil);
-                             
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-      template <class T, class V>
-      const_object_slice
-      slice(T const& start, V const& end) const;
-    
-      template <class T, class V>
-      object_slice
-      slice(T const& start, V const& end);
 
-# else
       template <class T, class V>
       const_object_slice
       slice(T const& start, V const& end) const
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+          ;
+# else
       {
           return this->slice(
                slice_bound<T>::type(start)
               ,  slice_bound<V>::type(end));
       }
+# endif
     
       template <class T, class V>
       object_slice
       slice(T const& start, V const& end)
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+          ;
+# else
       {
           return this->slice(
               slice_bound<T>::type(start)
               , slice_bound<V>::type(end));
       }
-# endif
+# endif 
    private:
      // there is a confirmed CWPro8 codegen bug here. We prevent the
      // early destruction of a temporary by binding a named object
@@ -204,35 +201,42 @@ namespace api
 # endif
   };
 
-  class object : public object_operators<object>
+  // VC6 and VC7 require this base class in order to generate the
+  // correct copy constructor for object. We can't define it there
+  // explicitly or it will complain of ambiguity.
+  struct object_base : object_operators<object>
+  {
+      // copy constructor without NULL checking, for efficiency. 
+      object_base(object_base const&);
+      object_base(PyObject* ptr);
+      
+      object_base& operator=(object_base const& rhs);
+      ~object_base();
+        
+      // Underlying object access -- returns a borrowed reference
+      PyObject* ptr() const;
+      
+   private:
+      PyObject* m_ptr;
+  };
+
+  class object : public object_base
   {
    public:
-# ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
-      // copy constructor without NULL checking, for efficiency. This
-      // confuses VC6/7 so object_initializer also handles this case.
-      object(object const&);
-# endif
-    
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
-          : m_ptr(object_initializer<is_proxy<T>::value>::get(
+          : object_base(object_initializer<is_proxy<T>::value>::get(
                       x, detail::convertible<object const*>::check(&x)))
       {
       }
 
       // Throw error_already_set() if the handle is null.
       explicit object(handle<> const&);
-        
-      // Underlying object access -- returns a borrowed reference
-      PyObject* ptr() const;
 
    public: // implementation detail -- for internal use only
       explicit object(detail::borrowed_reference);
       explicit object(detail::new_reference);
-
-   private:
-      PyObject* m_ptr;
   };
 
   //
@@ -327,26 +331,42 @@ namespace converter
 //
 
 inline object::object(handle<> const& x)
-    : m_ptr(incref(expect_non_null(x.get())))
+    : object_base(incref(expect_non_null(x.get())))
 {}
 
-# ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
 // copy constructor without NULL checking, for efficiency
-inline object::object(object const& rhs)
+inline api::object_base::object_base(object_base const& rhs)
     : m_ptr(incref(rhs.m_ptr))
 {}
-# endif 
+
+inline api::object_base::object_base(PyObject* p)
+    : m_ptr(p)
+{}
+
+inline api::object_base& api::object_base::operator=(api::object_base const& rhs)
+{
+    Py_INCREF(rhs.m_ptr);
+    Py_DECREF(this->m_ptr);
+    this->m_ptr = rhs.m_ptr;
+    return *this;
+}
+
+
+inline api::object_base::~object_base()
+{
+    Py_DECREF(m_ptr);
+}
 
 inline object::object(detail::borrowed_reference p)
-    : m_ptr(incref((PyObject*)p))
+    : object_base(incref((PyObject*)p))
 {}
 
 
 inline object::object(detail::new_reference p)
-    : m_ptr(expect_non_null((PyObject*)p))
+    : object_base(expect_non_null((PyObject*)p))
 {}
 
-inline PyObject* object::ptr() const
+inline PyObject* api::object_base::ptr() const
 {
     return m_ptr;
 }
