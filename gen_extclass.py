@@ -44,11 +44,6 @@ void report_missing_ptr_data(ExtensionInstance*, Class<ExtensionInstance>*, cons
 void report_missing_class_object(const std::type_info&);
 void report_released_smart_pointer(const std::type_info&);
     
-template <class T, class U>
-struct ExtensionClassFromPython
-{
-};
-
 template <class T>
 T* check_non_null(T* p)
 {
