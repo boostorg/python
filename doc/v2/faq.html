@@ -41,6 +41,8 @@
       <dt><a href="#debugging">How do I debug my Python extensions?</a></dt>
 
       <dt><a href="#imul">Why doesn't my <code>*=</code> operator work?</a></dt>
+
+      <dt><a href="#macosx">Does Boost.Python work with Mac OS X?</a></dt>
     </dl>
 
 
@@ -326,16 +328,38 @@ To cure this problem, all you need to do is upgrade your Python to
 version 2.2.1 or later.
 
 </blockquote>
+
+    <h2><a name="macosx"></a>Does Boost.Python work with Mac OS X?</h2>
+
+<blockquote>
+<p>The short answer: as of January 2003, unfortunately not.
+<p>
+The longer answer: using Mac OS 10.2.3 with the December Developer's Kit,
+Python 2.3a1, and bjam's darwin-tools.jam, Boost.Python compiles fine,
+including the examples. However, there are problems at runtime
+(see <a
+href="http://mail.python.org/pipermail/c++-sig/2003-January/003267.html"
+     >http://mail.python.org/pipermail/c++-sig/2003-January/003267.html</a>).
+Solutions are currently unknown.
+<p>
+It is known that under certain circumstances objects are double-destructed.
+See <a
+href="http://mail.python.org/pipermail/c++-sig/2003-January/003278.html"
+     >http://mail.python.org/pipermail/c++-sig/2003-January/003278.html"</a>
+for details. It is not clear however if this problem is related to
+the Boost.Python runtime issues.
+</blockquote>
+
     <hr>
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     24 November, 2002 
+     14 January, 2003 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
-    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All Rights
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002-2003. All Rights
     Reserved.</i></p>
   </body>
 </html>
