@@ -22,7 +22,7 @@ namespace boost { namespace python { namespace detail {
 // arguments, because compile-time information about the number of
 // keywords is missing for all but the initial function definition.
 //
-// {
+// @group make_keyword_range_function {
 template <class F, class Policies>
 object make_keyword_range_function(
     F f

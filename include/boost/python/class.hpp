@@ -422,7 +422,7 @@ class class_ : public objects::class_base
     // (possibly not wrapped) base class of T, an lvalue argument of
     // type T will be required.
     //
-    // {
+    // @group make_fn {
     template <class F>
     object make_fn(F const& f)
     {
@@ -476,6 +476,7 @@ class class_ : public objects::class_base
     // These two overloads discriminate between def() as applied to a
     // generic visitor and everything else.
     //
+    // @group def_impl {
     template <class Helper, class LeafVisitor, class Visitor>
     inline void def_impl(
         char const* name
@@ -509,12 +510,14 @@ class class_ : public objects::class_base
 
         this->def_default(name, fn, helper, mpl::bool_<Helper::has_default_implementation>());
     }
+    // }
 
     //
     // These two overloads handle the definition of default
     // implementation overloads for virtual functions. The second one
     // handles the case where no default implementation was specified.
     //
+    // @group def_default {
     template <class Fn, class Helper>
     inline void def_default(
         char const* name
@@ -535,6 +538,7 @@ class class_ : public objects::class_base
     template <class Fn, class Helper>
     inline void def_default(char const*, Fn, Helper const&, mpl::bool_<false>)
     { }
+    // }
     
     //
     // These two overloads discriminate between def() as applied to
@@ -542,6 +546,7 @@ class class_ : public objects::class_base
     // BOOST_PYTHON_FUNCTION_OVERLOADS(). The final argument is used to
     // discriminate.
     //
+    // @group def_maybe_overloads {
     template <class OverloadsT, class SigT>
     void def_maybe_overloads(
         char const* name
@@ -571,6 +576,7 @@ class class_ : public objects::class_base
         );
 
     }
+    // }
 };
 
 

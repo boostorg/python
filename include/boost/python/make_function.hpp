@@ -63,10 +63,11 @@ namespace detail
         , kw);
   }
 
-  // { Helpers for make_function when called with 3 arguments.  These
+  //   Helpers for make_function when called with 3 arguments.  These
   //   dispatch functions are used to discriminate between the cases
   //   when the 3rd argument is keywords or when it is a signature.
   //
+  // @group {
   template <class F, class CallPolicies, class Keywords>
   object make_function_dispatch(F f, CallPolicies const& policies, Keywords const& kw, mpl::true_)
   {
@@ -92,9 +93,11 @@ namespace detail
   
  }
 
-// { These overloaded functions wrap a function or member function
+//   These overloaded functions wrap a function or member function
 //   pointer as a Python object, using optional CallPolicies,
 //   Keywords, and/or Signature.
+//
+//   @group {
 template <class F>
 object make_function(F f)
 {

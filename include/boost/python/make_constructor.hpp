@@ -138,12 +138,13 @@ namespace detail
       typedef int type;
   };
   
-  // { make_constructor_aux
   //
   // These helper functions for make_constructor (below) do the raw work
   // of constructing a Python object from some invokable entity. See
   // <boost/python/detail/caller.hpp> for more information about how
   // the Sig arguments is used.
+  //
+  // @group make_constructor_aux {
   template <class F, class CallPolicies, class Sig>
   object make_constructor_aux(
       F f                             // An object that can be invoked by detail::invoke()
@@ -195,10 +196,12 @@ namespace detail
   }
   // }
 
-
-  // { Helpers for make_constructor when called with 3 arguments.  These
-  //   dispatch functions are used to discriminate between the cases
-  //   when the 3rd argument is keywords or when it is a signature.
+  //
+  //   These dispatch functions are used to discriminate between the
+  //   cases when the 3rd argument is keywords or when it is a
+  //   signature.
+  //
+  //   @group Helpers for make_constructor when called with 3 arguments. {
   //
   template <class F, class CallPolicies, class Keywords>
   object make_constructor_dispatch(F f, CallPolicies const& policies, Keywords const& kw, mpl::true_)
@@ -224,9 +227,10 @@ namespace detail
   // }
 }
 
-// { These overloaded functions wrap a function or member function
+//   These overloaded functions wrap a function or member function
 //   pointer as a Python object, using optional CallPolicies,
-//   Keywords, and/or Signature.
+//   Keywords, and/or Signature. @group {
+//
 template <class F>
 object make_constructor(F f)
 {

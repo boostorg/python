@@ -49,7 +49,6 @@ struct most_derived
     >::type type;
 };
 
-// {
 //  The following macros generate expansions for::
 //
 //      template <class RT, class T0... class TN>
@@ -99,6 +98,8 @@ struct most_derived
 //  this" argument of member functions to Target, because the function
 //  may actually be a member of a base class which is not wrapped, and
 //  in that case conversion from python would fail.
+//
+// @group {
 
 #  define BOOST_PP_ITERATION_PARAMS_1                                   \
     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/signature.hpp>))

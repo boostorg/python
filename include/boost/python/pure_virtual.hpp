@@ -18,7 +18,7 @@ namespace boost { namespace python {
 namespace detail
 {
   //
-  // { Helpers for pure_virtual_visitor, below.
+  // @group Helpers for pure_virtual_visitor. {
   //
   
   // Raises a Python RuntimeError reporting that a pure virtual
@@ -55,7 +55,7 @@ namespace detail
   }
 
   //
-  // } Helpers for pure_virtual_visitor
+  // } 
   //
 
   //

@@ -43,7 +43,7 @@ namespace detail
   //
   // Dispatch to properly add f to namespace ns.
   //
-  // { define_stub_function helpers 
+  // @group define_stub_function helpers { 
   template <class Func, class CallPolicies, class NameSpaceT>
   static void name_space_def(
       NameSpaceT& name_space
@@ -122,7 +122,7 @@ namespace detail
   //                                  (see defaults_gen.hpp)
   //      5. char const* name:        doc string
   //
-  // {
+  // @group define_stub_function<N> {
   template <int N>
   struct define_stub_function {};
 
