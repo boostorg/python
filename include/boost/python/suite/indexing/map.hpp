@@ -126,8 +126,13 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template<class Container, class Traits = map_traits<Container> >
-  struct map_suite : container_suite<Container, map_algorithms<Traits> >
+  template <
+    class Container
+    , int Flags = 0
+    , class Traits = map_traits<Container>
+  >
+  struct map_suite
+    : container_suite<Container, Flags, map_algorithms<Traits> >
   {
   };
 

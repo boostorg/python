@@ -76,8 +76,13 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template<class Container, class Traits = default_sequence_traits<Container> >
-  struct list_suite : container_suite<Container, list_algorithms<Traits> >
+  template <
+    class Container
+    , int Flags = 0
+    , class Traits = default_sequence_traits<Container>
+  >
+  struct list_suite
+    : container_suite<Container, Flags, list_algorithms<Traits> >
   {
   };
 
@@ -98,7 +103,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr>
   void list_algorithms<ContainerTraits, Ovr>::sort (container &c)
   {
-    typedef typename container_traits::value_traits_ value_traits_;
+    typedef typename self_type::container_traits::value_traits_ value_traits_;
     typedef typename value_traits_::less comparison;
 #if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
     // MSVC6 doesn't have a templated sort member in list, so we just

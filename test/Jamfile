@@ -60,6 +60,7 @@ bpl-test test_deque_ref    : test_deque_ref.py    test_deque_ext.cpp  ;
 bpl-test test_deque_plain  : test_deque_plain.py  test_deque_ext.cpp  ;
 bpl-test test_indexing_const ;
 bpl-test test_vector_shared ;
+bpl-test test_vector_disable ;
 bpl-test test_array        : test_array.py        test_array_ext.cpp  ;
 bpl-test test_array_ref    : test_array_ref.py    test_array_ext.cpp  ;
 bpl-test test_list_plain   : test_list_plain.py   test_list_ext.cpp   ;

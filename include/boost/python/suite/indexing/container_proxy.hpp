@@ -805,9 +805,13 @@ namespace boost { namespace python { namespace indexing {
     };
   }
 #endif
-  template<class Container, class Traits = container_proxy_traits<Container> >
+  template <
+      class Container
+      , int Flags = 0
+      , class Traits = container_proxy_traits<Container>
+  >
   struct container_proxy_suite
-    : container_suite<Container, default_algorithms<Traits> >
+    : container_suite<Container, Flags, default_algorithms<Traits> >
   {
   };
 

@@ -26,7 +26,21 @@
 #include <boost/bind.hpp>
 #include <functional>
 
+#define ICE_AND(a, b) ::boost::type_traits::ice_and <(a), (b)>::value
+#define ICE_NOT(a) ::boost::type_traits::ice_not <static_cast<bool>(a)>::value
+// undef'd at end of header
+
 namespace boost { namespace python { namespace indexing {
+  enum visitor_flags {
+    disable_len = 1
+    , disable_slices = 2
+    , disable_search = 4
+    , disable_reorder = 8
+    , disable_extend = 16
+    , disable_insert = 32
+    , minimum_support = 0xffff   // Disable all optional features
+  };
+
   namespace detail {
     template<typename PrecallPolicy>
     struct precall_only : public boost::python::default_call_policies
@@ -76,7 +90,7 @@ namespace boost { namespace python { namespace indexing {
   // __getitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<index_style_t style>
+  template<bool doit, bool with_slice>
   struct maybe_add_getitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -87,7 +101,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_getitem<index_style_nonlinear> {
+  struct maybe_add_getitem<true, false> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -103,7 +117,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_getitem<index_style_linear> {
+  struct maybe_add_getitem<true, true> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -121,7 +135,7 @@ namespace boost { namespace python { namespace indexing {
   // __setitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, index_style_t style>
+  template<bool doit, bool with_slice>
   struct maybe_add_setitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -132,7 +146,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_setitem<true, index_style_nonlinear> {
+  struct maybe_add_setitem<true, false> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -148,7 +162,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_setitem<true, index_style_linear> {
+  struct maybe_add_setitem<true, true> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -166,7 +180,7 @@ namespace boost { namespace python { namespace indexing {
   // __delitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, index_style_t style>
+  template<bool doit, bool with_slicing>
   struct maybe_add_delitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -177,7 +191,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_delitem<true, index_style_nonlinear> {
+  struct maybe_add_delitem<true, false> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -193,7 +207,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_delitem<true, index_style_linear> {
+  struct maybe_add_delitem<true, true> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -245,7 +259,7 @@ namespace boost { namespace python { namespace indexing {
   // sort dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, bool lessthan_comparable>
+  template<bool doit>
   struct maybe_add_sort {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -256,7 +270,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_sort<true, true> {
+  struct maybe_add_sort<true> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (
         PythonClass &pyClass
@@ -474,9 +488,9 @@ namespace boost { namespace python { namespace indexing {
   // Do-all visitor
   //////////////////////////////////////////////////////////////////////////
 
-  template<class Algorithms, class Policy>
+  template<class Algorithms, class Policy, int Flags = 0>
   class visitor
-    : public boost::python::def_visitor< visitor< Algorithms, Policy > >
+    : public boost::python::def_visitor< visitor< Algorithms, Policy, Flags > >
   {
     Policy m_policy;
 
@@ -487,6 +501,16 @@ namespace boost { namespace python { namespace indexing {
 
     explicit visitor (Policy const &policy = Policy()) : m_policy (policy) { }
 
+  private:
+    BOOST_STATIC_CONSTANT (
+        bool, has_indexing = traits::index_style >= index_style_nonlinear);
+
+    BOOST_STATIC_CONSTANT (
+        bool, has_slicing = ICE_AND (
+            traits::index_style == index_style_linear
+            , ICE_NOT (Flags & disable_slices)));
+
+  public:
     template <class PythonClass>
     void visit (PythonClass &pyClass) const
     {
@@ -494,61 +518,78 @@ namespace boost { namespace python { namespace indexing {
 
       // Note - this will add __len__ for anything that can determine
       // its size, even if that might be inefficient (e.g. have linear
-      // time complexity). It might be better to add a new feature
-      // selection flag to the container_traits to make this
-      // configurable.
-      maybe_add_len<traits::has_copyable_iter>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      // time complexity). Disable by setting disable_len in Flags
+      maybe_add_len <
+        ICE_AND (
+            traits::has_copyable_iter
+            , ICE_NOT (Flags & disable_len))
+      >::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_getitem<traits::index_style>
+      maybe_add_getitem <has_indexing, has_slicing>
         ::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_setitem<traits::has_mutable_ref, traits::index_style>
-        ::apply (pyClass, algorithms(), m_policy);
+      maybe_add_setitem <
+          ICE_AND (traits::has_mutable_ref, has_indexing)
+          , has_slicing
+      >::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_delitem<traits::has_erase, traits::index_style>
+      maybe_add_delitem<ICE_AND (traits::has_erase, has_indexing), has_slicing>
         ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_iter<
-          type_traits::ice_and <
-              traits::index_style != index_style_linear
-              , traits::has_copyable_iter
-          >::value
+        ICE_AND (
+            traits::index_style != index_style_linear
+            , traits::has_copyable_iter)
       >::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_sort <
-          traits::is_reorderable, value_traits_::lessthan_comparable
+        ICE_AND (
+            ICE_AND (
+                traits::is_reorderable
+                , value_traits_::lessthan_comparable)
+            , ICE_NOT (Flags & disable_reorder))
       >::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_reverse<traits::is_reorderable>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_reverse <
+        ICE_AND (traits::is_reorderable, ICE_NOT (Flags & disable_reorder))
+      >::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_append<traits::has_push_back>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_insert<traits::has_insert>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_insert <
+        ICE_AND (traits::has_insert, ICE_NOT (Flags & disable_insert))
+      >::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_extend <
-          type_traits::ice_and <
-              traits::index_style == index_style_linear
-              , traits::has_insert
-          >::value
+        ICE_AND (
+            ICE_AND (
+                traits::index_style == index_style_linear
+                , traits::has_insert)
+            , ICE_NOT (Flags & disable_extend))
       >::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_index <
-          type_traits::ice_and <
-              traits::index_style == index_style_linear
-              , traits::has_find
-          >::value
+        ICE_AND (
+            ICE_AND (
+                traits::index_style == index_style_linear
+                , traits::has_find)
+            , ICE_NOT (Flags & disable_search))
       >::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_count<traits::has_find, traits::index_style>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_count <
+        ICE_AND (
+            traits::has_find
+            , ICE_NOT (Flags & disable_search))
+        , traits::index_style
+      >::apply (pyClass, algorithms(), precallPolicy);
 
       Algorithms::visitor_helper (pyClass, m_policy);
     }
   };
 } } }
+
+#undef ICE_AND
+#undef ICE_NOT
 
 #endif // BOOST_PYTHON_INDEXING_VISITOR_HPP

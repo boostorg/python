@@ -201,9 +201,13 @@ namespace boost { namespace python { namespace indexing {
   }
 #endif
 
-  template<class Container, class Traits = base_container_traits<Container> >
+  template <
+    class Container
+    , int Flags = 0
+    , class Traits = base_container_traits<Container>
+  >
   struct iterator_range_suite
-      : container_suite<Container, default_algorithms<Traits> >
+    : container_suite<Container, Flags, default_algorithms<Traits> >
   {
   };
 

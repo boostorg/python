@@ -21,22 +21,23 @@
 #include <boost/type_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
-#if !BOOST_MSVC
-  enum index_style_t {
-    index_style_none         // No random access (iteration only)
-    , index_style_nonlinear  // Random access by key (no slicing)
-    , index_style_linear     // Random access by integer index (allows slicing)
-  };
-#else
-  // MSVC seems to have problems with static member variable constants
-  // of enumerated types, where it doesn't believe that an expression
-  // like (traits::index_style == index_style_linear) is a
-  // compile-time constant. However, the problem doesn't exist for
+#if BOOST_WORKAROUND (BOOST_MSVC, BOOST_TESTED_AT (1310)) \
+  || (defined (__GNUC__) && (__GNUC__ < 3))
+  // MSVC and GCC 2.96 seem to have problems comparing enumerated
+  // values in a static constant expression, and don't believe that an
+  // expression like (traits::index_style >= index_style_nonlinear) is
+  // a compile-time constant. However, the problem doesn't exist for
   // int.
   typedef int index_style_t;
   index_style_t const index_style_none = 0;
   index_style_t const index_style_nonlinear = 1;
   index_style_t const index_style_linear = 2;
+#else
+  enum index_style_t {
+    index_style_none         // No random access (iteration only)
+    , index_style_nonlinear  // Random access by key (no slicing)
+    , index_style_linear     // Random access by integer index (allows slicing)
+  };
 #endif
 
   template<typename T>

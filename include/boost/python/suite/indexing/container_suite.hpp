@@ -31,16 +31,18 @@ namespace boost { namespace python { namespace indexing {
 
   template <
       class Container
+      , int Flags = 0
       , class Algorithms
           = algo_selector<Container>
   >
   struct container_suite
-    : public visitor<Algorithms, default_container_policies>
+    : public visitor<Algorithms, default_container_policies, Flags>
   {
     typedef Algorithms algorithms;
 
     template<typename Policy>
-    static visitor<Algorithms, Policy> with_policies (Policy const &policy)
+    static
+    visitor<Algorithms, Policy, Flags> with_policies (Policy const &policy)
     {
       return visitor <Algorithms, Policy> (policy);
     }
