@@ -29,7 +29,8 @@ namespace detail
                   && class_object->tp_dict != 0
               )
               {
-                  borrowed_f = ::PyDict_GetItemString(class_object->tp_dict, name);
+                  borrowed_f = ::PyDict_GetItemString(
+                      class_object->tp_dict, const_cast<char*>(name));
 
 
               }
