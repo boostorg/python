@@ -8,6 +8,9 @@
 # ifdef _AIX
 # include <boost/python/detail/wrap_python.hpp>
 # include <cstdio>
+# ifdef __KCC
+#  include <iostream> // this works around a problem in KCC 4.0f
+# endif 
 
 namespace boost { namespace python { namespace detail { 
 
