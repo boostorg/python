@@ -92,7 +92,7 @@ struct hello_callback : hello
 <p>
   Finally, we add <tt>hello_callback</tt> to the <tt>
   class_builder&lt;&gt;</tt> declaration in our module initialization
-  function, and when we define the function, we must tell py_cpp about the default
+  function, and when we define the function, we must tell Boost.Python about the default
   implementation:
 
 <blockquote><pre>
@@ -120,7 +120,7 @@ hello_class.def(&amp;hello::greet, "greet", &amp;<b>hello_callback::default_gree
     <p>
       <a name="why_derived">*</a>You may ask, "Why do we need this derived
       class? This could have been designed so that everything gets done right
-      inside of <tt>hello</tt>." One of the goals of py_cpp is to be
+      inside of <tt>hello</tt>." One of the goals of Boost.Python is to be
       minimally intrusive on an existing C++ design. In principle, it should be
       possible to expose the interface for a 3rd party library without changing
       it. To unintrusively hook into the virtual functions so that a Python
