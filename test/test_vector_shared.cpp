@@ -23,6 +23,7 @@
 typedef boost::shared_ptr<int_wrapper> int_wrapper_holder;
 bool operator< (int_wrapper_holder const &, int_wrapper_holder const &);
 bool operator== (int_wrapper_holder const &, int_wrapper_holder const &);
+bool operator!= (int_wrapper_holder const &, int_wrapper_holder const &);
 
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <vector>
@@ -43,6 +44,11 @@ bool operator< (int_wrapper_holder const &lhs, int_wrapper_holder const &rhs)
 bool operator== (int_wrapper_holder const &lhs, int_wrapper_holder const &rhs)
 {
   return (*lhs) == (*rhs);
+}
+
+bool operator!= (int_wrapper_holder const &lhs, int_wrapper_holder const &rhs)
+{
+  return (*lhs) != (*rhs);
 }
 
 BOOST_PYTHON_MODULE(test_vector_shared_ext)
