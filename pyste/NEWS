@@ -1,3 +1,7 @@
+10 September 2003
+A new variable is accessible in the Pyste files: INTERFACE_FILE contains the 
+full path of the pyste file.
+
 4 September 2003
 Now it is possible to override protected and private pure virtual functions
 in Python, as requested by Roman Yakovenko.

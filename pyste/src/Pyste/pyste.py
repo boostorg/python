@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 import declarations
 
-__version__ = '0.9.23'
+__version__ = '0.9.24'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -249,6 +249,7 @@ def ExecuteInterface(interface):
     _imported_count[interface] = _imported_count.get(interface, 0) + 1
     exporters.current_interface = interface
     context = CreateContext()
+    context['INTERFACE_FILE'] = os.path.abspath(interface)
     execfile(interface, context)
     exporters.current_interface = old_interface
 
