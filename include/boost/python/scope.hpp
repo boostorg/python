@@ -16,7 +16,7 @@ class BOOST_PYTHON_DECL scope
     : public object, private noncopyable
 {
  public:
-    inline scope(object const&);
+    explicit inline scope(object const&);
     inline scope();
     inline ~scope();
     

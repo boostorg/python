@@ -85,7 +85,7 @@ namespace boost { namespace python
 "../../../utility/utility.htm#Class noncopyable">noncopyable</a>
   {
    public:
-      scope(object const&amp;);
+      explicit scope(object const&amp;);
       scope();
       ~scope()
   };
@@ -95,7 +95,7 @@ namespace boost { namespace python
     <h4><a name="scope-spec-ctors"></a>Class <code>scope</code> constructors
     and destructor</h4>
 <pre>
-scope(object const&amp; x);
+explicit scope(object const&amp; x);
 </pre>
     Stores a reference to the current associated scope object, and sets the
     associated scope object to the one referred to by <code>x.ptr()</code>.
