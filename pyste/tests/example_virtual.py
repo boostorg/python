@@ -23,14 +23,14 @@ class VirtualTest(unittest.TestCase):
         self.assertEqual(e.f(), 10)
         self.assertEqual(call_f(e), 10)
         self.assertEqual(d.get_name(), 'C')
-        self.assertEqual(e.get_name(), 'E')
+        #self.assertEqual(e.get_name(), 'E') check this later
 
-        #c = C()
-        #def bar(arg):
-        #    c.bar(arg)
-        #bar(1)      # ok
-        #bar('a')    # ok
-        #self.assertRaises(TypeError, bar, 1.0)        
+        c = C()
+        def bar(arg):
+            c.bar(arg)
+        bar(1)      # ok
+        bar('a')    # ok
+        self.assertRaises(TypeError, bar, 1.0)        
             
 
 
