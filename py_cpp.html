@@ -20,8 +20,16 @@
       very similar to the C++ interface. It is designed to be minimally
       intrusive on your C++ design. In most cases, you should not have to alter
       your C++ classes in any way in order to use them with py_cpp. The system
-      <em>should</em> simply "reflect" your C++ classes and functions into
-      Python.
+      <em>should</em> simply &ldquo;reflect&rdquo; your C++ classes and functions into
+      Python. The major features of py_cpp include support for:
+<ul>
+<li><a href="inheritance.hml">Subclassing extension types in Python</a>
+<li><a href="overriding.html">Overriding virtual functions in Python</a>
+<li><a href="overloading.html">[Member] function Overloading</a>
+<li><a href="special.html#numeric_auto">Automatic wrapping of numeric operators</a>
+</ul>
+among others.
+
 
 <h2>Supported Platforms</h2>
 <p>py_cpp has been tested in the following configurations:
@@ -60,12 +68,11 @@
 </ul>
 
 <p>Py_cpp requires the <a href="http://www.boost.org">boost</a> libraries, and is
-      has been accepted for inclusion into the boost libraries pending &quot;boostification&quot;
+      has been accepted for inclusion into the boost libraries pending &ldquo;boostification&ldquo;
       (completion of the documentation, change in some naming conventions and
       resolution of some namespace issues).
 
 <h2>Credits</h2>
-    <p>
 <ul>
       <li><a href="mailto:abrahams@mediaone.net">David Abrahams</a> originated
       and wrote py_cpp.
@@ -196,9 +203,9 @@
     <p>
        &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
       sell and distribute this document is granted provided this copyright
-      notice appears in all copies. This document is provided "as is" without
+      notice appears in all copies. This document is provided &ldquo;as is&rdquo; without
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
     <p>
-       Updated: Nov 21, 2000
+       Updated: Nov 25, 2000
 

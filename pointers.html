@@ -8,7 +8,9 @@
          <img width="277" height="86" id="_x0000_i1025" align="center"
         src="c++boost.gif" alt= "c++boost.gif (8819 bytes)">Pointers
       </h1>
-<h2>The Problem With Pointers</h2>
+
+<h2><a name="problem">The Problem With Pointers</a></h2>
+
       <p>
 In general, raw pointers passed to or returned from functions are problematic
 for py_cpp because pointers have too many potential meanings. Is it an iterator?
@@ -32,10 +34,10 @@ converted from/to Python strings.
 <h3>Can you avoid the problem?</h3>
 
 <p>My first piece of advice to anyone with a case not covered above is
-&quot;find a way to avoid the problem.&quot; For example, if you have just one
+&ldquo;find a way to avoid the problem.&rdquo; For example, if you have just one
 or two functions returning a pointer to a single (not an array of) <code>const
-T*</code> for some wrapped <code>T</code>, you may be able to write a &quot;thin
-converting wrapper&quot; over those two functions as follows (Since py_cpp
+T*</code> for some wrapped <code>T</code>, you may be able to write a &ldquo;thin
+converting wrapper&rdquo; over those two functions as follows (Since py_cpp
 converts <code>const T&</code> values <code>to_python</code> by copying the T
 into a new extension instance, Foo must have a public copy constructor):
 

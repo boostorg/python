@@ -12,7 +12,7 @@
   In the <a href="example1.html">previous example</a> we exposed a simple
   C++ class in Python and showed that we could write a subclass. We even
   redefined one of the functions in our derived class. Now we will learn
-  how to make the function <em>behave virtually</em>. 
+  how to make the function behave virtually <em>when called from C++</em>. 
 
 
 <h2><a name="overriding_example">Example</a></h2>
@@ -26,7 +26,7 @@ class world
  public:
     world(int);
     virtual ~world();
-    <b>virtual</b> const char* get() const { return "hi, world"; }
+    <b>virtual</b> std::string get() const { return "hi, world"; }
 };
 </pre></blockquote>
 
@@ -37,23 +37,24 @@ class world
 
 <ol>
 
-  <li><a name="derived_1">A</a> <code>PyObject*</code> data member that holds a reference to the
-  corresponding Python object.
+  <li><a name="derived_1">A</a> <code>PyObject*</code> data member that holds a
+  reference to the corresponding Python object.
 
-  <li><a name="derived_2">A</a> constructor for each exposed constructor of the base class which stores an
-  additional initial <code>PyObject*</code> argument in the data
-  member described above.
+  <li><a name="derived_2">A</a> constructor for each exposed constructor of the
+  base class which stores an additional initial <code>PyObject*</code> argument
+  in the data member described above.
 
-  <li><a name="derived_3">An</a> implementation of each virtual function you may wish to override in
-  Python which uses
-  <code>python::callback&lt<i>return-type</i>&gt;::call_method()</code> to call the
-  Python override.
+  <li><a name="derived_3">An</a> implementation of each virtual function you may
+  wish to override in Python which uses
+  <code>python::callback&lt<i>return-type</i>&gt;::call_method()</code> to call
+  the Python override.
 
-  <li><a name="derived_4">For</a> each non-pure virtual function meant to be overridable from Python, a
-  static member function (or a free function) taking a reference or pointer to the
-  base type as the first parameter and which forwards any additional parameters
-  neccessary to the <i>default</i> implementation of the virtual function. See also
-  <a href="#private">this note</a> if the base class virtual function is private.
+  <li><a name="derived_4">For</a> each non-pure virtual function meant to be
+  overridable from Python, a static member function (or a free function) taking
+  a reference or pointer to the base type as the first parameter and which
+  forwards any additional parameters neccessary to the <i>default</i>
+  implementation of the virtual function. See also <a href="#private">this
+  note</a> if the base class virtual function is private.
 
 </ol>
 
@@ -64,10 +65,10 @@ struct world_callback : world
         : world(x),
           m_self(self) {}
 
-    const char* get() const // <a href="#derived_3">3</a>
-        { return python::callback&lt;const char*&gt;::call_method(m_self, "get"); }
+    std::string get() const // <a href="#derived_3">3</a>
+        { return python::callback&lt;std::string&gt;::call_method(m_self, "get"); }
 
-    static const char* <a name= "default_implementation">default_get</a>(const hello::world& self) const // <a href="#derived_4">4</a>
+    static std::string <a name= "default_implementation">default_get</a>(const hello::world& self) const // <a href="#derived_4">4</a>
         { return self.world::get(); }
  private:
     PyObject* m_self; // <a href="#derived_1">1</a>
@@ -112,15 +113,15 @@ world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>)
 <h2>Pure Virtual Functions</h2>
 
     <p>
-      A pure virtual function with no implementation is actually a lot easier
-      to deal with than a virtual function with a default implementation. First
-      of all, you obviously don't need to <a href="#default_implementation">
-      supply a default implementation</a>. Secondly, you don't need to call
+      A pure virtual function with no implementation is actually a lot easier to
+      deal with than a virtual function with a default implementation. First of
+      all, you obviously don't need to <a href="#default_implementation"> supply
+      a default implementation</a>. Secondly, you don't need to call
       <code>def()</code> on the <code>extension_class&lt;&gt;</code> instance
       for the virtual function. In fact, you wouldn't <em>want</em> to: if the
-      corresponding attribute on the Python class stays undefined, you'll get
-      an <code>AttributeError</code> in Python when you try to call the
-      function, indicating that it should have been implemented. For example:
+      corresponding attribute on the Python class stays undefined, you'll get an
+      <code>AttributeError</code> in Python when you try to call the function,
+      indicating that it should have been implemented. For example:
     <blockquote>
 <pre>
 struct baz {

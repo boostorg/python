@@ -16,13 +16,15 @@
         Python:
       <blockquote>
 <pre>
+#include &lt;string&gt;
+
 namespace hello {
   class world
   {
    public:
       world(int);
       ~world();
-      const char* get() const { return "hi, world"; }
+      std::string get() const { return "hi, world"; }
     ...
   };
   std::size_t length(const world&amp; x) { return std::strlen(x.get()); }

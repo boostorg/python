@@ -11,11 +11,14 @@
       A Peek Under the Hood
     </h1>
     <p>
-      <code> extension_class&lt;T&gt;</code> is a subclass of <code>
+      Declaring a <code>class_builder&lt;T&gt;</code> causes the instantiation
+      of an <code>extension_class&lt;T&gt;</code> to which it forwards all
+      member function calls and which is doing most of the real work.
+      <code>extension_class&lt;T&gt;</code> is a subclass of <code>
       PyTypeObject</code>, the <code> struct</code> which Python's 'C' API uses
-      to describe a type. <a href="example1.html#world_class">An obj of
-      the <code>extension_class&lt;&gt;</code></a> becomes the Python type
-      object corresponding to <code>hello::world</code>. When we <a href= 
+      to describe a type. <a href="example1.html#world_class">An instance of the
+      <code>extension_class&lt;&gt;</code></a> becomes the Python type object
+      corresponding to <code>hello::world</code>. When we <a href=
       "example1.html#add_world_class">add it to the module</a> it goes into the
       module's dictionary to be looked up under the name "world".
     <p>
@@ -45,8 +48,8 @@
       the top of your module's init function, then <code>def</code> the member
       functions later to avoid problems with inter-class dependencies.
     <p>
-      Previous: <a href="overriding.html">function Overloading</a>
-      Next: <a href="building.html">Building a module_builder with Py_cpp</a>
+      Previous: <a href="overriding.html">Function Overloading</a>
+      Next: <a href="building.html">Building a Module with Py_cpp</a>
       Up: <a href="py_cpp.html">Top</a>
     <p>
       &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,

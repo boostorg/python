@@ -124,7 +124,7 @@ namespace scope as Python member functions.
         class is found which has a matching attribute, only functions overloaded
         in the context of that class are candidates for overload resolution. In
         this sense, overload resolution mirrors the C++ mechanism, where a name
-        in a derived class "hides" all functions with the same name from a base
+        in a derived class &ldquo;hides&rdquo; all functions with the same name from a base
         class.
         <p>
 
@@ -132,13 +132,12 @@ namespace scope as Python member functions.
         functions are tried in the same order they were
         <code>def()</code>ed. The first function whose signature can be made to
         match each argument passed is the one which is ultimately called. 
-        <br>
         This means in particular that you cannot overload the same function on 
-        both "<code>int</code>" and "<code>float</code>" because Python 
+        both &ldquo;<code>int</code>&rdquo; and &ldquo;<code>float</code>&rdquo; because Python 
         automatically converts either of the two types into the other one. 
-        Thus, if the "<code>float</code>"-overload is found first, it is used 
-        also used for arguments of type "<code>int</code>" as well, and the 
-        "<code>int</code>"-Version of the function is never invoked.
+        If the &ldquo;<code>float</code>&rdquo; overload is found first, it is used 
+        also used for arguments of type &ldquo;<code>int</code>&rdquo; as well, and the 
+        &ldquo;<code>int</code>&rdquo; version of the function is never invoked.
         </ul>
 
       <p>
@@ -148,9 +147,9 @@ namespace scope as Python member functions.
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
         sell and distribute this document is granted provided this copyright
-        notice appears in all copies. This document is provided "as is" without
-        express or implied warranty, and with no claim as to its suitability
-        for any purpose.
+        notice appears in all copies. This document is provided &ldquo;as
+        is&rdquo; without express or implied warranty, and with no claim as to
+        its suitability for any purpose.
       <p>
          Updated: Nov 21, 2000
     </div>
