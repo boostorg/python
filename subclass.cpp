@@ -35,20 +35,20 @@ namespace {
       // This bit of code copied wholesale from classobject.c in the Python source.
       PyObject *f, *t, *v, *tb;
       PyErr_Fetch(&t, &v, &tb);
-      f = PySys_GetObject("stderr");
+      f = PySys_GetObject(const_cast<char*>("stderr"));
       if (f != NULL)
       {
-          PyFile_WriteString("Exception ", f);
+          PyFile_WriteString(const_cast<char*>("Exception "), f);
           if (t) {
               PyFile_WriteObject(t, f, Py_PRINT_RAW);
               if (v && v != Py_None) {
-                  PyFile_WriteString(": ", f);
+                  PyFile_WriteString(const_cast<char*>(": "), f);
                   PyFile_WriteObject(v, f, 0);
               }
           }
-          PyFile_WriteString(" in ", f);
+          PyFile_WriteString(const_cast<char*>(" in "), f);
           PyFile_WriteObject(source, f, 0);
-          PyFile_WriteString(" ignored\n", f);
+          PyFile_WriteString(const_cast<char*>(" ignored\n"), f);
           PyErr_Clear(); /* Just in case */
       }
       Py_XDECREF(t);
@@ -156,7 +156,8 @@ namespace detail {
   // Mostly copied wholesale from Python's classobject.c
   PyObject* ClassBase::repr() const
   {
-      PyObject *mod = PyDict_GetItemString(m_name_space.get(), "__module__");
+      PyObject *mod = PyDict_GetItemString(
+          m_name_space.get(), const_cast<char*>("__module__"));
       unsigned long address = reinterpret_cast<unsigned long>(this);
       String result = (mod == NULL || !PyString_Check(mod))
                 ? String("<extension class %s at %lx>") % Tuple(m_name, address)
