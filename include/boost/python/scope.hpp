@@ -13,8 +13,15 @@
 
 namespace boost { namespace python { 
 
-class BOOST_PYTHON_DECL scope
-    : public object
+namespace detail
+{
+  // Making this a namespace-scope variable to avoid Cygwin issues.
+  // Use a PyObject* to avoid problems with static destruction after Py_Finalize
+  extern BOOST_PYTHON_DECL PyObject* current_scope;
+}
+
+class scope
+  : public object
 {
  public:
     inline scope(scope const&);
@@ -27,32 +34,27 @@ class BOOST_PYTHON_DECL scope
 
  private: // unimplemented functions
     void operator=(scope const&);
-    
- private: // static members
-    
-    // Use a PyObject* to avoid problems with static destruction after Py_Finalize
-    static PyObject* current_scope;
 };
 
 inline scope::scope(object const& new_scope)
     : object(new_scope)
-    , m_previous_scope(current_scope)
+    , m_previous_scope(detail::current_scope)
 {
-    current_scope = python::incref(new_scope.ptr());
+    detail::current_scope = python::incref(new_scope.ptr());
 }
 
 inline scope::scope()
     : object(detail::borrowed_reference(
-                 current_scope ? current_scope : Py_None
+                 detail::current_scope ? detail::current_scope : Py_None
                  ))
-      , m_previous_scope(python::xincref(current_scope))
+    , m_previous_scope(python::xincref(detail::current_scope))
 {
 }
 
 inline scope::~scope()
 {
-    python::xdecref(current_scope);
-    current_scope = m_previous_scope;
+    python::xdecref(detail::current_scope);
+    detail::current_scope = m_previous_scope;
 }
 
 namespace converter
@@ -67,9 +69,9 @@ namespace converter
 // Placing this after the specialization above suppresses a CWPro8.3 bug
 inline scope::scope(scope const& new_scope)
     : object(new_scope)
-    , m_previous_scope(current_scope)
+    , m_previous_scope(detail::current_scope)
 {
-    current_scope = python::incref(new_scope.ptr());
+    detail::current_scope = python::incref(new_scope.ptr());
 }
 
 }} // namespace boost::python

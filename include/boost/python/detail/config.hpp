@@ -71,7 +71,7 @@
 # define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #endif
 
-#if defined(BOOST_PYTHON_DYNAMIC_LIB) && defined(_WIN32)
+#if defined(BOOST_PYTHON_DYNAMIC_LIB) && defined(_WIN32) || defined(__CYGWIN__)
 #  if defined(BOOST_PYTHON_SOURCE)
 #     define BOOST_PYTHON_DECL __declspec(dllexport)
 #     define BOOST_PYTHON_BUILD_DLL

@@ -47,6 +47,9 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_DECL PyObject* scope::current_scope = 0;
+namespace detail
+{
+  BOOST_PYTHON_DECL PyObject* current_scope = 0;
+}
 
 }}

@@ -14,8 +14,6 @@
 #include <boost/python/detail/raw_pyobject.hpp>
 #include <boost/python/cast.hpp>
 
-#include <boost/lexical_cast.hpp>
-
 #include <vector>
 #include <algorithm>
 

@@ -15,6 +15,13 @@
 # include <boost/static_assert.hpp>
 # include <boost/type_traits/same_traits.hpp>
 
+#  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+#   if defined(__GNUC__) \
+    && ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+#    define BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+#   endif
+#  endif
+
 namespace boost { namespace python { 
 
 // for this compiler at least, cross-shared-library type_info
@@ -87,7 +94,7 @@ BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long long)
 #   undef BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID
 #  endif
 
-
+//
 inline type_info::type_info(std::type_info const& id)
     : m_base_type(
 #  ifdef BOOST_PYTHON_TYPE_ID_NAME
@@ -117,12 +124,26 @@ inline bool type_info::operator==(type_info const& rhs) const
 #  endif 
 }
 
+#  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+namespace detail
+{
+  BOOST_PYTHON_DECL char const* gcc_demangle(char const*);
+}
+#  endif
+    
 inline char const* type_info::name() const
 {
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
-    return m_base_type;
+    char const* raw_name
+        = m_base_type
+#  ifndef BOOST_PYTHON_TYPE_ID_NAME
+          ->name()
+#  endif
+        ;
+    
+#  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+    return detail::gcc_demangle(raw_name);
 #  else
-    return m_base_type->name();
+    return raw_name;
 #  endif 
 }
 

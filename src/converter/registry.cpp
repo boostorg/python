@@ -7,8 +7,6 @@
 #include <boost/python/converter/registrations.hpp>
 #include <boost/python/converter/builtin_converters.hpp>
 
-#include <boost/lexical_cast.hpp>
-
 #include <set>
 #include <stdexcept>
 
@@ -25,7 +23,7 @@ BOOST_PYTHON_DECL PyTypeObject* registration::get_class_object() const
         ::PyErr_Format(
             PyExc_TypeError
             , const_cast<char*>("No Python class registered for C++ class %s")
-            , target_type.name());
+            , this->target_type.name());
     
         throw_error_already_set();
     }
@@ -40,7 +38,9 @@ BOOST_PYTHON_DECL PyObject* registration::to_python(void const volatile* source)
         handle<> msg(
             ::PyString_FromFormat(
                 "No to_python (by-value) converter found for C++ type: %s"
-                , this->target_type.name()));
+                , this->target_type.name()
+                )
+            );
             
         PyErr_SetObject(PyExc_TypeError, msg.get());
 
