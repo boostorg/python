@@ -32,7 +32,7 @@ namespace boost { namespace python { namespace detail {
 //  interface:
 //
 //      template <typename DerivedT>
-//      void foo(func_stubs_base<DerivedT> const&)
+//      void foo(func_stubs_base<DerivedT> const&);
 //
 //  will accept only subclasses of func_stubs_base.
 //
@@ -272,12 +272,15 @@ struct func_stubs_base {
 //
 //              static RT func_0(T0 arg0)
 //              { return foo(arg0); }
-//              static RT func_1(T0 arg0,T1 arg1)
+//
+//              static RT func_1(T0 arg0, T1 arg1)
 //              { return foo(arg0, arg1); }
+//
 //              static RT func_2(T0 arg0, T1 arg1, T2 arg2)
 //              { return foo(arg0, arg1, arg2); }
-//              static RT func_3(T0 arg0, T1 arg1, T2 arg2,T3 arg3)
-//              { return foo  (arg0, arg1, arg2, arg3); }
+//
+//              static RT func_3(T0 arg0, T1 arg1, T2 arg2, T3 arg3)
+//              { return foo(arg0, arg1, arg2, arg3); }
 //          };
 //      };
 //
