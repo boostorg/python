@@ -67,6 +67,10 @@ run ../test/embedding.cpp <lib>../build/boost_python
         <$(gcc-compilers)><*><library-path>$(CYGWIN_PYTHON_DLL_PATH)
           <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
 
+bpl-test crossmod_exception
+  : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
+  ;
+
 bpl-test return_arg ;
 bpl-test staticmethod ;
 bpl-test shared_ptr ;
