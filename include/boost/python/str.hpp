@@ -5,6 +5,13 @@
 #include <boost/python/list.hpp>
 #include <boost/python/converter/pytype_object_manager_traits.hpp>
 
+// disable defines in <cctype> provided by some system libraries
+#undef isspace
+#undef islower
+#undef isalpha
+#undef isdigit
+#undef isalnum
+
 namespace boost { namespace python {
 
 class str : public object
