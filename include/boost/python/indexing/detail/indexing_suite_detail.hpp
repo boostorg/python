@@ -14,6 +14,12 @@
 # include <map>
 
 namespace boost { namespace python { namespace detail {
+
+#if defined(NDEBUG)
+#define CHECK_INVARIANT
+#else
+#define CHECK_INVARIANT check_invariant()
+#endif
     
     template <class Proxy>
     struct compare_proxy_index
@@ -43,6 +49,7 @@ namespace boost { namespace python { namespace detail {
     {
     public:
     
+        typedef typename std::vector<PyObject*>::const_iterator const_iterator;
         typedef typename std::vector<PyObject*>::iterator iterator;
         typedef typename Proxy::index_type index_type;
         typedef typename Proxy::policies_type policies_type;
@@ -69,21 +76,26 @@ namespace boost { namespace python { namespace detail {
                     break;
                 }
             }
+            CHECK_INVARIANT;
         }
 
         void
         add(PyObject* prox)
         {
+            CHECK_INVARIANT;
             // Add a proxy
             proxies.insert(
                 first_proxy(extract<Proxy&>(prox)().get_index()), prox);
+            CHECK_INVARIANT;
         }
 
         void
         erase(index_type from, index_type to)
         {
+            CHECK_INVARIANT;
             // Erase all proxies with indexes from..to 
             replace(from, to, 0);
+            CHECK_INVARIANT;
         }
 
         void
@@ -92,6 +104,7 @@ namespace boost { namespace python { namespace detail {
             index_type to, 
             typename std::vector<PyObject*>::size_type len)
         {
+            CHECK_INVARIANT;
             // Erase all proxies with indexes from..to.
             // Adjust the displaced indexes such that the
             // final effect is that we have inserted *len*
@@ -126,30 +139,53 @@ namespace boost { namespace python { namespace detail {
                         extract<Proxy&>(*right)().get_index(), from, to, len));
                 ++right;
             }
+            CHECK_INVARIANT;
         }
         
         PyObject*
         find(index_type i)
         {
+            CHECK_INVARIANT;
             // Find the proxy with *exact* index i.
             // Return 0 (null) if no proxy with the 
             // given index is found.
             iterator iter = first_proxy(i);
-            if (iter != proxies.end() 
+            if (iter != proxies.end()
                 && extract<Proxy&>(*iter)().get_index() == i)
+            {
+                CHECK_INVARIANT;
                 return *iter;
+            }
+            CHECK_INVARIANT;
             return 0;
         }
 
         typename std::vector<PyObject*>::size_type 
         size() const
         {
+            CHECK_INVARIANT;
             // How many proxies are there so far?
             return proxies.size();
         } 
 
     private:
-    
+
+#if !defined(NDEBUG)
+        void
+        check_invariant() const
+        {
+            for (const_iterator i = proxies.begin(); i != proxies.end(); ++i)
+            {
+                if ((*i)->ob_refcnt <= 0)
+                {
+                    PyErr_SetString(PyExc_RuntimeError, 
+                        "Invariant: Proxy vector in an inconsistent state");
+                    throw_error_already_set();
+                }
+            }
+        }
+#endif
+        
         std::vector<PyObject*> proxies;
     };
             

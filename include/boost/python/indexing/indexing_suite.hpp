@@ -147,7 +147,12 @@ namespace boost { namespace python {
             if (PyObject* shared = 
                 container_element_t::get_links().find(container.get(), idx))
             {
-                return extract<object>(shared)();
+//                return extract<object>(shared)();
+
+                handle<> h(shared);
+                object result(h);
+                h.release();
+                return result;
             }
             else
             {
@@ -218,8 +223,8 @@ namespace boost { namespace python {
         {
             if (PySlice_Check(i))
             {
-                base_set_slice(container, 
-                    reinterpret_cast<PySliceObject*>(i), v);
+                 base_set_slice(container, 
+                     reinterpret_cast<PySliceObject*>(i), v);
             }
             else
             {
@@ -343,6 +348,7 @@ namespace boost { namespace python {
                         temp.end()-temp.begin(), no_proxy());
                     DerivedPolicies::set_slice(container, from, to, 
                         temp.begin(), temp.end());
+                    l_.release();
                 }
             }            
         }
