@@ -142,6 +142,7 @@ hello_class.def(&amp;hello::greet, "greet", &amp;<b>hello_callback::default_gree
 <pre>
 struct baz {
     <strong>virtual</strong> int pure(int) = 0;
+    int calls_pure(int x) { return pure(x) + 1000; }
 };
 
 struct baz_callback {
@@ -154,7 +155,7 @@ BOOST_PYTHON_MODULE_INIT(foobar)
     {
        boost::python::module_builder foobar("foobar");
        boost::python::class_builder&lt;baz,baz_callback&gt; baz_class("baz");
-       baz_class.def(&amp;baz::pure, "pure");
+       baz_class.def(&amp;baz::calls_pure, "calls_pure");
     }
     catch(...)
     {
@@ -173,12 +174,18 @@ BOOST_PYTHON_MODULE_INIT(foobar)
 Traceback (innermost last):
   File "&lt;stdin&gt;", line 1, in ?
 AttributeError: pure
+&gt;&gt;&gt; x.calls_pure(1)
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+AttributeError: pure
 &gt;&gt;&gt; class mumble(baz):
 ...    def pure(self, x): return x + 1
 ...
 &gt;&gt;&gt; y = mumble()
 &gt;&gt;&gt; y.pure(99)
 100
+&gt;&gt;&gt; y.calls_pure(99)
+1100
 </pre></blockquote>
 
 <a name="private"><h2>Private Non-Pure Virtual Functions</h2></a>
@@ -192,6 +199,7 @@ this limited way without breaking binary compatibility (though it will certainly
 break the <a
 href="http://cs.calvin.edu/c++/C++Standard-Nov97/basic.html#basic.def.odr">ODR</a>).
 
+<hr>
     <p>
       Next: <a href="overloading.html">Function Overloading</a>
       Previous: <a href="exporting_classes.html">Exporting Classes</a>
