@@ -19,7 +19,9 @@ namespace boost { namespace python {
 // for this compiler at least, cross-shared-library type_info
 // comparisons don't work, so use typeid(x).name() instead. It's not
 // yet clear what the best default strategy is.
-# if defined(__GNUC__) && __GNUC__ >= 3 || defined(_AIX)
+# if (defined(__GNUC__) && __GNUC__ >= 3) \
+ || defined(_AIX) \
+ || (   defined(__sgi) && defined(__host_mips))
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
 
@@ -28,7 +30,7 @@ namespace boost { namespace python {
 // which works across shared libraries.
 struct type_info : private totally_ordered<type_info>
 {
-    type_info(std::type_info const& = typeid(void));
+    inline type_info(std::type_info const& = typeid(void));
     
     inline bool operator<(type_info const& rhs) const;
     inline bool operator==(type_info const& rhs) const;
@@ -59,8 +61,8 @@ inline type_info type_id(boost::type<T>* = 0)
         );
 }
 
-#  if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ <= 245
-// KCC on this platform seems to mistakenly distinguish "int" from
+#  if defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
+// Older EDG-based compilers seems to mistakenly distinguish "int" from
 // "signed int", etc., but only in typeid() expressions. However
 // though int == signed int, the "signed" decoration is propagated
 // down into template instantiations. Explicit specialization stops
@@ -76,6 +78,9 @@ inline type_info type_id<T>(boost::type<T>*)            \
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(short)
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(int)
 BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long)
+#   ifdef BOOST_HAS_LONG_LONG
+BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long long)
+#   endif
 #   undef BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID
 #  endif
 

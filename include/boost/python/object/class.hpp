@@ -39,6 +39,7 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
     void add_property(char const* name, ref const& fget);
     void add_property(char const* name, ref const& fget, ref const& fset);
     void setattr(char const* name, ref const&);
+    void enable_pickle_support();
  private:
     ref m_object;
 };
