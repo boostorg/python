@@ -263,7 +263,7 @@ template <class T>
 PyObject* to_python(const T& x)
 {
     py::PyPtr<py::ExtensionInstance> result(
-        PyExtensionClassConverters<T>::create_instance(false));
+        PyExtensionClassConverters<T>::create_instance());
     result->add_implementation(
         std::auto_ptr<py::InstanceHolderBase>(
             py_copy_to_new_value_holder(result.get(), x, py_holder_type(x))));
