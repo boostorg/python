@@ -17,14 +17,14 @@
 ROOT=$(HOME)
 BOOST=$(ROOT)/boost
 
-PYEXE=/usr/bin/python
+PYEXE=PYTHONPATH=. /usr/bin/python
 PYINC=-I/usr/include/python1.5
 #PYEXE=/usr/local/Python-1.5.2/bin/python
 #PYINC=-I/usr/local/Python-1.5.2/include/python1.5
 #PYEXE=/usr/local/Python-2.0/bin/python
 #PYINC=-I/usr/local/Python-2.0/include/python2.0
 
-STDOPTS=-ftemplate-depth-21
+STDOPTS=-fPIC -ftemplate-depth-21
 WARNOPTS=
 OPTOPTS=-g
 
@@ -33,7 +33,7 @@ CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST) $(PYINC) \
         $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
 MAKEDEP=-M
 
-LD=g++
+LD=$(CPP)
 LDOPTS=-shared
 
 OBJ=classes.o conversions.o extension_class.o functions.o \
