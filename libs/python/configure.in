@@ -29,21 +29,21 @@ dnl     AC_REQUIRE([AC_PROG_CC])
     
     cxx_tmp="dummy $CXX dummy"
     if test "$GXX" = "yes"; then                       # g++
-        shared_cxx_linker="$(CXX) -shared"
+        shared_cxx_linker="g++ -shared"
         position_independent_code_flag="-fPIC"
     elif test "$cxx_tmp[2]" = "como"; then             # Comeau C++
         shared_cxx_linker="como-dyn-link"
         position_independent_code_flag="--pic"
     elif test "$cxx_tmp[2]" = "cxx"; then              # Compaq C++
         case "$target" in
-          *dec*)     shared_cxx_linker="$(CXX) -shared -expect_unresolved '*'"
+          *dec*)     shared_cxx_linker="cxx -shared -expect_unresolved '*'"
                      position_independent_code_flag="";;
         esac
     elif test "$cxx_tmp[2]" = "CC"; then               # native compilers
         case "$target" in
-          *solaris*) shared_cxx_linker="$(CXX) -G"
+          *solaris*) shared_cxx_linker="CC -G"
                      position_independent_code_flag="-pic";;
-          *irix*)    shared_cxx_linker="$(CXX) -shared"
+          *irix*)    shared_cxx_linker="CC -shared"
                      position_independent_code_flag="";;
           *hpux*)    shared_cxx_linker="ld -b"
                      position_independent_code_flag="+z";;
