@@ -12,7 +12,7 @@
 # include <boost/python/converter/type_id.hpp>
 # include <boost/iterator_adaptors.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 template <class T> struct holder;
 
@@ -98,6 +98,6 @@ holder<Held>::holder()
 {
 }
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // CLASS_DWA20011214_HPP

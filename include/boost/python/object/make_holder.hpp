@@ -11,7 +11,7 @@
 # include <boost/python/object/class.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 
 template <class T> struct undefined;
@@ -119,6 +119,6 @@ struct make_holder<3>
     };
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // MAKE_HOLDER_DWA20011215_HPP

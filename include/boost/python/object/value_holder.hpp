@@ -8,7 +8,7 @@
 
 # include <boost/python/object/class.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 template <class Held>
 struct value_holder : holder<Held>
@@ -75,6 +75,6 @@ struct value_holder_generator
     };
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // VALUE_HOLDER_DWA20011215_HPP

@@ -6,7 +6,7 @@
 #ifndef CONSTRUCT_DWA20011215_HPP
 # define CONSTRUCT_DWA20011215_HPP
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 template <class T, class ArgList>
 struct construct
@@ -19,6 +19,6 @@ struct construct
     }
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // CONSTRUCT_DWA20011215_HPP

@@ -32,31 +32,31 @@ struct class_unwrapper
 template <class T>
 void* class_unwrapper<T>::can_convert(PyObject* p) const
 {
-    return object::find_holder<T>(p);
+    return objects::find_holder<T>(p);
 }
 
 template <class T>
 T& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T&>) const
 {
-    return *static_cast<object::holder<T>*>(holder_)->target();
+    return *static_cast<objects::holder<T>*>(holder_)->target();
 }
 
 template <class T>
 T const& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const&>) const
 {
-    return *static_cast<object::holder<T>*>(holder_)->target();
+    return *static_cast<objects::holder<T>*>(holder_)->target();
 }
 
 template <class T>
 T* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T*>) const
 {
-    return static_cast<object::holder<T>*>(holder_)->target();
+    return static_cast<objects::holder<T>*>(holder_)->target();
 }
 
 template <class T>
 T const* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const*>) const
 {
-    return static_cast<object::holder<T>*>(holder_)->target();
+    return static_cast<objects::holder<T>*>(holder_)->target();
 }
 
 }}} // namespace boost::python::converter

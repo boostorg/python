@@ -9,7 +9,7 @@
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/unwrapper.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 template <class T>
 struct class_unwrapper
@@ -35,6 +35,6 @@ struct class_unwrapper
 # endif 
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // CLASS_UNWRAPPER_DWA20011221_HPP
