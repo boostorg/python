@@ -85,7 +85,7 @@ code before the last Python reference to it disappears:
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   PyObject* to_python(Foo* p)
   {
-      return boost::python::python_extension_class_converters&lt;Foo&gt::ptr_to_python(p);
+      return boost::python::python_extension_class_converters&lt;Foo&gt;::ptr_to_python(p);
   }
 
   PyObject* to_python(const Foo* p)
