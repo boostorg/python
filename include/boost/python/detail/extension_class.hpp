@@ -61,7 +61,7 @@ T* check_non_null(T* p)
     return p;
 }
 
-template <class T> class held_instance;
+template <class Held> class held_instance;
 
 typedef void* (*conversion_function_ptr)(void*);
 
@@ -617,7 +617,7 @@ template <class Held>
 class held_instance : public Held
 {
     // There are no member functions: we want to avoid inadvertently overriding
-    // any virtual functions in T.
+    // any virtual functions in Held.
 public:
     held_instance(PyObject*) : Held() {}
     template <class A1>
