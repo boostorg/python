@@ -27,7 +27,7 @@ class BOOST_PYTHON_DECL module_base
     inline ref object() const;
 
  protected:
-    void generic_add_class(ref class_obj);
+    void add_class(ref const& class_obj);
 
  private:
     ref m_module;
