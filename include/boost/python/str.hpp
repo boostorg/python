@@ -351,15 +351,15 @@ class str : public detail::str_base
     }
 
     template <class T1, class T2>
-    bool startswidth(T1 const& prefix, T2 const& start) const
+    bool startswith(T1 const& prefix, T2 const& start) const
     {
-        return base::startswidth(object(prefix), object(start));
+        return base::startswith(object(prefix), object(start));
     }
      
     template <class T1, class T2, class T3>
-    bool startswidth(T1 const& prefix, T2 const& start, T3 const& end) const
+    bool startswith(T1 const& prefix, T2 const& start, T3 const& end) const
     {
-        return base::startswidth(object(prefix), object(start), object(end));
+        return base::startswith(object(prefix), object(start), object(end));
     }
 
     template <class T>
