@@ -19,7 +19,7 @@
         exceptions into Python exceptions. As far as I can tell, CXX has no
         support for subclassing C++ extension types in Python. An even
         more significant difference is that a user's C++ code is still basically
-        &ldquo;dealing with Python objects&rdquo;, though they are wrapped in
+        ``dealing with Python objects'', though they are wrapped in
         C++ classes. This means such jobs as argument parsing and conversion are
         still left to be done explicitly by the user.
 
@@ -40,8 +40,8 @@
       <p>
         As far as I can tell, CXX enables one to write what is essentially
         idiomatic Python code in C++, manipulating Python objects through the
-        same fully-generic interfaces we use in Python. While you're hardly programming directly to the &ldquo;bare
-        metal&rdquo; with CXX, it basically presents a &ldquo;C++-ized&rdquo;
+        same fully-generic interfaces we use in Python. While you're hardly programming directly to the ``bare
+        metal'' with CXX, it basically presents a ``C++-ized''
         version of the Python 'C' API.
 
       <p>
@@ -51,11 +51,11 @@
         fill in the other half. Here is his response to the commentary above:
 
 <blockquote>
-&ldquo;My intention with CXX was not to do what you are doing. It was to enable a
+``My intention with CXX was not to do what you are doing. It was to enable a
 person to write an extension directly in C++ rather than C. I figured others had
 the wrapping business covered. I thought maybe CXX would provide an easier
 target language for those making wrappers, but I never explored
-that.&rdquo;<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
+that.''<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
 </blockquote>
 
       <h2>SWIG</h2>
@@ -67,20 +67,20 @@ that.&rdquo;<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
         Perl or Tcl) extension module. It has been successfully used to create
         many Python extension modules. Like BPL, SWIG is trying to allow an
         existing interface to be wrapped with little or no change to the
-        existing code. The documentation says &ldquo;SWIG parses a form of ANSI C
+        existing code. The documentation says ``SWIG parses a form of ANSI C
         syntax that has been extended with a number of special directives. As a
         result, interfaces are usually built by grabbing a header file and
-        tweaking it a little bit.&rdquo; For C++ interfaces, the tweaking has often
+        tweaking it a little bit.'' For C++ interfaces, the tweaking has often
         proven to amount to more than just a little bit. One user
         writes:
 
-        <blockquote> &ldquo;The problem with swig (when I used it) is that it
+        <blockquote> ``The problem with swig (when I used it) is that it
         couldnt handle templates, didnt do func overloading properly etc.  For
         ANSI C libraries this was fine.  But for usual C++ code this was a
         problem.  Simple things work.  But for anything very complicated (or
         realistic), one had to write code by hand.  I believe BPL doesn't have
         this problem[<a href="#sic">sic</a>]...  IMHO overloaded functions are very important to
-        wrap correctly.&rdquo;<br><i>-Prabhu Ramachandran</i>
+        wrap correctly.''<br><i>-Prabhu Ramachandran</i>
         </blockquote>
         
       <p>
@@ -124,7 +124,7 @@ that.&rdquo;<br><i>-<a href="mailto:dubois1@llnl.gov">Paul Dubois</a></i>
       <a
       href="http://www.python.org/workshops/1996-11/papers/GRAD/html/GRADcover.html">GRAD</a>
       is another very ambitious project aimed at generating Python wrappers for
-      interfaces written in &ldquo;legacy languages&rdquo;, among which C++ is the first one
+      interfaces written in ``legacy languages'', among which C++ is the first one
       implemented. Like SWIG, it aims to parse source code and automatically
       generate wrappers, though it appears to take a more sophisticated approach
       to parsing in general and C++ in particular, so it should do a much better
@@ -152,9 +152,9 @@ an inheritance relationship?
         to support subclassing of extension types in Python, including
         multiple-inheritance. Both systems support pickling/unpickling of
         extension class instances in very similar ways. Both systems rely on the
-        same &ldquo;<a
+        same ``<a
         href="http://www.python.org/workshops/1994-11/BuiltInClasses/Welcome.html">Don
-        Beaudry Hack</a>&rdquo; that also inspired Don's MESS System.
+        Beaudry Hack</a>'' that also inspired Don's MESS System.
       <p>
         The major differences are:
       <ul>
@@ -177,23 +177,23 @@ an inheritance relationship?
           "http://www.digicool.com/releases/ExtensionClass/MultiMapping.html">A
           Zope Example</a> illustrates the differences.
         <li>
-          Zope's ExtensionClasses are specifically motivated by &ldquo;the need for a
-          C-based persistence mechanism&rdquo;. BPL's are motivated by the desire
+          Zope's ExtensionClasses are specifically motivated by ``the need for a
+          C-based persistence mechanism''. BPL's are motivated by the desire
           to simply reflect a C++ API into Python with as little modification as
           possible.
         <li>
-          The following Zope restriction does not apply to BPL: &ldquo;At most one
+          The following Zope restriction does not apply to BPL: ``At most one
           base extension direct or indirect super class may define C data
           members. If an extension subclass inherits from multiple base
           extension classes, then all but one must be mix-in classes that
-          provide extension methods but no data.&rdquo;
+          provide extension methods but no data.''
         <li>
           Zope requires use of the somewhat funky inheritedAttribute (search for
-          &ldquo;inheritedAttribute&rdquo; on <a
+          ``inheritedAttribute'' on <a
           href="http://www.digicool.com/releases/ExtensionClass">this page</a>)
           method to access base class methods. In BPL, base class methods can
           be accessed in the usual way by writing
-          &ldquo;<code>BaseClass.method</code>&rdquo;.
+          ``<code>BaseClass.method</code>''.
         <li>
           Zope supplies some creative but esoteric idioms such as <a href= 
           "http://www.digicool.com/releases/ExtensionClass/Acquisition.html">
@@ -211,7 +211,7 @@ an inheritance relationship?
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
         sell and distribute this document is granted provided this copyright
-        notice appears in all copies. This document is provided &ldquo;as is&rdquo; without
+        notice appears in all copies. This document is provided ``as is'' without
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>

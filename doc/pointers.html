@@ -34,10 +34,10 @@ converted from/to Python strings.
 <h3>Can you avoid the problem?</h3>
 
 <p>My first piece of advice to anyone with a case not covered above is
-&ldquo;find a way to avoid the problem.&rdquo; For example, if you have just one
+``find a way to avoid the problem.'' For example, if you have just one
 or two functions that return a pointer to an individual <code>const
-T</code>, and <code>T</code> is a wrapped class, you may be able to write a &ldquo;thin
-converting wrapper&rdquo; over those two functions as follows:
+T</code>, and <code>T</code> is a wrapped class, you may be able to write a ``thin
+converting wrapper'' over those two functions as follows:
 
 <blockquote><pre>
 const Foo* f(); // original function

@@ -78,7 +78,7 @@
         <dt>
         <b><tt class='method'>__call__</tt></b> (<var>self</var><big>[</big><var>, args...</var><big>]</big>)
 <dd>
-Called when the instance is &ldquo;called&rdquo; as a function; if this method
+Called when the instance is ``called'' as a function; if this method
 is defined, <code><var>x</var>(arg1, arg2, ...)</code> is a shorthand for
 <code><var>x</var>.__call__(arg1, arg2, ...)</code>.
       </dl>
@@ -143,7 +143,7 @@ bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;());
 
       Since BigNum also supports subtraction, multiplication, and division, we
       want to export those also. This can be done in a single command by
-      &ldquo;or&rdquo;ing the operator identifiers together (a complete list of these
+      ``or''ing the operator identifiers together (a complete list of these
       identifiers and the corresponding operators can be found in the <a href= 
       "#numeric_table">Table of Automatically Wrapped Methods</a>):
 <blockquote><pre>
@@ -181,7 +181,7 @@ bignum_class.def(boost::python::operators&lt;(boost::python::op_sub | boost::pyt
 </pre></blockquote>
       The type of the operand not mentioned is taken from the class being wrapped. In
       our example, the class object is <code>bignum_class</code>, and thus the
-      other operand's type is &ldquo;<code>BigNum const&amp;</code>&rdquo;. You can override
+      other operand's type is ``<code>BigNum const&amp;</code>''. You can override
       this default by explicitly specifying a type in the <code>
       operators</code> template: 
 <blockquote><pre>
@@ -189,7 +189,7 @@ bignum_class.def(boost::python::operators&lt;boost::python::op_add, BigNum&gt;()
 </pre></blockquote>
       <p>
         Note that automatic wrapping uses the <em>expression</em>
-        &ldquo;<code>left + right</code>&rdquo; and can be used uniformly
+        ``<code>left + right</code>'' and can be used uniformly
         regardless of whether the C++ operators are supplied as free functions
         <blockquote><pre>
 BigNum operator+(BigNum, BigNum)
@@ -261,9 +261,9 @@ bignum_class.def(&amp;rmod,  "__rmod__");
       <p>
         Automatic and manual wrapping can be mixed arbitrarily. Note that you
         cannot overload the same operator for a given extension class on both
-        &ldquo;<code>int</code>&rdquo; and &ldquo;<code>float</code>&rdquo;, because Python implicitly
+        ``<code>int</code>'' and ``<code>float</code>'', because Python implicitly
         converts these types into each other. Thus, the overloaded variant
-        found first (be it &ldquo;<code>int</code>&ldquo; or &ldquo;<code>float</code>&rdquo;) will be
+        found first (be it ``<code>int</code>`` or ``<code>float</code>'') will be
         used for either of the two types.
 
 <h3><a name="coercion">Coercion</a></h3>
@@ -315,7 +315,7 @@ some_class.def(&amp;custom_coerce, "__coerce__");
 
       Note that the later use of automatic operator wrapping on a
       <code>class_builder</code> or a call to
-      &ldquo;<code>some_class.def_standard_coerce()</code>&rdquo; will cause any
+      ``<code>some_class.def_standard_coerce()</code>'' will cause any
       custom coercion function to be replaced by the standard one.
 
 <h3><a name="ternary_pow">The Ternary <code>pow()</code> Operator</a></h3>
@@ -689,7 +689,7 @@ void throw_key_error_if_end(
 
 // Define some simple wrapper functions which match the Python  protocol
 // for __getitem__, __setitem__, and __delitem__.  Just as in Python, a
-// free function with a &ldquo;self&rdquo; first parameter makes a fine class method.
+// free function with a ``self'' first parameter makes a fine class method.
 
 const std::string&amp; get_item(const StringMap&amp; self, std::size_t key)
 {
@@ -774,7 +774,7 @@ KeyError: 2
 
       to provide functional access to the attribute <em>&lt;name&gt;</em>. This
       facility can be used from C++ or entirely from Python. For example, the
-      following shows how we can implement a &ldquo;computed attribute&rdquo; in Python: 
+      following shows how we can implement a ``computed attribute'' in Python: 
       <blockquote>
 <pre>
 &gt;&gt;&gt; class Range(AnyBPLExtensionClass):
@@ -880,7 +880,7 @@ Up: <a href= "index.html">Top</a>
          &copy; Copyright David Abrahams and Ullrich K&ouml;the 2000.
         Permission to copy, use, modify, sell and distribute this document is
         granted provided this copyright notice appears in all copies. This
-        document is provided &ldquo;as is&rdquo; without express or implied
+        document is provided ``as is'' without express or implied
         warranty, and with no claim as to its suitability for any purpose.
       <p>
          Updated: Nov 26, 2000
