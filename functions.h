@@ -18,9 +18,17 @@
 # include "objects.h"
 # include "base_object.h"
 # include <typeinfo>
+# include <vector>
 
 namespace py {
 
+// forward declaration
+class ExtensionInstance;
+
+
+// Function --
+//      the common base class for all overloadable function and method objects
+//      supplied by the library.
 class Function : public PythonObject
 {
  public:
@@ -41,6 +49,13 @@ class Function : public PythonObject
     PyPtr<Function> m_overloads;
 };
 
+// WrappedFunctionPointer<> --
+//      A single function or member function pointer wrapped and presented to
+//      Python as a callable object.
+//
+//   Template parameters:
+//      R - the return type of the function pointer
+//      F - the complete type of the wrapped function pointer
 template <class R, class F>
 struct WrappedFunctionPointer : Function
 {
@@ -58,6 +73,38 @@ struct WrappedFunctionPointer : Function
     
  private:
 	const PtrFun m_pf;
+};
+
+// virtual_function<> --
+//      A virtual function with a default implementation wrapped and presented
+//      to Python as a callable object.
+//
+//   Template parameters:
+//      T - the type of the target class
+//      R - the return type of the function pointer
+//      V - the virtual function pointer being wrapped
+//          (should be of the form R(T::*)(<args>), or R (*)(T, <args>))
+//      D - a function which takes a T&, const T&, T*, or const T* first
+//          parameter and calls T::f on it /non-virtually/, where V
+//          approximates &T::f.
+template <class T, class R, class V, class D>
+class virtual_function : public Function
+{
+ public:
+	virtual_function(V virtual_function_ptr, D default_implementation)
+        : m_virtual_function_ptr(virtual_function_ptr),
+          m_default_implementation(default_implementation)
+        {}
+
+ private:
+	PyObject* do_call(PyObject* args, PyObject* keywords) const;
+    
+    const char* description() const
+        { return typeid(V).name(); }
+    
+ private:
+	const V m_virtual_function_ptr;
+    const D m_default_implementation;
 };
 
 // A helper function for new_member_function(), below.  Implements the core
@@ -79,6 +126,35 @@ inline Function* new_wrapped_function(F pmf)
     // Deduce the return type and pass it off to the helper function above
 	return new_wrapped_function_aux(return_value(pmf), pmf);
 }
+
+namespace detail {
+  // A helper function for new_virtual_function(), below.  Implements the core
+  // functionality once the return type has already been deduced. R is expected to
+  // be Type<X>, where X is the actual return type of V.
+  template <class T, class R, class V, class D>
+  inline Function* new_virtual_function_aux(
+      Type<T>, R, V virtual_function_ptr, D default_implementation
+      )
+  {
+      // We can't just use "typename R::Type" below because MSVC (incorrectly) pukes.
+      typedef typename R::Type ReturnType;
+      return new virtual_function<T, ReturnType, V, D>(
+          virtual_function_ptr, default_implementation);
+  }
+
+  // Create and return a new virtual_function object wrapping the given
+  // virtual_function_ptr and default_implementation
+  template <class T, class V, class D>
+  inline Function* new_virtual_function(
+      Type<T>, V virtual_function_ptr, D default_implementation
+      )
+  {
+      // Deduce the return type and pass it off to the helper function above
+      return new_virtual_function_aux(
+          Type<T>(), return_value(virtual_function_ptr),
+          virtual_function_ptr, default_implementation);
+  }
+} // namespace detail
 
 // A function with a bundled "bound target" object. This is what is produced by
 // the expression a.b where a is an Instance or ExtensionInstance object and b
@@ -170,6 +246,25 @@ PyObject* SetterFunction<ClassType, MemberType>::do_call(
     
     return none();
 }
+
+template <class T, class R, class V, class D>
+PyObject* virtual_function<T,R,V,D>::do_call(PyObject* args, PyObject* keywords) const
+{
+    // If the target object is held by pointer, we must call through the virtual
+    // function pointer to the most-derived override.
+    PyObject* target = PyTuple_GetItem(args, 0);
+    if (target != 0)
+    {
+        ExtensionInstance* self = get_extension_instance(target);
+        if (self->wrapped_objects().size() == 1
+            && !self->wrapped_objects()[0]->held_by_value())
+        {
+            return Caller<R>::call(m_virtual_function_ptr, args, keywords);
+        }
+    }
+    return Caller<R>::call(m_default_implementation, args, keywords);
+}
+    
 
 }
 
