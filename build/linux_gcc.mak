@@ -12,10 +12,10 @@
 
 BOOST= /net/cci/rwgk/boost
 
-#PYEXE= /usr/bin/python
-#PYINC= -I/usr/include/python1.5
-PYEXE= /usr/local/Python-1.5.2/bin/python
-PYINC= -I/usr/local/Python-1.5.2/include/python1.5
+PYEXE= /usr/bin/python
+PYINC= -I/usr/include/python1.5
+#PYEXE= /usr/local/Python-1.5.2/bin/python
+#PYINC= -I/usr/local/Python-1.5.2/include/python1.5
 #PYEXE= /usr/local/Python-2.0/bin/python
 #PYINC= -I/usr/local/Python-2.0/include/python2.0
 
