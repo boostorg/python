@@ -1,0 +1,2 @@
+Class('C', 'basic.h')
+Function('call_f', 'basic.h')
