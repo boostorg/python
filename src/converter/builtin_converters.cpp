@@ -7,7 +7,7 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/converter/builtin_converters.hpp>
-#include <boost/python/converter/from_python_data.hpp>
+#include <boost/python/converter/rvalue_from_python_data.hpp>
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/handle.hpp>
 #include <boost/python/type_id.hpp>
@@ -50,14 +50,14 @@ namespace
           return slot && *slot ? slot : 0;
       }
 
-      static void construct(PyObject* obj, rvalue_stage1_data* data)
+      static void construct(PyObject* obj, rvalue_from_python_stage1_data* data)
       {
           // Get the (intermediate) source object
           unaryfunc creator = *static_cast<unaryfunc*>(data->convertible);
           handle<> intermediate(creator(obj));
 
           // Get the location in which to construct
-          void* storage = ((rvalue_base_data<T>*)data)->storage.bytes;
+          void* storage = ((rvalue_from_python_storage<T>*)data)->storage.bytes;
           new (storage) T(SlotPolicy::extract(intermediate.get()));
 
           // record successful construction

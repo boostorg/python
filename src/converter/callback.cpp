@@ -17,7 +17,7 @@ namespace detail
 
   namespace
   {
-    inline PyObject* convert(void const volatile* source, to_python_function_t converter)
+    inline PyObject* convert_to_python(void const volatile* source, to_python_function_t converter)
     {
         if (converter == 0)
         {
@@ -36,14 +36,14 @@ namespace detail
   arg_to_python_base::arg_to_python_base(
       void const volatile* source, to_python_function_t converter)
 # if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13102140
-      : handle<>(convert(source, converter))
+      : handle<>(convert_to_python(source, converter))
 # else
-      : m_ptr(convert(source, converter))
+      : m_ptr(convert_to_python(source, converter))
 # endif 
   {
   }
 
-  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_stage1_data const& data)
+  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_from_python_stage1_data const& data)
   {
       if (!data.convertible)
       {
@@ -108,7 +108,7 @@ namespace detail
       throw_error_already_set();
   }
   
-  BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_stage1_data& data, void* storage)
+  BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_from_python_stage1_data& data, void* storage)
   {
       handle<> holder(src);
       
@@ -125,6 +125,11 @@ namespace detail
           data.construct(src, &data);
       
       return data.convertible;
+  }
+
+  BOOST_PYTHON_DECL void absorb_result(PyObject* o)
+  {
+      Py_DECREF(expect_non_null(o));
   }
 }   
 

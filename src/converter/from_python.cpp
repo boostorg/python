@@ -6,17 +6,19 @@
 
 #include <boost/python/converter/find_from_python.hpp>
 #include <boost/python/converter/registrations.hpp>
-#include <boost/python/converter/from_python_data.hpp>
+#include <boost/python/converter/rvalue_from_python_data.hpp>
+#include <boost/python/converter/registrations.hpp>
+#include <boost/python/detail/wrap_python.hpp>
 #include <vector>
 #include <algorithm>
 
 namespace boost { namespace python { namespace converter { 
 
-BOOST_PYTHON_DECL rvalue_stage1_data find(
+BOOST_PYTHON_DECL rvalue_from_python_stage1_data find(
     PyObject* source
     , rvalue_from_python_registration const* chain)
 {
-    rvalue_stage1_data data;
+    rvalue_from_python_stage1_data data;
     data.convertible = 0;
     for (;chain != 0; chain = chain->next)
     {
