@@ -30,7 +30,7 @@ namespace // <unnamed>
       PyTypeObject* m_class_object;
   };
   
-  typedef std::map<undecorated_type_id_t, entry> registry_t;
+  typedef std::map<type_info, entry> registry_t;
   
   registry_t& entries()
   {
@@ -50,7 +50,7 @@ namespace // <unnamed>
       return registry;
   }
 
-  entry* find(undecorated_type_id_t type)
+  entry* find(type_info type)
   {
       return &entries()[type];
   }
@@ -67,12 +67,12 @@ namespace // <unnamed>
 namespace registry
 {
   to_python_function_t const& get_to_python_function(
-      undecorated_type_id_t key)
+      type_info key)
   {
       return find(key)->m_to_python_converter;
   }
   
-  void insert(to_python_function_t f, undecorated_type_id_t source_t)
+  void insert(to_python_function_t f, type_info source_t)
   {
       to_python_function_t& slot = find(source_t)->m_to_python_converter;
       assert(slot == 0); // we have a problem otherwise
@@ -85,7 +85,7 @@ namespace registry
   }
 
   // Insert an lvalue from_python converter
-  void insert(void* (*convert)(PyObject*), undecorated_type_id_t key)
+  void insert(void* (*convert)(PyObject*), type_info key)
   {
       entry* found = find(key);
       lvalue_from_python_registration *registration = new lvalue_from_python_registration;
@@ -99,7 +99,7 @@ namespace registry
   // Insert an rvalue from_python converter
   void insert(void* (*convertible)(PyObject*)
               , constructor_function construct
-              , undecorated_type_id_t key)
+              , type_info key)
   {
       entry* found = find(key);
       rvalue_from_python_registration *registration = new rvalue_from_python_registration;
@@ -112,7 +112,7 @@ namespace registry
   // Insert an rvalue from_python converter
   void push_back(void* (*convertible)(PyObject*)
               , constructor_function construct
-              , undecorated_type_id_t key)
+              , type_info key)
   {
       rvalue_from_python_registration** found = &find(key)->m_rvalue_from_python;
       while (*found != 0)
@@ -125,17 +125,17 @@ namespace registry
       *found = registration;
   }
 
-  PyTypeObject*& class_object(undecorated_type_id_t key)
+  PyTypeObject*& class_object(type_info key)
   {
       return find(key)->m_class_object;
   }
 
-  lvalue_from_python_registration*& lvalue_converters(undecorated_type_id_t key)
+  lvalue_from_python_registration*& lvalue_converters(type_info key)
   {
       return find(key)->m_lvalue_from_python;
   }
   
-  rvalue_from_python_registration*& rvalue_converters(undecorated_type_id_t key)
+  rvalue_from_python_registration*& rvalue_converters(type_info key)
   {
       return find(key)->m_rvalue_from_python;
   }

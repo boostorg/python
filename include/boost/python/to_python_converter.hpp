@@ -8,7 +8,7 @@
 
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/to_python_function.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 
 namespace boost { namespace python { 
 
@@ -31,7 +31,7 @@ to_python_converter<T,Conversion>::to_python_converter()
         
     converter::registry::insert(
         &normalized::convert
-        , converter::undecorated_type_id<T>());
+        , type_id<T>());
 }
 
 }} // namespace boost::python

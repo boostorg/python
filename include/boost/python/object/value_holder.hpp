@@ -8,7 +8,7 @@
 
 # include <boost/python/object/value_holder_fwd.hpp>
 # include <boost/python/object/class.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/object/inheritance.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/forward.hpp>
@@ -40,7 +40,7 @@ struct value_holder : instance_holder
     BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_VALUE_HOLDER,nil)
 
  private: // required holder implementation
-    void* holds(converter::undecorated_type_id_t);
+    void* holds(type_info);
 
  private: // data members
     Held m_held;
@@ -72,32 +72,32 @@ struct value_holder_back_reference : instance_holder
     BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_VALUE_HOLDER_BACK_REFERENCE,nil)
     
  private: // required holder implementation
-    void* holds(converter::undecorated_type_id_t);
+    void* holds(type_info);
 
  private: // data members
     BackReferenceType m_held;
 };
 
 template <class Held>
-void* value_holder<Held>::holds(converter::undecorated_type_id_t dst_t)
+void* value_holder<Held>::holds(type_info dst_t)
 {
-    converter::undecorated_type_id_t src_t = converter::undecorated_type_id<Held>();
+    type_info src_t = python::type_id<Held>();
     return src_t == dst_t ? &m_held
         : find_static_type(&m_held, src_t, dst_t);
 }
 
 template <class Held, class BackReferenceType>
 void* value_holder_back_reference<Held,BackReferenceType>::holds(
-    converter::undecorated_type_id_t dst_t)
+    type_info dst_t)
 {
-    converter::undecorated_type_id_t src_t = converter::undecorated_type_id<Held>();
+    type_info src_t = python::type_id<Held>();
     if (src_t == dst_t)
     {
         Held* x = &m_held;
         return x;
     }
 
-    src_t = converter::undecorated_type_id<BackReferenceType>();
+    src_t = python::type_id<BackReferenceType>();
     return src_t == dst_t
         ? &m_held
         :  find_static_type(&m_held, src_t, dst_t);

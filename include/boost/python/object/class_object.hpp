@@ -6,7 +6,7 @@
 #ifndef CLASS_OBJECT_DWA200222_HPP
 # define CLASS_OBJECT_DWA200222_HPP
 
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -18,8 +18,8 @@ struct class_object
 };
 
 template <class T>
-PyTypeObject*& class_object<T>::reference = converter::registry::class_object(
-    converter::undecorated_type_id<T>());
+PyTypeObject*& class_object<T>::reference
+    = converter::registry::class_object(python::type_id<T>());
 
 }}} // namespace boost::python::objects
 

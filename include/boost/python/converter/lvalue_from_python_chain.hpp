@@ -6,9 +6,11 @@
 #ifndef LVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
 # define LVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
 
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/pointer_type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/type_traits/cv_traits.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -39,7 +41,7 @@ namespace detail
   template <class T>
   lvalue_from_python_registration*const&
   ref_lvalue_from_python_chain<T>::value
-     = registry::lvalue_converters(undecorated_type_id<T>());
+     = registry::lvalue_converters(type_id<T>());
 
   template <class T, bool callback>
   struct select_lvalue_from_python_chain

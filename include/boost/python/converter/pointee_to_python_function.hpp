@@ -9,7 +9,6 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-# include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
 # include <boost/python/converter/pointer_type_id.hpp>

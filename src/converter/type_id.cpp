@@ -4,30 +4,33 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/converter/type_id.hpp>
+#include <boost/python/type_id.hpp>
+#include <boost/python/detail/decorated_type_id.hpp>
 #if !defined(__GNUC__) || __GNUC__ >= 3 || __SGI_STL_PORT
 # include <ostream>
 #else 
 # include <ostream.h>
 #endif 
 
-namespace boost { namespace python { namespace converter { 
+namespace boost { namespace python {
 
-BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, undecorated_type_id_t const& x)
+BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_info const& x)
 {
     return os << x.name();
 }
 
-BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_id_t const& x)
+namespace detail
 {
-    os << x.m_base_type;
-    if (x.m_decoration & type_id_t::const_)
-        os << " const";
-    if (x.m_decoration & type_id_t::volatile_)
-        os << " volatile";
-    if (x.m_decoration & type_id_t::reference)
-        os << "&";
-    return os;
+  BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, detail::decorated_type_info const& x)
+  {
+      os << x.m_base_type;
+      if (x.m_decoration & decorated_type_info::const_)
+          os << " const";
+      if (x.m_decoration & decorated_type_info::volatile_)
+          os << " volatile";
+      if (x.m_decoration & decorated_type_info::reference)
+          os << "&";
+      return os;
+  }
 }
-
-}}} // namespace boost::python::converter
+}} // namespace boost::python::converter

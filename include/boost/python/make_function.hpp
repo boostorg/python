@@ -35,8 +35,8 @@ objects::function* make_function(F f, Policies const& policies)
         , detail::arg_tuple_size<F>::value);
 }
 
-template <class ArgList, class Holder>
-objects::function* make_constructor(Holder* = 0, ArgList* = 0)
+template <class ArgList, class HolderGenerator>
+objects::function* make_constructor(HolderGenerator* = 0, ArgList* = 0)
 {
     enum { nargs = mpl::size<ArgList>::value };
     
@@ -44,13 +44,13 @@ objects::function* make_constructor(Holder* = 0, ArgList* = 0)
         objects::py_function(
             ::boost::bind<PyObject*>(detail::caller(),
                  objects::make_holder<nargs>
-                            ::template apply<Holder,ArgList>::execute
+                            ::template apply<HolderGenerator,ArgList>::execute
                  , _1, _2, default_call_policies()))
         , nargs + 1);
 }
 
-template <class ArgList, class Holder, class Policies>
-objects::function* make_constructor(Policies const& policies, Holder* = 0, ArgList* = 0)
+template <class ArgList, class HolderGenerator, class Policies>
+objects::function* make_constructor(Policies const& policies, HolderGenerator* = 0, ArgList* = 0)
 {
     enum { nargs = mpl::size<ArgList>::value };
     
@@ -58,7 +58,7 @@ objects::function* make_constructor(Policies const& policies, Holder* = 0, ArgLi
         objects::py_function(
             ::boost::bind<PyObject*>(detail::caller(),
                  objects::make_holder<nargs>
-                            ::template apply<Holder,ArgList>::execute
+                            ::template apply<HolderGenerator,ArgList>::execute
                  , _1, _2, policies))
         , nargs + 1);
 }

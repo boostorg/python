@@ -1,15 +1,22 @@
 #include <boost/python/converter/from_python.hpp>
-//#include <cassert>
-//#include <boost/type_traits.hpp>
-#include <boost/python/converter/type_id.hpp>
+#include <boost/python/type_id.hpp>
 #include <iostream>
+
+#if defined(__GNUC__) && __GNUC__ < 3 // 2.95.x linker seems to demand this definition
+namespace boost { namespace python {
+BOOST_PYTHON_DECL bool handle_exception_impl(function0<void>)
+{
+    return true;
+}
+}}
+#endif
 
 int result;
 
 #define ASSERT_SAME(T1,T2) \
        if (!is_same< T1, T2 >::value) { \
              std::cout << "*********************\n"; \
-             std::cout << type_id< T1 >() << " != " << type_id< T2 >() << "\n"; \
+             std::cout << python::type_id< T1 >() << " != " << python::type_id< T2 >() << "\n"; \
              std::cout << "*********************\n"; \
              result = 1; \
        }

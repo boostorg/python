@@ -6,7 +6,7 @@
 #ifndef POINTER_TYPE_ID_DWA2002222_HPP
 # define POINTER_TYPE_ID_DWA2002222_HPP
 
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 
 namespace boost { namespace python { namespace converter { 
@@ -17,9 +17,9 @@ namespace detail
   struct pointer_typeid_select
   {
       template <class T>
-      static inline undecorated_type_id_t execute(T*(*)() = 0)
+      static inline type_info execute(T*(*)() = 0)
       {
-          return undecorated_type_id<T>();
+          return type_id<T>();
       }
   };
 
@@ -27,37 +27,37 @@ namespace detail
   struct pointer_typeid_select<true>
   {
       template <class T>
-      static inline undecorated_type_id_t execute(T* const volatile&(*)() = 0)
+      static inline type_info execute(T* const volatile&(*)() = 0)
       {
-          return undecorated_type_id<T>();
+          return type_id<T>();
       }
     
       template <class T>
-      static inline undecorated_type_id_t execute(T*volatile&(*)() = 0)
+      static inline type_info execute(T*volatile&(*)() = 0)
       {
-          return undecorated_type_id<T>();
+          return type_id<T>();
       }
     
       template <class T>
-      static inline undecorated_type_id_t execute(T*const&(*)() = 0)
+      static inline type_info execute(T*const&(*)() = 0)
       {
-          return undecorated_type_id<T>();
+          return type_id<T>();
       }
 
       template <class T>
-      static inline undecorated_type_id_t execute(T*&(*)() = 0)
+      static inline type_info execute(T*&(*)() = 0)
       {
-          return undecorated_type_id<T>();
+          return type_id<T>();
       }
   };
 }
 
 // Usage: pointer_type_id<T>()
 //
-// Returns an undecorated_type_id_t associated with the type pointed
+// Returns a type_info associated with the type pointed
 // to by T, which may be a pointer or a reference to a pointer.
 template <class T>
-undecorated_type_id_t pointer_type_id(T(*)() = 0)
+type_info pointer_type_id(T(*)() = 0)
 {
     return detail::pointer_typeid_select<
           is_reference<T>::value

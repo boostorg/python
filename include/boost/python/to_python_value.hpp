@@ -7,7 +7,6 @@
 # define TO_PYTHON_VALUE_DWA200221_HPP
 
 # include <boost/type_traits/transform_traits.hpp>
-# include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/to_python_function.hpp>
 # include <boost/python/converter/builtin_converters.hpp>

@@ -6,14 +6,14 @@
 #ifndef FIND_INSTANCE_DWA2002312_HPP
 # define FIND_INSTANCE_DWA2002312_HPP
 
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
-// Given an undecorated type_id, find the instance data which
-// corresponds to it, or return 0 in case no such type is held.
-BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, converter::undecorated_type_id_t);
+// Given a type_id, find the instance data which corresponds to it, or
+// return 0 in case no such type is held.
+BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, type_info);
 
 // This produces a function with the right signature for use in from_python conversions
 template <class T>
@@ -21,14 +21,14 @@ struct instance_finder
 {
     instance_finder()
     {
-        converter::registry::insert(&execute, converter::undecorated_type_id<T>());
+        converter::registry::insert(&execute, python::type_id<T>());
     }
 
     static instance_finder const registration;
  private:
     static inline void* execute(PyObject* p)
     {
-        return find_instance_impl(p, converter::undecorated_type_id<T>());
+        return find_instance_impl(p, python::type_id<T>());
     }
 };
 

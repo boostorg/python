@@ -6,6 +6,7 @@
 #ifndef TYPE_FROM_PYTHON_DWA2002130_HPP
 # define TYPE_FROM_PYTHON_DWA2002130_HPP
 
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 
@@ -16,9 +17,9 @@ namespace detail
   // Given a pointer-to-function of 1 parameter returning a reference
   // type, return the type_id of the function's return type.
   template <class T, class U>
-  inline converter::undecorated_type_id_t extractor_type_id(T&(*)(U))
+  inline type_info extractor_type_id(T&(*)(U))
   {
-      return converter::undecorated_type_id<T>();
+      return type_id<T>();
   }
 
   // A function generator whose static execute() function is an lvalue

@@ -78,12 +78,17 @@ objects::function* make_function(F f, Policies const&amp; policies)
 <a name=
 "make_constructor-spec">template &lt;class T, class ArgList, class Generator&gt;
 objects::function* make_constructor();</a>
+
+template &lt;class ArgList, class Generator, class Policies&gt;
+objects::function* make_constructor(Policies const&amp; policies)
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> <code>T</code> is a class type. <code>ArgList</code>
-      is an <a href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++
-      argument types (<i>A1, A2,... AN</i>) such that if
+      <dt><b>Requires:</b> <code>T</code> is a class
+      type. <code>Policies</code> is a model of <a
+      href="CallPolicies.html">CallPolicies</a>. <code>ArgList</code>
+      is an <a href="../../../mpl/doc/Sequences.html">MPL sequence</a>
+      of C++ argument types (<i>A1, A2,... AN</i>) such that if
       <code>a1, a2</code>... <code>aN</code> are objects of type
       <i>A1, A2,... AN</i> respectively, the expression <code>new
       Generator::apply&lt;T&gt;::type(a1, a2</code>... <code>aN</code>) is
@@ -94,8 +99,12 @@ objects::function* make_constructor();</a>
       from Python, expects its first argument to be a Boost.Python extension
       class object. It converts its remaining its arguments to C++ and passes
       them to the constructor of a dynamically-allocated
-      <code>Generator::apply&lt;T&gt;::type</code> object. The result is
-      installed in the extension class object.
+      <code>Generator::apply&lt;T&gt;::type</code> object, which is
+      then installed in the extension class object. In the second
+      form, the <code>policies</code> are applied to the arguments and
+      result (<a
+      href="http://www.python.org/doc/current/lib/bltin-null-object.html">None</a>)
+      of the Python callable object
 
       <dt><b>Returns:</b> The new Python callable object
     </dl>

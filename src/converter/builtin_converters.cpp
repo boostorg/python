@@ -10,6 +10,7 @@
 #include <boost/python/converter/from_python_data.hpp>
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/reference.hpp>
+#include <boost/python/type_id.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/cast.hpp>
 #include <string>
@@ -38,7 +39,7 @@ namespace
           registry::insert(
               &slot_rvalue_from_python<T,SlotPolicy>::convertible
               , &slot_rvalue_from_python<T,SlotPolicy>::construct
-              , undecorated_type_id<T>()
+              , type_id<T>()
               );
       }
       
@@ -280,7 +281,7 @@ void initialize_builtin_converters()
     slot_rvalue_from_python<std::complex<long double>,complex_rvalue_from_python>();
     
     // Add an lvalue converter for char which gets us char const*
-    registry::insert(convert_to_cstring,undecorated_type_id<char>());
+    registry::insert(convert_to_cstring,type_id<char>());
 
     // Register by-value converters to std::string
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();

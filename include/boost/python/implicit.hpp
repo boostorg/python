@@ -8,7 +8,7 @@
 # include <boost/type.hpp>
 # include <boost/python/converter/implicit.hpp>
 # include <boost/python/converter/registry.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 
 namespace boost { namespace python { 
 
@@ -20,7 +20,7 @@ void implicitly_convertible(boost::type<Source>* = 0, boost::type<Target>* = 0)
     converter::registry::push_back(
           &functions::convertible
         , &functions::construct
-        , converter::undecorated_type_id<Target>());
+        , type_id<Target>());
 }
 
 }} // namespace boost::python

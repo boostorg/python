@@ -28,7 +28,7 @@
 
       <dd>
         <dl class="page-index">
-          <dt><a href="#class-spec">Class <code>error_already_set</code></a>
+          <dt><a href="#error_already_set-spec">Class <code>error_already_set</code></a>
 
           <dd>
             <dl class="page-index">
@@ -44,6 +44,7 @@
           <dt><a href="#handle_exception-spec">handle_exception</a>
 
           <dt><a href="#expect_non_null-spec">expect_non_null</a>
+          <dt><a href="#throw_error_already_set-spec">throw_error_already_set</a>
         </dl>
 
       <dt><a href="#examples">Examples</a>
@@ -117,9 +118,7 @@ void handle_exception() throw();
       an enclosing <code>try</code> block.
     </dl>
 <pre>
-<a name="expect_non_null-spec">PyObject* expect_non_null(PyObject* x);</a>
-
-template &lt;class T&gt; T* expect_non_null(T* x);
+<a name="expect_non_null-spec">template &lt;class T&gt; T* expect_non_null(T* x);</a>
 </pre>
 
     <dl class="expect_non_null-semantics">
@@ -133,6 +132,16 @@ template &lt;class T&gt; T* expect_non_null(T* x);
       functions in the <a href=
       "http://www.python.org/doc/2.2/api/api.html">Python/C API</a>, which
       return 0 on error.
+    </dl>
+
+<pre>
+<a name="throw_error_already_set-spec">void throw_error_already_set();</a>
+</pre>
+
+    <dl class="throw_error_already_set-semantics">
+
+      <dt><b>Effects:</b> <code>throw&nbsp;<a href=
+      "#error_already_set-spec">error_already_set</a>();</code> 
     </dl>
 
     <h2><a name="examples"></a>Examples</h2>

@@ -1,4 +1,4 @@
-#include <boost/python/converter/type_id.hpp>
+#include <boost/python/type_id.hpp>
 #include <cassert>
 #include <boost/python/converter/pointer_type_id.hpp>
 
@@ -6,8 +6,8 @@ int main()
 {
     using namespace boost::python::converter;
     
-    undecorated_type_id_t x
-        = undecorated_type_id<int>();
+    boost::python::type_info x
+        = boost::python::type_id<int>();
     
 
     assert(pointer_type_id<int*>() == x);

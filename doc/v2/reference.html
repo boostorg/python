@@ -1,21 +1,29 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
     <meta name="generator" content="HTML Tidy, see www.w3.org">
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Type" content=
+    "text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../boost.css">
 
     <title>Boost.Python - Reference</title>
+<style type="text/css">
+ p.c3 {font-style: italic}
+ h2.c2 {text-align: center}
+ h1.c1 {text-align: center}
+</style>
 
-    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
-    "reference">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%"
+    summary="reference">
       <tr>
         <td valign="top" width="300">
-          <h3><a href="http://www.boost.org"><img height="86" width="277" alt=
-          "C++ Boost" src="../c++boost.gif" border="0"></a></h3>
+          <h3><a href="http://www.boost.org"><img height="86" width=
+          "277" alt="C++ Boost" src="../../../../c++boost.gif" border="0">
+          </a></h3>
 
         <td valign="top">
-          <h1 align="center">Boost.Python</h1>
+          <h1 class="c1">Boost.Python</h1>
 
-          <h2 align="center">Reference</h2>
+          <h2 class="c2">Reference</h2>
     </table>
     <hr>
 
@@ -23,209 +31,227 @@
 
     <dl class="Reference">
       <dt><a href="#concepts">Concepts</a>
-      <dl class="index"> 
-        <dt><a href="CallPolicies.html#CallPolicies-concept">CallPolicies</a></dt>
-        <dt><a href="Dereferenceable.html#Dereferenceable-concept">Dereferenceable</a></dt>
-        <dt><a href="ResultConverter.html#ResultConverter-concept">ResultConverter</a></dt>
-        <dt><a href="ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a></dt>
-      </dl>
 
       <dt><a href="#high_level">High Level Components</a>
 
-      <dt><a href="#models_of_call_policies">Models of CallPolicies</a>
+      <dt><a href="#invocation">Function Invocation and Creation</a>
 
-      <dt><a href="#return_handler_generators">Models of ReturnHandlerGenerator</a>
+      <dd>
+        <dl class="index">
+          <dt><a href="#models_of_call_policies">Models of
+          CallPolicies</a>
+
+          <dt><a href="#result_converter_generators">Models of
+          ResultConverterGenerator</a>
+        </dl>
 
       <dt><a href="#type_conversion">To/From Python Type Conversion</a>
 
-      <dt><a href="#by_name">Index By Name</a>
-    </dl>
-    <a name="high_level"></a>
+      <dt><a href="#utility">Utility and Infrastructure</a>
 
-    <h2>High Level Components</h2>
+    </dl>
+<hr>
+    <!-- xxxxx -->
+
+    <h2><a name="concepts">Concepts</a></h2>
+        <dl class="index">
+          <dt><a href=
+          "CallPolicies.html#CallPolicies-concept">CallPolicies</a>
+
+          <dt><a href=
+          "Dereferenceable.html#Dereferenceable-concept">Dereferenceable</a>
+
+          <dt><a href=
+          "HolderGenerator.html#HolderGenerator-concept">HolderGenerator</a>
+
+          <dt><a href=
+          "ResultConverter.html#ResultConverter-concept">ResultConverter</a>
+
+          <dt><a href= 
+          "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a>
+        </dl>
+
+    <h2><a name="high_level">High Level Components</a></h2>
+
+    <dl>
+      <dt><a href="class.html">class.hpp/class_fwd.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="class.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="class.html#class_-spec">class_</a>
+
+              <dt><a href="class.html#bases-spec">bases</a>
+
+              <dt><a href="class.html#args-spec">args</a>
+            </dl>
+        </dl>
+
+      <dt><a href="errors.html">errors.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="errors.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "errors.html#error_already_set-spec">error_already_set</a>
+            </dl>
+
+          <dt><a href="errors.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "errors.html#handle_exception-spec">handle_exception</a>
+
+              <dt><a href=
+              "errors.html#expect_non_null-spec">expect_non_null</a>
+            </dl>
+        </dl>
+
+      <dt><a href="iterator.html">iterator.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="iterator.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="iterator.html#iterator-spec">iterator</a>
+
+              <dt><a href="iterator.html#iterators-spec">iterators</a>
+            </dl>
+
+          <dt><a href="iterator.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="iterator.html#range-spec">range</a>
+            </dl>
+        </dl>
+
+      <dt><a href="module.html">module.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="module.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="module.html#module-spec">module</a>
+            </dl>
+        </dl>
+
+      <dt><a href="objects.html">objects.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="objects.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="objects.html#xxx-spec">not yet
+              documented</a>
+            </dl>
+        </dl>
+    </dl>
+
+    <h2><a name="invocation">Function Invocation and Creation</a></h2>
 
     <dl class="index">
+      <dt><a href="call.html">call.hpp</a>
+
       <dd>
-        <a name="general_purpose"></a>
-
-        <h3>General Purpose</h3>
-
         <dl class="index">
-
-          <dt><a href="call.html">call.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="call.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "call.html#call-spec">call</a>
-                </dl>
-            </dl>
-
-          <dt><a href="call_method.html">call_method.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="call_method.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "call_method.html#call_method-spec">call_method</a>
-                </dl>
-            </dl>
-
-          <dt><a href="class.html">class.hpp/class_fwd.hpp</a>
+          <dt><a href="call.html#functions">Functions</a>
 
           <dd>
             <dl class="index">
-              <dt><a href="class.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href="class.html#class_-spec">class_</a>
-
-                  <dt><a href="class.html#bases-spec">bases</a>
-
-                  <dt><a href="class.html#args-spec">args</a>
-                </dl>
-            </dl>
-
-          <dt><a href="data_members.html">data_members.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="data_members.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "data_members.html#make_getter-spec">make_getter</a>
-
-                  <dt><a href=
-                  "data_members.html#make_setter-spec">make_setter</a>
-                </dl>
-            </dl>
-
-          <dt><a href="errors.html">errors.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="errors.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "errors.html#error_already_set-spec">error_already_set</a>
-                </dl>
-
-              <dt><a href="errors.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "errors.html#handle_exception-spec">handle_exception</a>
-
-                  <dt><a href=
-                  "errors.html#expect_non_null-spec">expect_non_null</a>
-                </dl>
-            </dl>
-
-
-          <dt><a href="iterator.html">iterator.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="iterator.html#classes">Classes</a>
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "iterator.html#iterator-spec">iterator</a>
-                  <dt><a href=
-                  "iterator.html#iterators-spec">iterators</a>
-                </dl>
-
-              <dt><a href="iterator.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "iterator.html#range-spec">range</a>
-                </dl>
-            </dl>
-
-          <dt><a href="make_function.html">make_function.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="make_function.html#classes">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "make_function.html#make_function-spec">make_function</a>
-
-                  <dt><a href=
-                  "make_function.html#make_constructor-spec">make_constructor</a>
-                </dl>
-            </dl>
-
-          <dt><a href="module.html">module.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="module.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href="module.html#module-spec">module</a>
-                </dl>
-            </dl>
-
-          <dt><a href="objects.html">objects.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="objects.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href="objects.html#xxx-spec">not yet documented</a>
-                </dl>
-            </dl>
-
-          <dt><a href="pointee.html">pointee.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="pointee.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt>class template <a href="pointee.html#pointee">pointee</a>
-                </dl>
-        </dl>
-
-          <dt><a href="reference_hpp.html">reference.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="reference_hpp.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href="reference_hpp.html#reference-spec">reference</a>
-                </dl>
-
-              <dt><a href="reference_hpp.html#types">Types</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href="reference_hpp.html#ref-spec">ref</a>
-                </dl>
+              <dt><a href="call.html#call-spec">call</a>
             </dl>
         </dl>
 
+      <dt><a href="call_method.html">call_method.hpp</a>
 
-        <a name="models_of_call_policies"></a>
+      <dd>
+        <dl class="index">
+          <dt><a href="call_method.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "call_method.html#call_method-spec">call_method</a>
+            </dl>
+        </dl>
+
+      <dt><a href="data_members.html">data_members.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="data_members.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "data_members.html#make_getter-spec">make_getter</a>
+
+              <dt><a href=
+              "data_members.html#make_setter-spec">make_setter</a>
+            </dl>
+        </dl>
+
+      <dt><a href="make_function.html">make_function.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="make_function.html#classes">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "make_function.html#make_function-spec">make_function</a>
+
+              <dt><a href=
+              "make_function.html#make_constructor-spec">make_constructor</a>
+            </dl>
+        </dl>
+
+      <dt><a href="ptr.html">ptr.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="ptr.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="ptr.html#ptr-spec">ptr</a>
+            </dl>
+
+          <dt><a href="ptr.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "ptr.html#pointer_wrapper-spec">pointer_wrapper</a>
+            </dl>
+
+          <dt><a href="ptr.html#metafunctions">MetaFunctions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "ptr.html#is_pointer_wrapper-spec">is_pointer_wrapper</a>
+
+              <dt><a href=
+              "ptr.html#unwrap_pointer-spec">unwrap_pointer</a>
+            </dl>
+        </dl>
+        <a name="models_of_call_policies"></a> 
 
         <h3>Models of CallPolicies</h3>
 
@@ -235,15 +261,18 @@
 
           <dd>
             <dl class="index">
-              <dt><a href="default_call_policies.html#classes">Classes</a>
+              <dt><a href=
+              "default_call_policies.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
-                  "default_call_policies.html#default_call_policies-spec">default_call_policies</a>
+                  <dt><a href= 
+                  "default_call_policies.html#default_call_policies-spec">
+                  default_call_policies</a>
 
-                  <dt><a href=
-                  "default_call_policies.html#default_result_converter-spec">default_result_converter</a>
+                  <dt><a href= 
+                  "default_call_policies.html#default_result_converter-spec">
+                  default_result_converter</a>
                 </dl>
             </dl>
 
@@ -252,25 +281,28 @@
 
           <dd>
             <dl class="index">
-              <dt><a href="return_internal_reference.html#classes">Classes</a>
+              <dt><a href=
+              "return_internal_reference.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "return_internal_reference.html#return_internal_reference-spec">
                   return_internal_reference</a>
                 </dl>
             </dl>
 
-          <dt><a href="return_value_policy.html">return_value_policy.hpp</a>
+          <dt><a href=
+          "return_value_policy.html">return_value_policy.hpp</a>
 
           <dd>
             <dl class="index">
-              <dt><a href="return_value_policy.html#classes">Classes</a>
+              <dt><a href=
+              "return_value_policy.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "return_value_policy.html#return_value_policy-spec">return_value_policy</a>
                 </dl>
             </dl>
@@ -280,34 +312,39 @@
 
           <dd>
             <dl class="index">
-              <dt><a href="with_custodian_and_ward.html#classes">Classes</a>
+              <dt><a href=
+              "with_custodian_and_ward.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
-                  "with_custodian_and_ward.html#with_custodian_and_ward-spec">with_custodian_and_ward</a>
+                  <dt><a href= 
+                  "with_custodian_and_ward.html#with_custodian_and_ward-spec">
+                  with_custodian_and_ward</a>
 
-                  <dt><a href=
+                  <dt><a href= 
                   "with_custodian_and_ward.html#with_custodian_and_ward_postcall-spec">
                   with_custodian_and_ward_postcall</a>
                 </dl>
             </dl>
         </dl>
-        <a name="return_handler_generators"></a>
+        <a name="result_converter_generators"></a> 
 
-        <h3>Models of ReturnHandlerGenerator</h3>
+        <h3>Models of ResultConverterGenerator</h3>
 
         <dl class="index">
-          <dt><a href="copy_const_reference.html">copy_const_reference.hpp</a>
+          <dt><a href=
+          "copy_const_reference.html">copy_const_reference.hpp</a>
 
           <dd>
             <dl class="index">
-              <dt><a href="copy_const_reference.html#classes">Classes</a>
+              <dt><a href=
+              "copy_const_reference.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
-                  "copy_const_reference.html#copy_const_reference-spec">copy_const_reference</a>
+                  <dt><a href= 
+                  "copy_const_reference.html#copy_const_reference-spec">
+                  copy_const_reference</a>
                 </dl>
             </dl>
 
@@ -316,17 +353,19 @@
 
           <dd>
             <dl class="index">
-              <dt><a href="copy_non_const_reference.html#classes">Classes</a>
+              <dt><a href=
+              "copy_non_const_reference.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "copy_non_const_reference.html#copy_non_const_reference-spec">
                   copy_non_const_reference</a>
                 </dl>
             </dl>
 
-          <dt><a href="manage_new_object.html">manage_new_object.hpp</a>
+          <dt><a href=
+          "manage_new_object.html">manage_new_object.hpp</a>
 
           <dd>
             <dl class="index">
@@ -334,7 +373,7 @@
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "manage_new_object.html#manage_new_object-spec">manage_new_object</a>
                 </dl>
             </dl>
@@ -344,11 +383,12 @@
 
           <dd>
             <dl class="index">
-              <dt><a href="reference_existing_object.html#classes">Classes</a>
+              <dt><a href=
+              "reference_existing_object.html#classes">Classes</a>
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "reference_existing_object.html#reference_existing_object-spec">
                   reference_existing_object</a>
                 </dl>
@@ -363,7 +403,7 @@
 
               <dd>
                 <dl class="index">
-                  <dt><a href=
+                  <dt><a href= 
                   "lvalue_from_python.html#reference_from_python-spec">reference_from_python</a>
 
                   <dt><a href=
@@ -371,140 +411,188 @@
                 </dl>
             </dl>
         </dl>
+    </dl>
 
-        <a name="type_conversion"></a>
+    <h2><a name="type_conversion">To/From Python Type
+    Conversion</a></h2>
 
-        <h3>To/From Python Type Conversion</h3>
+    <dl class="index">
+      <dt><a href="from_python.html">from_python.hpp</a>
 
+      <dd>
         <dl class="index">
-          <dt><a href="from_python.html">from_python.hpp</a>
+          <dt><a href="from_python.html#classes">Classes</a>
 
           <dd>
             <dl class="index">
-              <dt><a href="from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "from_python.html#from_python-spec">from_python</a>
-                </dl>
-            </dl>
-
-          <dt><a href="has_back_reference.html">has_back_reference.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="has_back_reference.html#classes">Classes</a>
-              <dd>
-                <dl class="index">
-                  <dt><a href="has_back_reference.html#has_back_reference-spec">has_back_reference</a>
-                </dl>
-
-            </dl>
-
-
-          <dt><a href="implicit.html">implicit.hpp</a>
-          <dd>
-            <dl class="index">
-              <dt><a href="implicit.html#functions">Functions</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "implicit.html#implicitly_convertible-spec">implicitly_convertible</a>
-                </dl>
-            </dl>
-
-          <dt><a href="ptr.html">ptr.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="ptr.html#functions">Functions</a>
-              <dd>
-                <dl class="index">
-                  <dt><a href="ptr.html#ptr-spec">ptr</a>
-                </dl>
-
-              <dt><a href="ptr.html#classes">Classes</a>
-              <dd>
-                <dl class="index">
-                  <dt><a href="ptr.html#pointer_wrapper-spec">pointer_wrapper</a>
-                </dl>
-
-              <dt><a href="ptr.html#metafunctions">MetaFunctions</a>
-              <dd>
-                <dl class="index">
-                  <dt><a href="ptr.html#is_pointer_wrapper-spec">is_pointer_wrapper</a>
-                  <dt><a href="ptr.html#unwrap_pointer-spec">unwrap_pointer</a>
-                </dl>
-
-            </dl>
-
-          <dt><a href="to_python_converter.html">to_python_converter.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_converter.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_converter.html#to_python_converter-spec">to_python_converter</a>
-                </dl>
-            </dl>
-
-          <dt><a href="to_python_indirect.html">to_python_indirect.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_indirect.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
-                </dl>
-            </dl>
-
-          <dt><a href="to_python_value.html">to_python_value.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="to_python_value.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "to_python_value.html#to_python_value-spec">to_python_value</a>
-                </dl>
-            </dl>
-
-          <dt><a href="type_from_python.html">type_from_python.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="type_from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "type_from_python.html#type_from_python-spec">type_from_python</a>
-                </dl>
-            </dl>
-
-          <dt><a href="value_from_python.html">value_from_python.hpp</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href="value_from_python.html#classes">Classes</a>
-
-              <dd>
-                <dl class="index">
-                  <dt><a href=
-                  "value_from_python.html#value_from_python-spec">value_from_python</a>
-                </dl>
+              <dt><a href=
+              "from_python.html#from_python-spec">from_python</a>
             </dl>
         </dl>
 
+      <dt><a href="implicit.html">implicit.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="implicit.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "implicit.html#implicitly_convertible-spec">implicitly_convertible</a>
+            </dl>
+        </dl>
+
+      <dt><a href=
+      "to_python_converter.html">to_python_converter.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="to_python_converter.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href= 
+              "to_python_converter.html#to_python_converter-spec">to_python_converter</a>
+            </dl>
+        </dl>
+
+      <dt><a href="to_python_indirect.html">to_python_indirect.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="to_python_indirect.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href= 
+              "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
+            </dl>
+        </dl>
+
+      <dt><a href="to_python_value.html">to_python_value.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="to_python_value.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "to_python_value.html#to_python_value-spec">to_python_value</a>
+            </dl>
+        </dl>
+
+      <dt><a href="type_from_python.html">type_from_python.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="type_from_python.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "type_from_python.html#type_from_python-spec">type_from_python</a>
+            </dl>
+        </dl>
+
+      <dt><a href="value_from_python.html">value_from_python.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="value_from_python.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "value_from_python.html#value_from_python-spec">value_from_python</a>
+            </dl>
+        </dl>
+    </dl>
+
+    <h2><a name="utility">Utility and Infrastructure</a></h2>
+
+    <dl>
+      <dt><a href="has_back_reference.html">has_back_reference.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="has_back_reference.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href= 
+              "has_back_reference.html#has_back_reference-spec">has_back_reference</a>
+            </dl>
+        </dl>
+
+        <dt><a href=
+        "instance_holder.html">instance_holder.hpp</a>
+
+        <dd>
+          <dl class="index">
+            <dt><a href=
+            "instance_holder.html#classes">Classes</a>
+
+            <dd>
+              <dl class="index">
+                <dt><a href= 
+                "instance_holder.html#instance_holder-spec">
+                instance_holder</a>
+              </dl>
+          </dl>
+
+      <dt><a href="pointee.html">pointee.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="pointee.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt>class template <a href=
+              "pointee.html#pointee">pointee</a>
+            </dl>
+        </dl>
+
+      <dt><a href="reference_hpp.html">reference.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="reference_hpp.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "reference_hpp.html#reference-spec">reference</a>
+            </dl>
+
+          <dt><a href="reference_hpp.html#types">Types</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="reference_hpp.html#ref-spec">ref</a>
+            </dl>
+        </dl>
+
+      <dt><a href="type_id.html">type_id.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="type_id.html#functions">Functions</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="type_id.html#type_id-spec">type_id</a>
+            </dl>
+
+          <dt><a href="type_id.html#classes">Classes</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="type_id.html#type_info-spec">type_info</a>
+            </dl>
+        </dl>
     </dl>
     <hr>
 
@@ -514,6 +602,7 @@
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 
 
-    <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
-    Abrahams</a> 2002. All Rights Reserved.</i>
+    <p class="c3">&copy; Copyright <a href= 
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All
+    Rights Reserved.
 

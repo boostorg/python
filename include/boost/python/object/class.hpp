@@ -9,8 +9,9 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/reference.hpp>
+# include <boost/python/instance_holder.hpp>
 # include <cstddef>
 
 namespace boost { namespace python {
@@ -19,10 +20,8 @@ class module;
 
 namespace objects { 
 
-template <class T> struct holder;
-
 // To identify a class, we don't need cv/reference decorations
-typedef converter::undecorated_type_id_t class_id;
+typedef type_info class_id;
 
 struct BOOST_PYTHON_DECL class_base : private noncopyable
 {
@@ -46,25 +45,6 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
 
 BOOST_PYTHON_DECL ref registered_class_object(class_id id);
 
-// Base class for all holders
-struct BOOST_PYTHON_DECL instance_holder : private noncopyable
-{
- public:
-    instance_holder();
-    virtual ~instance_holder();
-    
-    // return the next holder in a chain
-    instance_holder* next() const;
-
-    virtual void* holds(converter::undecorated_type_id_t) = 0;
-
-    void install(PyObject* inst) throw();
- private:
-    instance_holder* m_next;
-};
-// This macro is needed for implementation of derived holders
-# define BOOST_PYTHON_UNFORWARD(N,ignored) (typename unforward<A##N>::type)(a##N)
-
 // Each extension instance will be one of these
 struct instance
 {
@@ -74,14 +54,6 @@ struct instance
 
 BOOST_PYTHON_DECL ref class_metatype();
 BOOST_PYTHON_DECL ref class_type();
-
-//
-// implementation
-//
-inline instance_holder* instance_holder::next() const
-{
-    return m_next;
-}
 
 }}} // namespace boost::python::objects
 

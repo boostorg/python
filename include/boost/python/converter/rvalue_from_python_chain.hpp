@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 #ifndef RVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
 # define RVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
@@ -21,7 +22,7 @@ namespace detail
 
   template <class T>
   rvalue_from_python_registration*const& rvalue_from_python_chain_impl<T>::value
-      = registry::rvalue_converters(undecorated_type_id<T>());
+      = registry::rvalue_converters(type_id<T>());
 }
 
 template <class T>

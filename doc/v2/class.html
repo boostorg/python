@@ -319,9 +319,9 @@ class_&amp; def_init(Args const&amp; argument_types, CallPolicies policies);
 <code><a href=
       "make_function.html#make_constructor-spec">make_constructor</a>&lt;Args,Holder&gt;(policies)</code>,
       respectively, to the Boost.Python extension class being defined under the name
-      "__init__". <code>Holder</code> is a model of <a
-      href="Holder.html">Holder</a> which contains the
-      <code>HeldType</code>. If the extension class
+      "__init__". <code>Holder</code> is a concrete subclass of <a
+      href="instance_holder.html#instance_holder-spec">instance_holder</a>
+      which holds the <code>HeldType</code>. If the extension class
       already has an "__init__" attribute, the usual <a
       href="http:overloading.html">overloading procedure</a> applies.
 

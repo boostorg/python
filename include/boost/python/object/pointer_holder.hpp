@@ -7,7 +7,7 @@
 # define POINTER_HOLDER_DWA20011215_HPP
 
 # include <boost/python/object/class.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/object/inheritance.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/forward.hpp>
@@ -46,7 +46,7 @@ struct pointer_holder : instance_holder
     BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER,nil)
         
  private: // required holder implementation
-    void* holds(converter::undecorated_type_id_t);
+    void* holds(type_info);
 
  private: // data members
     Pointer m_p;
@@ -84,45 +84,45 @@ struct pointer_holder_back_reference : instance_holder
     BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE,nil)
 
  private: // required holder implementation
-    void* holds(converter::undecorated_type_id_t);
+    void* holds(type_info);
 
  private: // data members
     Pointer m_p;
 };
 
 template <class Pointer, class Value>
-pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
+inline pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
     : m_p(p)
 {
 }
 
 template <class Pointer, class Value>
-pointer_holder_back_reference<Pointer,Value>::pointer_holder_back_reference(Pointer p)
+inline pointer_holder_back_reference<Pointer,Value>::pointer_holder_back_reference(Pointer p)
     : m_p(p)
 {
 }
 
 template <class Pointer, class Value>
-void* pointer_holder<Pointer, Value>::holds(converter::undecorated_type_id_t dst_t)
+void* pointer_holder<Pointer, Value>::holds(type_info dst_t)
 {
-    if (dst_t == converter::undecorated_type_id<Pointer>())
+    if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
-    converter::type_id_t src_t = converter::undecorated_type_id<Value>();
+    type_info src_t = python::type_id<Value>();
     return src_t == dst_t ? &*this->m_p
         : find_dynamic_type(&*this->m_p, src_t, dst_t);
 }
 
 template <class Pointer, class Value>
-void* pointer_holder_back_reference<Pointer, Value>::holds(converter::undecorated_type_id_t dst_t)
+void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 {
-    if (dst_t == converter::undecorated_type_id<Pointer>())
+    if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
-    if (dst_t == converter::undecorated_type_id<held_type>())
+    if (dst_t == python::type_id<held_type>())
         return &*this->m_p;
 
-    converter::type_id_t src_t = converter::undecorated_type_id<Value>();
+    type_info src_t = python::type_id<Value>();
     Value* p = &*this->m_p;
     return src_t == dst_t ? p : find_dynamic_type(p, src_t, dst_t);
 }

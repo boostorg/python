@@ -9,7 +9,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
 
@@ -32,7 +32,7 @@ namespace detail
   template <class T>
   to_python_function_t const&
   to_python_function_base<T>::value
-        = converter::registry::get_to_python_function(undecorated_type_id<T>());
+        = converter::registry::get_to_python_function(type_id<T>());
 }
 
 template <class T>

@@ -6,7 +6,6 @@
 #ifndef CALLBACK_DWA2002228_HPP
 # define CALLBACK_DWA2002228_HPP
 
-# include <boost/python/converter/type_id.hpp>
 # include <boost/python/converter/to_python_function.hpp>
 # include <boost/python/converter/pointee_to_python_function.hpp>
 # include <boost/python/converter/from_python.hpp>

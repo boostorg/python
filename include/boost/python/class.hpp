@@ -11,7 +11,7 @@
 # include <boost/python/args.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/object/class.hpp>
-# include <boost/python/converter/type_id.hpp>
+# include <boost/python/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
 # include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/object/class_converters.hpp>
@@ -194,7 +194,7 @@ class class_ : public objects::class_base
         id_vector()
         {
             // Stick the derived class id into the first element of the array
-            ids[0] = converter::undecorated_type_id<T>();
+            ids[0] = type_id<T>();
     
             // Write the rest of the elements into succeeding positions.
             class_id* p = ids + 1;
@@ -276,9 +276,9 @@ namespace detail
           typedef void type;
 
           // Here's the runtime behavior
-          static void execute(converter::undecorated_type_id_t** p)
+          static void execute(type_info** p)
           {
-              *(*p)++ = converter::undecorated_type_id<T>();
+              *(*p)++ = type_id<T>();
           }
       };
   };

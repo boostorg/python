@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/object/inheritance.hpp>
-#include <boost/python/converter/type_id.hpp>
+#include <boost/python/type_id.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/reverse_graph.hpp>
@@ -45,7 +45,7 @@ namespace
   // Here we put together the low-level data structures of the
   // casting graph representation.
   //
-  typedef python::converter::undecorated_type_id_t class_id;
+  typedef python::type_info class_id;
 
   // represents a graph of available casts
   
