@@ -73,6 +73,14 @@ PyObject* to_python(unsigned short);
 unsigned short from_python(PyObject*, py::Type<unsigned short>);
 unsigned short from_python(PyObject*, py::Type<const unsigned short&>);
 
+PyObject* to_python(signed char);
+signed char from_python(PyObject*, py::Type<signed char>);
+signed char from_python(PyObject*, py::Type<const signed char&>);
+
+PyObject* to_python(unsigned char);
+unsigned char from_python(PyObject*, py::Type<unsigned char>);
+unsigned char from_python(PyObject*, py::Type<const unsigned char&>);
+
 PyObject* to_python(float);
 float from_python(PyObject*, py::Type<float>);
 float from_python(PyObject*, py::Type<const float&>);
@@ -267,6 +275,16 @@ inline unsigned int from_python(PyObject* p, py::Type<const unsigned int&>)
 inline unsigned short from_python(PyObject* p, py::Type<const unsigned short&>)
 {
     return from_python(p, py::Type<unsigned short>());
+}
+
+inline signed char from_python(PyObject* p, py::Type<const signed char&>)
+{
+    return from_python(p, py::Type<signed char>());
+}
+
+inline unsigned char from_python(PyObject* p, py::Type<const unsigned char&>)
+{
+    return from_python(p, py::Type<unsigned char>());
 }
 
 inline unsigned long from_python(PyObject* p, py::Type<const unsigned long&>)

@@ -170,6 +170,26 @@ unsigned short from_python(PyObject* p, py::Type<unsigned short> type)
     return integer_from_python(p, type);
 }
 
+PyObject* to_python(unsigned char i)
+{
+	return integer_to_python(i);
+}
+
+unsigned char from_python(PyObject* p, py::Type<unsigned char> type)
+{
+    return integer_from_python(p, type);
+}
+
+PyObject* to_python(signed char i)
+{
+	return integer_to_python(i);
+}
+
+signed char from_python(PyObject* p, py::Type<signed char> type)
+{
+    return integer_from_python(p, type);
+}
+
 PyObject* to_python(unsigned long x)
 {
     return integer_to_python(x);
