@@ -22,24 +22,6 @@ std::string x_value(X const& x)
     return "gotya " + x.s;
 }
 
-std::string
-print_xmap_entry(std::pair<std::string const, X> const& e)
-{
-    std::string r;
-    r += '(';
-    r += e.first;
-    r += ", ";
-    r += e.second.s;
-    r += ')';
-    return r;
-}
-
-X&
-get_xmap_entry(std::pair<std::string const, X>& e)
-{
-    return e.second;
-}
-
 BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 {    
     class_<X>("X")
@@ -53,11 +35,6 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 
     def("x_value", x_value);
     implicitly_convertible<std::string, X>();
-    
-    class_<std::pair<std::string const, X> >("XMapEntry")
-        .def("__repr__", &print_xmap_entry)
-        .def("data", &get_xmap_entry, return_internal_reference<>())
-    ;
 
     class_<std::map<std::string, X> >("XMap")
         .def(map_indexing_suite<std::map<std::string, X> >())
