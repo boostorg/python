@@ -128,7 +128,7 @@ pointer_wrapper&lt;T&gt; ptr(T x);
     <h4><a name="pointer_wrapper-spec-synopsis"></a>Class
     <code>pointer_wrapper</code> synopsis</h4>
 <pre>
-namespace boost
+namespace boost { namespace python
 {
     template&lt;class Ptr&gt; class pointer_wrapper
     { 
@@ -139,7 +139,7 @@ namespace boost
         operator Ptr() const;
         Ptr get() const;
     };
-};
+}}
 </pre>
 
     <h4><a name="pointer_wrapper-spec-types"></a>Class template <code>pointer_wrapper</code> types</h4>
@@ -182,13 +182,13 @@ Ptr get() const;
 
     <h4><a name="is_pointer_wrapper-spec-synopsis"></a>Class template <code>is_pointer_wrapper</code> synopsis</h4>
 <pre>
-namespace boost
+namespace boost { namespace python
 {
     template&lt;class T&gt; class is_pointer_wrapper
     { 
         static <i>unspecified</i> value = ...;
     };
-};
+}}
 </pre>
 
 
@@ -208,13 +208,13 @@ specialization of <code>pointer_wrapper&lt;&gt;</code>.
 
     <h4><a name="unwrap_pointer-spec-synopsis"></a>Class template <code>unwrap_pointer</code> synopsis</h4>
 <pre>
-namespace boost
+namespace boost { namespace python
 {
     template&lt;class T&gt; class unwrap_pointer
     { 
         typedef <i>unspecified</i> type;
     };
-};
+}}
 </pre>
 
     <dl class="metafunction-semantics">
