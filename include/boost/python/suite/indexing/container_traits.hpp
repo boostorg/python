@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Header file container_traits.hpp
 //
 // Traits information about entire containers for use in determining
@@ -92,11 +90,11 @@ namespace boost { namespace python { namespace indexing {
   };
 
   /////////////////////////////////////////////////////////////////////////
-  // Traits for the iterator_pair container emulator
+  // Traits for the iterator_range container emulator
   /////////////////////////////////////////////////////////////////////////
 
-  template<typename IteratorPair>
-  struct iterator_pair_traits : public base_container_traits<IteratorPair>
+  template<typename IteratorRange>
+  struct iterator_range_traits : public base_container_traits<IteratorRange>
   {
   };
 

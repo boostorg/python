@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module test_array_ext.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -18,7 +16,7 @@
 #include "int_wrapper.hpp"
 
 #include <boost/python/suite/indexing/container_suite.hpp>
-#include <boost/python/suite/indexing/iterator_pair.hpp>
+#include <boost/python/suite/indexing/iterator_range.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -28,23 +26,23 @@
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
 
-boost::python::indexing::iterator_pair<int *> get_array_plain()
+boost::python::indexing::iterator_range<int *> get_array_plain()
 {
   static int array[] = { 8, 6, 4, 2, 1, 3, 5, 7, 0 };
 
-  return boost::python::indexing::iterator_pair<int *>
+  return boost::python::indexing::iterator_range<int *>
     (boost::python::indexing::begin(array)
      , boost::python::indexing::end(array));
 }
 
-boost::python::indexing::iterator_pair<int_wrapper *> get_array_wrap()
+boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
 {
   static int_wrapper array[] = {
     int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2)
     , int_wrapper(1), int_wrapper(3), int_wrapper(5)
     , int_wrapper(7), int_wrapper(0) };
 
-  return boost::python::indexing::iterator_pair<int_wrapper *>
+  return boost::python::indexing::iterator_range<int_wrapper *>
     (boost::python::indexing::begin(array)
      , boost::python::indexing::end(array));
 }
@@ -61,7 +59,7 @@ BOOST_PYTHON_MODULE(test_array_ext)
     .def ("__cmp__", compare)
     ;
 
-  typedef boost::python::indexing::iterator_pair<int *> Container1;
+  typedef boost::python::indexing::iterator_range<int *> Container1;
 
   boost::python::class_<Container1>
     ("Array", boost::python::init<int *, int *>())
@@ -69,12 +67,12 @@ BOOST_PYTHON_MODULE(test_array_ext)
 
   boost::python::def ("get_array_plain", get_array_plain);
 
-  typedef boost::python::indexing::iterator_pair<int_wrapper *> Container2;
+  typedef boost::python::indexing::iterator_range<int_wrapper *> Container2;
 
   // reference_existing_object is safe in this case, because the array
   // is static, and we never manually destroy any array elements. There
   // is also no point in using return_internal_reference to extend the
-  // life of the iterator_pair object, since it has no influence on the
+  // life of the iterator_range object, since it has no influence on the
   // lifetimes of the array elements.
   boost::python::class_<Container2>
     ("Array_ref", boost::python::init<int_wrapper *, int_wrapper *>())

@@ -1,6 +1,4 @@
-// -*- mode:c++ -*-
-//
-// Header file iterator_pair.hpp
+// Header file iterator_range.hpp
 //
 // Emulate an STL container using a pair of iterators. Doesn't support
 // insertion or deletion, for the obvious reasons.
@@ -13,13 +11,14 @@
 //
 // History
 // =======
-// 2003/ 9/ 9   rmg     File creation
+// 2003/ 9/ 9   rmg     File creation as iterator_pair.hpp
+// 2003/10/27   rmg     Renamed iterator_range.hpp
 //
 // $Id$
 //
 
-#ifndef BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
-#define BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
+#ifndef BOOST_PYTHON_INDEXING_ITERATOR_RANGE_HPP
+#define BOOST_PYTHON_INDEXING_ITERATOR_RANGE_HPP
 
 #include <stdexcept>
 #include <algorithm>
@@ -29,7 +28,7 @@
 
 namespace boost { namespace python { namespace indexing {
   template<typename Iterator>
-  class iterator_pair
+  class iterator_range
   {
   private:
     typedef typename boost::call_traits<Iterator>::param_type iterator_param;
@@ -45,7 +44,7 @@ namespace boost { namespace python { namespace indexing {
 
     typedef iterator                             const_iterator;
     // Can't tell what the const version of our iterator should
-    // be. The client code will have to instantiate iterator_pair
+    // be. The client code will have to instantiate iterator_range
     // directly with a const_iterator if that's what it wants.
 
     // Also can't provide: allocator_type, reverse_iterator or
@@ -54,8 +53,8 @@ namespace boost { namespace python { namespace indexing {
     // reference and pointer if Iterator is itself a const_iterator.
 
   public:
-    iterator_pair (iterator_param, iterator_param);
-    iterator_pair (std::pair<iterator, iterator> const &);
+    iterator_range (iterator_param, iterator_param);
+    iterator_range (std::pair<iterator, iterator> const &);
 
     iterator begin() const;
     iterator end() const;
@@ -72,7 +71,7 @@ namespace boost { namespace python { namespace indexing {
   };
 
   template<typename Iterator>
-  iterator_pair<Iterator>::iterator_pair (
+  iterator_range<Iterator>::iterator_range (
       iterator_param begin, iterator_param end)
     : m_begin (begin)
     , m_end (end)
@@ -80,37 +79,37 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<typename Iterator>
-  iterator_pair<Iterator>
-  ::iterator_pair (std::pair<iterator, iterator> const &pair)
+  iterator_range<Iterator>
+  ::iterator_range (std::pair<iterator, iterator> const &pair)
     : m_begin (pair.first)
     , m_end (pair.second)
   {
   }
 
   template<typename Iterator>
-  typename iterator_pair<Iterator>::iterator
-  iterator_pair<Iterator>::begin() const
+  typename iterator_range<Iterator>::iterator
+  iterator_range<Iterator>::begin() const
   {
     return m_begin;
   }
 
   template<typename Iterator>
-  typename iterator_pair<Iterator>::iterator
-  iterator_pair<Iterator>::end() const
+  typename iterator_range<Iterator>::iterator
+  iterator_range<Iterator>::end() const
   {
     return m_end;
   }
 
   template<typename Iterator>
-  typename iterator_pair<Iterator>::size_type
-  iterator_pair<Iterator>::size() const
+  typename iterator_range<Iterator>::size_type
+  iterator_range<Iterator>::size() const
   {
     return std::distance (begin(), end());
   }
 
   template<typename Iterator>
-  typename iterator_pair<Iterator>::reference
-  iterator_pair<Iterator>::operator[](size_type index) const
+  typename iterator_range<Iterator>::reference
+  iterator_range<Iterator>::operator[](size_type index) const
   {
     iterator temp (begin());
     std::advance (temp, index);
@@ -118,13 +117,13 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<typename Iterator>
-  typename iterator_pair<Iterator>::reference
-  iterator_pair<Iterator>::at (size_type index) const
+  typename iterator_range<Iterator>::reference
+  iterator_range<Iterator>::at (size_type index) const
   {
     if (index >= size())
       {
         throw std::out_of_range
-          (std::string ("iterator_pair: index out of range"));
+          (std::string ("iterator_range: index out of range"));
       }
 
     else
@@ -144,4 +143,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
+#endif // BOOST_PYTHON_INDEXING_ITERATOR_RANGE_HPP

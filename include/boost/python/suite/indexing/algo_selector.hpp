@@ -1,10 +1,8 @@
-// -*- mode:c++ -*-
-//
 // Header file algo_selector.hpp
 //
 // Automatic selection of container algorithms (and traits) for known
 // container types (basically, all STL container instances, as well as
-// iterator_pair instances).
+// iterator_range instances).
 //
 // Copyright (c) 2003 Raoul M. Gough
 //
@@ -31,7 +29,7 @@
 #include <boost/python/suite/indexing/algorithms.hpp>
 
 // Definitions of further supported types
-#include <boost/python/suite/indexing/iterator_pair.hpp>
+#include <boost/python/suite/indexing/iterator_range.hpp>
 #include <set>
 #include <map>
 #include <list>
@@ -152,12 +150,12 @@ namespace boost { namespace python { namespace indexing {
 
     // Iterator ranges
     template <typename Iterator>
-    class selector_impl<iterator_pair<Iterator> >
+    class selector_impl<iterator_range<Iterator> >
     {
-      typedef iterator_pair<Iterator> Container;
+      typedef iterator_range<Iterator> Container;
 
-      typedef iterator_pair_traits<Container>       mutable_traits;
-      typedef iterator_pair_traits<Container const> const_traits; // ?
+      typedef iterator_range_traits<Container>       mutable_traits;
+      typedef iterator_range_traits<Container const> const_traits; // ?
 
     public:
       typedef default_algorithms<mutable_traits> mutable_algorithms;
