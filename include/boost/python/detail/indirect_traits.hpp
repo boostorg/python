@@ -27,13 +27,13 @@ struct is_reference_to_const<T const&>
 template <class T>
 struct is_reference_to_non_const
 {
-    BOOST_STATIC_CONSTANT(bool, value = false);
-};
-
-template <class T>
-struct is_reference_to_non_const<T&>
-{
-    BOOST_STATIC_CONSTANT(bool, value = true);
+    BOOST_STATIC_CONSTANT(
+        bool, value = (
+            ::boost::type_traits::ice_and<
+            ::boost::is_reference<T>::value
+            , !::boost::python::detail::is_reference_to_const<T>::value
+            >::value)
+        );
 };
 
 template <class T>
