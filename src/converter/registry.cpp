@@ -10,7 +10,13 @@
 #include <set>
 #include <stdexcept>
 
-#ifdef BOOST_PYTHON_TRACE_REGISTRY
+#if defined(__APPLE__) && defined(__MACH__) && defined(__GNUC__) \
+ && __GNUC__ == 3 && __GNUC_MINOR__ == 3 && !defined(__APPLE_CC__)
+# define BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND
+#endif
+
+#if defined(BOOST_PYTHON_TRACE_REGISTRY) \
+ || defined(BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND)
 # include <iostream>
 #endif
 
@@ -58,6 +64,7 @@ namespace // <unnamed>
   
   typedef std::set<entry> registry_t;
   
+#ifndef BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND
   registry_t& entries()
   {
       static registry_t registry;
@@ -83,6 +90,43 @@ namespace // <unnamed>
 # endif 
       return registry;
   }
+#else
+  registry_t& static_registry()
+  {
+    static registry_t result;
+    return result;
+  }
+
+  bool static_builtin_converters_initialized()
+  {
+    static bool result = false;
+    if (result == false) {
+      result = true;
+      std::cout << std::flush;
+      return false;
+    }
+    return true;
+  }
+
+  registry_t& entries()
+  {
+# ifndef BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
+      if (!static_builtin_converters_initialized())
+      {
+          initialize_builtin_converters();
+      }
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "registry: ";
+      for (registry_t::iterator p = static_registry().begin(); p != static_registry().end(); ++p)
+      {
+          std::cout << p->target_type << "; ";
+      }
+      std::cout << '\n';
+#  endif 
+# endif 
+      return static_registry();
+  }
+#endif // BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND
 
   entry* get(type_info type)
   {
