@@ -96,7 +96,7 @@ struct rvalue_from_python_data : rvalue_from_python_storage<T>
         && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245) \
         && (!defined(__DECCXX_VER) || __DECCXX_VER > 60590014)
     // This must always be a POD struct with m_data its first member.
-    BOOST_STATIC_ASSERT(offsetof(rvalue_from_python_storage<T>,stage1) == 0);
+    BOOST_STATIC_ASSERT(BOOST_PYTHON_OFFSETOF(rvalue_from_python_storage<T>,stage1) == 0);
 # endif
     
     // The usual constructor 
