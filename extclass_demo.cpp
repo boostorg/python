@@ -671,9 +671,9 @@ bool operator<(Int const & l, Int const & r) { return l.i_ < r.i_; }
 bool operator<(Int const & l, int const & r) { return l.i_ < r; }
 bool operator<(int const & l, Int const & r) { return l < r.i_; }
 
-Int pow(Int const & l, Int const & r) { return Int(::pow(l.i_, r.i_)); }
+Int pow(Int const & l, Int const & r) { return Int(static_cast<int>(::pow(l.i_, r.i_))); }
 Int powmod(Int const & l, Int const & r, Int const & m) { return Int((int)::pow(l.i_, r.i_) % m.i_); }
-Int pow(Int const & l, int const & r) { return Int(::pow(l.i_, r)); }
+Int pow(Int const & l, int const & r) { return Int(static_cast<int>(::pow(l.i_, r))); }
 
 std::ostream & operator<<(std::ostream & o, Int const & r) { return (o << r.i_); }
 
