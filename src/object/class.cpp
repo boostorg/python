@@ -317,7 +317,7 @@ namespace objects
               // like, so we'll store the total size of the object
               // there. A negative number indicates that the extra
               // instance memory is not yet allocated to any holders.
-              result->ob_size = -(offsetof(instance<>,storage) + instance_size);
+              result->ob_size = -(static_cast<int>(offsetof(instance<>,storage) + instance_size));
           }
           return (PyObject*)result;
       }
