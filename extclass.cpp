@@ -8,17 +8,24 @@
 
 #include "extclass.h"
 #include <cstring>
+#include <boost/utility.hpp>
 
 namespace py {
 namespace detail {
 
   struct operator_dispatcher
       : public PyObject
+#ifndef NDEBUG
+        , boost::noncopyable
+#endif
   {
       static PyTypeObject type_object;
       static PyNumberMethods number_methods;
 
       operator_dispatcher(const Ptr& o, const Ptr& s);
+#ifndef NDEBUG
+      ~operator_dispatcher();
+#endif
       static void dealloc(PyObject* self);
       static int coerce(PyObject** l, PyObject** r);
       static PyObject* call_add(PyObject*, PyObject*);
@@ -507,11 +514,19 @@ PyNumberMethods operator_dispatcher::number_methods =
     0 
 }; 
 
+#ifndef NDEBUG
+int total_Dispatchers = 0;
+operator_dispatcher::~operator_dispatcher() { --total_Dispatchers; }
+#endif
+
 operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
     : m_object(o), m_self(s)
 {
     ob_refcnt = 1;
     ob_type = &type_object;
+#ifndef NDEBUG
+    ++total_Dispatchers;
+#endif
 }
 
 void operator_dispatcher::dealloc(PyObject* self) 

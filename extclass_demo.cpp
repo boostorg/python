@@ -641,9 +641,22 @@ struct Fubar {
 /*                                                          */
 /************************************************************/
 
+#ifndef NDEBUG
+int total_Ints = 0;
+#endif
+
 struct Int
 {
-    explicit Int(int i) : i_(i) { }
+    explicit Int(int i) : i_(i) {
+#ifndef NDEBUG
+        ++total_Ints;
+#endif
+    }
+    
+#ifndef NDEBUG
+    ~Int() { --total_Ints; }
+    Int(const Int& rhs) : i_(rhs.i_) { ++total_Ints; }
+#endif
     
     int i() const { return i_; }
     
@@ -1032,6 +1045,10 @@ extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS
 }
 # endif
 
+#ifndef NDEBUG
+namespace py { namespace detail { extern int total_Dispatchers; }}
+#endif
+
 BOOL WINAPI DllMain(
     HINSTANCE,  //hDllInst
     DWORD fdwReason,
@@ -1041,7 +1058,17 @@ BOOL WINAPI DllMain(
 # ifdef PY_COMPILER_IS_MSVC
     _set_se_translator(structured_exception_translator);
 #endif
-    return 1;
     (void)fdwReason; // warning suppression.
+
+#ifndef NDEBUG
+    switch(fdwReason)
+    {
+    case DLL_PROCESS_DETACH:
+        assert(extclass_demo::total_Ints == 0);
+        assert(py::detail::total_Dispatchers == 0);
+    }
+#endif
+    
+    return 1;
 }
 #endif // _WIN32
