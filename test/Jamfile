@@ -58,6 +58,7 @@ bpl-test callbacks ;
 bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;
+bpl-test data_members ;
 
 # --- unit tests of library components ---
 unit-test indirect_traits_test

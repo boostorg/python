@@ -22,6 +22,7 @@
 # include <boost/mpl/bool_t.hpp>
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
+# include <boost/python/data_members.hpp>
 # include <boost/utility.hpp>
 
 namespace boost { namespace python { 
@@ -65,7 +66,7 @@ template <
     , class X2 // = detail::not_specified
     , class X3 // = detail::not_specified
     >
-class class_ : private objects::class_base
+class class_ : public objects::class_base
 {
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
@@ -138,8 +139,28 @@ class class_ : private objects::class_base
         return *this;
     }
 
+    //
+    // Data member access
+    //
+    template <class D>
+    self& def_readonly(char const* name, D T::*pm)
+    {
+        ref fget(make_getter(pm));
+        this->add_property(name, fget);
+        return *this;
+    }
+
+    template <class D>
+    self& def_readwrite(char const* name, D T::*pm)
+    {
+        ref fget(make_getter(pm));
+        ref fset(make_setter(pm));
+        this->add_property(name, fget, fset);
+        return *this;
+    }
+
     // return the underlying object
-    ref object() const;
+//    ref object() const;
 
  private: // types
     typedef objects::class_id class_id;
@@ -200,14 +221,6 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , this->object());
-}
-
-template <class T, class X1, class X2, class X3>
-inline ref class_<T,X1,X2,X3>::object() const
-{
-    typedef objects::class_base base;
-    
-    return this->base::object();
 }
 
 namespace detail

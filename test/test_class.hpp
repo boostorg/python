@@ -18,12 +18,13 @@ struct test_class
     int value() const { assert(magic == 7654321 + n); return x; }
     operator int() const { return x; }
     static int count() { return counter; }
- private:
-    void operator=(test_class const&);
- private:
+
     int x;
     long magic;
     static int counter;
+    
+ private:
+    void operator=(test_class const&);
 };
 
 template <int n>
