@@ -994,7 +994,7 @@ respectively. In our [^foo] function the minimum number of arguments is 1
 and the maximum number of arguments is 4. The [^def(...)] function will
 automatically add all the foo variants for us:
 
-    .def("foo", foo, foo_overloads());
+    def("foo", foo, foo_overloads());
 
 [h2 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]
 
