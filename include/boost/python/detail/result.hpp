@@ -31,23 +31,21 @@ namespace boost { namespace python { namespace detail {
 
 #  define BOOST_PYTHON_FIRST_ARGUMENT_PF(args, ignored)                                         \
 template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
-boost::type<R>* result(BOOST_PYTHON_FN(*,0,args), long = 0) { return 0; }
+boost::type<R>* result(BOOST_PYTHON_FN(*,0,args), int = 0) { return 0; }
 
-#  define BOOST_PYTHON_FIRST_ARGUMENT_PMF(args, cv)                                     \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>                     \
-boost::type<R>* result(BOOST_PYTHON_FN(A0::*,1,args)cv(), long = 0) { return 0; }
+#  define BOOST_PYTHON_FIRST_ARGUMENT_PMF(args, cv)                                             \
+template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>                             \
+boost::type<R>* result(BOOST_PYTHON_FN(A0::*,1,args)cv(), int = 0) { return 0; }
 
 BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PF, nil)
 BOOST_PYTHON_REPEAT_MF_CV_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PMF)
 
 template <class R, class T>
-boost::type<R>* result(R (T::*), long = 0) { return 0; }
+boost::type<R>* result(R (T::*), int = 0) { return 0; }
 
-
-#  if defined(BOOST_MSVC) && BOOST_MSVC <= 1300  /* it almost works with VC6, but not VC7 */    \
-   || (defined(BOOST_MSVC) && _MSC_FULL_VER == 13012108)  /*  or the VC7.01 alpha */            \
-   || defined(__GNUC__) && __GNUC__ < 3                                                         \
-   || defined(__MWERKS__) && __MWERKS__ < 3000
+#  if (defined(BOOST_MSVC) && _MSC_FULL_VER <= 13102140)  \
+   || (defined(__GNUC__) && __GNUC__ < 3)                 \
+   || (defined(__MWERKS__) && __MWERKS__ < 0x3000)
 // This code actually works on all implementations, but why use it when we don't have to?
 template <class T>
 struct get_result_type
@@ -71,15 +69,15 @@ struct result_result
 
     typedef typename t1::type* type;
 };
+
 template <class X>
 typename result_result<X>::type
-result(X const&, int = 0) { return 0; }
+result(X const&, short) { return 0; }
 
 #  else // Simpler code for more-capable compilers
-
 template <class X>
 boost::type<typename X::result_type>*
-result(X const&, int = 0) { return 0; }
+result(X const&, short = 0) { return 0; }
 
 #  endif 
 

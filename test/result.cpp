@@ -61,51 +61,51 @@ int main()
     // Show that we can use the general version that works for
     // AdaptableFunctions
     expect_int(
-        result((int(*)())0,0L)
+        result((int(*)())0,0)
         );
 
     expect_int(
-        result((int(*)(char))0,0L)
+        result((int(*)(char))0,0)
         );
 
     expect_int(
-        result((int(X::*)())0,0L)
+        result((int(X::*)())0,0)
         );
 
     expect_int(
-        result((int(X::*)(char))0,0L)
+        result((int(X::*)(char))0,0)
         );
 
     expect_int(
-        result((int(X::*))0,0L)
+        result((int(X::*))0,0)
         );
     
     expect_int(
-        result(std::plus<int>(), 0L)
+        result(std::plus<int>(),0)
         );
 
     expect_string(
-        result((char*(*)())0,0L)
+        result((char*(*)())0,0)
         );
     
     expect_string(
-        result((char*(*)(char))0,0L)
+        result((char*(*)(char))0,0)
         );
     
     expect_string(
-        result((char*(X::*)())0,0L)
+        result((char*(X::*)())0,0)
         );
     
     expect_string(
-        result((char*(X::*)(char))0,0L)
+        result((char*(X::*)(char))0,0)
         );
     
     expect_string(
-        result((char*(X::*))0,0L)
+        result((char*(X::*))0,0)
         );
     
     expect_string(
-        result(std::plus<char*>(), 0L)
+        result(std::plus<char*>(),0)
         );
 
     return 0;
