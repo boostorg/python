@@ -17,9 +17,9 @@
 ROOT=$(HOME)
 BOOST=$(ROOT)/boost
 
-PYEXE=/usr/local/Python-1.5.2/bin/python
+PYEXE=PYTHONPATH=. /usr/local/Python-1.5.2/bin/python
 PYINC=-I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE=/usr/local/Python-2.1/bin/python
+#PYEXE=PYTHONPATH=. /usr/local/Python-2.1/bin/python
 #PYINC=-I/usr/local/Python-2.1/include/python2.1
 #STLPORTINC=-I/usr/local/STLport-4.1b3/stlport
 #STLPORTINC=-I/usr/local/STLport-4.1b4/stlport

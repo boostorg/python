@@ -19,9 +19,9 @@ BOOST=$(ROOT)/boost
 
 PYEXE=PYTHONPATH=. /usr/bin/python
 PYINC=-I/usr/include/python1.5
-#PYEXE=/usr/local/Python-1.5.2/bin/python
+#PYEXE=PYTHONPATH=. /usr/local/Python-1.5.2/bin/python
 #PYINC=-I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE=/usr/local/Python-2.1/bin/python
+#PYEXE=PYTHONPATH=. /usr/local/Python-2.1/bin/python
 #PYINC=-I/usr/local/Python-2.1/include/python2.1
 
 STDOPTS=-fPIC -ftemplate-depth-21
