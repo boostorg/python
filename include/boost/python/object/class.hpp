@@ -37,6 +37,8 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
 
     // Retrieve the underlying object
     ref object() const { return m_object; }
+    void add_property(char const* name, ref const& fget);
+    void add_property(char const* name, ref const& fget, ref const& fset);
  private:
     ref m_object;
 };
