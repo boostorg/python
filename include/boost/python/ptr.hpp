@@ -1,5 +1,5 @@
-#ifndef BOOST_PTR_HPP_INCLUDED
-# define BOOST_PTR_HPP_INCLUDED
+#ifndef PTR_DWA20020601_HPP
+# define PTR_DWA20020601_HPP
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
@@ -124,4 +124,4 @@ class unwrap_pointer
 
 }} // namespace boost::python
 
-#endif // #ifndef BOOST_PTR_HPP_INCLUDED
+#endif // #ifndef PTR_DWA20020601_HPP
