@@ -28,6 +28,7 @@ template <class T> struct python_class : PyObject
         converter::detail::strip_type_info::insert(boost::python::type_id<type>(), boost::python::type_id<type*>());
         converter::detail::strip_type_info::insert(boost::python::type_id<type>(), boost::python::type_id<type const *>());
         converter::detail::strip_type_info::insert(boost::python::type_id<type>(), boost::python::type_id<this_type*>());
+        converter::detail::strip_type_info::insert(type_id<type>(), type_id<shared_ptr<type> >());
     }
 private:
     python_class();
