@@ -7,22 +7,54 @@
 #include <boost/python/object/function.hpp>
 #include <boost/python/object/function_object.hpp>
 #include <boost/python/object/function_handle.hpp>
-#include <numeric>
 #include <boost/python/errors.hpp>
 #include <boost/python/str.hpp>
+#include <boost/python/object_attributes.hpp>
+#include <boost/python/args.hpp>
+#include <boost/python/refcount.hpp>
+
 #include <algorithm>
 #include <cstring>
-#include <boost/python/object_attributes.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
 extern PyTypeObject function_type;
 
-function::function(py_function const& implementation, unsigned min_args, unsigned max_args)
+function::function(
+    py_function const& implementation
+    , unsigned min_arity
+    , unsigned max_arity
+    , python::detail::keyword const* names_and_defaults
+    , unsigned num_keywords
+    )
     : m_fn(implementation)
-    , m_min_args(min_args)
-    , m_max_args(std::max(max_args,min_args))
+      , m_min_arity(min_arity)
+      // was using std::max here, but a problem with MinGW-2.95 and
+      // our <boost/numeric/...> directory prevents it.
+      , m_max_arity(max_arity > min_arity ? max_arity : min_arity)
 {
+    if (names_and_defaults != 0)
+    {
+        unsigned keyword_offset
+            = m_max_arity > num_keywords ? m_max_arity - num_keywords : 0;
+
+            
+        m_arg_names = object(handle<>(PyTuple_New(m_max_arity)));
+        for (unsigned j = 0; j < keyword_offset; ++j)
+            PyTuple_SET_ITEM(m_arg_names.ptr(), j, incref(Py_None));
+        
+        for (unsigned i = 0; i < num_keywords; ++i)
+        {
+            PyTuple_SET_ITEM(
+                m_arg_names.ptr()
+                , i + keyword_offset
+                , expect_non_null(
+                    PyString_FromString(const_cast<char*>(names_and_defaults[i].name))
+                    )
+                );
+        }
+    }
+    
     PyObject* p = this;
     if (function_type.ob_type == 0)
     {
@@ -39,14 +71,51 @@ function::~function()
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
     std::size_t nargs = PyTuple_GET_SIZE(args);
+    std::size_t nkeywords = keywords ? PyDict_Size(keywords) : 0;
+    std::size_t total_args = nargs + nkeywords;
+    
     function const* f = this;
     do
     {
         // Check for a plausible number of arguments
-        if (nargs >= f->m_min_args && nargs <= f->m_max_args)
+        if (total_args >= f->m_min_arity && total_args <= f->m_max_arity)
         {
+            handle<> args2(allow_null(borrowed(args)));
+            if (nkeywords > 0)
+            {
+                if (!f->m_arg_names
+                    || static_cast<std::size_t>(PyTuple_Size(f->m_arg_names.ptr())) < total_args)
+                {
+                    args2 = handle<>(); // signal failure
+                }
+                else
+                {
+                    // build a new arg tuple
+                    args2 = handle<>(PyTuple_New(total_args));
+
+                    // Fill in the positional arguments
+                    for (std::size_t i = 0; i < nargs; ++i)
+                        PyTuple_SET_ITEM(args2.get(), i, incref(PyTuple_GET_ITEM(args, i)));
+
+                    // Grab remaining arguments by name from the keyword dictionary
+                    for (std::size_t j = nargs; j < total_args; ++j)
+                    {
+                        PyObject* value = PyDict_GetItem(
+                            keywords, PyTuple_GET_ITEM(f->m_arg_names.ptr(), j));
+                        
+                        if (!value)
+                        {
+                            PyErr_Clear();
+                            args2 = handle<>();
+                            break;
+                        }
+                        PyTuple_SET_ITEM(args2.get(), j, incref(value));
+                    }
+                }
+            }
+            
             // Call the function
-            PyObject* result = f->m_fn(args, keywords);
+            PyObject* result = args2 ? f->m_fn(args2.get(), 0) : 0;
             
             // If the result is NULL but no error was set, m_fn failed
             // the argument-matching test.
@@ -154,7 +223,10 @@ namespace
   
   handle<function> not_implemented_function()
   {
-      static object keeper(function_object(&not_implemented_impl, 2, 3));
+      static object keeper(
+          function_object(&not_implemented_impl, 2, 3
+                          , python::detail::keyword_range())
+          );
       return handle<function>(borrowed(downcast<function>(keeper.ptr())));
   }
 }
@@ -221,6 +293,19 @@ void function::add_to_namespace(
         attr_copy.attr("__doc__") = doc;
     }
 }
+
+BOOST_PYTHON_DECL void add_to_namespace(
+    object const& name_space, char const* name, object const& attribute)
+{
+    function::add_to_namespace(name_space, name, attribute);
+}
+
+BOOST_PYTHON_DECL void add_to_namespace(
+    object const& name_space, char const* name, object const& attribute, char const* doc)
+{
+    function::add_to_namespace(name_space, name, attribute, doc);    
+}
+
 
 namespace
 {
@@ -350,31 +435,35 @@ PyTypeObject function_type = {
     0                                       /* tp_new */
 };
 
-object function_object_impl(py_function const& f, unsigned min_args, unsigned max_args)
+object function_object(
+    py_function const& f, unsigned min_arity, unsigned max_arity
+    , python::detail::keyword_range const& keywords)
 {
     return python::object(
         python::detail::new_non_null_reference(
-            new function(f, min_args, max_args)));
+            new function(
+                f, min_arity, max_arity, keywords.first, keywords.second - keywords.first)));
 }
 
-handle<> function_handle_impl(py_function const& f, unsigned min_args, unsigned max_args)
+object function_object(
+    py_function const& f
+    , unsigned arity
+    , python::detail::keyword_range const& kw)
+{
+    return function_object(f, arity, arity, kw);
+}
+
+object function_object(py_function const& f, unsigned arity)
+{
+    return function_object(f, arity, arity, python::detail::keyword_range());
+}
+
+
+handle<> function_handle_impl(py_function const& f, unsigned min_arity, unsigned max_arity)
 {
     return python::handle<>(
         allow_null(
-            new function(f, min_args, max_args)));
+            new function(f, min_arity, max_arity, 0, 0)));
 }
-
-BOOST_PYTHON_DECL void add_to_namespace(
-    object const& name_space, char const* name, object const& attribute)
-{
-    function::add_to_namespace(name_space, name, attribute);
-}
-
-BOOST_PYTHON_DECL void add_to_namespace(
-    object const& name_space, char const* name, object const& attribute, char const* doc)
-{
-    function::add_to_namespace(name_space, name, attribute, doc);
-}
-
 
 }}} // namespace boost::python::objects
