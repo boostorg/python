@@ -760,6 +760,8 @@ namespace {
               }
           }
       }
+      
+      derived->share_method_tables();
   }
 
   void add_current_module_name(Dict& name_space)

@@ -22,6 +22,11 @@ class ClassWrapper
         module.add(Ptr(as_object(m_class.get()), Ptr::new_ref), name);
     }
     
+    ~ClassWrapper()
+    {
+        m_class->share_method_tables();
+    }
+    
     // define constructors
     template <class Signature>
     void def(const Signature& signature)

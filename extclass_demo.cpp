@@ -94,6 +94,7 @@ StringMapPythonClass::StringMapPythonClass()
     def(&get_item, "__getitem__");
     def(&set_item, "__setitem__");
     def(&del_item, "__delitem__");
+    share_method_tables();
 }
 
 int get_first(const IntPair& p)
@@ -122,6 +123,7 @@ IntPairPythonClass::IntPairPythonClass()
     def(&get_first, "__getattr__first__");
     def(&set_first, "__setattr__first__");
     def(&del_first, "__delattr__first__");
+    share_method_tables();
 }
 
 void IntPairPythonClass::setattr(IntPair& x, const std::string& name, int value)

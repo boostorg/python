@@ -30,7 +30,7 @@ void Module::add(Ptr x, const char* name)
 
 void Module::add(PyTypeObject* x, const char* name /*= 0*/)
 {
-    this->add(Ptr(as_object(x), Ptr::new_ref),
+    this->add(Ptr(as_object(x)),
         name ? name : x->tp_name);
 }
 

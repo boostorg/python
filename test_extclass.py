@@ -253,6 +253,10 @@ Special member functions in action
     >>> del df
     Deleting DerivedFromFoo
     
+    # force method table sharing
+    >>> class DerivedFromStringMap(StringMap): pass
+    ...
+    
     >>> m = StringMap()
 
 __getitem__(<unknown key>)
