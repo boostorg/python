@@ -139,6 +139,16 @@ AC_DEFUN([AC_WITH_EXTRA_INCLUDES],
           
 #########################################################
 
+AC_DEFUN([AC_WITH_EXTRA_LIBS], 
+[
+    AC_ARG_WITH(extra-libs, 
+    [  --with-extra-libs=\"-Ldir1 -llib1 -Ldir2 -llib2 ...\" : link against these libraries ],,)
+
+    LIBS="$CINCLUDES "$with_extra_libs
+])
+          
+#########################################################
+
 dnl AC_EXTRACT_REGEX(list, regEx)
 dnl variable $regExResult returns the first entry in 'list' that matches the 
 dnl regular expression 'regEx', using the 'expr' utility
@@ -273,6 +283,7 @@ AC_DEFUN([AC_FIND_PACKAGE],
 #########################################################
 
 AC_WITH_EXTRA_INCLUDES
+AC_WITH_EXTRA_LIBS
 AC_SHARED_LINKING(yes)
 
 #########################################################

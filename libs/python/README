@@ -44,6 +44,8 @@ of particular interest are:
 
   --libdir: the install directory for 'libboostpython.a'
   --with-shared-library-extension: the file extension for shared libraries  
+  --with-extra-libs: link modules against these extra libs 
+                     (on CYGWIN, you need to link against python15.lib)
 
 For most options, configure provides reasonable defaults, given in brackets.
 In particular, it is able to guess the right settings for shared library 

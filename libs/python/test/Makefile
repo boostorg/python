@@ -12,7 +12,7 @@ test_result:   testmodule$(MODULE_EXTENSION) comprehensive.py
 	python comprehensive.py > test_result
 
 testmodule$(MODULE_EXTENSION): $(LIBBPL) comprehensive.o
-	$(CXX_SHARED_LINKER) -o testmodule$(MODULE_EXTENSION) comprehensive.o $(LIBBPL)
+	$(CXX_SHARED_LINKER) -o testmodule$(MODULE_EXTENSION) comprehensive.o $(LIBBPL) $(LIBS)
 
 clean:
 	rm -rf *.o *$(MODULE_EXTENSION) *.a *.d *.pyc *.bak a.out test_result

@@ -9,6 +9,7 @@ TARGET_LIBDIR = @libdir@
 TARGET_LIBNAME = boostpython
 TARGET_LIBFILENAME = lib$(TARGET_LIBNAME).a
 MODULE_EXTENSION = @shared_library_extension@
+LIBS = @LIBS@
 
 %.o: %.cpp
 	$(CXX) $(SCXXFLAGS) $(CXXINCLUDES) -c $*.cpp
