@@ -63,9 +63,9 @@ Besides bjam, there are of course other ways to get your module built.
 What's written here should not be taken as "the one and only way".
 There are of course other build tools apart from [^bjam].
 
-Take note however that the preferred build tool for Boost.Python is bjam. 
-There are so many ways to set up the build incorrectly. Experience shows 
-that 90% of the "I can't build Boost.Python" problems come from people 
+Take note however that the preferred build tool for Boost.Python is bjam.
+There are so many ways to set up the build incorrectly. Experience shows
+that 90% of the "I can't build Boost.Python" problems come from people
 who had to use a different tool.
 ]
 
@@ -1010,7 +1010,7 @@ arguments or overloads with a common sequence of initial arguments come
 into play. Another macro is provided to make this a breeze.
 
 Like [^BOOST_PYTHON_FUNCTION_OVERLOADS],
-[^BOOST_PYTHON_FUNCTION_OVERLOADS] may be used to automatically create
+[^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] may be used to automatically create
 the thin wrappers for wrapping member functions. Let's have an example:
 
     struct george
@@ -1698,7 +1698,7 @@ with an example.
 
 We have a C++ library that works with sounds: reading and writing various
 formats, applying filters to the sound data, etc. It is named (conveniently)
-[^sounds].  Our library already has a neat C++ namespace hierarchy, like so: 
+[^sounds].  Our library already has a neat C++ namespace hierarchy, like so:
 
     sounds::core
     sounds::io
@@ -1718,21 +1718,21 @@ separately with Boost.Python, like this:
     {
         /* export everything in the sounds::core namespace */
         ...
-    } 
-        
+    }
+
     /* file io.cpp */
     BOOST_PYTHON_MODULE(io)
     {
         /* export everything in the sounds::io namespace */
         ...
-    } 
+    }
 
     /* file filters.cpp */
     BOOST_PYTHON_MODULE(filters)
     {
         /* export everything in the sounds::filters namespace */
         ...
-    } 
+    }
 
 Compiling these files will generate the following Python extensions:
 [^core.pyd], [^io.pyd] and [^filters.pyd].
@@ -1753,7 +1753,7 @@ Now, we create this directory structure for our Python package:
 
 The file [^__init__.py] is what tells Python that the directory [^sounds/] is
 actually a Python package. It can be a empty file, but can also perform some
-magic, that will be shown later. 
+magic, that will be shown later.
 
 Now our package is ready. All the user has to do is put [^sounds] into his
 [@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH] and fire up the interpreter:
@@ -1763,7 +1763,7 @@ Now our package is ready. All the user has to do is put [^sounds] into his
     >>> sound = sounds.io.open('file.mp3')
     >>> new_sound = sounds.filters.echo(sound, 1.0)
 
-Nice heh? 
+Nice heh?
 
 This is the simplest way to create hierarchies of packages, but it is not very
 flexible. What if we want to add a ['pure] Python function to the filters
@@ -1780,7 +1780,7 @@ little. First, we will have to change the name of the extension modules:
     {
         ...
         /* export everything in the sounds::core namespace */
-    }  
+    }
 
 Note that we added an underscore to the module name. The filename will have to
 be changed to [^_core.pyd] as well, and we do the same to the other extension modules.
@@ -1802,7 +1802,7 @@ Now, we change our package hierarchy like so:
 
 Note that we created a directory for each extension module, and added a
 __init__.py to each one. But if we leave it that way, the user will have to
-access the functions in the core module with this syntax: 
+access the functions in the core module with this syntax:
 
     >>> import sounds.core._core
     >>> sounds.core._core.foo(...)
@@ -1854,7 +1854,7 @@ even after it was already created:
     >>> def C_str(self): return 'A C instance!'
     >>>
     >>> # now we turn it in a member function
-    >>> C.__str__ = C_str   
+    >>> C.__str__ = C_str
     >>>
     >>> c = C()
     >>> print c
@@ -1874,7 +1874,7 @@ we have a class [^point] in C++:
         class_<point>("point")...;
     }
 
-If we are using the technique from the previous session, [@creating_packages.html 
+If we are using the technique from the previous session, [@creating_packages.html
 Creating Packages], we can code directly into [^geom/__init__.py]:
 
     from _geom import *
@@ -1882,7 +1882,7 @@ Creating Packages], we can code directly into [^geom/__init__.py]:
     # a regular function
     def point_str(self):
         return str((self.x, self.y))
-        
+
     # now we turn it into a member function
     point.__str__ = point_str
 
@@ -1897,9 +1897,9 @@ This technique has several advantages:
 You can even add a little syntactic sugar with the use of metaclasses. Let's
 create a special metaclass that "injects" methods in other classes.
 
-    # The one Boost.Python uses for all wrapped classes. 
+    # The one Boost.Python uses for all wrapped classes.
     # You can use here any class exported by Boost instead of "point"
-    BoostPythonMetaclass = point.__class__ 
+    BoostPythonMetaclass = point.__class__
 
     class injector(object):
         class __metaclass__(BoostPythonMetaclass):
@@ -1946,10 +1946,10 @@ class_ definitions in multiple files:
     /* file point.cpp */
     #include <point.h>
     #include <boost/python.hpp>
-    
+
     void export_point()
     {
-        class_<point>("point")...;    
+        class_<point>("point")...;
     }
 
     /* file triangle.cpp */
@@ -1962,11 +1962,11 @@ class_ definitions in multiple files:
     }
 
 Now you create a file [^main.cpp], which contains the [^BOOST_PYTHON_MODULE]
-macro, and call the various export functions inside it. 
+macro, and call the various export functions inside it.
 
     void export_point();
     void export_triangle();
-    
+
     BOOST_PYTHON_MODULE(_geom)
     {
         export_point();
@@ -1984,15 +1984,15 @@ usual approach:
     {
         class_<point>("point")...;
         class_<triangle>("triangle")...;
-    } 
+    }
 
-but the memory is kept under control. 
+but the memory is kept under control.
 
 This method is recommended too if you are developing the C++ library and
 exporting it to Python at the same time: changes in a class will only demand
 the compilation of a single cpp, instead of the entire wrapper code.
 
-[blurb __note__ If you're exporting your classes with [@../../../pyste/index.html Pyste], 
+[blurb __note__ If you're exporting your classes with [@../../../pyste/index.html Pyste],
 take a look at the [^--multiple] option, that generates the wrappers in
 various files as demonstrated here.]
 
