@@ -15,6 +15,9 @@
 
 namespace boost { namespace python { namespace objects { 
 
+// Very much like boost::reference_wrapper<T>, except that in this
+// case T can be a reference already without causing a
+// reference-to-reference error.
 template <class T>
 struct reference_to_value
 {

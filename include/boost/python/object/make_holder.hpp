@@ -19,11 +19,11 @@
 #  include <boost/mpl/begin_end.hpp>
 #  include <boost/mpl/apply.hpp>
 
-#  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/iteration/local.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
-#  include <boost/preprocessor/repetition/enum_binary_params.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_binary_params.hpp>
 
 #  include <cstddef>
 
@@ -31,19 +31,12 @@ namespace boost { namespace python { namespace objects {
 
 template <int nargs> struct make_holder;
 
-#  define BOOST_PYTHON_FORWARD_ARG(z, index, _)             \
-    typedef typename iter##index::type t##index;        \
-    typedef typename forward<t##index>::type f##index;  \
-    typedef typename mpl::next<iter##index>::type       \
-    BOOST_PP_CAT(iter,BOOST_PP_INC(index));
-
 #  define BOOST_PYTHON_DO_FORWARD_ARG(z, index, _) , f##index(a##index)
 
 // specializations...
 #  define BOOST_PP_ITERATION_PARAMS_1 (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/make_holder.hpp>))
 #  include BOOST_PP_ITERATE()
 
-#  undef BOOST_PYTHON_FORWARD_ARG
 #  undef BOOST_PYTHON_DO_FORWARD_ARG
 
 }}} // namespace boost::python::objects
@@ -61,11 +54,25 @@ struct make_holder<N>
     template <class Holder, class ArgList>
     struct apply
     {
+# if N
+        // Unrolled iteration through each argument type in ArgList,
+        // choosing the type that will be forwarded on to the holder's
+        // templated constructor.
         typedef typename mpl::begin<ArgList>::type iter0;
-        BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FORWARD_ARG, nil)
+        
+#  define BOOST_PP_LOCAL_MACRO(n)               \
+    typedef typename iter##n::type t##n;        \
+    typedef typename forward<t##n>::type f##n;  \
+    typedef typename mpl::next<iter##n>::type   \
+        BOOST_PP_CAT(iter,BOOST_PP_INC(n)); // Next iterator type
+        
+#  define BOOST_PP_LOCAL_LIMITS (0, N-1)
+#  include BOOST_PP_LOCAL_ITERATE()
+# endif 
+        
         static void execute(
             PyObject* p
-            BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, t, a))
+            BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, t, a))
         {
             typedef instance<Holder> instance_t;
             
