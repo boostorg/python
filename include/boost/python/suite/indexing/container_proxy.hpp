@@ -392,7 +392,7 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder, Generator>
   ::at (size_type index) const
   {
-    pointer_impl const &ptr (m_proxies.BOOST_PYTHON_INDEXING_AT (index));
+    pointer_impl const &ptr = m_proxies.BOOST_PYTHON_INDEXING_AT (index);
     assert (ptr->owner() == this);
     assert (ptr->index() == index);
     return const_reference (ptr);
