@@ -48,8 +48,10 @@ struct default_result_converter
     template <class R>
     struct apply
     {
+        BOOST_STATIC_CONSTANT(bool, is_illegal = is_reference<R>::value || is_pointer<R>::value);
+        
         typedef typename mpl::select_type<
-            is_reference<R>::value | is_pointer<R>::value
+            is_illegal
             , detail::specify_a_result_policy_to_wrap_functions_returning<R>
             , boost::python::to_python_value<
                 typename add_reference<typename add_const<R>::type>::type
