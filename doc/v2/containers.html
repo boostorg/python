@@ -1,0 +1,1585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta name="generator" content="A human being">
+    <meta http-equiv="Content-Type" content="text/html; charset=us-ascii">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+    <title>
+      Boost.Python - C++ Container Support
+    </title>
+  </head>
+  <body>
+    <table border="0" cellpadding="7" cellspacing="0" width="100%"
+           summary="header">
+      <tr>
+        <td valign="top" width="300">
+          <h3>
+            <a href="../../../../index.htm"><img height="86" width="277"
+                 alt="C++ Boost" src="../../../../c++boost.gif" border=
+                 "0"></a>
+          </h3>
+        </td>
+        <td valign="top">
+          <h1 align="center">
+            <a href="../index.html">Boost.Python</a><br>
+            C++ Container Support
+          </h1>
+        </td>
+      </tr>
+    </table>
+
+    <hr>
+
+    <h2>
+      Contents
+    </h2>
+
+    <dl class="page-index">
+      <dt>
+        <a href="#introduction">Introduction</a>
+      </dt>
+      <dt>
+        <a href="#design_goals">Design goals</a>
+      </dt>
+      <dt>
+        <a href="#interface">Interface</a>
+      </dt>
+      <dd>
+        <dl class="page-index">
+          <dt>
+            <a href="#container_suite">container_suite.hpp</a>
+          </dt>
+          <dt>
+            <a href="#policies">Using policies</a>
+          </dt>
+          <dt>
+            <a href="#extending">Extending and customizing</a>
+          </dt>
+          <dd>
+            <dl class="page-index">
+              <dt>
+                <a href="#algo_selector">algo_selector</a>
+              </dt>
+              <dt>
+                <a href="#ValueTraits">ValueTraits</a>
+              </dt>
+              <dt>
+                <a href="#ContainerTraits">ContainerTraits</a>
+              </dt>
+              <dt>
+                <a href="#Algorithms">Algorithms</a>
+              </dt>
+            </dl>
+          </dd>
+          <dt>
+            <a href="#container_proxy">container_proxy</a>
+          </dt>
+          <dt>
+            <a href="#limitations">Known limitations</a>
+          </dt>
+          <dt>
+            <a href="#workarounds">Compiler workarounds</a>
+          </dt>
+        </dl>
+      </dd>
+      <dt>
+        <a href="#references">References</a>
+      </dt>
+      <dt>
+        <a href="#acknoweldegments">Acknowledgements and Copyright</a>
+      </dt>
+    </dl>
+
+    <h2><a name="introduction">Introduction</a></h2>
+
+    The purpose of the code described here is to allow Python code to
+    access C++ containers using the regular Python container
+    interfaces. Since each C++ container is different, it is
+    non-trivial to decide what Python methods can be emulated, and how
+    to map them to C++ function calls. The library provides a
+    framework for representing those decisions, as well as bindings
+    for the standard C++ container templates.
+
+    <h2><a name="design_goals">Design goals</a></h2>
+
+    The primary design goals are as follows. The library should:
+
+    <ul>
+      <li>
+
+        Support instances of all useful standard container templates
+
+      </li>
+      <li>
+
+        Provide as much of the normal Python interface as is
+        reasonable for each container
+
+      </li>
+      <li>
+
+        Be extensible to user-defined container types
+
+      </li>
+      <li>
+
+        Support client-provided <a
+        href="CallPolicies.html">CallPolicies</a>
+
+      </li>
+    </ul>
+
+    Secondary design goals are as follows. The library should:
+
+    <ul>
+      <li>
+
+        Provide an emulation of Python reference semantics for
+        <i>values</i> in vector-like containers.
+
+      </li>
+      <li>
+
+        Provide an emulation of container semantics for iterator
+        pairs.
+
+      </li>
+    </ul>
+
+    <h2><a name="interface">Interface</a></h2>
+
+    <p>
+
+      The main iterface to the library is via an object which adds a
+      number of Python functions to a class via a single
+      <code>def</code> call. The selection of what Python functions to
+      add happens transparently for instances of the standard
+      container templates <a href="#Note1">[1]</a>, so that code like
+      the following should compile and "just work".
+
+    </p>
+
+<pre>
+  class_&lt; std::vector&lt;int&gt; &gt; ("vector_int")
+    .def (our_namespace::container_suite&lt; std::vector&lt;int&gt; &gt;());
+</pre>
+
+    <p>
+
+      The <code>container_suite</code> object achieves this using the
+      <code>def_visitor</code> interface, which provides a hook for
+      the <code>def</code> function to install multiple Python methods
+      in one call. If the container element type (<code>int</code> in
+      the example above) is a user-defined type, you will have to
+      expose this type to Python via a separate <code>class_</code>
+      instance.
+
+    </p>
+    <p>
+
+      <a name="Note1">[1]</a> if your compiler does not support
+      partial template specializations, you will have to explicitly
+      select the right algorithms and traits information, as described
+      in the <a href="#workarounds">compiler workarounds</a> section.
+
+    </p>
+
+    <h2><a name="container_suite">container_suite.hpp</a></h2>
+
+    <p>
+
+      The normal interface to the container suite is via the
+      <code>container_suite.hpp</code> header, which is summarized
+      below:
+
+    </p>
+
+    <p>
+<pre>
+#include &lt;boost/python/return_by_value.hpp&gt;
+#include &lt;boost/python/return_value_policy.hpp&gt;
+#include "algo_selector.hpp"
+#include "visitor.hpp"
+
+namespace our_namespace {
+  typedef return_value_policy&lt;return_by_value&gt; default_container_policies;
+
+  template&lt;class Container, class Algorithms = algo_selector&lt;Container&gt; &gt;
+  struct container_suite
+    : public visitor&lt;Algorithms, default_container_policies&gt;
+  {
+    template&lt;typename Policy&gt;
+    static visitor&lt;Algorithms, Policy&gt; with_policies (Policy const &amp;policy);
+  };
+}
+</pre>
+    </p>
+
+    <p>
+
+      Some important points to note about <code>container_suite</code>:
+
+      <ol>
+        <li>
+
+          It relies on the <code>our_namespace::algo_selector</code>
+          template, which uses partial template specialization, to
+          select what functionality to provide for the container.
+
+        </li>
+        <li>
+
+          It derives from the <code>our_namespace::visitor</code>
+          template, using a <code>return_by_value</code> return
+          policy. This is a reasonable default, and follows the
+          Boost.Python idiom of passing a default-constructed object
+          to the <code>def</code> function.
+
+        </li>
+        <li>
+
+          The <code>with_policies</code> static function template
+          generates different instances of the
+          <code>our_namespace::visitor</code> template, with
+          client-provided policies.
+
+        </li>
+      </ol>
+
+    </p>
+
+    <h2><a name="policies">Using policies</a></h2>
+
+    You can select call policies using the
+    <code>container_suite</code> static member function
+    <code>with_policies</code> as in the following example:
+
+<pre>
+  class_&lt; std::list&lt;heavy_class&gt; &gt; ("list_heavy_class")
+    .def (our_namespace::container_suite&lt; std::list&lt;heavy_class&gt; &gt;
+          ::with_policies (my_policies));
+</pre>
+
+    <h3>Caution with policies</h3>
+
+    <p>
+
+      It can be tempting to use <code>return_internal_reference</code>
+      if the container elements are expensive to copy. However, this
+      can be quite dangerous, since references to the elements can
+      easily become invalid (e.g. if the element is deleted or
+      moved). The Boost.Python code for
+      <code>return_internal_reference</code> can only manage the
+      lifetime of the entire container object, and not those of the
+      elements actually being referenced. Various alternatives exist,
+      the best of which is to store the container elements indirectly,
+      using <code>boost::shared_ptr</code> or an equivalent. If this
+      is not possible, <code><a
+      href="#container_proxy">container_proxy</a></code> may provide a
+      solution, at least for vector-like containers.
+
+    </p>
+
+    <h3>Internal policies detail</h3>
+
+    <p>
+
+      The <code>container_suite</code> object typically adds more than
+      one function to the Python class, and not all of those functions
+      can, or should, use exactly the same policies. For instance, the
+      Python <code>len</code> method, if provided, should always
+      return its result by value. The library actually uses up to
+      three different sets of policies derived from the one provided
+      to the <code>with_policies</code> function. These are:
+
+      <ol>
+        <li>
+
+          The supplied policies, unchanged
+
+        </li>
+        <li>
+
+          The supplied precall policy only, using <code>default_call_policies</code> for result conversion.
+
+        </li>
+        <li>
+
+          The supplied precall policies, and the supplied result
+          conversion policies applied to <i>each element</i> of a
+          returned list.
+
+        </li>
+      </ol>
+
+      Roughly speaking, methods returning a single container element
+      use the first option, while methods returning an integer value
+      (or <code>void</code>) use the second option. The third option
+      applies only to the slice version of <code>__getitem__</code>,
+      which generates a Python list by applying the return conversion
+      policies to each element in the list.
+
+    </p>
+
+    <h2><a name="extending">Extending and customizing</a></h2>
+
+    <p>
+
+      The <code>container_suite</code> template relies on six main
+      support templates, four of which are suitable for specialization
+      or replacement by client code. The following diagram shows the
+      templates <a href="#Note2">[2]</a> and their dependencies, with
+      the replaceable ones highlighted in grey.
+
+    </p>
+
+    <table>
+      <tr>
+        <td>
+
+          <img src="./overview.png" width="592" height="200"
+          alt="Dependencies between main templates">
+
+        </td>
+      </tr>
+      <tr>
+        <td><font size="-1">
+
+          Diagram 1. Overview of class dependencies
+
+        </font></td>
+      </tr>
+    </table>
+
+    <p>
+
+      <a name="Note2">[2]</a> Actually, <code>Algorithms</code> and
+      <code>ContainerTraits</code> don't represent individual
+      templates in the diagram, but <i>groups</i> of related
+      templates. For instance, there are templates called
+      <code>list_algorithms</code> and <code>assoc_algorithms</code>,
+      among others. The <code>algo_selector</code> template selects
+      which algorithms and container traits to use on the basis of
+      partial template specializations for the known container types.
+
+    </p>
+
+    <h2><a name="ValueTraits">ValueTraits</a></h2>
+
+    <p>
+
+      A <code>ValueTraits</code> class provides simple information
+      about the type of value stored within a container that will be
+      exposed to Python via the <code>container_suite</code>
+      interface. It controls the provision of some operations that are
+      dependant on the operations supported by container elements (for
+      instance, <code>find</code> requires a comparison operator for
+      the elements).  A <code>ValueTraits</code> class also provides a
+      hook called during initialization of the Python class, which can
+      be used for custom processing at this point.
+
+    </p>
+    <p>
+
+      The following table lists the static constants required in a
+      <code>ValueTraits</code> class:
+
+    </p>
+
+    <p>
+      <table border=1>
+        <tr>
+          <th align="left">
+            Static constant
+          </th>
+          <th align="center">
+            Type
+          </th>
+          <th align="left">
+            Meaning
+          </th>
+        </tr>
+
+        <tr>
+          <td>
+            <code>equality_comparable</code>
+          </td>
+          <td>
+            bool
+          </td>
+          <td>
+
+            Whether the value supports comparison via
+            <code>operator==</code>.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>lessthan_comparable</code>
+          </td>
+          <td>
+            bool
+          </td>
+          <td>
+
+            Whether the value supports comparison via
+            <code>operator&lt;</code>.
+
+          </td>
+        </tr>
+
+      </table>
+    </p>
+
+    <p>
+
+      A <code>ValueTraits</code> class should provide the following
+      member function template, which will be called during execution
+      of the <code>def</code> call for the container suite:
+
+    </p>
+
+    <p>
+
+<pre>
+template &lt;typename PythonClass, typename Policy&gt;
+static void visitor_helper (PythonClass &amp;, Policy const &amp;);
+</pre>
+
+    </p>
+
+    <h3>Usage notes for ValueTraits</h3>
+
+    <p>
+
+      In order to include a custom <code>ValueTraits</code> class into
+      the container suite, it is easiest to supply it as a
+      specialization of the template
+      <code>our_namespace::value_traits</code> for the container's
+      element type.  The existing <code>ContainerTraits</code> classes
+      all make use of
+      <code>value_traits&lt;container::value_type&gt;</code>, and so
+      will use a specialization for the value type if available. The
+      default, unspecialized, version of <code>value_traits</code>
+      defines <code>equality_comparable</code> as <code>true</code>
+      and has an empty implementation of <code>visitor_helper</code>.
+
+    </p>
+    <p>
+
+      As an example, if a user defined type does not have any
+      comparison operations, then there will probably be compile-time
+      errors caused by an attempt to provide the Python
+      <code>find</code> or <code>sort</code> methods. The solution is
+      to write a specialized version of
+      <code>our_namespace::value_traits</code> that disables the
+      appropriate features. For example:
+
+    </p>
+
+    <p>
+<pre>
+namespace our_namespace {
+  template<>
+  struct value_traits&lt;my_type&gt; : public value_traits&lt;int&gt;
+  {
+    static bool const equality_comparable = false;
+    static bool const lessthan_comparable = false;
+  };
+}
+</pre>
+    </p>
+
+    <p>
+
+      In this example, there is no need to perform any processing in
+      the <code>visitor_helper</code> function, and deriving from an
+      unspecialized version of the template (e.g.
+      <code>value_traits&lt;int&gt;</code>) exposes an empty
+      <code>visitor_helper</code>.
+
+    </p>
+
+    <h3>value_traits.hpp header</h3>
+
+    <p>
+<pre>
+namespace our_namespace {
+  template&lt;typename T&gt;
+  struct value_traits {
+    static bool const equality_comparable = true;
+    static bool const lessthan_comparable = true;
+
+    template&lt;typename PythonClass, typename Policy&gt;
+    static void visitor_helper (PythonClass &amp;, Policy const &amp;)
+    { }
+  };
+}
+</pre>
+    </p>
+
+    <h2><a name="ContainerTraits">ContainerTraits</a></h2>
+
+    <p>
+
+      A <code>ContainerTraits</code> class serves three
+      purposes. Firstly, it identifies what facilities the container
+      supports in principle (i.e. either directly or via some support
+      code). Secondly, it identifies the types used to pass values
+      into and out of the supported operations. Thirdly, it provides a
+      hook for additional code to run during initialization of the
+      Python class (i.e. during the <code>def</code> call for the
+      suite).
+
+    </p>
+    <p>
+
+      Note that a <code>ContainerTraits</code> class can be any class,
+      derived from the existing implementations or not, as long as it
+      meets the requirements listed in the following sections.
+
+    </p>
+
+    <h3>Static constants for ContainerTraits</h3>
+
+    The following table lists the static constants that a
+    <code>ContainerTraits</code> class should define. Note that these
+    must be <i>compile-time constants</i>, since parts of the library
+    use these constants to select between template specializations.
+    The constants must at least be convertible to the type shown in
+    the second column.
+
+    <p>
+      <table border=1>
+        <tr>
+          <th align="left">
+            Static constant
+          </th>
+          <th align="center">
+            Type
+          </th>
+          <th align="left">
+            Meaning
+          </th>
+          <th align="left">
+            Influence
+          </th>
+        </tr>
+        <tr>
+          <td>
+            <code>has_copyable_iter</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether copies of an iterator are independant <a
+            href="#Note3">[3]</a>
+
+          </td>
+          <td>
+
+            Required for <code>len</code> and <code>__iter__</code>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>is_reorderable</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether it is possible to re-order the contents of the
+            container.
+
+          </td>
+          <td>
+
+            Required for <code>reverse</code> and <code>sort</code>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_mutable_ref</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+            Whether container elements can be altered via a reference
+          </td>
+          <td>
+            Determines <code>is_reorderable</code> for most containers.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_find</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether find is possible in principle (via member function
+            or otherwise)
+
+          </td>
+          <td>
+            <code>__contains__</code>,
+            <code>index</code>,
+            <code>count</code>,
+            <code>has_key</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_insert</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether it is possible to insert new elements into the container.
+
+          </td>
+          <td>
+            <code>insert</code>,
+            <code>extend</code>,
+            slice version of <code>__setitem__</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_erase</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether it is possible to erase elements from the container.
+
+          </td>
+          <td>
+            <code>__delitem__</code>,
+            slice version of <code>__setitem__</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_push_back</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether container supports insertion at the end.
+
+          </td>
+          <td>
+            <code>append</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>has_pop_back</code>
+          </td>
+          <td align="center">
+            <code>bool</code>
+          </td>
+          <td>
+
+            Whether container supports element deletion at the end.
+
+          </td>
+          <td>
+            Currently unused
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>index_style</code>
+          </td>
+          <td align="center">
+            <code>enum IndexStyle</code>
+          </td>
+          <td>
+
+            Type of indexing the container supports <a
+            href="#Note4">[4]</a>
+
+          </td>
+          <td>
+            <code>__getitem__</code>,
+            <code>__setitem__</code>,
+            <code>__delitem__</code>,
+            <code>__iter__</code>,
+            <code>extend</code>,
+            <code>index</code>,
+            <code>count</code>,
+            <code>has_key</code>
+          </td>
+        </tr>
+      </table>
+    </p>
+
+    <p>
+      <h3>Notes</h3>
+
+      <table>
+        <tr>
+          <td valign="top">
+            <a name="Note3">[3]</a>
+          </td>
+          <td>
+
+            For example, copies of stream iterators are <i>not</i>
+            independant. All iterator copies refer to the same stream,
+            which has only one read and one write position.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td valign="top">
+            <a name="Note4">[4]</a>
+          </td>
+          <td>
+
+            <code>index_style_none</code>, no indexing at all
+            (e.g. <code>list</code>)<br>
+
+            <code>index_style_linear</code>, continuous integer-like
+            index type (e.g. <code>vector</code>)<br>
+
+            <code>index_style_nonlinear</code>, indexing via other
+            types (e.g.  <code>map</code>).
+
+          </td>
+        </tr>
+      </table>
+
+    </p>
+
+    <h3>Member types for ContainerTraits</h3>    
+
+    <p>
+
+      The following table lists the type names that must be defined in
+      a compatible implementation of <code>ContainerTraits</code>.
+      The large number of types is supposed to provide flexibility for
+      containers with differing interfaces. For example,
+      <code>map</code> uses the same type for searching and "indexing"
+      (i.e. <code>find</code> and <code>operator[]</code>) so
+      <code>key_type</code> and <code>index_type</code> would have to
+      be the same. In contrast, searching a <code>vector</code> would
+      typically use a different type to that used for indexing into a
+      vector.
+
+    </p>
+
+    <p>
+      <table border=1>
+        <tr>
+          <th align="left">
+            Type name
+          </th>
+          <th align="left">
+            Meaning
+          </th>
+        </tr>
+
+        <tr>
+          <td>
+            <code>container</code>
+          </td>
+          <td>
+            The type of the C++ container.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>size_type</code>
+          </td>
+          <td>
+
+            The type used to represent the number of elements in the
+            container.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>index_type</code>
+          </td>
+          <td>
+
+            The type used to represent indexes extracted from a
+            <code>__getitem__</code> call (and others).  For
+            <code>index_style_linear</code>, this <i>should be a
+            signed type</i>, so that negative indices can be
+            processed.  For <code>index_style_nonlinear</code>, this
+            will most likely be the same type as
+            <code>key_type</code>.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>index_param</code>
+          </td>
+          <td>
+
+            The type to use when passing <code>index_type</code> into
+            a function.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>value_type</code>
+          </td>
+          <td>
+
+            The type to use when copying a value into or out of the
+            container.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>value_param</code>
+          </td>
+          <td>
+
+            The type to use when passing <code>value_type</code> into
+            a function.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>key_type</code>
+          </td>
+          <td>
+
+            The type used for search operations like <code>find</code>
+            and <code>count</code>.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>key_param</code>
+          </td>
+          <td>
+
+            The type to use when passing <code>key_type</code> into a
+            function.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>reference</code>
+          </td>
+          <td>
+
+            The type to use when returning a reference to a container
+            element.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <code>value_traits_</code>
+          </td>
+          <td>
+
+            Traits for the container elements. See <a
+            href="#ValueTraits">the ValueTraits section</a> for
+            information about the requirements on this type.
+
+          </td>
+        </tr>
+
+      </table>
+
+    </p>
+
+    <h3>Member functions for ContainerTraits</h3>
+
+    In order to support additional initialization code to run, a
+    <code>ContainerTraits</code> class should provide a static member
+    function template as follows:
+
+    <p>
+<pre>
+template &lt;typename PythonClass, typename Policy&gt;
+static void visitor_helper (PythonClass &amp;, Policy const &amp;);
+</pre>
+    </p>
+
+    <p>
+
+      Typically, the implementation would just forward the call to the
+      equivalent function in the <code>value_traits_</code> class.
+
+    </p>
+
+    <h3>Usage notes for ContainerTraits</h3>
+
+    <p>
+
+      It may be possible to mix your own <code>ContainerTraits</code>
+      class with one of the existing <code>Algorithms</code>
+      implementations, thus saving yourself a fair bit of work.  The
+      easiest way to do this would be to specialize the
+      <code>algo_selector</code> template for your container type,
+      using public deriviation to get the implementation from one of
+      the existing <code>Algorithms</code> templates. For example,
+      assuming that <code>default_algorithms</code> is suitable for
+      your container:
+
+    </p>
+
+    <p>
+<pre>
+namespace our_namespace {
+  template<>
+  struct algo_selector&lt;my_container&gt;
+    : public default_algorithms&lt;my_container_traits&gt;
+  {
+  };
+}
+</pre>
+    </p>
+    <p>
+
+      Alternatively, you could select the algorithms and traits using
+      the <code>visitor</code> template directly, as described in the
+      <a href="#workarounds">compiler workarounds</a> section.
+
+    </p>
+
+    <h2><a name="Algorithms">Algorithms</a></h2>
+
+    <p>
+
+      The <code>Algorithms</code> requirements are designed to provide
+      a predictable interface to any container, so that the same
+      <code>visitor</code> code can expose any supported container to
+      Python. An implemention of <code>Algorithms</code> does this by
+      providing functions and typedefs with fixed names. The exact
+      interfaces to the functions can vary to some extent, since the
+      <code>def</code> function calls used internally by the
+      <code>visitor</code> deduce the function type
+      automatically. However, certain points must be confomed to:
+
+      <ol>
+        <li>
+
+          The functions should be static, with <code>container
+          &</code> as first parameter.
+
+        </li>
+
+        <li>
+
+          The functions should <i>not</i> be overloaded &ndash; this
+          avoids problems with type deduction.
+
+        </li>
+        <li>
+
+          Generally, not all of the possible functions need to be
+          implemented, dependant on the static constants in the
+          <code>ContainerTraits</code>.
+
+        </li>
+      </ol>
+
+    </p>
+
+    <p>
+
+      The block of code below shows the definition of the
+      <code>default_algorithms</code> class template, which is the
+      basis for all current implementations of
+      <code>Algorithms</code>. The typedefs that it defines are
+      primarily for convenience within the implementation itself,
+      however they are also required by the <code>slice_handler</code>
+      template, if slices are supported. Note that
+      <code>default_algorithms</code> derives all of the type
+      information from the <code>container_traits</code> template
+      argument, which allows the same implementation to be used for
+      various container types.
+
+    </p>
+
+    <p>
+<pre>
+namespace our_namespace {
+  template&lt;typename ContainerTraits&gt;
+  struct default_algorithms
+  {
+    typedef ContainerTraits container_traits;
+
+    typedef typename ContainerTraits::container   container;
+    typedef typename ContainerTraits::iterator    iterator;
+    typedef typename ContainerTraits::reference   reference;
+    typedef typename ContainerTraits::size_type   size_type;
+    typedef typename ContainerTraits::value_type  value_type;
+    typedef typename ContainerTraits::value_param value_param;
+    typedef typename ContainerTraits::index_param index_param;
+    typedef typename ContainerTraits::key_param   key_param;
+
+    static size_type size       (container &amp;);
+    static iterator  find       (container &amp;, key_param);
+    static size_type get_index  (container &amp;, key_param);
+    static size_type count      (container &amp;, key_param);
+    static bool      contains   (container &amp;, key_param);
+    static void      reverse    (container &amp;);
+    static reference get        (container &amp;, index_param);
+    static void      assign     (container &amp;, index_param, value_param);
+    static void      insert     (container &amp;, index_param, value_param);
+    static void      erase_one  (container &amp;, index_param);
+    static void      erase_range(container &amp;, index_param, index_param);
+    static void      push_back  (container &amp;, value_param);
+    static void      sort       (container &amp;);
+
+    template&lt;typename PythonClass, typename Policy&gt;
+    static void visitor_helper (PythonClass &amp;, Policy const &amp;);
+  };
+}
+</pre>
+    </p>
+
+    <h3>Usage notes for Algorithms</h3>
+
+    <p>
+
+      The existing <code>our_namespace::algo_selector</code> template
+      uses partial specializations and public derivation to select an
+      <code>Algorithms</code> implementation suitable for any of the
+      standard container types. Exactly how it does this should be
+      considered an implementation detail, and uses some tricks to
+      reuse various existing <code>Algorithms</code>
+      implementations. In any case, client code can specialize (or
+      partially specialize) the <code>algo_selector</code> template
+      for new container types, as long as the specialized instances
+      conform to the requirements for <code>Algorithms</code> as
+      already given.
+
+    </p>
+    <p>
+
+      A new implementation of <code>Algorithms</code> could derive
+      from any one of the existing implementation templates, or be
+      completely independant. The existing implementation templates
+      are listed in the following table. They each take one template
+      parameter, which should be a valid <code>ContainerTraits</code>
+      class, as specified in a <a href="#ContainerTraits">previous
+      section</a>.
+
+    </p>
+
+    <p>
+      <table border="1">
+        <tr>
+          <th>
+            Template name
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>default_algorithms</code>
+
+          </td>
+          <td>
+
+            Uses standard iterator-based algorithms wherever
+            possible. Assumes that the container provides
+            <code>begin</code> and end <code>end</code> member
+            functions that return iterators, and some or all of
+            <code>size</code>, <code>insert</code>, <code>erase</code>
+            and <code>push_back</code>, depending on what functions get
+            instantiated.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>list_algorithms</code>
+
+          </td>
+          <td>
+
+            Similar to the above (in fact, it derives from
+            <code>default_algorithms</code>) except that it uses
+            container member functions <code>reverse</code> and
+            <code>sort</code> instead of the iterator-based versions.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>assoc_algorithms</code>
+
+          </td>
+          <td>
+
+            Also derived from <code>default_algorithms</code>, for use
+            with associative containers. Uses the container member
+            function <code>find</code> for indexing, and member
+            function <code>count</code> instead of iterator-based
+            implementations.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>set_algorithms</code>
+
+          </td>
+          <td>
+
+            Derived from <code>assoc_algorithms</code> to handle
+            <code>set</code> insertion operations, which are slightly
+            different to the <code>map</code> versions.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>map_algorithms</code>
+
+          </td>
+          <td>
+
+            Derived from <code>assoc_algorithms</code> to handle
+            <code>map</code> insertion and lookup, which are slightly
+            different to the <code>set</code> versions.
+
+          </td>
+        </tr>
+      </table>
+    </p>
+
+    <h2><a name="container_proxy">container_proxy</a></h2>
+
+    <p>
+
+      The <code>container_proxy</code> template provides an emulation
+      of Python reference semantics for objects held by value in a
+      vector-like container. The primary application of this template
+      is in situations where all of the following apply:
+
+      <ol>
+        <li>
+
+          It is not practical to switch to a container of shared
+          pointers
+
+        </li>
+        <li>
+
+          Python code requires reference semantics for the objects
+          within the container
+
+        </li>
+        <li>
+
+          Element insertion, deletion or assignment are common, so
+          that using <code>return_internal_reference</code> would be
+          dangerous.
+
+        </li>
+      </ol>
+
+    </p>
+
+    <p>
+
+
+      The <code>container_proxy</code> template wraps a vector-like
+      container and presents an interface that is similar to that of a
+      normal vector, but which returns <code>element_proxy</code>
+      objects instead of plain references to values stored in the
+      wrapped container. During an operation that alters the position
+      of an element within the container (e.g. <code>insert</code>)
+      the <code>container_proxy</code> code updates the relevant proxy
+      objects, so that they still refer to the original elements of
+      the container. Any operation that would delete or overwrite a
+      value in the container (e.g. <code>erase</code>) copies the
+      to-be-deleted value into its corresponding proxy object. This
+      means that a proxy's "reference" to an element is robust in the
+      face of changes to the element's position in the container, and
+      even that element's removal.
+
+    </p>
+
+    <h3>container_proxy interface</h3>
+
+    <p>
+
+      The <code>container_proxy</code> interface is designed to be
+      convenient to use from C++, and to inter-operate with the
+      <code>default_algorithms</code> template. It is important that
+      <i>any</i> code that changes element positions within the
+      container (at least while proxies for the container exist) uses
+      the <code>container_proxy</code> interface, to ensure that the
+      proxies get updated. Of course, the interface introduces some
+      performance penalties, both in terms of memory usage and run
+      time.
+
+    </p>
+    <p>
+
+      The <code>Holder</code> template parameter determines how the
+      <code>container_proxy</code> stores the raw container object.
+      There are currently two types of holder implemented, the default
+      <code>identity</code> template which stores it's argument by
+      value, and the <code>deref</code> template which stores a
+      (plain) pointer to an external object. It would be possible, for
+      instance, to create a holder that uses a
+      <code>shared_pointer</code> instead.
+
+    </p>
+
+<pre>
+template&lt;class Container
+	 , class Holder = identity&lt;Container&gt; &gt;
+class container_proxy
+{
+public:
+  typedef typename Container::size_type size_type;
+  typedef typename Container::difference_type difference_type;
+  typedef typename Container::value_type raw_value_type;
+
+  typedef typename Holder::held_type held_type;
+
+  typedef <i>implementation defined</i> value_type;
+  typedef <i>implementation defined</i> const_value_type;
+
+  typedef value_type        reference;       // Has reference semantics
+  typedef const_value_type  const_reference; // Has reference semantics
+
+  struct iterator { <i>implementation defined</i> }
+
+  container_proxy ();
+  explicit container_proxy (held_type const &amp;);
+  template&lt;typename Iter&gt; container_proxy (Iter, Iter);
+
+  container_proxy (container_proxy const &amp;);
+  container_proxy &amp;operator= (container_proxy const &amp;);
+  ~container_proxy ();
+
+  Container const &amp;raw_container() const;   // OK to expose const reference
+
+  reference       at (size_type);
+  const_reference at (size_type) const;
+
+  reference       operator[] (size_type);
+  const_reference operator[] (size_type) const;
+
+  size_type size() const;
+  size_type capacity() const;
+  void reserve(size_type);
+
+  iterator begin();
+  iterator end();
+
+  iterator erase (iterator);
+  iterator erase (iterator, iterator);
+  iterator insert (iterator, raw_value_type const &amp;);
+  template&lt;typename Iter&gt; void insert (iterator, Iter, Iter);
+
+  void push_back (raw_value_type const &amp;);
+
+  value_type pop_back ();
+};
+</pre>
+
+    <p>
+      The <code>identity</code> template.
+
+<pre>
+template&lt;typename T&gt; struct identity {
+  typedef T held_type;
+
+  static T &amp;       get(T &amp;       obj) { return obj; }
+  static T const &amp; get(T const &amp; obj) { return obj; }
+
+  static T    create ()                     { return T(); }
+  static T    copy   (T const &amp;copy)        { return copy; }
+  static void assign (T &amp;to, T const &amp;from) { to = from; }
+  static void pre_destruction (T &amp;)         { }
+};
+</pre>
+    </p>
+
+    </p>
+      The <code>deref</code> template.
+
+<pre>
+template&lt;typename P&gt; struct deref {
+  typedef P held_type;
+
+  typedef typename boost::iterator_value&lt;P&gt;::type     value;
+
+  static value &amp;       get (P &amp;       ptr)  { return *ptr; }
+  static value const &amp; get (P const &amp; ptr)  { return *ptr; }
+
+  static P    create ()                     { return P(); }
+  static P    copy   (P const &amp;copy)        { return copy; }
+  static void assign (P &amp;to, P const &amp;from) { to = from; }
+  static void pre_destruction (P &amp;)         { }
+};
+</pre>
+    </p>
+
+    <h3>container_proxy implementation notes</h3>
+
+    <p>
+
+      An <code>element_proxy</code> refers to an element of the
+      container via two levels of indirection &ndash; it holds a
+      pointer to a so-called <code>shared_proxy</code> object, which
+      has a pointer back to the <code>container_proxy</code> object
+      and an element index within the wrapped container. This can be
+      seen in the following diagram, which shows a
+      <code><nobr>container_proxy&lt; vector&lt;int&gt;
+      &gt;</nobr></code> containing the three elements 111, 222 and
+      333.
+
+    <p>
+
+    <table>
+      <tr>
+        <td>
+
+          <img src="proxy.png" height="308" width="663"
+          alt="Interrelations between container_proxy, its container
+          and its element proxies">
+
+        </td>
+      </tr>
+      <tr>
+        <td><font size="-1">
+
+          Diagram 2. Example of <code>container_proxy</code> with some
+          element proxies
+
+        </font></td>
+      </tr>
+    </table>
+
+    </p>
+
+      In the example above, the shown <code>element_proxy</code>
+      object refers (indirectly) to the container element with the
+      value 222. An insertion before this element would increment the
+      element numbers in the <code>shared_proxy</code> objects so that
+      the given <code>element_proxy</code> continues to refer to the
+      same value at its new location.  Similary, a deletion before the
+      element would decrement the affected <code>shared_proxy</code>
+      element numbers. If the referenced element itself gets deleted
+      or overwritten, the <code>shared_proxy</code> first takes a
+      <i>copy</i> of the original value, and is then considered to be
+      <i>detached</i> from the <code>container_proxy</code>. This
+      situation is shown below in diagram 3.
+
+    </p>
+
+    <table>
+      <tr>
+        <td>
+
+          <img src="proxy_detached.png" height="105" width="403"
+          alt="Element proxy when detached from its container">
+
+        </td>
+      </tr>
+      <tr>
+        <td><font size="-1">
+
+          Diagram 3. Example of <code>element_proxy</code> with
+          detached <code>shared_proxy</code>
+
+        </font></td>
+      </tr>
+    </table>
+
+
+    <h2><a name="workarounds">Compiler workarounds</a></h2>
+
+    <p>
+
+      It is possible to use the suite without partial template
+      specialization support. However, the <code>algo_selector</code>
+      template will not work, which also means that the default
+      template parameter for <code>container_suite</code> won't
+      work. To avoid this problem, the client code must explicitly
+      select the <code>Algorithms</code> and
+      <code>ContainerTraits</code> instances to be used. It is
+      probably easiest to use the <code>visitor</code> template
+      directly, as in the following example:
+
+<pre>
+  using our_namespace;
+
+  class_&lt;std::vector&lt;int&gt; &gt; ("vector_int")
+    .def (visitor &lt;
+           default_algorithms &lt;
+            default_sequence_traits &lt;
+             std::vector &lt;int&gt; &gt; &gt;,
+           return_value_policy &ltreturn_by_value&gt;
+          &gt;());
+</pre>
+
+    </p>
+
+    <h2><a name="limitations">Known limitations</a></h2>
+
+    <p>
+
+      This section lists known limitations of the container
+      interfaces. These may or may not get fixed in the future, so
+      check the latest release of Boost and/or the Boost CVS
+      repository. Feel free to submit your own improvements to the
+      mailing list for the <a
+      href="http://www.python.org/sigs/c++-sig/">Python C++-SIG</a>.
+
+    </p>
+
+    <p>
+
+      The following Python sequence and mapping functions are not
+      currently implemented for any containers: <code>keys, values,
+      items, clear, copy, update, pop, __add__, __radd__, __iadd__,
+      __mul__, __rmul__ and __imul__</code>. Most of the methods
+      mentioned (except for <code>pop</code>) present no particular
+      difficulty to implement.  The problem with <code>pop</code> is
+      that it is incompatible with some return value policies (for
+      instance, <code>return_internal_reference</code>) since it must
+      return a copy of an element that has already been removed from
+      the container. This probably requires an extension to the
+      <code>container_suite</code> interface, to allow the client code
+      the option of specifying a different return policy for this
+      method in particular.
+
+    </p>
+    <p>
+
+      The suite currently restricts itself to the normal Python
+      container interface methods, which do not expose all of the
+      interfaces available with the C++ containers. For example,
+      vector <code>reserve</code> has no equivalent in Python and is
+      not exposed by the suite. Of course, user code can still add a
+      <code>def</code> call for this manually.
+
+    </p>
+    <p>
+
+      The <code>map</code> iterator should return only the key part of
+      the values, but currently returns the whole
+      <code>std::pair</code>.
+
+    </p>
+    <p>
+
+      The <code>sort</code> method (where provided) should allow an
+      optional comparison function from Python.
+
+    </p>
+    <p>
+
+      The existing <code>Algorithms</code> should allow a derived
+      class to replace any of the static member functions without
+      having to reimplement all of them. For instance, it would be
+      nice to be able to replace the low-level <code>begin</code> and
+      <code>end</code> functions in <code>default_algorithms</code>
+      and have all of the other functions use the replacements
+      automatically. This would be fairly easy using static
+      polymorphism, such as the <i>Curiously Recurring Template
+      Pattern</i>.
+
+    </p>
+
+    <h2><a name="references">References</a></h2>
+
+    <p>
+
+      The Python Library Reference section on <a href=
+      "http://www.python.org/doc/current/lib/typesseq.html">Sequence
+      Types</a> and the Python Reference Manual section on <a href=
+      "http://www.python.org/doc/current/ref/sequence-types.html">Emulating
+      container types</a>. The <a href=
+      "http://webstore.ansi.org/ansidocstore/product.asp?sku=INCITS%2FISO%2FIEC+14882%2D1998">C++
+      Standard</a>.
+
+    </p>
+
+    <h2><a name="acknoweldegments">Acknowledgements and Copyright</a></h2>
+
+    <p>
+
+      Thanks to Joel de Guzman and David Abrahams for input and
+      encouragement during the development of the container
+      suite. Joel wrote the original implementation of the indexing
+      support, which provided many of the ideas embodied in the new
+      implementation.
+
+    </p>
+
+    <p>
+
+      The container suite code and documentation are Copyright (c)
+      2003 by Raoul Gough, and licensed under the current Boost
+      license.
+
+    </p>
+
+  </body>
+</html>
