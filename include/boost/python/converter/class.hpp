@@ -18,6 +18,10 @@ struct class_unwrapper
     , private unwrapper<T*>
     , private unwrapper<T const*>
 {
+ protected:
+# ifdef __GNUC__ // suppress warning that "all member functions are private" (duh)
+    void uncallable();
+# endif 
  private:
     void* can_convert(PyObject*) const;
     T& convert(PyObject*, void*, boost::type<T&>) const;
