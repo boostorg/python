@@ -336,7 +336,7 @@ The first form creates a Python callable
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(demo)
 {
-   module m(&quot;demo&quot;)
+   module(&quot;demo&quot;)
       .add(
          class_&lt;std::vector&lt;double&gt; &gt;(&quot;dvec&quot;)
             .def(&quot;__iter__&quot;, iterator&lt;std::vector&lt;double&gt; &gt;())
