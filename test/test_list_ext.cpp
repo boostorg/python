@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module test_list_ext.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -18,6 +16,7 @@
 #include "int_wrapper.hpp"
 
 #include <boost/python/suite/indexing/container_suite.hpp>
+#include <boost/python/suite/indexing/list.hpp>
 #include <list>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>

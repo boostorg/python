@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module testnonlinear.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -17,6 +15,8 @@
 
 #include "int_wrapper.hpp"
 #include <boost/python/suite/indexing/container_suite.hpp>
+#include <boost/python/suite/indexing/map.hpp>
+#include <boost/python/suite/indexing/set.hpp>
 #include <map>
 #include <set>
 #include <boost/python/class.hpp>

@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module test_vector_ext.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -21,13 +19,14 @@
 
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/container_proxy.hpp>
+#include <boost/python/suite/indexing/vector.hpp>
 #include <vector>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/implicit.hpp>
 
-// More messiness from not having a separate int_wrapper.cpp file
+// Some messiness from not having a separate int_wrapper.cpp file
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
 

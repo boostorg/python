@@ -17,7 +17,8 @@
 
 #include "int_wrapper.hpp"
 #include <boost/python/suite/indexing/container_suite.hpp>
-#include <boost/python/suite/indexing/iterator_pair.hpp> // for begin(), end()
+#include <boost/python/suite/indexing/iterator_range.hpp> // for begin(), end()
+#include <boost/python/suite/indexing/vector.hpp>
 #include <vector>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>

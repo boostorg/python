@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module test_vector_shared_ext.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -26,6 +24,7 @@ bool operator== (int_wrapper_holder const &, int_wrapper_holder const &);
 bool operator!= (int_wrapper_holder const &, int_wrapper_holder const &);
 
 #include <boost/python/suite/indexing/container_suite.hpp>
+#include <boost/python/suite/indexing/vector.hpp>
 #include <vector>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>

@@ -1,4 +1,3 @@
-//
 // Module test_deque_ext.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -18,6 +17,7 @@
 
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/container_proxy.hpp>
+#include <boost/python/suite/indexing/deque.hpp>
 #include <deque>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
