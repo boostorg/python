@@ -34,6 +34,7 @@
 #include <vector>    // Default pointer container
 #include <cassert>
 #include <boost/shared_ptr.hpp>
+#include <boost/mpl/apply.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/container_suite.hpp>
@@ -41,6 +42,7 @@
 #include <boost/python/suite/indexing/algo_selector.hpp>
 
 namespace boost { namespace python { namespace indexing {
+
   template<typename T> struct identity {
     typedef T held_type;
 
@@ -73,6 +75,19 @@ namespace boost { namespace python { namespace indexing {
       typedef std::vector<Element> type;
     };
   };
+
+#if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
+  // Early template instantiation (ETI) workaround
+  namespace detail {
+    template<typename Container> struct msvc6_iterator {
+      typedef Container::iterator type;
+    };
+
+    template<> struct msvc6_iterator<int> {
+      typedef int *type;
+    };
+  }
+#endif
 
   template<class Container
            , class Holder = identity<Container>
@@ -254,16 +269,15 @@ namespace boost { namespace python { namespace indexing {
 
   private:
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
-#if defined (BOOST_NO_MEMBER_TEMPLATES) \
-        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
-    // Ignore the Generator argument, to avoid an MSVC6 fatal error
-    // (C1001 internal compiler error).
-    typedef std::vector<pointer_impl> pointer_container;
+
+    typedef typename mpl::apply1<Generator, pointer_impl>::type
+      pointer_container;
+
+#if BOOST_WORKAROUND (BOOST_MSVC, == 1200)
+    typedef detail::msvc6_iterator<pointer_container>::type pointer_iterator;
 #else
-    typedef typename Generator::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE
-        apply<pointer_impl>::type pointer_container;
-#endif
     typedef typename pointer_container::iterator pointer_iterator;
+#endif
 
 #if defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
     // Proxies need mutable access, and can't be friends with MSVC6
