@@ -20,9 +20,6 @@ class ClassWrapper
  public:
     ClassWrapper(Module& module, const char* name)
         : m_class(new ExtensionClass<T, U>(name))
-#if 0 // def PY_MSVC6_OR_EARLIER
-        , m_msvc_hack(name)
-#endif
     {
         module.add(Ptr(as_object(m_class.get()), Ptr::new_ref), name);
     }
@@ -70,9 +67,6 @@ class ClassWrapper
         { m_class->def_read_write(pm, name); }
  private:
     PyPtr<ExtensionClass<T, U> > m_class;
-#if 0 // def PY_MSVC6_OR_EARLIER
-    PyExtensionClassConverters<T, U> m_msvc_hack;
-#endif
 };
 
 // The bug mentioned at the top of this file is that on certain compilers static
