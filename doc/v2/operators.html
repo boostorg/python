@@ -832,15 +832,15 @@ struct number
    operator long() const { return x; }
 
    number&amp; operator+=(number const&amp; rhs)
-      { x += rhs }
-   number&amp; operator-=(number const&amp; rhs);
-      { x -= rhs }
+      { x += rhs; }
+   number&amp; operator-=(number const&amp; rhs)
+      { x -= rhs; }
    number&amp; operator*=(number const&amp; rhs)
-      { x *= rhs }
-   number&amp; operator/=(number const&amp; rhs);
-      { x /= rhs }
-   number&amp; operator%=(number const&amp; rhs);
-      { x %= rhs }
+      { x *= rhs; }
+   number&amp; operator/=(number const&amp; rhs)
+      { x /= rhs; }
+   number&amp; operator%=(number const&amp; rhs)
+      { x %= rhs; }
 
    long x;
 };
@@ -886,7 +886,7 @@ BOOST_PYTHON_MODULE(demo)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  3 October, 2003
+  5 October, 2004
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
