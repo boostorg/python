@@ -41,19 +41,11 @@
 
 namespace boost { namespace python { namespace detail { 
 
-#  if 0 // argpkg
-template <class N>
-inline PyObject* get(N, PyObject* const& args_)
-{
-    return PyTuple_GET_ITEM(args_,N::value);
-}
-#  else
-template <unsigned N>
-inline PyObject* get(PyObject* const& args_ BOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(unsigned,N))
+template <int N>
+inline PyObject* get(mpl::int_<N>, PyObject* const& args_)
 {
     return PyTuple_GET_ITEM(args_,N);
 }
-#  endif 
 
 inline unsigned arity(PyObject* const& args_)
 {
@@ -106,21 +98,12 @@ struct caller;
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
      typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
 
-#  if 0 // argpkg
 #  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
      BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
      typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
      c_t##n c##n(get(mpl::int_<n>(), inner_args));                              \
      if (!c##n.convertible())                                                   \
           return 0;
-# else
-#  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
-     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
-     typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
-     c_t##n c##n(get<n>(inner_args));                                           \
-     if (!c##n.convertible())                                                   \
-          return 0;
-# endif
 
 #  define BOOST_PP_ITERATION_PARAMS_1                                            \
         (3, (0, BOOST_PYTHON_MAX_ARITY + 1, <boost/python/detail/caller.hpp>))

@@ -11,9 +11,7 @@
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
 
-# if 0 // argpkg
-#  include <boost/mpl/int.hpp>
-# endif
+# include <boost/mpl/int.hpp>
 
 # include <boost/static_assert.hpp>
 # include <boost/python/refcount.hpp>
@@ -86,11 +84,7 @@ struct return_arg : Base
         if (!result)
             return 0;
         Py_DECREF(result);
-# if 0 // argpkg
         return incref( detail::get(mpl::int_<arg_pos-1>(),args) );
-# else
-        return incref( detail::get<(arg_pos-1)>(args) );
-# endif 
     }
 };
 
