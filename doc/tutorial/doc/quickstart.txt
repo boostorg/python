@@ -627,7 +627,7 @@ Then, Boost.Python needs to keep track of 1) the dispatch function [^f] and
 There's a special [^def] function for this purpose. Here's how it is
 applied to our example above:
 
-    class_<Base, BaseWrap>("Base")
+    class_<Base, BaseWrap, BaseWrap, boost::noncopyable>("Base")
         .def("f", &Base::f, &BaseWrap::default_f)
 
 Note that we are allowing [^Base] objects to be instantiated this time,
