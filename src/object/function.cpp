@@ -24,7 +24,11 @@ function::function(py_function const& implementation, unsigned min_args, unsigne
     , m_max_args(std::max(max_args,min_args))
 {
     PyObject* p = this;
-    ::PyType_Ready(&function_type);
+    if (function_type.ob_type == 0)
+    {
+        function_type.ob_type = &PyType_Type;
+        ::PyType_Ready(&function_type);
+    }
     PyObject_INIT(p, &function_type);
 }
 
@@ -305,7 +309,7 @@ extern "C"
 }
 
 PyTypeObject function_type = {
-    PyObject_HEAD_INIT(&PyType_Type)
+    PyObject_HEAD_INIT(0)
     0,
     "Boost.Python.function",
     sizeof(function),
