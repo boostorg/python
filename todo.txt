@@ -1,6 +1,7 @@
 .. -*- mode: rst -*-
+
 ====================================
- Boost.Python TODO list |(logo)|__
+ Boost.Python_ TODO list |(logo)|__
 ====================================
 
 .. |(logo)| image:: ../../c++boost.gif
@@ -8,12 +9,10 @@
 
 __ ../../index.htm
 
+.. _`Boost.Python`: index.html
+
 :copyright: Copyright David Abrahams 2003. See accompanying
             license_ for terms of use.
-
-This is a list of work which "really ought to get done".  In some
-cases people have promised to the work but have not yet moved on their
-promises.
 
 .. contents:: Outline
 
