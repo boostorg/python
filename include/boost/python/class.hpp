@@ -200,6 +200,7 @@ class class_ : public objects::class_base
     template <typename PickleSuiteType>
     self& def_pickle(PickleSuiteType)
     {
+      error_messages::must_be_derived_from_pickle_suite(PickleSuiteType());
       detail::pickle_suite_finalize<PickleSuiteType>::register_(
         *this,
         &PickleSuiteType::getinitargs,

@@ -13,11 +13,14 @@ namespace boost { namespace python {
 
 handle<> make_instance_reduce_function();
 
+struct pickle_suite;
+
 namespace error_messages {
 
   template <class T>
   struct missing_pickle_suite_function_or_incorrect_signature {};
 
+  inline void must_be_derived_from_pickle_suite(pickle_suite const&) {}
 }
 
 namespace detail { struct pickle_suite_registration; }
