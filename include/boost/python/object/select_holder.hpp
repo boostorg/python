@@ -13,7 +13,7 @@
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/type.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -24,7 +24,7 @@ namespace detail
   {
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,Held>::value) | has_back_reference<T>::value);
   
-      typedef typename mpl::select_type<
+      typedef typename mpl::select_if_c<
           selector
           , value_holder_back_reference<T,Held>
           , value_holder<T>
@@ -39,7 +39,7 @@ namespace detail
       typedef typename python::detail::pointee<Ptr>::type pointee;
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
       
-      typedef typename mpl::select_type<
+      typedef typename mpl::select_if_c<
           selector
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
