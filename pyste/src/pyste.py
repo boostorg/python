@@ -39,7 +39,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.9.4'
+__VERSION__ = '0.9.5'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -139,7 +139,7 @@ def CreateContext():
     context['use_shared_ptr'] = infos.use_shared_ptr
     context['use_auto_ptr'] = infos.use_auto_ptr
     context['add_method'] = infos.add_method
-    context['no_override'] = infos.no_override
+    context['final'] = infos.final
     # policies
     context['return_internal_reference'] = return_internal_reference
     context['with_custodian_and_ward'] = with_custodian_and_ward

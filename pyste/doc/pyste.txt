@@ -234,15 +234,15 @@ The string inside the brackets is the same as the name of the operator in C++.[b
 [h2 Virtual Member Functions]
 
 Pyste automatically generates wrappers for virtual member functions, but you
-may want to disable this behaviour (for performance reasons, or to let the code
-more clean) if you do not plan to override the functions in Python. To do
-this, use the function [^no_override]:
+may want to disable this behaviour (for performance reasons, or to let the
+code more clean) if you do not plan to override the functions in Python. To do
+this, use the function [^final]:
 
     C = Class('C', 'C.h')
-    no_override(C.foo) # C::foo is a virtual member function
+    final(C.foo) # C::foo is a virtual member function
 
-No wrapper code will be generated for the virtual member function C::foo that
-way.
+No virtual wrapper code will be generated for the virtual member function
+C::foo that way.
 
 [page:1 Policies]
 

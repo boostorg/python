@@ -216,5 +216,5 @@ def add_method(info, name, rename=None):
     else:
         added.append((name, rename))
 
-def no_override(info):
+def final(info):
     info._Attribute('no_override', True)
