@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
+#include <boost/python/object/find_instance.hpp>
 #include <boost/python/objects2.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/detail/binary_search.hpp>
