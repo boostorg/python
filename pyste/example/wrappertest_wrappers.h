@@ -11,7 +11,7 @@ template <class T>
 list VectorToList(const std::vector<T> & v)
 {
     list res;
-    typename std::vector<T>::const_iterator it;
+    std::vector<T>::const_iterator it;
     for(it = v.begin(); it != v.end(); ++it){
         res.append(*it);
     }
@@ -19,10 +19,8 @@ list VectorToList(const std::vector<T> & v)
     return res;
 }
 
-inline list RangeWrapper(int count){
+list RangeWrapper(int count){
     return VectorToList(wrappertest::Range(count));
 }
-
-inline int f_wrapper(wrappertest::A*) { return 10; } 
 
 #endif

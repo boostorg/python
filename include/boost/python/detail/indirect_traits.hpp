@@ -280,8 +280,9 @@ struct is_pointer_to_function
 struct false_helper1
 {
     template <class T>
-    struct apply : mpl::false_
+    struct apply
     {
+        BOOST_STATIC_CONSTANT(bool, value = false);
     };
 };
 
@@ -299,13 +300,22 @@ struct true_helper1
         BOOST_STATIC_CONSTANT(
             bool, value
             = sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type));
-        typedef mpl::bool_<value> type;
     };
 };
 
 template <bool ref = true>
 struct is_reference_to_const_helper1 : true_helper1
 {
+#   if 0
+    template <class T>
+    struct apply
+    {
+        static T t;
+        BOOST_STATIC_CONSTANT(
+            bool, value
+            = sizeof(reference_to_const_helper(t)) == sizeof(inner_yes_type));
+    };
+#   endif 
 };
 
 template <>
@@ -319,6 +329,7 @@ struct is_reference_to_const
     : is_reference_to_const_helper1<is_reference<T>::value>::template apply<T>
 {
 };
+
 
 
 template <bool ref = true>

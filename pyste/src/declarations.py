@@ -15,9 +15,6 @@ class Declaration(object):
         self.namespace = namespace
         # tuple (filename, line)
         self.location = '', -1
-        # if a declaration is incomplete it means that it was
-        # forward declared
-        self.incomplete = False 
 
 
     def FullName(self):
@@ -209,18 +206,13 @@ class Method(Function):
 
     def PointerDeclaration(self):
         'returns a declaration of a pointer to this function'
-        if self.static:
-            # static methods are like normal functions
-            return Function.PointerDeclaration(self)
-        else:
-            # using syntax of methods
-            result = self.result.FullName()
-            params = ', '.join([x.FullName() for x in self.parameters]) 
-            const = ''
-            if self.const:
-                const = 'const'            
-            return '(%s (%s::*)(%s) %s)&%s' %\
-                (result, self.class_, params, const, self.FullName()) 
+        result = self.result.FullName()
+        params = ', '.join([x.FullName() for x in self.parameters]) 
+        const = ''
+        if self.const:
+            const = 'const'            
+        return '(%s (%s::*)(%s) %s)&%s' %\
+            (result, self.class_, params, const, self.FullName()) 
 
     
 class Constructor(Method):
@@ -266,21 +258,20 @@ class ConverterOperator(ClassOperator):
     'An operator in the form "operator OtherClass()".'
     
     def FullName(self):
-        return self.class_ + '::operator ' + self.result.FullName()
+        return self.class_ + '::operator ' + self.result.name
 
     
 
 class Type(Declaration):
     'Represents a type.'
 
-    def __init__(self, name, const=False, default=None, incomplete=False):
+    def __init__(self, name, const=False, default=None):
         Declaration.__init__(self, name, None)
         # whatever the type is constant or not
         self.const = const
         # used when the Type is a function argument
         self.default = default
         self.volatile = False
-        self.incomplete = incomplete
 
     def __repr__(self):
         if self.const:
@@ -313,8 +304,8 @@ class ArrayType(Type):
 class ReferenceType(Type): 
     'A reference type.'    
 
-    def __init__(self, name, const=False, default=None, incomplete=False, expandRef=True):
-        Type.__init__(self, name, const, default, incomplete)
+    def __init__(self, name, const=False, default=None, expandRef=True):
+        Type.__init__(self, name, const, default)
         self.expand = expandRef
         
         
@@ -330,8 +321,8 @@ class ReferenceType(Type):
 class PointerType(Type):
     'A pointer type.'
     
-    def __init__(self, name, const=False, default=None, incomplete=False, expandPointer=False):
-        Type.__init__(self, name, const, default, incomplete)
+    def __init__(self, name, const=False, default=None, expandPointer=False):
+        Type.__init__(self, name, const, default)
         self.expand = expandPointer
 
    

@@ -80,7 +80,6 @@ namespace detail
   template <class T>
   object make_function1(T fn, ...) { return make_function(fn); }
 
-  inline
   object make_function1(object const& x, object const*) { return x; }
 }
 

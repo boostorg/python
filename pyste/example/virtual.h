@@ -20,6 +20,6 @@ private:
     virtual const char* name() { return "C"; }
 };
 
-inline int call_f(C& c) { return c.f(); }
+int call_f(C& c) { return c.f(); }
 
 }

@@ -1,6 +1,5 @@
 from Exporter import Exporter
 from settings import *
-import utils
 
 #==============================================================================
 # EnumExporter 
@@ -29,11 +28,3 @@ class EnumExporter(Exporter):
             code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
         code += indent + ';\n\n'
         codeunit.Write('module', code)
-
-
-    def Unit(self):
-        return utils.makeid(self.info.include)
-
-
-    def Order(self):
-        return self.info.name

@@ -1,6 +1,3 @@
-#ifndef HEADER_TEST_H
-#define HEADER_TEST_H
-
 #include <map>
 #include <string>
 
@@ -8,7 +5,7 @@ namespace header_test {
     
 enum choice { red, blue };
 
-inline std::string choice_str(choice c)
+std::string choice_str(choice c)
 {
     std::map<choice, std::string> choice_map;
     choice_map[red] = "red";
@@ -27,5 +24,3 @@ struct C
 };
 
 }
-
-#endif

@@ -1,11 +1,11 @@
 import unittest
-from basic import *
+import os
 
 class BasicExampleTest(unittest.TestCase):
 
     def testIt(self):
+        from basic import C, call_f
 
-        # test virtual functions
         class D(C):
             def f(self, x=10):
                 return x+1
@@ -21,45 +21,6 @@ class BasicExampleTest(unittest.TestCase):
         self.assertEqual(call_f(c, 4), 8)
         self.assertEqual(call_f(d), 11)
         self.assertEqual(call_f(d, 3), 4)
-        
-        # test data members
-        def testValue(value):
-            self.assertEqual(c.value, value)
-            self.assertEqual(d.value, value) 
-            self.assertEqual(get_value(c), value)
-            self.assertEqual(get_value(d), value)
-        testValue(1)
-        c.value = 30
-        d.value = 30
-        testValue(30)
-        self.assertEqual(c.const_value, 0)
-        self.assertEqual(d.const_value, 0)
-        def set_const_value():
-            c.const_value = 12
-        self.assertRaises(AttributeError, set_const_value)
-        
-        # test static data-members
-        def testStatic(value):
-            self.assertEqual(C.static_value, value)
-            self.assertEqual(c.static_value, value)
-            self.assertEqual(D.static_value, value)
-            self.assertEqual(d.static_value, value)
-            self.assertEqual(get_static(), value)
-        testStatic(3)
-        C.static_value = 10
-        testStatic(10)
-        self.assertEqual(C.const_static_value, 100)
-        def set_const_static():
-            C.const_static_value = 1
-        self.assertRaises(AttributeError, set_const_static)
-
-        # test static function
-        def test_mul(result, *args):
-            self.assertEqual(C.mul(*args), result)
-            self.assertEqual(c.mul(*args), result)
-        test_mul(6)
-        test_mul(3, 1)
-        test_mul(16, 8, 2)
 
 
 if __name__ == '__main__':

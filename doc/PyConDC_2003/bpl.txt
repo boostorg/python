@@ -9,9 +9,11 @@
 
 :Author: Ralf W. Grosse-Kunstleve
 
+:status: Draft
 :copyright: Copyright David Abrahams and Ralf W. Grosse-Kunstleve 2003. All rights reserved
 
 .. contents:: Table of Contents
+
 
 .. _`Boost Consulting`: http://www.boost-consulting.com
 
@@ -629,22 +631,19 @@ virtual functions.  At least one very promising project has been
 started to write a front-end which can generate these dispatchers (and
 other wrapping code) automatically from C++ headers.  
 
-Pyste_ is being developed by Bruno da Silva de Oliveira.  It builds on
-GCC_XML_, which generates an XML version of GCC's internal program
-representation.  Since GCC is a highly-conformant C++ compiler, this
-ensures correct handling of the most-sophisticated template code and
-full access to the underlying type system.  In keeping with the
-Boost.Python philosophy, a Pyste interface description is neither
-intrusive on the code being wrapped, nor expressed in some unfamiliar
-language: instead it is a 100% pure Python script.  If Pyste is
-successful it will mark a move away from wrapping everything directly
-in C++ for many of our users.  It will also allow us the choice to
-shift some of the metaprogram code from C++ to Python.  We expect that
-soon, not only our users but the Boost.Python developers themselves
-will be "thinking hybrid" about their own code.
+Pyste builds on GCC_XML_, which generates an XML version of GCC's
+internal program representation.  Since GCC is a highly-conformant C++
+compiler, this ensures correct handling of the most-sophisticated
+template code and full access to the underlying type system.  In
+keeping with the Boost.Python philosophy, a Pyste interface
+description is neither intrusive on the code being wrapped, nor
+expressed in some unfamiliar language: instead it is a 100% pure
+Python script.  If Pyste is successful it will mark a move away from
+wrapping everything directly in C++ for many of our users.  We expect
+that soon, not only our users but the Boost.Python developers
+themselves will be "thinking hybrid" about their own code.
 
 .. _`GCC_XML`: http://www.gccxml.org/HTML/Index.html
-.. _`Pyste`: http://www.boost.org/libs/python/pyste
 
 ---------------
  Serialization
@@ -771,6 +770,15 @@ This almost looks and works like regular Python code, but it is pure
 C++.  Of course we can wrap C++ functions which accept or return
 ``object`` instances.
 
+.. =====================
+    Development history
+   =====================
+
+   XXX Outline of development history to illustrate that the
+   library is mature. XXX
+
+   This can be postponed for the PyConDC paper
+
 =================
  Thinking hybrid
 =================
@@ -808,7 +816,7 @@ mainly concentrated on the C++ parts.  However, as the toolbox is
 becoming more complete, more and more newly added functionality can be
 implemented in Python.
 
-.. image:: python_cpp_mix.jpg
+.. image:: python_cpp_mix.png
 
 This figure shows the estimated ratio of newly added C++ and Python
 code over time as new algorithms are implemented.  We expect this
@@ -817,87 +825,6 @@ mostly in Python rather than a more difficult statically typed
 language is the return on our investment in Boost.Python.  The ability
 to access all of our code from Python allows a broader group of
 developers to use it in the rapid development of new applications.
-
-=====================
- Development history
-=====================
-
-The first version of Boost.Python was developed in 2000 by Dave
-Abrahams at Dragon Systems, where he was privileged to have Tim Peters
-as a guide to "The Zen of Python".  One of Dave's jobs was to develop
-a Python-based natural language processing system.  Since it was
-eventually going to be targeting embedded hardware, it was always
-assumed that the compute-intensive core would be rewritten in C++ to
-optimize speed and memory footprint [#proto]_.  The project also wanted to
-test all of its C++ code using Python test scripts [#test]_.  The only
-tool we knew of for binding C++ and Python was SWIG_, and at the time
-its handling of C++ was weak.  It would be false to claim any deep
-insight into the possible advantages of Boost.Python's approach at
-this point.  Dave's interest and expertise in fancy C++ template
-tricks had just reached the point where he could do some real damage,
-and Boost.Python emerged as it did because it filled a need and
-because it seemed like a cool thing to try.
-
-This early version was aimed at many of the same basic goals we've
-described in this paper, differing most-noticeably by having a
-slightly more cumbersome syntax and by lack of special support for
-operator overloading, pickling, and component-based development.
-These last three features were quickly added by Ullrich Koethe and
-Ralf Grosse-Kunstleve [#feature]_, and other enthusiastic contributors arrived
-on the scene to contribute enhancements like support for nested
-modules and static member functions.
-
-By early 2001 development had stabilized and few new features were
-being added, however a disturbing new fact came to light: Ralf had
-begun testing Boost.Python on pre-release versions of a compiler using
-the EDG_ front-end, and the mechanism at the core of Boost.Python
-responsible for handling conversions between Python and C++ types was
-failing to compile.  As it turned out, we had been exploiting a very
-common bug in the implementation of all the C++ compilers we had
-tested.  We knew that as C++ compilers rapidly became more
-standards-compliant, the library would begin failing on more
-platforms.  Unfortunately, because the mechanism was so central to the
-functioning of the library, fixing the problem looked very difficult.
-
-Fortunately, later that year Lawrence Berkeley and later Lawrence
-Livermore National labs contracted with `Boost Consulting`_ for support
-and development of Boost.Python, and there was a new opportunity to
-address fundamental issues and ensure a future for the library.  A
-redesign effort began with the low level type conversion architecture,
-building in standards-compliance and support for component-based
-development (in contrast to version 1 where conversions had to be
-explicitly imported and exported across module boundaries).  A new
-analysis of the relationship between the Python and C++ objects was
-done, resulting in more intuitive handling for C++ lvalues and
-rvalues.
-
-The emergence of a powerful new type system in Python 2.2 made the
-choice of whether to maintain compatibility with Python 1.5.2 easy:
-the opportunity to throw away a great deal of elaborate code for
-emulating classic Python classes alone was too good to pass up.  In
-addition, Python iterators and descriptors provided crucial and
-elegant tools for representing similar C++ constructs.  The
-development of the generalized ``object`` interface allowed us to
-further shield C++ programmers from the dangers and syntactic burdens
-of the Python 'C' API.  A great number of other features including C++
-exception translation, improved support for overloaded functions, and
-most significantly, CallPolicies for handling pointers and
-references, were added during this period.
-
-In October 2002, version 2 of Boost.Python was released.  Development
-since then has concentrated on improved support for C++ runtime
-polymorphism and smart pointers.  Peter Dimov's ingenious
-``boost::shared_ptr`` design in particular has allowed us to give the
-hybrid developer a consistent interface for moving objects back and
-forth across the language barrier without loss of information.  At
-first, we were concerned that the sophistication and complexity of the
-Boost.Python v2 implementation might discourage contributors, but the
-emergence of Pyste_ and several other significant feature
-contributions have laid those fears to rest.  Daily questions on the
-Python C++-sig and a backlog of desired improvements show that the
-library is getting used.  To us, the future looks bright.
-
-.. _`EDG`: http://www.edg.com
 
 =============
  Conclusions
@@ -924,24 +851,3 @@ the ground up, we can approach design with new confidence and power.
 .. [VELD1995] T. Veldhuizen, "Expression Templates," C++ Report,
    Vol. 7 No. 5 June 1995, pp. 26-31.
    http://osl.iu.edu/~tveldhui/papers/Expression-Templates/exprtmpl.html
-
-===========
- Footnotes
-===========
-
-.. [#proto] In retrospect, it seems that "thinking hybrid" from the
-        ground up might have been better for the NLP system: the
-        natural component boundaries defined by the pure python
-        prototype turned out to be inappropriate for getting the
-        desired performance and memory footprint out of the C++ core,
-        which eventually caused some redesign overhead on the Python
-        side when the core was moved to C++.
-
-.. [#test] We also have some reservations about driving all C++
-        testing through a Python interface, unless that's the only way
-        it will be ultimately used.  Any transition across language
-        boundaries with such different object models can inevitably
-        mask bugs.
-
-.. [#feature] These features were expressed very differently in v1 of
-        Boost.Python

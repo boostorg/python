@@ -105,7 +105,6 @@ class GCCXMLParser(object):
         else:
             res = Type(decl.FullName(), const)
             res.volatile = volatile
-            res.incomplete = decl.incomplete
         return res            
         
                 
@@ -222,7 +221,6 @@ class GCCXMLParser(object):
         bases = self.GetBases(element.get('bases'))        
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
-        incomplete = bool(element.get('incomplete', False))
         if isinstance(context, str): 
             class_ = Class(name, context, [], abstract, bases)
             self.AddDecl(class_)
@@ -234,7 +232,6 @@ class GCCXMLParser(object):
         # we have to add the declaration of the class before trying        
         # to parse its members, to avoid recursion.
         class_.location = location
-        class_.incomplete = incomplete
         self.Update(id, class_)       
         # now we can get the members
         class_.members = self.GetMembers(element.get('members'))
@@ -261,14 +258,14 @@ class GCCXMLParser(object):
     def ParseReferenceType(self, id, element):
         type_ = self.GetType(element.get('type'))
         expand = not isinstance(type_, FunctionType)
-        ref = ReferenceType(type_.name, type_.const, None, type_.incomplete, expand)
+        ref = ReferenceType(type_.name, type_.const, None, expand)
         self.Update(id, ref)
         
         
     def ParsePointerType(self, id, element):
         type_ = self.GetType(element.get('type'))
         expand = not isinstance(type_, FunctionType)
-        ref = PointerType(type_.name, type_.const, None, type_.incomplete, expand)
+        ref = PointerType(type_.name, type_.const, None, expand)
         self.Update(id, ref)
         
         

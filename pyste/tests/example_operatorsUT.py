@@ -19,7 +19,6 @@ class OperatorTest(unittest.TestCase):
         self.assertEqual(d(), 10)
         self.assertEqual(c(3.0), 13.0)
         self.assertEqual(d(6.0), 16.0)
-        self.assertEqual(str(c), "C")
 
 
 if __name__ == '__main__':

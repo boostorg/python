@@ -44,14 +44,12 @@
 # include <boost/python/object_protocol.hpp>
 # include <boost/python/object_protocol_core.hpp>
 # include <boost/python/operators.hpp>
-# include <boost/python/opaque_pointer_converter.hpp>
 # include <boost/python/other.hpp>
 # include <boost/python/overloads.hpp>
 # include <boost/python/pointee.hpp>
 # include <boost/python/ptr.hpp>
 # include <boost/python/reference_existing_object.hpp>
 # include <boost/python/return_internal_reference.hpp>
-# include <boost/python/return_opaque_pointer.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/scope.hpp>
 # include <boost/python/self.hpp>

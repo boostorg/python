@@ -7,7 +7,6 @@ from IncludeExporter import IncludeExporter
 from EnumExporter import EnumExporter
 from HeaderExporter import HeaderExporter
 from exporterutils import FunctionWrapper
-from utils import makeid
 
 
 #==============================================================================
@@ -91,7 +90,7 @@ class IncludeInfo(DeclarationInfo):
 def GenerateName(name, type_list):
     name = name.replace('::', '_')
     names = [name] + type_list
-    return makeid('_'.join(names))
+    return '_'.join(names) 
 
     
 class ClassTemplateInfo(DeclarationInfo):
@@ -185,11 +184,4 @@ def instantiate(template, types, rename=None):
     if isinstance(types, str):
         types = types.split()
     return template.Instantiate(types, rename)
-
-def use_shared_ptr(option):
-    option._Attribute('smart_ptr', 'boost::shared_ptr< %s >')
-
-def use_auto_ptr(option):
-    option._Attribute('smart_ptr', 'std::auto_ptr< %s >')
-        
     

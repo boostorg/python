@@ -30,7 +30,7 @@ Here's the interface file for it, named [^world.pyste]:
 
 and that's it!
 
-The next step is invoke Pyste in the command-line:
+The next step is invoke pyste in the command-line:
 
 [pre python pyste.py --module=hello world.pyste]
 
@@ -47,21 +47,20 @@ Pyste supports the following features:
 * Attributes 
 * Enums (both "free" enums and class enums)
 * Nested Classes
-* Support for [^boost::shared_ptr] and [^std::auto_ptr]
 
 [page Running Pyste]
 
-To run Pyste, you will need:
+To run pyste, you will need:
 
-* Python 2.2, available at [@http://www.python.org python's website].
+* Python 2.2, avaiable at [@http://www.python.org python's website].
 * The great [@http://effbot.org elementtree] library, from Fredrik Lundh.
 * The excellent GCCXML, from Brad King.
 
-Installation for the tools is available in their respective webpages.
+Installation for the tools is avaiable in their respective webpages.
 
 [blurb 
 [$theme/note.gif] GCCXML must be accessible in the PATH environment variable, so
-that Pyste can call it. How to do this varies from platform to platform.
+that pyste can call it. How to do this varies from platform to platform.
 ]
 
 [h2 Ok, now what?]
@@ -72,56 +71,31 @@ Well, now let's fire it up:
 '''
 >python pyste.py
 
-Pyste version 0.6.5
-
 Usage:
     pyste [options] --module=<name> interface-files
 
 where options are:
-    -I <path>           add an include path    
-    -D <symbol>         define symbol    
-    --multiple          create various cpps, instead of only one 
-                        (useful during development)                        
-    --out               specify output filename (default: <module>.cpp)
-                        in --multiple mode, this will be a directory
+    -I <path>           add an include path
+    -D <symbol>         define symbol
     --no-using          do not declare "using namespace boost";
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
-                        default is the empty namespace
-    --debug             writes the xml for each file parsed in the current
-                        directory
-    -h, --help          print this help and exit
-    -v, --version       print version information      
+                        default is "pyste"
 '''                        
 ]
 
 Options explained:
 
-The [^-I] and [^-D] are preprocessor flags, which are needed by GCCXML to parse
-the header files correctly and by Pyste to find the header files declared in the
+The [^-I] and [^-D] are preprocessor flags, which are needed by gccxml to parse the header files correctly and by pyste to find the header files declared in the
 interface files.
 
-[^--multiple] tells Pyste to generate multiple cpps for this module (one for
-each header parsed) in the directory named by [^--out], instead of the usual
-single cpp file. This mode is useful during development of a binding, because
-you are constantly changing source files, re-generating the bindings and
-recompiling. This saves a lot of time in compiling.
-
-[^--out] names the output file (default: [^<module>.cpp]), or in multiple mode,
-names a output directory for the files (default: [^<module>]).
-
-[^--no-using] tells Pyste to don't declare "[^using namespace boost;]" in the
+[^--no-using] tells pyste to don't declare "[^using namespace boost;]" in the
 generated cpp, using the namespace boost::python explicitly in all declarations.
 Use only if you're having a name conflict in one of the files.
 
 Use [^--pyste-ns] to change the namespace where new types are declared (for
-instance, the virtual wrappers). Use only if you are having any problems. By
-default, Pyste uses the empty namespace.
-
-[^--debug] will write in the current directory a xml file as outputted by GCCXML
-for each header parsed. Useful for bug reports.
-
-[^-h, --help, -v, --version] are self-explaining, I believe. ;)
+instance, the virtual wrappers). Use only if one of your header files declare a
+namespace named "pyste" and this is causing conflicts.
 
 So, the usage is simple enough:
 
@@ -129,13 +103,7 @@ So, the usage is simple enough:
 
 will generate a file [^mymodule.cpp] in the same dir where the command was
 executed. Now you can compile the file using the same instructions of the
-[@../../doc/tutorial/doc/building_hello_world.html tutorial]. Or, if you prefer:
-
-[pre >python pyste.py --module=mymodule --multiple file.pyste file2.pyste ...]
-
-will create a directory named "mymodule" in the current directory, and will
-generate a bunch of cpp files, one for each header exported. You can then
-compile them all into a single shared library (or dll).
+[@../../doc/tutorial/doc/building_hello_world.html tutorial]. 
 
 [h2 Wait... how do I set those I and D flags?]
 
@@ -152,15 +120,11 @@ which for Visual C++ 6 is normally located at:
 
 with that, you should have little trouble setting up the flags.
 
-[blurb [$theme/note.gif][*A note about Psyco][br][br]
-Although you don't have to install [@http://psyco.sourceforge.net/ Psyco] to use Pyste, if you do, Pyste will make use of it to speed up the wrapper generation. Speed ups of 30% can be achieved, so it's highly recommended.
-]
-
 [page The Interface Files]
 
 The interface files are the heart of Pyste. The user creates one or more
 interface files declaring the classes and functions he wants to export, and then
-invokes Pyste passing the interface files to it. Pyste then generates a single
+invokes pyste passing the interface files to it. Pyste then generates a single
 cpp file with Boost.Python code, with all the classes and functions exported.
 
 Besides declaring the classes and functions, the user has a number of other
@@ -221,14 +185,7 @@ with the function [^exclude]:
     exclude(World.greet)
     exclude(World.msg)
 
-To access the operators of a class, access the member [^operator] like this
-(supposing that [^C] is a class being exported):
-
-    exclude(C.operator['+'])
-    exclude(C.operator['*'])
-    exclude(C.operator['<<'])
-
-The string inside the brackets is the same as the name of the operator in C++.[br]
+Easy, huh? [$theme/smiley.gif]
 
 [page:1 Policies]
 
@@ -255,22 +212,15 @@ function:
 
 [blurb 
 [$theme/note.gif] [*What if a function or method needs a policy and the user
-doesn't set one?][br][br] If a function/method needs a policy and one was not
-set, Pyste will issue a error.  The user should then go in the interface file
-and set the policy for it, otherwise the generated cpp won't compile.
-]
-
-[blurb
-[$theme/note.gif] 
-Note that, for functions/methods that return [^const T&], the policy
-[^return_value_policy<copy_const_reference>()] wil be used by default, because
-that's normally what you want. You can change it to something else if you need
-to, though.
+doesn't set one?][br][br]
+If a function/method needs a policy and one was not set, Pyste will issue a error.
+The user should then go in the interface file and set the policy for it,
+otherwise the generated cpp won't compile.
 ]
 
 [page:1 Templates]
 
-Template classes can easily be exported too, but you can't export the template
+Template Classes can easily exported too, but you can't export the "Template"
 itself... you have to export instantiations of it! So, if you want to export a
 [^std::vector], you will have to export vectors of int, doubles, etc.
 
@@ -297,7 +247,7 @@ rename the instantiations:
     double_inst = Point("double")  // another way to do the same
     rename(double_inst, "DPoint")
 
-Note that you can rename, exclude, set policies, etc, in the [^Template] object
+Note that you can rename, exclude, set policies, etc, in the [^Template] class
 like you would do with a [^Function] or a [^Class]. This changes affect all
 [*future] instantiations:
 
@@ -318,7 +268,7 @@ If you want to change a option of a particular instantiation, you can do so:
 
 [blurb [$theme/note.gif] [*What if my template accepts more than one type?]
 [br][br]
-When you want to instantiate a template with more than one type, you can pass
+When you want to instantiate a Template with more than one type, you can pass
 either a string with the types separated by whitespace, or a list of strings
 '''("int double" or ["int", "double"]''' would both work).
 ]
@@ -329,20 +279,14 @@ Suppose you have this function:
 
     std::vector<std::string> names();
 
-But you don't want to export [^std::vector<std::string>], you want this function
-to return a python list of strings. Boost.Python has excellent support for
-that:
+But you don't want to export a vector<string>, you want this function to return
+a python list of strings. Boost.Python has an excellent support for that:
 
     list names_wrapper()
     {
         list result;
-        // call original function
         vector<string> v = names();
-        // put all the strings inside the python list
-        vector<string>::iterator it;
-        for (it = v.begin(); it != v.end(); ++it){
-            result.append(*it);    
-        }
+        // put each string in the vector in the list
         return result;
     }
     
@@ -351,8 +295,9 @@ that:
         def("names", &names_wrapper);
     }
 
-Nice heh? Pyste supports this mechanism too. You declare the [^names_wrapper]
-function in a header named "[^test_wrappers.h]" and in the interface file:
+Nice heh?
+Pyste supports this mechanism too. You declare the [^names_wrapper] function in a
+header, like "[^test_wrappers.h]", and in the interface file:
 
     Include("test_wrappers.h")
     names = Function("names", "test.h")
@@ -364,13 +309,13 @@ You can optionally declare the function in the interface file itself:
     """
     list names_wrapper()
     {
-        // code to call name() and convert the vector to a list...
+        // call name() and convert the vector to a list...
     }
     """)
     names = Function("names", "test.h")
     set_wrapper(names, names_wrapper)
 
-The same mechanism can be used with methods too. Just remember that the first
+The same mechanism can be done with methods too. Just remember that the first
 parameter of wrappers for methods is a pointer to the class, like in
 Boost.Python:
 
@@ -381,20 +326,13 @@ Boost.Python:
 
     list names_wrapper(C* c)
     {
-        // same as before, calling c->names() and converting result to a list 
+        // same as before, calling c->names() and converting result to a list
     }
 
 And then in the interface file:
 
     C = Class("C", "test.h")
     set_wrapper(C.names, "names_wrapper")
-
-[blurb 
-[$theme/note.gif]Even though Boost.Python accepts either a pointer or a
-reference to the class in wrappers for member functions as the first parameter,
-Pyste expects them to be a [*pointer]. Doing otherwise will prevent your
-code to compile when you set a wrapper for a virtual method.
-]
 
 [page:1 Exporting All Declarations from a Header]
 
@@ -429,39 +367,4 @@ the members of the header object like this:
 
     rename(hello.World.greet, "Greet")
     exclude(hello.World.set, "Set")
-
-
-[page:1 Smart Pointers]
-
-Pyste for now has manual support for smart pointers. Suppose:
-
-    struct C
-    {
-        int value;
-    };
-
-    boost::shared_ptr<C> newC(int value)
-    {
-        boost::shared_ptr<C> c( new C() );
-        c->value = value;
-        return c;
-    }
-
-    void printC(boost::shared_ptr<C> c)
-    {
-        std::cout << c->value << std::endl;
-    }
-
-To make [^newC] and [^printC] work correctly, you have to tell Pyste that a
-convertor for [^boost::shared_ptr<C>] is needed.
-
-    C = Class('C', 'C.h')
-    use_shared_ptr(C)
-    Function('newC', 'C.h')
-    Function('printC', 'C.h')
-
-For [^std::auto_ptr]'s, use the function [^use_auto_ptr].
-
-This system is temporary, and in the future the converters will automatically be
-exported if needed, without the need to tell Pyste about them explicitly.
 

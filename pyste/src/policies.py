@@ -19,13 +19,6 @@ class Policy:
             return ' >'
 
 
-    def __eq__(self, other):
-        try:
-            return self.Code() == other.Code()
-        except AttributeError:
-            return False
-
-
 
 class return_internal_reference(Policy):
     'Ties the return value to one of the parameters.'
@@ -80,4 +73,3 @@ reference_existing_object = 'reference_existing_object'
 copy_const_reference = 'copy_const_reference'
 copy_non_const_reference = 'copy_non_const_reference'
 manage_new_object = 'manage_new_object'        
-return_opaque_pointer = 'return_opaque_pointer'

@@ -29,10 +29,6 @@
     <hr>
 
     <dl class="page-index">
-
-      <dt><a href="#funcptr">How can I wrap a function which takes a
-      function pointer as an argument?</a><dd>
-
       <dt><a href="#dangling">I'm getting the "attempt to return dangling
       reference" error. What am I doing wrong?</a></dt>
 
@@ -58,57 +54,6 @@
       <dt><a href="#ownership">How can I wrap a function which needs to take
       ownership of a raw pointer?</a></dt>
     </dl>
-    <hr>
-
-    <h2><a name="funcptr">How can I wrap a function which takes a
-      function pointer as an argument?</a></h2>
-
-    If what you're trying to do is something like this:
-<pre>
-typedef boost::function&lt;void (string s) &gt; funcptr;
-
-void foo(funcptr fp)
-{
-    fp(&quot;hello,world!&quot;);
-}
-
-BOOST_PYTHON_MODULE(test)
-{
-    def(&quot;foo&quot;,foo) ;
-}
-</pre>
-
-And then:
-
-<pre>
-&gt;&gt;&gt; def hello(s):
-...    print s 
-...
-&gt;&gt;&gt; foo(hello)
-hello, world!
-</pre>
-
-    The short answer is: &quot;you can't&quot;.  This is not a
-    Boost.Python limitation so much as a limitation of C++.  The
-    problem is that a Python function is actually data, and the only
-    way of associating data with a C++ function pointer is to store it
-    in a static variable of the function.  The problem with that is
-    that you can only associate one piece of data with every C++
-    function, and we have no way of compiling a new C++ function
-    on-the-fly for every Python function you decide to pass
-    to <code>foo</code>.  In other words, this could work if the C++
-    function is always going to invoke the <em>same</em> Python
-    function, but you probably don't want that.
-
-    <p>If you have the luxury of changing the C++ code you're
-    wrapping, pass it an <code>object</code> instead and call that;
-    the overloaded function call operator will invoke the Python
-    function you pass it behind the <code>object</code>.
-
-    <p>For more perspective on the issue, see <a
-    href="http://aspn.activestate.com/ASPN/Mail/Message/1554837">this
-    posting</a>.
-
     <hr>
 
     <h2><a name="dangling">I'm getting the "attempt to return dangling
@@ -547,7 +492,7 @@ void b_insert(B&amp; b, std::auto_ptr&lt;A&gt; a)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     18 March, 2003 
+     23 January, 2003 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 

@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../src')  
+sys.path.append('..')  
 import unittest
 from policies import *
 
@@ -35,8 +35,7 @@ class PoliciesTest(unittest.TestCase):
         self.assertEqual(x.Code(), ret % 'copy_non_const_reference') 
         x = return_value_policy(manage_new_object)
         self.assertEqual(x.Code(), ret % 'manage_new_object') 
-        x = return_value_policy(return_opaque_pointer)
-        self.assertEqual(x.Code(), ret % 'return_opaque_pointer') 
+
 
     def testReturnWithCustodiam(self):
         'test the mix of return_internal with custodian'

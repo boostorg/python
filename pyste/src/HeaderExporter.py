@@ -63,12 +63,5 @@ class HeaderExporter(Exporter):
         exporter.SetDeclarations(self.declarations)
         exporters.exporters.append(exporter)
 
-    
-    def Unit(self):
-        return None # doesn't write anything by himself
-
-
-    def Order(self):
-        return self.info.include
 
         

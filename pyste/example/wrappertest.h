@@ -6,7 +6,7 @@
 
 namespace wrappertest {
 
-inline std::vector<int> Range(int count)
+std::vector<int> Range(int count)
 {
     std::vector<int> v;
     v.reserve(count);
@@ -34,13 +34,6 @@ struct C
     }
 };
 
-
-struct A
-{
-    virtual int f() { return 1; };
-};
-
-inline int call_foo(A* a){ return a->f(); }
 } 
 #endif
 

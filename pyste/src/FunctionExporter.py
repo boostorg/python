@@ -2,30 +2,37 @@ from Exporter import Exporter
 from policies import *
 from declarations import *
 from settings import *
-import utils
-import exporterutils
 
 
-#==============================================================================
-# FunctionExporter
-#==============================================================================
 class FunctionExporter(Exporter):
     'Generates boost.python code to export the given function.'
     
     def __init__(self, info, tail=None):
         Exporter.__init__(self, info, tail)
-        self._exported_opaque_pointers = {}
         
         
     def Export(self, codeunit, exported_names):
         decls = self.GetDeclarations(self.info.name)
         for decl in decls:
-            self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
-            exporterutils.WarnForwardDeclarations(decl)
+            self.CheckPolicy(decl)
             self.ExportDeclaration(decl, len(decls) == 1, codeunit)
-            self.ExportOpaquePointer(decl, codeunit)
-        self.GenerateOverloads(decls, codeunit)  
+        self.GenerateOverloads(decls, codeunit)            
 
+
+    def Name(self):
+        return self.info.name
+
+
+    def CheckPolicy(self, func):
+        'Warns the user if this function needs a policy'            
+        def IsString(type):
+            return type.const and type.name == 'char' and isinstance(type, PointerType)    
+        needs_policy = isinstance(func.result, (ReferenceType, PointerType))
+        if IsString(func.result):
+            needs_policy = False
+        if needs_policy and self.info.policy is None:
+            print '---> Error: Function "%s" needs a policy.' % func.FullName() 
+            print 
 
     def ExportDeclaration(self, decl, unique, codeunit):
         name = self.info.rename or decl.name
@@ -76,19 +83,3 @@ class FunctionExporter(Exporter):
         else:
             return ''
 
-
-    def ExportOpaquePointer(self, function, codeunit):
-        if self.info.policy == return_value_policy(return_opaque_pointer):
-            type = function.result.name
-            macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)' % type
-            if macro not in self._exported_opaque_pointers:
-                codeunit.Write('declaration-outside', macro)
-                self._exported_opaque_pointers[macro] = 1
-
-
-    def Order(self):
-        return self.info.name
-
-
-    def Unit(self):
-        return utils.makeid(self.info.include)
