@@ -616,7 +616,8 @@ class _VirtualWrapperGenerator(object):
         decl += indent + '}\n'
 
         # default implementations (with overloading)
-        if not method.abstract:
+        # only for classes that are not abstract, and public methods 
+        if not method.abstract and method.visibility == Scope.public:
             minArgs = method.minArgs
             maxArgs = method.maxArgs
             impl_names = self.DefaultImplementationNames(method)
@@ -634,8 +635,6 @@ class _VirtualWrapperGenerator(object):
         '''Returns a list of lines, which should be put inside the class_
         statement to export this method.'''
         # dont define abstract methods
-        if method.abstract:
-            return []
         pyste = namespaces.pyste
         rename = self.info[method.name].rename or method.name
         default_names = self.DefaultImplementationNames(method)
@@ -685,7 +684,7 @@ class _VirtualWrapperGenerator(object):
             return type(m) == Method and m.virtual        
         return [m for m in self.class_.members if IsVirtual(m)]
         
-    		
+            
     
     def Constructors(self):
         def IsValid(m):
@@ -696,9 +695,10 @@ class _VirtualWrapperGenerator(object):
     def GenerateDefinitions(self):
         defs = []
         for method in self.VirtualMethods():
-            if method.visibility == Scope.public:
-                if not self.info[method.name].exclude:
-                    defs.extend(self.MethodDefinition(method))            
+            exclude = self.info[method.name].exclude
+            # generate definitions only for public methods and non-abstract methods
+            if method.visibility == Scope.public and not method.abstract and not exclude:
+                defs.extend(self.MethodDefinition(method))
         return defs
 
         
@@ -710,7 +710,7 @@ class _VirtualWrapperGenerator(object):
         code = 'struct %s: %s\n' % (self.wrapper_name, class_name)
         code += '{\n'
         # generate constructors (with the overloads for each one)
-        for cons in self.Constructors():
+        for cons in self.Constructors(): # only public constructors
             minArgs = cons.minArgs
             maxArgs = cons.maxArgs
             # from the min number of arguments to the max number, generate
