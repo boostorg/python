@@ -59,6 +59,8 @@ BOOST_PYTHON_MODULE(testsuite)
 {
   boost::python::implicitly_convertible <int, IntWrapper>();
 
+  boost::python::def ("setTrace", &IntWrapper::setTrace);
+
   boost::python::class_<IntWrapper> ("IntWrapper", boost::python::init<int>())
     .def ("increment", &IntWrapper::increment)
     .def ("__repr__", repr);
