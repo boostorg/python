@@ -14,6 +14,7 @@
 # include <boost/python/object/forward.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/preprocessor/enum_params.hpp>
+# include <boost/preprocessor/expr_if.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
