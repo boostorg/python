@@ -66,8 +66,8 @@ class python_import_extension_class_converters
         return python_import_extension_class_converters();
     }
 
-    PyObject* to_python(boost::python::semantics, const T& x) const {
-        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(boost::python::search_namespace, x);
+    PyObject* member_to_python(const T& x) const {
+        return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 
     friend T* from_python(PyObject* p, boost::python::type<T*> t, bool sig = false) {
@@ -102,7 +102,7 @@ class python_import_extension_class_converters
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_caTr(p, t);
     }
     friend PyObject* to_python(boost::python::semantics, std::auto_ptr<T> x, bool sig = false) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(boost::python::search_namespace, x);
+        return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&> t, bool sig = false) {
@@ -115,15 +115,13 @@ class python_import_extension_class_converters
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_csTr(p, t);
     }
     friend PyObject* to_python(boost::python::semantics, boost::shared_ptr<T> x, bool sig = false) {
-        return boost::python::detail::import_extension_class<T>::get_converters()->to_python(x);
+        return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 };
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python {
-
-BOOST_PYTHON_IMPORT_CONVERSION(python_import_extension_class_converters);
 
 /* This class template is instantiated by export_converters().
    A pointer to this class is exported/imported via the Python API.
@@ -140,7 +138,7 @@ struct export_converter_object_base
     virtual int get_api_major() const { return detail::export_converters_api_major; }
     virtual int get_api_minor() const { return detail::export_converters_api_minor; }
 
-    virtual PyObject* to_python(const T& x) = 0;
+    virtual PyObject* dispatcher_to_python(const T& x) = 0;
 
     virtual T* from_python_Ts(PyObject* p, type<T*> t) = 0;
     virtual const T* from_python_cTs(PyObject* p, type<const T*> t) = 0;
@@ -153,21 +151,21 @@ struct export_converter_object_base
     virtual std::auto_ptr<T>& from_python_aTr(PyObject* p, type<std::auto_ptr<T>&> t) = 0;
     virtual std::auto_ptr<T> from_python_aT(PyObject* p, type<std::auto_ptr<T> > t) = 0;
     virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, type<const std::auto_ptr<T>&> t) = 0;
-    virtual PyObject* to_python(std::auto_ptr<T> x) = 0;
+    virtual PyObject* dispatcher_to_python(std::auto_ptr<T> x) = 0;
 
     virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, type<boost::shared_ptr<T>&> t) = 0;
     virtual const boost::shared_ptr<T>& from_python_sT(PyObject* p, type<boost::shared_ptr<T> > t) = 0;
     virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, type<const boost::shared_ptr<T>&> t) = 0;
-    virtual PyObject* to_python(boost::shared_ptr<T> x) = 0;
+    virtual PyObject* dispatcher_to_python(boost::shared_ptr<T> x) = 0;
 };
 
 // Converters to be used if T is not copyable.
 template <class T>
 struct export_converter_object_noncopyable : export_converter_object_base<T>
 {
-    virtual PyObject* to_python(const T& x) {
+    virtual PyObject* dispatcher_to_python(const T& x) {
         PyErr_SetString(PyExc_RuntimeError,
-          "to_python(const T&) converter not exported");
+        "to_python(boost::python::semantics, const T&) converter not exported");
         throw import_error();
     }
 
@@ -202,8 +200,8 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
     virtual const std::auto_ptr<T>& from_python_caTr(PyObject* p, type<const std::auto_ptr<T>&> t) {
         return from_python(p, t);
     }
-    virtual PyObject* to_python(std::auto_ptr<T> x) {
-        return to_python(x);
+    virtual PyObject* dispatcher_to_python(std::auto_ptr<T> x) {
+        return to_python(search_namespace, x);
     }
 
     virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, type<boost::shared_ptr<T>&> t) {
@@ -215,8 +213,8 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
     virtual const boost::shared_ptr<T>& from_python_csTr(PyObject* p, type<const boost::shared_ptr<T>&> t) {
         return from_python(p, t);
     }
-    virtual PyObject* to_python(boost::shared_ptr<T> x) {
-        return to_python(x);
+    virtual PyObject* dispatcher_to_python(boost::shared_ptr<T> x) {
+        return to_python(search_namespace, x);
     }
 };
 
@@ -224,8 +222,8 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
 template <class T>
 struct export_converter_object : export_converter_object_noncopyable<T>
 {
-    virtual PyObject* to_python(const T& x) {
-        return BOOST_PYTHON_CONVERSION::py_extension_class_converters(type<T>()).to_python(x);
+    virtual PyObject* dispatcher_to_python(const T& x) {
+        return py_extension_class_converters(type<T>()).member_to_python(x);
     }
 };
 

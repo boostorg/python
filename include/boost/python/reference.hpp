@@ -38,8 +38,6 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_IMPORT_CONVERSION(py_ptr_conversions);
-
 template <class T>
 class reference
 	: public py_ptr_conversions<reference<T>, T,

@@ -195,7 +195,7 @@ class python_extension_class_converters
     }
 
     /// This is a member function because in a conforming implementation, friend
-    /// funcitons defined inline in the class body are all instantiated as soon
+    /// functions defined inline in the class body are all instantiated as soon
     /// as the enclosing class is instantiated. If T is not copyable, that causes
     /// a compiler error. Instead, we access this function through the global
     /// template 
@@ -205,7 +205,7 @@ class python_extension_class_converters
     /// defined below this class. Since template functions are instantiated only
     /// on demand, errors will be avoided unless T is noncopyable and the user
     /// writes code which causes us to try to copy a T.
-    PyObject* to_python(const T& x) const
+    PyObject* member_to_python(const T& x) const
     {
         boost::python::reference<boost::python::detail::extension_instance> result(create_instance());
         result->add_implementation(
@@ -240,13 +240,8 @@ class python_extension_class_converters
     /// Convert obj to T*. If obj == None, returns 0.
     friend T* from_python(PyObject* obj, boost::python::type<T*>)
     {
-        // forward declaration needed for ordinary lookup.
-        T* non_null_from_python(PyObject*, boost::python::type<T*>);
-        
-        if (obj == Py_None)
-            return 0;
-        else
-            return non_null_from_python(obj, boost::python::type<T*>());
+        if (obj == Py_None) return 0;
+        return non_null_from_python(obj, boost::python::type<T*>());
     }
 
     /// Extract from obj a mutable reference to the PtrType object which is holding a T.
@@ -369,14 +364,12 @@ class python_extension_class_converters
 template <class T>
 PyObject* to_python(boost::python::semantics, const T& x)
 {
-    return py_extension_class_converters(boost::python::type<T>()).to_python(x);
+    return py_extension_class_converters(boost::python::type<T>()).member_to_python(x);
 }
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python {
-
-BOOST_PYTHON_IMPORT_CONVERSION(python_extension_class_converters);
 
 namespace detail {
 

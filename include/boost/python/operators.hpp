@@ -239,7 +239,7 @@ namespace detail
           {                                                                             \
               tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return to_python(search_namespace                                         \
+              return to_python(search_namespace,                                        \
                   from_python(args[0].get(), type<Left>()) oper                         \
                   from_python(args[1].get(), type<Right>()));                           \
           }                                                                             \
@@ -255,7 +255,7 @@ namespace detail
           {                                                                             \
               tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return to_python(search_namespace                                         \
+              return to_python(search_namespace,                                        \
                   from_python(args[1].get(), type<Left>()) oper                         \
                   from_python(args[0].get(), type<Right>()));                           \
           }                                                                             \
