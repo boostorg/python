@@ -101,7 +101,7 @@ class list : public object
     explicit list(std::size_t sz = 0);
     static PyTypeObject* type_obj();
     static bool accepts(ref p);
-    std::size_t size();
+    std::size_t size() const;
     ref operator[](std::size_t pos) const;
     proxy operator[](std::size_t pos);
     ref get_item(std::size_t pos) const;
@@ -283,7 +283,7 @@ struct list::slice_proxy
     const list& operator=(const list& rhs);
     operator ref() const;
     operator list() const;
-    std::size_t size();
+    std::size_t size() const;
     ref operator[](std::size_t pos) const;
  private:
     friend class list;

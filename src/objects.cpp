@@ -362,7 +362,7 @@ bool list::accepts(ref p)
     return PyList_Check(p.get());
 }
 
-std::size_t list::size()
+std::size_t list::size() const
 {
     return PyList_Size(get());
 }
@@ -467,7 +467,7 @@ list::slice_proxy::operator list() const
     return list(this->operator ref());
 }
 
-std::size_t list::slice_proxy::size()
+std::size_t list::slice_proxy::size() const
 {
     return this->operator list().size();
 }
