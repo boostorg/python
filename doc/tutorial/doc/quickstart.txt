@@ -1058,7 +1058,7 @@ Notice the use of [^init<...>] and [^optional<...>] to signify the default
 [page:1 Auto-Overloading]
 
 It was mentioned in passing in the previous section that
-[^BOOST_PYTHON_FUNCTION_OVERLOADS] and [^BOOST_PYTHON_FUNCTION_OVERLOADS]
+[^BOOST_PYTHON_FUNCTION_OVERLOADS] and [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]
 can also be used for overloaded functions and member functions with a
 common sequence of initial arguments. Here is an example:
 
