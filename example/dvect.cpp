@@ -1,9 +1,12 @@
-#include "ivect.h"
 #include "dvect.h"
+#include "ivect.h"
 #include <boost/python/cross_module.hpp>
 namespace python = boost::python;
 
 namespace {
+
+# include "dvect_conversions.cpp"
+# include "ivect_conversions.cpp"
 
   vects::ivect dvect_as_ivect(const vects::dvect& dv)
   {
@@ -12,36 +15,9 @@ namespace {
     for (int i = 0; i < dv.size(); i++) iviter[i] = static_cast<int>(dv[i]);
     return iv;
   }
-
-  boost::python::tuple ivect_as_tuple(const vects::ivect& iv)
-  {
-    return iv.as_tuple();
-  }
-
-  std::auto_ptr<vects::ivect> auto_ptr_ivect(const vects::dvect& dv)
-  {
-    return std::auto_ptr<vects::ivect>(new vects::ivect(dvect_as_ivect(dv)));
-  }
-
-  boost::shared_ptr<vects::ivect> shared_ptr_ivect(const vects::dvect& dv)
-  {
-    return boost::shared_ptr<vects::ivect>(new vects::ivect(dvect_as_ivect(dv)));
-  }
-
-  boost::python::tuple auto_ptr_ivect_as_tuple(std::auto_ptr<vects::ivect>& iv)
-  {
-    return iv->as_tuple();
-  }
-
-  boost::python::tuple shared_ptr_ivect_as_tuple(boost::shared_ptr<vects::ivect>& iv)
-  {
-    return iv->as_tuple();
-  }
 }
 
-extern "C"
-DL_EXPORT(void)
-initdvect()
+BOOST_PYTHON_MODULE_INIT(dvect)
 {
   try
   {
@@ -56,11 +32,8 @@ initdvect()
     dvect_class.def(&vects::dvect::as_tuple, "as_tuple");
     dvect_class.def(dvect_as_ivect, "as_ivect");
 
-    this_module.def(ivect_as_tuple, "ivect_as_tuple");
-    dvect_class.def(auto_ptr_ivect, "auto_ptr_ivect");
-    dvect_class.def(shared_ptr_ivect, "shared_ptr_ivect");
-    this_module.def(auto_ptr_ivect_as_tuple, "auto_ptr_ivect_as_tuple");
-    this_module.def(shared_ptr_ivect_as_tuple, "shared_ptr_ivect_as_tuple");
+# include "dvect_defs.cpp"
+# include "ivect_defs.cpp"
   }
   catch(...)
   {
