@@ -46,10 +46,11 @@ namespace boost { namespace python { namespace converter {
 // stored in the construct field.
 //
 // If no appropriate converter is found, conversion fails and the
-// convertible field is null. This step is expected not to throw an
-// exception, and when used in argument conversion for wrapped C++
-// functions, it causes overload resolution to reject the current
-// function but not to fail completely. If
+// convertible field is null. When used in argument conversion for
+// wrapped C++ functions, it causes overload resolution to reject the
+// current function but not to fail completely. If an exception is
+// thrown, overload resolution stops and the exception propagates back
+// through the caller.
 //
 // If an lvalue converter is matched, its convertible() function is
 // expected to return a pointer to the stored T object; its
