@@ -61,7 +61,7 @@ class FunctionExporter(Exporter):
             overload = self.OverloadName(decl)
             if overload and overload not in codes:
                 code = 'BOOST_PYTHON_FUNCTION_OVERLOADS(%s, %s, %i, %i)' %\
-                    (overload, decl.FullName(), decl.minArgs, decl_.maxArgs)
+                    (overload, decl.FullName(), decl.minArgs, decl.maxArgs)
                 codeunit.Write('declaration', code + '\n')
                 codes[overload] = None
         

@@ -797,9 +797,12 @@ class _VirtualWrapperGenerator(object):
         This method creates the instance variable self.virtual_methods.
         '''        
         def IsVirtual(m):
-            return type(m) is Method and \
-                m.virtual and \
-                m.visibility != Scope.private
+            if type(m) is Method:
+                pure_virtual = m.abstract and m.virtual
+                virtual = m.virtual and m.visibility != Scope.private
+                return virtual or pure_virtual
+            else:
+                return False
                 
         # extract the virtual methods, avoiding duplications. The duplication
         # must take in account the full signature without the class name, so 

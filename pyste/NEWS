@@ -1,3 +1,7 @@
+4 September 2003
+Now it is possible to override protected and private pure virtual functions
+in Python, as requested by Roman Yakovenko.
+
 23 August 2003
 Fixed bug where some Imports where not writing their include files.  
 Now whenever the declarations change, the cache files are rebuilt
