@@ -82,20 +82,6 @@ class ClassInfo(DeclarationInfo):
         
 
 #==============================================================================
-# IncludeInfo
-#==============================================================================
-class IncludeInfo(DeclarationInfo):
-
-    def __init__(self, include):
-        DeclarationInfo.__init__(self)
-        self._Attribute('include', include)
-        exporter = IncludeExporter(InfoWrapper(self))
-        if exporter not in exporters.exporters: 
-            exporters.exporters.append(exporter)        
-        exporter.interface_file = exporters.current_interface 
-
-
-#==============================================================================
 # templates
 #==============================================================================
 def GenerateName(name, type_list):

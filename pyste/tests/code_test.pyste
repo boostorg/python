@@ -1,5 +1,5 @@
 Class('A', 'code_test.h')
-header_code('#include <string>\n')
+Include('string')
 global_declaration_code('''
 int get(A& a) { return a.x; }
 
