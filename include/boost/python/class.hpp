@@ -46,6 +46,11 @@
 # include <boost/utility.hpp>
 # include <boost/detail/workaround.hpp>
 
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+#  include <boost/mpl/and.hpp>
+#  include <boost/type_traits/is_member_pointer.hpp>
+# endif
+
 namespace boost { namespace python {
 
 enum no_init_t { no_init };
@@ -97,6 +102,16 @@ namespace detail
       SelectHolder::register_();
   }
 
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+  template <class T>
+  struct is_data_member_pointer
+      : mpl::and_<
+            is_member_pointer<T>
+          , mpl::not_<is_member_function_pointer<T> >
+        >
+  {};
+# endif
+  
   namespace error
   {
     //
@@ -293,25 +308,53 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readonly(char const* name, D const& d)
     {
-        return this->def_readonly_impl(name, d, 0);
+        return this->def_readonly_impl(
+            name, d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+          , detail::is_data_member_pointer<D>()
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+          , 0
+# endif 
+            );
     }
 
     template <class D>
     self& def_readwrite(char const* name, D const& d)
     {
-        return this->def_readwrite_impl(name, d, 0);
+        return this->def_readwrite_impl(
+            name, d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+          , detail::is_data_member_pointer<D>()
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+          , 0
+# endif 
+            );
     }
-
+    
     template <class D>
     self& def_readonly(char const* name, D& d)
     {
-        return this->def_readonly_impl(name, d, 0);
+        return this->def_readonly_impl(
+            name, d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+          , detail::is_data_member_pointer<D>()
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+          , 0
+# endif 
+            );
     }
 
     template <class D>
     self& def_readwrite(char const* name, D& d)
     {
-        return this->def_readwrite_impl(name, d, 0);
+        return this->def_readwrite_impl(
+            name, d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+          , detail::is_data_member_pointer<D>()
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+          , 0
+# endif 
+            );
     }
 
     // Property creation
@@ -400,27 +443,55 @@ class class_ : public objects::class_base
  private: // helper functions
 
     template <class D, class B>
-    self& def_readonly_impl(char const* name, D B::*pm_, int)
+    self& def_readonly_impl(
+        char const* name, D B::*pm_
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+        , mpl::true_
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+        , int
+# endif 
+        )
     {
         D T::*pm = pm_;
         return this->add_property(name, make_getter(pm));
     }
 
     template <class D, class B>
-    self& def_readwrite_impl(char const* name, D B::*pm_, int)
+    self& def_readwrite_impl(
+        char const* name, D B::*pm_
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+        , mpl::true_
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+        , int
+# endif 
+        )
     {
         D T::*pm = pm_;
         return this->add_property(name, make_getter(pm), make_setter(pm));
     }
 
     template <class D>
-    self& def_readonly_impl(char const* name, D& d, ...)
+    self& def_readonly_impl(
+        char const* name, D& d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+        , mpl::false_
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+        , ...
+# endif 
+        )
     {
         return this->add_static_property(name, make_getter(d));
     }
 
     template <class D>
-    self& def_readwrite_impl(char const* name, D& d, ...)
+    self& def_readwrite_impl(
+        char const* name, D& d
+# if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)
+        , mpl::false_
+# elif BOOST_NO_FUNCTION_TEMPLATE_ORDERING
+        , ...
+# endif 
+        )
     {
         return this->add_static_property(name, make_getter(d), make_setter(d));
     }
@@ -542,10 +613,8 @@ inline void class_<T,X1,X2,X3>::register_() const
         mpl::bool_<is_copyable>()
 # if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
         , holder_selector::execute((held_type*)0)
-# elif BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-        , holder_selector::type()
 # else 
-        , typename holder_selector::type()
+        , BOOST_DEDUCED_TYPENAME holder_selector::type()
 # endif 
         );
 }
