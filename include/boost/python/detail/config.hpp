@@ -105,7 +105,7 @@
 #  define BOOST_PYTHON_DECL_EXCEPTION BOOST_PYTHON_DECL
 #endif
 
-#if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590041)
+#if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590042)
 // Replace broken Tru64/cxx offsetof macro
 # define BOOST_PYTHON_OFFSETOF(s_name, s_member) \
         ((size_t)__INTADDR__(&(((s_name *)0)->s_member)))
