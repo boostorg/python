@@ -1,4 +1,4 @@
-#include <boost/python/indexing/vector_indexing_suite.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/implicit.hpp>
