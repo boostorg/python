@@ -3,6 +3,9 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
+
+//  See http://www.boost.org/libs/python for documentation.
+
 #ifndef PYTHON_DWA2002810_HPP
 # define PYTHON_DWA2002810_HPP
 
