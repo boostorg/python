@@ -84,6 +84,17 @@
 >>> rewrap_const_reference_string('yo, wassup?')
 'yo, wassup?'
 
+
+Check that None <==> NULL
+
+>>> rewrap_const_reference_cstring(None)
+
+But when converted to a string rvalue, None becomes 'None':
+
+>>> rewrap_const_reference_string(None)
+'None'
+
+
 Now check implicit conversions between floating/integer types
 
 >>> rewrap_const_reference_float(42)
