@@ -33,9 +33,10 @@ automatic in Python, the Python/C API requires you to do it
 by hand</a>. This is
 messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the <a href="../../v2/handle.html">
-handle</a> class
-template to automate the process.</p>
-<a name="reference_counting_handles"></a><h2>Reference-counting handles</h2><p>
+handle</a> and
+<a href="../../v2/object.html">
+object</a> class templates to automate the process.</p>
+<a name="reference_counting_handles_and_objects"></a><h2>Reference-counting handles and objects</h2><p>
 There are two ways in which a function in the Python/C API can return a
 <tt>PyObject*</tt>: as a <i>borrowed reference</i> or as a <i>new reference</i>. Which of
 these a function uses, is listed in that function's documentation. The two
@@ -53,14 +54,10 @@ The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
 namespace of the <tt>__main__</tt> module:</p>
 <code><pre>
-    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_module</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>) ));
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_namespace</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>get</span><span class=special>()) ));
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+    </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
 </span></pre></code>
-<p>
-Because the Python/C API doesn't know anything about <tt>handle</tt>s, we used
-the <a href="../../v2/handle.html#handle-spec-observers">
-get</a> member function to
-retrieve the <tt>PyObject*</tt> from which the <tt>handle</tt> was constructed.</p>
 <p>
 For a function returning a <i>new reference</i> we can just create a <tt>handle</tt>
 out of the raw <tt>PyObject*</tt> without wrapping it in a call to borrowed. One
@@ -120,13 +117,25 @@ For most intents and purposes you can use the namespace dictionary of the
 We have already seen how to get the <tt>__main__</tt> module's namespace so let's
 run some Python code in it:</p>
 <code><pre>
-    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_module</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>) ));
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_namespace</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>get</span><span class=special>()) ));
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt;( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;hello = file('hello.txt', 'w')\n&quot;
-                           </span><span class=string>&quot;hello.write('Hello world!')\n&quot;
-                           </span><span class=string>&quot;hello.close()&quot;</span><span class=special>, </span><span class=identifier>Py_file_input</span><span class=special>,
-                           </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>get</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>get</span><span class=special>()) );
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+
+    </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
+
+    </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+
+        </span><span class=string>&quot;hello = file('hello.txt', 'w')\n&quot;
+        </span><span class=string>&quot;hello.write('Hello world!')\n&quot;
+        </span><span class=string>&quot;hello.close()&quot;
+
+      </span><span class=special>, </span><span class=identifier>Py_file_input
+      </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+      , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())
+    );
 </span></pre></code>
+<p>
+Because the Python/C API doesn't know anything about <tt>object</tt>s, we used
+the object's <tt>ptr</tt> member function to retrieve the <tt>PyObject*</tt>.</p>
 <p>
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.</p>
@@ -140,17 +149,28 @@ you want to be a Dr. Frankenstein, always wrap <tt>PyObject*</tt>s in <tt>handle
 It's nice that <tt>handle</tt> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-in the <a href="object_interface.html">
-previous section</a>: the aptly named <tt>object</tt>
-class and it's derivatives. What we haven't seen, is that they can be
-constructed from a <tt>handle</tt>. The following examples should illustrate this
-fact:</p>
+above, and in the <a href="object_interface.html">
+previous section</a>: the aptly
+named <tt>object</tt> class and it's derivatives. We've already seen that they
+can be constructed from a <tt>handle</tt>. The following examples should further
+illustrate this fact:</p>
 <code><pre>
-    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>main_module</span><span class=special>(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>) ));
-    </span><span class=identifier>dict </span><span class=identifier>main_namespace</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>( </span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>get</span><span class=special>()) )));
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt;( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;result = 5 ** 2&quot;</span><span class=special>, </span><span class=identifier>Py_file_input</span><span class=special>,
-                           </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()) );
-    </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;( </span><span class=identifier>main_namespace</span><span class=special>[</span><span class=string>&quot;result&quot;</span><span class=special>] );
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+
+    </span><span class=identifier>dict </span><span class=identifier>main_namespace</span><span class=special>(
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))));
+
+    </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+
+        </span><span class=string>&quot;result = 5 ** 2&quot;
+
+        </span><span class=special>, </span><span class=identifier>Py_file_input
+        </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+        , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())
+    );
+
+    </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>main_namespace</span><span class=special>[</span><span class=string>&quot;result&quot;</span><span class=special>] );
 </span></pre></code>
 <p>
 Here we create a dictionary object for the <tt>__main__</tt> module's namespace.
@@ -160,8 +180,12 @@ the dictionary. Another way to achieve the same result is to let
 PyRun_String</a> return the result directly with <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58">
 Py_eval_input</a>:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;5 ** 2&quot;</span><span class=special>, </span><span class=identifier>Py_eval_input</span><span class=special>,
-                                         </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()) ));
+    <span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+        </span><span class=string>&quot;5 ** 2&quot;
+      </span><span class=special>, </span><span class=identifier>Py_eval_input
+      </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+      , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))
+    );
     </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>result</span><span class=special>);
 </span></pre></code>
 <p>
@@ -176,8 +200,13 @@ error_already_set</a>, so basically, the Python exception is automatically trans
 <code><pre>
     <span class=keyword>try
     </span><span class=special>{
-        </span><span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;5/0&quot;</span><span class=special>, </span><span class=identifier>Py_eval_input</span><span class=special>,
-                                             </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()) ));
+        </span><span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+            </span><span class=string>&quot;5/0&quot;
+          </span><span class=special>, </span><span class=identifier>Py_eval_input
+          </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+          , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))
+        );
+
         // </span><span class=identifier>execution </span><span class=identifier>will </span><span class=identifier>never </span><span class=identifier>get </span><span class=identifier>here</span><span class=special>:
         </span><span class=keyword>int </span><span class=identifier>five_divided_by_zero </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>result</span><span class=special>);
     }
@@ -212,8 +241,12 @@ here</a>.)</p>
 If you'd rather not have <tt>handle</tt> throw a C++ exception when it is constructed, you can use the <a href="../../v2/handle.html#allow_null-spec">
 allow_null</a> function in the same way you'd use borrowed:</p>
 <code><pre>
-    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>allow_null</span><span class=special>( </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;5/0&quot;</span><span class=special>, </span><span class=identifier>Py_eval_input</span><span class=special>,
-                                             </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>(), </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()) ));
+    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>allow_null</span><span class=special>(</span><span class=identifier>PyRun_String</span><span class=special>(
+        </span><span class=string>&quot;5/0&quot;
+       </span><span class=special>, </span><span class=identifier>Py_eval_input
+       </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+       , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())));
+
     </span><span class=keyword>if </span><span class=special>(!</span><span class=identifier>result</span><span class=special>)
         // </span><span class=identifier>Python </span><span class=identifier>exception </span><span class=identifier>occurred
     </span><span class=keyword>else

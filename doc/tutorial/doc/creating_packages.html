@@ -37,7 +37,7 @@ with an example.</p>
 <p>
 We have a C++ library that works with sounds: reading and writing various
 formats, applying filters to the sound data, etc. It is named (conveniently)
-<tt>sounds</tt>.  Our library already has a neat C++ namespace hierarchy, like so: </p>
+<tt>sounds</tt>.  Our library already has a neat C++ namespace hierarchy, like so:</p>
 <code><pre>
     <span class=identifier>sounds</span><span class=special>::</span><span class=identifier>core
     </span><span class=identifier>sounds</span><span class=special>::</span><span class=identifier>io
@@ -59,21 +59,21 @@ separately with Boost.Python, like this:</p>
     {
         /* </span><span class=keyword>export </span><span class=identifier>everything </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>sounds</span><span class=special>::</span><span class=identifier>core </span><span class=keyword>namespace </span><span class=special>*/
         ...
-    } 
-        
+    }
+
     /* </span><span class=identifier>file </span><span class=identifier>io</span><span class=special>.</span><span class=identifier>cpp </span><span class=special>*/
     </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>io</span><span class=special>)
     {
         /* </span><span class=keyword>export </span><span class=identifier>everything </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>sounds</span><span class=special>::</span><span class=identifier>io </span><span class=keyword>namespace </span><span class=special>*/
         ...
-    } 
+    }
 
     /* </span><span class=identifier>file </span><span class=identifier>filters</span><span class=special>.</span><span class=identifier>cpp </span><span class=special>*/
     </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>filters</span><span class=special>)
     {
         /* </span><span class=keyword>export </span><span class=identifier>everything </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>sounds</span><span class=special>::</span><span class=identifier>filters </span><span class=keyword>namespace </span><span class=special>*/
         ...
-    } 
+    }
 </span></pre></code>
 <p>
 Compiling these files will generate the following Python extensions:
@@ -97,7 +97,7 @@ Now, we create this directory structure for our Python package:</p>
 </pre></code><p>
 The file <tt>__init__.py</tt> is what tells Python that the directory <tt>sounds/</tt> is
 actually a Python package. It can be a empty file, but can also perform some
-magic, that will be shown later. </p>
+magic, that will be shown later.</p>
 <p>
 Now our package is ready. All the user has to do is put <tt>sounds</tt> into his
 <a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000">
@@ -109,7 +109,7 @@ PYTHONPATH</a> and fire up the interpreter:</p>
     &gt;&gt;&gt; </span><span class=identifier>new_sound </span><span class=special>= </span><span class=identifier>sounds</span><span class=special>.</span><span class=identifier>filters</span><span class=special>.</span><span class=identifier>echo</span><span class=special>(</span><span class=identifier>sound</span><span class=special>, </span><span class=number>1.0</span><span class=special>)
 </span></pre></code>
 <p>
-Nice heh? </p>
+Nice heh?</p>
 <p>
 This is the simplest way to create hierarchies of packages, but it is not very
 flexible. What if we want to add a <i>pure</i> Python function to the filters
@@ -126,7 +126,7 @@ little. First, we will have to change the name of the extension modules:</p>
     {
         ...
         /* </span><span class=keyword>export </span><span class=identifier>everything </span><span class=identifier>in </span><span class=identifier>the </span><span class=identifier>sounds</span><span class=special>::</span><span class=identifier>core </span><span class=keyword>namespace </span><span class=special>*/
-    }  
+    }
 </span></pre></code>
 <p>
 Note that we added an underscore to the module name. The filename will have to
@@ -147,7 +147,7 @@ Now, we change our package hierarchy like so:</p>
 </pre></code><p>
 Note that we created a directory for each extension module, and added a
 __init__.py to each one. But if we leave it that way, the user will have to
-access the functions in the core module with this syntax: </p>
+access the functions in the core module with this syntax:</p>
 <code><pre>
     <span class=special>&gt;&gt;&gt; </span><span class=identifier>import </span><span class=identifier>sounds</span><span class=special>.</span><span class=identifier>core</span><span class=special>.</span><span class=identifier>_core
     </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>sounds</span><span class=special>.</span><span class=identifier>core</span><span class=special>.</span><span class=identifier>_core</span><span class=special>.</span><span class=identifier>foo</span><span class=special>(...)

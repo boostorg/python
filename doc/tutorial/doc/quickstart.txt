@@ -1439,10 +1439,10 @@ There is a difference however. While the reference-counting is fully
 automatic in Python, the Python/C API requires you to do it
 [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is
 messy and especially hard to get right in the presence of C++ exceptions.
-Fortunately Boost.Python provides the [@../../v2/handle.html handle] class
-template to automate the process.
+Fortunately Boost.Python provides the [@../../v2/handle.html handle] and
+[@../../v2/object.html object] class templates to automate the process.
 
-[h2 Reference-counting handles]
+[h2 Reference-counting handles and objects]
 
 There are two ways in which a function in the Python/C API can return a
 [^PyObject*]: as a ['borrowed reference] or as a ['new reference]. Which of
@@ -1458,12 +1458,10 @@ The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
 namespace of the [^__main__] module:
 
-    handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
-    handle<> main_namespace(borrowed( PyModule_GetDict(main_module.get()) ));
+    object main_module(
+        handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_namespace = main_module.attr("__dict__");
 
-Because the Python/C API doesn't know anything about [^handle]s, we used
-the [@../../v2/handle.html#handle-spec-observers get] member function to
-retrieve the [^PyObject*] from which the [^handle] was constructed.
 
 For a function returning a ['new reference] we can just create a [^handle]
 out of the raw [^PyObject*] without wrapping it in a call to borrowed. One
@@ -1512,12 +1510,24 @@ For most intents and purposes you can use the namespace dictionary of the
 We have already seen how to get the [^__main__] module's namespace so let's
 run some Python code in it:
 
-    handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
-    handle<> main_namespace(borrowed( PyModule_GetDict(main_module.get()) ));
-    handle<>( PyRun_String("hello = file('hello.txt', 'w')\n"
-                           "hello.write('Hello world!')\n"
-                           "hello.close()", Py_file_input,
-                           main_namespace.get(), main_namespace.get()) );
+    object main_module(
+        handle<>(borrowed(PyImport_AddModule("__main__"))));
+
+    object main_namespace = main_module.attr("__dict__");
+
+    handle<>(PyRun_String(
+
+        "hello = file('hello.txt', 'w')\n"
+        "hello.write('Hello world!')\n"
+        "hello.close()"
+
+      , Py_file_input
+      , main_namespace.ptr()
+      , main_namespace.ptr())
+    );
+
+Because the Python/C API doesn't know anything about [^object]s, we used
+the object's [^ptr] member function to retrieve the [^PyObject*].
 
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.
@@ -1532,24 +1542,39 @@ you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
 It's nice that [^handle] manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-in the [@object_interface.html previous section]: the aptly named [^object]
-class and it's derivatives. What we haven't seen, is that they can be
-constructed from a [^handle]. The following examples should illustrate this
-fact:
+above, and in the [@object_interface.html previous section]: the aptly
+named [^object] class and it's derivatives. We've already seen that they
+can be constructed from a [^handle]. The following examples should further
+illustrate this fact:
 
-    handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
-    dict main_namespace(handle<>(borrowed( PyModule_GetDict(main_module.get()) )));
-    handle<>( PyRun_String("result = 5 ** 2", Py_file_input,
-                           main_namespace.ptr(), main_namespace.ptr()) );
-    int five_squared = extract<int>( main_namespace["result"] );
+    object main_module(
+        handle<>(borrowed(PyImport_AddModule("__main__"))));
+
+    dict main_namespace(
+        handle<>(borrowed(PyModule_GetDict(main_module.ptr()))));
+
+    handle<>(PyRun_String(
+
+        "result = 5 ** 2"
+
+        , Py_file_input
+        , main_namespace.ptr()
+        , main_namespace.ptr())
+    );
+
+    int five_squared = extract<int>(main_namespace["result"] );
 
 Here we create a dictionary object for the [^__main__] module's namespace.
 Then we assign 5 squared to the result variable and read this variable from
 the dictionary. Another way to achieve the same result is to let
 PyRun_String return the result directly with Py_eval_input:
 
-    object result(handle<>( PyRun_String("5 ** 2", Py_eval_input,
-                                         main_namespace.ptr(), main_namespace.ptr()) ));
+    object result(handle<>(PyRun_String(
+        "5 ** 2"
+      , Py_eval_input
+      , main_namespace.ptr()
+      , main_namespace.ptr()))
+    );
     int five_squared = extract<int>(result);
 
 __note__ [*Note] that [^object]'s member function to return the wrapped
@@ -1563,8 +1588,13 @@ If an exception occurs in the execution of some Python code, the PyRun_String fu
 
     try
     {
-        object result(handle<>( PyRun_String("5/0", Py_eval_input,
-                                             main_namespace.ptr(), main_namespace.ptr()) ));
+        object result(handle<>(PyRun_String(
+            "5/0"
+          , Py_eval_input
+          , main_namespace.ptr()
+          , main_namespace.ptr()))
+        );
+
         // execution will never get here:
         int five_divided_by_zero = extract<int>(result);
     }
@@ -1592,8 +1622,12 @@ The [^error_already_set] exception class doesn't carry any information in itself
 
 If you'd rather not have [^handle] throw a C++ exception when it is constructed, you can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same way you'd use borrowed:
 
-    handle<> result(allow_null( PyRun_String("5/0", Py_eval_input,
-                                             main_namespace.ptr(), main_namespace.ptr()) ));
+    handle<> result(allow_null(PyRun_String(
+        "5/0"
+       , Py_eval_input
+       , main_namespace.ptr()
+       , main_namespace.ptr())));
+
     if (!result)
         // Python exception occurred
     else
@@ -1886,8 +1920,8 @@ we have a class [^point] in C++:
         class_<point>("point")...;
     }
 
-If we are using the technique from the previous session, [@creating_packages.html
-Creating Packages], we can code directly into [^geom/__init__.py]:
+If we are using the technique from the previous session,
+[@creating_packages.html Creating Packages], we can code directly into [^geom/__init__.py]:
 
     from _geom import *
 

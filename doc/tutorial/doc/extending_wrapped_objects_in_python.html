@@ -34,7 +34,7 @@ even after it was already created:</p>
     </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>def </span><span class=identifier>C_str</span><span class=special>(</span><span class=identifier>self</span><span class=special>): </span><span class=keyword>return </span><span class=literal>'A C instance!'
     </span><span class=special>&gt;&gt;&gt;
     &gt;&gt;&gt; </span>##<span class=identifier>now </span><span class=identifier>we </span><span class=identifier>turn </span><span class=identifier>it </span><span class=identifier>in </span><span class=identifier>a </span><span class=identifier>member </span><span class=identifier>function
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>C</span><span class=special>.</span><span class=identifier>__str__ </span><span class=special>= </span><span class=identifier>C_str   
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>C</span><span class=special>.</span><span class=identifier>__str__ </span><span class=special>= </span><span class=identifier>C_str
     </span><span class=special>&gt;&gt;&gt;
     &gt;&gt;&gt; </span><span class=identifier>c </span><span class=special>= </span><span class=identifier>C</span><span class=special>()
     &gt;&gt;&gt; </span><span class=identifier>print </span><span class=identifier>c
@@ -56,8 +56,8 @@ we have a class <tt>point</tt> in C++:</p>
     }
 </span></pre></code>
 <p>
-If we are using the technique from the previous session, <a href="creating_packages.html">
-
+If we are using the technique from the previous session,
+<a href="creating_packages.html">
 Creating Packages</a>, we can code directly into <tt>geom/__init__.py</tt>:</p>
 <code><pre>
     <span class=identifier>from </span><span class=identifier>_geom </span><span class=identifier>import </span><span class=special>*
@@ -65,7 +65,7 @@ Creating Packages</a>, we can code directly into <tt>geom/__init__.py</tt>:</p>
     </span>##<span class=identifier>a </span><span class=identifier>regular </span><span class=identifier>function
     </span><span class=identifier>def </span><span class=identifier>point_str</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
         </span><span class=keyword>return </span><span class=identifier>str</span><span class=special>((</span><span class=identifier>self</span><span class=special>.</span><span class=identifier>x</span><span class=special>, </span><span class=identifier>self</span><span class=special>.</span><span class=identifier>y</span><span class=special>))
-        
+
     </span>##<span class=identifier>now </span><span class=identifier>we </span><span class=identifier>turn </span><span class=identifier>it </span><span class=identifier>into </span><span class=identifier>a </span><span class=identifier>member </span><span class=identifier>function
     </span><span class=identifier>point</span><span class=special>.</span><span class=identifier>__str__ </span><span class=special>= </span><span class=identifier>point_str
 </span></pre></code>
@@ -76,9 +76,9 @@ This technique has several advantages:</p>
 You can even add a little syntactic sugar with the use of metaclasses. Let's
 create a special metaclass that &quot;injects&quot; methods in other classes.</p>
 <code><pre>
-    ##<span class=identifier>The </span><span class=identifier>one </span><span class=identifier>Boost</span><span class=special>.</span><span class=identifier>Python </span><span class=identifier>uses </span><span class=keyword>for </span><span class=identifier>all </span><span class=identifier>wrapped </span><span class=identifier>classes</span><span class=special>. 
+    ##<span class=identifier>The </span><span class=identifier>one </span><span class=identifier>Boost</span><span class=special>.</span><span class=identifier>Python </span><span class=identifier>uses </span><span class=keyword>for </span><span class=identifier>all </span><span class=identifier>wrapped </span><span class=identifier>classes</span><span class=special>.
     </span>##<span class=identifier>You </span><span class=identifier>can </span><span class=identifier>use </span><span class=identifier>here </span><span class=identifier>any </span><span class=keyword>class </span><span class=identifier>exported </span><span class=identifier>by </span><span class=identifier>Boost </span><span class=identifier>instead </span><span class=identifier>of </span><span class=string>&quot;point&quot;
-    </span><span class=identifier>BoostPythonMetaclass </span><span class=special>= </span><span class=identifier>point</span><span class=special>.</span><span class=identifier>__class__ 
+    </span><span class=identifier>BoostPythonMetaclass </span><span class=special>= </span><span class=identifier>point</span><span class=special>.</span><span class=identifier>__class__
 
     </span><span class=keyword>class </span><span class=identifier>injector</span><span class=special>(</span><span class=identifier>object</span><span class=special>):
         </span><span class=keyword>class </span><span class=identifier>__metaclass__</span><span class=special>(</span><span class=identifier>BoostPythonMetaclass</span><span class=special>):

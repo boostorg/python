@@ -32,10 +32,10 @@ class_ definitions in multiple files:</p>
     <span class=comment>/* file point.cpp */
     </span><span class=preprocessor>#include </span><span class=special>&lt;</span><span class=identifier>point</span><span class=special>.</span><span class=identifier>h</span><span class=special>&gt;
     </span><span class=preprocessor>#include </span><span class=special>&lt;</span><span class=identifier>boost</span><span class=special>/</span><span class=identifier>python</span><span class=special>.</span><span class=identifier>hpp</span><span class=special>&gt;
-    
+
     </span><span class=keyword>void </span><span class=identifier>export_point</span><span class=special>()
     {
-        </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>point</span><span class=special>&gt;(</span><span class=string>&quot;point&quot;</span><span class=special>)...;    
+        </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>point</span><span class=special>&gt;(</span><span class=string>&quot;point&quot;</span><span class=special>)...;
     }
 
     /* </span><span class=identifier>file </span><span class=identifier>triangle</span><span class=special>.</span><span class=identifier>cpp </span><span class=special>*/
@@ -49,11 +49,11 @@ class_ definitions in multiple files:</p>
 </span></pre></code>
 <p>
 Now you create a file <tt>main.cpp</tt>, which contains the <tt>BOOST_PYTHON_MODULE</tt>
-macro, and call the various export functions inside it. </p>
+macro, and call the various export functions inside it.</p>
 <code><pre>
     <span class=keyword>void </span><span class=identifier>export_point</span><span class=special>();
     </span><span class=keyword>void </span><span class=identifier>export_triangle</span><span class=special>();
-    
+
     </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>_geom</span><span class=special>)
     {
         </span><span class=identifier>export_point</span><span class=special>();
@@ -72,10 +72,10 @@ usual approach:</p>
     {
         </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>point</span><span class=special>&gt;(</span><span class=string>&quot;point&quot;</span><span class=special>)...;
         </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>triangle</span><span class=special>&gt;(</span><span class=string>&quot;triangle&quot;</span><span class=special>)...;
-    } 
+    }
 </span></pre></code>
 <p>
-but the memory is kept under control. </p>
+but the memory is kept under control.</p>
 <p>
 This method is recommended too if you are developing the C++ library and
 exporting it to Python at the same time: changes in a class will only demand
@@ -84,7 +84,7 @@ the compilation of a single cpp, instead of the entire wrapper code.</p>
   <tr>
     <td class="note_box">
 <img src="theme/note.gif"></img> If you're exporting your classes with <a href="../../../pyste/index.html">
-Pyste</a>, 
+Pyste</a>,
 take a look at the <tt>--multiple</tt> option, that generates the wrappers in
 various files as demonstrated here.    </td>
   </tr>

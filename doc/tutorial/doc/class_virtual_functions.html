@@ -53,6 +53,18 @@ need to create a class wrapper:</p>
         </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
         </span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self</span><span class=special>;
     };
+
+
+    </span><span class=keyword>struct </span><span class=identifier>BaseWrap </span><span class=special>: </span><span class=identifier>Base
+    </span><span class=special>{
+        </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>)
+            : </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
+        </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>, </span><span class=identifier>Base </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>copy</span><span class=special>)
+            : </span><span class=identifier>Base</span><span class=special>(</span><span class=identifier>copy</span><span class=special>), </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
+        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
+        </span><span class=keyword>int </span><span class=identifier>default_f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>Base</span><span class=special>::</span><span class=identifier>f</span><span class=special>(); } // &lt;&lt;=== ***</span><span class=identifier>ADDED</span><span class=special>***
+        </span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self</span><span class=special>;
+    };
 </span></pre></code>
 <table width="80%" border="0" align="center">
   <tr>

@@ -132,6 +132,40 @@ test_tutorial()
     );
 }
 
+void
+test_tutorial2()
+{
+    using namespace boost::python;
+
+    object main_module(
+        handle<>(borrowed(PyImport_AddModule("__main__"))));
+
+    dict main_namespace(
+        handle<>(borrowed(PyModule_GetDict(main_module.ptr()))));
+
+    handle<>(PyRun_String(
+
+        "result = 5 ** 2"
+
+        , Py_file_input
+        , main_namespace.ptr()
+        , main_namespace.ptr())
+    );
+
+    int five_squared = extract<int>(main_namespace["result"]);
+    assert(five_squared == 25);
+
+    object result(handle<>(
+        PyRun_String("5 ** 2"
+            , Py_eval_input
+            , main_namespace.ptr()
+            , main_namespace.ptr()))
+    );
+
+    int five_squared2 = extract<int>(result);
+    assert(five_squared2 == 25);
+}
+
 int main()
 {
     if (python::handle_exception(test))
@@ -142,6 +176,13 @@ int main()
     }
 
     if (python::handle_exception(test_tutorial))
+    {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        return 1;
+    }
+
+    if (python::handle_exception(test_tutorial2))
     {
         if (PyErr_Occurred())
             PyErr_Print();
