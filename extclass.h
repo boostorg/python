@@ -5,6 +5,9 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+//  This file automatically generated for 5-argument constructors by
+//  gen_extclass.py
 
 #ifndef EXTENSION_CLASS_DWA052000_H_
 # define EXTENSION_CLASS_DWA052000_H_
@@ -279,10 +282,12 @@ class ExtensionClass
     // define constructors
     template <class A1, class A2, class A3, class A4, class A5>
     void def(Constructor<A1, A2, A3, A4, A5>)
-    { add_constructor(             // the following incantation builds a Signature1,
-        prepend(Type<A1>::Id(),    // Signature2, ... constructor. It _should_ all
-        prepend(Type<A2>::Id(),    // get optimized away. Just another workaround
-        prepend(Type<A3>::Id(),    // for the lack of partial specialization in MSVC
+    // The following incantation builds a Signature1, Signature2,... object. It
+    // should _all_ get optimized away.
+    { add_constructor(
+        prepend(Type<A1>::Id(),
+        prepend(Type<A2>::Id(),
+        prepend(Type<A3>::Id(),
         prepend(Type<A4>::Id(),
         prepend(Type<A5>::Id(),
                 Signature0()))))));
@@ -350,7 +355,69 @@ class ExtensionClass
     }
 };
 
-#include "extclass_pygen.h"
+// A simple wrapper over a T which allows us to use ExtensionClass<T> with a
+// single template parameter only. See ExtensionClass<T>, above.
+template <class T>
+class HeldInstance : public T
+{
+    // There are no member functions: we want to avoid inadvertently overriding
+    // any virtual functions in T.
+public:
+    HeldInstance(PyObject* p) : T(), m_self(p) {}
+    template <class A1>
+    HeldInstance(PyObject* p, const A1& a1) : T(a1), m_self(p) {}
+    template <class A1, class A2>
+    HeldInstance(PyObject* p, const A1& a1, const A2& a2) : T(a1, a2), m_self(p) {}
+    template <class A1, class A2, class A3>
+    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3) : T(a1, a2, a3), m_self(p) {}
+    template <class A1, class A2, class A3, class A4>
+    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : T(a1, a2, a3, a4), m_self(p) {}
+    template <class A1, class A2, class A3, class A4, class A5>
+    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : T(a1, a2, a3, a4, a5), m_self(p) {}
+protected:
+    PyObject* m_self; // Not really needed; doesn't really hurt.
+};
+
+class InstanceHolderBase
+{
+public:
+    virtual ~InstanceHolderBase() {}
+};
+
+template <class Held>
+class InstanceHolder : public InstanceHolderBase
+{
+public:
+    virtual Held *target() = 0;
+};
+    
+template <class Held, class Wrapper>
+class InstanceValueHolder : public InstanceHolder<Held>
+{
+public:
+    Held* target() { return &m_held; }
+    Wrapper* value_target() { return &m_held; }
+
+    InstanceValueHolder(ExtensionInstance* p) :
+        m_held(p) {}
+    template <class A1>
+    InstanceValueHolder(ExtensionInstance* p, const A1& a1) :
+        m_held(p, a1) {}
+    template <class A1, class A2>
+    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2) :
+        m_held(p, a1, a2) {}
+    template <class A1, class A2, class A3>
+    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3) :
+        m_held(p, a1, a2, a3) {}
+    template <class A1, class A2, class A3, class A4>
+    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4) :
+        m_held(p, a1, a2, a3, a4) {}
+    template <class A1, class A2, class A3, class A4, class A5>
+    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) :
+        m_held(p, a1, a2, a3, a4, a5) {}
+private:
+    Wrapper m_held;
+};
 
 template <class PtrType, class HeldType>
 class InstancePtrHolder : public InstanceHolder<HeldType>
@@ -403,20 +470,6 @@ ExtensionClass<T, U>::~ExtensionClass()
     ClassRegistry<T>::unregister_class(this);
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // Back to the global namespace for this GCC bug
-}
-#endif
-
-//
-// Static data member declaration.
-//
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // Back from the global namespace for this GCC bug
-namespace py {
-#endif
-
-template <class T>
-Class<py::ExtensionInstance>* ClassRegistry<T>::static_class_object;
-
 template <class T>
 inline void ClassRegistry<T>::register_class(Class<ExtensionInstance>* p)
 {
@@ -434,6 +487,13 @@ inline void ClassRegistry<T>::unregister_class(Class<ExtensionInstance>* p)
     static_class_object = 0;
 }
 
+//
+// Static data member declaration.
+//
+template <class T>
+Class<py::ExtensionInstance>* ClassRegistry<T>::static_class_object;
+
 } // namespace py
 
 #endif // EXTENSION_CLASS_DWA052000_H_
+
