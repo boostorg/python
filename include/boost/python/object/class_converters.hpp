@@ -7,7 +7,7 @@
 # define CLASS_CONVERTERS_DWA2002119_HPP
 
 # include <boost/python/object/class_wrapper.hpp>
-# include <boost/mpl/fold.hpp>
+# include <boost/mpl/for_each.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/object/find_instance.hpp>
@@ -44,27 +44,19 @@ struct do_nothing
 template <class Derived>
 struct register_base_of
 {
-    // We're not using any state so we supply Ingored argument
-    template <class Ignored, class Base>
-    struct apply
+    template <class Base> void operator()(boost::mpl::identity<Base>)
     {
-        typedef void type; // 'type' needs to be defined for the same reasons
+        // Register the Base class
+        register_dynamic_id<Base>();
+        // Register the up-cast
+        register_conversion<Derived,Base>(false);
 
-        // Here's the runtime part:
-        static void execute()
-        {
-            // Register the Base class
-            register_dynamic_id<Base>();
-            // Register the up-cast
-            register_conversion<Derived,Base>(false);
-
-            // Register the down-cast, if appropriate.
-            mpl::select_if_c<
-                is_polymorphic<Base>::value
-                , register_downcast<Base,Derived>
-                , do_nothing
-                >::type::execute();
-        }
+        // Register the down-cast, if appropriate.
+        mpl::select_if_c<
+              is_polymorphic<Base>::value
+            , register_downcast<Base, Derived>
+            , do_nothing
+            >::type::execute();
     };
 };
 
@@ -84,7 +76,7 @@ inline void register_class_from_python(Derived* = 0, Bases* = 0)
     register_dynamic_id<Derived>();
 
     // register each base in the sequence
-    mpl::fold<Bases, void, register_base_of<Derived> >::execute();
+    mpl::for_each<Bases>(register_base_of<Derived>());
 }
 
 }}} // namespace boost::python::object
