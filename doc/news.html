@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="boost.css">
 
@@ -29,41 +29,36 @@
     <hr>
 
     <dl class="page-index">
-      <dt>18 March, 2003
-
-      <dd><a href="mailto:Gottfried.Ganssauge-at-haufe.de">Gottfried
-      Ganßauge</a> has contributed <a
-      href="v2/opaque_pointer_converter.html">opaque pointer
-      support</a>.
-        <br>
-      <a href="nicodemus-at-globalite.com.br">Bruno da Silva de
-      Oliveira</a> has contributed the exciting <a
-      href="../pyste/index.html">Pyste</a> (&quot;Pie-steh&quot;)
-      package.
-
-      <dt>24 February 2003</dt>
-
-      <dd>Finished improved support
-      for <code>boost::shared_ptr</code>.  Now any wrapped object of
-      C++ class <code>X</code> can be converted automatically
-      to <code>shared_ptr&lt;X&gt;</code>, regardless of how it was
-      wrapped.  The <code>shared_ptr</code> will manage the lifetime
-      of the Python object which supplied the <code>X</code>, rather
-      than just the <code>X</code> object itself, and when such
-      a <code>shared_ptr</code> is converted back to Python, the
-      original Python object will be returned.</dd>
-      
       <dt>22 July 2003</dt>
 
-      <dd>Killed the dreaded &quot;bad argument type for builtin
-      operation&quot; error.  Argument errors now show the actual and
-      expected argument types!</dd>
+      <dd>Killed the dreaded "bad argument type for builtin operation" error.
+      Argument errors now show the actual and expected argument types!</dd>
 
       <dt>19 July 2003</dt>
 
       <dd>Added the new <code>return_arg</code> policy from <a href=
       "mailto:nickm-at-sitius.com">Nikolay Mladenov</a>. Thanks,
       Nikolay!</dd>
+
+      <dt>18 March, 2003</dt>
+
+      <dd><a href="mailto:Gottfried.Ganssauge-at-haufe.de">Gottfried
+      Gan&szlig;auge</a> has contributed <a href=
+      "v2/opaque_pointer_converter.html">opaque pointer support</a>.<br>
+       <a href="nicodemus-at-globalite.com.br">Bruno da Silva de Oliveira</a>
+      has contributed the exciting <a href="../pyste/index.html">Pyste</a>
+      ("Pie-steh") package.</dd>
+
+      <dt>24 February 2003</dt>
+
+      <dd>Finished improved support for <code>boost::shared_ptr</code>. Now
+      any wrapped object of C++ class <code>X</code> can be converted
+      automatically to <code>shared_ptr&lt;X&gt;</code>, regardless of how it
+      was wrapped. The <code>shared_ptr</code> will manage the lifetime of
+      the Python object which supplied the <code>X</code>, rather than just
+      the <code>X</code> object itself, and when such a
+      <code>shared_ptr</code> is converted back to Python, the original
+      Python object will be returned.</dd>
 
       <dt>19 January 2003</dt>
 
@@ -122,8 +117,7 @@
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     18 March, 2003
-    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     18 March, 2003 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href="../../../people/dave_abrahams.htm">Dave
