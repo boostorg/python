@@ -5,7 +5,6 @@ import modules ;
 
 
 local PYTHON_PATH = [ modules.peek : PYTHON_PATH ] ;
-ECHO "XXX" $(PYTHON_PATH) ;
 
 if [ GLOB /usr/local/include/python2.2 : * ]
 {
