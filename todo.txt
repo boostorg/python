@@ -4,6 +4,8 @@ High Priority:
 Document builtin correspondences between builtiin Python types and C++
 types
 
+FILE* conversions: http://aspn.activestate.com/ASPN/Mail/Message/1411366
+
 
 Medium Priority:
 ----------------
