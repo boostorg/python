@@ -280,6 +280,8 @@ namespace
   }
   unaryfunc py_encode_string = encode_string_unaryfunc;
 
+
+#ifndef BOOST_NO_STD_WSTRING
   // A SlotPolicy for extracting C++ strings from Python objects.
   struct wstring_rvalue_from_python
   {
@@ -307,6 +309,7 @@ namespace
           return result;
       }
   };
+#endif 
 
   struct complex_rvalue_from_python
   {
@@ -402,8 +405,10 @@ void initialize_builtin_converters()
     // Add an lvalue converter for char which gets us char const*
     registry::insert(convert_to_cstring,type_id<char>());
 
+# ifndef BOOST_NO_STD_WSTRING
     // Register by-value converters to std::string, std::wstring
     slot_rvalue_from_python<std::wstring, wstring_rvalue_from_python>();
+# endif 
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();
 }
 
