@@ -16,6 +16,7 @@
 #  include <boost/python/object/inheritance.hpp>
 #  include <boost/python/object/find_instance.hpp>
 #  include <boost/python/object/forward.hpp>
+#  include <boost/python/object/class_wrapper.hpp>
 #  include <boost/python/pointee.hpp>
 #  include <boost/python/detail/force_instantiate.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
@@ -34,13 +35,26 @@ namespace boost { namespace python { namespace objects {
 template <class Pointer, class Value>
 struct pointer_holder : instance_holder
 {
+    typedef Value value_type;
+    
     pointer_holder(Pointer);
+
+    static void register_();
 
     // Forward construction to the held object
 
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 1))
 #  include BOOST_PP_ITERATE()
 
+ private: // types
+    struct construct_from_pointer
+    {
+        static pointer_holder* execute(PyObject*, Pointer x)
+        {
+            return new pointer_holder(x);
+        }
+    };
+    
  private: // required holder implementation
     void* holds(type_info);
 
@@ -54,9 +68,14 @@ struct pointer_holder_back_reference : instance_holder
  private:
     typedef typename python::pointee<Pointer>::type held_type;
  public:
+    typedef Value value_type;
 
+    // Not sure about this one -- can it work? The source object
+    // undoubtedly does not carry the correct back reference pointer.
     pointer_holder_back_reference(Pointer);
 
+    static void register_();
+    
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 2))
 #  include BOOST_PP_ITERATE()
@@ -77,9 +96,26 @@ inline pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
 }
 
 template <class Pointer, class Value>
+inline void pointer_holder<Pointer,Value>::register_()
+{
+    python::detail::force_instantiate(class_wrapper<Pointer,pointer_holder,construct_from_pointer>());
+    python::detail::force_instantiate(instance_finder<Pointer>::registration);
+}
+    
+
+template <class Pointer, class Value>
 inline pointer_holder_back_reference<Pointer,Value>::pointer_holder_back_reference(Pointer p)
     : m_p(p)
 {
+}
+
+template <class Pointer, class Value>
+inline void pointer_holder_back_reference<Pointer,Value>::register_()
+{
+    // not implemented at least until we solve the back reference issue mentioned above.
+    //    python::detail::force_instantiate(class_wrapper<Pointer,pointer_holder_back_reference>());
+    python::detail::force_instantiate(instance_finder<Pointer>::registration);
+    python::detail::force_instantiate(instance_finder<held_type>::registration);
 }
 
 template <class Pointer, class Value>
@@ -142,9 +178,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
         : m_p(new held_type(
                     p BOOST_PP_COMMA_IF(N) BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             ))
-    {
-        python::detail::force_instantiate(instance_finder<held_type>::registration);
-    }
+    {}
 
 # undef N
 

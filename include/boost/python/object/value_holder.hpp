@@ -29,6 +29,8 @@ namespace boost { namespace python { namespace objects {
 template <class Held>
 struct value_holder : instance_holder
 {
+    typedef Held value_type;
+
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/value_holder.hpp>, 1))
 #  include BOOST_PP_ITERATE()
@@ -43,6 +45,10 @@ struct value_holder : instance_holder
 template <class Held, class BackReferenceType>
 struct value_holder_back_reference : instance_holder
 {
+    typedef Held value_type;
+    
+    static void register_();
+    
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/value_holder.hpp>, 2))
 #  include BOOST_PP_ITERATE()
@@ -77,6 +83,12 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
         return &m_held;
     else
         return find_static_type(x, src_t, dst_t);
+}
+
+template <class Held, class BackReferenceType>
+void value_holder_back_reference<Held,BackReferenceType>::register_()
+{
+    python::detail::force_instantiate(instance_finder<BackReferenceType>::registration);
 }
 
 }}} // namespace boost::python::objects
@@ -119,7 +131,6 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
             BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
     {
-        python::detail::force_instantiate(instance_finder<BackReferenceType>::registration);
     }
 
 # undef N

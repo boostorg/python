@@ -24,6 +24,10 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
     virtual void* holds(type_info) = 0;
 
     void install(PyObject* inst) throw();
+
+    // Register any converters associated with this Holder
+    static inline void register_() {}
+    
  private:
     instance_holder* m_next;
 };

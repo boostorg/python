@@ -8,26 +8,37 @@
 
 # include <boost/python/handle.hpp>
 # include <boost/python/to_python_converter.hpp>
+# include <boost/python/converter/registered.hpp>
+# include <boost/ref.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
-template <class T, class Holder>
-struct class_wrapper
-    : to_python_converter<T,class_wrapper<T,Holder> >
+template <class Src, class Holder>
+struct copy_construct_instance
 {
-    class_wrapper(object const& type_)
-        : m_class_object_keeper(type_)
+    static Holder* execute(PyObject* instance, Src const& x)
     {
-        assert(type_.ptr()->ob_type == (PyTypeObject*)class_metatype().get());
-        m_class_object = (PyTypeObject*)type_.ptr();
+        return new Holder(instance, cref(x));
     }
-    
-    static PyObject* convert(T const& x)
+};
+
+// Used to convert objects of type Src to wrapped C++ classes by
+// building a new instance object and installing a Holder constructed
+// from the Src object.
+template <class Src, class Holder, class MakeHolder = copy_construct_instance<Src,Holder> >
+struct class_wrapper
+    : to_python_converter<Src,class_wrapper<Src,Holder,MakeHolder> >
+{
+    static PyObject* convert(Src const& x)
     {
+        // Get the class object associated with the wrapped type
+        typedef typename Holder::value_type value_type;
+        PyTypeObject* class_object = converter::registered<value_type>::converters.class_object;
+        
         // Don't call the type directly to do the construction, since
         // that would require the registration of an appropriate
         // __init__ function.
-        PyObject* raw_result = m_class_object->tp_alloc(m_class_object, 0);
+        PyObject* raw_result = class_object->tp_alloc(class_object, 0);
 
         if (raw_result == 0)
             return 0;
@@ -38,7 +49,7 @@ struct class_wrapper
 
         // Build a value_holder to contain the object using the copy
         // constructor
-        Holder* p = new Holder(raw_result, cref(x));
+        Holder* p = MakeHolder::execute(raw_result, x);
 
         // Install it in the instance
         p->install(raw_result);
@@ -46,14 +57,7 @@ struct class_wrapper
         // Return the new result
         return result.release();
     }
-    
- private:
-    object m_class_object_keeper;
-    static PyTypeObject* m_class_object;
 };
-
-template <class T, class Holder>
-PyTypeObject* class_wrapper<T,Holder>::m_class_object;
 
 }}} // namespace boost::python::objects
 

@@ -190,7 +190,11 @@ A take_a(A const& a) { return a; }
 B take_b(B& b) { return b; }
 C take_c(C* c) { return *c; }
 D take_d(D* const& d) { return *d; }
-    
+
+D take_d_shared_ptr(boost::shared_ptr<D> d) { return *d; }
+
+boost::shared_ptr<A> d_factory() { return boost::shared_ptr<B>(new D); }
+
 BOOST_PYTHON_MODULE_INIT(m1)
 {
     using namespace boost::python;
@@ -237,6 +241,10 @@ BOOST_PYTHON_MODULE_INIT(m1)
       .def("take_b", take_b)
       .def("take_c", take_c)
       .def("take_d", take_d)
+
+
+      .def("take_d_shared_ptr", take_d_shared_ptr)
+      .def("d_factory", d_factory)
         ;
 
     class_<A, shared_ptr<A> >("A")

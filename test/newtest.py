@@ -158,6 +158,13 @@ are a complicated constructor and member function, respectively.
 >>> take_d(d).name()
 'D'
 
+>>> take_d_shared_ptr(d).name()
+'D'
+
+>>> d_as_a = d_factory()
+>>> dd = take_d(d_as_a)
+>>> dd.name()
+'D'
 
 """
 
