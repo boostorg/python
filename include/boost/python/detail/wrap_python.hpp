@@ -40,6 +40,10 @@
 //
 #include <patchlevel.h>
 
+#if PY_MAJOR_VERSION<2 || PY_MAJOR_VERSION==2 && PY_MINOR_VERSION<2
+#error Python 2.2 or higher is required for this version of Boost.Python.
+#endif
+
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
 #  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
@@ -96,19 +100,9 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
-#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
-#   include <config.h>
-#  else
-#   include <pyconfig.h>
-#  endif
 #  undef hypot // undo the evil #define left by Python.
 
 # elif defined(__BORLANDC__)
-#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
-#   include <config.h>
-#  else
-#   include <pyconfig.h>
-#  endif
 #  undef HAVE_HYPOT
 #  define HAVE_HYPOT 1
 # endif
