@@ -1,3 +1,8 @@
+4 July 2003
+Applied patch that solved a bug in ClassExporter and added a distutils install
+script (install/setup.py), both contributed by Prabhu Ramachandran.
+Thanks Prabhu!
+
 2 July 2003
 Jim Wilson found a bug where types like "char**" were being interpreted as 
 "char*". Thanks Jim!

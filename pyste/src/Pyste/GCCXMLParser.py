@@ -44,12 +44,12 @@ class GCCXMLParser(object):
 
 
     def AddDecl(self, decl):
-        if decl._FullName() in self._names:
-            decl._is_unique= False
+        if decl.FullName() in self._names:
+            decl.is_unique= False
             for d in self.declarations:
-                if d._FullName() == decl._FullName():
-                    d._is_unique = False
-        self._names[decl._FullName()] = 0
+                if d.FullName() == decl.FullName():
+                    d.is_unique = False
+        self._names[decl.FullName()] = 0
         self.declarations.append(decl)
 
         
@@ -117,15 +117,15 @@ class GCCXMLParser(object):
         if isinstance(decl, Type):
             res = deepcopy(decl)
             if const:
-                res._const = const
+                res.const = const
             if volatile: 
-                res._volatile = volatile
+                res.volatile = volatile
             if restricted:
-                res._restricted = restricted
+                res.restricted = restricted
         else:
-            res = Type(decl._FullName(), const)
-            res._volatile = volatile
-            res._restricted = restricted
+            res = Type(decl.FullName(), const)
+            res.volatile = volatile
+            res.restricted = restricted
         return res            
         
                 
@@ -171,14 +171,14 @@ class GCCXMLParser(object):
         if isinstance(context, Class):
             self.ParseField(id, element)
             elem, decl = self.elements[id]
-            decl._static = True
+            decl.static = True
         else:
             namespace = context
             name = element.get('name')                    
             type_ = self.GetType(element.get('type'))
             location = self.GetLocation(element.get('location'))
             variable = Variable(type_, name, namespace)
-            variable._location = location
+            variable.location = location
             self.AddDecl(variable)
             self.Update(id, variable)
         
@@ -188,7 +188,7 @@ class GCCXMLParser(object):
         for child in element:
             if child.tag == 'Argument':
                 type = self.GetType(child.get('type'))
-                type._default = child.get('default')                
+                type.default = child.get('default')                
                 args.append(type)
         return args
 
@@ -203,7 +203,7 @@ class GCCXMLParser(object):
         params = self.GetArguments(element)
         incomplete = bool(int(element.get('incomplete', 0)))
         function = functionType(name, namespace, returns, params)
-        function._location = location
+        function.location = location
         self.AddDecl(function)
         self.Update(id, function)
 
@@ -237,10 +237,10 @@ class GCCXMLParser(object):
                 # "Unimplemented" tag, but we are not interested in this classes
                 # anyway
                 continue
-            base = Base(decl._FullName(), visib)
+            base = Base(decl.FullName(), visib)
             this_level.append(base)
             # normalize with the other levels
-            for index, level in enumerate(decl._hierarchy):
+            for index, level in enumerate(decl.hierarchy):
                 if index < len(next_levels):
                     next_levels[index] = next_levels[index] + level
                 else:
@@ -253,14 +253,18 @@ class GCCXMLParser(object):
         return hierarchy
 
         
-    def GetMembers(self, members):
+    def GetMembers(self, member_list):
         # members must be a string with the ids of the members
-        if members is None:
+        if member_list is None:
             return []
-        memberobjs = []
-        for member in members.split():
-            memberobjs.append(self.GetDecl(member)) 
-        return memberobjs
+        members = []
+        for member in member_list.split():
+            decl = self.GetDecl(member)
+            if type(decl) in Class.ValidMemberTypes():
+                if type(decl) is str:
+                    print decl
+                members.append(decl) 
+        return members
 
 
     def ParseClass(self, id, element):
@@ -275,20 +279,22 @@ class GCCXMLParser(object):
             # a nested class
             visib = element.get('access', Scope.public)
             class_ = NestedClass(
-                name, context._FullName(), visib, [], abstract)
-        class_._incomplete = incomplete
+                name, context.FullName(), visib, [], abstract)
+        class_.incomplete = incomplete
         # we have to add the declaration of the class before trying        
         # to parse its members and bases, to avoid recursion.
         self.AddDecl(class_)
-        class_._location = location
+        class_.location = location
         self.Update(id, class_)       
         # now we can get the members and the bases
-        class_._hierarchy = self.GetHierarchy(element.get('bases'))        
-        if class_._hierarchy:
-            class_._bases = class_._hierarchy[0]
+        class_.hierarchy = self.GetHierarchy(element.get('bases'))        
+        if class_.hierarchy:
+            class_.bases = class_.hierarchy[0]
         members = self.GetMembers(element.get('members'))
         for member in members:
-            class_._AddMember(member)
+            if type(member) is str:
+                print member
+            class_.AddMember(member)
 
 
     def ParseStruct(self, id, element):
@@ -305,21 +311,21 @@ class GCCXMLParser(object):
         type = self.GetType(element.get('type'))
         min = element.get('min')
         max = element.get('max')
-        array = ArrayType(type._name, type._const, min, max)
+        array = ArrayType(type.name, type.const, min, max)
         self.Update(id, array)
 
         
     def ParseReferenceType(self, id, element):
         type = self.GetType(element.get('type'))
         expand = not isinstance(type, FunctionType)
-        ref = ReferenceType(type._name, type._const, None, expand, type._suffix)
+        ref = ReferenceType(type.name, type.const, None, expand, type.suffix)
         self.Update(id, ref)
         
         
     def ParsePointerType(self, id, element):
         type = self.GetType(element.get('type'))
         expand = not isinstance(type, FunctionType)
-        ref = PointerType(type._name, type._const, None, expand, type._suffix)
+        ref = PointerType(type.name, type.const, None, expand, type.suffix)
         self.Update(id, ref)
         
         
@@ -331,7 +337,7 @@ class GCCXMLParser(object):
 
 
     def ParseMethodType(self, id, element):
-        class_ = self.GetDecl(element.get('basetype'))._FullName()
+        class_ = self.GetDecl(element.get('basetype')).FullName()
         result = self.GetType(element.get('returns'))
         args = self.GetArguments(element)
         method = MethodType(result, args, class_)
@@ -341,19 +347,19 @@ class GCCXMLParser(object):
     def ParseField(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context'))._FullName()
+        classname = self.GetDecl(element.get('context')).FullName()
         type_ = self.GetType(element.get('type'))
         static = bool(int(element.get('extern', '0')))
         location = self.GetLocation(element.get('location'))
         var = ClassVariable(type_, name, classname, visib, static)
-        var._location = location
+        var.location = location
         self.Update(id, var)
 
 
     def ParseMethod(self, id, element, methodType=Method):
         name = element.get('name')
         result = self.GetType(element.get('returns'))
-        classname = self.GetDecl(element.get('context'))._FullName()
+        classname = self.GetDecl(element.get('context')).FullName()
         visib = element.get('access', Scope.public)
         static = bool(int(element.get('static', '0')))
         virtual = bool(int(element.get('virtual', '0')))
@@ -363,7 +369,7 @@ class GCCXMLParser(object):
         params = self.GetArguments(element)
         method = methodType(
             name, classname, result, params, visib, virtual, abstract, static, const)
-        method._location = location
+        method.location = location
         self.Update(id, method)
 
 
@@ -374,22 +380,22 @@ class GCCXMLParser(object):
     def ParseConstructor(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context'))._FullName()
+        classname = self.GetDecl(element.get('context')).FullName()
         location = self.GetLocation(element.get('location'))
         params = self.GetArguments(element)
         ctor = Constructor(name, classname, params, visib)
-        ctor._location = location
+        ctor.location = location
         self.Update(id, ctor)
 
 
     def ParseDestructor(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context'))._FullName()
+        classname = self.GetDecl(element.get('context')).FullName()
         virtual = bool(int(element.get('virtual', '0')))
         location = self.GetLocation(element.get('location'))
         des = Destructor(name, classname, visib, virtual)
-        des._location = location
+        des.location = location
         self.Update(id, des)
 
 
@@ -402,7 +408,7 @@ class GCCXMLParser(object):
         type = self.GetType(element.get('type'))        
         context = self.GetDecl(element.get('context'))
         if isinstance(context, Class):
-            context = context._FullName()
+            context = context.FullName()
         typedef = Typedef(type, name, context)
         self.Update(id, typedef)
         self.AddDecl(typedef)
@@ -417,15 +423,15 @@ class GCCXMLParser(object):
             enum = Enumeration(name, context)
         else:
             visib = element.get('access', Scope.public)
-            enum = ClassEnumeration(name, context._FullName(), visib)
+            enum = ClassEnumeration(name, context.FullName(), visib)
         self.AddDecl(enum)
-        enum._location = location
+        enum.location = location
         for child in element:
             if child.tag == 'EnumValue':
                 name = child.get('name')
                 value = int(child.get('init'))
-                enum._values[name] = value
-        enum._incomplete = incomplete
+                enum.values[name] = value
+        enum.incomplete = incomplete
         self.Update(id, enum)
 
 

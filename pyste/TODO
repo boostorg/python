@@ -6,3 +6,5 @@
 
 - Expose programmability to the Pyste files (listing members of a class, for
   instance)
+
+- Virtual operators  

@@ -46,24 +46,24 @@ class ClassExporter(Exporter):
 
 
     def ScopeName(self):
-        return makeid(self.class_._FullName()) + '_scope'
+        return makeid(self.class_.FullName()) + '_scope'
 
 
     def Unit(self):
-        return makeid(self.class_._name)
+        return makeid(self.class_.name)
 
 
     def Name(self):
-        return self.class_._FullName()
+        return self.class_.FullName()
 
 
     def SetDeclarations(self, declarations):
         Exporter.SetDeclarations(self, declarations)
         decl = self.GetDeclaration(self.info.name)
         if isinstance(decl, Typedef):
-            self.class_ = self.GetDeclaration(decl._type._name)
+            self.class_ = self.GetDeclaration(decl.type.name)
             if not self.info.rename:
-                self.info.rename = decl._name
+                self.info.rename = decl.name
         else:
             self.class_ = decl
         self.class_ = copy.deepcopy(self.class_)
@@ -72,10 +72,10 @@ class ClassExporter(Exporter):
         
     def ClassBases(self):
         all_bases = []       
-        for level in self.class_._hierarchy:
+        for level in self.class_.hierarchy:
             for base in level:
                 all_bases.append(base)
-        return [self.GetDeclaration(x._name) for x in all_bases] 
+        return [self.GetDeclaration(x.name) for x in all_bases] 
 
     
     def Order(self):
@@ -83,7 +83,7 @@ class ClassExporter(Exporter):
         bases' bases.  Do this because base classes must be instantialized
         before the derived classes in the module definition.  
         '''
-        return '%s_%s' % (len(self.ClassBases()), self.class_._FullName())
+        return '%s_%s' % (len(self.ClassBases()), self.class_.FullName())
         
     
     def Export(self, codeunit, exported_names):
@@ -113,23 +113,23 @@ class ClassExporter(Exporter):
         '''
         valid_members = (Method, ClassVariable, NestedClass, ClassOperator,
             ConverterOperator, ClassEnumeration)
-        for level in self.class_._hierarchy:
+        for level in self.class_.hierarchy:
             level_exported = False
             for base in level:
-                base = self.GetDeclaration(base._name)
-                if base._FullName() not in exported_names:
+                base = self.GetDeclaration(base.name)
+                if base.FullName() not in exported_names:
                     for member in base:
                         if type(member) in valid_members:
                             member = copy.deepcopy(member)   
                             #if type(member) not in (ClassVariable,:
-                            #    member.class_ = self.class_._FullName()
-                            self.class_._AddMember(member)        
+                            #    member.class_ = self.class_.FullName()
+                            self.class_.AddMember(member)        
                 else:
                     level_exported = True
             if level_exported:
                 break
         def IsValid(member):
-            return isinstance(member, valid_members) and member._visibility == Scope.public
+            return isinstance(member, valid_members) and member.visibility == Scope.public
         self.public_members = [x for x in self.class_ if IsValid(x)]
 
 
@@ -196,19 +196,19 @@ class ClassExporter(Exporter):
         
     def ExportBasics(self):
         'Export the name of the class and its class_ statement'
-        self.Add('template', self.class_._FullName())
-        name = self.info.rename or self.class_._name
+        self.Add('template', self.class_.FullName())
+        name = self.info.rename or self.class_.name
         self.Add('constructor', '"%s"' % name)
         
         
     def ExportBases(self, exported_names):
         'Expose the bases of the class into the template section'        
-        hierarchy = self.class_._hierarchy
+        hierarchy = self.class_.hierarchy
         for level in hierarchy:
             exported = []
             for base in level:
-                if base._visibility == Scope.public and base._name in exported_names:
-                    exported.append(base._name)
+                if base.visibility == Scope.public and base.name in exported_names:
+                    exported.append(base.name)
             if exported:
                 code = namespaces.python + 'bases< %s > ' %  (', '.join(exported))
                 self.Add('template', code)         
@@ -223,9 +223,9 @@ class ClassExporter(Exporter):
         
         def init_code(cons):
             'return the init<>() code for the given contructor'
-            param_list = [p._FullName() for p in cons._parameters]
-            min_params_list = param_list[:cons._minArgs]
-            max_params_list = param_list[cons._minArgs:]
+            param_list = [p.FullName() for p in cons.parameters]
+            min_params_list = param_list[:cons.minArgs]
+            max_params_list = param_list[cons.minArgs:]
             min_params = ', '.join(min_params_list)
             max_params = ', '.join(max_params_list)
             init = py_ns + 'init< '
@@ -240,9 +240,9 @@ class ClassExporter(Exporter):
         constructors = [x for x in self.public_members if isinstance(x, Constructor)]
         self.constructors = constructors[:]
         # don't export the copy constructor if the class is abstract
-        if self.class_._abstract:
+        if self.class_.abstract:
             for cons in constructors:
-                if cons._IsCopy():
+                if cons.IsCopy():
                     constructors.remove(cons)
                     break
         if not constructors:
@@ -252,7 +252,7 @@ class ClassExporter(Exporter):
             # write the constructor with less parameters to the constructor section
             smaller = None
             for cons in constructors:
-                if smaller is None or len(cons._parameters) < len(smaller._parameters):
+                if smaller is None or len(cons.parameters) < len(smaller.parameters):
                     smaller = cons
             assert smaller is not None
             self.Add('constructor', init_code(smaller))
@@ -262,7 +262,7 @@ class ClassExporter(Exporter):
                 code = '.def(%s)' % init_code(cons) 
                 self.Add('inside', code)
         # check if the class is copyable
-        if not self.class_._HasCopyConstructor() or self.class_._abstract:
+        if not self.class_.HasCopyConstructor() or self.class_.abstract:
             self.Add('template', namespaces.boost + 'noncopyable')
             
         
@@ -270,11 +270,11 @@ class ClassExporter(Exporter):
         'Export the variables of the class, both static and simple variables'
         vars = [x for x in self.public_members if isinstance(x, Variable)]
         for var in vars:
-            if self.info[var._name].exclude: 
+            if self.info[var.name].exclude: 
                 continue
-            name = self.info[var._name].rename or var._name
-            fullname = var._FullName() 
-            if var._type._const:
+            name = self.info[var.name].rename or var.name
+            fullname = var.FullName() 
+            if var.type.const:
                 def_ = '.def_readonly'
             else:
                 def_ = '.def_readwrite'
@@ -284,8 +284,8 @@ class ClassExporter(Exporter):
     
     def OverloadName(self, method):
         'Returns the name of the overloads struct for the given method'
-        name = makeid(method._FullName())
-        overloads = '_overloads_%i_%i' % (method._minArgs, method._maxArgs)    
+        name = makeid(method.FullName())
+        overloads = '_overloads_%i_%i' % (method.minArgs, method.maxArgs)    
         return name + overloads
 
     
@@ -307,13 +307,13 @@ class ClassExporter(Exporter):
         declared = {}
         def DeclareOverloads(m):
             'Declares the macro for the generation of the overloads'
-            if (isinstance(m, Method) and m._static) or type(m) == Function:
-                func = m._FullName()
+            if (isinstance(m, Method) and m.static) or type(m) == Function:
+                func = m.FullName()
                 macro = 'BOOST_PYTHON_FUNCTION_OVERLOADS'
             else:
-                func = m._name
+                func = m.name
                 macro = 'BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS' 
-            code = '%s(%s, %s, %i, %i)\n' % (macro, self.OverloadName(m), func, m._minArgs, m._maxArgs)
+            code = '%s(%s, %s, %i, %i)\n' % (macro, self.OverloadName(m), func, m.minArgs, m.maxArgs)
             if code not in declared:
                 declared[code] = True
                 self.Add('declaration', code)
@@ -322,29 +322,29 @@ class ClassExporter(Exporter):
         def Pointer(m):
             'returns the correct pointer declaration for the method m'
             # check if this method has a wrapper set for him
-            wrapper = self.info[m._name].wrapper
+            wrapper = self.info[m.name].wrapper
             if wrapper:
                 return '&' + wrapper.FullName()
             else:
-                return m._PointerDeclaration() 
+                return m.PointerDeclaration() 
 
         def IsExportable(m):
             'Returns true if the given method is exportable by this routine'
             ignore = (Constructor, ClassOperator, Destructor)
-            return isinstance(m, Function) and not isinstance(m, ignore) and not m._virtual        
+            return isinstance(m, Function) and not isinstance(m, ignore) and not m.virtual        
         
         methods = [x for x in self.public_members if IsExportable(x)]        
         methods.extend(self.GetAddedMethods())
         
         for method in methods:
-            method_info = self.info[method._name]
+            method_info = self.info[method.name]
             
             # skip this method if it was excluded by the user
             if method_info.exclude:
                 continue 
 
             # rename the method if the user requested
-            name = method_info.rename or method._name
+            name = method_info.rename or method.name
             
             # warn the user if this method needs a policy and doesn't have one
             method_info.policy = exporterutils.HandlePolicy(method, method_info.policy)
@@ -355,7 +355,7 @@ class ClassExporter(Exporter):
                 policy = ', %s%s()' % (namespaces.python, policy.Code())
             # check for overloads
             overload = ''
-            if method._minArgs != method._maxArgs:
+            if method.minArgs != method.maxArgs:
                 # add the overloads for this method
                 DeclareOverloads(method)
                 overload_name = self.OverloadName(method)
@@ -369,7 +369,7 @@ class ClassExporter(Exporter):
             code += ')'
             self.Add('inside', code)
             # static method
-            if isinstance(method, Method) and method._static:
+            if isinstance(method, Method) and method.static:
                 code = '.staticmethod("%s")' % name
                 self.Add('inside', code)
             # add wrapper code if this method has one
@@ -382,15 +382,15 @@ class ClassExporter(Exporter):
         '''Make all methods that the user indicated to no_override no more virtual, delegating their
         export to the ExportMethods routine'''
         for member in self.class_:
-            if type(member) == Method and member._virtual:
-                member._virtual = not self.info[member._name].no_override 
+            if type(member) == Method and member.virtual:
+                member.virtual = not self.info[member.name].no_override 
 
 
     def ExportVirtualMethods(self):        
         # check if this class has any virtual methods
         has_virtual_methods = False
         for member in self.class_:
-            if type(member) == Method and member._virtual:
+            if type(member) == Method and member.virtual:
                 has_virtual_methods = True
                 break
 
@@ -436,26 +436,26 @@ class ClassExporter(Exporter):
             for decl in self.declarations:
                 if isinstance(decl, Operator):
                     # check if one of the params is this class
-                    for param in decl._parameters:
-                        if param._name == self.class_._FullName():
+                    for param in decl.parameters:
+                        if param.name == self.class_.FullName():
                             operators.append(decl)
                             break
             return operators
 
         def GetOperand(param):
             'Returns the operand of this parameter (either "self", or "other<type>")'
-            if param._name == self.class_._FullName():
+            if param.name == self.class_.FullName():
                 return namespaces.python + 'self'
             else:
-                return namespaces.python + ('other< %s >()' % param._name)
+                return namespaces.python + ('other< %s >()' % param.name)
 
 
         def HandleSpecialOperator(operator):
             # gatter information about the operator and its parameters
-            result_name = operator._result._name                        
+            result_name = operator.result.name                        
             param1_name = ''
-            if operator._parameters:
-                param1_name = operator._parameters[0]._name
+            if operator.parameters:
+                param1_name = operator.parameters[0].name
                 
             # check for str
             ostream = 'basic_ostream'
@@ -473,21 +473,21 @@ class ClassExporter(Exporter):
         frees = GetFreeOperators()
         members = [x for x in self.public_members if type(x) == ClassOperator]
         all_operators = frees + members
-        operators = [x for x in all_operators if not self.info['operator'][x._name].exclude]
+        operators = [x for x in all_operators if not self.info['operator'][x.name].exclude]
         
         for operator in operators:
             # gatter information about the operator, for use later
-            wrapper = self.info['operator'][operator._name].wrapper
+            wrapper = self.info['operator'][operator.name].wrapper
             if wrapper:
                 pointer = '&' + wrapper.FullName()
                 if wrapper.code:
                     self.Add('declaration', wrapper.code)
             else:
-                pointer = operator._PointerDeclaration()                 
-            rename = self.info['operator'][operator._name].rename
+                pointer = operator.PointerDeclaration()                 
+            rename = self.info['operator'][operator.name].rename
 
             # check if this operator will be exported as a method
-            export_as_method = wrapper or rename or operator._name in self.BOOST_RENAME_OPERATORS
+            export_as_method = wrapper or rename or operator.name in self.BOOST_RENAME_OPERATORS
             
             # check if this operator has a special representation in boost
             special_code = HandleSpecialOperator(operator)
@@ -499,9 +499,9 @@ class ClassExporter(Exporter):
                     if wrapper:
                         rename = wrapper.name
                     else:
-                        rename = self.BOOST_RENAME_OPERATORS[operator._name]
+                        rename = self.BOOST_RENAME_OPERATORS[operator.name]
                 policy = ''
-                policy_obj = self.info['operator'][operator._name].policy
+                policy_obj = self.info['operator'][operator.name].policy
                 if policy_obj:
                     policy = ', %s()' % policy_obj.Code() 
                 self.Add('inside', '.def("%s", %s%s)' % (rename, pointer, policy))
@@ -509,24 +509,24 @@ class ClassExporter(Exporter):
             elif has_special_representation:
                 self.Add('inside', special_code)
                 
-            elif operator._name in self.BOOST_SUPPORTED_OPERATORS:
+            elif operator.name in self.BOOST_SUPPORTED_OPERATORS:
                 # export this operator using boost's facilities
                 op = operator
-                is_unary = isinstance(op, Operator) and len(op._parameters) == 1 or\
-                           isinstance(op, ClassOperator) and len(op._parameters) == 0
+                is_unary = isinstance(op, Operator) and len(op.parameters) == 1 or\
+                           isinstance(op, ClassOperator) and len(op.parameters) == 0
                 if is_unary:
                     self.Add('inside', '.def( %s%sself )' % \
-                        (operator._name, namespaces.python))
+                        (operator.name, namespaces.python))
                 else:
                     # binary operator
-                    if len(operator._parameters) == 2:
-                        left_operand = GetOperand(operator._parameters[0])
-                        right_operand = GetOperand(operator._parameters[1])
+                    if len(operator.parameters) == 2:
+                        left_operand = GetOperand(operator.parameters[0])
+                        right_operand = GetOperand(operator.parameters[1])
                     else:
                         left_operand = namespaces.python + 'self'
-                        right_operand = GetOperand(operator._parameters[0])
+                        right_operand = GetOperand(operator.parameters[0])
                     self.Add('inside', '.def( %s %s %s )' % \
-                        (left_operand, operator._name, right_operand))
+                        (left_operand, operator.name, right_operand))
 
         # export the converters.
         # export them as simple functions with a pre-determined name
@@ -534,8 +534,8 @@ class ClassExporter(Exporter):
         converters = [x for x in self.public_members if type(x) == ConverterOperator]
                 
         def ConverterMethodName(converter):
-            result_fullname = converter._result._FullName()
-            result_name = converter._result._name
+            result_fullname = converter.result.FullName()
+            result_name = converter.result.name
             for regex, method_name in self.SPECIAL_CONVERTERS.items():
                 if regex.match(result_fullname):
                     return method_name
@@ -545,7 +545,7 @@ class ClassExporter(Exporter):
                 return 'to_' + result_name
             
         for converter in converters:
-            info = self.info['operator'][converter._result._FullName()]
+            info = self.info['operator'][converter.result.FullName()]
             # check if this operator should be excluded
             if info.exclude:
                 continue
@@ -554,7 +554,7 @@ class ClassExporter(Exporter):
             if info.rename or not special_code:
                 # export as method
                 name = info.rename or ConverterMethodName(converter)
-                pointer = converter._PointerDeclaration()
+                pointer = converter.PointerDeclaration()
                 policy_code = ''
                 if info.policy:
                     policy_code = ', %s()' % info.policy.Code()
@@ -568,9 +568,9 @@ class ClassExporter(Exporter):
     def ExportNestedClasses(self, exported_names):
         nested_classes = [x for x in self.public_members if isinstance(x, NestedClass)]
         for nested_class in nested_classes:
-            nested_info = self.info[nested_class._name]
+            nested_info = self.info[nested_class.name]
             nested_info.include = self.info.include
-            nested_info.name = nested_class._FullName()
+            nested_info.name = nested_class.FullName()
             exporter = ClassExporter(nested_info)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
@@ -581,9 +581,9 @@ class ClassExporter(Exporter):
     def ExportNestedEnums(self):
         nested_enums = [x for x in self.public_members if isinstance(x, ClassEnumeration)]
         for enum in nested_enums:
-            enum_info = self.info[enum._name]
+            enum_info = self.info[enum.name]
             enum_info.include = self.info.include
-            enum_info.name = enum._FullName()
+            enum_info.name = enum.FullName()
             exporter = EnumExporter(enum_info)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
@@ -594,7 +594,7 @@ class ClassExporter(Exporter):
     def ExportSmartPointer(self):
         smart_ptr = self.info.smart_ptr
         if smart_ptr:
-            class_name = self.class_._FullName()
+            class_name = self.class_.FullName()
             smart_ptr = smart_ptr % class_name
             self.Add('scope', '%s::register_ptr_to_python< %s >();' % (namespaces.python, smart_ptr))
             
@@ -604,8 +604,8 @@ class ClassExporter(Exporter):
         methods = [x for x in self.public_members if isinstance(x, Method)]
         for method in methods:
             return_opaque_policy = return_value_policy(return_opaque_pointer)
-            if self.info[method._name].policy == return_opaque_policy:
-                macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)' % method._result._name
+            if self.info[method.name].policy == return_opaque_policy:
+                macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)' % method.result.name
                 if macro not in self._exported_opaque_pointers:
                     self.Add('declaration-outside', macro)
                     self._exported_opaque_pointers[macro] = 1
@@ -617,9 +617,9 @@ class ClassExporter(Exporter):
 
 def _ParamsInfo(m, count=None):
     if count is None:
-        count = len(m._parameters)
+        count = len(m.parameters)
     param_names = ['p%i' % i for i in range(count)]
-    param_types = [x._FullName() for x in m._parameters[:count]]
+    param_types = [x.FullName() for x in m.parameters[:count]]
     params = ['%s %s' % (t, n) for t, n in zip(param_types, param_names)]
     #for i, p in enumerate(m.parameters[:count]):
     #    if p.default is not None:
@@ -636,7 +636,7 @@ class _VirtualWrapperGenerator(object):
         self.class_ = class_
         self.bases = bases[:]
         self.info = info
-        self.wrapper_name = makeid(class_._FullName()) + '_Wrapper'
+        self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
         self.virtual_methods = None
         self._method_count = {}
         self.GenerateVirtualMethods()
@@ -647,9 +647,9 @@ class _VirtualWrapperGenerator(object):
         number of default arguments. Always returns at least one name, and return from 
         the one with most arguments to the one with the least.
         '''
-        base_name = 'default_' + method._name 
-        minArgs = method._minArgs
-        maxArgs = method._maxArgs
+        base_name = 'default_' + method.name 
+        minArgs = method.minArgs
+        maxArgs = method.maxArgs
         if minArgs == maxArgs:
             return [base_name]
         else:
@@ -663,18 +663,18 @@ class _VirtualWrapperGenerator(object):
         '''
         pyste = namespaces.pyste
         python = namespaces.python
-        rename = self.info[method._name].rename or method._name
-        result = method._result._FullName()
+        rename = self.info[method.name].rename or method.name
+        result = method.result.FullName()
         return_str = 'return '
         if result == 'void':
             return_str = ''
         params, param_names, param_types = _ParamsInfo(method)
         constantness = ''
-        if method._const:
+        if method.const:
             constantness = ' const'
         
         # call_method callback
-        decl  = indent + '%s %s(%s)%s {\n' % (result, method._name, params, constantness)
+        decl  = indent + '%s %s(%s)%s {\n' % (result, method.name, params, constantness)
         param_names_str = ', '.join(param_names)
         if param_names_str:
             param_names_str = ', ' + param_names_str
@@ -685,19 +685,19 @@ class _VirtualWrapperGenerator(object):
         # default implementations (with overloading)
         def DefaultImpl(method, param_names):
             'Return the body of a default implementation wrapper'
-            wrapper = self.info[method._name].wrapper
+            wrapper = self.info[method.name].wrapper
             if not wrapper:
                 # return the default implementation of the class
-                return '%s%s::%s(%s);\n' % \
-                    (return_str, self.class_._FullName(), method._name, ', '.join(param_names)) 
+                return '%s%s(%s);\n' % \
+                    (return_str, method.FullName(), ', '.join(param_names)) 
             else:
                 # return a call for the wrapper
                 params = ', '.join(['this'] + param_names)
                 return '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
                 
-        if not method._abstract and method._visibility != Scope.private:
-            minArgs = method._minArgs
-            maxArgs = method._maxArgs
+        if not method.abstract and method.visibility != Scope.private:
+            minArgs = method.minArgs
+            maxArgs = method.maxArgs
             impl_names = self.DefaultImplementationNames(method)
             for impl_name, argNum in zip(impl_names, range(minArgs, maxArgs+1)): 
                 params, param_names, param_types = _ParamsInfo(method, argNum)            
@@ -713,35 +713,35 @@ class _VirtualWrapperGenerator(object):
         statement to export this method.'''
         # dont define abstract methods
         pyste = namespaces.pyste
-        rename = self.info[method._name].rename or method._name
+        rename = self.info[method.name].rename or method.name
         default_names = self.DefaultImplementationNames(method)
-        class_name = self.class_._FullName()
+        class_name = self.class_.FullName()
         wrapper_name = pyste + self.wrapper_name
-        result = method._result._FullName()
-        is_method_unique = method._is_unique
+        result = method.result.FullName()
+        is_method_unique = method.is_unique
         constantness = ''
-        if method._const:
+        if method.const:
             constantness = ' const'
         
         # create a list of default-impl pointers
-        minArgs = method._minArgs
-        maxArgs = method._maxArgs 
+        minArgs = method.minArgs
+        maxArgs = method.maxArgs 
         if is_method_unique:
             default_pointers = ['&%s::%s' % (wrapper_name, x) for x in default_names]
         else:
             default_pointers = []
             for impl_name, argNum in zip(default_names, range(minArgs, maxArgs+1)):
-                param_list = [x._FullName() for x in method._parameters[:argNum]]
+                param_list = [x.FullName() for x in method.parameters[:argNum]]
                 params = ', '.join(param_list)             
                 signature = '%s (%s::*)(%s)%s' % (result, wrapper_name, params, constantness)
                 default_pointer = '(%s)&%s::%s' % (signature, wrapper_name, impl_name)
                 default_pointers.append(default_pointer)
             
         # get the pointer of the method
-        pointer = method._PointerDeclaration()
+        pointer = method.PointerDeclaration()
 
         # Add policy to overloaded methods also
-        policy = self.info[method._name].policy or ''
+        policy = self.info[method.name].policy or ''
         if policy:
             policy = ', %s%s()' % (namespaces.python, policy.Code())
 
@@ -766,14 +766,14 @@ class _VirtualWrapperGenerator(object):
         '''        
         def IsVirtual(m):
             return type(m) is Method and \
-                m._virtual and \
-                m._visibility != Scope.private
+                m.virtual and \
+                m.visibility != Scope.private
                                       
         all_methods = [x for x in self.class_ if IsVirtual(x)]
         for base in self.bases:
             base_methods = [copy.deepcopy(x) for x in base if IsVirtual(x)]
             for base_method in base_methods:
-                base_method.class_ = self.class_._FullName()
+                base_method.class_ = self.class_.FullName()
                 all_methods.append(base_method)
         
         # extract the virtual methods, avoiding duplications. The duplication
@@ -781,16 +781,16 @@ class _VirtualWrapperGenerator(object):
         # that inherited members are correctly excluded if the subclass overrides
         # them.
         def MethodSig(method):
-            if method._const:
+            if method.const:
                 const = 'const'
             else:
                 const = ''
-            if method._result:
-                result = method._result._FullName()
+            if method.result:
+                result = method.result.FullName()
             else:
                 result = ''
-            params = ', '.join([x._FullName() for x in method._parameters]) 
-            return '%s %s(%s) %s' % (result, method._name, params, const) 
+            params = ', '.join([x.FullName() for x in method.parameters]) 
+            return '%s %s(%s) %s' % (result, method.name, params, const) 
         
         self.virtual_methods = []
         already_added = {}
@@ -802,15 +802,15 @@ class _VirtualWrapperGenerator(object):
             
     
     def Constructors(self):
-        return self.class_._Constructors(publics_only=True)
+        return self.class_.Constructors(publics_only=True)
     
         
     def GenerateDefinitions(self):
         defs = []
         for method in self.virtual_methods:
-            exclude = self.info[method._name].exclude
+            exclude = self.info[method.name].exclude
             # generate definitions only for public methods and non-abstract methods
-            if method._visibility == Scope.public and not method._abstract and not exclude:
+            if method.visibility == Scope.public and not method.abstract and not exclude:
                 defs.extend(self.MethodDefinition(method))
         return defs
 
@@ -819,13 +819,13 @@ class _VirtualWrapperGenerator(object):
         'Return the wrapper for this class'
         
         # generate the class code
-        class_name = self.class_._FullName()
+        class_name = self.class_.FullName()
         code = 'struct %s: %s\n' % (self.wrapper_name, class_name)
         code += '{\n'
         # generate constructors (with the overloads for each one)
         for cons in self.Constructors(): # only public constructors
-            minArgs = cons._minArgs
-            maxArgs = cons._maxArgs
+            minArgs = cons.minArgs
+            maxArgs = cons.maxArgs
             # from the min number of arguments to the max number, generate
             # all version of the given constructor
             cons_code = ''
@@ -841,7 +841,7 @@ class _VirtualWrapperGenerator(object):
         # generate the body
         body = []
         for method in self.virtual_methods:
-            if not self.info[method._name].exclude:
+            if not self.info[method.name].exclude:
                 body.append(self.Declaration(method, indent))            
         body = '\n'.join(body) 
         code += body + '\n'

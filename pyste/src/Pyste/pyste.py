@@ -39,7 +39,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.9.6'
+__VERSION__ = '0.9.7'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -154,7 +154,7 @@ def CreateContext():
     return context                                        
 
     
-def Main():
+def Begin():
     includes, defines, module, out, interfaces, multiple = ParseArguments()
     # execute the interface files
     for interface in interfaces:
@@ -229,10 +229,14 @@ def UsePsyco():
         psyco.profile()
     except: pass         
 
-    
-if __name__ == '__main__':
+
+def main():
     start = time.clock()
     UsePsyco()
-    status = Main()
+    status = Begin()
     print '%0.2f seconds' % (time.clock()-start)
-    sys.exit(status)
+    sys.exit(status) 
+
+    
+if __name__ == '__main__':
+    main()

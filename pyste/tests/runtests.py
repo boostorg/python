@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-sys.path.append('../src')  
+sys.path.append('../src/Pyste')  
 import unittest
 import os.path
 from glob import glob

@@ -21,16 +21,16 @@ class EnumExporter(Exporter):
         if not self.info.exclude:
             indent = self.INDENT
             in_indent = self.INDENT*2
-            rename = self.info.rename or self.enum._name
-            full_name = self.enum._FullName()
+            rename = self.info.rename or self.enum.name
+            full_name = self.enum.FullName()
             if rename == "$_0" or rename == '._0':
                 full_name = "int"
                 rename = "unnamed"
             code = indent + namespaces.python
             code += 'enum_< %s >("%s")\n' % (full_name, rename)
-            for name in self.enum._values:         
+            for name in self.enum.values:         
                 rename = self.info[name].rename or name
-                value_fullname = self.enum._ValueFullName(name)
+                value_fullname = self.enum.ValueFullName(name)
                 code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
             code += indent + ';\n\n'
             codeunit.Write('module', code)

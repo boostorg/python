@@ -32,8 +32,8 @@ class HeaderExporter(Exporter):
         header = os.path.normpath(self.parser_header)
         for decl in self.declarations:
             # check if this declaration is in the header
-            location = os.path.normpath(decl._location[0])
-            if location == header and not self.IsInternalName(decl._name):
+            location = os.path.normpath(decl.location[0])
+            if location == header and not self.IsInternalName(decl.name):
                 # ok, check the type of the declaration and export it accordingly
                 self.HandleDeclaration(decl, codeunit, exported_names)
             
@@ -57,9 +57,9 @@ class HeaderExporter(Exporter):
             
     def HandleExporter(self, decl, exporter_type, codeunit, exported_names):
         # only export complete declarations
-        if not getattr(decl, "_incomplete", False):
-            info = self.info[decl._name]
-            info.name = decl._FullName()
+        if not decl.incomplete:
+            info = self.info[decl.name]
+            info.name = decl.FullName()
             info.include = self.info.include
             exporter = exporter_type(info)
             exporter.SetDeclarations(self.declarations)

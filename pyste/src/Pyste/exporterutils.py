@@ -41,17 +41,17 @@ def HandlePolicy(function, policy):
     
     def IsString(type):
         'Return True if the Type instance can be considered a string'
-        return type._FullName() == 'const char*'
+        return type.FullName() == 'const char*'
 
     def IsPyObject(type):
-        return type._FullName() == '_object *' # internal name of PyObject
+        return type.FullName() == '_object *' # internal name of PyObject
     
-    result = function._result
+    result = function.result
     # if the function returns const char*, a policy is not needed
     if IsString(result) or IsPyObject(result):
         return policy
     # if returns a const T&, set the default policy
-    if policy is None and result._const and isinstance(result, ReferenceType):
+    if policy is None and result.const and isinstance(result, ReferenceType):
         policy = return_value_policy(copy_const_reference)
     # basic test if the result type demands a policy
     needs_policy = isinstance(result, (ReferenceType, PointerType)) 
@@ -59,7 +59,7 @@ def HandlePolicy(function, policy):
     if needs_policy and policy is None:
         global _printed_warnings
         warning = '---> Error: %s returns a pointer or a reference, ' \
-                  'but no policy was specified.' % function._FullName()
+                  'but no policy was specified.' % function.FullName()
         if warning not in _printed_warnings:
             print warning
             print 

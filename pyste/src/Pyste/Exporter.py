@@ -55,7 +55,7 @@ class Exporter:
     def GetDeclarations(self, fullname):
         decls = []
         for decl in self.declarations:
-            if decl._FullName() == fullname:
+            if decl.FullName() == fullname:
                 decls.append(decl)
         if not decls:
             raise RuntimeError, 'no %s declaration found!' % fullname
