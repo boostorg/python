@@ -9,7 +9,6 @@
 # include <boost/python/errors.hpp>
 # include <boost/python/detail/config.hpp>
 # include <boost/python/make_function.hpp>
-# include <boost/python/objects.hpp>
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/detail/module_base.hpp>
 # include <boost/python/detail/module_init.hpp>
