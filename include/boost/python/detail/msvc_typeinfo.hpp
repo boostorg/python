@@ -23,34 +23,19 @@ namespace boost { namespace python { namespace detail {
 typedef std::type_info const& typeinfo;
 
 template <class T>
-static typeinfo typeid_nonref(T*, ...) { return typeid(T); }
-
-template <class T>
-static typeinfo typeid_nonref(T const*, int) { return typeid(T); }
-
-template <class T>
-static typeinfo typeid_nonref(T volatile*, int) { return typeid(T); }
-
-template <class T>
-static typeinfo typeid_nonref(T const volatile*, long) { return typeid(T); }
-
-#  ifdef BOOST_INTEL_CXX_VERSION
-// The const volatile overload above confuses Intel when dealing with arrays
-template <class T, unsigned N>
-static typeinfo typeid_nonref(T(*)[N], long) { return typeid(T[N]); }
-#  endif
+static typeinfo typeid_nonref(T const volatile*) { return typeid(T); }
 
 template <class T>
 inline typeinfo typeid_ref_1(T&(*)())
 {
-    return detail::typeid_nonref((T*)0,0L);
+    return detail::typeid_nonref((T*)0);
 }
 
 // A non-reference
 template <class T>
 inline typeinfo typeid_ref(type<T>*, T&(*)(type<T>))
 {
-    return detail::typeid_nonref((T*)0,0L);
+    return detail::typeid_nonref((T*)0);
 }
 
 // A reference
