@@ -17,7 +17,7 @@ struct registration;
 // This namespace acts as a sort of singleton
 namespace registry
 {
-  // Get the registration corresponding to the type, creating it if neccessary
+  // Get the registration corresponding to the type, creating it if necessary
   BOOST_PYTHON_DECL registration const& lookup(type_info);
 
   // Return a pointer to the corresponding registration, if one exists

@@ -126,7 +126,7 @@ void handle_exception() throw();
 
       <dt><b>Rationale:</b> At inter-language boundaries it is important to
       ensure that no C++ exceptions escape, since the calling language
-      usually doesn't have the equipment neccessary to properly unwind the
+      usually doesn't have the equipment necessary to properly unwind the
       stack. Use <code>handle_exception</code> to manage exception
       translation whenever your C++ code is called directly from the Python
       API. This is done for you automatically by the usual function wrapping

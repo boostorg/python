@@ -260,7 +260,7 @@ a request which helps to eliminate redundancy. The rules used to
 <ol>
 <li> Treat built-in types specially: when unwrapping a value or
    constant reference to one of these, use a value for the target
-   type. It will bind to a const reference if neccessary, and more
+   type. It will bind to a const reference if necessary, and more
    importantly, avoids having to dynamically allocate room for
    an lvalue of types which can be cheaply copied.
 <li>

@@ -273,7 +273,7 @@ correctly:
 ==================
 
 This section outlines some of the library's major features.  Except as
-neccessary to avoid confusion, details of library implementation are
+necessary to avoid confusion, details of library implementation are
 omitted.
 
 -------------------------------------------
@@ -537,7 +537,7 @@ This has two effects:
    called with an object wrapping a ``Derived`` instance.  Wrapped
    member functions of class ``T`` are treated as though they have an
    implicit first argument of ``T&``, so these conversions are
-   neccessary to allow the base class methods to be called for derived
+   necessary to allow the base class methods to be called for derived
    objects.
 
 Of course it's possible to derive new Python classes from wrapped C++
@@ -650,7 +650,7 @@ Things to notice about the dispatcher class:
   called on an object of type ``BaseWrap``, since it overrides ``f``.
 
 Admittedly, this formula is tedious to repeat, especially on a project
-with many polymorphic classes; that it is neccessary reflects
+with many polymorphic classes; that it is necessary reflects
 limitations in C++'s compile-time reflection capabilities.  Several
 efforts are underway to write front-ends for Boost.Python which can
 generate these dispatchers (and other wrapping code) automatically.
