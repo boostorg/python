@@ -14,7 +14,7 @@ local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
 rule bpl-test ( name ? : files * )
 {
     files ?= $(name).py $(name).cpp ;
-    
+
     local modules ;
     local py ;
     for local f in $(files)
@@ -28,7 +28,7 @@ rule bpl-test ( name ? : files * )
             py = $(f) ;
         }
     }
-    
+
     name ?= $(py:S=) ;
 
     for local f in $(files)
@@ -36,11 +36,11 @@ rule bpl-test ( name ? : files * )
         if $(f:S) != .py
         {
             local m = $(f:S=) ;
-            
+
             if $(m) = $(py:S=)
             {
                 m = $(name) ;
-                
+
                 if $(m) = $(py:S=)
                 {
                     m = $(m)_ext ;
@@ -50,7 +50,7 @@ rule bpl-test ( name ? : files * )
             modules += $(m) ;
         }
     }
-    
+
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
@@ -63,6 +63,7 @@ bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters
 bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
+bpl-test defaults_ext : defaults.py defaults.cpp ;
 
 bpl-test object ;
 bpl-test list ;
@@ -123,7 +124,7 @@ run upcast.cpp  <lib>../../test/build/test_exec_monitor
 run select_holder.cpp  <lib>../../test/build/test_exec_monitor
   : # command-line args
   : # input files
-  : $(UNIT_TEST_PROPERTIES) 
+  : $(UNIT_TEST_PROPERTIES)
     ;
 
 
