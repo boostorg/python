@@ -22,11 +22,10 @@ PyTypeObject* registration::get_class_object() const
 {
     if (this->m_class_object == 0)
     {
-        std::string name = lexical_cast<std::string>(this->target_type);
         ::PyErr_Format(
             PyExc_TypeError
             , const_cast<char*>("No Python class registered for C++ class %s")
-            , name.c_str());
+            , target_type.name());
     
         throw_error_already_set();
     }
