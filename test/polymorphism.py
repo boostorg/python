@@ -32,17 +32,21 @@ class PolymorphTest(unittest.TestCase):
       self.failUnlessEqual(type(factory(1)), A)
       self.failUnlessEqual(type(factory(2)), C)
 
-   def testReturnPy(self):
+   def test_return_py(self):
 
-      class D(A):
+      class X(A):
          def f(self):
-            return 'D.f'
+            return 'X.f'
 
-      d = D()
+      x = X()
       
-      self.failUnlessEqual ('D.f', d.f())
-      self.failUnlessEqual ('D.f', call_f(d))
+      self.failUnlessEqual ('X.f', x.f())
+      self.failUnlessEqual ('X.f', call_f(x))
 
+   def test_wrapper_downcast(self):
+      a = pass_a(D())
+      self.failUnlessEqual('D::g()', a.g())
+   
 if __name__ == "__main__":
    
    # remove the option which upsets unittest

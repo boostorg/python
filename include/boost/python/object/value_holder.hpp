@@ -37,10 +37,11 @@ namespace boost { namespace python { namespace objects {
 #   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) objects::do_unforward(a##n,0)
 #  endif 
 
-template <class Held>
+template <class Value>
 struct value_holder : instance_holder
 {
-    typedef Held value_type;
+    typedef Value held_type;
+    typedef Value value_type;
 
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/value_holder.hpp>, 1))
@@ -50,13 +51,14 @@ struct value_holder : instance_holder
     void* holds(type_info);
 
  private: // data members
-    Held m_held;
+    Value m_held;
 };
 
-template <class Held, class BackReferenceType>
+template <class Value, class Held>
 struct value_holder_back_reference : instance_holder
 {
-    typedef Held value_type;
+    typedef Held held_type;
+    typedef Value value_type;
     
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/value_holder.hpp>, 2))
@@ -66,29 +68,29 @@ private: // required holder implementation
     void* holds(type_info);
 
  private: // data members
-    BackReferenceType m_held;
+    Held m_held;
 };
 
 #  undef BOOST_PYTHON_UNFORWARD_LOCAL
 
-template <class Held>
-void* value_holder<Held>::holds(type_info dst_t)
+template <class Value>
+void* value_holder<Value>::holds(type_info dst_t)
 {
-    type_info src_t = python::type_id<Held>();
+    type_info src_t = python::type_id<Value>();
     return src_t == dst_t ? &m_held
         : find_static_type(&m_held, src_t, dst_t);
 }
 
-template <class Held, class BackReferenceType>
-void* value_holder_back_reference<Held,BackReferenceType>::holds(
+template <class Value, class Held>
+void* value_holder_back_reference<Value,Held>::holds(
     type_info dst_t)
 {
-    type_info src_t = python::type_id<Held>();
-    Held* x = &m_held;
+    type_info src_t = python::type_id<Value>();
+    Value* x = &m_held;
     
     if (dst_t == src_t)
         return x;
-    else if (dst_t == python::type_id<BackReferenceType>())
+    else if (dst_t == python::type_id<Held>())
         return &m_held;
     else
         return find_static_type(x, src_t, dst_t);

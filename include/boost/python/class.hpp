@@ -20,17 +20,6 @@
 # include <boost/python/init.hpp>
 # include <boost/python/args_fwd.hpp>
 
-# include <boost/type_traits/is_same.hpp>
-# include <boost/type_traits/is_convertible.hpp>
-# include <boost/type_traits/is_member_function_pointer.hpp>
-# include <boost/type_traits/is_polymorphic.hpp>
-
-# include <boost/mpl/size.hpp>
-# include <boost/mpl/for_each.hpp>
-# include <boost/mpl/bool.hpp>
-# include <boost/mpl/not.hpp>
-# include <boost/mpl/or.hpp>
-
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/python/object/make_instance.hpp>
@@ -43,6 +32,18 @@
 # include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
+
+# include <boost/type_traits/is_same.hpp>
+# include <boost/type_traits/is_convertible.hpp>
+# include <boost/type_traits/is_member_function_pointer.hpp>
+# include <boost/type_traits/is_polymorphic.hpp>
+
+# include <boost/mpl/size.hpp>
+# include <boost/mpl/for_each.hpp>
+# include <boost/mpl/bool.hpp>
+# include <boost/mpl/not.hpp>
+# include <boost/mpl/or.hpp>
+# include <boost/mpl/vector/vector10.hpp>
 
 # include <boost/utility.hpp>
 # include <boost/detail/workaround.hpp>
@@ -106,6 +107,27 @@ namespace detail
       SelectHolder::register_();
   }
 
+  //
+  // register_wrapper_class -- register the relationship between a
+  // virtual function callback wrapper class and the class being
+  // wrapped.
+  //
+  template <class T>
+  inline void register_wrapper_class(T*, T*, int) {}
+  
+  template <class Wrapper, class T>
+  inline void register_wrapper_class(Wrapper*, T*, ...)
+  {
+      objects::register_class_from_python<Wrapper, mpl::vector1<T> >();
+      objects::copy_class_object(type_id<T>(), type_id<Wrapper>());
+  }
+  
+  template <class Held, class T>
+  inline void register_wrapper_class(Held* = 0, T* = 0)
+  {
+      register_wrapper_class((Held*)0, (T*)0,  0);
+  }
+  
 # ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
   template <class T>
   struct is_data_member_pointer
@@ -562,6 +584,12 @@ inline void class_<T,X1,X2,X3>::register_() const
 {
     objects::register_class_from_python<T,bases>();
 
+    typedef BOOST_DEDUCED_TYPENAME holder_selector::type select_holder;
+    typedef BOOST_DEDUCED_TYPENAME select_holder::type holder;
+    typedef BOOST_DEDUCED_TYPENAME holder::held_type held_t;
+    
+    detail::register_wrapper_class<held_t,T>();
+        
     detail::register_class_to_python<T>(
         mpl::bool_<is_copyable>()
 # if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
