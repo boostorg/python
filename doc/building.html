@@ -77,7 +77,7 @@
     library, but if multiple Boost.Python extension modules are used
     together, it will prevent sharing of types across extension modules, and
     consume extra code space. To build <code>boost_python</code>, use <a
-    href="../../../tools/build/index.html">Boost.Build</a> in the usual way
+    href="../../../tools/build/v1/build_system.htm">Boost.Build</a> in the usual way
     from the <code>libs/python/build</code> subdirectory of your boost
     installation (if you have already built boost from the top level this may
     have no effect, since the work is already done).</p>
@@ -249,7 +249,7 @@
     <blockquote>
 <pre>
 bjam -sTOOLS=<i><a href=
-"../../../tools/build/index.html#Tools">toolset</a></i> test
+"../../../more/getting_started.html#Tools">toolset</a></i> test
 </pre>
     </blockquote>
     This will update all of the Boost.Python v1 test and example targets. The
@@ -259,7 +259,7 @@ bjam -sTOOLS=<i><a href=
     <blockquote>
 <pre>
 bjam -sTOOLS=<i><a href=
-"../../../tools/build/index.html#Tools">toolset</a></i> -sPYTHON_TEST_ARGS=-v test
+"../../../more/getting_started.html#Tools">toolset</a></i> -sPYTHON_TEST_ARGS=-v test
 </pre>
     </blockquote>
     which will print each test's Python code with the expected output as it
@@ -286,11 +286,11 @@ edit the line which reads
 
 <blockquote>
 <pre>
-boost-build ../../../tools/build ;
+boost-build ../../../tools/build/v1 ;
 </pre>
 </blockquote>
 
-so that the path refers to the <code>tools/build</code> subdirectory
+so that the path refers to the <code>tools/build/v1</code> subdirectory
 of your Boost installation.
 
 
@@ -311,10 +311,10 @@ so that the path refers to the root directory of your Boost installation.
 
     <h2><a name="variants">Build Variants</a></h2>
     Three <a href=
-    "../../../tools/build/build_system.htm#variants">variant</a>
+    "../../../tools/build/v1/build_system.htm#variants">variant</a>
     configurations of all python-related targets are supported, and can be
     selected by setting the <code><a href=
-    "../../../tools/build/build_system.htm#user_globals">BUILD</a></code>
+    "../../../tools/build/v1/build_system.htm#user_globals">BUILD</a></code>
     variable: 
 
     <ul>
