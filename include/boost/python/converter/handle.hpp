@@ -16,7 +16,7 @@ struct BOOST_PYTHON_DECL body;
 // The common base class for unwrap_ and wrap_ handle objects. They
 // share a common base so that handles can be linked into a chain
 // within a function wrapper which is managed by a single object.
-struct BOOST_PYTHON_DECL handle : boost::noncopyable
+struct BOOST_PYTHON_DECL handle : private boost::noncopyable
 {
  public: // member functions
 

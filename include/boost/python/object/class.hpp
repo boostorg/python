@@ -26,7 +26,7 @@ template <class T> struct holder;
 // To identify a class, we don't need cv/reference decorations
 typedef converter::undecorated_type_id_t class_id;
 
-struct BOOST_PYTHON_DECL class_base : noncopyable
+struct BOOST_PYTHON_DECL class_base : private noncopyable
 {
     // constructor
     class_base(
@@ -44,7 +44,7 @@ struct BOOST_PYTHON_DECL class_base : noncopyable
 };
 
 // Base class for all holders
-struct BOOST_PYTHON_DECL instance_holder : noncopyable
+struct BOOST_PYTHON_DECL instance_holder : private noncopyable
 {
  public:
     instance_holder();

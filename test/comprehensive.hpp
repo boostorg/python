@@ -27,8 +27,8 @@ namespace bpl_test {
 // example: Foo, Bar, and Baz are C++ classes we want to wrap.
 //
 
-class Foo                // prohibit copying, proving that it doesn't choke 
-    : boost::noncopyable // our generation of to_python().
+class Foo                        // prohibit copying, proving that it doesn't choke 
+    : private boost::noncopyable // our generation of to_python().
 {
  public: // constructor/destructor
     Foo(int x) : m_x(x) {}

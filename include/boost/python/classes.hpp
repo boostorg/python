@@ -233,7 +233,7 @@ class BOOST_PYTHON_DECL_TEMPLATE meta_class
                    boost::python::detail::getattrable<
                       boost::python::detail::setattrable<
                          boost::python::detail::type_object<class_t<T> > > > > >,
-      boost::noncopyable
+      private boost::noncopyable
 {
  public:
     meta_class();
