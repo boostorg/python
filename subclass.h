@@ -20,12 +20,11 @@
 namespace py {
 
 // A simple type which acts something like a built-in Python class instance.
-// TODO: implement all the special methods, like __call__, __getattr__, etc.,
-// and the other special attributes, like __dict__.
 class Instance : public PythonObject
 {
  public:
     Instance(PyTypeObject* class_);
+    ~Instance();
 
     // Standard Python functions.
     PyObject* repr();
@@ -73,6 +72,9 @@ class Instance : public PythonObject
  private: // noncopyable, without the size bloat
     Instance(const Instance&);
     void operator=(const Instance&);
+
+ private: // helper functions
+    int setattr_dict(PyObject* value);
     
  private:
     Dict m_name_space;
@@ -80,26 +82,50 @@ class Instance : public PythonObject
 
 template <class T> class MetaClass;
 
+namespace detail {
+  class ClassBase : public py::TypeObjectBase
+  {
+   public:
+      ClassBase(PyTypeObject* meta_class, String name, Tuple bases, const Dict& name_space);
+      Tuple bases() const;
+      String name() const;
+      Dict& dict();
+      
+      // Standard Python functions.
+      PyObject* getattr(const char* name);
+      int setattr(const char* name, PyObject* value);
+    
+   protected:
+      bool initialize_instance(Instance* instance, PyObject* args, PyObject* keywords);
+      void add_base(Ptr base);
+
+   private: // virtual functions
+      // Subclasses should override this to delete the particular instance type
+      virtual void delete_instance(PyObject*) const = 0;
+
+   private: // py::TypeObjectBase required interface implementation
+      void instance_dealloc(PyObject*) const; // subclasses should not override this
+      
+   private:
+      String m_name;
+      Tuple m_bases;
+      Dict m_name_space;
+  };
+
+  void enable_named_method(ClassBase* type_object, const char* name);
+}
+
 // A type which acts a lot like a built-in Python class. T is the instance type,
 // so Class<Instance> is a very simple "class-alike".
 template <class T>
 class Class
-    : public Getattrable<Setattrable<TypeObject<T> > >
+    : public py::detail::ClassBase
 {
  public:
     Class(MetaClass<T>* meta_class, String name, Tuple bases, const Dict& name_space);
     
-    Tuple bases() const;
-    String name() const;
-    Dict& dict();
-    
     // Standard Python functions.
-    PyObject* getattr(const char* name);
-    int setattr(const char* name, PyObject* value);
     PyObject* call(PyObject* args, PyObject* keywords);
-    
- protected:
-    void add_base(Ptr base);
     
  private: // Implement mapping methods on instances
     PyObject* instance_repr(PyObject*) const;
@@ -144,22 +170,17 @@ class Class
     
  private: // Miscellaneous "special" methods
     PyObject* instance_call(PyObject* instance, PyObject* args, PyObject* keywords) const;
+    PyObject* instance_getattr(PyObject* instance, const char* name) const;
+    int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
 
+ private: // Implementation of py::detail::ClassBase required interface
+    void delete_instance(PyObject*) const;
+    
  private: // noncopyable, without the size bloat
     Class(const Class<T>&);
     void operator=(const Class&);
-    
- private:
-    String m_name;
-    Tuple m_bases;
-    Dict m_name_space;
 };
 
-// Don't really need to be friends, but are essentially part of the Class interface.
-// These operate on TypeObjectBase just to save on code space.
-void enable_special_methods(TypeObjectBase*, const Tuple& bases, const Dict& name_space);
-void enable_named_method(TypeObjectBase*, const char*);
-    
 // The type of a Class<T> object.
 template <class T>
 class MetaClass
@@ -180,12 +201,6 @@ class MetaClass
     };
 };
 
-// Add the name of the module currently being loaded to the name_space with the
-// key "__module__". If no module is being loaded, or if name_space already has
-// a key "__module", has no effect. This is not really a useful public
-// interface; it's just used for Class<>::Class() below.
-void add_current_module_name(Dict&);
-
 //
 // Member function implementations.
 //
@@ -197,86 +212,24 @@ MetaClass<T>::MetaClass()
 
 template <class T>
 Class<T>::Class(MetaClass<T>* meta_class, String name, Tuple bases, const Dict& name_space)
-    : Properties(meta_class, name.c_str()),
-      m_name(name),
-      m_bases(bases),
-      m_name_space(name_space)
+    : py::detail::ClassBase(meta_class, name, bases, name_space)
 {
-    add_current_module_name(m_name_space);
-    enable_special_methods(this, bases, name_space);
 }
 
 template <class T>
-String Class<T>::name() const
+void Class<T>::delete_instance(PyObject* instance) const
 {
-    return m_name;
-}
-
-template <class T>
-PyObject* Class<T>::getattr(const char* name)
-{
-    Ptr local_attribute = m_name_space.get_item(String(name).reference());
-    
-    if (local_attribute.get())
-        return local_attribute.release();
-
-    // In case there are no bases...
-	PyErr_SetString(PyExc_AttributeError, name);
-
-    // Check bases
-    for (std::size_t i = 0; i < m_bases.size(); ++i)
-    {
-        if (PyErr_ExceptionMatches(PyExc_AttributeError))
-            PyErr_Clear(); // we're going to try a base class
-        else if (PyErr_Occurred()) 
-            break; // Other errors count, though!
-        
-        PyObject* base_attribute = PyObject_GetAttrString(m_bases[i].get(), const_cast<char*>(name));
-        if (base_attribute != 0)
-            return base_attribute;
-    }
-    return 0;
-}
-
-template <class T>
-int Class<T>::setattr(const char* name, PyObject* value)
-{
-    if (PyCallable_Check(value))
-        enable_named_method(this, name);
-    
-    return PyDict_SetItemString(
-        m_name_space.reference().get(), const_cast<char*>(name), value);
+    delete Downcast<T>(instance);
 }
 
 template <class T>
 PyObject* Class<T>::call(PyObject* args, PyObject* keywords)
 {
     PyPtr<T> result(new T(this));
-
-    // Getting the init function off the result instance should result in a
-    // bound method.
-    PyObject* const init_function = result->getattr("__init__", false);
-        
-    if (init_function == 0)
-    {
-        if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_AttributeError)) {
-            PyErr_Clear(); // no __init__? That's legal.
-        }
-        else {
-            return 0; // Something else? Keep the error
-        }
-    }
+    if (!this->initialize_instance(result.get(), args, keywords))
+        return 0;
     else
-    {
-        // Manage the reference to the bound function
-        Ptr init_function_holder(init_function);
-        
-        // Declare a Ptr to manage the result of calling __init__ (which should be None).
-        Ptr init_result(
-            PyEval_CallObjectWithKeywords(init_function, args, keywords));
-    }
-    
-    return result.release();
+        return result.release();
 }
 
 template <class T>
@@ -364,6 +317,19 @@ template <class T>
 PyObject* Class<T>::instance_call(PyObject* instance, PyObject* args, PyObject* keywords) const
 {
     return Downcast<T>(instance)->call(args, keywords);
+}
+
+template <class T>
+PyObject* Class<T>::instance_getattr(PyObject* instance, const char* name) const
+{
+    return Downcast<T>(instance)->getattr(name);
+}
+
+
+template <class T>
+int Class<T>::instance_setattr(PyObject* instance, const char* name, PyObject* value) const
+{
+    return Downcast<T>(instance)->setattr(name, value);
 }
 
 template <class T>
@@ -504,26 +470,16 @@ PyObject* Class<T>::instance_number_hex(PyObject* instance) const
     return Downcast<T>(instance)->hex();
 }
 
-template <class T>
-Dict& Class<T>::dict()
-{
-    return m_name_space;
-}
+namespace detail {
+  inline Dict& ClassBase::dict()
+  {
+      return m_name_space;
+  }
 
-template <class T>
-Tuple Class<T>::bases() const
-{
-    return m_bases;
-}
-
-template <class T>
-void Class<T>::add_base(Ptr base)
-{
-    Tuple new_bases(m_bases.size() + 1);
-    for (std::size_t i = 0; i < m_bases.size(); ++i)
-        new_bases.set_item(i, m_bases[i]);
-    new_bases.set_item(m_bases.size(), base);
-    m_bases = new_bases;
+  inline Tuple ClassBase::bases() const
+  {
+      return m_bases;
+  }
 }
 
 template <class T>
@@ -549,9 +505,14 @@ PyObject* MetaClass<T>::call(PyObject* args, PyObject* /*keywords*/)
 }
 
 namespace detail {
-const String& setattr_string();
-const String& getattr_string();
-const String& delattr_string();
+  const String& setattr_string();
+  const String& getattr_string();
+  const String& delattr_string();
+
+  inline String ClassBase::name() const
+  {
+      return m_name;
+  }
 }
 
 
