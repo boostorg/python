@@ -1,11 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
-"http://www.w3.org/TR/REC-html40/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <title>
       Special Method and Operator Support
     </title>
     <div>
       <h1>
-         <img width="277" height="86" id="_x0000_i1025" align="center" src= 
+         <img width="277" height="86" id="_x0000_i1025" align="middle" src= 
         "../../../c++boost.gif" alt="c++boost.gif (8819 bytes)">Special Method and
         Operator Support
       </h1>
@@ -202,7 +201,7 @@ BigNum operator+(BigNum, BigNum)
         or as member
         functions <blockquote><pre>
 BigNum BigNum::operator+(BigNum).
-</blockquote></pre>
+</pre></blockquote>
 
       <p>
         For the Python built-in functions <code>pow()</code> and
@@ -646,13 +645,13 @@ Note that "__rrpow__" is an extension not present in plain Python.
       iteration idiom looks like
 <blockquote><pre>
 for i in S:
-</blockquote></pre>
+</pre></blockquote>
 
 while in C++ one writes
 
 <blockquote><pre>
 for (iterator i = S.begin(), end = S.end(); i != end; ++i)
-</blockquote></pre>
+</pre></blockquote>
 
 <p>One could try to wrap C++ iterators in order to carry the C++ idiom into
       Python. However, this does not work very well because 
