@@ -58,14 +58,14 @@ namespace detail {
       cl.def("__getinitargs__", getinitargs_fn);
     }
 
-    template <class Class_, class Tgetstate, class Tsetstate>
+    template <class Class_, class Tgetstate, class Tsetstate, class Ttuple>
     static
     void
     register_(
       Class_& cl,
       inaccessible* (*getinitargs_fn)(),
       tuple (*getstate_fn)(Tgetstate),
-      void (*setstate_fn)(Tsetstate, object),
+      void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
       cl.enable_pickling(getstate_manages_dict);
@@ -74,14 +74,14 @@ namespace detail {
     }
 
     template <class Class_,
-              class Tgetinitargs, class Tgetstate, class Tsetstate>
+              class Tgetinitargs, class Tgetstate, class Tsetstate, class Ttuple>
     static
     void
     register_(
       Class_& cl,
       tuple (*getinitargs_fn)(Tgetinitargs),
       tuple (*getstate_fn)(Tgetstate),
-      void (*setstate_fn)(Tsetstate, object),
+      void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
       cl.enable_pickling(getstate_manages_dict);
