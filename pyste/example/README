@@ -1,4 +1,4 @@
-To use this examples, just execute in the command-line:
+To use this examples, just execute the command-line:
 
 pyste --module=<example> <example>.pyste
 
