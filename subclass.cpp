@@ -101,7 +101,7 @@ namespace {
 
       Ptr state(PyObject_GetAttrString(instance, "__dict__"), Ptr::null_ok);
       PyErr_Clear();
-      if (state.get() != 0)
+      if (state.get() != 0 && Dict(state).size() > 0)
       {
           return Tuple(instance_class, initargs, state);
       }

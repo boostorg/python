@@ -72,9 +72,7 @@ namespace detail {
       if (left->ob_type != &operator_dispatcher::type_object ||
           right->ob_type != &operator_dispatcher::type_object)
       {
-          String format("operator_dispatcher::unwrap_args(): internal error (%d, %d)");
-          String message(format % Tuple(__FILE__, __LINE__));
-          PyErr_SetObject(PyExc_RuntimeError, message.get());
+          PyErr_SetString(PyExc_RuntimeError, "operator_dispatcher::unwrap_args(): expecting operator_dispatcher arguments only!");
           return unwrap_exception_code;
       }
 
@@ -103,13 +101,10 @@ namespace detail {
           right->ob_type != &operator_dispatcher::type_object ||
           m->ob_type != &operator_dispatcher::type_object)
       {
-          String format("operator_dispatcher::unwrap_pow_args(): internal error (%d, %d)");
-          String message(format % Tuple(__FILE__, __LINE__));
-          PyErr_SetObject(PyExc_RuntimeError, message.get());
+          PyErr_SetString(PyExc_RuntimeError, "operator_dispatcher::unwrap_pow_args(): expecting operator_dispatcher arguments only!");
           return unwrap_exception_code;
       }
-
-
+      
       typedef PyPtr<operator_dispatcher> DPtr;
       DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::new_ref);
       DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::new_ref);
@@ -493,7 +488,15 @@ void operator_dispatcher_dealloc(PyObject* self)
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
-    *r = operator_dispatcher::create(Ptr(*r, Ptr::new_ref), Ptr());
+    try
+    {
+        *r = operator_dispatcher::create(Ptr(*r, Ptr::new_ref), Ptr());
+    }
+    catch(...)
+    {
+        handle_exception();
+        return -1;
+    }
     return 0;
 }
 

@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <boost/smart_ptr.hpp>
 #include "objects.h"
+#include <boost/type_traits.hpp>
 
 namespace py {
 
@@ -584,169 +585,167 @@ TypeObjectBase::TypeObjectBase(PyTypeObject* t)
 
 namespace
 {
+  typedef long pod_refcount;
 
+  inline pod_refcount pod_refcount_offset(std::size_t size)
+  {
+      const std::size_t alignment = boost::alignment_of<pod_refcount>::value;
+      return (size + alignment - 1) / alignment * alignment;
+  }
 
-int* counted_pod_refcount(char* pod)
-{
-    if(pod == 0) 
-        return 0;
-    return reinterpret_cast<int*>(pod - detail::shared_pod_manager::offset);
-}
+  inline pod_refcount* counted_pod_refcount(char* pod, std::size_t size)
+  {
+      if(pod == 0)
+          return 0;
+      
+      return reinterpret_cast<pod_refcount*>(pod + pod_refcount_offset(size));
+  }
 
-#ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
-int pod_instance_counter = 0;
-#endif
+  #ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
+  int pod_instance_counter = 0;
+  #endif
 
-int counted_pod_getref(char* pod)
-{
-    int* ref_count = counted_pod_refcount(pod);
-    if(ref_count == 0)
-        return -1;
-    return *ref_count;
-}
+  inline pod_refcount counted_pod_getref(char* pod, std::size_t size)
+  {
+      pod_refcount* ref_count = counted_pod_refcount(pod, size);
+      return ref_count == 0 ? -1 : *ref_count;
+  }
 
-int counted_pod_decref(char* pod)
-{
-    int* ref_count = counted_pod_refcount(pod);
-    if(ref_count == 0)
-        return -1;
-    --(*ref_count);
-    if(*ref_count <= 0)
-    {
-#ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
-        --pod_instance_counter;
-#endif
-        ::operator delete(ref_count);
-        return 0;
-    }
-    return *ref_count;
-}
+  inline pod_refcount counted_pod_decref(char* pod, std::size_t size)
+  {
+      pod_refcount* const ref_count = counted_pod_refcount(pod, size);
+      if (ref_count == 0)
+          return -1;
+      --(*ref_count);
+      if (*ref_count <= 0)
+      {
+  #ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
+          --pod_instance_counter;
+  #endif
+          ::operator delete(pod);
+          return 0;
+      }
+      return *ref_count;
+  }
 
-int counted_pod_incref(char* pod)
-{
-    int* ref_count = counted_pod_refcount(pod);
-    if(ref_count == 0)
-        return -1;
-    return ++(*ref_count);
-}
+  pod_refcount counted_pod_incref(char* pod, std::size_t size)
+  {
+      pod_refcount* ref_count = counted_pod_refcount(pod, size);
+      return ref_count == 0 ? -1 : ++(*ref_count);
+  }
 
 } // anonymous namespace
 
 namespace detail
 {
+  struct shared_pod_manager::Compare
+  {
+      bool operator()(const std::pair<char*, std::size_t>& x1,
+                      const std::pair<char*, std::size_t>& x2) const
+      {
+          const std::size_t n1 = x1.second;
+          const std::size_t n2 = x2.second;
+          return n1 < n2 || n1 == n2 && PY_CSTD_::memcmp(x1.first, x2.first, n1) < 0;
+      }
+  };
 
-struct shared_pod_manager::Compare
-{
-    bool operator()(const std::pair<char*, std::size_t>& x1,
-                    const std::pair<char*, std::size_t>& x2) const
-    {
-        const std::size_t n1 = x1.second;
-        const std::size_t n2 = x2.second;
-        return n1 < n2 || n1 == n2 && PY_CSTD_::memcmp(x1.first, x2.first, n1) < 0;
-    }
-};
+  struct shared_pod_manager::identical
+  {
+      identical(char* p) : pod(p) {}
 
-struct shared_pod_manager::identical
-{
-    identical(char* p) : pod(p) {}
-    
-    bool operator()(const std::pair<char*, std::size_t>& x) const
-    {
-        return pod == x.first;
-    }
-    
-    char* pod;
-};
+      bool operator()(const std::pair<char*, std::size_t>& x) const
+      {
+          return pod == x.first;
+      }
 
-shared_pod_manager& shared_pod_manager::instance()
-{
-    static shared_pod_manager spm;
-    return spm;
-}
+      char* pod;
+  };
 
-shared_pod_manager::~shared_pod_manager()
-{
-}
+  shared_pod_manager& shared_pod_manager::instance()
+  {
+      static shared_pod_manager spm;
+      return spm;
+  }
 
-void* shared_pod_manager::replace_if_equal(void* pod, std::size_t size)
-{
-    if(pod == 0)
-        return 0;
-        
-    const Holder element(static_cast<char*>(pod), size);
-    
-    const Storage::iterator found
-        = std::lower_bound(m_storage.begin(), m_storage.end(), element, Compare());
-    
-    if (found != m_storage.end() && pod == found->first)
-    {
-        // pod already in list => do nothing
-        return pod;
-    }
-    else if (found != m_storage.end() && !Compare()(element, *found))
-    {
-        // equal element in list => replace
-        void* replacement = found->first;
-        counted_pod_incref(found->first);   
-        dec_ref(element.first); // invalidates iterator 'found'
-        return replacement;
-    }
-    else
-    {
-        // new element => insert
-        m_storage.insert(found, element);
-        return pod;
-    }
-}
+  shared_pod_manager::~shared_pod_manager()
+  {
+  }
 
-void* shared_pod_manager::make_unique_copy(void* pod, std::size_t size)
-{
-    if(pod == 0)
-        return 0;
-    if(counted_pod_getref(static_cast<char*>(pod)) == 1)
-        return pod;
-    void* copy = create(size);
-    memmove(copy, pod, size);
-    dec_ref(pod);
-    return copy;
-}
+  void* shared_pod_manager::replace_if_equal(void* pod, std::size_t size)
+  {
+      if(pod == 0)
+          return 0;
 
-void* shared_pod_manager::create(std::size_t size)
-{
-    std::size_t total_size = offset + size;
-    char* buffer = static_cast<char*>(::operator new(total_size));
-#ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
-    ++pod_instance_counter;
-#endif
-    memset(buffer, 0, total_size);
+      const Holder element(static_cast<char*>(pod), size);
 
-    int* ref_count = reinterpret_cast<int*>(buffer);
-    *ref_count = 1;
-    
-    char* pod = buffer + offset;
+      const Storage::iterator found
+          = std::lower_bound(m_storage.begin(), m_storage.end(), element, Compare());
 
-    return pod;
-}
+      if (found != m_storage.end() && pod == found->first)
+      {
+          // pod already in list => do nothing
+          return pod;
+      }
+      else if (found != m_storage.end() && !Compare()(element, *found))
+      {
+          // equal element in list => replace
+          void* replacement = found->first;
+          counted_pod_incref(found->first, size);   
+          dec_ref(element.first, size); // invalidates iterator 'found'
+          return replacement;
+      }
+      else
+      {
+          // new element => insert
+          m_storage.insert(found, element);
+          return pod;
+      }
+  }
 
-void shared_pod_manager::dec_ref(void* pod)
-{
-    if(pod == 0)
-        return;
-    
-    if(counted_pod_getref(static_cast<char*>(pod)) <= 1)
-    {
-        const Storage::iterator found =
-            std::find_if(m_storage.begin(), m_storage.end(), 
-            identical(static_cast<char*>(pod)));
+  void* shared_pod_manager::make_unique_copy(void* pod, std::size_t size)
+  {
+      if(pod == 0)
+          return 0;
+      if(counted_pod_getref(static_cast<char*>(pod), size) == 1)
+          return pod;
+      void* copy = create(size);
+      memmove(copy, pod, size);
+      dec_ref(pod, size);
+      return copy;
+  }
 
-        if(found != m_storage.end())
-        {
-            m_storage.erase(found);
-        }
-    }
-    counted_pod_decref(static_cast<char*>(pod));
-}
+  void* shared_pod_manager::create(std::size_t size)
+  {
+      std::size_t total_size = pod_refcount_offset(size) + sizeof(pod_refcount);
+      char* pod = static_cast<char*>(::operator new(total_size));
+  #ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
+      ++pod_instance_counter;
+  #endif
+      memset(pod, 0, total_size);
 
+      *counted_pod_refcount(pod, size) = 1;
+
+      return pod;
+  }
+
+  void shared_pod_manager::dec_ref(void* pod, std::size_t size)
+  {
+      if(pod == 0)
+          return;
+
+      if(counted_pod_getref(static_cast<char*>(pod), size) <= 1)
+      {
+          const Storage::iterator found =
+              std::find_if(m_storage.begin(), m_storage.end(), 
+              identical(static_cast<char*>(pod)));
+
+          if(found != m_storage.end())
+          {
+              m_storage.erase(found);
+          }
+      }
+      counted_pod_decref(static_cast<char*>(pod), size);
+  }
 } // namespace detail
 
 namespace {
