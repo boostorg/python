@@ -6,6 +6,8 @@
 #ifndef DEF_DWA200292_HPP
 # define DEF_DWA200292_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/object_fwd.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/detail/def_helper.hpp>

@@ -6,6 +6,8 @@
 #ifndef ITERATOR_DWA2002512_HPP
 # define ITERATOR_DWA2002512_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/target.hpp>
 # include <boost/python/object/iterator.hpp>
 # include <boost/python/object_core.hpp>

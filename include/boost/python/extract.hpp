@@ -6,6 +6,8 @@
 #ifndef EXTRACT_DWA200265_HPP
 # define EXTRACT_DWA200265_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/converter/object_manager.hpp>
 # include <boost/python/converter/from_python.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>

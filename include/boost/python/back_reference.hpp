@@ -6,6 +6,8 @@
 #ifndef BACK_REFERENCE_DWA2002510_HPP
 # define BACK_REFERENCE_DWA2002510_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/object_fwd.hpp>
 # include <boost/python/detail/dependent.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>

@@ -6,6 +6,8 @@
 #ifndef RETURN_INTERNAL_REFERENCE_DWA2002131_HPP
 # define RETURN_INTERNAL_REFERENCE_DWA2002131_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/reference_existing_object.hpp>
 # include <boost/python/with_custodian_and_ward.hpp>

@@ -6,6 +6,8 @@
 #ifndef OBJECT_OPERATORS_DWA2002617_HPP
 # define OBJECT_OPERATORS_DWA2002617_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/object_core.hpp>
 # include <boost/python/call.hpp>
 

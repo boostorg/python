@@ -6,6 +6,8 @@
 #ifndef CLASS_DWA200216_HPP
 # define CLASS_DWA200216_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/object/class.hpp>
 

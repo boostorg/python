@@ -6,6 +6,8 @@
 #ifndef TO_PYTHON_CONVERTER_DWA200221_HPP
 # define TO_PYTHON_CONVERTER_DWA200221_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/as_to_python_function.hpp>
 # include <boost/python/type_id.hpp>

@@ -6,6 +6,8 @@
 #ifndef LVALUE_FROM_PYTYPE_DWA2002130_HPP
 # define LVALUE_FROM_PYTYPE_DWA2002130_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/void_ptr.hpp>

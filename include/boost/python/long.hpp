@@ -6,6 +6,8 @@
 #ifndef LONG_DWA2002627_HPP
 # define LONG_DWA2002627_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/object.hpp>
 # include <boost/python/converter/pytype_object_mgr_traits.hpp>
 

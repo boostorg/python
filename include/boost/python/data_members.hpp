@@ -6,6 +6,8 @@
 #ifndef DATA_MEMBERS_DWA2002328_HPP
 # define DATA_MEMBERS_DWA2002328_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/return_by_value.hpp>
 # include <boost/python/return_internal_reference.hpp>

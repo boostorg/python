@@ -6,6 +6,8 @@
 #ifndef OPERATORS_DWA2002530_HPP
 # define OPERATORS_DWA2002530_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/detail/operator_id.hpp>

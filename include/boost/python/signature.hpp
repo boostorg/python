@@ -12,6 +12,8 @@
 # ifndef SIGNATURE_JDG20020813_HPP
 #  define SIGNATURE_JDG20020813_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/enum.hpp>

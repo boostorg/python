@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef CLASS_FWD_DWA200222_HPP
 # define CLASS_FWD_DWA200222_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/not_specified.hpp>
 
 namespace boost { namespace python { 

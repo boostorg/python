@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef BASES_DWA2002321_HPP
 # define BASES_DWA2002321_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/python/detail/type_list.hpp>
 # include <boost/mpl/if.hpp>

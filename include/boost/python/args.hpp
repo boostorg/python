@@ -6,6 +6,8 @@
 #ifndef KEYWORDS_DWA2002323_HPP
 # define KEYWORDS_DWA2002323_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/args_fwd.hpp>
 # include <boost/config.hpp>
 # include <boost/python/detail/preprocessor.hpp>

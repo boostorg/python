@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef IMPLICIT_DWA2002325_HPP
 # define IMPLICIT_DWA2002325_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/type.hpp>
 # include <boost/python/converter/implicit.hpp>
 # include <boost/python/converter/registry.hpp>

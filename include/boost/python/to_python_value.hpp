@@ -6,6 +6,8 @@
 #ifndef TO_PYTHON_VALUE_DWA200221_HPP
 # define TO_PYTHON_VALUE_DWA200221_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/refcount.hpp>
 # include <boost/python/tag.hpp>
 

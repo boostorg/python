@@ -8,6 +8,8 @@
  */
 # ifndef OPAQUE_POINTER_CONVERTER_HPP_
 # define OPAQUE_POINTER_CONVERTER_HPP_
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/lvalue_from_pytype.hpp>
 # include <boost/python/to_python_converter.hpp>
 # include <boost/python/detail/dealloc.hpp>

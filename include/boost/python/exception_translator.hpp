@@ -6,6 +6,8 @@
 #ifndef EXCEPTION_TRANSLATOR_DWA2002810_HPP
 # define EXCEPTION_TRANSLATOR_DWA2002810_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/bind.hpp>
 # include <boost/type.hpp>
 # include <boost/python/detail/translate_exception.hpp>

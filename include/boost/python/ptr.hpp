@@ -1,5 +1,7 @@
 #ifndef PTR_DWA20020601_HPP
 # define PTR_DWA20020601_HPP
+
+# include <boost/python/detail/prefix.hpp>
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided

@@ -6,6 +6,8 @@
 #ifndef STR_20020703_HPP
 #define STR_20020703_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>

@@ -8,6 +8,8 @@
 # ifndef CALL_METHOD_DWA2002411_HPP
 #  define CALL_METHOD_DWA2002411_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 #  include <boost/type.hpp>
 
 #  include <boost/python/converter/arg_to_python.hpp>

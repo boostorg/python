@@ -6,6 +6,8 @@
 #ifndef TO_PYTHON_INDIRECT_DWA200221_HPP
 # define TO_PYTHON_INDIRECT_DWA200221_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/python/object/instance.hpp>

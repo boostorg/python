@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef COPY_NON_CONST_REFERENCE_DWA2002131_HPP
 # define COPY_NON_CONST_REFERENCE_DWA2002131_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/to_python_value.hpp>

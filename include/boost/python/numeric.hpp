@@ -6,6 +6,8 @@
 #ifndef NUMARRAY_DWA2002922_HPP
 # define NUMARRAY_DWA2002922_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/tuple.hpp>
 # include <boost/python/str.hpp>
 # include <boost/preprocessor/iteration/local.hpp>

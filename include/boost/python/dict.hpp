@@ -6,6 +6,8 @@
 #ifndef DICT_20020706_HPP
 #define DICT_20020706_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/tuple.hpp>

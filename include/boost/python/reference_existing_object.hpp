@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef REFERENCE_EXISTING_OBJECT_DWA200222_HPP
 # define REFERENCE_EXISTING_OBJECT_DWA200222_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/to_python_indirect.hpp>

@@ -6,6 +6,8 @@
 #ifndef SELF_DWA2002531_HPP
 # define SELF_DWA2002531_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/config.hpp>
 
 namespace boost { namespace python {

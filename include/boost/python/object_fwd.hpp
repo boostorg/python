@@ -6,6 +6,8 @@
 #ifndef OBJECT_FWD_DWA2002724_HPP
 # define OBJECT_FWD_DWA2002724_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 namespace boost { namespace python { 
 namespace api
 {

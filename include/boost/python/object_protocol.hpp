@@ -6,6 +6,8 @@
 #ifndef OBJECT_PROTOCOL_DWA2002615_HPP
 # define OBJECT_PROTOCOL_DWA2002615_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/object_protocol_core.hpp>

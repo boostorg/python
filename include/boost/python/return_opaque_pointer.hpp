@@ -8,6 +8,8 @@
  */
 # ifndef RETURN_OPAQUE_POINTER_HPP_
 # define RETURN_OPAQUE_POINTER_HPP_
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/opaque_pointer_converter.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/if.hpp>

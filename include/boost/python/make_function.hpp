@@ -6,6 +6,8 @@
 #ifndef MAKE_FUNCTION_DWA20011221_HPP
 # define MAKE_FUNCTION_DWA20011221_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/args_fwd.hpp>
 # include <boost/python/detail/caller.hpp>

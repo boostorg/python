@@ -6,6 +6,8 @@
 #ifndef MODULE_INIT_DWA20020722_HPP
 # define MODULE_INIT_DWA20020722_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 

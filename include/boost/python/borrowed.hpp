@@ -5,6 +5,8 @@
 // to its suitability for any purpose.
 #ifndef BORROWED_DWA2002614_HPP
 # define BORROWED_DWA2002614_HPP
+
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/borrowed_ptr.hpp>
 
 namespace boost { namespace python { 

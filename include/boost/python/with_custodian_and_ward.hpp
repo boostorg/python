@@ -6,6 +6,8 @@
 #ifndef WITH_CUSTODIAN_AND_WARD_DWA2002131_HPP
 # define WITH_CUSTODIAN_AND_WARD_DWA2002131_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/object/life_support.hpp>
 

@@ -6,6 +6,8 @@
 #ifndef CAST_DWA200269_HPP
 # define CAST_DWA200269_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>

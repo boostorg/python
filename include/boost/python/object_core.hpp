@@ -6,6 +6,8 @@
 #ifndef OBJECT_CORE_DWA2002615_HPP
 # define OBJECT_CORE_DWA2002615_HPP
 
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/type.hpp>
 
 # include <boost/python/call.hpp>
