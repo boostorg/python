@@ -97,9 +97,10 @@ namespace detail
   BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_from_python_stage1_data& data, void* storage)
   {
       handle<> holder(src);
-      
+
+      void const* registration = data.convertible;
       data = rvalue_from_python_stage1(
-          src, *static_cast<from_python_registration const*>(data.convertible));
+          src, *static_cast<from_python_registration const*>(registration));
       
       if (!data.convertible)
       {
