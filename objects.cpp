@@ -45,9 +45,9 @@ PyObject* Object::get() const
     return m_p.get();
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-} // Back to the global namespace for this GCC bug
-#endif
+} // namespace py
+
+PY_BEGIN_CONVERSION_NAMESPACE
 
 PyObject* to_python(const py::Tuple& x)
 {
@@ -89,9 +89,9 @@ py::String from_python(PyObject* p, py::Type<py::String> type)
     return py::object_from_python(p, type);
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+PY_END_CONVERSION_NAMESPACE
+
 namespace py {
-#endif
 
 Tuple::Tuple(std::size_t n)
     : Object(Ptr(PyTuple_New(n)))
@@ -208,6 +208,12 @@ void String::intern()
     *this = String(Ptr(PyString_InternFromString(c_str()), Ptr::borrowed));
 }
 
+String& String::operator*=(unsigned int repeat_count)
+{
+    *this = String(Ptr(PySequence_Repeat(get(), repeat_count)));
+    return *this;
+}
+
 Dict::Dict(Ptr p)
     : Object(p)
 {
@@ -256,7 +262,12 @@ Ptr Dict::operator[](Ptr key) const {
 }
 
     
-Ptr Dict::get_item(const Ptr& key, const Ptr& default_ /* = Ptr() */) const
+Ptr Dict::get_item(const Ptr& key) const
+{
+    return get_item(key, Ptr());
+}
+
+Ptr Dict::get_item(const Ptr& key, const Ptr& default_) const
 {
     PyObject* value_or_null = PyDict_GetItem(get(), key.get());
     if (value_or_null == 0 && !PyErr_Occurred())
@@ -270,45 +281,17 @@ void Dict::set_item(const Ptr& key, const Ptr& value)
     if (PyDict_SetItem(get(), key.get(), value.get()) == -1)
         throw ErrorAlreadySet();
 }
-        
-void Dict::set_item(const Object& key, const Ptr& value)
-{
-    set_item(key.reference(), value);
-}
-        
+
 void Dict::erase(Ptr key) {
     if (PyDict_DelItem(get(), key.get()) == -1)
         throw ErrorAlreadySet();
 }
 
-Ptr Dict::items() const { return Ptr(PyDict_Items(get())); }
-Ptr Dict::keys() const { return Ptr(PyDict_Keys(get())); }
-Ptr Dict::values() const { return Ptr(PyDict_Values(get())); }
+List Dict::items() const { return List(Ptr(PyDict_Items(get()))); }
+List Dict::keys() const { return List(Ptr(PyDict_Keys(get()))); }
+List Dict::values() const { return List(Ptr(PyDict_Values(get()))); }
 
 std::size_t Dict::size() const { return static_cast<std::size_t>(PyDict_Size(get())); }
-
-Dict::Proxy Dict::operator[](const Object& key)
-{
-    return this->operator[](key.reference());
-}
-
-Ptr Dict::operator[](const Object& key) const
-{
-    return this->operator[](key.reference());
-}
-
-Ptr Dict::get_item(const Object& key, Ptr default_) const
-{
-    return this->get_item(key.reference(), default_);
-}
-        
-void Dict::erase(const Object& key)
-{
-    this->erase(key.reference());
-}
-
-
-// TODO: iterator support
 
 String operator+(String x, String y)
 {
@@ -394,19 +377,19 @@ List::Proxy List::operator[](std::size_t pos)
     return Proxy(reference(), pos);
 }
 
-void List::insert(std::size_t index, Ptr item)
+void List::insert(std::size_t index, const Ptr& item)
 {
     if (PyList_Insert(get(), index, item.get()) == -1)
         throw ErrorAlreadySet();
 }
 
-void List::push_back(Ptr item)
+void List::push_back(const Ptr& item)
 {
     if (PyList_Append(get(), item.get()) == -1)
         throw ErrorAlreadySet();
 }
 
-void List::append(Ptr item)
+void List::append(const Ptr& item)
 {
     this->push_back(item);
 }
@@ -454,17 +437,12 @@ Ptr List::get_item(std::size_t pos) const
     return Ptr(PyList_GetItem(this->get(), pos), Ptr::borrowed);
 }
 
-void List::set_item(std::size_t pos, Ptr rhs)
+void List::set_item(std::size_t pos, const Ptr& rhs)
 {
     int result = PyList_SetItem(this->get(), pos, rhs.get());
     if (result == -1)
         throw ErrorAlreadySet();
     Py_INCREF(rhs.get());
-}
-
-void List::set_item(std::size_t pos, Object rhs)
-{
-    this->set_item(pos, rhs.reference());
 }
 
 List::Proxy::Proxy(const Ptr& list, std::size_t index)
