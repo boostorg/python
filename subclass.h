@@ -44,7 +44,32 @@ class Instance : public PythonObject
     // Sequence methods
     PyObject* get_slice(int start, int finish);
     void set_slice(int start, int finish, PyObject* value);
-    
+
+    // Number methods
+    PyObject* add(PyObject* other);
+    PyObject* subtract(PyObject* other);
+    PyObject* multiply(PyObject* other);
+    PyObject* divide(PyObject* other);
+    PyObject* remainder(PyObject* other);
+    PyObject* divmod(PyObject* other);
+    PyObject* power(PyObject*, PyObject*);
+    PyObject* negative();
+    PyObject* positive();
+    PyObject* absolute();
+    int nonzero();
+    PyObject* invert();
+    PyObject* lshift(PyObject* other);
+    PyObject* rshift(PyObject* other);
+    PyObject* do_and(PyObject* other);
+    PyObject* do_xor(PyObject* other);
+    PyObject* do_or(PyObject* other);
+    int coerce(PyObject**, PyObject**);
+    PyObject* as_int();
+    PyObject* as_long();
+    PyObject* as_float();
+    PyObject* oct();
+    PyObject* hex();
+
  private: // noncopyable, without the size bloat
     Instance(const Instance&);
     void operator=(const Instance&);
@@ -92,6 +117,31 @@ class Class
     PyObject* instance_sequence_slice(PyObject*, int start, int finish) const;
     int instance_sequence_ass_slice(PyObject*, int start, int finish, PyObject* value) const;
 
+ private: // Implement number methods on instances
+    PyObject* instance_number_add(PyObject*, PyObject*) const;
+    PyObject* instance_number_subtract(PyObject*, PyObject*) const;
+    PyObject* instance_number_multiply(PyObject*, PyObject*) const;
+    PyObject* instance_number_divide(PyObject*, PyObject*) const;
+    PyObject* instance_number_remainder(PyObject*, PyObject*) const;
+    PyObject* instance_number_divmod(PyObject*, PyObject*) const;
+    PyObject* instance_number_power(PyObject*, PyObject*, PyObject*) const;
+    PyObject* instance_number_negative(PyObject*) const;
+    PyObject* instance_number_positive(PyObject*) const;
+    PyObject* instance_number_absolute(PyObject*) const;
+    int instance_number_nonzero(PyObject*) const;
+    PyObject* instance_number_invert(PyObject*) const;
+    PyObject* instance_number_lshift(PyObject*, PyObject*) const;
+    PyObject* instance_number_rshift(PyObject*, PyObject*) const;
+    PyObject* instance_number_and(PyObject*, PyObject*) const;
+    PyObject* instance_number_xor(PyObject*, PyObject*) const;
+    PyObject* instance_number_or(PyObject*, PyObject*) const;
+    int instance_number_coerce(PyObject*, PyObject**, PyObject**) const;
+    PyObject* instance_number_int(PyObject*) const;
+    PyObject* instance_number_long(PyObject*) const;
+    PyObject* instance_number_float(PyObject*) const;
+    PyObject* instance_number_oct(PyObject*) const;
+    PyObject* instance_number_hex(PyObject*) const;
+    
  private: // Miscellaneous "special" methods
     PyObject* instance_call(PyObject* instance, PyObject* args, PyObject* keywords) const;
 
@@ -314,6 +364,144 @@ template <class T>
 PyObject* Class<T>::instance_call(PyObject* instance, PyObject* args, PyObject* keywords) const
 {
     return Downcast<T>(instance)->call(args, keywords);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_add(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->add(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_subtract(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->subtract(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_multiply(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->multiply(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_divide(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->divide(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_remainder(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->remainder(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_divmod(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->divmod(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_power(PyObject* instance, PyObject* exponent, PyObject* modulus) const
+{
+    return Downcast<T>(instance)->power(exponent, modulus);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_negative(PyObject* instance) const
+{
+    return Downcast<T>(instance)->negative();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_positive(PyObject* instance) const
+{
+    return Downcast<T>(instance)->positive();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_absolute(PyObject* instance) const
+{
+    return Downcast<T>(instance)->absolute();
+}
+
+template <class T>
+int Class<T>::instance_number_nonzero(PyObject* instance) const
+{
+    return Downcast<T>(instance)->nonzero();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_invert(PyObject* instance) const
+{
+    return Downcast<T>(instance)->invert();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_lshift(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->lshift(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_rshift(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->rshift(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_and(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->do_and(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_xor(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->do_xor(other);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_or(PyObject* instance, PyObject* other) const
+{
+    return Downcast<T>(instance)->do_or(other);
+}
+
+template <class T>
+int Class<T>::instance_number_coerce(PyObject* instance, PyObject** x, PyObject** y) const
+{
+    return Downcast<T>(instance)->coerce(x, y);
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_int(PyObject* instance) const
+{
+    return Downcast<T>(instance)->as_int();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_long(PyObject* instance) const
+{
+    return Downcast<T>(instance)->as_long();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_float(PyObject* instance) const
+{
+    return Downcast<T>(instance)->as_float();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_oct(PyObject* instance) const
+{
+    return Downcast<T>(instance)->oct();
+}
+
+template <class T>
+PyObject* Class<T>::instance_number_hex(PyObject* instance) const
+{
+    return Downcast<T>(instance)->hex();
 }
 
 template <class T>
