@@ -11,11 +11,74 @@
       <p>
          Right now, the only supported configuration is one in which the BPL
          source files are statically linked with the source for your extension
-         module. You may first build them into a library and link it with your
-         extension module source, but the effect is the same as compiling all
-         the source files together. Some users have successfully built the
-         sources into a shared library, and support for a shared library
-         build is planned, but not yet implemented. The BPL source files are:
+         module. BPL comes with a standard build process that compiles the
+         BPL sources, builds the library <code>'libboostpython.a'</code>, 
+         runs a comprehensive test suite and (upon success)
+         copies the library into an installation directory specified by the 
+         user. To involke this build process, you need to do the following:
+         
+      <h4>Compilation with GNU g++:</h4>
+      
+<blockquote><pre>
+> cd &lt;boost_root&gt;/libs/python
+> setenv CXX g++     # use g++
+>
+> ./configure \
+    --with-pythoninc=/usr/local/include/python1.5 \ 
+    --with-extra-includes=/usr/local/STLport
+>
+> make install
+</pre></blockquote>
+   
+where 
+<blockquote><pre>
+--with-pythoninc: the directory where 'Python.h' lives
+--with-extra-includes: the directory where STLport includes 
+    or the 'limits' header are
+</pre></blockquote>
+        
+      <h4>Compilation with another compiler:</h4>
+      
+<blockquote><pre>
+> cd &lt;boost_root&gt;/libs/python
+> setenv CXX CC  # your compiler
+>
+> ./configure \
+    --with-pythoninc=/usr/local/include/python1.5 \ 
+    --enable-shared-linker=-G \
+    --enable-position-independent-code=-pic
+>
+> make install
+</pre></blockquote>
+   
+where 
+<blockquote><pre>
+--with-pythoninc: as above
+--enable-shared-linker: flag that tells the compiler to build a
+        shared library (needed for Python modules)
+--enable-position-independent-code: flag that tells the compiler 
+        to create position independent code (needed for shared linking)
+</pre></blockquote>
+
+<p>       
+<code>configure</code> provides additional options that are listed 
+after invoking
+
+<blockquote><pre>
+> ./configure --help
+</pre></blockquote>
+
+    Reasonable defaults for each option are givem in brackets. 
+    Of particular interest are the following options:
+
+<blockquote><pre>
+--libdir: the install directory for 'libboostpython.a'
+--enable-shared-library-extension: the file extension for shared libraries  
+</pre></blockquote>
+
+      <p>   
+         If this build process doesn't work for you, you must compile the 
+         source files manually. The BPL source files are:
 <blockquote>
 <pre>
 <a href="../../../libs/python/src/extension_class.cpp">extclass.cpp</a>
@@ -28,7 +91,12 @@
 <a href="../../../libs/python/src/classes.cpp">subclass.cpp</a>
          </pre>
          </blockquote>
-               <p>
+         You may first build them into a library and link it with your
+         extension module source, but the effect is the same as compiling all
+         the source files together. Some users have successfully built the
+         sources into a shared library, and support for a shared library
+         build is planned, but not yet implemented.                
+         <p>
          Next: <a href="enums.html">Enums</a>
          Previous: <a href="under-the-hood.html">A Peek Under the Hood</a>
          Up: <a href="index.html">Top</a>

@@ -1,0 +1,230 @@
+AC_INIT(src/extension_class.cpp)
+
+AC_PREFIX_DEFAULT([`pwd | sed 's?/libs/python$??'`])
+
+AC_CONFIG_AUX_DIR(build) 
+AC_CANONICAL_SYSTEM
+
+AC_CYGWIN
+AC_MINGW32
+
+CCFLAGS=-O
+CXXFLAGS=-O
+AC_PROG_CXX
+
+#########################################################
+
+AC_DEFUN(AC_SHARED_LIBRARY_EXTENSION,
+[
+    AC_REQUIRE([AC_CYGWIN])
+    AC_REQUIRE([AC_MINGW32])
+    if test "$CYGWIN" = yes || test "$MINGW32" = yes; then
+      shared_library_extension=".dll"
+    else
+      shared_library_extension=".so"
+    fi
+    AC_ARG_ENABLE(shared-library-extension,
+    [  --enable-shared-library-extension:  file extension for shared libraries 
+                                      (including the dot) [UNIX: .so | Win32: .dll] ],, )
+    AC_SUBST(shared_library_extension)
+])
+
+#########################################################
+
+AC_DEFUN([AC_WITH_EXTRA_INCLUDES], 
+[
+    AC_ARG_WITH(extra-includes, 
+    [  --with-extra-includes=\"dir1 dir2 ...\" : look in these directories for include files],,)
+
+    for i in $with_extra_includes; do
+        CINCLUDES="$CINCLUDES -I"$i
+        CXXINCLUDES="$CXXINCLUDES -I"$i
+    done
+])
+          
+#########################################################
+
+AC_DEFUN([AC_ENABLE_SHARED_LINKER], 
+[
+  AC_ARG_ENABLE(shared-linker,
+  [  --enable-shared-linker:  which flag tells the compiler to create a shared library ? 
+                           [-shared] ],
+  , [enable_shared_linker="-shared"])
+  AC_MSG_CHECKING(for how to build shared libraries )
+  if test ! "$enable_shared_linker" = "no"; then
+      CC_SHARED_LINKER="$(CC) $enable_shared_linker"
+      CXX_SHARED_LINKER="$(CXX) $enable_shared_linker"
+      AC_SUBST(CC_SHARED_LINKER)
+      AC_SUBST(CXX_SHARED_LINKER)
+      AC_MSG_RESULT([$(CC) $enable_shared_linker])
+  else
+      AC_MSG_RESULT("disabled")
+  fi
+])
+          
+#########################################################
+
+AC_DEFUN([AC_ENABLE_POSITION_INDEPENDENT_CODE], 
+[
+  AC_ARG_ENABLE(position-independent-code,
+  [  --enable-position-independent-code:  which flag tells the compiler to create 
+                                       position independent code ? [-fPIC] ],
+  , [enable_position_independent_code="-fPIC"])
+  AC_MSG_CHECKING(for how to create position independent code )
+  if test ! "$enable_position_independent_code" = "no"; then
+      CCFLAGS="$CCFLAGS $enable_position_independent_code"
+      CXXFLAGS="$CXXFLAGS $enable_position_independent_code"
+      AC_MSG_RESULT([$enable_position_independent_code])
+  else
+      AC_MSG_RESULT("disabled")
+  fi
+])
+          
+#########################################################
+
+dnl AC_EXTRACT_REGEX(list, regEx)
+dnl variable $regExResult returns the first entry in 'list' that matches the 
+dnl regular expression 'regEx', using the 'expr' utility
+dnl $regExResult = "" if nothing is found
+AC_DEFUN(AC_EXTRACT_REGEX, 
+[
+    regExResult=""
+    if test "$1" != ""; then
+        for i in $1; do
+            regExResult=`expr "$i" : "$2"`
+            if test "$regExResult" != ""; then
+                break
+            fi
+        done
+    fi
+])
+
+#########################################################
+
+dnl AC_FIND_PACKAGE(packageName, packageLib, packageInc, packageComment)
+dnl defines with_packageName=yes/no
+dnl         packageNamelib=<path>/not found
+dnl         packageNameinclude=<path>/not found
+dnl and adds the paths to $LIBS, $CINCLUDES, and $CXXINCLUDES
+dnl example:
+dnl     AC_FIND_PACKAGE(tiff, tiff, tiff.h, support import/export of tiff images)
+AC_DEFUN([AC_FIND_PACKAGE], 
+[
+    AC_ARG_WITH([$1], [  --with-$1=dir : $4. 
+                   if dir=yes: $1 package files will be searched for in 
+                      some standard directories.
+                   if dir is a directory: $1 package files will be searched for   
+                      using 'find' below dir.
+                   alternatively, you can specify:], ,)
+    ifelse($2, "", ,[AC_ARG_WITH([$1lib], [  --with-$1lib=dir : the $1 package's lib directory], ,)])
+    ifelse($3, "", ,[AC_ARG_WITH([$1inc], [  --with-$1inc=dir : the $1 package's include directory], ,)])
+
+    [$1]lib="not found"
+    [$1]include="not found"
+    
+    if test ${with_[$1]:-""} = "" -a ${with_[$1]lib:-""} = "" -a ${with_[$1]inc:-""} = ""; then
+        with_[$1]="no"
+    fi
+    
+    if test ${with_[$1]:-""} != "no"; then
+        if test ! [$2] = "" ; then   # check for library
+            AC_MSG_CHECKING([for lib$2 ])
+            dirs=""
+            if test -f ${with_[$1]lib:-""}/lib[$2].so; then
+                dirs=${with_[$1]lib:-""}/lib[$2].so
+            elif test -f ${with_[$1]lib:-""}/lib[$2].a; then
+                dirs=${with_[$1]lib:-""}/lib[$2].a
+            elif test -d ${with_[$1]:-""}; then
+                dirs=`find $with_[$1] -name "lib[$2].so" -print; find $with_[$1] -name "lib[$2].a" -print`
+            elif test ${with_[$1]:-""} = "yes"; then
+                for i in /usr/local/lib /usr/local/gnu/lib /usr/local/[$1] /opt/lib /opt/gnu/lib /opt/[$1]; do
+                    if test -d $i; then
+                        dirs="$dirs "`find $i -name "lib[$2].so" -print; find $i -name "lib[$2].a" -print`
+                    fi
+                done
+            fi
+            AC_EXTRACT_REGEX($dirs, \(.*lib\)/lib$2\.so)
+            if test "$regExResult" = ""; then
+                AC_EXTRACT_REGEX($dirs, \(.*lib\)/lib$2\.a)
+            fi
+            if test "$regExResult" = ""; then
+                AC_EXTRACT_REGEX($dirs, \(.*\)/lib$2\.so)
+            fi
+            if test "$regExResult" = ""; then
+                AC_EXTRACT_REGEX($dirs, \(.*\)/lib$2\.a)
+            fi
+            [$1]lib=${regExResult:-"not found"}
+            AC_MSG_RESULT($[$1]lib)
+        else
+            [$1]lib=""
+        fi
+        
+        if test ! [$3] = "" ; then   # check for header
+            AC_MSG_CHECKING([for $3 ])
+            if test -f ${with_[$1]inc:-""}/[$3]; then
+                dirs=$with_[$1]inc/[$3]
+            elif test -d ${with_[$1]:-""}; then
+                dirs=`find $with_[$1] -name patsubst([$3], .*/, ) -print`
+            elif test ${with_[$1]:-""} = "yes"; then
+                for i in /usr/local/include /usr/local/gnu/include /usr/local/[$1] \
+                         /opt/include /opt/gnu/include /opt/[$1]; do
+                    if test -d $i; then
+                        dirs="$dirs "`find $i -name patsubst([$3], .*/, ) -print`
+                    fi
+                done
+            fi
+            AC_EXTRACT_REGEX($dirs, \(.*include\)/patsubst([$3], \., \\.))
+            if test "$regExResult" = ""; then
+                AC_EXTRACT_REGEX($dirs, \(.*\)/patsubst([$3], \., \\.))
+            fi
+            [$1]include=${regExResult:-"not found"}
+            AC_MSG_RESULT($[$1]include)
+        else
+            [$1]include=""
+        fi
+        
+        if test "$[$1]lib" = "not found" -o "$[$1]include" = "not found"; then
+            with_[$1]="no"
+            AC_MSG_WARN(  Configuring without [$1] support)
+        else
+            with_[$1]="yes"
+            if test ! [$2] = "" ; then   
+                LIBS="$LIBS -L$[$1]lib -l[$2]"
+            fi
+            if test ! [$3] = "" ; then   
+                CINCLUDES="$CINCLUDES -I$[$1]include"
+                CXXINCLUDES="$CXXINCLUDES -I$[$1]include"
+                AC_SUBST(CXXINCLUDES)
+            fi
+        fi
+    fi
+    
+])
+
+#########################################################
+
+AC_WITH_EXTRA_INCLUDES()
+AC_ENABLE_SHARED_LINKER()
+AC_ENABLE_POSITION_INDEPENDENT_CODE()
+AC_SHARED_LIBRARY_EXTENSION()
+
+#########################################################
+
+AC_CHECK_PROG(python_prog, python, [yes], [not found])
+if test "$python_prog" = "yes"; then
+    AC_FIND_PACKAGE(python, "", Python.h, Python includes (required!))
+else
+    with_python="no"
+fi
+if test "$with_python" = "no"; then
+    AC_MSG_ERROR(Python support required to install BPL)
+fi
+
+#########################################################
+
+boost_includes=[-I`pwd | sed 's?/libs/python$??'`]
+CXXINCLUDES="$CXXINCLUDES $boost_includes"
+
+#########################################################
+
+AC_OUTPUT(build/Makefile)

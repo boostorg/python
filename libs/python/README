@@ -1,0 +1,48 @@
+To build using g++:
+===================
+
+> setenv CXX g++ 
+>
+> ./configure \
+    --with-pythoninc=/usr/local/include/python1.5 \ 
+    --with-extra-includes=/usr/local/STLport
+>
+> make install
+   
+where 
+    --with-pythoninc: the directory where 'Python.h' lives
+    --with-extra-includes: the directory where STLport includes 
+        or the 'limits' header are
+        
+
+To build using another compiler:
+================================
+
+> setenv CXX CC  # your compiler
+>
+> ./configure \
+    --with-pythoninc=/usr/local/include/python1.5 \ 
+    --enable-shared-linker=-G \
+    --enable-position-independent-code=-pic
+>
+> make install
+    
+where 
+    --with-pythoninc: as above
+    --enable-shared-linker: flag that tells the compiler to build a
+            shared library (needed for Python modules)
+    --enable-position-independent-code: flag that tells the compiler 
+            to create position independent code (needed for shared linking)
+
+        
+more options:
+=============
+
+> ./configure --help
+
+of particular interest are:
+
+  --libdir: the install directory for 'libboostpython.a'
+  --enable-shared-library-extension: the file extension for shared libraries  
+
+for most options, configure provides reaonable defaults, given in brackets
