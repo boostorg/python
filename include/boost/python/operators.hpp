@@ -1,16 +1,21 @@
 #ifndef OPERATORS_UK112000_H_
 #define OPERATORS_UK112000_H_
 
-#include <boost/python/detail/functions.hpp>
+# include <boost/python/reference.hpp>
+# include <boost/python/detail/functions.hpp>
+
 // When STLport is used with native streams, _STL::ostringstream().str() is not
-// _STL::string, but std::string.
-#if defined(__SGI_STL_PORT) ? __SGI_STL_OWN_IOSTREAMS : !defined(__GNUC__)
-# include <sstream>
-#else
-# include <strstream>
-#endif
+// _STL::string, but std::string. This confuses to_python(), so we'll use
+// strstream instead. Also, GCC 2.95.2 doesn't have sstream.
+# if defined(__SGI_STL_PORT) ? __SGI_STL_OWN_IOSTREAMS : !defined(__GNUC__) || __GNUC__ > 2
+#  include <sstream>
+# else
+#  include <strstream>
+# endif
 
 namespace boost { namespace python {
+
+tuple standard_coerce(ref l, ref r);
 
 namespace detail {
   
