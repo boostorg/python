@@ -72,7 +72,7 @@ class ClassBaseTest(Tester):
         self.TestType(param, FundamentalType, 'int', 'int', False)  
         self.assertEqual(foo.namespace, None)
         self.assertEqual(
-            foo.PointerDeclaration(), '(void (test::Base::*)(int) )test::Base::foo')
+            foo.PointerDeclaration(), '(void (test::Base::*)(int) )&test::Base::foo')
 
     def testX(self):
         'test the member x in class Base'
@@ -109,7 +109,7 @@ class ClassBaseTest(Tester):
         self.TestType(simple.result, FundamentalType, 'bool', 'bool', False)
         self.assertEqual(
             simple.PointerDeclaration(), 
-            '(bool (test::Base::*)(const std::string &) )test::Base::simple')
+            '(bool (test::Base::*)(const std::string &) )&test::Base::simple')
         
           
     def testZ(self):
@@ -181,7 +181,7 @@ class FreeFuncTest(Tester):
         self.assertEqual(self.func.namespace, 'test')
         self.assertEqual(
             self.func.PointerDeclaration(), 
-            '(const test::Base & (*)(const std::string &, int))test::FreeFunc')
+            '(const test::Base & (*)(const std::string &, int))&test::FreeFunc')
 
 
     def testResult(self):
