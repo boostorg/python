@@ -1,0 +1,22 @@
+'''
+>>> from return_arg_ext import *
+>>> l1=Label()
+>>> assert l1 is l1.label("bar")
+>>> assert l1 is l1.label("bar").sensitive(0)
+>>> assert l1.label("foo").sensitive(0) is l1.sensitive(1).label("bar")
+>>> assert return_arg is return_arg(return_arg)
+
+'''
+
+def run(args = None):
+    import sys
+    import doctest
+
+    if args is not None:
+        sys.argv = args
+    return doctest.testmod(sys.modules.get(__name__))
+    
+if __name__ == '__main__':
+    print "running..."
+    import sys
+    sys.exit(run()[0])
