@@ -10,6 +10,7 @@
 # include <boost/python/extract.hpp>
 # include <boost/scoped_ptr.hpp>
 # include <boost/detail/binary_search.hpp>
+# include <boost/get_pointer.hpp>
 # include <vector>
 # include <map>
 
@@ -385,16 +386,17 @@ namespace boost { namespace python { namespace detail {
         Index index;
     };
 
-  }  // namespace detail
+  }}  // namespace python::detail
 
     template <class Container, class Index, class Policies> 
     inline typename Container::value_type* 
-    get_pointer(detail::container_element<Container, Index, Policies> const& p)
+    get_pointer(
+        python::detail::container_element<Container, Index, Policies> const& p)
     {
         // Get the pointer of a container_element smart pointer
         return p.get();
     }
 
-}} // namespace boost::python
+} // namespace boost
 
 #endif // INDEXING_SUITE_DETAIL_JDG20036_HPP

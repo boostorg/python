@@ -10,6 +10,7 @@
 # include <boost/python/class.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
 # include <boost/python/indexing/detail/indexing_suite_detail.hpp>
+# include <boost/python/return_internal_reference.hpp>
 # include <boost/python/iterator.hpp>
 
 namespace boost { namespace python {
@@ -120,17 +121,17 @@ namespace boost { namespace python {
             // Hook into the class_ generic visitation .def function
             register_ptr_to_python<container_element_t>();
             
-            typedef typename Container::iterator iterator;
-            iterator(Container::*begin_)() = &Container::begin;
-            iterator(Container::*end_)() = &Container::end;
-
             cl
                 .def("__len__", base_size)
                 .def("__setitem__", &base_set_item)
                 .def("__delitem__", &base_delete_item)
                 .def("__getitem__", &base_get_item)
                 .def("__contains__", &base_contains)
-                .def("__iter__", boost::python::range(begin_, end_)) 
+                .def("__iter__", 
+                    iterator<Container, return_internal_reference<> >())
+
+                .def("append", &base_append)
+                .def("extend", &base_extend)
             ;
         }        
         
@@ -397,6 +398,69 @@ namespace boost { namespace python {
                 else
                     return false;
             }            
+        }
+        
+        static void
+        base_append(Container& container, PyObject* v)
+        {
+            extract<Element&> elem(v);
+            // try if elem is an exact Element
+            if (elem.check())
+            {
+                DerivedPolicies::append(container, elem());
+            }
+            else
+            {
+                //  try to convert elem to Element
+                extract<Element> elem(v);
+                if (elem.check())
+                {
+                    DerivedPolicies::append(container, elem());
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, 
+                        "Attempting to append an invalid type");
+                    throw_error_already_set();
+                }
+            }
+        }
+        
+        static void
+        base_extend(Container& container, PyObject* v)
+        {
+            //  v must be a list or some container
+            handle<> l_(borrowed(v));
+            object l(l_);
+
+            std::vector<Element> temp;
+            for (int i = 0; i < l.attr("__len__")(); i++)
+            {
+                object elem(l[i]);
+                extract<Element const&> x(elem);
+                //  try if elem is an exact Element type
+                if (x.check())
+                {
+                    temp.push_back(x());
+                }
+                else
+                {
+                    //  try to convert elem to Element type
+                    extract<Element> x(elem);
+                    if (x.check())
+                    {
+                        temp.push_back(x());
+                    }
+                    else
+                    {
+                        PyErr_SetString(PyExc_TypeError, 
+                            "Invalid list element");
+                        throw_error_already_set();
+                    }
+                }
+            }          
+          
+            DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
 
         static object 

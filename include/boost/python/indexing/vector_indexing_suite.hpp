@@ -143,6 +143,19 @@ namespace boost { namespace python {
         { 
             return current - (difference_type(to) - from - len);
         }
+        
+        static void 
+        append(Container& container, element_type const& v)
+        { 
+            container.push_back(v);
+        }
+        
+        template <class Iter>
+        static void 
+        extend(Container& container, Iter first, Iter last)
+        { 
+            container.insert(container.end(), first, last);
+        }
     };
        
 }} // namespace boost::python 
