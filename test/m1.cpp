@@ -17,7 +17,6 @@
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/errors.hpp>
-#include <boost/mpl/type_list.hpp>
 #include <string.h>
 
 // Declare some straightforward extension types
@@ -200,7 +199,6 @@ D take_d(D const& d) { return d; }
 BOOST_PYTHON_MODULE_INIT(m1)
 {
     using namespace boost::python;
-    using boost::mpl::type_list;
     using boost::shared_ptr;
     
     simple_to_python();
@@ -280,8 +278,8 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
         .add(
             class_<complicated>("complicated")
-            .def_init(type_list<simple const&,int>())
-            .def_init(type_list<simple const&>())
+            .def_init(args<simple const&,int>())
+            .def_init(args<simple const&>())
             .def("get_n", &complicated::get_n)
             )
         ;
