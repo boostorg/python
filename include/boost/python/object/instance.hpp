@@ -42,7 +42,8 @@ struct additional_instance_size
     typedef instance<Data> instance_data;
     typedef instance<char> instance_char;
     BOOST_STATIC_CONSTANT(
-        std::size_t, value = sizeof(instance_data) - offsetof(instance_char,storage));
+        std::size_t, value = sizeof(instance_data)
+                           - BOOST_PYTHON_OFFSETOF(instance_char,storage));
 };
 
 }}} // namespace boost::python::object

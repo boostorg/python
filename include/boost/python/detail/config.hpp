@@ -106,4 +106,12 @@ class function;
 }}}
 #endif
 
+#if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590014)
+// Replace broken Tru64/cxx offsetof macro
+# define BOOST_PYTHON_OFFSETOF(s_name, s_member) \
+        ((size_t)__INTADDR__(&(((s_name *)0)->s_member)))
+#else
+# define BOOST_PYTHON_OFFSETOF offsetof
+#endif
+
 #endif // CONFIG_DWA052200_H_
