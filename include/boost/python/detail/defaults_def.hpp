@@ -15,9 +15,9 @@
 #include <boost/python/detail/defaults_gen.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/mpl/int_t.hpp>
-#include <boost/mpl/size.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/iterate.hpp>
+#include <boost/python/detail/type_list_utils.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
@@ -134,7 +134,7 @@ struct define_stub_function {};
         SigT sig,
         char const* doc)
     {
-        typedef typename mpl::at<0, SigT>::type nth_type;
+        typedef typename boost::python::detail::type_at<0, SigT>::type nth_type;
         typedef typename StubsT::v_type v_type;
         typedef typename StubsT::nv_type nv_type;
 
@@ -145,7 +145,8 @@ struct define_stub_function {};
         >::type stubs_type;
 
         BOOST_STATIC_ASSERT(
-            (stubs_type::max_args + 1) <= boost::mpl::size<SigT>::value);
+            (stubs_type::max_args + 1) <=
+                boost::python::detail::type_list_size<SigT>::value);
 
         typedef typename stubs_type::template gen<SigT> gen_type;
         define_with_defaults_helper<stubs_type::n_funcs-1>::def

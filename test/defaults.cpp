@@ -121,8 +121,14 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
         ;
 
     class_<X>("X")
+
+# if (!defined(__EDG_VERSION__) || __EDG_VERSION__ > 245)                       \
+    && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
         .def(init<int, optional<char, std::string, double> >())
-        .def("get_state", &X::get_state)
+#endif
+        
+		
+		.def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
         .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())

@@ -21,6 +21,7 @@
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/empty.hpp>
 #include <boost/config.hpp>
+#include <boost/python/detail/type_list_utils.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -44,7 +45,7 @@ struct func_stubs_base {};
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BPL_IMPL_TYPEDEF_GEN(INDEX, DATA)                                       \
-    typedef typename boost::mpl::at                                             \
+    typedef typename boost::python::detail::type_at                             \
     <                                                                           \
         BOOST_PP_ADD(INDEX, DATA),                                              \
         SigT                                                                    \
@@ -84,7 +85,7 @@ struct func_stubs_base {};
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::mpl::at<0, SigT>::type RT;                  \
+            typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \
@@ -135,8 +136,8 @@ struct func_stubs_base {};
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::mpl::at<0, SigT>::type RT;                  \
-            typedef typename boost::mpl::at<1, SigT>::type ClassT;              \
+            typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
+            typedef typename boost::python::detail::type_at<1, SigT>::type ClassT;\
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \
