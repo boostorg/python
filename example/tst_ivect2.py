@@ -1,4 +1,4 @@
-def f():
+def f(broken_auto_ptr):
   import ivect
   import dvect
   #
@@ -9,13 +9,19 @@ def f():
   print '1. auto_ptr_value_dvect_as_tuple'
   print dvect.auto_ptr_value_dvect_as_tuple(adv)
   print '2. auto_ptr_value_dvect_as_tuple'
-  print dvect.auto_ptr_value_dvect_as_tuple(adv)
+  if (not broken_auto_ptr):
+    print dvect.auto_ptr_value_dvect_as_tuple(adv)
+  else:
+    print None
   #
   aiv = ivect.ivect_as_auto_ptr(iv)
   print '1. auto_ptr_value_ivect_as_tuple'
   print dvect.auto_ptr_value_ivect_as_tuple(aiv)
   print '2. auto_ptr_value_ivect_as_tuple'
-  print dvect.auto_ptr_value_ivect_as_tuple(aiv)
+  if (not broken_auto_ptr):
+    print dvect.auto_ptr_value_ivect_as_tuple(aiv)
+  else:
+    print None
   #
   sdv = ivect.dvect_as_shared_ptr(dv)
   print '1. shared_ptr_value_dvect_as_tuple'
@@ -79,7 +85,14 @@ def f():
 
 if (__name__ == "__main__"):
   import sys, string
+  broken_auto_ptr = 0
   n = 1
-  if (len(sys.argv) > 1): n = string.atoi(sys.argv[1])
+  if (len(sys.argv) > 1):
+    if (sys.argv[1] == "--broken-auto-ptr"):
+      broken_auto_ptr = 1
+      if (len(sys.argv) > 2):
+        n = string.atoi(sys.argv[2])
+    else:
+      n = string.atoi(sys.argv[1])
   for i in xrange(n):
-    f()
+    f(broken_auto_ptr)

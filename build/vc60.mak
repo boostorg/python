@@ -102,8 +102,8 @@ tst:
 	$(PYEXE) tst_noncopyable.py
 	$(PYEXE) tst_ivect1.py
 	$(PYEXE) tst_dvect1.py
-	$(PYEXE) tst_ivect2.py
-	$(PYEXE) tst_dvect2.py
+	$(PYEXE) tst_ivect2.py --broken-auto-ptr
+	$(PYEXE) tst_dvect2.py --broken-auto-ptr
 
 clean:
 	del *.obj
