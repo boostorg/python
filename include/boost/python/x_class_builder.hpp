@@ -91,6 +91,10 @@ class python_import_extension_class_converters
     friend const T& from_python(PyObject* p, boost::python::type<T>)
         { return from_python(p, boost::python::type<T&>()); }
 
+  // *****************************************************************
+  // THIS IS OUT OF SYNC WITH class python_extension_class_converters!
+  // WE MIGHT NEED TO DEFINE MORE FUNCTIONS.
+  // *****************************************************************
     friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T>&>) {
         return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_from_python(p);
     }
@@ -166,11 +170,15 @@ struct export_ptr_converters : export_converters_base<T>
   virtual T* Tptr_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::from_python(obj, boost::python::type<T*>());
   }
+  // *****************************************************************
+  // THIS IS OUT OF SYNC WITH class python_extension_class_converters!
+  // WE MIGHT NEED TO DEFINE MORE FUNCTIONS.
+  // *****************************************************************
   virtual std::auto_ptr<T>& auto_ptr_from_python(PyObject *obj) {
-    return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::ptr_from_python(obj, boost::python::type<std::auto_ptr<T> >());
+    return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<std::auto_ptr<T> >());
   }
   virtual boost::shared_ptr<T>& shared_ptr_from_python(PyObject *obj) {
-    return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::ptr_from_python(obj, boost::python::type<boost::shared_ptr<T> >());
+    return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<boost::shared_ptr<T> >());
   }
 };
 
