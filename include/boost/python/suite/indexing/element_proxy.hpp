@@ -157,16 +157,23 @@ namespace boost { namespace python { namespace indexing {
 
     size_t use_count() const { return m_ptr.use_count(); } // For debugging
   };
-} } }
 
-namespace boost
-{
+#ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+}} // namespace python::indexing
+#endif 
+
   template<typename ContainerProxy>
   typename ContainerProxy::raw_value_type *
   get_pointer (python::indexing::element_proxy<ContainerProxy> const &proxy)
   {
     return &(*proxy);
   }
+
+#ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+    // Don't hide these other get_pointer overloads
+    using boost::python::get_pointer;
+}} // namespace python::indexing
+#endif 
 }
 
 #endif // BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP
