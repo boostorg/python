@@ -28,7 +28,7 @@ BOOST_PYTHON_DECL void* find(
 }
 
 BOOST_PYTHON_DECL void* find(
-    PyObject* const source
+    PyObject* source
     , lvalue_from_python_registration const* chain)
 {
     for (;chain != 0; chain = chain->next)
