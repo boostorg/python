@@ -36,20 +36,26 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT                                \
-    BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(                                        \
+    BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT                                         \
+    (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
         class T,                                                                \
-        mpl::void_)                                                             \
+        mpl::void_                                               \
+    )                                                                           \
 
 #define BOOST_PYTHON_TEMPLATE_TYPES                                             \
-    BOOST_PP_ENUM_PARAMS(                                                       \
+    BOOST_PP_ENUM_PARAMS                                                        \
+    (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
-        class T)                                                                \
+        class T                                                                 \
+    )                                                                           \
 
 #define BOOST_PYTHON_TEMPLATE_ARGS                                              \
-    BOOST_PP_ENUM_PARAMS(                                                       \
+    BOOST_PP_ENUM_PARAMS                                                        \
+    (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
-        T)                                                                      \
+        T                                                                       \
+    )                                                                           \
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
@@ -88,7 +94,7 @@ namespace detail {
             bool, value =
                 sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
         typedef mpl::bool_c<value> type;
-
+        
         BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_optional,(T)) // needed for MSVC & Borland
     };
 
@@ -117,62 +123,16 @@ namespace detail {
 
 } // namespace detail
 
-template <class DerivedT>
-struct init_base {
-
-    DerivedT const& derived() const
-    { return *static_cast<DerivedT const*>(this); }
-};
-
-template <class CallPoliciesT, class InitT>
-struct init_with_call_policies
-: public init_base<init_with_call_policies<CallPoliciesT, InitT> >
-{
-    BOOST_STATIC_CONSTANT(int, n_arguments = InitT::n_arguments);
-    BOOST_STATIC_CONSTANT(int, n_defaults = InitT::n_defaults);
-
-    typedef typename InitT::reversed_args reversed_args;
-
-    init_with_call_policies(CallPoliciesT const& policies_, char const* doc_)
-    : policies(policies_), doc(doc_) {}
-
-    char const* doc_string() const
-    { return doc; }
-
-    CallPoliciesT
-    call_policies() const
-    { return policies; }
-
-    CallPoliciesT policies;
-    char const* doc;
-};
 
 template <BOOST_PYTHON_TEMPLATE_TYPES>
-struct init : public init_base<init<BOOST_PYTHON_TEMPLATE_ARGS> >
+struct init //: detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 {
-    typedef init<BOOST_PYTHON_TEMPLATE_ARGS> self_t;
-
-    init(char const* doc_ = 0)
-    : doc(doc_) {}
-
-    char const* doc_string() const
-    { return doc; }
-
-    default_call_policies
-    call_policies() const
-    { return default_call_policies(); }
-
-    template <class CallPoliciesT>
-    init_with_call_policies<CallPoliciesT, self_t>
-    operator[](CallPoliciesT const& policies) const
-    { return init_with_call_policies<CallPoliciesT, self_t>(policies, doc); }
-
     typedef detail::type_list<BOOST_PYTHON_TEMPLATE_ARGS> signature_;
     typedef typename mpl::end<signature_>::type finish;
 
     // Find the optional<> element, if any
     typedef typename mpl::find_if<
-        signature_, detail::is_optional<mpl::_1>
+        signature_, detail::is_optional<mpl::_>
     >::type opt;
 
 
@@ -183,7 +143,7 @@ struct init : public init_base<init<BOOST_PYTHON_TEMPLATE_ARGS> >
         , mpl::next<opt>
     >::type expected_finish;
     BOOST_STATIC_ASSERT((is_same<expected_finish, finish>::value));
-
+    
     typedef typename mpl::apply_if<
         is_same<opt,finish>
         , mpl::list0<>
@@ -213,36 +173,6 @@ struct init : public init_base<init<BOOST_PYTHON_TEMPLATE_ARGS> >
 
     // Count the maximum number of arguments
     BOOST_STATIC_CONSTANT(int, n_arguments = mpl::size<reversed_args>::value);
-
-    char const* doc;
-};
-
-template <> // specialization for zero args
-struct init<> : public init_base<init<> >
-{
-    typedef init<> self_t;
-
-    init(char const* doc_ = 0)
-    : doc(doc_) {}
-
-    char const* doc_string() const
-    { return doc; }
-
-    default_call_policies
-    call_policies() const
-    { return default_call_policies(); }
-
-    template <class CallPoliciesT>
-    init_with_call_policies<CallPoliciesT, self_t>
-    operator[](CallPoliciesT const& policies) const
-    { return init_with_call_policies<CallPoliciesT, self_t>(policies, doc); }
-
-    BOOST_STATIC_CONSTANT(int, n_defaults = 0);
-    BOOST_STATIC_CONSTANT(int, n_arguments = 0);
-
-    typedef detail::type_list<> reversed_args;
-
-    char const* doc;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -268,10 +198,10 @@ namespace detail
           , mpl::list0<>
           , mpl::push_front<>
           >::type args;
-
+      
       cl.def_init(args(), policies, doc);
   }
-
+  
   ///////////////////////////////////////////////////////////////////////////////
   //
   //  define_class_init_helper<N>::apply
@@ -339,13 +269,12 @@ namespace detail
 //          __init__(int)
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <class ClassT, class InitT>
+template <class ClassT, class CallPoliciesT, class InitT>
 void
-define_init(ClassT& cl, InitT const& i)
+define_init(ClassT& cl, InitT const& i, CallPoliciesT const& policies, char const* doc)
 {
     typedef typename InitT::reversed_args reversed_args;
-    detail::define_class_init_helper<InitT::n_defaults>::apply(
-        cl, i.call_policies(), reversed_args(), i.doc_string());
+    detail::define_class_init_helper<InitT::n_defaults>::apply(cl, policies, reversed_args(), doc);
 }
 
 }} // namespace boost::python
