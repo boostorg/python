@@ -27,6 +27,7 @@
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next.hpp>
 #include <boost/mpl/apply.hpp>
+#include <cstddef>
 
 namespace boost { namespace python {
 
@@ -203,26 +204,26 @@ namespace detail
         };                                                                      \
     };
 
-#define BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)        \
-    fstubs_name(char const* doc = 0)                                            \
-        : ::boost::python::detail::overloads_common<fstubs_name>(doc) {}        \
-    template <class Keywords>                                                   \
-    fstubs_name(char const* doc, Keywords const& keywords)                      \
-        : ::boost::python::detail::overloads_common<fstubs_name>(               \
-            doc, keywords.range())                                              \
-    {                                                                           \
-        typedef typename ::boost::python::detail::                              \
-            error::more_keywords_than_function_arguments<                       \
-                Keywords::size,n_args>::too_many_keywords assertion;            \
-    }                                                                           \
-    template <class Keywords>                                                   \
-    fstubs_name(Keywords const& keywords, char const* doc = 0)                  \
-        : ::boost::python::detail::overloads_common<fstubs_name>(               \
-            doc, keywords.range())                                              \
-    {                                                                           \
-        typedef typename ::boost::python::detail::                              \
-            error::more_keywords_than_function_arguments<                       \
-                Keywords::size,n_args>::too_many_keywords assertion;            \
+#define BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                    \
+    fstubs_name(char const* doc = 0)                                                        \
+        : ::boost::python::detail::overloads_common<fstubs_name>(doc) {}                    \
+    template <std::size_t N>                                                                \
+    fstubs_name(char const* doc, ::boost::python::detail::keywords<N> const& keywords)      \
+        : ::boost::python::detail::overloads_common<fstubs_name>(                           \
+            doc, keywords.range())                                                          \
+    {                                                                                       \
+        typedef typename ::boost::python::detail::                                          \
+            error::more_keywords_than_function_arguments<                                   \
+                N,n_args>::too_many_keywords assertion;                                     \
+    }                                                                                       \
+    template <std::size_t N>                                                                \
+    fstubs_name(::boost::python::detail::keywords<N> const& keywords, char const* doc = 0)  \
+        : ::boost::python::detail::overloads_common<fstubs_name>(                           \
+            doc, keywords.range())                                                          \
+    {                                                                                       \
+        typedef typename ::boost::python::detail::                                          \
+            error::more_keywords_than_function_arguments<                                   \
+                N,n_args>::too_many_keywords assertion;                                     \
     }
 
 # if defined(BOOST_NO_VOID_RETURNS)

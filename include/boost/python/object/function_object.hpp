@@ -17,15 +17,13 @@ namespace objects
 { 
   BOOST_PYTHON_DECL api::object function_object(
       py_function const& f
-      , unsigned min_arity, unsigned max_arity
       , python::detail::keyword_range const&);
 
   BOOST_PYTHON_DECL api::object function_object(
       py_function const& f
-      , unsigned arity
       , python::detail::keyword_range const&);
 
-  BOOST_PYTHON_DECL api::object function_object(py_function const& f, unsigned arity);
+  BOOST_PYTHON_DECL api::object function_object(py_function const& f);
 
   // Add an attribute to the name_space with the given name. If it is
   // a Boost.Python function object

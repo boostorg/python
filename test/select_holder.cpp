@@ -9,6 +9,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/same_traits.hpp>
 #include <boost/function/function0.hpp>
+#include <boost/mpl/bool.hpp>
 #include <memory>
 
 #define BOOST_INCLUDE_MAIN
@@ -24,8 +25,8 @@ namespace boost { namespace python
   // specialization
   template <>
   struct has_back_reference<BR>
+    : mpl::true_
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
   };
 }} // namespace boost::python
 

@@ -61,6 +61,7 @@ run ../test/embedding.cpp <lib>../build/boost_python
   : # requirements
   $(PYTHON_PROPERTIES)
     <define>BOOST_PYTHON_STATIC_LIB
+    <define>BOOST_PYTHON_STATIC_MODULE
     <library-path>$(PYTHON_LIB_PATH)
       <$(gcc-compilers)><debug-python><library-path>$(CYGWIN_PYTHON_DEBUG_DLL_PATH)
         <$(gcc-compilers)><*><library-path>$(CYGWIN_PYTHON_DLL_PATH)
@@ -151,9 +152,9 @@ run indirect_traits_test.cpp ;
 run destroy_test.cpp ;
 run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor : : : $(UNIT_TEST_PROPERTIES) ;
 run member_function_cast.cpp ;
-run bases.cpp ;
+run bases.cpp : : : $(UNIT_TEST_PROPERTIES) ;
 run if_else.cpp ;
-run pointee.cpp ;
+run pointee.cpp : : : $(UNIT_TEST_PROPERTIES) ;
 run result.cpp ;
 
 compile string_literal.cpp ;

@@ -49,17 +49,24 @@ template< typename T > T&(* is_ref_tester1(type<T>) )(type<T>) { return 0; }
 inline char BOOST_TT_DECL is_ref_tester1(...) { return 0; }
 
 template <class T>
-inline typeinfo msvc_typeid(boost::type<T>* = 0)
+inline typeinfo msvc_typeid(boost::type<T>*)
 {
     return detail::typeid_ref(
         (boost::type<T>*)0, detail::is_ref_tester1(type<T>())
         );
 }
 
+template <>
+inline typeinfo msvc_typeid<void>(boost::type<void>*)
+{
+    return typeid(void);
+}
+
 #  ifndef NDEBUG
 inline typeinfo assert_array_typeid_compiles()
 {
-    return msvc_typeid<char const[3]>(), msvc_typeid<char[3]>();
+    return msvc_typeid((boost::type<char const[3]>*)0)
+        , msvc_typeid((boost::type<char[3]>*)0);
 }
 #  endif
 

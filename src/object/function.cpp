@@ -14,33 +14,42 @@
 #include <boost/python/refcount.hpp>
 #include <boost/python/extract.hpp>
 
+#include <boost/python/detail/signature.hpp>
+#include <boost/mpl/vector/vector10.hpp>
+
+#include <boost/bind.hpp>
+
 #include <algorithm>
 #include <cstring>
 
 namespace boost { namespace python { namespace objects { 
 
+py_function_impl_base::~py_function_impl_base()
+{
+}
+
+unsigned py_function_impl_base::max_arity() const
+{
+    return this->min_arity();
+}
+
 extern PyTypeObject function_type;
 
 function::function(
     py_function const& implementation
-    , unsigned min_arity
-    , unsigned max_arity
     , python::detail::keyword const* names_and_defaults
     , unsigned num_keywords
     )
     : m_fn(implementation)
-      , m_min_arity(min_arity)
-      // was using std::max here, but a problem with MinGW-2.95 and
-      // our <boost/numeric/...> directory prevents it.
-      , m_max_arity(max_arity > min_arity ? max_arity : min_arity)
 {
     if (names_and_defaults != 0)
     {
-        unsigned keyword_offset
-            = m_max_arity > num_keywords ? m_max_arity - num_keywords : 0;
+        unsigned int max_arity = m_fn.max_arity();
+        unsigned int keyword_offset
+            = max_arity > num_keywords ? max_arity - num_keywords : 0;
 
 
-        unsigned tuple_size = num_keywords ? m_max_arity : 0;
+        unsigned tuple_size = num_keywords ? max_arity : 0;
         m_arg_names = object(handle<>(PyTuple_New(tuple_size)));
 
         if (num_keywords != 0)
@@ -86,7 +95,8 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     do
     {
         // Check for a plausible number of arguments
-        if (total_args >= f->m_min_arity && total_args <= f->m_max_arity)
+        if (total_args >= f->m_fn.min_arity()
+            && total_args <= f->m_fn.max_arity())
         {
             // This will be the args that actually get passed
             handle<> args2(allow_null(borrowed(args)));
@@ -242,7 +252,7 @@ namespace
   }
 
   // Something for the end of the chain of binary operators
-  PyObject* not_implemented_impl(PyObject*, PyObject*)
+  PyObject* not_implemented(PyObject*, PyObject*)
   {
       Py_INCREF(Py_NotImplemented);
       return Py_NotImplemented;
@@ -250,9 +260,11 @@ namespace
   
   handle<function> not_implemented_function()
   {
+      
       static object keeper(
-          function_object(&not_implemented_impl, 2, 3
-                          , python::detail::keyword_range())
+          function_object(
+              py_function(&not_implemented, mpl::vector1<void>(), 2)
+            , python::detail::keyword_range())
           );
       return handle<function>(borrowed(downcast<function>(keeper.ptr())));
   }
@@ -478,48 +490,38 @@ PyTypeObject function_type = {
 };
 
 object function_object(
-    py_function const& f, unsigned min_arity, unsigned max_arity
+    py_function const& f
     , python::detail::keyword_range const& keywords)
 {
     return python::object(
         python::detail::new_non_null_reference(
             new function(
-                f, min_arity, max_arity, keywords.first, keywords.second - keywords.first)));
+                f, keywords.first, keywords.second - keywords.first)));
 }
 
-object function_object(
-    py_function const& f
-    , unsigned arity
-    , python::detail::keyword_range const& kw)
+object function_object(py_function const& f)
 {
-    return function_object(f, arity, arity, kw);
-}
-
-object function_object(py_function const& f, unsigned arity)
-{
-    return function_object(f, arity, arity, python::detail::keyword_range());
+    return function_object(f, python::detail::keyword_range());
 }
 
 
-handle<> function_handle_impl(py_function const& f, unsigned min_arity, unsigned max_arity)
+handle<> function_handle_impl(py_function const& f)
 {
     return python::handle<>(
         allow_null(
-            new function(f, min_arity, max_arity, 0, 0)));
+            new function(f, 0, 0)));
 }
 
 }
 
 namespace detail
 {
-  object BOOST_PYTHON_DECL make_raw_function(objects::py_function f, std::size_t min_args)
+  object BOOST_PYTHON_DECL make_raw_function(objects::py_function f)
   {
       static keyword k;
     
       return objects::function_object(
           f
-          , min_args
-          , std::numeric_limits<std::size_t>::max()
           , keyword_range(&k,&k));
   }
 }

@@ -21,6 +21,7 @@
 # include <boost/mpl/bool.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/mpl/or.hpp>
+# include <boost/mpl/not.hpp>
 
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/is_base_and_derived.hpp>
@@ -49,7 +50,7 @@ namespace detail
   // constructor. Normally this means U is a virtual function
   // dispatcher subclass for T.
   template <class T, class U>
-  void check_default_constructible(T*, U*, mpl::bool_<true>)
+  void check_default_constructible(T*, U*, mpl::true_)
   {
       python::detail::force_instantiate(
           sizeof(specify_init_arguments_or_no_init_for_class_<T>(U((::PyObject*)0)))
@@ -59,7 +60,7 @@ namespace detail
   // Handles the "normal" case where T is held directly and
   // has_back_reference<T> is not specialized.
   template <class T>
-  void check_default_constructible(T*, T*, mpl::bool_<false>)
+  void check_default_constructible(T*, T*, mpl::false_)
   {
       python::detail::force_instantiate(
           sizeof(specify_init_arguments_or_no_init_for_class_<T>(T()))
@@ -90,17 +91,22 @@ namespace detail
   template <class T, class Held>
   struct select_value_holder
   {
-      BOOST_STATIC_CONSTANT(bool, back_ref = (!is_same<T,Held>::value) | has_back_reference<T>::value);
-
+   private:
+      typedef mpl::or_<
+          mpl::not_<is_same<T,Held> >
+        , has_back_reference<T>
+      > use_back_ref;
+  
+   public:
       static void assert_default_constructible()
       {
-          detail::check_default_constructible((T*)0,(Held*)0,mpl::bool_<back_ref>());
+          detail::check_default_constructible((T*)0,(Held*)0, use_back_ref());
       }
   
-      typedef typename mpl::if_c<
-          back_ref
-          , value_holder_back_reference<T,Held>
-          , value_holder<T>
+      typedef typename mpl::if_<
+          use_back_ref
+        , value_holder_back_reference<T,Held>
+        , value_holder<T>
       >::type type;
 
       static inline void register_() {}
@@ -111,23 +117,28 @@ namespace detail
   template <class T,class Ptr>
   struct select_pointer_holder
   {
-      typedef typename python::pointee<Ptr>::type pointee;
-      BOOST_STATIC_CONSTANT(bool, back_ref = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
-      
+   private:
+      typedef typename python::pointee<Ptr>::type wrapper;
+      typedef mpl::or_<
+          mpl::not_<is_same<T,wrapper> >
+        , has_back_reference<T>
+      > use_back_ref;
+
+   public:
       static void assert_default_constructible()
       {
-          detail::check_default_constructible((T*)0,(pointee*)0,mpl::bool_<back_ref>());
+          detail::check_default_constructible((T*)0,(wrapper*)0, use_back_ref());
       }
   
-      typedef typename mpl::if_c<
-          back_ref
+      typedef typename mpl::if_<
+            use_back_ref
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
       >::type type;
       
       static inline void register_()
       {
-          select_pointer_holder::register_(mpl::bool_<back_ref>());
+          select_pointer_holder::register_(use_back_ref());
       }
 
       static type* get() { return 0; }

@@ -38,7 +38,7 @@ void work_with_string(object print)
     str tabstr("\t\ttab\tdemo\t!");
     print(tabstr.expandtabs());
     print(tabstr.expandtabs(4));
-    print(tabstr.expandtabs(7.9));
+    print(tabstr.expandtabs(7L));
 
     print("operators");
     print( str("part1") + str("part2") );

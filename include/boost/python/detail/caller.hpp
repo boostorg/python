@@ -14,6 +14,7 @@
 #  include <boost/mpl/apply.hpp>
 #  include <boost/mpl/if.hpp>
 #  include <boost/mpl/size.hpp>
+#  include <boost/mpl/at.hpp>
 #  include <boost/type_traits/is_same.hpp>
 
 #  include <boost/python/detail/preprocessor.hpp>
@@ -25,7 +26,9 @@
 #  include <boost/preprocessor/dec.hpp>
 #  include <boost/preprocessor/if.hpp>
 
+#  include <boost/python/type_id.hpp>
 #  include <boost/python/detail/invoke.hpp>
+#  include <boost/python/detail/signature.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -58,15 +61,18 @@ struct select_result_converter
 
 template <unsigned> struct caller_arity;
 
+template <class F, class ConverterGenerators, class CallPolicies, class Sig>
+struct caller;
+
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
      typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
 
-#  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
-     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)               \
-     BOOST_PYTHON_NEXT(ConverterGenerators, conv_iter,n)               \
-     typedef typename apply_iter1<conv_iter##n,arg_iter##n>::type c_t##n;       \
-     c_t##n c##n(PyTuple_GET_ITEM(args_, n));                                   \
-     if (!c##n.convertible())                                                   \
+#  define BOOST_PYTHON_ARG_CONVERTER(n)                                 \
+     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                \
+     BOOST_PYTHON_NEXT(ConverterGenerators, conv_iter,n)                \
+     typedef typename apply_iter1<conv_iter##n,arg_iter##n>::type c_t##n; \
+     c_t##n c##n(PyTuple_GET_ITEM(args_, n));                           \
+     if (!c##n.convertible())                                           \
           return 0;
 
 #  define BOOST_PP_ITERATION_PARAMS_1                                            \
@@ -119,8 +125,8 @@ struct caller
     typedef PyObject* result_type;
     
     caller(F f, CallPolicies p) : base(f,p) {}
-};
 
+};
 
 }}} // namespace boost::python::detail
 
@@ -163,6 +169,14 @@ struct caller_arity<N>
             
             return m_data.second().postcall(args_, result);
         }
+
+        static unsigned min_arity() { return N; }
+        
+        static char const*const* type_names()
+        {
+            return signature<Sig>::type_names();
+        }
+        
      private:
         compressed_pair<F,Policies> m_data;
     };

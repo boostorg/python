@@ -16,11 +16,14 @@
 # include <boost/type.hpp>
 # include <boost/python/arg_from_python.hpp>
 # include <boost/mpl/apply.hpp>
+# include <boost/mpl/vector/vector10.hpp>
 # include <boost/bind.hpp>
 # include <boost/bind/protect.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
+
+# include <boost/detail/iterator.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -118,8 +121,18 @@ namespace detail
       // Make a callable object which can be used as the iterator's next() function.
       object next_function = 
           objects::function_object(
+              py_function(
                   bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies)
-              , 1);
+                , mpl::vector2<
+# if defined BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+                      object
+# else 
+                      typename boost::detail::iterator_traits<Iterator>::value_type
+# endif 
+                    , Iterator
+                  >()
+              )
+          );
     
       return class_<range_>(name, no_init)
           .def("__iter__", identity_function())
@@ -164,16 +177,25 @@ namespace detail
 
   template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>
   inline object make_iterator_function(
-      Accessor1 const& get_start, Accessor2 const& get_finish, Iterator const& (*)(), boost::type<Target>*, NextPolicies*, int)
+      Accessor1 const& get_start
+    , Accessor2 const& get_finish
+    , Iterator const& (*)()
+    , boost::type<Target>*
+    , NextPolicies*
+    , int
+  )
   {
       return 
           objects::function_object(
-              boost::bind(
-                  &make_iterator_help<
-                      Target,Iterator,Accessor1,Accessor2,NextPolicies
-                  >::create
-                  , get_start, get_finish, _1, _2)
-              , 1 );
+              py_function(
+                  boost::bind(
+                      &make_iterator_help<
+                          Target,Iterator,Accessor1,Accessor2,NextPolicies
+                      >::create
+                      , get_start, get_finish, _1, _2)
+                , mpl::vector2<object, Target>()
+              )
+          );
   }
 
   template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>

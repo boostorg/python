@@ -19,8 +19,6 @@ struct BOOST_PYTHON_DECL function : PyObject
 {
     function(
         py_function const&
-        , unsigned min_arity
-        , unsigned max_arity
         , python::detail::keyword const* names_and_defaults
         , unsigned num_keywords);
       
@@ -48,8 +46,6 @@ struct BOOST_PYTHON_DECL function : PyObject
     
  private: // data members
     py_function m_fn;
-    unsigned m_min_arity;
-    unsigned m_max_arity;
     handle<function> m_overloads;
     object m_name;
     object m_doc;

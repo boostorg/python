@@ -14,6 +14,7 @@
 #include <cassert>
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
+#include <boost/mpl/bool.hpp>
 
 // This test shows that a class can be wrapped "as itself" but also
 // acquire a back-reference iff has_back_reference<> is appropriately
@@ -64,14 +65,14 @@ namespace boost { namespace python
 {
   template <>
   struct has_back_reference<Y>
+      : mpl::true_
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
   };
 
   template <>
   struct has_back_reference<Z>
+      : mpl::true_
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
   };
 }}
 

@@ -7,7 +7,7 @@
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/iterator.hpp>
-#include <boost/iterator_adaptors.hpp>
+#include <boost/iterator/transform_iterator.hpp>
 #include <list>
 
 using namespace boost::python;
@@ -21,7 +21,7 @@ struct doubler
     int operator()(int x) const { return x * 2; }
 };
 
-typedef boost::transform_iterator_generator<doubler, list_int::iterator>::type doubling_iterator;
+typedef boost::transform_iterator<doubler, list_int::iterator> doubling_iterator;
 typedef std::pair<doubling_iterator,doubling_iterator> list_range2;
 
 list_range2 range2(list_int& x)

@@ -37,7 +37,7 @@ namespace detail
   {
       return objects::function_object(
           detail::caller<F,ConverterGenerators,CallPolicies,Sig>(f, p)
-          , mpl::size<Sig>::value - 1);
+      );
   }
 
   // As above, except that it accepts argument keywords. NumKeywords
@@ -62,8 +62,7 @@ namespace detail
     
       return objects::function_object(
           detail::caller<F,ConverterGenerators,CallPolicies,Sig>(f, p)
-          , arity
-          , kw);
+        , kw);
   }
 }
 

@@ -203,22 +203,22 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
         : base(doc_)
     {
     }
-    
-    template <class Keywords>
-    init(char const* doc_, Keywords const& kw)
-        : base(doc_, std::make_pair(kw.base(), kw.base() + Keywords::size))
-    {
-        typedef typename detail::error::more_keywords_than_init_arguments<
-            Keywords::size, n_arguments::value
-            >::too_many_keywords assertion;
-    }
 
-    template <class Keywords>
-    init(Keywords const& kw, char const* doc_ = 0)
+    template <std::size_t N>
+    init(char const* doc_, detail::keywords<N> const& kw)
         : base(doc_, kw.range())
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
-            Keywords::size, n_arguments::value
+            N, n_arguments::value
+            >::too_many_keywords assertion;
+    }
+
+    template <std::size_t N>
+    init(detail::keywords<N> const& kw, char const* doc_ = 0)
+        : base(doc_, kw.range())
+    {
+        typedef typename detail::error::more_keywords_than_init_arguments<
+            N, n_arguments::value
             >::too_many_keywords assertion;
     }
 

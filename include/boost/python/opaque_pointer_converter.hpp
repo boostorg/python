@@ -113,22 +113,24 @@ PyTypeObject opaque_pointer_converter<Pointer>::type_object =
     ::boost::python::detail::dealloc
 };
 }} // namespace boost::python
-# ifdef BOOST_MSVC
+#  ifdef BOOST_MSVC
 // MSC works without this workaround, but needs another one ...
-# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee) \
-BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(Pointee)
-# else
-# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee) \
-namespace boost { namespace python {                      \
-    template<>                                            \
-    inline type_info type_id(boost::type<Pointee>*) {     \
-        return type_info (typeid (Pointee *));            \
-    }                                                     \
-    template<>                                            \
-    inline type_info type_id(                             \
-        boost::type<const volatile Pointee &>*) {         \
-        return type_info (typeid (Pointee *));            \
-    }                                                     \
+#  define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)      \
+     BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(Pointee)
+#  else
+#   define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)                     \
+    namespace boost { namespace python {                                        \
+    template<>                                                                  \
+    inline type_info type_id<Pointee>(BOOST_PYTHON_EXPLICIT_TT_DEF(Pointee))    \
+    {                                                                           \
+        return type_info (typeid (Pointee *));                                  \
+    }                                                                           \
+    template<>                                                                  \
+    inline type_info type_id<const volatile Pointee&>(                          \
+        BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile Pointee&))                  \
+    {                                                                           \
+        return type_info (typeid (Pointee *));                                  \
+    }                                                                           \
 }}
-# endif
+#  endif
 # endif	// OPAQUE_POINTER_CONVERTER_HPP_

@@ -11,7 +11,9 @@
 # include <boost/python/tuple.hpp>
 # include <boost/python/dict.hpp>
 # include <boost/python/object/py_function.hpp>
+# include <boost/mpl/vector/vector10.hpp>
 
+# include <boost/limits.hpp>
 # include <cstddef>
 
 namespace boost { namespace python { 
@@ -31,17 +33,25 @@ namespace detail
               ).ptr()
           );
       }
+
    private:
       F f;
   };
 
-  object BOOST_PYTHON_DECL make_raw_function(objects::py_function, std::size_t min_args);
+  object BOOST_PYTHON_DECL make_raw_function(objects::py_function);
 }
 
 template <class F>
 object raw_function(F f, std::size_t min_args = 0)
 {
-    return detail::make_raw_function(detail::raw_dispatcher<F>(f), min_args);
+    return detail::make_raw_function(
+        objects::py_function(
+            detail::raw_dispatcher<F>(f)
+          , mpl::vector1<PyObject*>()
+          , min_args
+          , std::numeric_limits<unsigned>::max()
+        )
+    );
 }
     
 }} // namespace boost::python

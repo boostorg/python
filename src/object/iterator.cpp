@@ -7,19 +7,27 @@
 #include <boost/python/object/iterator_core.hpp>
 #include <boost/python/object/function_object.hpp>
 #include <boost/bind.hpp>
+#include <boost/mpl/vector/vector10.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
-static PyObject* identity(PyObject* args_, PyObject*)
+namespace
 {
-    PyObject* x = PyTuple_GET_ITEM(args_,0);
-    Py_INCREF(x);
-    return x;
+  PyObject* identity(PyObject* args_, PyObject*)
+  {
+      PyObject* x = PyTuple_GET_ITEM(args_,0);
+      Py_INCREF(x);
+      return x;
+  }
 }
 
 BOOST_PYTHON_DECL object const& identity_function()
 {
-    static object result(function_object(&identity, 1));
+    static object result(
+        function_object(
+            py_function(&identity, mpl::vector2<PyObject*,PyObject*>())
+        )
+    );
     return result;
 }
 
