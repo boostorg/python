@@ -131,13 +131,15 @@ namespace detail {
         SigT sig,
         char const* doc)
     {
-        typedef typename mpl::select_type
-        <
-            boost::is_same<void, typename mpl::at<0, SigT>::type>::value,
-            typename StubsT::v_type,
-            typename StubsT::nv_type
-        >
-        ::type stubs_type;
+        typedef typename mpl::at<0, SigT>::type nth_type;
+        typedef typename StubsT::v_type v_type;
+        typedef typename StubsT::nv_type nv_type;
+        
+        typedef typename mpl::select_type<
+            boost::is_same<void, nth_type>::value
+            , v_type
+            , nv_type
+        >::type stubs_type;
 
         BOOST_STATIC_ASSERT(
             (stubs_type::max_args + 1) <= boost::mpl::size<SigT>::value);

@@ -38,7 +38,7 @@ namespace boost { namespace python {
 //      signature<void(C::*)(int) const>    void C::foo(int, int) const
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <typename T>
+template <class T>
 struct signature {};
 
 namespace detail {
@@ -47,42 +47,42 @@ namespace detail {
 //
 //  The following macros generate expansions for:
 //
-//      template <typename RT, typename T0... typename TN>
+//      template <class RT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, T0...TN>
 //      get_signature(signature<RT(*)(T0...TN)>)
 //      {
 //          return boost::mpl::type_list<RT, T0...TN>();
 //      }
 //
-//      template <typename RT, typename T0... typename TN>
+//      template <class RT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, T0...TN>
 //      get_signature(RT(*)(T0...TN))
 //      {
 //          return boost::mpl::type_list<RT, T0...TN>();
 //      }
 //
-//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      template <class RT, class ClassT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, ClassT, T0...TN>
 //      get_signature(signature<RT(ClassT::*)(T0...TN))>)
 //      {
 //          return boost::mpl::type_list<RT, ClassT, T0...TN>();
 //      }
 //
-//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      template <class RT, class ClassT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, ClassT, T0...TN>
 //      get_signature(signature<RT(ClassT::*)(T0...TN) const)>)
 //      {
 //          return boost::mpl::type_list<RT, ClassT const, T0...TN>();
 //      }
 //
-//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      template <class RT, class ClassT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN)))
 //      {
 //          return boost::mpl::type_list<RT, ClassT, T0...TN>();
 //      }
 //
-//      template <typename RT, typename ClassT, typename T0... typename TN>
+//      template <class RT, class ClassT, class T0... class TN>
 //      inline boost::mpl::type_list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN) const))
 //      {
@@ -93,7 +93,7 @@ namespace detail {
 //  and arguments of the input signature and stuffs them in an mpl::type_list.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_TEMPLATE_GEN(INDEX, DATA)  typename BOOST_PP_CAT(T, INDEX)
+#define BPL_IMPL_TEMPLATE_GEN(INDEX, DATA)  class BOOST_PP_CAT(T, INDEX)
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PP_ITERATION_PARAMS_1                                             \
@@ -113,10 +113,10 @@ namespace detail {
 #else // defined(BOOST_PP_IS_ITERATING)
 // PP vertical iteration code
 
-///////////////////////////////////////////////////////////////////////////////
+# if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
 template
 <
-    typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -139,12 +139,9 @@ get_signature
         >();
 }
 
-///////////////////////////////////////
-#if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
-
 template
 <
-    typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -167,12 +164,12 @@ get_signature
         >();
 }
 
-#endif // !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
+# endif // !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
 
 ///////////////////////////////////////
 template
 <
-    typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -196,11 +193,11 @@ get_signature
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#if BOOST_PP_ITERATION() <= (BOOST_PYTHON_MAX_ARITY - 2)
+# if BOOST_PP_ITERATION() <= (BOOST_PYTHON_MAX_ARITY - 2)
 
 template
 <
-    typename RT, typename ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT, class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -223,19 +220,17 @@ get_signature
         ();
 }
 
-///////////////////////////////////////
-template
-<
-    typename RT, typename ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM
-    (
+#  if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
+template <
+    class RT
+    , class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    BOOST_PP_ENUM(
         BOOST_PP_ITERATION(),
         BPL_IMPL_TEMPLATE_GEN,
         BOOST_PP_EMPTY
     )
 >
-inline boost::mpl::type_list
-<
+inline boost::mpl::type_list<
     RT, ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
 >
@@ -249,11 +244,11 @@ get_signature
         BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
     >();
 }
+#  endif 
 
-///////////////////////////////////////
 template
 <
-    typename RT, typename ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT, class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -279,7 +274,7 @@ get_signature
 ///////////////////////////////////////
 template
 <
-    typename RT, typename ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    class RT, class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM
     (
         BOOST_PP_ITERATION(),
@@ -304,6 +299,6 @@ get_signature
     >();
 }
 
-#endif // BOOST_PP_ITERATION() < (BOOST_PYTHON_MAX_ARITY - 2)
+# endif // BOOST_PP_ITERATION() < (BOOST_PYTHON_MAX_ARITY - 2)
 
 #endif // !defined(BOOST_PP_IS_ITERATING)
