@@ -15,11 +15,7 @@ namespace boost { namespace python { namespace converter {
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, undecorated_type_id_t const& x)
 {
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
-    return os << x.m_base_type;
-#  else
-    return os << x.m_base_type->name();
-#  endif 
+    return os << x.name();
 }
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream& os, type_id_t const& x)

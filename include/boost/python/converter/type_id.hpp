@@ -37,24 +37,25 @@ namespace detail
 // which works across shared libraries.
 struct undecorated_type_id_t : totally_ordered<undecorated_type_id_t>
 {
+    undecorated_type_id_t(std::type_info const&);
+    
+    // default constructor needed to build arrays, etc.
+    undecorated_type_id_t();
+
+    bool operator<(undecorated_type_id_t const& rhs) const;
+    bool operator==(undecorated_type_id_t const& rhs) const;
+
+    char const* name() const;
+    friend BOOST_PYTHON_DECL std::ostream& operator<<(
+        std::ostream&, undecorated_type_id_t const&);
+    
+ private: // data members
 #  ifdef BOOST_PYTHON_TYPE_ID_NAME
     typedef char const* base_id_t;
 #  else
     typedef std::type_info const* base_id_t;
 #  endif
     
-    undecorated_type_id_t(base_id_t);
-    
-    // default constructor for use in BGL graph internal properties
-    undecorated_type_id_t() {} 
-
-    bool operator<(undecorated_type_id_t const& rhs) const;
-    bool operator==(undecorated_type_id_t const& rhs) const;
-    
-    friend BOOST_PYTHON_DECL std::ostream& operator<<(
-        std::ostream&, undecorated_type_id_t const&);
-    
- private: // data members
     base_id_t m_base_type;
 };
 
@@ -66,8 +67,10 @@ struct type_id_t : totally_ordered<type_id_t>
 
     bool operator<(type_id_t const& rhs) const;
     bool operator==(type_id_t const& rhs) const;
+
     friend BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
-    
+
+    operator undecorated_type_id_t const&() const;
  private: // type
     typedef undecorated_type_id_t base_id_t;
     
@@ -153,13 +156,7 @@ struct is_reference_to_volatile
 template <class T>
 inline undecorated_type_id_t undecorated_type_id(detail::dummy<T>* = 0)
 {
-    return undecorated_type_id_t(
-#  ifdef BOOST_PYTHON_TYPE_ID_NAME
-        typeid(T).name()
-#  else
-        &typeid(T)
-#  endif
-        );
+    return undecorated_type_id_t(typeid(T));
 }
 
 template <class T>
@@ -177,8 +174,19 @@ inline type_id_t type_id(detail::dummy<T>* = 0)
         );
 }
 
-inline undecorated_type_id_t::undecorated_type_id_t(base_id_t base_t)
-    : m_base_type(base_t)
+inline undecorated_type_id_t::undecorated_type_id_t(std::type_info const& id)
+    : m_base_type(
+#  ifdef BOOST_PYTHON_TYPE_ID_NAME
+        id.name()
+#  else
+        &id
+#  endif
+        )
+{
+}
+
+inline undecorated_type_id_t::undecorated_type_id_t()
+    : m_base_type()
 {
 }
 
@@ -217,6 +225,21 @@ inline bool type_id_t::operator==(type_id_t const& rhs) const
 {
     return m_decoration == rhs.m_decoration && m_base_type == rhs.m_base_type;
 }
+
+inline type_id_t::operator undecorated_type_id_t const&() const
+{
+    return m_base_type;
+}
+
+inline char const* undecorated_type_id_t::name() const
+{
+#  ifdef BOOST_PYTHON_TYPE_ID_NAME
+    return m_base_type;
+#  else
+    return m_base_type->name();
+#  endif 
+}
+
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, undecorated_type_id_t const&);
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_id_t const&);
