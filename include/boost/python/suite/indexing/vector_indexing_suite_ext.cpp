@@ -2,7 +2,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/implicit.hpp>
-#include "container_proxy.hpp"
+#include "container_suite.hpp"
 
 using namespace boost::python;
 
@@ -23,11 +23,6 @@ std::string x_value(X const& x)
     return "gotya " + x.s;
 }
 
-X *get_pointer (container_proxy<std::vector<X> >::value_type const &proxy)
-{
-  return &(*proxy);
-}
-
 BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
 {    
     class_<X>("X")
@@ -35,6 +30,7 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
         .def(init<X>())
         .def(init<std::string>())
         .def("__repr__", &X::repr)
+      .def("__eq__", &X::operator==)
         .def("reset", &X::reset)
         .def("foo", &X::foo)
     ;
@@ -45,12 +41,8 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
     typedef std::vector<X> RawContainer;
     typedef container_proxy<RawContainer> Container;
 
-    boost::python::register_ptr_to_python<Container::value_type>();
-
-    implicitly_convertible<X, Container::value_type>();
-    
     class_<Container>("XVec")
-        .def(vector_indexing_suite<Container, true>())
+        .def(indexing::container_suite<Container>::generate())
     ;
         
     // Compile check only...

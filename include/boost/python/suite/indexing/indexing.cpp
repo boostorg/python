@@ -21,15 +21,27 @@
 // $Id$
 //
 
+#ifndef NEWSTYLE
+# define NEWSTYLE 1
+#endif
+
 #include "container_proxy.hpp"
 #include "IntWrapper.hpp"
+
+#if NEWSTYLE
+#include "container_suite.hpp"
+#endif
 
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/implicit.hpp>
+
+#if !NEWSTYLE
 #include <boost/python/suite/indexing/indexing_suite.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#endif
+
 #include <boost/lexical_cast.hpp>
 
 #include <string>
@@ -57,26 +69,46 @@ void pointer_increment (boost::shared_ptr<IntWrapper> const &ptr)
   (*ptr).increment();
 }
 
-IntWrapper *get_pointer (container_proxy<std::vector<IntWrapper> >::value_type const &proxy)
-{
-  return &(*proxy);
-}
-
 BOOST_PYTHON_MODULE (indexing)
 {
-  boost::python::def ("trace", &IntWrapper::setTrace);
+  boost::python::def ("setTrace", &IntWrapper::setTrace);
 
   typedef std::vector<IntWrapper> Container;
   typedef container_proxy<Container> ProxyContainer;
   typedef boost::shared_ptr<IntWrapper> Pointer;
   typedef std::vector<Pointer> PointerContainer;
 
-  using boost::python::vector_indexing_suite;
+  boost::python::implicitly_convertible <int, IntWrapper>();
 
   //  typedef vector_indexing_suite<Container, true> Suite;
+#if NEWSTYLE
+  typedef boost::python::return_value_policy<boost::python::return_by_value>
+    default_policies;
+
+  // Not really the same thing - returning internal references
+  typedef indexing::visitor
+    <indexing::container_suite<Container>::algorithms
+    , boost::python::return_internal_reference<> > ProxySuite;
+
+  typedef indexing::visitor
+    <indexing::container_suite<ProxyContainer>::algorithms
+    , default_policies> ProxyContainerSuite;
+
+  typedef indexing::visitor
+    <indexing::container_suite<PointerContainer>::algorithms
+    , default_policies> PointerContainerSuite;
+
+#else
+  using boost::python::vector_indexing_suite;
+
   typedef vector_indexing_suite<Container, false> ProxySuite;
   typedef vector_indexing_suite<ProxyContainer, true> ProxyContainerSuite;
   typedef vector_indexing_suite<PointerContainer, true> PointerContainerSuite;
+
+  boost::python::implicitly_convertible <IntWrapper, ProxyContainer::value_type>();
+
+  boost::python::register_ptr_to_python<ProxyContainer::value_type>();
+#endif
 
   boost::python::class_<Container> ("Vector")
     .def (ProxySuite())
@@ -90,20 +122,10 @@ BOOST_PYTHON_MODULE (indexing)
     .def (PointerContainerSuite())
     .def ("reserve", &PointerContainer::reserve);
 
-  boost::python::implicitly_convertible <IntWrapper, ProxyContainer::value_type>();
-
   boost::python::class_<IntWrapper> ("IntWrapper", boost::python::init<int>())
     .def ("increment", &IntWrapper::increment)
     .def ("__repr__", &boost::lexical_cast<std::string, IntWrapper>)
     ;
-
-  // Ultimately, all of the value_type's properties should be provided
-  // via something like register_ptr_to_python with double-dereferencing.
-  //  boost::python::class_<ProxyContainer::value_type> ("Container__value_type", boost::python::init<IntWrapper>())
-  //    .def ("increment", proxy_increment<ProxyContainer>)
-  //    .def ("__repr__", proxy_repr<ProxyContainer>)
-  //    ;
-  boost::python::register_ptr_to_python<ProxyContainer::value_type>();
 
   boost::python::implicitly_convertible <IntWrapper, Pointer>();
 

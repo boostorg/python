@@ -38,28 +38,6 @@ void indexing::slice::validate () const
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Slice constructor
-/////////////////////////////////////////////////////////////////////////////
-
-indexing::slice::slice (boost::python::detail::borrowed_reference ref)
-  : boost::python::object (ref)
-  , mStart (0)
-  , mStep (0)
-  , mStop (0)
-  , mDirection (0)
-{
-  if (!PySlice_Check (this->ptr()))
-    {
-      PyErr_SetString (PyExc_TypeError
-		       , "slice constructor: passed a non-slice object");
-
-      boost::python::throw_error_already_set();
-    }
-
-  // This slice object is useless until setLength is called
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // Set up our member variables for a sequence of a given length
 /////////////////////////////////////////////////////////////////////////////
 

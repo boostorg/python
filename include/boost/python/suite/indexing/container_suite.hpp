@@ -35,12 +35,14 @@ namespace indexing {
   template<class Container, class Algorithms = algo_selector<Container> >
   struct container_suite
   {
+    typedef Algorithms algorithms;
+
     typedef boost::python::return_value_policy<boost::python::return_by_value>
     default_policies;
 
     static visitor<Algorithms, default_policies> generate ()
     {
-      return visitor <Algorithms, default_policies> (default_policies());
+      return visitor <Algorithms, default_policies> ();
     }
 
     template<typename Policy>

@@ -40,6 +40,8 @@ namespace indexing
   {
     static boost::python::object make_getitem (Policy const &);
     static boost::python::object make_setitem (Policy const &);
+    static boost::python::object make_delitem (Policy const &);
+    static boost::python::object make_extend  (Policy const &);
 
   private:
     typedef typename Algorithms::container container;
@@ -47,6 +49,8 @@ namespace indexing
 
     static boost::python::list get_slice (container &, slice);
     static void set_slice (container &, slice, boost::python::object);
+    static void del_slice (container &, slice);
+    static void extend (container &, boost::python::object);
 
     struct postcall_override
     {
@@ -111,7 +115,7 @@ namespace indexing
 		       , typename Algorithms::index_param from
 		       , typename Algorithms::index_param to)
     {
-      Algorithms::erase (c, from, to);
+      Algorithms::erase_range (c, from, to);
     }
   };
 }
@@ -184,6 +188,32 @@ indexing::slice_handler<Algorithms, Policy>
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// Return a function object that implements the slice version of __delitem__
+/////////////////////////////////////////////////////////////////////////////
+
+template<class Algorithms, class Policy>
+boost::python::object
+indexing::slice_handler<Algorithms, Policy>
+::make_delitem (Policy const &policy)
+{
+  // should we try to get funky with policy::precall?
+  return boost::python::make_function (del_slice, policy);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Return a function object that implements extend
+/////////////////////////////////////////////////////////////////////////////
+
+template<class Algorithms, class Policy>
+boost::python::object
+indexing::slice_handler<Algorithms, Policy>
+::make_extend (Policy const &policy)
+{
+  // should we try to get funky with policy::precall?
+  return boost::python::make_function (extend, policy);
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // Implementation for the slice version of __getitem__
 /////////////////////////////////////////////////////////////////////////////
 
@@ -233,7 +263,12 @@ indexing::slice_handler<Algorithms, Policy>
     }
 
   typedef typename Algorithms::container_traits traits;
-  typedef boost::python::extract<typename Algorithms::value_param> extractor;
+
+  // Try two kinds of extractors - the first is more efficient (using
+  // a reference to existing object, if possible and sensible) and the
+  // second allowing implicit conversions.
+  typedef boost::python::extract<typename Algorithms::value_param> extractor1;
+  typedef boost::python::extract<typename Algorithms::value_type> extractor2;
 
   // Note: any error during this operation will probably leave the
   // container partially updated. This can occur (for example) if the
@@ -250,7 +285,17 @@ indexing::slice_handler<Algorithms, Policy>
     {
       if (sl.inRange (index))
 	{
-	  Algorithms::assign (c, index, extractor (iterPtr->current()));
+	  extractor1 ex1 (iterPtr->current());
+
+	  if (ex1.check())
+	    {
+	      Algorithms::assign (c, index, ex1);
+	    }
+
+	  else
+	    {
+	      Algorithms::assign (c, index, extractor2 (iterPtr->current()));
+	    }
 	}
 
       else if (sl.step() != 1)
@@ -266,9 +311,22 @@ indexing::slice_handler<Algorithms, Policy>
 	  // Could optimize this in some cases (i.e. if the length of
 	  // the replacement sequence is known)
 
-	  maybe_insert<traits::has_insert>
-	    ::template apply<Algorithms> (c, index
-					  , extractor (iterPtr->current()));
+	  extractor1 ex1 (iterPtr->current());
+
+	  if (ex1.check())
+	    {
+	      maybe_insert<traits::has_insert>
+		::template apply<Algorithms> (c, index, ex1);
+
+	      Algorithms::assign (c, index, ex1);
+	    }
+
+	  else
+	    {
+	      maybe_insert<traits::has_insert>
+		::template apply<Algorithms>
+		(c, index, extractor2 (iterPtr->current()));
+	    }
 	}
 
       index += sl.step();
@@ -291,6 +349,43 @@ indexing::slice_handler<Algorithms, Policy>
 	    ::template apply<Algorithms> (c, index, sl.stop());
 	}
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Implementation for the slice version of __delitem__
+/////////////////////////////////////////////////////////////////////////////
+
+template<class Algorithms, class Policy>
+void
+indexing::slice_handler<Algorithms, Policy>
+::del_slice (container &c, slice sl)
+{
+  sl.setLength (Algorithms::size (c));   // Current length of our container
+
+  Algorithms::erase_range (c, sl.start(), sl.stop());
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Implementation of extend
+/////////////////////////////////////////////////////////////////////////////
+
+template<class Algorithms, class Policy>
+void
+indexing::slice_handler<Algorithms, Policy>
+::extend (container &c, boost::python::object values)
+{
+  boost::python::object length
+    ((boost::python::detail::new_reference
+      (PyInt_FromLong (Algorithms::size (c)))));
+
+  indexing::slice sl
+    ((boost::python::detail::new_reference
+      (PySlice_New
+       (length.ptr()
+	, boost::python::object().ptr()
+	, boost::python::object().ptr()))));
+
+  set_slice (c, sl, values);
 }
 
 #endif // slice_handler_rmg_20030909_included

@@ -22,14 +22,43 @@
 # $Id$
 #
 
-from testsuite import Array, getArray
+from testsuite import Array, getArray, IntWrapper, setTrace
+
+setTrace (0)
 
 a = getArray()
 
-print a[0], a[1], a[2], [x for x in a], a[0:-2], a[-1:-3:-1], a[0:54:0]
+print a[0], a[1], a[2], [x for x in a], a[0:-2], a[-1:-3:-1]
+
+try:
+    a[0:54:0]
+
+except ValueError, e:
+    print "Got expected ValueError:", e
+    pass
 
 a[1] = 4
 
 print a[0], a[1], a[2], [x for x in a], a[0:-2], a[-1:-3:-1]
 
-print a[0:43]
+print a[0:43] # Try index beyond length
+
+# Try slice assignment with correct length
+a[0:2] = [IntWrapper(-1), IntWrapper(-2)]
+print [x for x in a]
+
+# Try slice assignment with overlong sequence
+try:
+    a[0:1] = [IntWrapper(-1), IntWrapper(-2)]
+
+except TypeError, e:
+    print "Got expected TypeError:", e
+    pass
+
+# Try slice assignment with short sequence
+try:
+    a[0:3] = [IntWrapper(-1), IntWrapper(-2)]
+
+except TypeError, e:
+    print "Got expected TypeError:", e
+    pass

@@ -25,6 +25,7 @@
 #define container_proxy_rmg_20030826_included
 
 #include "shared_proxy_impl.hpp"
+#include "element_proxy.hpp"
 #include <map>
 #include <memory>
 #include <cassert>
@@ -60,139 +61,20 @@ public:
 
   typedef typename Container::value_type raw_value_type;
 
-  struct const_element_proxy;
+  typedef element_proxy<self_type> value_type;
+  typedef value_type               reference;  // Already has ref. semantics
 
-  class element_proxy
-  {
-    friend class const_element_proxy;
-
-    typedef shared_proxy proxy_type;
-    typedef boost::shared_ptr<proxy_type> proxy_pointer;
-
-    proxy_pointer mPtr;
-
-  public:
-    typedef typename proxy_type::value_type value_type;
-    typedef typename proxy_type::reference reference;
-    typedef typename proxy_type::pointer pointer;
-    typedef typename proxy_type::iterator_category iterator_category;
-    typedef typename proxy_type::difference_type difference_type;
-
-    typedef value_type element_type;      // Alias for register_ptr_to_python
-
-    element_proxy () : mPtr () { }
-    explicit element_proxy (proxy_type *ptr) : mPtr (ptr) { }
-    element_proxy (proxy_pointer const &ptr) : mPtr (ptr) { }
-
-    explicit element_proxy (raw_value_type const &val)
-      : mPtr (new proxy_type(val))
-    {
-      // Create new standalone value (i.e. detached)
-    }
-
-    reference operator* () const { return mPtr->operator*(); }
-    pointer operator-> () const { return (*mPtr).operator->(); }
-    pointer get () const { return operator->(); }  // Alias for pointer_holder
-
-    // Implicit conversion to raw_value_type
-    operator reference () const { return operator*(); }
-
-    // These are necessary (at least) while the indexing suite insists
-    // on converting the real container's value_type to the proxy
-    // container's value_type when going from Python to C++. If the
-    // suite would just pass the real container's value_type through,
-    // our implicit conversion to value_type might suffice.
-    bool operator== (value_type const &other) { return (**this) == other; }
-    bool operator!= (value_type const &other) { return (**this) != other; }
-    bool operator< (value_type const &other) { return (**this) < other; }
-    bool operator> (value_type const &other) { return (**this) > other; }
-
-    element_proxy &operator= (value_type const &copy)
-    {
-      proxy_type &proxy (*mPtr);
-      container_proxy *container = proxy.owner();
-      size_type index = proxy.index();
-
-      if (container)
-	{
-	  container->replace (index, copy);
-	  // Proxy was attached before, but is now detached. Make sure
-	  // we now refer to the new element, instead of the detached
-	  // copy of the old element
-	  mPtr = container->at (index).mPtr;
-
-	  // Note: in the special case that this we and the container
-	  // proxy itself have the only references to the
-	  // shared_proxy_impl, it is not necessary to first detach
-	  // the proxy. Maybe best to implement when changing to
-	  // intrusive_ptr instead of shared_ptr.
-	}
-
-      else
-	{
-	  *proxy = copy;
-	}
-
-      return *this;
-    }
-
-    element_proxy &operator= (element_proxy const &copy)
-    {
-      // This is the most dubious bit of the fudge. The indexing_suite's
-      // implementation of __setitem__ tries to pass us our value_type,
-      // which is actually of type element_proxy
-      return (*this) = *copy;
-    }
-
-    size_t use_count() const { return mPtr.use_count(); } // For debugging
-  };
-
-  struct const_element_proxy
-  {
-    typedef shared_proxy proxy_type;
-    typedef boost::shared_ptr<proxy_type> proxy_pointer;
-
-    proxy_pointer mPtr;
-
-  public:
-    typedef typename proxy_type::value_type const value_type;
-    typedef value_type &reference;
-    typedef value_type *pointer;
-    typedef typename proxy_type::iterator_category iterator_category;
-    typedef typename proxy_type::difference_type difference_type;
-
-    const_element_proxy () : mPtr () { }
-    explicit const_element_proxy (proxy_type *ptr) : mPtr (ptr) { }
-    const_element_proxy (proxy_pointer const &ptr) : mPtr (ptr) { }
-    const_element_proxy (element_proxy const &copy) : mPtr (copy.mPtr) { }
-
-    explicit const_element_proxy (raw_value_type const &val)
-      : mPtr (new proxy_type(val))
-    {
-      // Create new standalone value (i.e. detached)
-    }
-
-    reference operator* () const { return mPtr->operator*(); }
-    pointer operator-> () const { return mPtr->operator->(); }
-
-    // Implicit conversion to raw_value_type
-    operator reference () const { return operator*(); }
-
-    size_t use_count() const { return mPtr.use_count(); } // For debugging
-  };
-
-  typedef element_proxy value_type;
-  typedef element_proxy reference;  // Already has reference semantics
-  typedef const_element_proxy const_value_type;
+  typedef const_element_proxy<self_type> const_value_type;
+  typedef const_value_type               const_reference; // Has ref. semantics
 
 public:
   struct iterator
   {
     typedef typename raw_iterator_traits::difference_type difference_type;
     typedef std::random_access_iterator_tag iterator_category;
-    typedef element_proxy value_type;
-    typedef element_proxy *pointer;
-    typedef element_proxy reference;  // Already has reference semantics
+    typedef container_proxy::value_type value_type;
+    typedef value_type *pointer;
+    typedef value_type reference;  // Already has reference semantics
 
     iterator (container_proxy *p, size_type i) : ptr (p), index (i) { }
 
@@ -246,11 +128,11 @@ public:
   Container &      container();         // Should be private?
   Container const &container() const;   // Should be private?
 
-  element_proxy       at (size_type index);
-  const_element_proxy at (size_type index) const;
+  reference       at (size_type index);
+  const_reference at (size_type index) const;
 
-  element_proxy       operator[] (size_type index)       { return at(index); }
-  const_element_proxy operator[] (size_type index) const { return at(index); }
+  reference       operator[] (size_type index)       { return at(index); }
+  const_reference operator[] (size_type index) const { return at(index); }
 
   size_type size() const { return container().size(); }
   size_type capacity() const { return container().capacity(); }
@@ -267,8 +149,8 @@ public:
 
   void push_back (raw_value_type const &copy) { insert (end(), copy); }
 
-  element_proxy pop_back () {
-    element_proxy result = at (end() - 1);
+  value_type pop_back () {
+    value_type result = at (end() - 1);
     erase (end() - 1);
     return result;
   }
@@ -378,7 +260,7 @@ container_proxy<Container, HeldType, Accessor>
 }
 
 template<class Container, typename HeldType, class Accessor>
-typename container_proxy<Container, HeldType, Accessor>::element_proxy
+typename container_proxy<Container, HeldType, Accessor>::reference
 container_proxy<Container, HeldType, Accessor>
 ::at (size_type index)
 {
@@ -389,11 +271,11 @@ container_proxy<Container, HeldType, Accessor>
       entry.reset (new shared_proxy (this, index));
     }
 
-  return element_proxy (entry);
+  return reference (entry);
 }
 
 template<class Container, typename HeldType, class Accessor>
-typename container_proxy<Container, HeldType, Accessor>::const_element_proxy
+typename container_proxy<Container, HeldType, Accessor>::const_reference
 container_proxy<Container, HeldType, Accessor>
 ::at (size_type index) const
 {
@@ -403,7 +285,7 @@ container_proxy<Container, HeldType, Accessor>
 
   container_proxy *mutable_this = const_cast<container_proxy *>(this);
 
-  return const_element_proxy (mutable_this->at (index));
+  return const_reference (mutable_this->at (index));
 }
 
 template<class Container, typename HeldType, class Accessor>

@@ -36,6 +36,7 @@
 #include <boost/python/implicit.hpp>
 
 #include "iterator_pair.hpp"
+#include "container_proxy.hpp"
 
 indexing::iterator_pair<IntWrapper *> getArray()
 {
@@ -63,7 +64,8 @@ BOOST_PYTHON_MODULE(testsuite)
 
   boost::python::class_<IntWrapper> ("IntWrapper", boost::python::init<int>())
     .def ("increment", &IntWrapper::increment)
-    .def ("__repr__", repr);
+    .def ("__repr__", repr)
+    .def ("__cmp__", compare)
     ;
 
   typedef std::vector<int> Container1;
@@ -96,4 +98,9 @@ BOOST_PYTHON_MODULE(testsuite)
   // deletes!
   boost::python::class_<Container5>("Vector_ref")
     .def (indexing::container_suite<Container5>::generate (boost::python::return_internal_reference<>()));
+
+  typedef container_proxy<std::vector<IntWrapper> > Container6;
+
+  boost::python::class_<Container6>("Vector_proxy")
+    .def (indexing::container_suite<Container6>::generate ());
 }

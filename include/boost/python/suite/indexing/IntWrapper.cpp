@@ -121,6 +121,24 @@ bool operator< (IntWrapper const &lhs, IntWrapper const &rhs)
   return lhs.mI < rhs.mI;
 }
 
+int compare (IntWrapper const &lhs, IntWrapper const &rhs)
+{
+  if (lhs < rhs)
+    {
+      return -1;
+    }
+
+  else if (rhs < lhs)
+    {
+      return 1;
+    }
+
+  else
+    {
+      return 0;
+    }
+}
+
 std::ostream &operator<< (std::ostream &strm, IntWrapper const &iw)
 {
   strm << iw.mI;

@@ -22,18 +22,60 @@
 # $Id$
 #
 
-from testsuite import Vector
+from testsuite import Vector, Vector_ref, setTrace
 
-v = Vector()
+def test_vector(v):
+    v.append(1)
+    v.append(2)
+    v.append(3)
 
-v.append(1)
-v.append(2)
-v.append(3)
+    print v[0], v[1], v[2], [x for x in v]
 
-print v[0], v[1], v[2], [x for x in v]
+    v[1] = 4
 
-v[1] = 4
+    print v[0], v[1], v[2], [x for x in v], v[0:2]
 
-print v[0], v[1], v[2], [x for x in v]
+    # Try slice assignment with equal lengths
+    v[0:2] = [9, 8]
+    print [x for x in v]
 
-print v[0:2]
+    # Try slice assignment with shorter replacement
+    v[0:2] = [7]
+    print [x for x in v]
+
+    # Try slice assignment with longer replacement
+    v[0:1] = [6, 5, 4]
+    print [x for x in v]
+
+    # Try element deletion
+    del v[0]
+    print [x for x in v]
+
+    # Try slice deletion
+    del v[0:2]
+    print [x for x in v]
+
+    try:
+        del v[3]
+
+    except IndexError, e:
+        print "Got expected exception:", e
+
+    print [x for x in v]
+
+    del v[0:999]
+    print [x for x in v]
+
+    v.append (3)
+    print v[0]
+    del v[:]
+    print [x for x in v]
+
+print "Plain vector:"
+print "============="
+test_vector (Vector())
+
+print "Ref vector:"
+print "==========="
+setTrace(0)
+test_vector (Vector_ref())

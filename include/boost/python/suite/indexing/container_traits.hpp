@@ -2,6 +2,9 @@
 //
 // Header file container_traits.hpp
 //
+// Traits information about entire containers for use in determining
+// what Python methods to support for a container.
+//
 // Copyright (c) 2003 Raoul M. Gough
 //
 // This material is provided "as is", with absolutely no warranty expressed
@@ -26,75 +29,77 @@
 #define container_traits_rmg_20030823_included
 
 #include "suite_utils.hpp"
-#include "iterator_suite.hpp"
+#include "iterator_traits.hpp"
+#include "value_traits.hpp"
 #include <boost/type_traits.hpp>
 
 namespace indexing {
+  /////////////////////////////////////////////////////////////////////////
+  // Lowest common denominator traits - applicable to real containers
+  // and iterator pairs
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename Container>
+  struct base_container_traits
+    : public iterator_detail::traits_by_category<typename Container::iterator>
+  ::type
+  {
+  protected:
+    typedef typename
+      iterator_detail::traits_by_category<typename Container::iterator>
+      ::type base_type;
+
+    BOOST_STATIC_CONSTANT (bool,   is_mutable
+			   = ! boost::is_const<Container>::value);
+
+  public:
+    typedef Container container;
+
+    typedef typename container::size_type  size_type;
+    typedef typename container::size_type  index_type; // at(), operator[]
+    typedef typename base_type::value_type key_type;   // find, count, ...
+
+    // *FIXME* should probably override the typedefs for iterator,
+    // value_type and reference with the const versions if !is_mutable
+
+    typedef value_traits<typename base_type::value_type> value_traits_;
+
+    BOOST_STATIC_CONSTANT (bool,   has_mutable_ref
+			   = base_type::has_mutable_ref && is_mutable);
+
+    BOOST_STATIC_CONSTANT (bool,   has_find
+			   = value_traits_::equality_comparable);
+
+    // Assume the worst for everything else
+    BOOST_STATIC_CONSTANT (bool,   has_insert         = false);
+    BOOST_STATIC_CONSTANT (bool,   has_erase          = false);
+    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = false);
+    BOOST_STATIC_CONSTANT (bool,   has_push_back      = false);
+
+    // Forward visitor_helper to value_traits_
+    template<typename PythonClass, typename Policy>
+    static void visitor_helper (PythonClass &, Policy const &);
+  };
+
   /////////////////////////////////////////////////////////////////////////
   // Traits for the iterator_pair container emulator
   /////////////////////////////////////////////////////////////////////////
 
   template<typename IteratorPair>
-  struct iterator_pair_traits
-    : public
-    iterator_detail::traits_by_category<typename IteratorPair::iterator>::type
+  struct iterator_pair_traits : public base_container_traits<IteratorPair>
   {
-    typedef IteratorPair container;
-    typedef typename IteratorPair::size_type        size_type;
-    typedef typename IteratorPair::size_type        index_type; // at()
-
-    static bool const has_insert         = false;
-    static bool const has_erase          = false;
-    static bool const has_pop_back       = false;
-    static bool const has_push_back      = false;
   };
 
   /////////////////////////////////////////////////////////////////////////
-  // Lowest common denominator (almost all "real" containers would
-  // meet at least these requirements)
+  // Default container traits - almost all "real" containers would meet
+  // at least these requirements
   /////////////////////////////////////////////////////////////////////////
 
   template<typename Container>
-  struct default_container_traits
+  struct default_container_traits : public base_container_traits<Container>
   {
-  protected:
-    static bool const is_mutable = ! boost::is_const<Container>::value;
-
-  public:
-    typedef Container container;
-
-    // *FIXME* should use value_type const and const_reference if !is_mutable
-    typedef typename Container::value_type       value_type;
-    typedef typename Container::reference        reference;
-
-    typedef typename Container::difference_type  difference_type;
-    typedef typename Container::size_type        size_type;
-    typedef typename Container::size_type        index_type; // at()
-    typedef value_type                           key_type; // find, count, ...
-
-    // Should probably select iterator or const_iterator on the
-    // basis of is_mutable
-    typedef typename Container::iterator         iterator;
-    typedef typename Container::const_iterator   const_iterator;
-
-    static bool const has_copyable_iter  = true;
-
-    static IndexStyle const index_style
-      = ::indexing::iterator_traits<iterator>::index_style;
-
-    static bool const has_mutable_ref
-      = is_mutable && is_mutable_ref<reference>::value;
-
-    // has_mutable_ref basically means that the container supports
-    // in-place replacement of values (e.g. the associative containers
-    // *don't*)
-
-    static bool const is_reversible      = has_mutable_ref;
-
-    static bool const has_insert         = is_mutable;
-    static bool const has_erase          = is_mutable;
-    static bool const has_pop_back       = false;
-    static bool const has_push_back      = false;
+    BOOST_STATIC_CONSTANT (bool,   has_insert         = is_mutable);
+    BOOST_STATIC_CONSTANT (bool,   has_erase          = is_mutable);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -104,8 +109,25 @@ namespace indexing {
   template<typename Container>
   struct default_sequence_traits : public default_container_traits<Container>
   {
-    static bool const has_pop_back       = is_mutable;
-    static bool const has_push_back      = is_mutable;
+    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = is_mutable);
+    BOOST_STATIC_CONSTANT (bool,   has_push_back      = is_mutable);
+  };
+
+  /////////////////////////////////////////////////////////////////////////
+  // Sequences within a container_proxy
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename Container>
+  struct container_proxy_traits : public default_sequence_traits<Container>
+  {
+    typedef Container container;
+    typedef typename container::raw_value_type value_type; // insert, ...
+    typedef typename container::raw_value_type key_type;   // find, count, ...
+    typedef typename container::reference reference;       // return values
+
+    typedef value_traits<reference> value_traits_;
+    // Get value_traits for the reference type (i.e. element_proxy)
+    // to get the custom visitor_helper
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -115,7 +137,8 @@ namespace indexing {
   template<typename Container>
   struct set_traits : public default_container_traits<Container>
   {
-    static IndexStyle const index_style = index_style_nonlinear;
+    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
+    BOOST_STATIC_CONSTANT (bool,   has_find    = true);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -131,8 +154,22 @@ namespace indexing {
     typedef typename Container::key_type    index_type; // at()
     typedef typename Container::key_type    key_type; // find, count, ...
 
-    static IndexStyle const index_style = index_style_nonlinear;
+    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
+    BOOST_STATIC_CONSTANT (bool,   has_find    = true);
   };
+}
+
+/////////////////////////////////////////////////////////////////////////
+// Visitor helper function (foward to value_traits_ version)
+/////////////////////////////////////////////////////////////////////////
+
+template<typename Container>
+template<typename PythonClass, typename Policy>
+void
+indexing::base_container_traits<Container>
+::visitor_helper (PythonClass &pyClass, Policy const &policy)
+{
+  value_traits_::visitor_helper (pyClass, policy);
 }
 
 #endif // container_suite_rmg_20030823_included

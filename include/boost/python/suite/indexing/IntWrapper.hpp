@@ -48,6 +48,7 @@ struct IntWrapper {
 
 bool operator== (IntWrapper const &lhs, IntWrapper const &rhs);
 bool operator< (IntWrapper const &lhs, IntWrapper const &rhs);
+int compare (IntWrapper const &lhs, IntWrapper const &rhs);
 std::ostream &operator<< (std::ostream &strm, IntWrapper const &iw);
 
 #endif // IntWrapper_rmg_20030910_included

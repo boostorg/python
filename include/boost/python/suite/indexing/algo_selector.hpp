@@ -33,6 +33,7 @@
 
 // Definitions of supported types
 #include "iterator_pair.hpp"
+#include "container_proxy.hpp"
 #include <set>
 #include <map>
 #include <list>
@@ -159,6 +160,20 @@ namespace indexing {
 
       typedef iterator_pair_traits<Container>       mutable_traits;
       typedef iterator_pair_traits<Container const> const_traits; // ?
+
+    public:
+      typedef default_algorithms<mutable_traits> mutable_algorithms;
+      typedef default_algorithms<const_traits>   const_algorithms;
+    };
+
+    // Container proxies
+    template <typename RawContainer>
+    class selector_impl<container_proxy<RawContainer> >
+    {
+      typedef container_proxy<RawContainer> Container;
+
+      typedef container_proxy_traits<Container>       mutable_traits;
+      typedef container_proxy_traits<Container const> const_traits;
 
     public:
       typedef default_algorithms<mutable_traits> mutable_algorithms;
