@@ -9,6 +9,8 @@
 # include <boost/python/make_function.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/composite_traits.hpp>
+# include <boost/type_traits/transform_traits.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
 # include <boost/mpl/select_type.hpp>
 
 namespace boost { namespace python { namespace detail { 
@@ -21,39 +23,16 @@ namespace boost { namespace python { namespace detail {
 // function pointer or function type, should produce a callable Python
 // object.
 
-template <bool needs_wrapping>
-struct wrap_function_select
-{
-    template <class F>
-    static objects::function* execute(F f)
-    {
-        return make_function(f);
-    }
-};
+template <class F>
+inline PyObject* wrap_function_aux(F f, PyObject*) { return f; }
 
-template<>
-struct wrap_function_select<false>
-{
-    template <class F>
-    static F execute(F f)
-    {
-        return f;
-    }
-};
+template <class F>
+inline PyObject* wrap_function_aux(F f, ...) { return make_function(f); }
 
 template <class F>
 PyObject* wrap_function(F f)
 {
-    return wrap_function_select<
-# if 1
-        type_traits::ice_not<
-                is_pointer<F>::value
-# else 
-              type_traits::ice_or<
-                 is_function<F>::value
-                 , is_member_function_pointer<F>::value
-# endif 
-        >::value >::execute(f);
+    return wrap_function_aux(f, f);
 }
 
 }}} // namespace boost::python::detail
