@@ -49,6 +49,11 @@ struct BOOST_PYTHON_DECL registration
 
     // The unique to_python converter for the associated C++ type.
     to_python_function_t m_to_python;
+    
+# if defined(__MWERKS__) && __MWERKS__ <= 0x3003
+ private:
+    void operator=(registration); // This is not defined, and just keeps MWCW happy.
+# endif 
 };
 
 //
