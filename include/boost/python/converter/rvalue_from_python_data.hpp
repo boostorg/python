@@ -89,8 +89,10 @@ struct rvalue_from_python_storage
 template <class T>
 struct rvalue_from_python_data : rvalue_from_python_storage<T>
 {
+# if !defined(__MWERKS__) || __MWERKS__ >= 0x3000
     // This must always be a POD struct with m_data its first member.
     BOOST_STATIC_ASSERT(offsetof(rvalue_from_python_storage<T>,stage1) == 0);
+# endif
     
     // The usual constructor 
     rvalue_from_python_data(rvalue_from_python_stage1_data const&);
