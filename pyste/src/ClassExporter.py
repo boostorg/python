@@ -366,10 +366,11 @@ class ClassExporter(Exporter):
     }
 
     # converters which has a special name in python
-    SPECIAL_CONVETERS = {
+    SPECIAL_CONVERTERS = {
         'double' : '__float__',
         'float' : '__float__',
         'int' : '__int__',
+        'long' : '__long__',
     }
         
     
@@ -480,12 +481,15 @@ class ClassExporter(Exporter):
         # export them as simple functions with a pre-determined name
 
         converters = [x for x in self.public_members if type(x) == ConverterOperator]
-        
+                
         def ConverterMethodName(converter):
             result_fullname = converter.result.name
-            # extract the last name from the full name
-            result_name = _ID(result_fullname.split('::')[-1])
-            return 'to_' + result_name
+            if result_fullname in self.SPECIAL_CONVERTERS:
+                return self.SPECIAL_CONVERTERS[result_fullname]
+            else:
+                # extract the last name from the full name
+                result_name = _ID(result_fullname.split('::')[-1])
+                return 'to_' + result_name
             
         for converter in converters:
             info = self.info['operator'][converter.result.name]

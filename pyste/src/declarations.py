@@ -445,8 +445,20 @@ class Typedef(Declaration):
         self.visibility = Scope.public
 
 
+class Union(Declaration):
+    'Shallow declaration, because Unions are not supported yet'    
+    def __init__(self, name, namespace):
+        Declaration.__init__(self, name, namespace)
 
 
+class ClassUnion(Union):
 
+    def __init__(self, name, class_, visib):
+        Union.__init__(self, name, None)
+        self.class_ = class_
+        self.visibility = visib            
+
+    def FullName(self):
+        return '%s::%s' % (self.class_, self.name)
 
 
