@@ -103,7 +103,9 @@ template <class T>
 struct arg_rvalue_from_python
 {
     typedef typename boost::add_reference<
-        typename boost::add_const<T>::type
+        T
+        // We can't add_const here, or it would be impossible to pass
+        // auto_ptr<U> args from Python to C++
     >::type result_type;
     
     arg_rvalue_from_python(PyObject*);

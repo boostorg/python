@@ -11,6 +11,7 @@
 # include <boost/python/pointee.hpp>
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
+# include <boost/python/object/class_wrapper.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/make_instance.hpp>
 # include <boost/python/object/instance.hpp>
@@ -97,7 +98,7 @@ namespace detail
       static inline void register_(mpl::bool_c<false>)
       {
           python::detail::force_instantiate(
-              objects::class_wrapper<
+              objects::class_value_wrapper<
                 Ptr
                 , type
                 , make_instance<T,type> >());

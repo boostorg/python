@@ -6,9 +6,7 @@
 #ifndef CLASS_CONVERTERS_DWA2002119_HPP
 # define CLASS_CONVERTERS_DWA2002119_HPP
 
-# include <boost/python/object/class_wrapper.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/python/handle.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/inheritance.hpp>

@@ -44,6 +44,10 @@ using boost::python::handle;
 using boost::python::object;
 using boost::python::borrowed;
 
+// MSVC6 can't process this whole file at once, so we break it up into
+// two parts. See test_builtin_converters2.cpp
+#ifndef BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS
+
 // Used to test that arbitrary handle<>s can be returned
 handle<PyTypeObject> get_type(handle<> x)
 {
@@ -56,6 +60,8 @@ handle<> return_null_handle()
 }
 
 char const* rewrap_value_mutable_cstring(char* x) { return x; }
+
+void wrap_more();
 
 BOOST_PYTHON_MODULE(builtin_converters)
 {
@@ -74,10 +80,10 @@ BOOST_PYTHON_MODULE(builtin_converters)
     def("rewrap_value_unsigned_long", by_value<unsigned long>::rewrap);
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
-#ifdef HAVE_LONG_LONG
+# ifdef HAVE_LONG_LONG
     def("rewrap_value_long_long", by_value<LONG_LONG>::rewrap);
     def("rewrap_value_unsigned_long_long", by_value<unsigned LONG_LONG>::rewrap);
-#endif 
+# endif 
     def("rewrap_value_float", by_value<float>::rewrap);
     def("rewrap_value_double", by_value<double>::rewrap);
     def("rewrap_value_long_double", by_value<long double>::rewrap);
@@ -92,6 +98,14 @@ BOOST_PYTHON_MODULE(builtin_converters)
         // Expose this to illustrate our failings ;-). See test_builtin_converters.py
     def("rewrap_value_mutable_cstring", rewrap_value_mutable_cstring);
 
+    wrap_more();
+}
+
+#else // BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS -- this part
+      // compiled into test_builtin_converters2.cpp
+
+void wrap_more()
+{
 
     def("rewrap_const_reference_bool", by_const_reference<bool>::rewrap);
     def("rewrap_const_reference_char", by_const_reference<char>::rewrap);
@@ -105,10 +119,10 @@ BOOST_PYTHON_MODULE(builtin_converters)
     def("rewrap_const_reference_unsigned_long", by_const_reference<unsigned long>::rewrap);
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
-#ifdef HAVE_LONG_LONG
+# ifdef HAVE_LONG_LONG
     def("rewrap_const_reference_long_long", by_const_reference<LONG_LONG>::rewrap);
     def("rewrap_const_reference_unsigned_long_long", by_const_reference<unsigned LONG_LONG>::rewrap);
-#endif
+# endif
     def("rewrap_const_reference_float", by_const_reference<float>::rewrap);
     def("rewrap_const_reference_double", by_const_reference<double>::rewrap);
     def("rewrap_const_reference_long_double", by_const_reference<long double>::rewrap);
@@ -123,4 +137,6 @@ BOOST_PYTHON_MODULE(builtin_converters)
 
     def("rewrap_reference_object", by_reference<object>::rewrap);
 }
+
+#endif // BOOST_PYTHON_WRAP_MORE_BUILTIN_CONVERTERS
 

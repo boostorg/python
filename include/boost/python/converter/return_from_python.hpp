@@ -11,9 +11,11 @@
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
 # include <boost/python/detail/void_ptr.hpp>
-# include <boost/call_traits.hpp>
 # include <boost/python/detail/void_return.hpp>
 # include <boost/python/errors.hpp>
+# include <boost/type_traits/has_trivial_copy.hpp>
+# include <boost/mpl/logical/and.hpp>
+# include <boost/mpl/bool_c.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -38,7 +40,14 @@ namespace detail
   template <class T>
   struct return_rvalue_from_python
   {
-      typedef typename call_traits<T>::param_type result_type;
+      typedef typename mpl::if_<
+          mpl::logical_and<
+            has_trivial_copy<T>, mpl::bool_c<(sizeof(T) <= 2 * sizeof(double))>
+          >
+          , T
+          , T&
+      >::type result_type;
+
       return_rvalue_from_python();
       result_type operator()(PyObject*);
    private:

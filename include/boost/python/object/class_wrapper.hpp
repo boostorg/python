@@ -13,14 +13,27 @@ namespace boost { namespace python { namespace objects {
 
 // Used to convert objects of type Src to wrapped C++ classes by
 // building a new instance object and installing a Holder constructed
-// from the Src object.
+// from a Src const&.
 template <class Src, class Holder, class MakeInstance>
 struct class_wrapper
     : to_python_converter<Src,class_wrapper<Src,Holder,MakeInstance> >
 {
     static PyObject* convert(Src const& x)
     {
-        return MakeInstance::execute(cref(x));
+        return MakeInstance::execute(boost::ref(x));
+    }
+};
+
+// Used to convert objects of type Src to wrapped C++ classes by
+// building a new instance object and installing a Holder constructed
+// from a Src value.
+template <class Src, class Holder, class MakeInstance>
+struct class_value_wrapper
+    : to_python_converter<Src,class_value_wrapper<Src,Holder,MakeInstance> >
+{
+    static PyObject* convert(Src x)
+    {
+        return MakeInstance::execute(x);
     }
 };
 

@@ -16,7 +16,6 @@
 #  include <boost/python/object/inheritance.hpp>
 #  include <boost/python/object/find_instance.hpp>
 #  include <boost/python/object/forward.hpp>
-#  include <boost/python/object/class_wrapper.hpp>
 #  include <boost/python/pointee.hpp>
 #  include <boost/python/detail/force_instantiate.hpp>
 #  include <boost/python/detail/preprocessor.hpp>

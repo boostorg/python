@@ -55,15 +55,19 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+bpl-test auto_ptr ;
 bpl-test minimal ;
 bpl-test args ;
 bpl-test numpy ;
 bpl-test enum ;
-bpl-test docstring ;
 bpl-test exception_translator ;
 bpl-test pearu1 : test_cltree.py cltree.cpp ;
 bpl-test try : newtest.py m1.cpp m2.cpp ;
-bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters.cpp ;
+
+# Had to break this up into two files for MSVC6
+extension builtin_converters : test_builtin_converters.cpp test_builtin_converters2.cpp <dll>../build/boost_python ;
+boost-python-runtest builtin_converters : test_builtin_converters.py <pyd>builtin_converters  ;
+
 bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
@@ -111,6 +115,8 @@ bpl-test pickle2 ;
 bpl-test pickle3 ;
 
 bpl-test nested ;
+
+bpl-test docstring ;
 
 if $(TEST_BIENSTMAN_NON_BUGS)
 {
@@ -161,11 +167,9 @@ run select_arg_to_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/
   : $(UNIT_TEST_PROPERTIES)
     ;
 
-if $(TEST_EXPECTED_FAILURES)
-{
-    compile-fail ./raw_pyobject_fail1.cpp : $(PYTHON_PROPERTIES) ;
-    compile-fail ./raw_pyobject_fail2.cpp : $(PYTHON_PROPERTIES) ;
-    compile-fail ./object_fail1.cpp : $(PYTHON_PROPERTIES) ;
-}
+compile-fail ./raw_pyobject_fail1.cpp : $(PYTHON_PROPERTIES) ;
+compile-fail ./raw_pyobject_fail2.cpp : $(PYTHON_PROPERTIES) ;
+compile-fail ./as_to_python_function.cpp : $(PYTHON_PROPERTIES) ;
+compile-fail ./object_fail1.cpp : $(PYTHON_PROPERTIES) ;
 
 
