@@ -143,7 +143,7 @@ class PyExtensionClassConverters
     // Get an object which can be used to convert T to/from python. This is used
     // as a kind of concept check by the global template
     //
-    //     from_python(PyObject*,  py::Type<const T&>)
+    //     PyObject* to_python(const T& x)
     //
     // below this class, to prevent the confusing messages that would otherwise
     // pop up. Now, if T hasn't been wrapped as an extension class, the user
@@ -160,7 +160,7 @@ class PyExtensionClassConverters
     // a compiler error. Instead, we access this function through the global
     // template 
     //
-    //     from_python(PyObject*,  py::Type<const T&>)
+    //     PyObject* to_python(const T& x)
     //
     // defined below this class. Since template functions are instantiated only
     // on demand, errors will be avoided unless T is noncopyable and the user
