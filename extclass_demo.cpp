@@ -39,9 +39,9 @@ int FooCallback::default_add_len(const Foo* self, const char* x)
 // Since Foo::pure() is pure virtual, we don't need a corresponding
 // default_pure(). A failure to override it in Python will result in an
 // exception at runtime when pure() is called.
-const char* FooCallback::pure() const
+std::string FooCallback::pure() const
 {
-    return py::Callback<const char*>::call_method(m_self, "pure");
+    return py::Callback<std::string>::call_method(m_self, "pure");
 }
 
 // The initializer for ExtensionClass<Foo,FooCallback> is entirely optional. It
@@ -201,7 +201,7 @@ public:
     DerivedFromFoo(int x) : Foo(x) {}
     
 private:
-    const char* pure() const
+    std::string pure() const
         { return "this was never pure!"; }
     
     int add_len(const char*) const
@@ -227,7 +227,7 @@ void Foo::set(long x)
     m_x = x;
 }
 
-const char* Foo::call_pure()
+std::string Foo::call_pure()
 {
     return this->pure();
 }
@@ -362,7 +362,7 @@ struct OverloadTest
     int x_;
 };
 
-static int getX(OverloadTest * u)
+static int getX(OverloadTest* u)
 {
     return u->x();
 }
@@ -406,7 +406,7 @@ struct Derived2 : public Dummy, public Base
     int x_;
 };
 
-static int testUpcast(Base * b)
+static int testUpcast(Base* b)
 {
     return b->x();
 }
@@ -421,12 +421,12 @@ static std::auto_ptr<Base> derived2Factory(int i)
     return std::auto_ptr<Base>(new Derived2(i));
 }
 
-static int testDowncast1(Derived1 * d)
+static int testDowncast1(Derived1* d)
 {
     return d->x();
 }
 
-static int testDowncast2(Derived2 * d)
+static int testDowncast2(Derived2* d)
 {
     return d->x();
 }
@@ -466,19 +466,19 @@ struct CallbackTestCallback : public CallbackTest
     return py::Callback<std::string>::call_method(m_self, "callback", x); 
   }
 
-  static int default_callback(CallbackTest * self, int x) 
+  static int default_callback(CallbackTest* self, int x) 
   { 
     return self->CallbackTest::callback(x); 
   }
-  static std::string default_callbackString(CallbackTest * self, std::string x) 
+  static std::string default_callbackString(CallbackTest* self, std::string x) 
   { 
     return self->CallbackTest::callbackString(x); 
   }
   
-  PyObject * m_self;
+  PyObject* m_self;
 };
 
-int testCallback(CallbackTestBase * b, int i)
+int testCallback(CallbackTestBase* b, int i)
 {
     return b->testCallback(i);
 }
@@ -492,32 +492,32 @@ int testCallback(CallbackTestBase * b, int i)
 
 struct A1 {
     virtual ~A1() {}
-    virtual const char* overrideA1() const { return "A1::overrideA1"; }
-    virtual const char* inheritA1() const { return "A1::inheritA1"; }
+    virtual std::string overrideA1() const { return "A1::overrideA1"; }
+    virtual std::string inheritA1() const { return "A1::inheritA1"; }
 };
 
 struct A2 {
     virtual ~A2() {}
-    virtual const char* inheritA2() const { return "A2::inheritA2"; }
+    virtual std::string inheritA2() const { return "A2::inheritA2"; }
 };
 
 struct B1 : A1, A2 {
-    const char* overrideA1() const { return "B1::overrideA1"; }
-    virtual const char* overrideB1() const { return "B1::overrideB1"; }
+    std::string overrideA1() const { return "B1::overrideA1"; }
+    virtual std::string overrideB1() const { return "B1::overrideB1"; }
 };
 
 struct B2 : A1, A2 {
-    const char* overrideA1() const { return "B2::overrideA1"; }
-    virtual const char* inheritB2() const { return "B2::inheritB2"; }
+    std::string overrideA1() const { return "B2::overrideA1"; }
+    virtual std::string inheritB2() const { return "B2::inheritB2"; }
 };
 
 struct C : B1 {
-    const char* overrideB1() const { return "C::overrideB1"; }
+    std::string overrideB1() const { return "C::overrideB1"; }
 };
 
-const char* call_overrideA1(const A1& a) { return a.overrideA1(); }
-const char* call_overrideB1(const B1& b) { return b.overrideB1(); }
-const char* call_inheritA1(const A1& a) { return a.inheritA1(); }
+std::string call_overrideA1(const A1& a) { return a.overrideA1(); }
+std::string call_overrideB1(const B1& b) { return b.overrideB1(); }
+std::string call_inheritA1(const A1& a) { return a.inheritA1(); }
 
 std::auto_ptr<A1> factoryA1asA1() { return std::auto_ptr<A1>(new A1); }
 std::auto_ptr<A1> factoryB1asA1() { return std::auto_ptr<A1>(new B1); }
@@ -531,11 +531,11 @@ std::auto_ptr<B1> factoryCasB1() { return std::auto_ptr<B1>(new C); }
 struct B_callback : B1 {
    B_callback(PyObject* self) : m_self(self) {}
    
-   const char* overrideA1() const { return py::Callback<const char *>::call_method(m_self, "overrideA1"); }
-   const char* overrideB1() const { return py::Callback<const char *>::call_method(m_self, "overrideB1"); }
+   std::string overrideA1() const { return py::Callback<std::string>::call_method(m_self, "overrideA1"); }
+   std::string overrideB1() const { return py::Callback<std::string>::call_method(m_self, "overrideB1"); }
    
-   static const char* default_overrideA1(B1& x) { return x.B1::overrideA1(); }
-   static const char* default_overrideB1(B1& x) { return x.B1::overrideB1(); }
+   static std::string default_overrideA1(B1& x) { return x.B1::overrideA1(); }
+   static std::string default_overrideB1(B1& x) { return x.B1::overrideB1(); }
    
    PyObject* m_self;
 };
@@ -543,11 +543,11 @@ struct B_callback : B1 {
 struct A_callback : A1 {
    A_callback(PyObject* self) : m_self(self) {}
    
-   const char* overrideA1() const { return py::Callback<const char *>::call_method(m_self, "overrideA1"); }
-   const char* inheritA1() const { return py::Callback<const char *>::call_method(m_self, "inheritA1"); }
+   std::string overrideA1() const { return py::Callback<std::string>::call_method(m_self, "overrideA1"); }
+   std::string inheritA1() const { return py::Callback<std::string>::call_method(m_self, "inheritA1"); }
    
-   static const char* default_overrideA1(A1& x) { return x.A1::overrideA1(); }
-   static const char* default_inheritA1(A1& x) { return x.A1::inheritA1(); }
+   static std::string default_overrideA1(A1& x) { return x.A1::overrideA1(); }
+   static std::string default_inheritA1(A1& x) { return x.A1::inheritA1(); }
    
    PyObject* m_self;
 };
@@ -566,9 +566,9 @@ struct RawTest
     int i_;
 };
 
-PyObject * raw(py::Tuple const & args, py::Dict const & keywords);
+PyObject* raw(py::Tuple const & args, py::Dict const & keywords);
 
-int raw1(PyObject * args, PyObject * keywords)
+int raw1(PyObject* args, PyObject* keywords)
 {
     return PyTuple_Size(args) + PyDict_Size(keywords);
 }
@@ -762,9 +762,8 @@ struct EnumOwner
 }
 
 namespace py {
-template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
-
-using extclass_demo::pow;
+  template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
+  using extclass_demo::pow;
 }
 
 // This is just a way of getting the converters instantiated
@@ -774,6 +773,55 @@ using extclass_demo::pow;
 //};
 
 namespace extclass_demo {
+
+/************************************************************/
+/*                                                          */
+/*                       pickling support                   */
+/*                                                          */
+/************************************************************/
+  class world
+  {
+    private:
+      std::string country;
+      int secret_number;
+    public:
+      world(const std::string& country) : secret_number(0) {
+        this->country = country;
+      }
+      std::string greet() const { return "Hello from " + country + "!"; }
+      std::string get_country() const { return country; }
+      void set_secret_number(int number) { secret_number = number; }
+      int get_secret_number() const { return secret_number; }
+  };
+
+  // Support for pickle.
+  py::Tuple world_getinitargs(const world& w)
+  {
+      py::Tuple result(1);
+      result.set_item(0, w.get_country());
+      return result;
+  }
+
+  py::Tuple world_getstate(const world& w)
+  {
+      py::Tuple result(1);
+      result.set_item(0, w.get_secret_number());
+      return result;
+  }
+
+  void world_setstate(world& w, py::Tuple state)
+  {
+      if (state.size() != 1) {
+          PyErr_SetString(PyExc_ValueError,
+                          "Unexpected argument in call to __setstate__.");
+          throw py::ErrorAlreadySet();
+      }
+    
+      const int number = py::from_python(state[0].get(), py::Type<int>());
+      if (number != 42)
+          w.set_secret_number(number);
+  }
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -978,6 +1026,23 @@ void init_module(py::Module& m)
     enum_owner.add(PyInt_FromLong(EnumOwner::one), "one");
     enum_owner.add(PyInt_FromLong(EnumOwner::two), "two");
     enum_owner.add(PyInt_FromLong(EnumOwner::three), "three");
+
+    // pickling support
+    
+    // Create the Python type object for our extension class.
+    py::ClassWrapper<world> world_class(m, "world");
+
+    // Add the __init__ function.
+    world_class.def(py::Constructor<std::string>());
+    // Add a regular member function.
+    world_class.def(&world::greet, "greet");
+    world_class.def(&world::get_secret_number, "get_secret_number");
+    world_class.def(&world::set_secret_number, "set_secret_number");
+
+    // Support for pickle.
+    world_class.def(world_getinitargs, "__getinitargs__");
+    world_class.def(world_getstate, "__getstate__");
+    world_class.def(world_setstate, "__setstate__");
 }
 
 PyObject* raw(py::Tuple const& args, py::Dict const& keywords)
@@ -988,7 +1053,7 @@ PyObject* raw(py::Tuple const& args, py::Dict const& keywords)
         throw py::ArgumentError();
     }
     
-    RawTest* first = PY_CONVERSION::from_python(args[0].get(), py::Type<RawTest *>());
+    RawTest* first = PY_CONVERSION::from_python(args[0].get(), py::Type<RawTest*>());
     int second = PY_CONVERSION::from_python(args[1].get(), py::Type<int>());
     
     int third = PY_CONVERSION::from_python(keywords[py::String("third")].get(), py::Type<int>());
@@ -1067,7 +1132,6 @@ BOOL WINAPI DllMain(
     {
     case DLL_PROCESS_DETACH:
         assert(extclass_demo::total_Ints == 0);
-        assert(py::detail::total_Dispatchers == 0);
     }
 #endif
     
