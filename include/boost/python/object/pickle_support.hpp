@@ -59,7 +59,7 @@ namespace detail {
       inaccessible* (*setstate_fn)(),
       bool)
     {
-      cl.enable_pickling(false);
+      cl.enable_pickling_(false);
       cl.def("__getinitargs__", getinitargs_fn);
     }
 
@@ -75,7 +75,7 @@ namespace detail {
       void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
-      cl.enable_pickling(getstate_manages_dict);
+      cl.enable_pickling_(getstate_manages_dict);
       cl.def("__getstate__", getstate_fn);
       cl.def("__setstate__", setstate_fn);
     }
@@ -93,7 +93,7 @@ namespace detail {
       void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
     {
-      cl.enable_pickling(getstate_manages_dict);
+      cl.enable_pickling_(getstate_manages_dict);
       cl.def("__getinitargs__", getinitargs_fn);
       cl.def("__getstate__", getstate_fn);
       cl.def("__setstate__", setstate_fn);

@@ -281,6 +281,7 @@ namespace boost { namespace python
     // pickle support
     template &lt;typename PickleSuite&gt;
     self&amp; def_pickle(PickleSuite const&amp;);
+    self&amp; enable_pickling();
   };
 }}
 </pre>
@@ -707,6 +708,23 @@ class_&amp; def_pickle(PickleSuite const&amp;);
       high-level interface</a> for establishing complete pickle support for
       the wrapped class. The user is protected by compile-time consistency
       checks.</dt>
+    </dl>
+    <br>
+<pre>
+class_&amp; enable_pickling();
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> n/a</dt>
+
+      <dt><b>Effects:</b> Defines the <code>__reduce__</code> method and
+      the <code>__safe_for_unpickling__</code> attribute.
+
+      <dt><b>Returns:</b> <code>*this</code></dt>
+
+      <dt><b>Rationale:</b> Light-weight alternative to
+      <code>def_pickle()</code>. Enables implementation of
+      <a href="pickle.html">pickle support</a> from Python.</dt>
     </dl>
     <br>
      

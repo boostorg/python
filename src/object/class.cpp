@@ -599,7 +599,7 @@ namespace objects
       this->setattr("__init__", object(f));
   }
 
-  void class_base::enable_pickling(bool getstate_manages_dict)
+  void class_base::enable_pickling_(bool getstate_manages_dict)
   {
       setattr("__reduce__", object(make_instance_reduce_function()));
       setattr("__safe_for_unpickling__", object(true));

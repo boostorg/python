@@ -281,13 +281,51 @@ is not empty.
 </ul>
 
 <hr>
+<h2>Light-weight alternative: pickle support implemented in Python</h2>
 
-&copy; Copyright Ralf W. Grosse-Kunstleve 20012-2002. Permission to copy,
+<h3><a href="../../test/pickle4.cpp"><tt>pickle4.cpp</tt></a></h3>
+
+The <tt>pickle4.cpp</tt> example demonstrates an alternative technique
+for implementing pickle support. First we direct Boost.Python via
+the <tt>class_::enable_pickling()</tt> member function to define only
+the basic attributes required for pickling:
+
+<pre>
+  class_&lt;world&gt;("world", args&lt;const std::string&amp;&gt;())
+      // ...
+      .enable_pickling()
+      // ...
+</pre>
+
+This enables the standard Python pickle interface as described
+in the Python documentation. By &quot;injecting&quot; a
+<tt>__getinitargs__</tt> method into the definition of the wrapped
+class we make all instances pickleable:
+
+<pre>
+  # import the wrapped world class
+  from pickle4_ext import world
+
+  # definition of __getinitargs__
+  def world_getinitargs(self):
+    return (self.get_country(),)
+
+  # now inject __getinitargs__ (Python is a dynamic language!)
+  world.__getinitargs__ = world_getinitargs
+</pre>
+
+See also the
+<a href="../tutorial/doc/extending_wrapped_objects_in_python.html"
+>tutorial section</a> on injecting additional methods from Python.
+
+<hr>
+
+&copy; Copyright Ralf W. Grosse-Kunstleve 2001-2004. Permission to copy,
 use, modify, sell and distribute this document is granted provided this
 copyright notice appears in all copies. This document is provided "as
 is" without express or implied warranty, and with no claim as to its
 suitability for any purpose.
 
 <p>
-Updated: Aug 2002.
+Updated: Feb 2004.
 </div>

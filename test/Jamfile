@@ -151,6 +151,7 @@ bpl-test crossmod_exception
 [ bpl-test pickle1 ]
 [ bpl-test pickle2 ]
 [ bpl-test pickle3 ]
+[ bpl-test pickle4 ]
 
 [ bpl-test nested ]
 

@@ -415,6 +415,12 @@ class class_ : public objects::class_base
       return *this;
     }
 
+    self& enable_pickling()
+    {
+        this->base::enable_pickling_(false);
+        return *this;
+    }
+
     self& staticmethod(char const* name)
     {
         this->make_method_static(name);

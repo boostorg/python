@@ -32,7 +32,7 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
 
     // Implementation detail. Hiding this in the private section would
     // require use of template friend declarations.
-    void enable_pickling(bool getstate_manages_dict);
+    void enable_pickling_(bool getstate_manages_dict);
 
  protected:
     void add_property(char const* name, object const& fget);
