@@ -16,7 +16,7 @@
 # include <boost/mpl/not.hpp>
 
 namespace boost { namespace python {
-            
+                   
     // indexing_suite class. This class is the protocol class for
     // the management of C++ containers intended to be integrated
     // to Python. The objective is make a C++ container look and
@@ -93,10 +93,12 @@ namespace boost { namespace python {
     // the function should return the adjusted index when data in the
     // container at index from..to is replaced by *len* elements.
     //
+
     template <
           class Container
         , class DerivedPolicies
         , bool NoProxy = false
+        , bool NoSlice = false
         , class Element = typename Container::value_type
         , class Key = typename Container::value_type
         , class Index = typename Container::size_type
@@ -107,6 +109,7 @@ namespace boost { namespace python {
               Container
             , DerivedPolicies
             , NoProxy
+            , NoSlice
             , Element
             , Key
             , Index
@@ -127,25 +130,44 @@ namespace boost { namespace python {
           , iterator<Container>
           , iterator<Container, return_internal_reference<> > >::type
         def_iterator;
-    
-        static void
-        register_container_element(mpl::false_)
-        { 
-            register_ptr_to_python<container_element_t>();
-        }
         
-        static void
-        register_container_element(mpl::true_)
-        { 
-        }
+        typedef typename mpl::if_<
+            no_proxy
+          , detail::no_proxy_helper<
+                Container
+              , DerivedPolicies
+              , container_element_t
+              , Index>
+          , detail::proxy_helper<
+                Container
+              , DerivedPolicies
+              , container_element_t
+              , Index> >::type
+        proxy_handler;
 
+        typedef typename mpl::if_<
+            mpl::bool_<NoSlice>
+          , detail::slice_helper<
+                Container
+              , DerivedPolicies
+              , proxy_handler
+              , Element
+              , Index>
+          , detail::slice_helper<
+                Container
+              , DerivedPolicies
+              , proxy_handler
+              , Element
+              , Index> >::type
+        slice_handler;
+  
     public:
       
         template <class Class>
         void visit(Class& cl) const
         {
             // Hook into the class_ generic visitation .def function
-            register_container_element(no_proxy());
+            proxy_handler::register_container_element();
             
             cl
                 .def("__len__", base_size)
@@ -157,85 +179,27 @@ namespace boost { namespace python {
 
                 .def("append", &base_append)
                 .def("extend", &base_extend)
-            ;
+            ;         
         }        
         
     private:
-           
-        static object
-        base_get_item_(
-            back_reference<Container&> const& container, 
-            PyObject* i, mpl::false_)
-        { 
-            // Proxy  
-            Index idx = DerivedPolicies::convert_index(container.get(), i);
-            
-            if (PyObject* shared = 
-                container_element_t::get_links().find(container.get(), idx))
-            {
-                handle<> h(borrowed(shared));
-                return object(h);
-            }
-            else
-            {
-                object prox(container_element_t(container.source(), idx));
-                container_element_t::
-                    get_links().add(prox.ptr(), container.get());
-                return prox;
-            }
-        }
-
-        static object
-        base_get_item_(
-            back_reference<Container&> const& container, 
-            PyObject* i, mpl::true_)
-        { 
-            // No Proxy
-            return object(
-                DerivedPolicies::get_item(
-                    container.get(), DerivedPolicies::
-                        convert_index(container.get(), i)));
-        }
-
+                   
         static object
         base_get_item(back_reference<Container&> container, PyObject* i)
         { 
             if (PySlice_Check(i))
-                return base_get_slice(
+                return slice_handler::base_get_slice(
                     container.get(), reinterpret_cast<PySliceObject*>(i));
             
-            return base_get_item_(container, i, no_proxy());
-         }
-
-        static object 
-        base_get_slice(Container& container, PySliceObject* slice)
-        { 
-            Index from, to;
-            base_get_slice_data(container, slice, from, to);
-            return DerivedPolicies::get_slice(container, from, to);
+            return proxy_handler::base_get_item_(container, i);
         }
-
-        static void
-        base_get_slice_data(
-            Container& container, PySliceObject* slice, Index& from, Index& to)
-        {
-            if (Py_None == slice->start)
-                from = 0;
-            else 
-                from = DerivedPolicies::convert_index(container, slice->start);
-
-            if (Py_None == slice->stop)
-                to = container.size();
-            else 
-                to = DerivedPolicies::convert_index(container, slice->stop);
-        }        
         
         static void 
         base_set_item(Container& container, PyObject* i, PyObject* v)
         {
             if (PySlice_Check(i))
             {
-                 base_set_slice(container, 
+                 slice_handler::base_set_slice(container, 
                      reinterpret_cast<PySliceObject*>(i), v);
             }
             else
@@ -269,123 +233,20 @@ namespace boost { namespace python {
             }
         }
 
-        static void
-        base_replace_indexes(
-            Container& container, Index from, 
-            Index to, Index n, mpl::false_)
-        {
-            //  Proxy
-            container_element_t::get_links().replace(container, from, to, n);
-        }
-
-        static void
-        base_replace_indexes(
-            Container& container, Index from, 
-            Index to, Index n, mpl::true_)
-        {
-            //  No Proxy
-        }
-        
-        static void
-        base_erase_indexes(
-            Container& container, Index from, Index to, mpl::false_)
-        {
-            //  Proxy
-            container_element_t::get_links().erase(container, from, to);
-        }
-
-        static void
-        base_erase_indexes(
-            Container& container, Index from, Index to, mpl::true_)
-        {
-            //  No Proxy
-        }
-   
-        static void 
-        base_set_slice(Container& container, PySliceObject* slice, PyObject* v)
-        {
-            Index from, to;
-            base_get_slice_data(container, slice, from, to);
-            
-            extract<Element&> elem(v);
-            // try if elem is an exact Element
-            if (elem.check())
-            {
-                base_replace_indexes(container, from, to, 1, no_proxy());
-                DerivedPolicies::set_slice(container, from, to, elem());
-            }
-            else
-            {
-                //  try to convert elem to Element
-                extract<Element> elem(v);
-                if (elem.check())
-                {
-                    base_replace_indexes(container, from, to, 1, no_proxy());
-                    DerivedPolicies::set_slice(container, from, to, elem());
-                }
-                else
-                {
-                    //  Otherwise, it must be a list or some container
-                    handle<> l_(borrowed(v));
-                    object l(l_);
-    
-                    std::vector<Element> temp;
-                    for (int i = 0; i < l.attr("__len__")(); i++)
-                    {
-                        object elem(l[i]);
-                        extract<Element const&> x(elem);
-                        //  try if elem is an exact Element type
-                        if (x.check())
-                        {
-                            temp.push_back(x());
-                        }
-                        else
-                        {
-                            //  try to convert elem to Element type
-                            extract<Element> x(elem);
-                            if (x.check())
-                            {
-                                temp.push_back(x());
-                            }
-                            else
-                            {
-                                PyErr_SetString(PyExc_TypeError, 
-                                    "Invalid sequence element");
-                                throw_error_already_set();
-                            }
-                        }
-                    }          
-                  
-                    base_replace_indexes(container, from, to, 
-                        temp.end()-temp.begin(), no_proxy());
-                    DerivedPolicies::set_slice(container, from, to, 
-                        temp.begin(), temp.end());
-                }
-            }            
-        }
-
         static void 
         base_delete_item(Container& container, PyObject* i)
         {
             if (PySlice_Check(i))
             {
-                base_delete_slice(container, reinterpret_cast<PySliceObject*>(i));
+                slice_handler::base_delete_slice(
+                    container, reinterpret_cast<PySliceObject*>(i));
                 return;
             }
             
             Index index = DerivedPolicies::convert_index(container, i);
-            base_erase_indexes(container, index, index+1, no_proxy());
+            proxy_handler::base_erase_indexes(container, index, index+1);
             DerivedPolicies::delete_item(container, index);
-        }
-        
-        static void 
-        base_delete_slice(Container& container, PySliceObject* slice)
-        { 
-            Index from, to;
-            base_get_slice_data(container, slice, from, to);
-            base_erase_indexes(container, from, to, no_proxy());
-            DerivedPolicies::delete_slice(container, from, to);
-        }  
+        } 
 
         static size_t
         base_size(Container& container)
@@ -475,44 +336,8 @@ namespace boost { namespace python {
           
             DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
-
-        static object 
-        get_slice(Container& container, Index from, Index to)
-        { 
-            // default implementation
-            PyErr_SetString(PyExc_RuntimeError, "Slicing not supported");
-            throw_error_already_set();
-            return object();
-        }
-
-        static void 
-        set_slice(Container& container, Index from, 
-            Index to, Element const& v)
-        { 
-            // default implementation
-            PyErr_SetString(PyExc_RuntimeError, "Slicing not supported");
-            throw_error_already_set();
-        }
-
-        template <class Iter>
-        static void 
-        set_slice(Container& container, Index from, 
-            Index to, Iter first, Iter last)
-        { 
-            // default implementation
-            PyErr_SetString(PyExc_RuntimeError, "Slicing not supported");
-            throw_error_already_set();
-        }
-
-        static void 
-        delete_slice(Container& container, Index from, Index to)
-        { 
-            // default implementation
-            PyErr_SetString(PyExc_RuntimeError, "Slicing not supported");
-            throw_error_already_set();
-        }
-    };            
-       
+    };
+    
 }} // namespace boost::python 
 
 #endif // INDEXING_SUITE_JDG20036_HPP

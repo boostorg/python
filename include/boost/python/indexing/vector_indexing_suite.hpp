@@ -116,6 +116,18 @@ namespace boost { namespace python {
         }
         
         static index_type
+        get_min_index(Container& container)
+        { 
+            return 0;
+        }
+
+        static index_type
+        get_max_index(Container& container)
+        { 
+            return container.size();
+        }
+      
+        static index_type
         convert_index(Container& container, PyObject* i_)
         { 
             extract<long> i(i_);
