@@ -33,16 +33,16 @@ then gives up:</p>
 </span></pre></code>
 <p>
 Users may provide custom translation. Here's an example:</p>
-<code><pre>
-    <span class=keyword>struct </span><span class=identifier>PodBayDoorException</span><span class=special>;
-    </span><span class=keyword>void </span><span class=identifier>translator</span><span class=special>(</span><span class=identifier>PodBayDoorException</span><span class=special>&amp; </span><span class=identifier>x</span><span class=special>) </span><span class=special>{
+<pre>
+    <code><span class=keyword>struct </span><span class=identifier>PodBayDoorException</span><span class=special>;
+    </span><span class=keyword>void </span><span class=identifier>translator</span><span class=special>(</span><span class=identifier>PodBayDoorException</span><span class=special> </span><span class="keyword">const</span><span class=special>&amp; </span><span class=identifier>x</span><span class=special>) {
         </span><span class=identifier>PyErr_SetString</span><span class=special>(</span><span class=identifier>PyExc_UserWarning</span><span class=special>, </span><span class=string>&quot;I'm sorry Dave...&quot;</span><span class=special>);
-    </span><span class=special>}
-    </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>kubrick</span><span class=special>) </span><span class=special>{
+    }
+    </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>kubrick</span><span class=special>) {
          </span><span class=identifier>register_exception_translator</span><span class=special>&lt;
               </span><span class=identifier>PodBayDoorException</span><span class=special>&gt;(</span><span class=identifier>translator</span><span class=special>);
-         </span><span class=special>...
-</span></pre></code>
+         ...
+</span></code></pre>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

@@ -1245,7 +1245,7 @@ then gives up:
 Users may provide custom translation. Here's an example:
 
     struct PodBayDoorException;
-    void translator(PodBayDoorException& x) {
+    void translator(PodBayDoorException const& x) {
         PyErr_SetString(PyExc_UserWarning, "I'm sorry Dave...");
     }
     BOOST_PYTHON_MODULE(kubrick) {
