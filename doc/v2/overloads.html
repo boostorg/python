@@ -180,7 +180,7 @@ tuple f(int x = 1, double y = 4.25, char const* z = &quot;wow&quot;)
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(f_overloads, f, 0, 3)
 
-stryct Y {};
+struct Y {};
 struct X
 {
     Y&amp; f(int x, double y = 4.25, char const* z = &quot;wow&quot;)
@@ -213,7 +213,7 @@ BOOST_PYTHON_MODULE(args_ext)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
+  15 December, 2002
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
