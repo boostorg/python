@@ -148,43 +148,53 @@
       </tr>
 
       <tr>
-        <td><code>CYGWIN_ROOT</code></td>
+        <td><code>CYGWIN_PYTHON_ROOT</code></td>
 
-        <td>path to the user's Cygwin installation</td>
+        <td>unix-style path containing the <code>include/</code>
+        directory containing
+        <code>python$(PYTHON_VERSION)/python.h</code>. </td>
 
         <td>
         </td>
 
         <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC from a regular Win32 build of
-        bjam. This and the following two settings are useful when building
-        with multiple toolsets on Windows, since Cygwin GCC requires a
-        different build of Python.</td>
-      </tr>
+        "http://www.cygwin.com">Cygwin</a> GCC. This and the following
+        settings are useful when building with multiple toolsets on
+        Windows, since Cygwin GCC requires a different build of
+        Python.</td> </tr>
 
       <tr>
-        <td><code>GCC_PYTHON_ROOT</code></td>
+        <td><code>CYGWIN_PYTHON_ROOT</code></td>
 
         <td>path to the user's Cygwin Python installation</td>
 
-        <td><code>$(CYGWIN_ROOT)/usr/local</code></td>
+        <td><code>/usr</code></td>
 
         <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC from a regular Win32 build of
-        bjam.</td>
-      </tr>
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
 
       <tr>
-        <td><code>GCC_DEBUG_PYTHON_ROOT</code></td>
+        <td><code>CYGWIN_PYTHON_LIB_PATH</code></td>
 
-        <td>path to the user's Cygwin <code><a href=
-        "#variants">pydebug</a></code> build</td>
+        <td>path containing the user's Cygwin Python import lib
+        <code>libpython$(PYTHON_VERSION).dll.a</code></td>
 
-        <td><code>$(CYGWIN_ROOT)/usr/local/pydebug</code></td>
+        <td>Autoconfigured from <code>CYGWIN_PYTHON_ROOT</code></td>
 
         <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC from a regular Win32 build of
-        bjam.</td>
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+
+      <tr>
+        <td><code>CYGWIN_PYTHON_DLL_PATH</code></td>
+
+        <td>path containing the user's Cygwin Python dll
+        (<code>libpython$(PYTHON_VERSION).dll</code>)</td>
+
+        <td><code>/bin</code></td>
+
+        <td>Use only when building with <a href=
+        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+
       </tr>
     </table>
 
