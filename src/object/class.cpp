@@ -21,6 +21,7 @@
 #include <boost/python/self.hpp>
 #include <boost/python/dict.hpp>
 #include <boost/python/str.hpp>
+#include <boost/minmax.hpp>
 #include <functional>
 #include <vector>
 #include <cstddef>
@@ -481,7 +482,7 @@ namespace objects
       // Build a tuple of the base Python type objects. If no bases
       // were declared, we'll use our class_type() as the single base
       // class.
-      std::size_t const num_bases = std::max(num_types - 1, static_cast<std::size_t>(1));
+      std::size_t const num_bases = std_max(num_types - 1, static_cast<std::size_t>(1));
       handle<> bases(PyTuple_New(num_bases));
 
       for (std::size_t i = 1; i <= num_bases; ++i)

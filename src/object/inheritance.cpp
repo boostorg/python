@@ -91,7 +91,7 @@ namespace
           if (m_distances.size() != n * n)
           {
               m_distances.clear();
-              m_distances.resize(n * n, std::numeric_limits<std::size_t>::max());
+              m_distances.resize(n * n, (std::numeric_limits<std::size_t>::max)());
               m_known_vertices = n;
           }
           
@@ -293,7 +293,7 @@ namespace
       
       smart_graph::node_distance_map d(g.distances_to(dst));
 
-      if (d[src] == std::numeric_limits<std::size_t>::max())
+      if (d[src] == (std::numeric_limits<std::size_t>::max)())
           return 0;
 
       typedef property_map<cast_graph,edge_cast_t>::const_type cast_map;

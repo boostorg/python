@@ -9,6 +9,7 @@
 #include <boost/python/object.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
+#include <boost/minmax.hpp>
 
 #include <iterator>
 #include <algorithm>
@@ -138,7 +139,7 @@ class slice : public object
 					throw std::invalid_argument( "Zero-length slice");
 			if (i >= 0) {
 				ret.start = begin;
-				std::advance( ret.start, std::min(i, max_dist-1));
+				std::advance( ret.start, std_min(i, max_dist-1));
 			}
 			else {
 				if (i < -max_dist && ret.step < 0)
@@ -182,7 +183,7 @@ class slice : public object
 				
 				if (i > 0) {
 					ret.stop = begin;
-					std::advance( ret.stop, std::min( i-1, max_dist-1));
+					std::advance( ret.stop, std_min( i-1, max_dist-1));
 				}
 				else { // i is negative, but not more negative than -max_dist
 					ret.stop = end;

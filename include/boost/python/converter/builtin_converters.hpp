@@ -87,7 +87,7 @@ namespace detail
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(                                    \
         unsigned T                                                      \
         , static_cast<unsigned long>(x) > static_cast<unsigned long>(   \
-                std::numeric_limits<long>::max())                       \
+                (std::numeric_limits<long>::max)())                     \
         ? ::PyLong_FromUnsignedLong(x)                                  \
         : ::PyInt_FromLong(x))
 
