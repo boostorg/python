@@ -21,30 +21,19 @@ PYEXE=/usr/local/Python-1.5.2/bin/python
 PYINC=-I/usr/local/Python-1.5.2/include/python1.5
 #PYEXE=/usr/local/Python-2.0/bin/python
 #PYINC=-I/usr/local/Python-2.0/include/python2.0
-#STLPORTINC=-I/usr/local/STLport-4.1b3/stlport
-#STLPORTINC=-I/usr/local/STLport-4.1b4/stlport
-#STLPORTOPTS= \
-# -D__USE_STD_IOSTREAM \
-# -D__STL_NO_SGI_IOSTREAMS \
-# -D__STL_USE_NATIVE_STRING \
-# -D__STL_NO_NEW_C_HEADERS \
-# -D_RWSTD_COMPILE_INSTANTIATE=1
 STLPORTINC=-I$(BOOST)/boost/compatibility/cpp_c_headers
 
-STDOPTS=-std strict_ansi
-# use -msg_display_number to obtain integer tags for -msg_disable
-WARNOPTS=-msg_disable 186,450,1115
+STDOPTS=
+WARNOPTS=-woff 1001,1234,1682
 OPTOPTS=-g
 
-CPP=cxx
+CPP=CC -LANG:std -n32 -mips4
 CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST) $(PYINC) \
         $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
-MAKEDEP=-Em
+MAKEDEP=-M
 
-LD=cxx
-LDOPTS=-shared -expect_unresolved 'Py*' -expect_unresolved '_Py*'
-
-#HIDDEN=-hidden
+LD=CC -LANG:std -n32 -mips4
+LDOPTS=-shared
 
 OBJ=classes.o conversions.o extension_class.o functions.o \
     init_function.o module_builder.o \
@@ -73,11 +62,7 @@ all: libboost_python.a \
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a
-	cd cxx_repository; \
-          ls -1 > ../libboost_python.a.input; \
-          ar r ../libboost_python.a -input ../libboost_python.a.input
-	rm -f libboost_python.a.input
-	ar r libboost_python.a $(OBJ)
+	$(CPP) -ar -o libboost_python.a $(OBJ)
 
 boost_python_test.so: $(OBJ) comprehensive.o
 	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o boost_python_test.so -lm
@@ -156,7 +141,7 @@ clean:
 	rm -f ivect.o ivect.so
 	rm -f dvect.o dvect.so
 	rm -f so_locations *.pyc
-	rm -rf cxx_repository
+	rm -rf ii_files
 
 softlinks:
 	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks

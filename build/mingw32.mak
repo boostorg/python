@@ -1,18 +1,14 @@
 # Usage:
 #
-#   Create a new empty directory anywhere (preferably not in the boost tree).
-#   Copy this Makefile to that new directory and rename it to "Makefile"
-#   Set the BOOST_* pathnames below.
+#   make copy          Copy the sources and tests
+#   make               Compile all sources
+#   make test          Run doctest tests
+#   make clean         Remove all object files
+#   make del           Remove the sources and tests
 #
-#   The idea is that the build directory is on a Unix filesystem that
-#   is mounted on a PC using SAMBA. Use this makefile under both Unix
-#   and Windows:
-#
-#   Unix: make softlinks     Create softlinks to source code and tests
-#   Win:  make               Compile all sources
-#   Win:  make test          Run doctest tests
-#   Unix: make clean         Remove all object files
-#   Unix: make unlink        Remove softlinks
+# Revision history:
+#   12 Apr 01 new macro ROOT to simplify configuration (R.W. Grosse-Kunstleve)
+#   Initial version: R.W. Grosse-Kunstleve
 
 # To install mingw32, follow instructions at:
 #   http://starship.python.net/crew/kernr/mingw32/Notes.html
@@ -31,117 +27,49 @@
 # Could this be fixed with compiler options?
 # -fhuge-objects looks interesting, but requires recompiling the C++ library.
 #                (what exactly does that mean?)
-# -fvtable-thunks eliminates the compiler warning,
-# but "import boost_python_test" still causes a crash.
+# -fvtable-thunks eliminates the compiler warning, but
+#                 "import boost_python_test" still causes a crash.
 
-BOOST_UNIX= /net/cci/rwgk/boost
-BOOST_WIN= "L:\boost"
+ROOT=L:
+BOOST_WIN="$(ROOT)\boost"
+BOOST_UNIX=$(HOME)/boost
 
-PYEXE= "C:\Program files\Python\python.exe"
-PYINC= -I"C:\usr\include\python1.5"
-PYLIB= "C:\usr\lib\libpython15.a"
+PYEXE="C:\Program files\Python\python.exe"
+PYINC=-I"C:\usr\include\python1.5"
+PYLIB="C:\usr\lib\libpython15.a"
 
-STDOPTS= -ftemplate-depth-21
+STDOPTS=-ftemplate-depth-21
 WARNOPTS=
+OPTOPTS=-g
 
-CPP= g++
-CPPOPTS= $(STLPORTINC) $(STLPORTOPTS) -I$(BOOST_WIN) $(PYINC) \
-         $(STDOPTS) $(WARNOPTS) -g
+CPP=g++
+CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST_WIN) $(PYINC) \
+        $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
 
-LD= g++
-LDOPTS= -shared
+LD=g++
+LDOPTS=-shared
 
-BPL_SRC = $(BOOST_UNIX)/libs/python/src
-BPL_TST = $(BOOST_UNIX)/libs/python/test
-BPL_EXA = $(BOOST_UNIX)/libs/python/example
-SOFTLINKS = \
-$(BPL_SRC)/classes.cpp \
-$(BPL_SRC)/conversions.cpp \
-$(BPL_SRC)/extension_class.cpp \
-$(BPL_SRC)/functions.cpp \
-$(BPL_SRC)/init_function.cpp \
-$(BPL_SRC)/module_builder.cpp \
-$(BPL_SRC)/objects.cpp \
-$(BPL_SRC)/types.cpp \
-$(BPL_TST)/comprehensive.cpp \
-$(BPL_TST)/comprehensive.hpp \
-$(BPL_TST)/comprehensive.py \
-$(BPL_TST)/doctest.py \
-$(BPL_EXA)/abstract.cpp \
-$(BPL_EXA)/getting_started1.cpp \
-$(BPL_EXA)/getting_started2.cpp \
-$(BPL_EXA)/getting_started3.cpp \
-$(BPL_EXA)/getting_started4.cpp \
-$(BPL_EXA)/getting_started5.cpp \
-$(BPL_EXA)/passing_char.cpp \
-$(BPL_EXA)/test_abstract.py \
-$(BPL_EXA)/test_getting_started1.py \
-$(BPL_EXA)/test_getting_started2.py \
-$(BPL_EXA)/test_getting_started3.py \
-$(BPL_EXA)/test_getting_started4.py \
-$(BPL_EXA)/test_getting_started5.py
-
-DEFS= \
-boost_python_test \
-abstract \
-getting_started1 \
-getting_started2 \
-getting_started3 \
-getting_started4 \
-getting_started5
-
-OBJ = classes.o conversions.o extension_class.o functions.o \
-      init_function.o module_builder.o \
-      objects.o types.o
+OBJ=classes.o conversions.o extension_class.o functions.o \
+    init_function.o module_builder.o \
+    objects.o types.o cross_module.o
 
 .SUFFIXES: .o .cpp
 
-all: libboost_python.a boost_python_test.pyd abstract.pyd \
+all: libboost_python.a \
+     abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
-     getting_started4.pyd getting_started5.pyd
-
-softlinks: defs
-	@ for pn in $(SOFTLINKS); \
-	  do \
-            bn=`basename "$$pn"`; \
-	    if [ ! -e "$$bn" ]; then \
-              echo "ln -s $$pn ."; \
-	      ln -s "$$pn" .; \
-            else \
-              echo "info: no softlink created (file exists): $$bn"; \
-	    fi; \
-	  done
-
-unlink: rmdefs
-	@ for pn in $(SOFTLINKS); \
-	  do \
-            bn=`basename "$$pn"`; \
-	    if [ -L "$$bn" ]; then \
-              echo "rm $$bn"; \
-              rm "$$bn"; \
-            elif [ -e "$$bn" ]; then \
-              echo "info: not a softlink: $$bn"; \
-	    fi; \
-	  done
-
-defs:
-	@ for def in $(DEFS); \
-	  do \
-            echo "EXPORTS\n\tinit$$def" > $$def.def; \
-	  done
-
-rmdefs:
-	@ for def in $(DEFS); \
-	  do \
-            rm $$def.def; \
-	  done
+     simple_vector.pyd \
+     do_it_yourself_converters.pyd \
+     pickle1.pyd pickle2.pyd pickle3.pyd \
+     noncopyable_export.pyd noncopyable_import.pyd \
+     ivect.pyd dvect.pyd
 
 libboost_python.a: $(OBJ)
 	del libboost_python.a
 	ar r libboost_python.a $(OBJ)
 
-DLLWRAPOPTS= -s --driver-name g++ -s
-             --entry _DllMainCRTStartup@12 --target=i386-mingw32
+DLLWRAPOPTS=-s --driver-name g++ -s \
+            --entry _DllMainCRTStartup@12 --target=i386-mingw32
 
 boost_python_test.pyd: $(OBJ) comprehensive.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -173,38 +101,96 @@ getting_started3.pyd: $(OBJ) getting_started3.o
           --def getting_started3.def \
           $(OBJ) getting_started3.o $(PYLIB)
 
-getting_started4.pyd: $(OBJ) getting_started4.o
+simple_vector.pyd: $(OBJ) simple_vector.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname getting_started4.pyd \
-          --def getting_started4.def \
-          $(OBJ) getting_started4.o $(PYLIB)
+          --dllname simple_vector.pyd \
+          --def simple_vector.def \
+          $(OBJ) simple_vector.o $(PYLIB)
 
-getting_started5.pyd: $(OBJ) getting_started5.o
+do_it_yourself_converters.pyd: $(OBJ) do_it_yourself_converters.o
 	dllwrap $(DLLWRAPOPTS) \
-          --dllname getting_started5.pyd \
-          --def getting_started5.def \
-          $(OBJ) getting_started5.o $(PYLIB)
+          --dllname do_it_yourself_converters.pyd \
+          --def do_it_yourself_converters.def \
+          $(OBJ) do_it_yourself_converters.o $(PYLIB)
+
+pickle1.pyd: $(OBJ) pickle1.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle1.pyd \
+          --def pickle1.def \
+          $(OBJ) pickle1.o $(PYLIB)
+
+pickle2.pyd: $(OBJ) pickle2.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle2.pyd \
+          --def pickle2.def \
+          $(OBJ) pickle2.o $(PYLIB)
+
+pickle3.pyd: $(OBJ) pickle3.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname pickle3.pyd \
+          --def pickle3.def \
+          $(OBJ) pickle3.o $(PYLIB)
+
+noncopyable_export.pyd: $(OBJ) noncopyable_export.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname noncopyable_export.pyd \
+          --def noncopyable_export.def \
+          $(OBJ) noncopyable_export.o $(PYLIB)
+
+noncopyable_import.pyd: $(OBJ) noncopyable_import.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname noncopyable_import.pyd \
+          --def noncopyable_import.def \
+          $(OBJ) noncopyable_import.o $(PYLIB)
+
+ivect.pyd: $(OBJ) ivect.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname ivect.pyd \
+          --def ivect.def \
+          $(OBJ) ivect.o $(PYLIB)
+
+dvect.pyd: $(OBJ) dvect.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname dvect.pyd \
+          --def dvect.def \
+          $(OBJ) dvect.o $(PYLIB)
 
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
 
 test:
-	$(PYEXE) comprehensive.py
+#	$(PYEXE) comprehensive.py
 	$(PYEXE) test_abstract.py
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_getting_started3.py
-	$(PYEXE) test_getting_started4.py
-	$(PYEXE) test_getting_started5.py
+	$(PYEXE) test_simple_vector.py
+	$(PYEXE) test_do_it_yourself_converters.py
+	$(PYEXE) test_pickle1.py
+	$(PYEXE) test_pickle2.py
+	$(PYEXE) test_pickle3.py
+	$(PYEXE) test_cross_module.py
 
 clean:
-	rm -f $(OBJ) libboost_python.a libboost_python.a.input
-	rm -f comprehensive.o boost_python_test.pyd
-	rm -f abstract.o abstract.pyd
-	rm -f getting_started1.o getting_started1.pyd
-	rm -f getting_started2.o getting_started2.pyd
-	rm -f getting_started3.o getting_started3.pyd
-	rm -f getting_started4.o getting_started4.pyd
-	rm -f getting_started5.o getting_started5.pyd
-	rm -f so_locations *.pyc
-	rm -rf cxx_repository
+	del *.o
+	del *.a
+	del *.pyd
+	del *.pyc
+
+softlinks:
+	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) softlinks
+
+unlink:
+	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) unlink
+
+cp:
+	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) cp
+
+rm:
+	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) rm
+
+copy:
+	$(PYEXE) $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) copy
+
+del:
+	$(PYEXE) $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) del
