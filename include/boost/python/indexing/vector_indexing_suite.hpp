@@ -64,7 +64,7 @@ namespace boost { namespace python {
         static object 
         get_slice(Container& container, index_type from, index_type to)
         { 
-            return object(Container(container.begin(), container.end()));
+            return object(Container(container.begin()+from, container.begin()+to));
         }
 
         static void 
