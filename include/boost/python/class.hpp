@@ -122,7 +122,7 @@ class class_ : private objects::class_base
     // Define the constructor with the given Args, which should be an
     // MPL sequence of types.
     template <class Args>
-    self& def_init(Args const& = Args())
+    self& def_init(Args const&)
     {
         def("__init__", make_constructor<T,Args,HolderGenerator>());
         return *this;
