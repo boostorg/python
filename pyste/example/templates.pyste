@@ -1,8 +1,0 @@
-Point = Template('Point', 'templates.h')
-rename(Point.x, 'i')
-rename(Point.y, 'j')
-IPoint = Point('int double')
-FPoint = Point('double int')
-rename(IPoint, 'IPoint')
-rename(IPoint.x, '_x_')
-

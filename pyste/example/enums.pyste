@@ -1,8 +1,0 @@
-color = Enum('test::color', 'enums.h')
-rename(color.red, 'Red')
-rename(color.blue, 'Blue')
-X = Class('test::X', 'enums.h')
-rename(X.choices.bad, 'Bad')
-rename(X.choices.good, 'Good')
-rename(X.choices, 'Choices')
-
