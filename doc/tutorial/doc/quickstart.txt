@@ -484,6 +484,18 @@ need to create a class wrapper:
         PyObject* self;
     };
 
+
+    struct BaseWrap : Base
+    {
+        BaseWrap(PyObject* self_)
+            : self(self_) {}
+        BaseWrap(PyObject* self_, Base const& copy)
+            : Base(copy), self(self_) {}
+        int f() { return call_method<int>(self, "f"); }
+        int default_f() { return Base::f(); } // <<=== ***ADDED***
+        PyObject* self;
+    };
+
 [blurb __detail__ [*member function and methods][br][br] Python, like
 many object oriented languages uses the term [*methods].  Methods
 correspond roughly to C++'s [*member functions]]

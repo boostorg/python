@@ -22,7 +22,7 @@
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="deriving_a_python_class.html"><img src="theme/l_arr.gif" border="0"></a></td>
     <td width="20"><a href="class_operators_special_functions.html"><img src="theme/r_arr.gif" border="0"></a></td>
-   </tr>
+  </tr>
 </table>
 <p>
 Recall that in the <a href="class_virtual_functions.html">
@@ -48,16 +48,18 @@ not declared as pure virtual:</p>
 and instead had a default implementation that returns <tt>0</tt>, as shown above,
 we need to add a forwarding function that calls the <tt>Base</tt> default virtual
 function <tt>f</tt> implementation:</p>
-<code><pre>
-    <span class=keyword>struct </span><span class=identifier>BaseWrap </span><span class=special>: </span><span class=identifier>Base
+<pre>
+    <code><span class=keyword>struct </span><span class=identifier>BaseWrap </span><span class=special>: </span><span class=identifier>Base
     </span><span class=special>{
         </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>)
             : </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
-        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
+        </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>, </span><span class="identifier">Base</span><span class=special> const&amp; </span><span class="identifier">copy</span><span class=special>)
+            : </span><span class=identifier>Base</span><span class=special>(</span><span class="identifier">copy</span><span class=special></span><span class=special>), </span><span class=special></span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
+</span><span class=special>        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
         </span><span class=keyword>int </span><span class=identifier>default_f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>Base</span><span class=special>::</span><span class=identifier>f</span><span class=special>(); } // &lt;&lt;=== ***</span><span class=identifier>ADDED</span><span class=special>***
         </span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self</span><span class=special>;
     };
-</span></pre></code>
+</span></code></pre>
 <p>
 Then, Boost.Python needs to keep track of 1) the dispatch function <tt>f</tt> and
 2) the forwarding function to its default implementation <tt>default_f</tt>.
@@ -110,7 +112,7 @@ Calling <tt>call_f</tt>, passing in a <tt>derived</tt> object:</p>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="deriving_a_python_class.html"><img src="theme/l_arr.gif" border="0"></a></td>
     <td width="20"><a href="class_operators_special_functions.html"><img src="theme/r_arr.gif" border="0"></a></td>
-   </tr>
+  </tr>
 </table>
 <br>
 <hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
