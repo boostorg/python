@@ -256,16 +256,18 @@ class class_ : public objects::class_base
     //
     // Data member access
     //
-    template <class D>
-    self& def_readonly(char const* name, D T::*pm)
+    template <class D, class B>
+    self& def_readonly(char const* name, D B::*pm_)
     {
+        D T::*pm = pm_;
         this->add_property(name, make_getter(pm));
         return *this;
     }
 
-    template <class D>
-    self& def_readwrite(char const* name, D T::*pm)
+    template <class D, class B>
+    self& def_readwrite(char const* name, D B::*pm_)
     {
+        D T::*pm = pm_;
         return this->add_property(name, make_getter(pm), make_setter(pm));
     }
 
