@@ -126,41 +126,6 @@ class ClassRegistry
     static std::vector<py::detail::DerivedClassInfo> static_derived_class_info;
 };
 
-namespace detail
-{
-    struct operator_dispatcher
-    : public PyObject
-    {
-        static PyTypeObject type_object;
-        static PyNumberMethods number_methods;
-
-        operator_dispatcher(PyObject * o, PyObject * s);
-        static void dealloc(PyObject *self);
-        static int coerce(PyObject ** l, PyObject ** r);
-        static PyObject * call_add(PyObject *, PyObject *);
-        static PyObject * call_sub(PyObject *, PyObject *);
-        static PyObject * call_mul(PyObject *, PyObject *);
-        static PyObject * call_div(PyObject *, PyObject *);
-        static PyObject * call_mod(PyObject *, PyObject *);
-        static PyObject * call_divmod(PyObject *, PyObject *);
-        static PyObject * call_lshift(PyObject *, PyObject *);
-        static PyObject * call_rshift(PyObject *, PyObject *);
-        static PyObject * call_and(PyObject *, PyObject *);
-        static PyObject * call_xor(PyObject *, PyObject *);
-        static PyObject * call_or(PyObject *, PyObject *);
-        static PyObject * call_pow(PyObject *, PyObject *, PyObject *);
-        static int call_cmp(PyObject *, PyObject *);
-
-        static bool unwrap_args(PyObject *  left, PyObject * right, 
-                                PyObject * & self, PyObject * & other);
-        static int unwrap_pow_args(PyObject *, PyObject *, PyObject *,
-                                    PyObject * &, PyObject * &, PyObject * &);
-
-        PyObject * object;
-        PyObject * self;
-    };
-}
-
 }
 
 PY_BEGIN_CONVERSION_NAMESPACE
@@ -221,9 +186,9 @@ class PyExtensionClassConverters
                 return held->target();
 
             // see extclass.cpp for an explanation of try_class_conversions()
-            void * target = py::ClassRegistry<T>::class_object()->try_class_conversions(*p);
+            void* target = py::ClassRegistry<T>::class_object()->try_class_conversions(*p);
             if(target) 
-                return static_cast<T *>(target);
+                return static_cast<T*>(target);
         }
         py::report_missing_instance_data(self, py::ClassRegistry<T>::class_object(), typeid(T));
         throw py::ArgumentError();
@@ -273,7 +238,7 @@ class PyExtensionClassConverters
         { return from_python(p, py::Type<T*>()); }
 
     // Convert to const T* const&
-    friend const T* from_python(PyObject* p, py::Type<const T *const&>)
+    friend const T* from_python(PyObject* p, py::Type<const T*const&>)
          { return from_python(p, py::Type<const T*>()); }
   
     // Convert to T* const&
@@ -326,9 +291,6 @@ PyObject* to_python(const T& x)
 {
     return py_extension_class_converters(py::Type<T>()).to_python(x);
 }
-
-inline PyObject * to_python(py::detail::operator_dispatcher * n) { return n; }
-
 
 PY_END_CONVERSION_NAMESPACE
 
@@ -417,14 +379,14 @@ namespace detail
   template <class From, class To>
   struct DefineConversion
   {
-      static void * upcast_ptr(void * v)
+      static void* upcast_ptr(void* v)
       {
-          return static_cast<To *>(static_cast<From *>(v));
+          return static_cast<To*>(static_cast<From*>(v));
       }
 
-      static void * downcast_ptr(void * v)
+      static void* downcast_ptr(void* v)
       {
-          return dynamic_cast<To *>(static_cast<From *>(v));
+          return dynamic_cast<To*>(static_cast<From*>(v));
       }
   };
 }
@@ -478,7 +440,7 @@ class ExtensionClass
     // export homogeneous operators (type of both lhs and rhs is 'operator')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>());
     
-    // export homogeneous operators (type of both lhs and rhs is 'T const &')
+    // export homogeneous operators (type of both lhs and rhs is 'T const&')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>());
     template <long which, class Operand>
     inline void def(operators<which,Operand>)
@@ -489,11 +451,11 @@ class ExtensionClass
 
     // export heterogeneous operators (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
-    //                       py::right_operand<int const &>());
+    //                       py::right_operand<int const&>());
 
-    // export heterogeneous operators (type of lhs: 'T const &', of rhs: 'right')
+    // export heterogeneous operators (type of lhs: 'T const&', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
-    //                       py::right_operand<int const &>());
+    //                       py::right_operand<int const&>());
     template <long which, class Left, class Right>
     inline void def(operators<which,Left>, right_operand<Right> r)
     {
@@ -504,12 +466,12 @@ class ExtensionClass
     // export heterogeneous reverse-argument operators 
     // (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
-    //                       py::left_operand<int const &>());
+    //                       py::left_operand<int const&>());
     
     // export heterogeneous reverse-argument operators 
-    // (type of lhs: 'left', of rhs: 'T const &')
+    // (type of lhs: 'left', of rhs: 'T const&')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
-    //                       py::left_operand<int const &>());
+    //                       py::left_operand<int const&>());
     template <long which, class Left, class Right>
     inline void def(operators<which,Right>, left_operand<Left> l)
     {
@@ -518,11 +480,11 @@ class ExtensionClass
     }
 
     // define a function that passes Python arguments and keywords
-    // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
+    // to C++ verbatim (as a 'Tuple const&' and 'Dict const&' 
     // respectively). This is useful for manual argument passing.
     // It's also the only possibility to pass keyword arguments to C++.
     // Fn must have a signatur that is compatible to 
-    //     PyObject * (*)(PyObject * aTuple, PyObject * aDictionary)
+    //     PyObject* (*)(PyObject* aTuple, PyObject* aDictionary)
     template <class Fn>
     inline void def_raw(Fn fn, const char* name)
     {
@@ -583,7 +545,7 @@ class ExtensionClass
     // declare the given class a base class of this one and register 
     // up and down conversion functions
     template <class S, class V>
-    void declare_base(ExtensionClass<S, V> * base)
+    void declare_base(ExtensionClass<S, V>* base)
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
@@ -600,7 +562,7 @@ class ExtensionClass
     // declare the given class a base class of this one and register 
     // only up conversion function
     template <class S, class V>
-    void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
+    void declare_base(ExtensionClass<S, V>* base, WithoutDowncast)
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
@@ -728,7 +690,7 @@ template <class Held>
 class InstanceHolder : public InstanceHolderBase
 {
 public:
-    virtual Held *target() = 0;
+    virtual Held*target() = 0;
 };
 
 // Concrete class which holds a Held by way of a wrapper class Wrapper. If Held
@@ -797,7 +759,7 @@ class ExtensionInstance : public Instance
 
 namespace detail
 {
-    Tuple extension_class_coerce(PyObject * l, PyObject * r);
+  Tuple extension_class_coerce(Ptr l, Ptr r);
 }
 
 template <class T, class U>
@@ -825,7 +787,7 @@ void ExtensionClass<T, U>::register_coerce()
 
 template <class T, class U>
 inline
-std::vector<detail::BaseClassInfo> const & 
+std::vector<detail::BaseClassInfo> const& 
 ExtensionClass<T, U>::base_classes() const
 {
     return ClassRegistry<T>::base_classes();
@@ -833,7 +795,7 @@ ExtensionClass<T, U>::base_classes() const
 
 template <class T, class U>
 inline
-std::vector<detail::DerivedClassInfo> const & 
+std::vector<detail::DerivedClassInfo> const& 
 ExtensionClass<T, U>::derived_classes() const
 {
     return ClassRegistry<T>::derived_classes();
@@ -872,13 +834,13 @@ inline void ClassRegistry<T>::unregister_class(ExtensionClassBase* p)
 }
 
 template <class T>
-void ClassRegistry<T>::register_base_class(py::detail::BaseClassInfo const & i)
+void ClassRegistry<T>::register_base_class(py::detail::BaseClassInfo const& i)
 {
     static_base_class_info.push_back(i);
 }
 
 template <class T>
-void ClassRegistry<T>::register_derived_class(py::detail::DerivedClassInfo const & i)
+void ClassRegistry<T>::register_derived_class(py::detail::DerivedClassInfo const& i)
 {
     static_derived_class_info.push_back(i);
 }
