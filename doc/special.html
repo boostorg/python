@@ -41,12 +41,17 @@
           <b><tt class='method'>__init__</tt></b>(<i>self</i>)
         <dd>
           Initialize the class instance. For extension classes not subclassed in
-          Python, this is provided by the
-          <code>boost::python::constructor<...>()</code> construct and should <i>not</i> be explicitly <code>def</code>ed.
+          Python, <code> __init__</code> is defined by 
+          
+          <pre>    my_class.def(boost::python::constructor<...>())</pre> 
+          
+          (see section <a href="example1.html">"A Simple Example Using BPL"</a>).<p>
         <dt>
           <b><tt class='method'>__del__</tt></b>(<i>self</i>)
         <dd>
-          Called when the extension instance is about to be destroyed.
+          Called when the extension instance is about to be destroyed. For extension classes 
+          not subclassed in Python, <code> __del__</code> is always defined automatically by 
+          means of the class' destructor.
         <dt>
           <b><tt class='method'>__repr__</tt></b>(<i>self</i>)
         <dd>
@@ -111,7 +116,7 @@ foo_class.def(&amp;to_string, "__str__");
       Numeric operators can be exposed manually, by <code>def</code>ing C++
       [member] functions that support the standard Python <a
       href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">numeric
-      protocols</a>. This is the basic same technique used to expose
+      protocols</a>. This is the same basic technique used to expose
       <code>to_string()</code> as <code>__str__()</code> above, and is <a
       href="#numeric_manual">covered in detail below</a>.  BPL also supports
       <i>automatic wrapping</i> of numeric operators whenever they have already
@@ -121,7 +126,7 @@ foo_class.def(&amp;to_string, "__str__");
 
 <p>
 Supose we wanted to expose a C++ class
-      <code>BigNum</code> which supports addition, so that we can write (in C++):
+      <code>BigNum</code> which supports addition. That is, in C++ we can write:
 <blockquote><pre>
 BigNum a, b, c;
 ...
@@ -196,7 +201,7 @@ BigNum operator+(BigNum, BigNum)
 </pre></blockquote>
         or as member
         functions <blockquote><pre>
-BigNum::operator+(BigNum).
+BigNum BigNum::operator+(BigNum).
 </blockquote></pre>
 
       <p>
@@ -218,8 +223,7 @@ namespace boost { namespace python {
       <p>
         In some cases, automatic wrapping of operators may be impossible or
         undesirable. Suppose, for example, that the modulo operation for BigNums
-        is defined by a set of functions <code>mod()</code> (for automatic
-        wrapping, we would need <code>operator%()</code>):
+        is defined by a set of functions called <code>mod()</code>:
 
 <blockquote><pre>
 BigNum mod(BigNum const&amp; left, BigNum const&amp; right);
@@ -228,8 +232,9 @@ BigNum mod(int left, BigNum const&amp; right);
 </pre></blockquote>
 
      <p>
-       In order to create the Python operator "__mod__" from these functions, we
-       have to wrap them manually:
+        For automatic wrapping of the modulo function, <code>operator%()</code> would be needed.
+        Therefore, the <code>mod()</code>-functions must be wrapped manually. That is, we have 
+        to export them explicitly with the Python special name "__mod__":
 
 <blockquote><pre>
 bignum_class.def((BigNum (*)(BigNum const&amp;, BigNum const&amp;))&amp;mod, "__mod__");
@@ -237,8 +242,8 @@ bignum_class.def((BigNum (*)(BigNum const&amp;, int))&amp;mod, "__mod__");
 </pre></blockquote>
 
 <p>
-      The third form (with <code>int</code> as left operand) cannot be wrapped
-      this way. We must first create a function <code>rmod()</code> with the
+      The third form of <code>mod()</code> (with <code>int</code> as left operand) cannot 
+      be wrapped directly. We must first create a function <code>rmod()</code> with the
       operands reversed: 
 
 <blockquote><pre>
@@ -248,7 +253,7 @@ BigNum rmod(BigNum const&amp; right, int left)
 }
 </pre></blockquote>
 
-      This function must be wrapped under the name "__rmod__": 
+      This function must be wrapped under the name "__rmod__" (standing for "reverse mod"): 
 
 <blockquote><pre>
 bignum_class.def(&amp;rmod,  "__rmod__");
@@ -271,7 +276,7 @@ bignum_class.def(&amp;rmod,  "__rmod__");
 
       Plain Python can only execute operators with identical types on the left
       and right hand side. If it encounters an expression where the types of
-      the left and right operand differ, it tries to coerce these type to a
+      the left and right operand differ, it tries to coerce these types to a
       common type before invoking the actual operator. Implementing good
       coercion functions can be difficult if many type combinations must be
       supported. 
@@ -295,7 +300,7 @@ bignum_class.def_standard_coerce();
 </pre></blockquote>
 
       If you encounter a situation where you absolutely need a customized
-      coercion, you can overload the "__coerce__" operator itself. The signature
+      coercion, you can still define the "__coerce__" operator manually. The signature
       of a coercion function should look like one of the following (the first is
       the safest):
 
@@ -310,13 +315,22 @@ PyObject* custom_coerce(PyObject* left, PyObject* right);
       converted to the same type. Such a function is wrapped as usual: 
 
 <blockquote><pre>
+// this must be called before any use of automatic operator  
+// wrapping or a call to some_class.def_standard_coerce()
 some_class.def(&amp;custom_coerce, "__coerce__");
 </pre></blockquote>
 
-      Note that the later use of automatic operator wrapping on a
+      Note that the standard coercion (defined by use of automatic operator wrapping on a
       <code>class_builder</code> or a call to
-      ``<code>some_class.def_standard_coerce()</code>'' will cause any
-      custom coercion function to be replaced by the standard one.
+      &ldquo;<code>some_class.def_standard_coerce()</code>&rdquo;) will never be applied 
+      if a custom coercion function has been registered. Therefore, in your coercion function
+      you should call
+
+<blockquote><pre>
+boost::python::detail::extension_class_coerce(left, right);
+</pre></blockquote>
+
+    for all cases that you don't want to handle yourself.
 
 <h3><a name="ternary_pow">The Ternary <code>pow()</code> Operator</a></h3>
 
@@ -330,7 +344,7 @@ some_class.def(&amp;custom_coerce, "__coerce__");
       this is done as usual: 
 
 <blockquote><pre>
-BigNum power(BigNum const&amp; first, BigNum const&amp; second, BigNum const&amp; module);
+BigNum power(BigNum const&amp; first, BigNum const&amp; second, BigNum const&amp; modulus);
 typedef BigNum (ternary_function1)(const BigNum&amp;, const BigNum&amp;, const BigNum&amp;);
 ...
 bignum_class.def((ternary_function1)&amp;power,  "__pow__");
@@ -353,19 +367,19 @@ bignum_class.def((ternary_function2)&amp;power,  "__pow__");
 </pre></blockquote>
 
       In the second variant, however, <code>BigNum</code> appears only as second
-      argument, and in the last one it is the third argument. These functions
+      argument, and in the last one it's the third argument. These functions
       must be presented to BPL such that that the <code>BigNum</code>
       argument appears in first position:
 
 <blockquote><pre>
 BigNum rpower(BigNum const&amp; second, int first, int modulus)
 {
-    return power(first, second, third);
+    return power(first, second, modulus);
 }
 
-BigNum rrpower(BigNum const&amp; third, int first, int second)
+BigNum rrpower(BigNum const&amp; modulus, int first, int second)
 {
-    return power(first, second, third);
+    return power(first, second, modulus);
 }
 </pre></blockquote>
 
@@ -637,7 +651,7 @@ for i in S:
 while in C++ one writes
 
 <blockquote><pre>
-for (iterator i = S.begin(), end = S.end(); i != end)
+for (iterator i = S.begin(), end = S.end(); i != end; ++i)
 </blockquote></pre>
 
 <p>One could try to wrap C++ iterators in order to carry the C++ idiom into
