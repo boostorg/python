@@ -39,6 +39,8 @@
       structure overflow</a></dt>
 
       <dt><a href="#debugging">How do I debug my Python extensions?</a></dt>
+
+      <dt><a href="#imul">Why doesn't my <code>*=</code> operator work?</a></dt>
     </dl>
 
 
@@ -296,11 +298,39 @@ setting up PYTHONPATH and other important environment variables such
 as LD_LIBRARY_PATH which may be needed by your debugger in order to
 get things to work right.
 
+    <h2><a name="imul"></a>Why doesn't my <code>*=</code> operator work?</h2>
+
+<blockquote>
+<b>Q:</b> <i>I have exported my class to python, with many overloaded operators. it
+works fine for me except the </i><code>*=</code><i> operator. It always tells
+me "can't multiply sequence with non int type". If I use
+</i><code>p1.__imul__(p2)</code><i> instead of </i><code>p1 *=
+p2</code><i>, it successfully executes my code. What's wrong with
+me?</i>
+
+<p><b>A:</b> There's nothing wrong with you. This is a bug in Python
+2.2. You can see the same effect in Pure Python (you can learn a lot
+about what's happening in Boost.Python by playing with new-style
+classes in Pure Python).
+
+<pre>
+&gt;&gt;&gt; class X(object):
+...     def __imul__(self, x):
+...         print 'imul'
+...
+&gt;&gt;&gt; x = X()
+&gt;&gt;&gt; x *= 1
+</pre>
+
+To cure this problem, all you need to do is upgrade your Python to
+version 2.2.1 or later.
+
+</blockquote>
     <hr>
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     23 November, 2002 
+     24 November, 2002 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
