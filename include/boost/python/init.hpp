@@ -315,7 +315,7 @@ namespace detail
           , mpl::push_front<>
           >::type args;
 
-      typedef typename ClassT::holder_selector holder_selector_t;
+      typedef typename ClassT::holder_selector::type selector_t;
       typedef typename ClassT::held_type held_type_t;
 
       cl.def(
@@ -327,7 +327,7 @@ namespace detail
                 // Using runtime type selection works around a CWPro7 bug.
                 , holder_selector_t::execute((held_type_t*)0).get()
 #    else
-                , holder_selector_t::type::get()
+                , selector_t::get()
 #    endif 
                 )
             , doc
