@@ -711,16 +711,8 @@ class _VirtualWrapperGenerator(object):
             wrapper = self.info[method.name].wrapper
             if not wrapper:
                 # return the default implementation of the class
-                if method.abstract:
-                    s = indent2 + 'PyErr_SetString(PyExc_RuntimeError, "pure virtual function called");\n' +\
-                        indent2 + 'throw_error_already_set();\n' 
-                    params = ', '.join(param_names)
-                    s += indent2 + '%s%s(%s);\n' % \
-                        (return_str, method.name, params)
-                    return s
-                else:                 
-                    return indent2 + '%s%s(%s);\n' % \
-                        (return_str, method.FullName(), ', '.join(param_names)) 
+                return indent2 + '%s%s(%s);\n' % \
+                    (return_str, method.FullName(), ', '.join(param_names)) 
             else:
                 if wrapper.code:
                     self.codeunit.Write('declaration-outside', wrapper.code) 
@@ -728,7 +720,7 @@ class _VirtualWrapperGenerator(object):
                 params = ', '.join(['this'] + param_names)
                 return indent2 + '%s%s(%s);\n' % (return_str, wrapper.FullName(), params)
                 
-        if method.visibility != Scope.private:
+        if not method.abstract and method.visibility != Scope.private:
             minArgs = method.minArgs
             maxArgs = method.maxArgs
             impl_names = self.DefaultImplementationNames(method)
@@ -759,7 +751,9 @@ class _VirtualWrapperGenerator(object):
         # create a list of default-impl pointers
         minArgs = method.minArgs
         maxArgs = method.maxArgs 
-        if is_method_unique:
+        if method.abstract:
+            default_pointers = []
+        elif is_method_unique:
             default_pointers = ['&%s::%s' % (wrapper_name, x) for x in default_names]
         else:
             default_pointers = []
@@ -772,6 +766,8 @@ class _VirtualWrapperGenerator(object):
             
         # get the pointer of the method
         pointer = method.PointerDeclaration()
+        if method.abstract:
+            pointer = namespaces.python + ('pure_virtual(%s)' % pointer)
 
         # Add policy to overloaded methods also
         policy = self.info[method.name].policy or ''
@@ -781,9 +777,12 @@ class _VirtualWrapperGenerator(object):
         # generate the defs
         definitions = []
         # basic def
-        definitions.append('.def("%s", %s, %s%s)' % (rename, pointer, default_pointers[-1], policy))
-        for default_pointer in default_pointers[:-1]:
-            definitions.append('.def("%s", %s%s)' % (rename, default_pointer, policy))
+        if default_pointers:
+            definitions.append('.def("%s", %s, %s%s)' % (rename, pointer, default_pointers[-1], policy))
+            for default_pointer in default_pointers[:-1]:
+                definitions.append('.def("%s", %s%s)' % (rename, default_pointer, policy))
+        else:
+            definitions.append('.def("%s", %s%s)' % (rename, pointer, policy))
         return definitions
 
     
