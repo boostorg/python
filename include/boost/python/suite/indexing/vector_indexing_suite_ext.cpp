@@ -30,7 +30,6 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
         .def(init<X>())
         .def(init<std::string>())
         .def("__repr__", &X::repr)
-      .def("__eq__", &X::operator==)
         .def("reset", &X::reset)
         .def("foo", &X::foo)
     ;
