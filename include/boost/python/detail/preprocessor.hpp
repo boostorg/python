@@ -61,17 +61,8 @@ namespace boost { namespace python { namespace detail {
 # define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
 #endif 
 
-# define BOOST_PYTHON_NAMED_PF(f,Count) \
-    R(*f)(BOOST_MPL_TEMPLATE_PARAMETERS(0,Count,A))
-
-# define BOOST_PYTHON_NAMED_PMF(f, Count, cv) \
-   R(A0::*f)(BOOST_MPL_TEMPLATE_PARAMETERS(1,Count,A))cv()
-
-# define BOOST_PYTHON_PF(Count) \
-    R(*)(BOOST_MPL_TEMPLATE_PARAMETERS(0,Count,A))
-
-# define BOOST_PYTHON_PMF(Count, cv) \
-   R(A0::*)(BOOST_MPL_TEMPLATE_PARAMETERS(1,Count,A))cv()
+# define BOOST_PYTHON_FN(inner,start,count) \
+    R(inner)(BOOST_MPL_TEMPLATE_PARAMETERS(start,count,A))
 
 # define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)           \
     BOOST_PP_REPEAT_FROM_TO_2ND(                                \
