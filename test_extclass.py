@@ -841,6 +841,16 @@ test inheritB2
     'B2::inheritB2'
     >>> db2.inheritB2()
     'B2::inheritB2'
+
+===============================================================
+test methodologies for wrapping functions that return a pointer
+
+    >>> get_record().value
+    1234
+
+    In this methodology, the referent is copied
+    >>> get_record() == get_record()
+    0
 '''
 
 from demo import *

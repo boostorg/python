@@ -618,12 +618,52 @@ void vd_push_back(std::vector<double>& vd, const double& x)
 
 /************************************************************/
 /*                                                          */
+/*       What if I want to return a pointer?                */
+/*                                                          */
+/************************************************************/
+
+//
+// This example exposes the pointer by copying its referent
+//
+struct Record {
+    Record(int x) : value(x){}
+    int value;
+};
+
+const Record* get_record()
+{
+    static Record v(1234);
+    return &v;
+}
+
+template class py::ExtensionClass<Record>; // explicitly instantiate
+
+} // namespace extclass_demo
+
+#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+namespace py {
+#endif
+inline PyObject* to_python(const extclass_demo::Record* p)
+{
+    return to_python(*p);
+}
+#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+}
+#endif
+
+namespace extclass_demo {
+/************************************************************/
+/*                                                          */
 /*                       init the module                    */
 /*                                                          */
 /************************************************************/
 
 void init_module(py::Module& m)
 {
+    m.def(get_record, "get_record");
+    py::ClassWrapper<Record> record_class(m, "Record");
+    record_class.def_readonly(&Record::value, "value");
+    
     m.def(sizelist, "sizelist");
     
     py::ClassWrapper<std::vector<double> >  vector_double(m, "vector_double");
