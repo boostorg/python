@@ -11,7 +11,7 @@ namespace boost { namespace python { namespace detail {
 // Allows us to force the argument to be instantiated without
 // incurring unused variable warnings
 
-# if !defined(BOOST_MSVC) || BOOST_MSVC == 1200 || _MSC_FULL_VER > 13102171
+# if !defined(BOOST_MSVC) || BOOST_MSVC == 1200 || _MSC_FULL_VER > 13102196
 
 template <class T>
 inline void force_instantiate(T const&) {}
