@@ -191,7 +191,6 @@ namespace boost { namespace python { namespace indexing {
     typedef typename Parent::value_param value_param;
     typedef typename Parent::index_param index_param;
 
-    static void      assign     (container &, index_param, value_param);
     static void      insert     (container &, index_param);
   };
 
@@ -546,19 +545,6 @@ namespace boost { namespace python { namespace indexing {
 
         boost::python::throw_error_already_set ();
       }
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // Assign a value at a particular index (set version with dummy param)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  void
-  set_algorithms<ContainerTraits, Ovr>::assign (container &c
-                                                , index_param ix
-                                                , value_param dummy)
-  {
-    most_derived::insert (c, ix);  // Ignore dummy value parameter
   }
 
   /////////////////////////////////////////////////////////////////////////
