@@ -15,8 +15,6 @@
 
 namespace py {
 
-class ExtensionType;
-
 class Module
 {
     typedef PyObject * (*RawFunctionPtr)(py::Tuple const &, py::Dict const &);
