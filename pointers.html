@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+    <title>
+      Pointers
+    </title>
+    <div>
+      <h1>
+         <img width="277" height="86" id="_x0000_i1025" align="center"
+        src="c++boost.gif" alt= "c++boost.gif (8819 bytes)">Pointers
+      </h1>
+
+<h2><a name="problem">The Problem With Pointers</a></h2>
+
+      <p>
+In general, raw pointers passed to or returned from functions are problematic
+for py_cpp because pointers have too many potential meanings. Is it an iterator?
+A pointer to a single element? An array? When used as a return value, is the
+caller expected to manage (delete) the pointed-to object or is the pointer
+really just a reference? If the latter, what happens to Python references to the
+referent when some C++ code deletes it?
+<p>
+There are a few cases in which pointers are converted automatically:
+<ul>
+
+<li>Both const- and non-const pointers to wrapped class instances can be passed
+<i>to</i> C++ functions. 
+
+<li>Values of type <code>const char*</code> are interpreted as
+null-terminated 'C' strings and when passed to or returned from C++ functions are
+converted from/to Python strings.
+
+</ul>
+
+<h3>Can you avoid the problem?</h3>
+
+<p>My first piece of advice to anyone with a case not covered above is
+&ldquo;find a way to avoid the problem.&rdquo; For example, if you have just one
+or two functions returning a pointer to a single (not an array of) <code>const
+T*</code> for some wrapped <code>T</code>, you may be able to write a &ldquo;thin
+converting wrapper&rdquo; over those two functions as follows (Since py_cpp
+converts <code>const T&</code> values <code>to_python</code> by copying the T
+into a new extension instance, Foo must have a public copy constructor):
+
+<blockquote><pre>
+const Foo* f(); // original function
+const Foo& f_wrapper() { return *f(); }
+  ...
+my_module.def(f_wrapper, "f");
+</pre></blockquote>
+
+<h2>Dealing with the problem</h2>
+
+<p>The first step in handling the remaining cases is to figure out what the pointer
+means. Several potential solutions are provided in the examples that follow:
+
+<h3>Returning a pointer to a wrapped type</h3>
+
+<h4>Returning a const pointer</h4>
+
+<p>If you have lots of functions returning a <code>const T*</code> for some
+wrapped <code>T</code>, you may want to provide an automatic
+<code>to_python</code> conversion function so you don't have to write lots of
+thin wrappers. You can do this simply as follows:
+
+<blockquote><pre>
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+  PyObject* to_python(const Foo* p) {
+     return to_python(*p); // convert const Foo* in terms of const Foo&
+  }
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
+</pre></blockquote>
+
+<h4>If you can't (afford to) copy the referent, or the pointer is non-const</h4>
+
+<p>If the wrapped type doesn't have a public copy constructor, if copying is
+<i>extremely</i> costly (remember, we're dealing with Python here), or if the
+pointer is non-const and you really need to be able to modify the referent from
+Python, you can use the following dangerous trick. Why dangerous? Because python
+can not control the lifetime of the referent, so it may be destroyed by your C++
+code before the last Python reference to it disappears:
+
+<blockquote><pre>
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+  PyObject* to_python(Foo* p)
+  {
+      return python::PyExtensionClassConverters<Foo>::ptr_to_python(p);
+  }
+
+  PyObject* to_python(const Foo* p)
+  {
+      return to_python(const_cast<Foo*>(p));
+  }
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
+</pre></blockquote>
+
+This will cause the Foo* to be treated as though it were an owning smart
+pointer, even though it's not. Be sure you don't use the reference for anything
+from Python once the pointer becomes invalid, though. Don't worry too much about
+the <code>const_cast&lt;&gt;</code> above: Const-correctness is completely lost
+to Python anyway!
+
+<h3>[In/]Out Parameters and Immutable Types</h3>
+
+<p>If you have an interface that uses non-const pointers (or references) as
+in/out parameters to types which in Python are immutable (e.g. int, string),
+there simply is <i>no way</i> to get the same interface in Python. You must
+resort to transforming your interface with simple thin wrappers as shown below:
+<blockquote><pre>
+const void f(int* in_out_x); // original function
+const int f_wrapper(int in_x) { f(in_x); return in_x; }
+  ...
+my_module.def(f_wrapper, "f");
+</pre></blockquote>
+
+<p>Of course, [in/]out parameters commonly occur only when there is already a
+return value. You can handle this case by returning a Python tuple:
+<blockquote><pre>
+typedef unsigned ErrorCode;
+const char* f(int* in_out_x); // original function
+ ...
+#include &lt;py_cpp/objects.h&gt;
+const python::tuple f_wrapper(int in_x) { 
+  const char* s = f(in_x); 
+  return python::tuple(s, in_x);
+}
+  ...
+my_module.def(f_wrapper, "f");
+</pre></blockquote>
+<p>Now, in Python:
+<blockquote><pre>
+&gt;&gt;&gt; str,out_x = f(3)
+</pre></blockquote>
+
+
+
+      <p>
+         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+        sell and distribute this document is granted provided this copyright
+        notice appears in all copies. This document is provided "as is" without
+        express or implied warranty, and with no claim as to its suitability
+        for any purpose.
+      <p>
+         Updated: Nov 6, 2000
+    </div>
+
