@@ -32,6 +32,7 @@
 namespace boost { namespace python {
 
 typedef detail::keywords<1> arg;
+typedef arg arg_; // gcc 2.96 workaround
 
 namespace detail
 {
