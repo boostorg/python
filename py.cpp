@@ -14,11 +14,6 @@
 
 namespace py {
 
-void expect_and_absorb_non_null(PyObject* p)
-{
-    Py_XDECREF(expect_non_null(p));
-}
-
 // IMPORTANT: this function may only be called from within a catch block!
 void handle_exception()
 {
