@@ -53,8 +53,17 @@ T* check_non_null(T* p)
 
 template <class T> class HeldInstance;
 typedef void * (*ConversionFct)(void *);
-typedef std::pair<TypeObjectBase *, ConversionFct> BaseClassInfo;
-typedef std::pair<TypeObjectBase *, ConversionFct> SubClassInfo;
+
+struct BaseClassInfo
+{
+    BaseClassInfo(TypeObjectBase * t, ConversionFct f)
+    :class_object(t), convert(f)
+    {}
+    
+    TypeObjectBase *class_object;
+    ConversionFct convert;
+};
+typedef BaseClassInfo SubClassInfo;
 
 class ExtensionClassBase : public Class<ExtensionInstance>
 {
@@ -71,8 +80,8 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void add_getter_method(Function*, const char* name);
     
     virtual void * try_class_conversions(InstanceHolderBase*) const;
-    virtual void * try_super_class_conversions(InstanceHolderBase*) const;
-    virtual void * try_sub_class_conversions(InstanceHolderBase*) const;
+    virtual void * try_superclass_conversions(InstanceHolderBase*) const;
+    virtual void * try_subclass_conversions(InstanceHolderBase*) const;
     virtual std::vector<BaseClassInfo> const & base_classes() const = 0;
     virtual std::vector<SubClassInfo> const & sub_classes() const = 0;
 };

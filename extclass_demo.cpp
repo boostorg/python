@@ -363,10 +363,9 @@ static int getX(OverloadTest * u)
     return u->x();
 }
 
-
 /************************************************************/
 /*                                                          */
-/*    classes to test base declarations snd conversions     */
+/*    classes to test base declarations and conversions     */
 /*                                                          */
 /************************************************************/
 
@@ -427,6 +426,57 @@ static int testDowncast2(Derived2 * d)
 
 /************************************************************/
 /*                                                          */
+/*       test classes for interaction of overloading,       */
+/*             base declarations,  and callbacks            */
+/*                                                          */
+/************************************************************/
+
+struct CallbackTestBase
+{
+  virtual int testCallback(int i) { return callback(i); }
+  virtual int callback(int i) = 0;
+};
+
+struct CallbackTest : public CallbackTestBase
+{
+  virtual int callback(int i) { return i + 1; }
+  virtual std::string callbackString(std::string const & i) { return i + " 1"; }
+};
+
+struct CallbackTestCallback : public CallbackTest
+{
+  CallbackTestCallback(PyObject* self)
+  : m_self(self)
+  {}
+  
+  int callback(int x) 
+  { 
+    return py::Callback<int>::call_method(m_self, "callback", x); 
+  }
+  std::string callbackString(std::string const & x) 
+  { 
+    return py::Callback<std::string>::call_method(m_self, "callback", x); 
+  }
+
+  static int default_callback(CallbackTest * self, int x) 
+  { 
+    return self->CallbackTest::callback(x); 
+  }
+  static std::string default_callbackString(CallbackTest * self, std::string x) 
+  { 
+    return self->CallbackTest::callbackString(x); 
+  }
+  
+  PyObject * m_self;
+};
+
+int testCallback(CallbackTestBase * b, int i)
+{
+    return b->testCallback(i);
+}
+
+/************************************************************/
+/*                                                          */
 /*                       init the module                    */
 /*                                                          */
 /************************************************************/
@@ -472,7 +522,7 @@ void init_module(py::Module& m)
     m.def(&test5, "overloaded");
 
     py::ClassWrapper<OverloadTest> over(m, "OverloadTest");
-    over.def(py::Constructor<>());
+    over.def(py::Constructor<py::Void>());
     over.def(py::Constructor<OverloadTest const &>());
     over.def(py::Constructor<int>());
     over.def(py::Constructor<int, int>());
@@ -507,6 +557,19 @@ void init_module(py::Module& m)
     m.def(&derived2Factory, "derived2Factory");
     m.def(&testDowncast1, "testDowncast1");
     m.def(&testDowncast2, "testDowncast2");
+
+    py::ClassWrapper<CallbackTestBase> callbackTestBase(m, "CallbackTestBase");
+    callbackTestBase.def(&CallbackTestBase::testCallback, "testCallback");
+    m.def(&testCallback, "testCallback");
+
+    py::ClassWrapper<CallbackTest, CallbackTestCallback> callbackTest(m, "CallbackTest");
+    callbackTest.def(py::Constructor<py::Void>());
+    callbackTest.def(&CallbackTest::callback, "callback", 
+                   &CallbackTestCallback::default_callback);
+    callbackTest.def(&CallbackTest::callbackString, "callback", 
+                   &CallbackTestCallback::default_callbackString);
+
+    callbackTest.declare_base(callbackTestBase);     
 }
 
 void init_module()

@@ -62,8 +62,8 @@ class TypeObjectBase : public PythonType
     virtual int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
 
     virtual void * try_class_conversions(InstanceHolderBase*) const { return 0; }
-    virtual void * try_super_class_conversions(InstanceHolderBase*) const { return 0; }
-    virtual void * try_sub_class_conversions(InstanceHolderBase*) const { return 0; }
+    virtual void * try_superclass_conversions(InstanceHolderBase*) const { return 0; }
+    virtual void * try_subclass_conversions(InstanceHolderBase*) const { return 0; }
     virtual void * convert_from_holder(InstanceHolderBase*) const { return 0; }
 
     // Dealloc is a special case, since every type needs a nonzero tp_dealloc slot.

@@ -512,6 +512,46 @@ Testing base class conversions
     >>> testDowncast2(der1)
     Traceback (innermost last):
     TypeError: extension class 'Base' is not convertible into 'Derived2'.
+    
+Testing interaction between callbacks, base declarations, and overloading
+- testCallback() calls callback() (within C++)
+- callback() is overloaded (in the wrapped class CallbackTest)
+- callback() is redefined in RedefineCallback (overloading is simulated by type casing)
+- testCallback() should use the redefined callback()
+
+    >>> c = CallbackTest()
+    >>> c.testCallback(1)
+    2
+    >>> c.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
+    >>> c.callback(1)
+    2
+    >>> c.callback('foo')
+    'foo 1'
+    
+    >>> import types
+    >>> class RedefineCallback(CallbackTest):
+    ...     def callback(self, x): 
+    ...             if type(x) is types.IntType:
+    ...                     return x - 2
+    ...             else:
+    ...                     return CallbackTest.callback(self,x)
+    ... 
+    >>> r = RedefineCallback()
+    >>> r.callback(1)
+    -1
+    >>> r.callback('foo')
+    'foo 1'
+    >>> r.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
+    >>> r.testCallback(1)
+    -1
+    >>> testCallback(r, 1)
+    -1
 '''
 
 from demo import *
