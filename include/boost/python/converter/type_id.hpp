@@ -7,21 +7,18 @@
 # define TYPE_ID_DWA20011127_HPP
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
+# include <boost/python/detail/msvc_typeinfo.hpp>
+# include <boost/type_traits/cv_traits.hpp>
+# include <boost/type_traits/composite_traits.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/operators.hpp>
+# include <boost/type.hpp>
 # include <typeinfo>
 # include <iosfwd>
 # include <cstring>
 
 
 namespace boost { namespace python { namespace converter { 
-
-// a portable mechanism for identifying types at runtime across modules.
-
-namespace detail
-{
-  template <class T> class dummy;
-}
 
 // for this compiler at least, cross-shared-library type_info
 // comparisons don't work, so use typeid(x).name() instead. It's not
@@ -61,7 +58,7 @@ struct type_id_t : totally_ordered<type_id_t>
 {
     enum decoration { const_ = 0x1, volatile_ = 0x2, reference = 0x4 };
     
-    type_id_t(undecorated_type_id_t, decoration decoration);
+    type_id_t(undecorated_type_id_t, decoration = decoration());
 
     bool operator<(type_id_t const& rhs) const;
     bool operator==(type_id_t const& rhs) const;
@@ -78,13 +75,19 @@ struct type_id_t : totally_ordered<type_id_t>
 };
 
 template <class T>
-inline undecorated_type_id_t undecorated_type_id(detail::dummy<T>* = 0)
+inline undecorated_type_id_t undecorated_type_id(boost::type<T>* = 0)
 {
-    return undecorated_type_id_t(typeid(T));
+    return undecorated_type_id_t(
+#  if (!defined(BOOST_MSVC) || BOOST_MSVC > 1300) && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
+        typeid(T)
+#  else // strip the decoration which msvc and Intel mistakenly leave in
+        python::detail::msvc_typeid<T>()
+#  endif 
+        );
 }
 
 template <class T>
-inline type_id_t type_id(detail::dummy<T>* = 0)
+inline type_id_t type_id(boost::type<T>* = 0)
 {
     return type_id_t(
         undecorated_type_id<T>()

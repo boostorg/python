@@ -8,7 +8,6 @@
 
 # include <boost/python/object/function.hpp>
 # include <boost/python/object/make_holder.hpp>
-# include <boost/python/converter/registration.hpp>
 # include <boost/python/detail/caller.hpp>
 # include <boost/python/detail/arg_tuple_size.hpp>
 # include <boost/mpl/size.hpp>

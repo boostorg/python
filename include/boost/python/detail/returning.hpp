@@ -11,17 +11,10 @@
 #ifndef RETURNING_DWA20011201_HPP
 # define RETURNING_DWA20011201_HPP
 
-//# include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/config.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/from_python.hpp>
-# include <boost/python/to_python.hpp>
-
-namespace boost { namespace python
-{
-  template <class T> struct to_python;
-}} // namespace boost::python
 
 namespace boost { namespace python { namespace detail {
 

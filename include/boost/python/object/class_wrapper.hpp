@@ -6,21 +6,18 @@
 #ifndef CLASS_WRAPPER_DWA20011221_HPP
 # define CLASS_WRAPPER_DWA20011221_HPP
 
-# include <boost/python/object/class.hpp>
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/reference.hpp>
-# include <boost/python/converter/to_python.hpp>
-# include <memory>
+# include <boost/python/to_python_converter.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
 template <class T>
 struct class_wrapper
-    : converter::to_python_converter<T const&>
+    : to_python_converter<T, class_wrapper<T> >
 {
     class_wrapper(ref const& type_)
-        : converter::to_python_converter<T const&>(convert)
-        , m_class_object_keeper(type_)
+        : m_class_object_keeper(type_)
     {
         assert(type_->ob_type == (PyTypeObject*)class_metatype().get());
         m_class_object = (PyTypeObject*)type_.get();
@@ -31,9 +28,8 @@ struct class_wrapper
         // Don't call the type to do the construction, since that
         // would require the registration of an __init__ copy
         // constructor. Instead, just construct the object in place.
-        PyObject* raw_result = (PyObject*)PyObject_New(
-            instance, m_class_object);
-        
+        PyObject* raw_result = m_class_object->tp_alloc(m_class_object, 0);
+
         if (raw_result == 0)
             return 0;
 
@@ -41,6 +37,8 @@ struct class_wrapper
         // exceptions.
         ref result(raw_result, ref::allow_null());
 
+        ((instance*)raw_result)->objects = 0;
+        
         // Build a value_holder to contain the object using the copy
         // constructor
         value_holder<T>* p = new value_holder<T>(raw_result, cref(x));

@@ -7,15 +7,24 @@
 # define TO_PYTHON_FUNCTION_DWA2002128_HPP
 
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/type_traits/transform_traits.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-typedef PyObject* (*to_python_function_base)(void);
+// The type of stored function pointers which actually do conversion
+// by-value. The void* points to the object to be converted, and
+// type-safety is preserved through runtime registration.
+typedef PyObject* (*to_python_value_function)(void const*);
 
-template <class T>
-struct to_python_function
+// Given a typesafe to_python conversion function, produces a
+// to_python_value_function which can be registered in the usual way.
+template <class T, class ToPython>
+struct as_to_python_value_function
 {
-    typedef PyObject*(*type)(T);
+    static PyObject* convert(void const* x)
+    {
+        return ToPython::convert(*(T const*)x);
+    }
 };
 
 }}} // namespace boost::python::converter

@@ -16,6 +16,7 @@
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/converter/class.hpp>
 #include <boost/python/reference_from_python.hpp>
+#include <boost/python/to_python_converter.hpp>
 #include <boost/python/value_from_python.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/mpl/type_list.hpp>
@@ -105,26 +106,19 @@ PyObject* new_simple()
 // are selected.
 //
 using boost::python::converter::from_python_data;
+using boost::python::to_python_converter;
 
-// Wrap a simple by converting it to a Simple
-PyObject* simple_to_python(simple const& x)
+// Wrap a simple by copying it into a Simple
+struct simple_to_python
+    : to_python_converter<simple, simple_to_python>
 {
-    SimpleObject* p = PyObject_New(SimpleObject, &SimpleType);
-    p->x = x;
-    return (PyObject*)p;
-}
-
-
-// wrap a mutable reference to a simple by converting it to a
-// Simple. Normally we wouldn't do it this way, since modifications to
-// the result clearly don't change the original object, but here we're
-// just proving that the mechanism works.
-PyObject* simple_ref_to_python(simple& x)
-{
-    SimpleObject* p = PyObject_New(SimpleObject, &SimpleType);
-    p->x = x;
-    return (PyObject*)p;
-}
+    static PyObject* convert(simple const& x)
+    {
+        SimpleObject* p = PyObject_New(SimpleObject, &SimpleType);
+        p->x = x;
+        return (PyObject*)p;
+    }
+};
 
 int noddy_to_int(PyObject* p, from_python_data&)
 {
@@ -184,16 +178,15 @@ struct D : B, C
     int x;
 };
 
-int take_a(A const& a) { return a.x; }
-int take_b(B const& b) { return b.x; }
-int take_c(C const& c) { return c.x; }
-int take_d(D const& d) { return d.x; }
+A take_a(A const& a) { return a; }
+B take_b(B const& b) { return b; }
+C take_c(C const& c) { return c; }
+D take_d(D const& d) { return d; }
     
 BOOST_PYTHON_MODULE_INIT(m1)
 {
     using boost::python::module;
     using boost::python::class_;
-    using boost::python::converter::to_python_converter;
     using boost::python::converter::from_python_converter;
     using boost::python::reference_from_python;
     using boost::python::value_from_python;
@@ -204,7 +197,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
     using boost::mpl::type_list;
     
     // Create the converters; they are self-registering/unregistering.
-    static to_python_converter<simple const&> c1(simple_to_python);
+    static simple_to_python c1;
 
     static from_python_converter<int> c2(
         &(boost::python::type_from_python<&NoddyType>::convertible), noddy_to_int);
@@ -219,10 +212,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
         , extract_simple_object
         >
         unwrap_simple;
-    
-    static to_python_converter<simple&> simple_ref_wrapper(simple_ref_to_python);
 
-    
     module m1("m1");
 
     typedef boost::python::objects::pointer_holder_generator<

@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 
 #include <boost/python/converter/from_python.hpp>
+#include <boost/python/converter/registry.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -14,14 +15,12 @@ from_python_converter_base::from_python_converter_base(
     )
     : body(type)
     , m_convertible(checker)
-{
-    registry::insert(*this);
-}
 
-from_python_converter_base::~from_python_converter_base()
 {
-    if (can_unregister())
-        registry::remove(*this);
+    // Insert this in the converter chain.
+    from_python_converter_base*& head = registry::from_python_chain(type);
+    m_next = head;
+    head = this;
 }
 
 }}} // namespace boost::python::converter

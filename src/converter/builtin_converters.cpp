@@ -200,7 +200,6 @@ namespace
 #define REGISTER_INT_CONVERTERS(U) register_int_converters<U>()
 #define REGISTER_INT_CONVERTERS2(U) REGISTER_INT_CONVERTERS(signed U); REGISTER_INT_CONVERTERS(unsigned U)  
 
-
 void initialize_builtin_converters()
 {
     REGISTER_INT_CONVERTERS2(char);

@@ -73,8 +73,8 @@ are a complicated constructor and member function, respectively.
 >>> d = D()
 
 ------
->>> take_a(a)
-0
+>>> take_a(a).name()
+'A'
 
 >>> try:
 ...     take_b(a)
@@ -92,11 +92,11 @@ are a complicated constructor and member function, respectively.
 ... else: print 'no exception'
 
 ------
->>> take_a(b)
-0
+>>> take_a(b).name()
+'A'
 
->>> take_b(b)
-1
+>>> take_b(b).name()
+'B'
 
 >>> try:
 ...     take_c(b)
@@ -109,16 +109,16 @@ are a complicated constructor and member function, respectively.
 ... else: print 'no exception'
 
 -------
->>> take_a(c)
-0
+>>> take_a(c).name()
+'A'
 
 >>> try:
 ...     take_b(c)
 ... except: pass
 ... else: print 'no exception'
 
->>> take_c(c)
-2
+>>> take_c(c).name()
+'C'
 
 >>> try:
 ...     take_d(c)
@@ -126,14 +126,14 @@ are a complicated constructor and member function, respectively.
 ... else: print 'no exception'
 
 -------
->>> take_a(d)
-0
->>> take_b(d)
-1
->>> take_c(d)
-2
->>> take_d(d)
-3
+>>> take_a(d).name()
+'A'
+>>> take_b(d).name()
+'B'
+>>> take_c(d).name()
+'C'
+>>> take_d(d).name()
+'D'
 
 
 """

@@ -8,20 +8,41 @@
 # include <string>
 # include <boost/python/detail/wrap_python.hpp>
 
-namespace boost { namespace python { namespace converter { 
+namespace boost { namespace python { 
 
-template <class T> struct to_python_lookup;
+// Provide specializations of to_python_value
+template <class T> struct to_python_value;
 
-template <class T>
-struct to_python_int
+namespace detail
 {
-    bool convertible() const { return true; }
-    PyObject* operator()(T x) const { return PyInt_FromLong(long(x)); }
-};
+  struct builtin_to_python
+  {
+      static bool convertible() { return true; }
+  };
+}
 
-# define BOOST_PYTHON_TO_INT(T) \
-    template <> struct to_python_lookup<signed T const&> : to_python_int<signed T const&> {}; \
-    template <> struct to_python_lookup<unsigned T const&> : to_python_int<unsigned T const&> {};
+# define BOOST_PYTHON_TO_PYTHON_BY_VALUE(T, expr)   \
+    template <> struct to_python_value<T&>          \
+        : detail::builtin_to_python                 \
+    {                                               \
+        PyObject* operator()(T const& x) const      \
+        {                                           \
+            return (expr);                          \
+        }                                           \
+    };                                              \
+    template <> struct to_python_value<T const&>    \
+        : detail::builtin_to_python                 \
+    {                                               \
+        PyObject* operator()(T const& x) const      \
+        {                                           \
+            return (expr);                          \
+        }                                           \
+    };
+
+
+# define BOOST_PYTHON_TO_INT(T)                                         \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, PyInt_FromLong(x))        \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned T, PyInt_FromLong(x))
 
 BOOST_PYTHON_TO_INT(char)
 BOOST_PYTHON_TO_INT(short)
@@ -29,47 +50,13 @@ BOOST_PYTHON_TO_INT(int)
 BOOST_PYTHON_TO_INT(long)
 # undef BOOST_TO_PYTHON_INT
 
-template <>
-struct to_python_lookup<char const*const&>
-{
-    bool convertible() const { return true; }
-    PyObject* operator()(char const* x) const { return PyString_FromString(x); }
-};
-    
-template <>
-struct to_python_lookup<std::string const&>
-{
-    bool convertible() const { return true; }
-    PyObject* operator()(std::string const& x) const
-    {
-        return PyString_FromString(x.c_str());
-    }
-};
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, PyString_FromString(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromString(x.c_str()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(PyObject*, x)
 
-template <>
-struct to_python_lookup<float const&>
-{
-    bool convertible() const { return true; }
-    PyObject* operator()(float x) const { return PyFloat_FromDouble(x); }
-};
-    
-template <>
-struct to_python_lookup<double const&>
-{
-    bool convertible() const { return true; }
-    PyObject* operator()(double x) const { return PyFloat_FromDouble(x); }
-};
-    
-template <>
-struct to_python_lookup<long double const&>
-{
-    bool convertible() const { return true; }
-    PyObject* operator()(long double x) const
-    {
-        return PyFloat_FromDouble(x);
-    }
-};
-    
-}}} // namespace boost::python::converter
+}} // namespace boost::python::converter
 
 #endif // BUILTIN_TO_PYTHON_CONVERTERS_DWA2002129_HPP

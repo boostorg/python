@@ -15,7 +15,6 @@ PYTHON_PROPERTIES
     dll bpl
       : 
       src/converter/from_python.cpp
-      src/converter/to_python.cpp
       src/converter/registry.cpp
       src/converter/type_id.cpp
       src/object/class.cpp

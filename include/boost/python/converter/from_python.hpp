@@ -11,7 +11,7 @@
 # include <boost/python/converter/from_python_function.hpp>
 # include <boost/python/converter/from_python_data.hpp>
 # include <boost/python/converter/type_id.hpp>
-# include <boost/python/converter/registration.hpp>
+# include <boost/python/converter/registry.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 
 namespace boost { namespace python { namespace converter { 
@@ -29,16 +29,21 @@ template <class T> struct from_python_lookup;
 struct BOOST_PYTHON_DECL from_python_converter_base : body
 {
     from_python_converter_base(type_id_t, from_python_check); // registers
-    ~from_python_converter_base();         // unregisters
 
     // Must return non-null iff the conversion will be successful. Any
     // non-null pointer is acceptable, and will be passed on to the
     // convert() function, so useful data can be stored there.
     inline void* convertible(PyObject*) const;
-//    inline type_id_t key() const;
+
+    // Given the head of a from_python converter chain, find the
+    // converter which can convert p, leaving its intermediate data in
+    // data.
+    inline static from_python_converter_base const*
+    find(from_python_converter_base const*chain, PyObject* p, void*& data);
+    
  private:
-//    type_id_t m_key;
     from_python_check m_convertible;
+    from_python_converter_base* m_next;
 };
 
 
@@ -52,17 +57,24 @@ struct from_python_converter : from_python_converter_base
     from_python_converter(from_python_check, conversion_function, from_python_destructor = 0);
     T convert(PyObject*, from_python_data&) const;
     void destroy(from_python_data&) const;
+
+    // Find a converter for converting p to a T.
+    static from_python_converter<T> const* find(PyObject* p, void*& data);
     
  private: // data members
     conversion_function m_convert;
     from_python_destructor m_destroy;
+
+    // Keeps the chain of converters which convert from PyObject* to T
+    static from_python_converter_base*const& chain;
 };
 
-// -------------------------------------------------------------------------
+// Initialized to refer to a common place in the registry.
+template <class T>
+from_python_converter_base*const&
+from_python_converter<T>::chain = registry::from_python_chain(type_id<T>());
 
-//struct from_python_base
-//{
-//};
+// -------------------------------------------------------------------------
 
 // A class which implements from_python with a registry lookup.
 template <class T>
@@ -95,12 +107,21 @@ inline void* from_python_converter_base::convertible(PyObject* o) const
     return m_convertible(o);
 }
 
-# if 0
-inline type_id_t from_python_converter_base::key() const
+inline from_python_converter_base const*
+from_python_converter_base::find(
+    from_python_converter_base const* chain, PyObject* p, void*& data)
 {
-    return m_key;
+    for (from_python_converter_base const* q = chain; q != 0 ; q = q->m_next)
+    {
+        void* d = q->convertible(p);
+        if (d != 0)
+        {
+            data = d;
+            return q;
+        }
+    }
+    return 0;
 }
-# endif 
 
 template <class T>
 inline from_python_converter<T>::from_python_converter(
@@ -113,6 +134,14 @@ inline from_python_converter<T>::from_python_converter(
     , m_destroy(destructor)
 {
     
+}
+
+template <class T>
+inline from_python_converter<T> const*
+from_python_converter<T>::find(PyObject* p, void*& data)
+{
+    return static_cast<from_python_converter<T> const*>(
+        from_python_converter_base::find(chain, p, data));
 }
 
 template <class T>
@@ -133,7 +162,7 @@ inline void from_python_converter<T>::destroy(from_python_data& data) const
 template <class T>
 inline from_python_lookup<T>::from_python_lookup(PyObject* src)
     : m_converter(
-        registration<T>::get_from_python(
+        from_python_converter<T>::find(
             src, m_intermediate_data.stage1))
 {
 }

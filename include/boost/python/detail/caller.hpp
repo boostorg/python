@@ -20,26 +20,6 @@ namespace boost { namespace python
 
 namespace boost { namespace python { namespace detail {
 
-// for "readable" error messages
-template <class T> struct must_use_a_result_handler_to_wrap_functions_returning
-# if defined(__GNUC__) && __GNUC__ >= 3 || defined(__EDG__)
-{}
-# endif 
-;
-
-struct to_python_generator
-{
-    template <class R>
-    struct apply
-    {
-        typedef typename mpl::select_type<
-                is_reference<R>::value | is_pointer<R>::value
-            , must_use_a_result_handler_to_wrap_functions_returning<R>
-            , to_python<R>
-        >::type type;
-    };
-};
-
 struct caller
 {
     typedef PyObject* result_type;

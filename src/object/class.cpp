@@ -6,7 +6,6 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/object/class.hpp>
-#include <boost/python/object/class_wrapper.hpp>
 #include <boost/python/objects.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/detail/binary_search.hpp>
@@ -122,7 +121,7 @@ PyTypeObject class_type_object = {
         0,                                      /* tp_descr_set */
         0,                                      /* tp_dictoffset */
         0,                                      /* tp_init */
-        0,                                      /* tp_alloc */
+        PyType_GenericAlloc,                    /* tp_alloc */
         PyType_GenericNew
 };
 
