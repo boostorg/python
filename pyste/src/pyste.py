@@ -27,7 +27,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.6.3'
+__VERSION__ = '0.6.4'
 
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:

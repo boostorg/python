@@ -258,7 +258,7 @@ class ConverterOperator(ClassOperator):
     'An operator in the form "operator OtherClass()".'
     
     def FullName(self):
-        return self.class_ + '::operator ' + self.result.name
+        return self.class_ + '::operator ' + self.result.FullName()
 
     
 

@@ -8,6 +8,7 @@ from EnumExporter import EnumExporter
 from makeid import makeid
 from copy import deepcopy
 import exporterutils
+import re
 
 #==============================================================================
 # ClassExporter
@@ -357,12 +358,16 @@ class ClassExporter(Exporter):
         '()' : '__call__',
     }
 
-    # converters which has a special name in python
+    # converters which have a special name in python
+    # it's a map of a regular expression of the converter's result to the
+    # appropriate python name
     SPECIAL_CONVERTERS = {
-        'double' : '__float__',
-        'float' : '__float__',
-        'int' : '__int__',
-        'long' : '__long__',
+        re.compile(r'(const)?\s*double$') : '__float__',
+        re.compile(r'(const)?\s*float$') : '__float__',
+        re.compile(r'(const)?\s*int$') : '__int__',
+        re.compile(r'(const)?\s*long$') : '__long__',
+        re.compile(r'(const)?\s*char\s*\*?$') : '__str__',
+        re.compile(r'(const)?.*::basic_string<.*>\s*(\*|\&)?$') : '__str__',
     }
         
     
@@ -475,16 +480,18 @@ class ClassExporter(Exporter):
         converters = [x for x in self.public_members if type(x) == ConverterOperator]
                 
         def ConverterMethodName(converter):
-            result_fullname = converter.result.name
-            if result_fullname in self.SPECIAL_CONVERTERS:
-                return self.SPECIAL_CONVERTERS[result_fullname]
+            result_fullname = converter.result.FullName()
+            result_name = converter.result.name
+            for regex, method_name in self.SPECIAL_CONVERTERS.items():
+                if regex.match(result_fullname):
+                    return method_name
             else:
                 # extract the last name from the full name
-                result_name = makeid(result_fullname.split('::')[-1])
+                result_name = makeid(result_name)
                 return 'to_' + result_name
             
         for converter in converters:
-            info = self.info['operator'][converter.result.name]
+            info = self.info['operator'][converter.result.FullName()]
             # check if this operator should be excluded
             if info.exclude:
                 continue

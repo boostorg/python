@@ -28,7 +28,7 @@ struct C
         return C::x + other;
     }
     
-
+    operator const char*() { return "C"; }
 };
 
 double C::x = 10;
@@ -39,5 +39,6 @@ const C operator*(const C& lhs, const C& rhs)
     c.value = lhs.value * rhs.value;
     return c;
 }
+
 
 }

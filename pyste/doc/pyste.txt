@@ -123,6 +123,10 @@ which for Visual C++ 6 is normally located at:
 
 with that, you should have little trouble setting up the flags.
 
+[blurb [$theme/note.gif][*A note about Psyco][br][br]
+Although you don't have to install [@http://psyco.sourceforge.net/ Psyco] to use Pyste, if you do, Pyste will make use of it to speed up the wrapper generation. Speed ups of 30% can be achieved, so it's highly recommended.
+]
+
 [page The Interface Files]
 
 The interface files are the heart of Pyste. The user creates one or more
