@@ -74,7 +74,9 @@ class ExtensionClassBase : public Class<ExtensionInstance>
 {
  public:
     ExtensionClassBase(const char* name);
-    
+    void set_attribute(const char* name, PyObject* x);
+    void set_attribute(const char* name, Ptr x);
+                  
  public:
     // the purpose of try_class_conversions() and its related functions 
     // is explained in extclass.cpp
