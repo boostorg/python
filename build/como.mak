@@ -1,3 +1,5 @@
+# Revision History:
+# 04 Mar 01  Changed library name to libboost_python.a (David Abrahams)
 LIBSRC = \
     classes.cpp \
     conversions.cpp \
@@ -30,8 +32,8 @@ endif
             | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
                 [ -s $@ ] || rm -f $@
 
-example1: example1.o libpycpp.a
-	como-dyn-link -o ../example/hellomodule.$(MODULE_EXTENSION) $(PYHTON_LIB) example1.o -L. -lpycpp
+example1: example1.o libboost_python.a
+	como-dyn-link -o ../example/hellomodule.$(MODULE_EXTENSION) $(PYHTON_LIB) example1.o -L. -lboost_python
 	python ../example/test_example1.py
 
 example1.o: ../example/example1.cpp
@@ -40,9 +42,9 @@ example1.o: ../example/example1.cpp
 clean:
 	rm -rf *.o *.$(MODULE_EXTENSION) *.a *.d *.pyc *.bak a.out
 
-libpycpp.a: $(LIBOBJ)
-	rm -f libpycpp.a
-	ar cq libpycpp.a $(LIBOBJ)
+libboost_python.a: $(LIBOBJ)
+	rm -f libboost_python.a
+	ar cq libboost_python.a $(LIBOBJ)
 
 DEP = $(OBJ:.o=.d)
 
