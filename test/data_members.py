@@ -30,6 +30,11 @@
 >>> v.get_name2()
 'pi'
 
+>>> v.y.x
+6
+>>> v.y.x = -7
+>>> v.y.x
+-7
 '''
 
 def run(args = None):

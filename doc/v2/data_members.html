@@ -77,7 +77,15 @@ template &lt;class C, class D, class Policies&gt;
       <code>C*</code>, and returns the corresponding member <code>D</code>
       member of the <code>C</code> object, converted <code>to_python</code>.
       If <code>policies</code> is supplied, it will be applied to the
-      function as described <a href="CallPolicies.html">here</a>.</dt>
+      function as described <a href="CallPolicies.html">here</a>. Otherwise,
+      the library attempts to determine whether <code>D</code> is a
+      user-defined class type, and if so uses <code><a href=
+      "return_internal_reference.html#return_internal_reference-spec">return_internal_reference</a>&lt;&gt;</code></dt>
+
+      <dt>for <code>Policies</code>. Note that this test may inappropriately
+      choose <code>return_internal_reference&lt;&gt;</code> in some cases
+      when <code>D</code> is a smart pointer type. This is a known
+      defect.</dt>
 
       <dt><b>Returns:</b> An instance of <a href=
       "object.html#object-spec">object</a> which holds the new Python
@@ -147,8 +155,8 @@ BOOST_PYTHON_MODULE_INIT(data_members_example)
 
     <p>
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     13 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=

@@ -38,6 +38,11 @@ namespace detail
   struct builtin_to_python
   {
       static bool convertible() { return true; }
+
+      // This information helps make_getter() decide whether to try to
+      // return an internal reference or not. I don't like it much,
+      // but it will have to serve for now.
+      BOOST_STATIC_CONSTANT(bool, uses_registry = false);
   };
 }
 

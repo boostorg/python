@@ -9,11 +9,15 @@
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/type_traits/transform_traits.hpp>
-# include <boost/type_traits/cv_traits.hpp>
+# include <boost/type_traits/add_const.hpp>
+# include <boost/type_traits/add_reference.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/return_by_value.hpp>
+# include <boost/python/return_internal_reference.hpp>
 # include <boost/python/object/function_object.hpp>
 # include <boost/python/arg_from_python.hpp>
+# include <boost/python/converter/builtin_converters.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/bind.hpp>
 
 namespace boost { namespace python { 
@@ -44,7 +48,7 @@ namespace detail
       static PyObject* set(Data Class::*pm, PyObject* args_, PyObject*, Policies const& policies)
       {
           // check that each of the arguments is convertible
-          arg_from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
+          arg_from_python<Class&> c0(PyTuple_GET_ITEM(args_, 0));
           if (!c0.convertible()) return 0;
 
           typedef typename add_const<Data>::type target1;
@@ -55,22 +59,40 @@ namespace detail
 
           if (!policies.precall(args_)) return 0;
 
-          (c0(PyTuple_GET_ITEM(args_, 0)))->*pm = c1(PyTuple_GET_ITEM(args_, 1));
+          (c0(PyTuple_GET_ITEM(args_, 0))).*pm = c1(PyTuple_GET_ITEM(args_, 1));
         
           return policies.postcall(args_, detail::none());
       }
   };
+
+  // If it's a regular class type (not an object manager or other
+  // type for which we have to_python specializations, use
+  // return_internal_reference so that we can do things like
+  //    x.y.z =  1
+  // and get the right result.
+  template <class T>
+  struct default_getter_policy
+      : mpl::if_c<
+        to_python_value<
+          typename add_reference<
+              typename add_const<T>::type
+          >::type
+        >::uses_registry
+        , return_internal_reference<>
+        , return_value_policy<return_by_value>
+    >
+  {};
 }
 
 template <class C, class D>
 object make_getter(D C::*pm)
 {
-    typedef return_value_policy<return_by_value> default_policy;
+    typedef typename detail::default_getter_policy<D>::type policy;
     
     return objects::function_object(
         ::boost::bind(
-            &detail::member<D,C,default_policy>::get, pm, _1, _2
-            , default_policy())
+            &detail::member<D,C,policy>::get, pm, _1, _2
+            , policy())
         , 1);
         
 }

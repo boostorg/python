@@ -24,12 +24,13 @@ double get_fair_value(X const& x) { return x.value(); }
 
 struct Var
 {
-    Var(std::string name_) : name(name_), value(), name2(name.c_str()) {}
+    Var(std::string name_) : name(name_), value(), name2(name.c_str()), y(6) {}
     std::string const name;
     std::string get_name1() const { return name; }
     std::string const& get_name2() const { return name; }
     float value;
     char const* name2;
+    Y y;
 };
 
 BOOST_PYTHON_MODULE(data_members_ext)
@@ -51,6 +52,7 @@ BOOST_PYTHON_MODULE(data_members_ext)
         .def_readonly("name", &Var::name)
         .def_readonly("name2", &Var::name2)
         .def_readwrite("value", &Var::value)
+        .def_readonly("y", &Var::y)
         
         // Test return_by_value for plain values and for
         // pointers... return_by_value was implemented as a
