@@ -11,6 +11,7 @@
 # include <boost/python/reference.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/objects.hpp>
+# include <boost/python/detail/wrap_python.hpp>
 
 namespace boost { namespace python {
 
@@ -25,7 +26,6 @@ class BOOST_PYTHON_DECL module_base
     void add(PyObject* x, const char* name);
     void add(PyTypeObject* x, const char* name = 0);
     void add(ref x, const char*name);
-    void add_overload(objects::function* x, const char* name);
 
     // Return true iff a module is currently being built.
     static bool initializing();
@@ -58,7 +58,7 @@ class module : public module_base
     template <class Fn>
     void def(Fn fn, const char* name)
     {
-        add_overload(make_function(fn), name);
+        this->add(boost::python::make_function(fn), name);
     }
 };
 
