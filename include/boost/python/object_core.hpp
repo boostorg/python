@@ -146,6 +146,9 @@ namespace api
       const_object_slice slice(object_cref, slice_nil) const;
       object_slice slice(object_cref, slice_nil);
 
+      const_object_slice slice(slice_nil, slice_nil) const;
+      object_slice slice(slice_nil, slice_nil);
+
       template <class T, class V>
       const_object_slice
       slice(T const& start, V const& end) const
