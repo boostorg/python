@@ -1,4 +1,3 @@
-// -*- mode:c++ -*-
 //
 // Module test_deque_ext.cpp
 //
@@ -29,8 +28,20 @@
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
 
+struct deque_generator {
+  // Generates deque type for any element type. This matches the
+  // performance characteristics of the real container and the pointer
+  // index container in a container_proxy, e.g. for insert/erase at
+  // the beginning.
+  template<typename Element> struct apply {
+    typedef std::deque<Element> type;
+  };
+};
+
 BOOST_PYTHON_MODULE(test_deque_ext)
 {
+  namespace indexing = boost::python::indexing;
+
   boost::python::implicitly_convertible <int, int_wrapper>();
 
   boost::python::def ("setTrace", &int_wrapper::setTrace);
@@ -44,7 +55,7 @@ BOOST_PYTHON_MODULE(test_deque_ext)
   typedef std::deque<int> Container1;
 
   boost::python::class_<Container1>("Deque")
-    .def (boost::python::indexing::container_suite<Container1>())
+    .def (indexing::container_suite<Container1>())
     ;
 
   typedef std::deque<int_wrapper> Container2;
@@ -53,13 +64,13 @@ BOOST_PYTHON_MODULE(test_deque_ext)
   // dangerous - the references can be invalidated by inserts or
   // deletes!
   boost::python::class_<Container2>("Deque_ref")
-    .def (boost::python::indexing::container_suite<Container2>
+    .def (indexing::container_suite<Container2>
           ::with_policies (boost::python::return_internal_reference<>()));
 
-  typedef boost::python::indexing::container_proxy< std::deque<int_wrapper> >
-    Container3;
+  typedef indexing::container_proxy<
+    Container2, indexing::identity<Container2>, deque_generator> Container3;
 
   boost::python::class_<Container3>("Deque_proxy")
-    .def (boost::python::indexing::container_suite<Container3>())
+    .def (indexing::container_suite<Container3>())
     ;
 }
