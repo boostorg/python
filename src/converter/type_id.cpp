@@ -24,7 +24,6 @@
 #   if defined(__GNUC__) &&  __GNUC__ >= 3
 #    include <cxxabi.h>
 #   endif
-#include <iostream>
 #  endif 
 
 namespace boost { namespace python {
@@ -100,7 +99,6 @@ namespace detail
                   ? mangled
                   : keeper.p;
 
-              std::cout << "demangled name: " << mangled << " as " << demangled << std::endl;
               p = demangler.insert(p, std::make_pair(mangled, demangled));
               keeper.p = 0;
           }
