@@ -115,14 +115,21 @@ test_tutorial()
 {
     using namespace boost::python;
 
-    object main_module =
-        object(handle<>(borrowed(PyImport_AddModule("__main__"))));
-    object main_namespace = extract<dict>(
-        object(handle<>(borrowed(PyModule_GetDict(main_module.ptr())))));
-    handle<>( PyRun_String("hello = file('hello.txt', 'w')\n"
-                           "hello.write('Hello world!')\n"
-                           "hello.close()", Py_file_input,
-                           main_namespace.ptr(), main_namespace.ptr()) );
+    object main_module(
+        handle<>(borrowed(PyImport_AddModule("__main__"))));
+
+    object main_namespace = main_module.attr("__dict__");
+
+    handle<>(PyRun_String(
+
+        "hello = file('hello.txt', 'w')\n"
+        "hello.write('Hello world!')\n"
+        "hello.close()"
+
+      , Py_file_input
+      , main_namespace.ptr()
+      , main_namespace.ptr())
+    );
 }
 
 int main()
