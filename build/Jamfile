@@ -9,7 +9,7 @@
 # To run all tests with verbose output: jam -sPYTHON_TEST_ARGS=-v test
 #
 # Declares the following targets:
-#   1. libboost_python, a static link library to be linked with all
+#   1. libboost_python.dll/.so, a dynamic library to be linked with all
 #      Boost.Python modules
 #
 #   2. pairs of test targets of the form <name>.test and <name>.run
