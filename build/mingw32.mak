@@ -66,7 +66,7 @@ all: libboost_python.a \
      richcmp1.pyd richcmp2.pyd richcmp3.pyd
 
 libboost_python.a: $(OBJ)
-	del libboost_python.a
+	-del libboost_python.a
 	ar r libboost_python.a $(OBJ)
 
 DLLWRAPOPTS=-s --driver-name g++ -s \
@@ -187,10 +187,10 @@ test:
 	$(PYEXE) test_richcmp3.py
 
 clean:
-	del *.o
-	del *.a
-	del *.pyd
-	del *.pyc
+	-del *.o
+	-del *.a
+	-del *.pyd
+	-del *.pyc
 
 softlinks:
 	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) softlinks
