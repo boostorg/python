@@ -91,16 +91,14 @@ void* value_holder_back_reference<Held,BackReferenceType>::holds(
     type_info dst_t)
 {
     type_info src_t = python::type_id<Held>();
-    if (src_t == dst_t)
-    {
-        Held* x = &m_held;
+    Held* x = &m_held;
+    
+    if (dst_t == src_t)
         return x;
-    }
-
-    src_t = python::type_id<BackReferenceType>();
-    return src_t == dst_t
-        ? &m_held
-        :  find_static_type(&m_held, src_t, dst_t);
+    else if (dst_t == python::type_id<BackReferenceType>())
+        return &m_held;
+    else
+        return find_static_type(x, src_t, dst_t);
 }
 
 }}} // namespace boost::python::objects
