@@ -31,6 +31,12 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
         , char const* doc = 0           // Docstring, if any.
         );
 
+
+    // Implementation detail. Hiding this in the private section would
+    // require use of template friend declarations.
+    void enable_pickling(bool getstate_manages_dict);
+
+ protected:
     // Retrieve the underlying object
     void add_property(char const* name, object const& fget);
     void add_property(char const* name, object const& fget, object const& fset);
@@ -45,9 +51,9 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     // for abstract classes.
     void def_no_init();
 
-    // Implementation detail. Hiding this in the private section would
-    // require use of template friend declarations.
-    void enable_pickling(bool getstate_manages_dict);
+    // Effects:
+    //  setattr(self, staticmethod(getattr(self, method_name)))
+    void make_method_static(const char *method_name);
 };
 
 }}} // namespace boost::python::objects

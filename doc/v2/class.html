@@ -212,7 +212,7 @@
 namespace boost { namespace python
 {
   template &lt;class T
-   <font color="#007F00">       , class Bases = bases&lt;&gt;
+   <font color="#007F00">     , class Bases = bases&lt;&gt;
             , class HeldType = T
             , class NonCopyable = <i>unspecified</i>
            &gt;
@@ -242,6 +242,9 @@ namespace boost { namespace python
     template &lt;class Fn, class A1, class A2, class A3&gt;
     class_&amp; def(char const* name, Fn fn, A1 const&amp;, A2 const&amp;, A3 const&amp;);
 
+    // declaring method as static
+    class_&amp; staticmethod(char const* name);
+    
     // exposing operators
     template &lt;<i>unspecified</i>&gt;
     class_&amp; def(<a href=
@@ -344,10 +347,11 @@ class_&amp; def(Init init_expr);
       generated constructs an object of <code>HeldType</code> according to
       the semantics described <a href="#HeldType">above</a>, using a copy of
       <code>init_expr</code>'s <a href="CallPolicies.html">call policies</a>.
-      If the longest <a href="init.html#init-expressions">valid prefix</a> of <code>Init</code> contains <em>N</em>
-      types and <code>init_expr</code> holds <em>M</em> keywords, an initial
-      sequence of the keywords are used for all but the first
-      <em>N</em>&nbsp;-&nbsp;<em>M</em> arguments of each overload.</dt>
+      If the longest <a href="init.html#init-expressions">valid prefix</a> of
+      <code>Init</code> contains <em>N</em> types and <code>init_expr</code>
+      holds <em>M</em> keywords, an initial sequence of the keywords are used
+      for all but the first <em>N</em>&nbsp;-&nbsp;<em>M</em> arguments of
+      each overload.</dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
@@ -378,20 +382,20 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
           <li>
             If <code>a1</code> is the result of an <a href=
             "overloads.html#overload-dispatch-expression"><em>overload-dispatch-expression</em></a>,
-            only the second form is allowed and fn must be a pointer
-            to function or pointer to member function whose <a
-            href="definitions.html#arity">arity</a> is the same as A1's <a href=
-            "overloads.html#overload-dispatch-expression"><em>maximum arity</em></a>.
+            only the second form is allowed and fn must be a pointer to
+            function or pointer to member function whose <a href=
+            "definitions.html#arity">arity</a> is the same as A1's <a href=
+            "overloads.html#overload-dispatch-expression"><em>maximum
+            arity</em></a>. 
 
             <dl>
               <dt><b>Effects:</b> For each prefix <em>P</em> of
-              <code>Fn</code>'s sequence of argument types, beginning
-            with the one whose length is <code>A1</code>'s <a href=
-            "overloads.html#overload-dispatch-expression"><em>minimum
-            arity</em></a>, adds a
-              <code><em>name</em>(</code>...<code>)</code> method
-              overload to the extension class. Each overload generated
-              invokes
+              <code>Fn</code>'s sequence of argument types, beginning with
+              the one whose length is <code>A1</code>'s <a href=
+              "overloads.html#overload-dispatch-expression"><em>minimum
+              arity</em></a>, adds a
+              <code><em>name</em>(</code>...<code>)</code> method overload to
+              the extension class. Each overload generated invokes
               <code>a1</code>'s call-expression with <em>P</em>, using a copy
               of <code>a1</code>'s <a href="CallPolicies.html">call
               policies</a>. If the longest valid prefix of <code>A1</code>
@@ -476,6 +480,37 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
 
       <dt><b>Returns:</b> <code>*this</code></dt>
     </dl>
+<pre>
+class_&amp; staticmethod(char const* name);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
+      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>, and corresponds to a method whose overloads have all
+      been defined.</dt>
+
+      <dt><b>Effects:</b> Replaces the existing named attribute <i>x</i> with
+      the result of invoking <code>staticmethod(</code><i>x</i><code>)</code>
+      in Python. Specifies that the corresponding method is static and
+      therefore no object instance will be passed to it. This is equivalent
+      to the Python statement:</dt>
+
+      <dd>
+<pre>
+setattr(self, name, staticmethod(getattr(self, name)))
+</pre>
+      </dd>
+
+      <dt><b>Note:</b> Attempting to invoke <code>def(name,...)</code> after
+      invoking <code>staticmethod(name)</code> will <a href=
+      "definitions.html#raise">raise</a> a RuntimeError.</dt>
+
+      <dt><b>Returns:</b> <code>*this</code></dt>
+    </dl>
+    <br>
+     
 <pre>
 template &lt;<i>unspecified</i>&gt;
 class_&amp; def(<a href=
@@ -597,27 +632,21 @@ class_&amp; def_pickle(PickleSuite const&amp;);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Requires:</b> PickleSuite must be publically derived from
-          <a href="pickle.html"
-          ><code>pickle_suite</code></a>.</dt>
+      <dt><b>Requires:</b> PickleSuite must be publically derived from <a
+      href="pickle.html"><code>pickle_suite</code></a>.</dt>
 
       <dt><b>Effects:</b> Defines a legal combination of the special
-          attributes and methods:
-          <code>__getinitargs__</code>,
-          <code>__getstate__</code>,
-          <code>__setstate__</code>,
-          <code>__getstate_manages_dict__</code>,
-          <code>__safe_for_unpickling__</code>,
-          <code>__reduce__</code>
-      </dt>
+      attributes and methods: <code>__getinitargs__</code>,
+      <code>__getstate__</code>, <code>__setstate__</code>,
+      <code>__getstate_manages_dict__</code>,
+      <code>__safe_for_unpickling__</code>, <code>__reduce__</code></dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
-      <dt><b>Rationale:</b> Provides an
-          <a href="pickle.html"
-          >easy to use high-level interface</a>
-          for establishing complete pickle support for the wrapped class.
-          The user is protected by compile-time consistency checks.</dt>
+      <dt><b>Rationale:</b> Provides an <a href="pickle.html">easy to use
+      high-level interface</a> for establishing complete pickle support for
+      the wrapped class. The user is protected by compile-time consistency
+      checks.</dt>
     </dl>
     <br>
      
@@ -685,8 +714,8 @@ class_&lt;Derived, bases&lt;Base&gt; &gt;("Derived");
 </pre>
     Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     13 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
      
 
     <p><i>&copy; Copyright <a href=

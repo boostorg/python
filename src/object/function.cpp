@@ -12,6 +12,7 @@
 #include <boost/python/object_attributes.hpp>
 #include <boost/python/args.hpp>
 #include <boost/python/refcount.hpp>
+#include <boost/python/extract.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -261,7 +262,22 @@ void function::add_to_namespace(
         if (existing)
         {
             if (existing->ob_type == &function_type)
+            {
                 new_func->add_overload(existing);
+            }
+            else if (existing->ob_type == &PyStaticMethod_Type)
+            {
+                char const* name_space_name = extract<char const*>(name_space.attr("__name__"));
+                
+                ::PyErr_Format(
+                    PyExc_RuntimeError
+                    , "Boost.Python - All overloads must be exported "
+                      "before calling \'class_<...>(\"%s\").staticmethod(\"%s\")\'"
+                    , name_space_name
+                    , name_
+                    );
+                throw_error_already_set();
+            }
         }
         else if (is_binary_operator(name_))
         {

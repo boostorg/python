@@ -63,6 +63,7 @@ run ../test/embedding.cpp <dll>../build/boost_python
     <library-path>$(PYTHON_LIB_PATH)
     <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
 
+bpl-test staticmethod ;
 bpl-test shared_ptr ;
 bpl-test polymorphism ;
 bpl-test auto_ptr ;

@@ -352,6 +352,11 @@ class class_ : public objects::class_base
       return *this;
     }
 
+    self& staticmethod(char const* name)
+    {
+        this->make_method_static(name);
+        return *this;
+    }
  private: // helper functions
 
     inline void register_() const;

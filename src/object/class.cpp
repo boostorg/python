@@ -440,6 +440,37 @@ namespace objects
       }
   }
 
+  namespace
+  {
+    PyObject* callable_check(PyObject* callable)
+    {
+        if (PyCallable_Check(expect_non_null(callable)))
+            return callable;
+
+        ::PyErr_Format(
+            PyExc_TypeError
+            , "staticmethod expects callable object; got an object of type %s, which is not callable"
+            , callable->ob_type->tp_name
+            );
+        
+        throw_error_already_set();
+        return 0;
+    }
+  }
+  
+  void class_base::make_method_static(const char * method_name)
+  {
+      PyTypeObject* self = downcast<PyTypeObject>(this->ptr());
+      dict d((handle<>(borrowed(self->tp_dict))));
+
+      object method(d[method_name]);
+
+      this->attr(method_name) = object(
+          handle<>(
+              PyStaticMethod_New((callable_check)(method.ptr()) )
+              ));
+  }
+
   BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
   {
       return query_class(id);
