@@ -190,7 +190,7 @@ namespace
       
       return std::lower_bound(
           type_index().begin(), type_index().end()
-          , make_tuple(type, vertex_t(), dynamic_id_function(0))
+          , boost::make_tuple(type, vertex_t(), dynamic_id_function(0))
           , boost::bind<bool>(std::less<class_id>()
                , boost::bind<class_id>(select1st<entry>(), _1)
                , boost::bind<class_id>(select1st<entry>(), _2)));
@@ -216,7 +216,7 @@ namespace
       vertex_t v = add_vertex(full_graph().topology());
       vertex_t v2 = add_vertex(up_graph().topology());
       assert(v == v2);
-      return type_index().insert(p, make_tuple(type, v, dynamic_id_function(0)));
+      return type_index().insert(p, boost::make_tuple(type, v, dynamic_id_function(0)));
   }
 
   // Map a two types to a vertex in the graph, inserting if neccessary
@@ -408,7 +408,7 @@ namespace
       // Look in the cache first for a quickie address translation
       std::ptrdiff_t offset = (char*)p - (char*)dynamic_id.first;
 
-      cache_element seek(make_tuple(src_t, dst_t, offset, dynamic_id.second));
+      cache_element seek(boost::make_tuple(src_t, dst_t, offset, dynamic_id.second));
       cache_t& c = cache();
       cache_t::iterator const cache_pos
           = std::lower_bound(c.begin(), c.end(), seek);
