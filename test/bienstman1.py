@@ -1,6 +1,8 @@
 '''
+# Try to reproduce a Numeric interaction bug if Numeric is installed.
 >>> from bienstman1_ext import *
->>> # from Numeric import *
+>>> try: from Numeric import *
+... except: pass
 '''
 def run(args = None):
     import sys
