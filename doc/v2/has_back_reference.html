@@ -82,33 +82,33 @@ namespace boost { namespace python
 {
     template&lt;class WrappedClass&gt; class has_back_reference
     { 
-        typedef <i>unspecified</i> type;
+        typedef mpl::false_ type;
     };
 }}
 </pre>
     <p>A "<a href="../../../mpl/doc/paper/html/usage.html#metafunctions">
-    metafunction</a>" which is inspected by Boost.Python to determine how 
+    metafunction</a>" that is inspected by Boost.Python to determine how 
     wrapped classes can be constructed.</p>
 
     <dl class="traits-semantics">
       <dt><code>type::value</code> is an integral constant convertible to bool
       of unspecified type.</dt>
 
-      <dt>Specializations may substitute a typedef with a nested 
-      <code>value</code> convertible to
-      <code>true</code> for <code>type</code> iff for each invocation of
+      <dt>Specializations may substitute a <code>true</code>-valued integral constant wrapper for 
+      <code>type</code> iff for each invocation of
       <code>class_&lt;WrappedClass&gt;::def(init&lt;</code>
-      <i>type-sequence...</i><code>&gt;())</code> and the implicitly provided
+      <i>type-sequence...</i><code>&gt;())</code> and the implicitly wrapped
       copy constructor (unless it is <a href="class.html#class_-spec">
       noncopyable</a>), there exists a corresponding constructor 
       <code>WrappedClass::WrappedClass(PyObject*,&nbsp;</code>
       <i>type-sequence...</i><code>)</code>. If such a specialization exists,
       the <code>WrappedClass</code> constructors will be called with a "back
       reference" pointer to the corresponding Python object whenever they are
-      invoked from Python. The easiest way to provide this typedef is to 
-      inherit from <code>mpl::true_</code>, or to 
-      <code>typedef mpl::true_ type</code>. Alternatively, the specialization
-      may provide its own metafunction.
+      invoked from Python. The easiest way to provide this nested <code>
+type
+</code>
+ is to 
+      derive the specialization from <code>mpl::true_</code>.
       </dt>
     </dl>
 
@@ -144,9 +144,8 @@ namespace boost { namespace python
 {
   template &lt;&gt;
   struct has_back_reference&lt;X&gt;
-  {
-     typedef mpl::true_ type;
-  };
+    : mpl::true_
+  {};
 }}
 
 struct Y
@@ -159,8 +158,8 @@ struct Y
     int m_x;
 };
 
-boost::shared_ptr&lt;Y&gt; 
-Y_self(boost::shared_ptr&lt;Y&gt; self) { return self; }
+shared_ptr&lt;Y&gt; 
+Y_self(shared_ptr&lt;Y&gt; self) { return self; }
 
 BOOST_PYTHON_MODULE(back_references)
 {
@@ -211,7 +210,7 @@ BOOST_PYTHON_MODULE(back_references)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
+  18 July, 2004
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
