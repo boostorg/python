@@ -246,11 +246,11 @@ namespace detail
     struct select_held_type
         : mpl::select_type<
             type_traits::ice_or<
-                type_traits::ice_not<specifies_bases<T>::value>::value
+                 specifies_bases<T>::value
                , is_same<T,noncopyable>::value
             >::value
-            , T
             , Prev
+            , T
           >
     {
     };
