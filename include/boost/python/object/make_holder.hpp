@@ -14,6 +14,22 @@
 
 namespace boost { namespace python { namespace objects { 
 
+namespace detail
+{
+  // Use of this workaround as opposed to straightforward mpl::at
+  // needed for vc7, for some reason.
+  template <unsigned N, class Sequence>
+  struct at
+  {
+   private:
+      typedef typename mpl::at_algorithm_traits< 
+          typename mpl::sequence_traits<Sequence>::sequence_category
+      >::template algorithm<N, Sequence>::type base;
+   public:
+      typedef typename base::type type;
+  };
+}
+
 template <int nargs> struct make_holder;
 
 template <>
@@ -39,7 +55,7 @@ struct make_holder<1>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         
         static void execute(
@@ -58,9 +74,9 @@ struct make_holder<2>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename detail::at<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
         
         static void execute(
@@ -78,11 +94,11 @@ struct make_holder<3>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename detail::at<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename detail::at<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
         
         static void execute(
@@ -100,13 +116,13 @@ struct make_holder<4>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename detail::at<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename detail::at<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename detail::at<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
         
         static void execute(
@@ -124,15 +140,15 @@ struct make_holder<5>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename detail::at<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename detail::at<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename detail::at<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
+        typedef typename detail::at<4,ArgList>::type t4;
         typedef typename forward<t4>::type f4;
         
         static void execute(
@@ -150,17 +166,17 @@ struct make_holder<6>
     struct apply
     {
         typedef typename mpl::apply1<Generator,T>::type holder;
-        typedef typename mpl::at<0,ArgList>::type t0;
+        typedef typename detail::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
+        typedef typename detail::at<1,ArgList>::type t1;
         typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
+        typedef typename detail::at<2,ArgList>::type t2;
         typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
+        typedef typename detail::at<3,ArgList>::type t3;
         typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
+        typedef typename detail::at<4,ArgList>::type t4;
         typedef typename forward<t4>::type f4;
-        typedef typename mpl::at<5,ArgList>::type t5;
+        typedef typename detail::at<5,ArgList>::type t5;
         typedef typename forward<t5>::type f5;
         
         static void execute(
