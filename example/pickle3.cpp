@@ -18,6 +18,17 @@
 #include <boost/python/class_builder.hpp>
 namespace python = boost::python;
 
+namespace boost { namespace python {
+
+  ref getattr(PyObject* o, const std::string& attr_name) {
+    return ref(PyObject_GetAttrString(o, const_cast<char*>(attr_name.c_str())));
+  }
+  ref getattr(const ref& r, const std::string& attr_name) {
+    return getattr(r.get(), attr_name);
+  }
+
+}}
+
 namespace { // Avoid cluttering the global namespace.
 
   // A friendly class.
@@ -89,7 +100,7 @@ namespace {
           throw boost::python::argument_error();
       }
       const world& w = args[0].get<const world&>();
-      python::ref mydict(args[0].getattr("__dict__"));
+      python::ref mydict = python::getattr(args[0], "__dict__");
       python::tuple result(2);
       // store the object's __dict__
       result.set_item(0, mydict);
@@ -106,7 +117,7 @@ namespace {
           throw boost::python::argument_error();
       }
       world& w = args[0].get<world&>();
-      python::ref mydict(args[0].getattr("__dict__"));
+      python::ref mydict = python::getattr(args[0], "__dict__");
       const python::tuple& state(args[1].get<python::tuple>());
       if (state.size() != 2) {
         PyErr_SetString(PyExc_ValueError,
