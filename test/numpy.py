@@ -1,6 +1,13 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+# Unfortunately the doctest module works differently in Python versions
+# 2.2, 2.3, and 2.4. Newer versions evaluate all docstrings, even that
+# of objects with names starting with an underscore. To portably disable
+# tests based on the availability of Numeric and Numpy, the corresponding
+# test functions are simply deleted below if necessary.
+
 def numeric_tests():
     '''
     >>> from numpy_ext import *
@@ -118,14 +125,18 @@ def _run(args = None):
         import Numeric
         m = Numeric
         has_numeric = 1
-    except ImportError: pass
+    except ImportError:
+      global numeric_tests
+      numeric_tests = None
 
     has_numarray = 0
     try:
         import numarray
         m = numarray
         has_numarray = 1
-    except ImportError: pass
+    except ImportError:
+      global _numarray_tests
+      _numarray_tests = None
     
     # Bail if neither one is installed
     if not (has_numeric or has_numarray):
