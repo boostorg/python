@@ -11,6 +11,7 @@
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/defaults_def.hpp>
 # include <boost/python/scope.hpp>
+# include <boost/python/signature.hpp>
 
 namespace boost { namespace python { 
 
