@@ -266,10 +266,11 @@ namespace objects
           PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(c.release()));
       }
 
-      object module_name = PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
+      object module_name(
+          PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
           ? scope().attr("__name__")
           : api::getattr(scope(), "__module__", object(""))
-          ;
+          );
 
       if (module_name)
           module_name += '.';
