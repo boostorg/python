@@ -81,7 +81,12 @@ class handle
     {
     }
 
-    handle& operator=(handle const& r);
+    handle& operator=(handle const& r)
+    {
+        python::xdecref(m_p);
+        m_p = python::xincref(r.m_p);
+        return *this;
+    }
 
 #if !defined(BOOST_MSVC) || (BOOST_MSVC > 1200)
 
@@ -187,14 +192,6 @@ template <class T>
 inline handle<T>::~handle()
 {
     python::xdecref(m_p);
-}
-
-template <class T>
-inline handle<T>& handle<T>::operator=(handle<T> const& r)
-{
-    python::xdecref(m_p);
-    m_p = python::xincref(r.m_p);
-    return *this;
 }
 
 template <class T>
