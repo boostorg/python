@@ -56,7 +56,7 @@ struct ACallback :  A, wrapper<A>
 #else 
             return f();
 #endif 
-        else
+        //else
             return A::f();
     }
 };
@@ -87,7 +87,7 @@ struct DCallback :  D,  wrapper<D>
 #else 
             return f();
 #endif 
-        else
+        //else
             return D::f();
     }
 };
