@@ -6,7 +6,7 @@
 #ifndef HAS_BACK_REFERENCE_DWA2002323_HPP
 # define HAS_BACK_REFERENCE_DWA2002323_HPP
 
-#if !(defined(_WIN32) && defined(__MWERKS__))
+#if defined(__ALPHA) && defined(__osf__) && defined(__DECCXX_VER)
 # include <pyconfig.h>
 #endif
 #include <boost/config.hpp>

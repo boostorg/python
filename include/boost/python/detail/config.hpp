@@ -12,7 +12,7 @@
 #ifndef CONFIG_DWA052200_H_
 # define CONFIG_DWA052200_H_
 
-#if !(defined(_WIN32) && defined(__MWERKS__))
+#if defined(__ALPHA) && defined(__osf__) && defined(__DECCXX_VER)
 # include <pyconfig.h>
 #endif
 # include <boost/config.hpp>

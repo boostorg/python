@@ -6,7 +6,7 @@
 #ifndef OBJECT_CORE_DWA2002615_HPP
 # define OBJECT_CORE_DWA2002615_HPP
 
-#if !(defined(_WIN32) && defined(__MWERKS__))
+#if defined(__ALPHA) && defined(__osf__) && defined(__DECCXX_VER)
 # include <pyconfig.h>
 #endif
 # include <boost/type.hpp>
