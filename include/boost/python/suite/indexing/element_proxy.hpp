@@ -27,6 +27,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/get_pointer.hpp>
 
+// More headers are included near the bottom of this file
+
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
   class element_proxy
@@ -169,12 +171,11 @@ namespace boost
   }
 }
 
-// Including more headers here is a little weird, but it fixes a
-// problem with Compaq C++ V6.5-031 (at least) which implements
-// two-phase name lookup. get_pointer is used unqualified within some
-// templates used by register_ptr_to_python, so our overload needs to
-// be visible during parsing of the templates, not just during their
-// instantiation.
+// Including more headers here is a little weird, but it make sure
+// that our overload of get_pointer is in scope during both
+// name-lookup phases (if the compiler implements two-phase name
+// lookup). get_pointer is used unqualified within some templates used
+// by register_ptr_to_python.
 
 #include <boost/python/implicit.hpp>
 #include <boost/python/register_ptr_to_python.hpp>
