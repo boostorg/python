@@ -40,8 +40,6 @@ struct BOOST_PYTHON_DECL function : PyObject
     function* m_overloads;
 };
 
-extern BOOST_PYTHON_DECL PyTypeObject function_type;
-
 //
 // implementations
 //

@@ -11,6 +11,7 @@
 
 namespace boost { namespace python { namespace objects { 
 
+extern PyTypeObject function_type;
 
 function::function(py_function implementation, unsigned min_args, unsigned max_args)
     : m_fn(implementation)
