@@ -52,8 +52,11 @@ namespace boost { namespace python { namespace detail {
 //          return mpl::list<RT, ClassT&, T0...TN>();
 //      }
 //
-//  These functions extract the return type, class (for member functions)
-//  and arguments of the input signature and stuffs them in an mpl::list.
+//  These functions extract the return type, class (for member
+//  functions) and arguments of the input signature and stuffs them in
+//  an mpl::list.  Note that cv-qualification is dropped from the
+//  target class; that is a necessary sacrifice to ensure that an
+//  lvalue from_python converter is used.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -102,11 +105,11 @@ get_signature(RT(*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)))
 template <
     class RT, class ClassT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)>
 inline BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-    RT, ClassT Q& BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)>
+    RT, ClassT& BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)>
 get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)) Q)
 {
     return BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-            RT, ClassT Q & BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
+            RT, ClassT& BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
         >();
 }
 
