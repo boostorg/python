@@ -70,13 +70,6 @@ struct unwind_helper<false>
 
 template <class Generator, class U>
 inline typename Generator::result_type
-unwind_type(U& p, Generator* = 0)
-{
-    return unwind_helper<is_pointer<U>::value>::execute(p, (Generator*)0);
-}
-
-template <class Generator, class U>
-inline typename Generator::result_type
 unwind_type(U const& p, Generator* = 0)
 {
     return unwind_helper<is_pointer<U>::value>::execute(p, (Generator*)0);
