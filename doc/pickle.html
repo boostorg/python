@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+
+<title>Boost.Python Pickle Support</title>
+
+<div>
+
+<img src="../../../c++boost.gif"
+     alt="c++boost.gif (8819 bytes)"
+     align="center"
+     width="277" height="86">
+
+<hr>
+<h1>Boost.Python Pickle Support</h1>
+
+Pickle is a Python module for object serialization, also known
+as persistence, marshalling, or flattening.
+
+<p>
+It is often necessary to save and restore the contents of an object to
+a file. One approach to this problem is to write a pair of functions
+that read and write data from a file in a special format. A powerful
+alternative approach is to use Python's pickle module. Exploiting
+Python's ability for introspection, the pickle module recursively
+converts nearly arbitrary Python objects into a stream of bytes that
+can be written to a file.
+
+<p>
+The Boost Python Library supports the pickle module by emulating the
+interface implemented by Jim Fulton's ExtensionClass module that is
+included in the
+<a href="http://www.zope.org/"
+>ZOPE</a>
+distribution.
+This interface is similar to that for regular Python classes as
+described in detail in the
+<a href="http://www.python.org/doc/current/lib/module-pickle.html"
+>Python Library Reference for pickle.</a>
+
+<hr>
+<h2>The Boost.Python Pickle Interface</h2>
+
+At the user level, the Boost.Python pickle interface involves three special
+methods:
+
+<dl>
+<dt>
+<strong><tt>__getinitargs__</tt></strong>
+<dd>
+  When an instance of a Boost.Python extension class is pickled, the
+  pickler tests if the instance has a <tt>__getinitargs__</tt> method.
+  This method must return a Python tuple (it is most convenient to use
+  a boost::python::tuple). When the instance is restored by the
+  unpickler, the contents of this tuple are used as the arguments for
+  the class constructor.
+
+  <p>
+  If <tt>__getinitargs__</tt> is not defined, the class constructor
+  will be called without arguments.
+
+<p>
+<dt>
+<strong><tt>__getstate__</tt></strong>
+
+<dd>
+  When an instance of a Boost.Python extension class is pickled, the
+  pickler tests if the instance has a <tt>__getstate__</tt> method.
+  This method should return a Python object representing the state of
+  the instance.
+
+  <p>
+  If <tt>__getstate__</tt> is not defined, the instance's
+  <tt>__dict__</tt> is pickled (if it is not empty).
+
+<p>
+<dt>
+<strong><tt>__setstate__</tt></strong>
+
+<dd>
+  When an instance of a Boost.Python extension class is restored by the
+  unpickler, it is first constructed using the result of
+  <tt>__getinitargs__</tt> as arguments (see above). Subsequently the
+  unpickler tests if the new instance has a <tt>__setstate__</tt>
+  method. If so, this method is called with the result of
+  <tt>__getstate__</tt> (a Python object) as the argument.
+
+  <p>
+  If <tt>__setstate__</tt> is not defined, the result of
+  <tt>__getstate__</tt> must be a Python dictionary. The items of this
+  dictionary are added to the instance's <tt>__dict__</tt>.
+
+</dl>
+
+If both <tt>__getstate__</tt> and <tt>__setstate__</tt> are defined,
+the Python object returned by <tt>__getstate__</tt> need not be a
+dictionary. The <tt>__getstate__</tt> and <tt>__setstate__</tt> methods
+can do what they want.
+
+<hr>
+<h2>Pitfalls and Safety Guards</h2>
+
+In Boost.Python extension modules with many extension classes,
+providing complete pickle support for all classes would be a
+significant overhead. In general complete pickle support should only be
+implemented for extension classes that will eventually be pickled.
+However, the author of a Boost.Python extension module might not
+anticipate correctly which classes need support for pickle.
+Unfortunately, the pickle protocol described above has two important
+pitfalls that the end user of a Boost.Python extension module might not
+be aware of:
+
+<dl>
+<dt>
+<strong>Pitfall 1:</strong>
+Both <tt>__getinitargs__</tt> and <tt>__getstate__</tt> are not defined.
+
+<dd>
+  In this situation the unpickler calls the class constructor without
+  arguments and then adds the <tt>__dict__</tt> that was pickled by
+  default to that of the new instance.
+
+  <p>
+  However, most C++ classes wrapped with Boost.Python will have member
+  data that are not restored correctly by this procedure. To alert the
+  user to this problem, a safety guard is provided. If both
+  <tt>__getinitargs__</tt> and <tt>__getstate__</tt> are not defined,
+  Boost.Python tests if the class has an attribute
+  <tt>__dict_defines_state__</tt>. An exception is raised if this
+  attribute is not defined:
+
+<pre>
+    RuntimeError: Incomplete pickle support (__dict_defines_state__ not set)
+</pre>
+
+  In the rare cases where this is not the desired behavior, the safety
+  guard can deliberately be disabled. The corresponding C++ code for
+  this is, e.g.:
+
+<pre>
+    class_builder&lt;your_class&gt; py_your_class(your_module, "your_class");
+    py_your_class.dict_defines_state();
+</pre>
+
+  It is also possible to override the safety guard at the Python level.
+  E.g.:
+
+<pre>
+    import your_bpl_module
+    class your_class(your_bpl_module.your_class):
+      __dict_defines_state__ = 1
+</pre>
+
+<p>
+<dt>
+<strong>Pitfall 2:</strong>
+<tt>__getstate__</tt> is defined and the instance's <tt>__dict__</tt> is not empty.
+
+<dd>
+  The author of a Boost.Python extension class might provide a
+  <tt>__getstate__</tt> method without considering the possibilities
+  that:
+
+  <p>
+  <ul>
+  <li>
+    his class is used in Python as a base class. Most likely the
+    <tt>__dict__</tt> of instances of the derived class needs to be
+    pickled in order to restore the instances correctly.
+
+  <p>
+  <li>
+    the user adds items to the instance's <tt>__dict__</tt> directly.
+    Again, the <tt>__dict__</tt> of the instance then needs to be
+    pickled.
+
+  </ul>
+  <p>
+
+  To alert the user to this highly unobvious problem, a safety guard is
+  provided. If <tt>__getstate__</tt> is defined and the instance's
+  <tt>__dict__</tt> is not empty, Boost.Python tests if the class has
+  an attribute <tt>__getstate_manages_dict__</tt>. An exception is
+  raised if this attribute is not defined:
+
+<pre>
+    RuntimeError: Incomplete pickle support (__getstate_manages_dict__ not set)
+</pre>
+
+  To resolve this problem, it should first be established that the
+  <tt>__getstate__</tt> and <tt>__setstate__</tt> methods manage the
+  instances's <tt>__dict__</tt> correctly. Note that this can be done
+  both at the C++ and the Python level. Finally, the safety guard
+  should intentionally be overridden.  E.g. in C++:
+
+<pre>
+    class_builder&lt;your_class&gt; py_your_class(your_module, "your_class");
+    py_your_class.getstate_manages_dict();
+</pre>
+
+  In Python:
+
+<pre>
+    import your_bpl_module
+    class your_class(your_bpl_module.your_class):
+      __getstate_manages_dict__ = 1
+      def __getstate__(self):
+        # your code here
+      def __setstate__(self, state):
+        # your code here
+</pre>
+</dl>
+
+<hr>
+<h2>Practical Advice</h2>
+
+<ul>
+<li>
+  Avoid using <tt>__getstate__</tt> if the instance can also be
+  reconstructed by way of <tt>__getinitargs__</tt>. This automatically
+  avoids Pitfall 2.
+
+<p>
+<li>
+  If <tt>__getstate__</tt> is required, include the instance's
+  <tt>__dict__</tt> in the Python object that is returned.
+
+</ul>
+
+<hr>
+<h2>Example</h2>
+
+An example that shows how to configure pickle support is available in the
+<tt>boost/lib/python/example</tt> directory
+(<tt>getting_started3.cpp</tt>).
+
+<hr>
+&copy; Copyright Ralf W. Grosse-Kunstleve 2001. Permission to copy,
+use, modify, sell and distribute this document is granted provided this
+copyright notice appears in all copies. This document is provided "as
+is" without express or implied warranty, and with no claim as to its
+suitability for any purpose.
+
+<p>
+Updated: March 10, 2001
+</div>
