@@ -37,12 +37,18 @@ bpl_exa + "/noncopyable.h",
 bpl_exa + "/noncopyable_export.cpp",
 bpl_exa + "/noncopyable_import.cpp",
 bpl_exa + "/tst_noncopyable.py",
-bpl_exa + "/ivect.h",
-bpl_exa + "/ivect.cpp",
 bpl_exa + "/dvect.h",
 bpl_exa + "/dvect.cpp",
-bpl_exa + "/tst_ivect.py",
-bpl_exa + "/tst_dvect.py",
+bpl_exa + "/dvect_conversions.cpp",
+bpl_exa + "/dvect_defs.cpp",
+bpl_exa + "/ivect.h",
+bpl_exa + "/ivect.cpp",
+bpl_exa + "/ivect_conversions.cpp",
+bpl_exa + "/ivect_defs.cpp",
+bpl_exa + "/tst_dvect1.py",
+bpl_exa + "/tst_dvect2.py",
+bpl_exa + "/tst_ivect1.py",
+bpl_exa + "/tst_ivect2.py",
 )
 
 defs = (
@@ -89,6 +95,7 @@ if (__name__ == "__main__"):
       if (os.access(f, os.F_OK)):
         print "File exists: " + f
       else:
+        print "Linking: " + f
         os.system("ln -s " + path + os.sep + fn + " .")
 
   elif (mode in ("rm", "del")):

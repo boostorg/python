@@ -165,8 +165,10 @@ test:
 
 tst:
 	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect.py
-	$(PYEXE) tst_dvect.py
+	$(PYEXE) tst_ivect1.py
+	$(PYEXE) tst_dvect1.py
+	$(PYEXE) tst_ivect2.py
+	$(PYEXE) tst_dvect2.py
 
 clean:
 	del *.o
@@ -187,7 +189,7 @@ rm:
 	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) rm
 
 copy:
-	python $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) copy
+	$(PYEXE) $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) copy
 
 del:
-	python $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) del
+	$(PYEXE) $(BOOST_WIN)\libs\python\build\filemgr.py $(BOOST_WIN) del

@@ -27,7 +27,7 @@ PYINC= -I/usr/local/Python-1.5.2/include/python1.5
 # -D_RWSTD_COMPILE_INSTANTIATE=1
 STLPORTINC= -I/net/cci/xp/C++_C_headers
 
-STDOPTS= -std strict_ansi -DBOOST_PYTHON_TRU64_CXX_PROBLEM
+STDOPTS= -std strict_ansi
 WARNOPTS= -msg_disable 186,450,1115
 # use -msg_display_number to obtain integer tags for -msg_disable
 
@@ -133,8 +133,10 @@ test:
 
 tst:
 	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect.py
-	$(PYEXE) tst_dvect.py
+	$(PYEXE) tst_ivect1.py
+	$(PYEXE) tst_dvect1.py
+	$(PYEXE) tst_ivect2.py
+	$(PYEXE) tst_dvect2.py
 
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input
@@ -156,16 +158,16 @@ clean:
 	rm -rf cxx_repository
 
 softlinks:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks
 
 unlink:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) unlink
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) unlink
 
 cp:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) cp
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) cp
 
 rm:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) rm
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) rm
 
 depend:
 	@ cat Makefile.nodepend; \

@@ -118,8 +118,10 @@ test:
 
 tst:
 	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect.py
-	$(PYEXE) tst_dvect.py
+	$(PYEXE) tst_ivect1.py
+	$(PYEXE) tst_dvect1.py
+	$(PYEXE) tst_ivect2.py
+	$(PYEXE) tst_dvect2.py
 
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input
@@ -141,16 +143,16 @@ clean:
 	rm -rf cxx_repository
 
 softlinks:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) softlinks
 
 unlink:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) unlink
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) unlink
 
 cp:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) cp
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) cp
 
 rm:
-	python $(BOOST)/libs/python/build/filemgr.py $(BOOST) rm
+	$(PYEXE) $(BOOST)/libs/python/build/filemgr.py $(BOOST) rm
 
 depend:
 	@ cat Makefile.nodepend; \
