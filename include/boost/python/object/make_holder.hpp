@@ -24,7 +24,7 @@ template <int nargs> struct make_holder;
 
 
 # define BOOST_PYTHON_FORWARD_ARG(index, ignored)                                       \
-    typedef typename mpl::at<index,ArgList>::type BOOST_PP_CAT(t,index);                \
+    typedef typename mpl::at_c<index,ArgList>::type BOOST_PP_CAT(t,index);              \
     typedef typename forward<BOOST_PP_CAT(t,index)>::type BOOST_PP_CAT(f,index);
 
 # define BOOST_PYTHON_DO_FORWARD_ARG(index, ignored)    \
