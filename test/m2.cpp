@@ -66,21 +66,21 @@ struct rewrap
 
 BOOST_PYTHON_MODULE_INIT(m2)
 {
-    boost::python::module m2("m2");
-    
-    m2.def(unwrap_int, "unwrap_int");
-    m2.def(unwrap_int_ref, "unwrap_int_ref");
-    m2.def(unwrap_int_const_ref, "unwrap_int_const_ref");
-    m2.def(unwrap_simple, "unwrap_simple");
-    m2.def(unwrap_simple_ref, "unwrap_simple_ref");
-    m2.def(unwrap_simple_const_ref, "unwrap_simple_const_ref");
+    boost::python::module("m2")
+        .def("unwrap_int", unwrap_int)
+        .def("unwrap_int_ref", unwrap_int_ref)
+        .def("unwrap_int_const_ref", unwrap_int_const_ref)
+        .def("unwrap_simple", unwrap_simple)
+        .def("unwrap_simple_ref", unwrap_simple_ref)
+        .def("unwrap_simple_const_ref", unwrap_simple_const_ref)
 
-    m2.def(&rewrap<int>::f, "wrap_int");
-    m2.def(&rewrap<int&>::f, "wrap_int_ref");
-    m2.def(&rewrap<int const&>::f, "wrap_int_const_ref");
-    m2.def(&rewrap<simple>::f, "wrap_simple");
-    m2.def(&rewrap<simple&>::f, "wrap_simple_ref");
-    m2.def(&rewrap<simple const&>::f, "wrap_simple_const_ref");
+        .def("wrap_int", &rewrap<int>::f)
+        .def("wrap_int_ref", &rewrap<int&>::f)
+        .def("wrap_int_const_ref", &rewrap<int const&>::f)
+        .def("wrap_simple", &rewrap<simple>::f)
+        .def("wrap_simple_ref", &rewrap<simple&>::f)
+        .def("wrap_simple_const_ref", &rewrap<simple const&>::f)
+        ;
 }
 
 #include "module_tail.cpp"

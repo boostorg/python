@@ -269,7 +269,6 @@ BOOST_PYTHON_MODULE_INIT(m1)
     using boost::python::module;
     using boost::python::class_;
     
-    module m1("m1");
     // Create the converters; they are self-registering/unregistering.
     static int_wrapper wrap_int;
     static simple_wrapper wrap_simple;
@@ -280,56 +279,66 @@ BOOST_PYTHON_MODULE_INIT(m1)
     static simple_const_ref_unwrapper unwrap_simple_const_ref;
     static simple_ref_wrapper wrap_simple_ref;
 
-    // This unwrapper extracts pointers and references to the "complicated" class.
-    //    static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
+    module m1("m1");
+
+    m1
+      // Insert the metaclass for all extension classes
+      .setattr("xclass", boost::python::objects::class_metatype())
     
-    // Insert the extension metaclass object
-    m1.add(
-        boost::python::objects::class_metatype()
-        , "xclass");
-    
-    // Insert the base class for all extension classes
-    m1.add(boost::python::objects::class_type()
-           , "xinst");
+      // Insert the base class for all extension classes
+      .setattr("xinst", boost::python::objects::class_type())
 
-    m1.def(new_noddy, "new_noddy");
-    m1.def(new_simple, "new_simple");
-    
-    // Expose f()
-    m1.def(f, "f");
+      .def("new_noddy", new_noddy)
+      .def("new_simple", new_simple)
 
-    // Expose g()
-    m1.def(g, "g");
+      // Expose f()
+      .def("f", f)
 
-    m1.def(take_a, "take_a");
-    m1.def(take_b, "take_b");
-    m1.def(take_c, "take_c");
-    m1.def(take_d, "take_d");
+      // Expose g()
+      .def("g", g)
 
-    class_<A>(m1, "A")
-        .def_init()
-        .def(&A::name, "name")
-        ;
-          
-    class_<B,bases<A> >(m1, "B")
-        .def_init()
-        .def(&B::name, "name")
-        ;
-          
-    class_<C,bases<A> >(m1, "C")
-        .def_init()
-        .def(&C::name, "name")
+      .def("take_a", take_a)
+      .def("take_b", take_b)
+      .def("take_c", take_c)
+      .def("take_d", take_d)
+
+      .add(
+          class_<A>("A")
+          .def_init()
+          .def("name", &A::name)
+          )
+        
         ;
 
-    class_<D,bases<B,C> >(m1, "D")
-        .def_init()
-        .def(&D::name, "name")
+    // sequence points don't ensure that "A" is constructed before "B"
+    // or "C" below if we make them part of the same chain
+    m1
+        .add(
+            class_<B,bases<A> >("B")
+            .def_init()
+            .def("name", &B::name)
+            )
+        
+        .add(
+            class_<C,bases<A> >("C")
+            .def_init()
+            .def("name", &C::name)
+            )
         ;
 
-    class_<complicated>(m1, "complicated")
-        .def_init(args<simple const&,int>())
-        .def_init(args<simple const&>())
-        .def(&complicated::get_n, "get_n")
+    m1
+        .add(
+            class_<D,bases<B,C> >("D")
+            .def_init()
+            .def("name", &D::name)
+            )
+
+        .add(
+            class_<complicated>("complicated")
+            .def_init(args<simple const&,int>())
+            .def_init(args<simple const&>())
+            .def("get_n", &complicated::get_n)
+            )
         ;
 }
 
