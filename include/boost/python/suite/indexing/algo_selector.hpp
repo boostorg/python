@@ -40,7 +40,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   namespace detail {
-    template<typename Container> struct selector_impl;
+    template<typename Container> class selector_impl;
 
     // selector_impl instances should include *two* publically
     // accessible typedefs, one for the non-const version of the
