@@ -17,6 +17,7 @@ extern "C"
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/python/detail/aix_init_module.hpp>
+# include <boost/python/module_init.hpp>
 
 namespace boost { namespace python { namespace detail {
 
