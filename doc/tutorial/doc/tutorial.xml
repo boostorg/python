@@ -162,10 +162,10 @@ minimalist <emphasis>bjam</emphasis> script that builds the DLLs for us.</para>
 Before anything else, you should have the bjam executable in your boost
 directory or somewhere in your path such that <literal>bjam</literal> can be executed in
 the command line. Pre-built Boost.Jam executables are available for most
-platforms. The complete list of Bjam executables can be found 
+platforms. The complete list of Bjam executables can be found
 <ulink url="http://sourceforge.net/project/showfiles.php?group_id=7586">here</ulink>.</para>
 <anchor id="hello.let_s_jam_" /><bridgehead renderas="sect2">Let's Jam!</bridgehead><para>
-<inlinemediaobject><imageobject><imagedata fileref="images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
+<inlinemediaobject><imageobject><imagedata fileref="../images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
 <para>
 Here is our minimalist Jamfile:</para>
 <programlisting><literal>    subproject libs/python/example/tutorial ;
@@ -563,9 +563,12 @@ Now we can inform Boost.Python of the inheritance relationship between
 Doing so, we get some things for free:</para>
 <orderedlist>
 <listitem>
-Derived automatically inherits all of Base's Python methods (wrapped C++ member functions)
+Derived automatically inherits all of Base's Python methods
+  (wrapped C++ member functions)
 </listitem><listitem>
-<emphasis role="bold">If</emphasis> Base is polymorphic, <literal>Derived</literal> objects which have been passed to Python via a pointer or reference to <literal>Base</literal> can be passed where a pointer or reference to <literal>Derived</literal> is expected.
+<emphasis role="bold">If</emphasis> Base is polymorphic, <literal>Derived</literal> objects which have been passed to
+  Python via a pointer or reference to <literal>Base</literal> can be passed where a pointer
+  or reference to <literal>Derived</literal> is expected.
 </listitem>
 </orderedlist><para>
 Now, we shall expose the C++ free functions <literal>b</literal> and <literal>d</literal> and <literal>factory</literal>:</para>
@@ -594,53 +597,75 @@ Boost.Python <link linkend="python.call_policies">call policies</link> later.</p
 <section id="python.class_virtual_functions">
 <title>Class Virtual Functions</title>
 <para>
-In this section, we shall learn how to make functions behave
-polymorphically through virtual functions. Continuing our example, let us
-add a virtual function to our <literal>Base</literal> class:</para>
+In this section, we shall learn how to make functions behave polymorphically
+through virtual functions. Continuing our example, let us add a virtual function
+to our <literal>Base</literal> class:</para>
 <programlisting>
 <literal>
 <phrase role="keyword">struct</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
 {</phrase><phrase role="keyword">
+    virtual</phrase><phrase role="special"> ~</phrase><phrase role="identifier">Base</phrase><phrase role="special">()</phrase><phrase role="special"> {}</phrase><phrase role="keyword">
     virtual</phrase><phrase role="keyword"> int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special"> =</phrase><phrase role="number"> 0</phrase><phrase role="special">;</phrase><phrase role="special">
 };</phrase>
 </literal>
 </programlisting>
 <para>
-Since <literal>f</literal> is a pure virtual function, <literal>Base</literal> is now an abstract
-class. Given an instance of our class, the free function <literal>call_f</literal>
-calls some implementation of this virtual function in a concrete
-derived class:</para>
+One of the goals of Boost.Python is to be minimally intrusive on an existing C++ 
+design. In principle, it should be possible to expose the interface for a 3rd 
+party library without changing it. It is not ideal to add anything to our class 
+<code><phrase role="identifier">Base</phrase></code>. Yet, when you have a virtual function that's going to be overridden in 
+Python and called polymorphically <emphasis role="bold">from C++</emphasis>, we'll need to add some 
+scaffoldings to make things work properly. What we'll do is write a class 
+wrapper that derives from <code><phrase role="identifier">Base</phrase></code> that will unintrusively hook into the virtual 
+functions so that a Python override may be called:</para>
 <programlisting>
 <literal>
-<phrase role="keyword">int</phrase><phrase role="identifier"> call_f</phrase><phrase role="special">(</phrase><phrase role="identifier">Base</phrase><phrase role="special">&amp;</phrase><phrase role="identifier"> b</phrase><phrase role="special">)</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> b</phrase><phrase role="special">.</phrase><phrase role="identifier">f</phrase><phrase role="special">();</phrase><phrase role="special"> }</phrase>
-</literal>
-</programlisting>
-<para>
-To allow this function to be implemented in a Python derived class, we
-need to create a class wrapper:</para>
-<programlisting>
-<literal>
-<phrase role="keyword">struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special"> :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
-{</phrase><phrase role="identifier">
-    BaseWrap</phrase><phrase role="special">(</phrase><phrase role="identifier">PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self_</phrase><phrase role="special">)</phrase><phrase role="special">
-        :</phrase><phrase role="identifier"> self</phrase><phrase role="special">(</phrase><phrase role="identifier">self_</phrase><phrase role="special">)</phrase><phrase role="special"> {}</phrase><phrase role="keyword">
-    int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> call_method</phrase><phrase role="special">&lt;</phrase><phrase role="keyword">int</phrase><phrase role="special">&gt;(</phrase><phrase role="identifier">self</phrase><phrase role="special">,</phrase><phrase role="string"> &quot;f&quot;</phrase><phrase role="special">);</phrase><phrase role="special"> }</phrase><phrase role="identifier">
-    PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self</phrase><phrase role="special">;</phrase><phrase role="special">
-};</phrase><phrase role="keyword">
-
-
-struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special"> :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
-{</phrase><phrase role="identifier">
-    BaseWrap</phrase><phrase role="special">(</phrase><phrase role="identifier">PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self_</phrase><phrase role="special">)</phrase><phrase role="special">
-        :</phrase><phrase role="identifier"> self</phrase><phrase role="special">(</phrase><phrase role="identifier">self_</phrase><phrase role="special">)</phrase><phrase role="special"> {}</phrase><phrase role="identifier">
-    BaseWrap</phrase><phrase role="special">(</phrase><phrase role="identifier">PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self_</phrase><phrase role="special">,</phrase><phrase role="identifier"> Base</phrase><phrase role="keyword"> const</phrase><phrase role="special">&amp;</phrase><phrase role="identifier"> copy</phrase><phrase role="special">)</phrase><phrase role="special">
-        :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">(</phrase><phrase role="identifier">copy</phrase><phrase role="special">),</phrase><phrase role="identifier"> self</phrase><phrase role="special">(</phrase><phrase role="identifier">self_</phrase><phrase role="special">)</phrase><phrase role="special"> {}</phrase><phrase role="keyword">
-    int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> call_method</phrase><phrase role="special">&lt;</phrase><phrase role="keyword">int</phrase><phrase role="special">&gt;(</phrase><phrase role="identifier">self</phrase><phrase role="special">,</phrase><phrase role="string"> &quot;f&quot;</phrase><phrase role="special">);</phrase><phrase role="special"> }</phrase><phrase role="keyword">
-    int</phrase><phrase role="identifier"> default_f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">();</phrase><phrase role="special"> }</phrase><phrase role="comment"> // &lt;&lt;=== ***ADDED***
-</phrase><phrase role="identifier">    PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self</phrase><phrase role="special">;</phrase><phrase role="special">
+<phrase role="keyword">struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special"> :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">,</phrase><phrase role="identifier"> wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase><phrase role="special">
+{</phrase><phrase role="keyword">
+    int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special">
+    {</phrase><phrase role="keyword">
+        return</phrase><phrase role="keyword"> this</phrase><phrase role="special">-&gt;</phrase><phrase role="identifier">get_override</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">)();</phrase><phrase role="special">
+    }</phrase><phrase role="special">
 };</phrase>
 </literal>
 </programlisting>
+<para>
+Notice too that in addition to inheriting from <code><phrase role="identifier">Base</phrase></code>, we also multiply-
+inherited <code><phrase role="identifier">wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase></code> (See <ulink url="../../../v2//wrapper.html">Wrapper</ulink>). The
+<code><phrase role="identifier">wrapper</phrase></code> template makes the job of wrapping classes that are meant to
+overridden in Python, easier.</para>
+<informaltable frame="all">
+<?dbhtml table-width="74%" ?>
+<tgroup cols="1">
+<tbody>
+<row>
+<entry>
+<inlinemediaobject><imageobject><imagedata fileref="images/alert.png"></imagedata></imageobject></inlinemediaobject> MSVC6/7 Workaround<para/>
+<para/>
+ 
+If you are using Microsoft Visual C++ 6 or 7, you have to write <code><phrase role="identifier">f</phrase></code> as:<para/>
+<para/>
+
+<code><phrase role="keyword">return</phrase><phrase role="identifier"> call</phrase><phrase role="special">&lt;</phrase><phrase role="keyword">int</phrase><phrase role="special">&gt;(</phrase><phrase role="keyword">this</phrase><phrase role="special">-&gt;</phrase><phrase role="identifier">get_override</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">).</phrase><phrase role="identifier">ptr</phrase><phrase role="special">());</phrase></code>.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+BaseWrap's overridden virtual member function <code><phrase role="identifier">f</phrase></code> in effect calls the
+corresponding method of the Python object through <code><phrase role="identifier">get_override</phrase></code>.</para>
+<para>
+Finally, exposing <code><phrase role="identifier">Base</phrase></code>:</para>
+<programlisting>
+<literal>
+<phrase role="identifier">class_</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> boost</phrase><phrase role="special">::</phrase><phrase role="identifier">noncopyable</phrase><phrase role="special">&gt;(</phrase><phrase role="string">&quot;Base&quot;</phrase><phrase role="special">)</phrase><phrase role="special">
+    .</phrase><phrase role="identifier">def</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">,</phrase><phrase role="identifier"> pure_virtual</phrase><phrase role="special">(&amp;</phrase><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">))</phrase><phrase role="special">
+    ;</phrase>
+</literal>
+</programlisting>
+<para>
+<code><phrase role="identifier">pure_virtual</phrase></code> signals Boost.Python that the function <code><phrase role="identifier">f</phrase></code> is a pure virtual 
+function.</para>
 <informaltable frame="all">
 <?dbhtml table-width="74%" ?>
 <tgroup cols="1">
@@ -656,147 +681,18 @@ correspond roughly to C++'s <emphasis role="bold">member functions</emphasis></e
 </tbody>
 </tgroup>
 </informaltable>
-<para>
-Our class wrapper <literal>BaseWrap</literal> is derived from <literal>Base</literal>. Its overridden
-virtual member function <literal>f</literal> in effect calls the corresponding method
-of the Python object <literal>self</literal>, which is a pointer back to the Python
-<literal>Base</literal> object holding our <literal>BaseWrap</literal> instance.</para>
-<informaltable frame="all">
-<?dbhtml table-width="74%" ?>
-<tgroup cols="1">
-<tbody>
-<row>
-<entry>
-<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Why do we need BaseWrap?</emphasis><para/>
-<para/>
-</entry>
-</row>
-</tbody>
-</tgroup>
-</informaltable>
-<para>
-<emphasis>You may ask</emphasis>, &quot;Why do we need the <literal>BaseWrap</literal> derived class? This could
-have been designed so that everything gets done right inside of
-Base.&quot;<para/>
-<para/>
-</para>
-<para>
-One of the goals of Boost.Python is to be minimally intrusive on an
-existing C++ design. In principle, it should be possible to expose the
-interface for a 3rd party library without changing it. To unintrusively
-hook into the virtual functions so that a Python override may be called, we
-must use a derived class.<para/>
-<para/>
-</para>
-<para>
-Note however that you don't need to do this to get methods overridden
-in Python to behave virtually when called <emphasis>from</emphasis> <emphasis role="bold">Python</emphasis>. The only
-time you need to do the <literal>BaseWrap</literal> dance is when you have a virtual
-function that's going to be overridden in Python and called
-polymorphically <emphasis>from</emphasis> <emphasis role="bold">C++</emphasis>.]</para>
-<para>
-Wrapping <literal>Base</literal> and the free function <literal>call_f</literal>:</para>
-<programlisting>
-<literal>
-<phrase role="identifier">class_</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">,</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> boost</phrase><phrase role="special">::</phrase><phrase role="identifier">noncopyable</phrase><phrase role="special">&gt;(</phrase><phrase role="string">&quot;Base&quot;</phrase><phrase role="special">,</phrase><phrase role="identifier"> no_init</phrase><phrase role="special">)</phrase><phrase role="special">
-    ;</phrase><phrase role="identifier">
-def</phrase><phrase role="special">(</phrase><phrase role="string">&quot;call_f&quot;</phrase><phrase role="special">,</phrase><phrase role="identifier"> call_f</phrase><phrase role="special">);</phrase>
-</literal>
-</programlisting>
-<para>
-Notice that we parameterized the <literal>class_</literal> template with <literal>BaseWrap</literal> as the
-second parameter. What is <literal>noncopyable</literal>? Without it, the library will try
-to create code for converting Base return values of wrapped functions to
-Python. To do that, it needs Base's copy constructor... which isn't
-available, since Base is an abstract class.</para>
-<para>
-In Python, let us try to instantiate our <literal>Base</literal> class:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> base</phrase><phrase role="special"> =</phrase><phrase role="identifier"> Base</phrase><phrase role="special">()</phrase><phrase role="identifier">
-RuntimeError</phrase><phrase role="special">:</phrase><phrase role="identifier"> This</phrase><phrase role="keyword"> class</phrase><phrase role="identifier"> cannot</phrase><phrase role="identifier"> be</phrase><phrase role="identifier"> instantiated</phrase><phrase role="identifier"> from</phrase><phrase role="identifier"> Python</phrase>
-</literal>
-</programlisting>
-<para>
-Why is it an error? <literal>Base</literal> is an abstract class. As such it is advisable
-to define the Python wrapper with <literal>no_init</literal> as we have done above. Doing
-so will disallow abstract base classes such as <literal>Base</literal> to be instantiated.</para>
 </section>
-<section id="python.deriving_a_python_class">
-<title>Deriving a Python Class</title>
-<para>
-Continuing, we can derive from our base class Base in Python and override
-the virtual function in Python. Before we can do that, we have to set up
-our <literal>class_</literal> wrapper as:</para>
-<programlisting>
-<literal>
-<phrase role="identifier">class_</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">,</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> boost</phrase><phrase role="special">::</phrase><phrase role="identifier">noncopyable</phrase><phrase role="special">&gt;(</phrase><phrase role="string">&quot;Base&quot;</phrase><phrase role="special">)</phrase><phrase role="special">
-    ;</phrase>
-</literal>
-</programlisting>
-<para>
-Otherwise, we have to suppress the Base class' <literal>no_init</literal> by adding an
-<literal><emphasis role="underline">_init</emphasis>_()</literal> method to all our derived classes. <literal>no_init</literal> actually adds
-an <literal><emphasis role="underline">_init</emphasis>_</literal> method that raises a Python RuntimeError exception.</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="keyword"> class</phrase><phrase role="identifier"> Derived</phrase><phrase role="special">(</phrase><phrase role="identifier">Base</phrase><phrase role="special">):</phrase><phrase role="special">
-...</phrase><phrase role="identifier">     def</phrase><phrase role="identifier"> f</phrase><phrase role="special">(</phrase><phrase role="identifier">self</phrase><phrase role="special">):</phrase><phrase role="special">
-...</phrase><phrase role="keyword">         return</phrase><phrase role="number"> 42</phrase><phrase role="special">
-...</phrase>
-</literal>
-</programlisting>
-<para>
-Cool eh? A Python class deriving from a C++ class!</para>
-<para>
-Let's now make an instance of our Python class <literal>Derived</literal>:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> derived</phrase><phrase role="special"> =</phrase><phrase role="identifier"> Derived</phrase><phrase role="special">()</phrase>
-</literal>
-</programlisting>
-<para>
-Calling <literal>derived.f()</literal>:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> derived</phrase><phrase role="special">.</phrase><phrase role="identifier">f</phrase><phrase role="special">()</phrase><phrase role="number">
-42</phrase>
-</literal>
-</programlisting>
-<para>
-Will yield the expected result. Finally, calling calling the free function
-<literal>call_f</literal> with <literal>derived</literal> as argument:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> call_f</phrase><phrase role="special">(</phrase><phrase role="identifier">derived</phrase><phrase role="special">)</phrase><phrase role="number">
-42</phrase>
-</literal>
-</programlisting>
-<para>
-Will also yield the expected result.</para>
-<para>
-Here's what's happening:</para>
-<orderedlist>
-<listitem>
-<literal>call_f(derived)</literal> is called in Python
-</listitem><listitem>
-This corresponds to <literal>def(&quot;call_f&quot;, call_f);</literal>. Boost.Python dispatches this call.
-</listitem><listitem>
-<literal>int call_f(Base&amp; b) { return b.f(); }</literal> accepts the call.
-</listitem><listitem>
-The overridden virtual function <literal>f</literal> of <literal>BaseWrap</literal> is called.
-</listitem><listitem>
-<literal>call_method&lt;int&gt;(self, &quot;f&quot;);</literal> dispatches the call back to Python.
-</listitem><listitem>
-<literal>def f(self): return 42</literal> is finally called.
-</listitem>
-</orderedlist></section>
 <section id="python.virtual_functions_with_default_implementations">
 <title>Virtual Functions with Default Implementations</title>
 <para>
-Recall that in the <link linkend="python.class_virtual_functions">previous section</link>, we
-wrapped a class with a pure virtual function that we then implemented in
-C++ or Python classes derived from it. Our base class:</para>
+We've seen in the previous section how classes with pure virtual functions are 
+wrapped using Boost.Python's <ulink url="../../../v2//wrapper.html">class wrapper</ulink>
+facilities. If we wish to wrap <emphasis role="bold">non</emphasis>-pure-virtual functions instead, the 
+mechanism is a bit different.</para>
+<para>
+Recall that in the <link linkend="python.class_virtual_functions">previous section</link>, we 
+wrapped a class with a pure virtual function that we then implemented in C++, or 
+Python classes derived from it. Our base class:</para>
 <programlisting>
 <literal>
 <phrase role="keyword">struct</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
@@ -812,41 +708,63 @@ not declared as pure virtual:</para>
 <literal>
 <phrase role="keyword">struct</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
 {</phrase><phrase role="keyword">
+    virtual</phrase><phrase role="special"> ~</phrase><phrase role="identifier">Base</phrase><phrase role="special">()</phrase><phrase role="special"> {}</phrase><phrase role="keyword">
     virtual</phrase><phrase role="keyword"> int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="number"> 0</phrase><phrase role="special">;</phrase><phrase role="special"> }</phrase><phrase role="special">
 };</phrase>
 </literal>
 </programlisting>
 <para>
-and instead had a default implementation that returns <literal>0</literal>, as shown above,
-we need to add a forwarding function that calls the <literal>Base</literal> default virtual
-function <literal>f</literal> implementation:</para>
+We wrap it this way:</para>
 <programlisting>
 <literal>
-<phrase role="keyword">struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special"> :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">
-{</phrase><phrase role="identifier">
-    BaseWrap</phrase><phrase role="special">(</phrase><phrase role="identifier">PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self_</phrase><phrase role="special">)</phrase><phrase role="special">
-        :</phrase><phrase role="identifier"> self</phrase><phrase role="special">(</phrase><phrase role="identifier">self_</phrase><phrase role="special">)</phrase><phrase role="special"> {}</phrase><phrase role="keyword">
-    int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> call_method</phrase><phrase role="special">&lt;</phrase><phrase role="keyword">int</phrase><phrase role="special">&gt;(</phrase><phrase role="identifier">self</phrase><phrase role="special">,</phrase><phrase role="string"> &quot;f&quot;</phrase><phrase role="special">);</phrase><phrase role="special"> }</phrase><phrase role="keyword">
-    int</phrase><phrase role="identifier"> default_f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="identifier"> Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">();</phrase><phrase role="special"> }</phrase><phrase role="comment"> // &lt;&lt;=== ***ADDED***
-</phrase><phrase role="identifier">    PyObject</phrase><phrase role="special">*</phrase><phrase role="identifier"> self</phrase><phrase role="special">;</phrase><phrase role="special">
+<phrase role="keyword">struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special"> :</phrase><phrase role="identifier"> Base</phrase><phrase role="special">,</phrase><phrase role="identifier"> wrapper</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">&gt;</phrase><phrase role="special">
+{</phrase><phrase role="keyword">
+    int</phrase><phrase role="identifier"> f</phrase><phrase role="special">()</phrase><phrase role="special">
+    {</phrase><phrase role="keyword">
+        if</phrase><phrase role="special"> (</phrase><phrase role="identifier">override</phrase><phrase role="identifier"> f</phrase><phrase role="special"> =</phrase><phrase role="keyword"> this</phrase><phrase role="special">-&gt;</phrase><phrase role="identifier">get_override</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">))</phrase><phrase role="keyword">
+            return</phrase><phrase role="identifier"> f</phrase><phrase role="special">();</phrase><phrase role="comment"> // *note*
+</phrase><phrase role="keyword">        return</phrase><phrase role="identifier"> Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">();</phrase><phrase role="special">
+    }</phrase><phrase role="keyword">
+
+    int</phrase><phrase role="identifier"> default_f</phrase><phrase role="special">()</phrase><phrase role="special"> {</phrase><phrase role="keyword"> return</phrase><phrase role="keyword"> this</phrase><phrase role="special">-&gt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">();</phrase><phrase role="special"> }</phrase><phrase role="special">
 };</phrase>
 </literal>
 </programlisting>
 <para>
-Then, Boost.Python needs to keep track of 1) the dispatch function <literal>f</literal> and
-2) the forwarding function to its default implementation <literal>default_f</literal>.
-There's a special <literal>def</literal> function for this purpose. Here's how it is
-applied to our example above:</para>
+Notice how we implemented <code><phrase role="identifier">BaseWrap</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase></code>. Now, we have to check if there is an 
+override for <code><phrase role="identifier">f</phrase></code>. If none, then we call <code><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">()</phrase></code>.</para>
+<informaltable frame="all">
+<?dbhtml table-width="74%" ?>
+<tgroup cols="1">
+<tbody>
+<row>
+<entry>
+<inlinemediaobject><imageobject><imagedata fileref="images/alert.png"></imagedata></imageobject></inlinemediaobject> MSVC6/7 Workaround<para/>
+<para/>
+ 
+If you are using Microsoft Visual C++ 6 or 7, you have to rewrite the line
+with the <code><phrase role="special">*</phrase><phrase role="identifier">note</phrase><phrase role="special">*</phrase></code> as:<para/>
+<para/>
+
+<code><phrase role="keyword">return</phrase><phrase role="identifier"> call</phrase><phrase role="special">&lt;</phrase><phrase role="keyword">char</phrase><phrase role="keyword"> const</phrase><phrase role="special">*&gt;(</phrase><phrase role="identifier">f</phrase><phrase role="special">.</phrase><phrase role="identifier">ptr</phrase><phrase role="special">());</phrase></code>.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+Finally, exposing:</para>
 <programlisting>
 <literal>
-<phrase role="identifier">class_</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">Base</phrase><phrase role="special">,</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> boost</phrase><phrase role="special">::</phrase><phrase role="identifier">noncopyable</phrase><phrase role="special">&gt;(</phrase><phrase role="string">&quot;Base&quot;</phrase><phrase role="special">)</phrase><phrase role="special">
-    .</phrase><phrase role="identifier">def</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">,</phrase><phrase role="special"> &amp;</phrase><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">,</phrase><phrase role="special"> &amp;</phrase><phrase role="identifier">BaseWrap</phrase><phrase role="special">::</phrase><phrase role="identifier">default_f</phrase><phrase role="special">)</phrase>
+<phrase role="identifier">class_</phrase><phrase role="special">&lt;</phrase><phrase role="identifier">BaseWrap</phrase><phrase role="special">,</phrase><phrase role="identifier"> boost</phrase><phrase role="special">::</phrase><phrase role="identifier">noncopyable</phrase><phrase role="special">&gt;(</phrase><phrase role="string">&quot;Base&quot;</phrase><phrase role="special">)</phrase><phrase role="special">
+    .</phrase><phrase role="identifier">def</phrase><phrase role="special">(</phrase><phrase role="string">&quot;f&quot;</phrase><phrase role="special">,</phrase><phrase role="special"> &amp;</phrase><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase><phrase role="special">,</phrase><phrase role="special"> &amp;</phrase><phrase role="identifier">BaseWrap</phrase><phrase role="special">::</phrase><phrase role="identifier">default_f</phrase><phrase role="special">)</phrase><phrase role="special">
+    ;</phrase>
 </literal>
 </programlisting>
 <para>
-Note that we are allowing <literal>Base</literal> objects to be instantiated this time,
-unlike before where we specifically defined the <literal>class_&lt;Base&gt;</literal> with
-<literal>no_init</literal>.</para>
+Take note that we expose both <code><phrase role="special">&amp;</phrase><phrase role="identifier">Base</phrase><phrase role="special">::</phrase><phrase role="identifier">f</phrase></code> and <code><phrase role="special">&amp;</phrase><phrase role="identifier">BaseWrap</phrase><phrase role="special">::</phrase><phrase role="identifier">default_f</phrase></code>. 
+Boost.Python needs to keep track of 1) the dispatch function <literal>f</literal> and 2) the 
+forwarding function to its default implementation <literal>default_f</literal>. There's a 
+special <literal>def</literal> function for this purpose.</para>
 <para>
 In Python, the results would be as expected:</para>
 <programlisting>
@@ -872,22 +790,6 @@ Calling <literal>derived.f()</literal>:</para>
 <programlisting>
 <literal>
 <phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> derived</phrase><phrase role="special">.</phrase><phrase role="identifier">f</phrase><phrase role="special">()</phrase><phrase role="number">
-42</phrase>
-</literal>
-</programlisting>
-<para>
-Calling <literal>call_f</literal>, passing in a <literal>base</literal> object:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> call_f</phrase><phrase role="special">(</phrase><phrase role="identifier">base</phrase><phrase role="special">)</phrase><phrase role="number">
-0</phrase>
-</literal>
-</programlisting>
-<para>
-Calling <literal>call_f</literal>, passing in a <literal>derived</literal> object:</para>
-<programlisting>
-<literal>
-<phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> call_f</phrase><phrase role="special">(</phrase><phrase role="identifier">derived</phrase><phrase role="special">)</phrase><phrase role="number">
 42</phrase>
 </literal>
 </programlisting>
@@ -1823,7 +1725,7 @@ Boost.Python's static link library comes in two variants. Both are located
 in Boost's <literal>/libs/python/build/bin-stage</literal> subdirectory. On Windows, the
 variants are called <literal>boost_python.lib</literal> (for release builds) and
 <literal>boost_python_debug.lib</literal> (for debugging). If you can't find the libraries,
-you probably haven't built Boost.Python yet. See 
+you probably haven't built Boost.Python yet. See
 <ulink url="../../../building.html">Building and Testing</ulink> on how to do this.</para>
 <para>
 Python's static link library can be found in the <literal>/libs</literal> subdirectory of
@@ -2001,7 +1903,7 @@ you want to be a Dr. Frankenstein, always wrap <literal>PyObject*</literal>s in 
 It's nice that <literal>handle</literal> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the <link linkend="python.object">previous section</link>: the aptly
+above, and in the <ulink url="object.html">previous section</ulink>: the aptly
 named <literal>object</literal> class and it's derivatives. We've already seen that they
 can be constructed from a <literal>handle</literal>. The following examples should further
 illustrate this fact:</para>
@@ -2047,10 +1949,10 @@ int</phrase><phrase role="identifier"> five_squared</phrase><phrase role="specia
 take into account the different functions that <literal>object</literal> and <literal>handle</literal>
 perform.</para>
 <anchor id="using_the_interpreter.exception_handling" /><bridgehead renderas="sect2">Exception handling</bridgehead><para>
-If an exception occurs in the execution of some Python code, the <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink> 
-function returns a null pointer. Constructing a <literal>handle</literal> out of this null 
-pointer throws <ulink url="../../../v2/errors.html#error_already_set-spec">error_already_set</ulink>, 
-so basically, the Python exception is automatically translated into a 
+If an exception occurs in the execution of some Python code, the <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink>
+function returns a null pointer. Constructing a <literal>handle</literal> out of this null
+pointer throws <ulink url="../../../v2/errors.html#error_already_set-spec">error_already_set</ulink>,
+so basically, the Python exception is automatically translated into a
 C++ exception when using <literal>handle</literal>:</para>
 <programlisting>
 <literal>
@@ -2073,14 +1975,14 @@ catch</phrase><phrase role="special">(</phrase><phrase role="identifier">error_a
 </literal>
 </programlisting>
 <para>
-The <literal>error_already_set</literal> exception class doesn't carry any information in itself. 
-To find out more about the Python exception that occurred, you need to use the 
-<ulink url="http://www.python.org/doc/api/exceptionHandling.html">exception handling functions</ulink> 
-of the Python/C API in your catch-statement. This can be as simple as calling 
-<ulink url="http://www.python.org/doc/api/exceptionHandling.html#l2h-70">PyErr_Print()</ulink> to 
-print the exception's traceback to the console, or comparing the type of the 
-exception with those of the <ulink url="http://www.python.org/doc/api/standardExceptions.html">
-standard exceptions</ulink>:</para>
+The <literal>error_already_set</literal> exception class doesn't carry any information in itself.
+To find out more about the Python exception that occurred, you need to use the
+<ulink url="http://www.python.org/doc/api/exceptionHandling.html">exception handling functions</ulink>
+of the Python/C API in your catch-statement. This can be as simple as calling
+<ulink url="http://www.python.org/doc/api/exceptionHandling.html#l2h-70">PyErr_Print()</ulink> to
+print the exception's traceback to the console, or comparing the type of the
+exception with those of the <ulink url="http://www.python.org/doc/api/standardExceptions.html
+standard">exceptions</ulink>:</para>
 <programlisting>
 <literal>
 <phrase role="keyword">catch</phrase><phrase role="special">(</phrase><phrase role="identifier">error_already_set</phrase><phrase role="special">)</phrase><phrase role="special">
@@ -2098,11 +2000,11 @@ standard exceptions</ulink>:</para>
 </literal>
 </programlisting>
 <para>
-(To retrieve even more information from the exception you can use some of the other 
+(To retrieve even more information from the exception you can use some of the other
 exception handling functions listed <ulink url="http://www.python.org/doc/api/exceptionHandling.html">here</ulink>.)</para>
 <para>
-If you'd rather not have <literal>handle</literal> throw a C++ exception when it is constructed, you 
-can use the <ulink url="../../../v2/handle.html#allow_null-spec">allow_null</ulink> function in the same 
+If you'd rather not have <literal>handle</literal> throw a C++ exception when it is constructed, you
+can use the <ulink url="../../../v2/handle.html#allow_null-spec">allow_null</ulink> function in the same
 way you'd use borrowed:</para>
 <programlisting>
 <literal>
@@ -2345,7 +2247,7 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.</para>
 <para>
 Now our package is ready. All the user has to do is put <literal>sounds</literal> into his
-<ulink url="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000">PYTHONPATH</ulink> 
+<ulink url="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000">PYTHONPATH</ulink>
 and fire up the interpreter:</para>
 <programlisting>
 <literal>
@@ -2493,7 +2395,7 @@ BOOST_PYTHON_MODULE</phrase><phrase role="special">(</phrase><phrase role="ident
 </programlisting>
 <para>
 If we are using the technique from the previous session,
-<link linkend="python.creating_packages">Creating Packages</link>, we can code directly 
+<link linkend="python.creating_packages">Creating Packages</link>, we can code directly
 into <literal>geom/<emphasis role="underline">_init</emphasis>_.py</literal>:</para>
 <programlisting>
 <literal>
