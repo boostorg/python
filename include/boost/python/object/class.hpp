@@ -37,9 +37,13 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     void enable_pickling(bool getstate_manages_dict);
 
  protected:
-    // Retrieve the underlying object
     void add_property(char const* name, object const& fget);
     void add_property(char const* name, object const& fget, object const& fset);
+
+    void add_static_property(char const* name, object const& fget);
+    void add_static_property(char const* name, object const& fget, object const& fset);
+    
+    // Retrieve the underlying object
     void setattr(char const* name, object const&);
 
     // Set a special attribute in the class which tells Boost.Python
