@@ -334,7 +334,7 @@ class ClassExporter(Exporter):
     def ExportVirtualMethods(self):        
         # check if this class has any virtual methods
         has_virtual_methods = False
-        for member in self.class_.members:
+        for member in self.public_members:
             if type(member) == Method and member.virtual:
                 has_virtual_methods = True
                 break
@@ -605,7 +605,7 @@ class _VirtualWrapperGenerator(object):
         param_names_str = ', '.join(param_names)
         if param_names_str:
             param_names_str = ', ' + param_names_str
-        decl += indent*2 + '%s%scall_method<%s>(self, "%s"%s);\n' %\
+        decl += indent*2 + '%s%scall_method< %s >(self, "%s"%s);\n' %\
             (return_str, python, result, rename, param_names_str)
         decl += indent + '}\n'
 
@@ -675,11 +675,15 @@ class _VirtualWrapperGenerator(object):
 
 
     def VirtualMethods(self):
-        return [m for m in self.class_.members if type(m) == Method and m.virtual]
+        def IsVirtual(m):
+            return type(m) == Method and m.virtual and m.visibility == Scope.public
+        return [m for m in self.class_.members if IsVirtual(m)]
     
     
     def Constructors(self):
-        return [m for m in self.class_.members if isinstance(m, Constructor)]
+        def IsValid(m):
+            return isinstance(m, Constructor) and m.visibility == Scope.public
+        return [m for m in self.class_.members if IsValid(m)]
     
         
     def GenerateDefinitions(self):
