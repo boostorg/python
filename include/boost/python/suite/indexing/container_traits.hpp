@@ -157,6 +157,9 @@ namespace boost { namespace python { namespace indexing {
 
     BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool,   has_find    = true);
+    BOOST_STATIC_CONSTANT (bool,   is_reorderable = false);
+    // MSVC seems to have a mutable std::set::reference, so we need
+    // to explicitly cancel is_reorderable here
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -179,6 +182,9 @@ namespace boost { namespace python { namespace indexing {
     BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool,   has_find       = true);
     BOOST_STATIC_CONSTANT (bool,   is_reorderable = false);
+    // std::map::reference (reference to the mapped type) is mutable,
+    // so explicitly override the base-class assumption of
+    // is_reorderable
   };
 } } }
 
