@@ -138,36 +138,36 @@ namespace detail
   };
 }
 
-# define BOOST_PYTHON_BINARY_OPERATION(id, rid, expr)                   \
-namespace detail                                                        \
-{                                                                       \
-  template <>                                                           \
-  struct operator_l<op_##id>                                            \
-  {                                                                     \
-      template <class L, class R>                                       \
-      struct apply                                                      \
-      {                                                                 \
-          static inline PyObject* execute(L const& l, R const& r)       \
-          {                                                             \
-              return detail::convert_result(expr);                      \
-          }                                                             \
-      };                                                                \
-      static char const* name() { return "__" #id "__"; }               \
-  };                                                                    \
-                                                                        \
-  template <>                                                           \
-  struct operator_r<op_##id>                                            \
-  {                                                                     \
-      template <class L, class R>                                       \
-      struct apply                                                      \
-      {                                                                 \
-          static inline PyObject* execute(R const& r, L const& l)       \
-          {                                                             \
-              return detail::convert_result(expr);                      \
-          }                                                             \
-      };                                                                \
-      static char const* name() { return "__" #rid "__"; }              \
-  };                                                                    \
+# define BOOST_PYTHON_BINARY_OPERATION(id, rid, expr)       \
+namespace detail                                            \
+{                                                           \
+  template <>                                               \
+  struct operator_l<op_##id>                                \
+  {                                                         \
+      template <class L, class R>                           \
+      struct apply                                          \
+      {                                                     \
+          static inline PyObject* execute(L& l, R const& r) \
+          {                                                 \
+              return detail::convert_result(expr);          \
+          }                                                 \
+      };                                                    \
+      static char const* name() { return "__" #id "__"; }   \
+  };                                                        \
+                                                            \
+  template <>                                               \
+  struct operator_r<op_##id>                                \
+  {                                                         \
+      template <class L, class R>                           \
+      struct apply                                          \
+      {                                                     \
+          static inline PyObject* execute(R& r, L const& l) \
+          {                                                 \
+              return detail::convert_result(expr);          \
+          }                                                 \
+      };                                                    \
+      static char const* name() { return "__" #rid "__"; }  \
+  };                                                        \
 } 
 
 # define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)      \
@@ -289,7 +289,7 @@ namespace detail                                                \
       template <class T>                                        \
       struct apply                                              \
       {                                                         \
-          static PyObject* execute(T const& x)                  \
+          static PyObject* execute(T& x)                        \
           {                                                     \
               return detail::convert_result(op(x));             \
           }                                                     \
