@@ -12,15 +12,31 @@ def _find(s, sub, start=0, end=None):
     else:
         return pos
 
-def _gen_common_key(key, n, args):
+def _raise_no_argument(key, n, args):
+    raise IndexError(str(key) + " extra arg(s) not passed to gen_function")
+    
+def _gen_common_key(key, n, args, fill = _raise_no_argument):
+    # import sys
+    # print >> sys.stderr, "_gen_common_key(", repr(key), ",", repr(n), ',', repr(args), ',', fill, ')'
+    # sys.stderr.flush()
     if len(key) > 0 and key in '123456789':
-        return str(args[int(key) - 1])
-    elif key == 'x':
-        return str(n)
+        index = int(key) - 1;
+        
+        if index >= len(args):
+            return fill(key, n, args)
+
+        arg = args[index]
+        if callable(arg):
+            return str(arg(key, n, args))
+        else:
+            return str(arg)
+    elif key in ('x','n','-','+'):
+        return str(n + {'-':-1,'+':+1,'x':0,'n':0}[key])
     else:
         return key
 
-def _gen_arg(template, n, args, delimiter = '%'):
+def _gen_arg(template, n, args, delimiter = '%', fill = _raise_no_argument):
+    
     result = ''
     i = 0
     while i < len(template): # until the template is consumed
@@ -33,13 +49,13 @@ def _gen_arg(template, n, args, delimiter = '%'):
         key = template[start - 1 : start] # the key character. If there were no
                                           # delimiters left, key will be empty
 
-        if key == 'n':
+        if 0 and key == 'n':
             result = result + `n`
-        else:
-            result = result + _gen_common_key(key, n, args)
+        else: 
+            result = result + _gen_common_key(key, n, args, fill)
 
         i = start
-        
+
     return result
 
 def gen_function(template, n, *args, **keywords):
@@ -52,19 +68,46 @@ def gen_function(template, n, *args, **keywords):
     
     Sections of the template between '%{', '%}' pairs are ommitted if n == 0.
     
-    %n is transformed into the string representation of 1..n for each repetition
-    of n.
+    %n is transformed into the string representation of 1..n for each
+    repetition within %(...%). Elsewhere, %n is transformed into the
+    string representation of n
 
-    %x, where x is a digit, is transformed into the corresponding additional
-    argument.
+    %- is transformed into the string representation of 0..n-1 for
+    each repetition within %(...%). Elsewhere, %- is transformed into the
+    string representation of n-1.
+
+    %+ is transformed into the string representation of 2..n+1 for
+    each repetition within %(...%). Elsewhere, %- is transformed into the
+    string representation of n+1.
+
+    %x is always transformed into the string representation of n
+
+    %z, where z is a digit, selects the corresponding additional
+    argument. If that argument is callable, it is called with three
+    arguments:
+        key  - the string representation of 'z'
+        n    - the iteration number
+        args - a tuple consisting of all the additional arguments to
+               this function
+    otherwise, the selected argument is converted to a string representation
+
 
     for example,
     
-    >>> gen_function('%1 abc(%(int a%n%:, %));%{ // all args are ints%}', 2, 'void')
-    'void abc(int a1, int a2); // all args are ints'
+    >>> gen_function('%1 abc%x(%(int a%n%:, %));%{ // all args are ints%}', 2, 'void')
+    'void abc2(int a1, int a2); // all args are ints'
+    
     >>> gen_function('%1 abc(%(int a%n%:, %));%{ // all args are ints%}', 0, 'x')
     'x abc();'
         
+    >>> gen_function('%1 abc(%(int a%n%:, %));%{ // all args are ints%}', 0, lambda key, n, args: 'abcd'[n])
+    'a abc();'
+        
+    >>> gen_function('%2 %1 abc(%(int a%n%:, %));%{ // all args are ints%}', 0, 'x', fill = lambda key, n, args: 'const')
+    'const x abc();'
+
+    >>> gen_function('abc%[k%:v%]', 0, fill = lambda key, n, args, value = None: '<' + key + ',' + value + '>')
+    'abc<k,v>'
 
     >>> template = '''    template <class T%(, class A%n%)>
     ...     static PyObject* call( %1(T::*pmf)(%(A%n%:, %))%2, PyObject* args, PyObject* /* keywords */ ) {
@@ -123,6 +166,7 @@ def gen_function(template, n, *args, **keywords):
         }
 """
     delimiter = keywords.get('delimiter', '%')
+    fill = keywords.get('fill', _raise_no_argument);
     result = ''
     i = 0
     while i < len(template): # until the template is consumed
@@ -135,7 +179,7 @@ def gen_function(template, n, *args, **keywords):
         key = template[start - 1 : start] # the key character. If there were no
                                           # delimiters left, key will be empty
 
-        pairs = { '(':')', '{':'}' }
+        pairs = { '(':')', '{':'}', '[':']' }
         
         if key in pairs.keys():
             end = string.find(template, delimiter + pairs[key], start)
@@ -146,23 +190,27 @@ def gen_function(template, n, *args, **keywords):
                 if n > 0:
                     result = result + gen_function(template[start:end], n, args, delimiter)
             else:
-                separator_pos = _find(template, delimiter + ':', start, end)
-                separator = template[separator_pos+2 : end]
-
-                for x in range(1, n + 1):
-                    result = result + _gen_arg(template[start:separator_pos], x, args,
-                                               delimiter)
-                    if x != n:
-                        result = result + separator
+                separator_pos = _find(template, delimiter + ':',
+                                      start, end)
+                remainder = template[separator_pos+2 : end]
+                
+                if key == '(':
+                    for x in range(1, n + 1):
+                        result = result + _gen_arg(template[start:separator_pos], x, args,
+                                                   delimiter)
+                        if x != n:
+                            result = result + remainder
+                else:
+                    result = result + fill(template[start:separator_pos], n, args, value = remainder)
                 
         else:
-            result = result + _gen_common_key(key, n, args)
+            result = result + _gen_common_key(key, n, args, fill)
             
         i = delimiter_pos + 2
         
     return result
 
-def gen_functions(template, n, *args):
+def gen_functions(template, n, *args, **keywords):
     r"""gen_functions(template, n, [args...]) -> string
 
     Call gen_function repeatedly with from 0..n and the given optional
@@ -174,11 +222,13 @@ def gen_functions(template, n, *args):
     void abc(int a1, int a2); // all args are ints
     
     """
+    fill = keywords.get('fill', _raise_no_argument);
     result = ''
     for x in range(n + 1):
-        result = result + apply(gen_function, (template, x) + args)
+        result = result + apply(gen_function, (template, x) + args, keywords)
     return result
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    import sys
+    doctest.testmod(sys.modules.get(__name__))
