@@ -79,7 +79,8 @@ namespace detail {
   struct parameter_traits
   {
    private:
-      typedef const_ref_selector<boost::is_reference<T>::value> selector;
+      enum { is_ref = boost::is_reference<T>::value };
+      typedef const_ref_selector<is_ref> selector;
    public:
       typedef typename selector::template const_ref<T>::type const_reference;
   };

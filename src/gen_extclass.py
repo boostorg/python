@@ -15,6 +15,7 @@ def gen_extclass(args):
 //  gen_extclass.python
 
 //  Revision History:
+//  17 Apr 01  Comment added with reference to cross_module.hpp (R.W. Grosse-Kunstleve)
 //  05 Mar 01  Fixed a bug which prevented auto_ptr values from being converted
 //             to_python (Dave Abrahams)
 
@@ -171,6 +172,14 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 // and U. T is the class the user really intends to wrap. U is a class derived
 // from T with some virtual function overriding boilerplate, or if there are no
 // virtual functions, U = held_instance<T>.
+//
+// A look-alike of this class in root/boost/python/cross_module.hpp
+// is used for the implementation of the cross-module support
+// (export_converters and import_converters). If from_python
+// and to_python converters are added or removed from the class
+// below, the class python_import_extension_class_converters has
+// to be modified accordingly.
+//
 template <class T, class U = boost::python::detail::held_instance<T> >
 class python_extension_class_converters
 {
@@ -607,6 +616,12 @@ class extension_class
         choose_op<(which & op_and)>::template args<Operand>::add(this);
         choose_op<(which & op_xor)>::template args<Operand>::add(this);
         choose_op<(which & op_or)>::template args<Operand>::add(this);
+        choose_op<(which & op_gt)>::template args<Operand>::add(this);
+        choose_op<(which & op_ge)>::template args<Operand>::add(this);
+        choose_op<(which & op_lt)>::template args<Operand>::add(this);
+        choose_op<(which & op_le)>::template args<Operand>::add(this);
+        choose_op<(which & op_eq)>::template args<Operand>::add(this);
+        choose_op<(which & op_ne)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_neg)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_pos)>::template args<Operand>::add(this);
         choose_unary_op<(which & op_abs)>::template args<Operand>::add(this);
@@ -636,6 +651,12 @@ class extension_class
         choose_op<(which & op_xor)>::template args<Left,Right>::add(this);
         choose_op<(which & op_or)>::template args<Left,Right>::add(this);
         choose_op<(which & op_cmp)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_gt)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_ge)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_lt)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_le)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_eq)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_ne)>::template args<Left,Right>::add(this);
     }
     
     template <long which, class Left, class Right>
