@@ -55,15 +55,6 @@
 
       <dt><a href="#building_ext">Building your Extension Module</a></dt>
 
-      <dd>
-        <dl>
-          <dt><a href="#easy">The Easy Way</a></dt>
-
-          <dt><a href="#outside">Building your module outside the Boost
-          project tree</a></dt>
-        </dl>
-      </dd>
-
       <dt><a href="#variants">Build Variants</a></dt>
 
       <dt><a href="#VisualStudio">Building Using the Microsoft Visual Studio
@@ -83,7 +74,7 @@
     <p>Normally, Boost.Python extension modules must be linked with the
     <code>boost_python</code> shared library. In special circumstances you
     may want to link to a static version of the <code>boost_python</code>
-    library, but if multiple Boost.Pythone extension modules are used
+    library, but if multiple Boost.Python extension modules are used
     together, it will prevent sharing of types across extension modules, and
     consume extra code space. To build <code>boost_python</code>, use <a
     href="../../../tools/build/index.html">Boost.Build</a> in the usual way
@@ -275,44 +266,48 @@ bjam -sTOOLS=<i><a href=
     passes. 
 
     <h2><a name="building_ext">Building your Extension Module</a></h2>
-    Though there are other approaches, the best way to build an extension
-    module using Boost.Python is with Boost.Build. If you have to use another
-    build system, you should use Boost.Build at least once with the
+    Though there are other approaches, the smoothest and most reliable
+    way to build an extension module using Boost.Python is with
+    Boost.Build. If you have to use another build system, you should
+    use Boost.Build at least once with the
     "<code><b>-n</b></code>" option so you can see the command-lines it uses,
     and replicate them. You are likely to run into compilation or linking
     problems otherwise. 
 
-    <h3><a name="easy">The Easy Way</a></h3>
-    Until Boost.Build v2 is released, cross-project build dependencies are
-    not supported, so it works most smoothly if you add a new subproject to
-    your boost installation. The <code>libs/python/example</code>
-    subdirectory of your boost installation contains a minimal example (along
-    with many extra sources). To copy the example subproject: 
+    The <code><a href="../example">libs/python/example</a></code>
+    subdirectory of your boost installation contains a small example
+    which builds and tests two extensions. To build your own
+    extensions copy the example subproject and make the following two edits:
 
-    <ol>
-      <li>Create a new subdirectory in, <code>libs/python</code>, say
-      <code>libs/python/my_project</code>.</li>
+<ol>
+<li><code><a
+href="../example/boost-build.jam"><b>boost-build.jam</b></a></code> -
+edit the line which reads
 
-      <li>Copy <code><a href=
-      "../example/Jamfile">libs/python/example/Jamfile</a></code> to your new
-      directory.</li>
+<blockquote>
+<pre>
+boost-build ../../../tools/build ;
+</pre>
+</blockquote>
 
-      <li>Edit the Jamfile as appropriate for your project. You'll want to
-      change the "<code>subproject</code>" rule invocation at the top, and
-      the names of some of the source files and/or targets.</li>
-    </ol>
+so that the path refers to the <code>tools/build</code> subdirectory
+of your Boost installation.
+
+
+<li><code><a href="../example/Jamrules"><b>Jamrules</b></a></code> -
+edit the line which reads
+
+<blockquote>
+<pre>
+path-global BOOST_ROOT : ../../.. ;
+</pre>
+</blockquote>
+so that the path refers to the root directory of your Boost installation.
+</ol>
+
+<p>
     The instructions <a href="#testing">above</a> for testing Boost.Python
     apply equally to your new extension modules in this subproject. 
-
-    <h3><a name="outside">Building your module outside the Boost project
-    tree</a></h3>
-    If you can't (or don't wish to) modify your boost installation, the
-    alternative is to create your own Boost.Build project. A similar example
-    you can use as a starting point is available in <code><a href=
-    "../example/project.zip">this archive</a></code>. You'll need to edit the
-    Jamfile and Jamrules files, depending on the relative location of your
-    Boost installation and the new project. Note that automatic testing of
-    extension modules is not available in this configuration. 
 
     <h2><a name="variants">Build Variants</a></h2>
     Three <a href=
