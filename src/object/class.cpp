@@ -277,16 +277,11 @@ namespace objects
 
   object module_prefix()
   {
-      object result(
+      return object(
           PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
           ? object(scope().attr("__name__"))
           : api::getattr(scope(), "__module__", str())
           );
-
-      if (result)
-          result += '.';
-      
-      return result;
   }
 
   namespace
@@ -348,11 +343,14 @@ namespace objects
 
       // Call the class metatype to create a new class
       dict d;
-      
+   
+      object m = module_prefix();
+      if (m) d["__module__"] = m;
+
       if (doc != 0)
           d["__doc__"] = doc;
       
-      object result = object(class_metatype())(module_prefix() + name, bases, d);
+      object result = object(class_metatype())(name, bases, d);
       assert(PyType_IsSubtype(result.ptr()->ob_type, &PyType_Type));
       
       if (scope().ptr() != Py_None)
