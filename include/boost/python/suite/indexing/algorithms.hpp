@@ -25,6 +25,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/suite/indexing/int_slice_helper.hpp>
+#include <boost/python/suite/indexing/slice.hpp>
 #include <algorithm>
 #include <stdexcept>
 #include <limits>
@@ -65,9 +66,12 @@ namespace boost { namespace python { namespace indexing {
     static iterator  begin      (container &c) { return c.begin(); }
     static iterator  end        (container &c) { return c.end(); }
 
-    // Reasonable default for slice handling
-    typedef int_slice_helper<self_type> slice_helper;
+    // Reasonable defaults for slice handling
+    typedef int_slice_helper<self_type, integer_slice> slice_helper;
 
+    static slice_helper make_slice_helper (container &c, slice const &);
+
+    // Default visitor_helper
     template<typename PythonClass, typename Policy>
     static void visitor_helper (PythonClass &, Policy const &);
 
@@ -403,6 +407,18 @@ namespace boost { namespace python { namespace indexing {
   void default_algorithms<ContainerTraits>::sort (container &c)
   {
     std::sort (begin(c), end(c));
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // slice_helper factory function (default version)
+  /////////////////////////////////////////////////////////////////////////
+
+  template<typename ContainerTraits>
+  typename default_algorithms<ContainerTraits>::slice_helper
+  default_algorithms<ContainerTraits>
+  ::make_slice_helper (container &c, slice const &sl)
+  {
+    return slice_helper (c, integer_slice (sl, size (c)));
   }
 
   /////////////////////////////////////////////////////////////////////////
