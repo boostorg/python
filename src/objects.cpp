@@ -250,8 +250,7 @@ const ref& dictionary_proxy::operator=(const ref& rhs)
 
 dictionary_proxy::operator ref() const
 {
-    return ref(m_dict->ob_type->tp_as_mapping->mp_subscript(m_dict.get(), m_key.get()),
-               ref::increment_count);
+    return ref(m_dict->ob_type->tp_as_mapping->mp_subscript(m_dict.get(), m_key.get()));
 }
 
 dictionary_proxy::dictionary_proxy(const ref& dict, const ref& key)
