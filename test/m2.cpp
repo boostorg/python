@@ -14,48 +14,43 @@
 using boost::python::wrap;
 using boost::python::unwrap;
 
-extern "C"
+// Get a simple (by value) from the argument, and return the
+// string it holds.
+PyObject* unwrap_simple(simple x)
 {
-    // Get a simple (by value) from the argument, and return the
-    // string it holds.
-    PyObject* unwrap_simple(simple x)
-    {
-        return PyString_FromString(x.s);
-    }
+    return PyString_FromString(x.s);
+}
 
-    // Likewise, but demands that its possible to get a non-const
-    // reference to the simple.
-    PyObject* unwrap_simple_ref(simple& x)
-    {
-        return PyString_FromString(x.s);
-    }
+// Likewise, but demands that its possible to get a non-const
+// reference to the simple.
+PyObject* unwrap_simple_ref(simple& x)
+{
+    return PyString_FromString(x.s);
+}
 
-    // Likewise, with a const reference to the simple object.
-    PyObject* unwrap_simple_const_ref(simple const& x)
-    {
-        return PyString_FromString(x.s);
-    }
+// Likewise, with a const reference to the simple object.
+PyObject* unwrap_simple_const_ref(simple const& x)
+{
+    return PyString_FromString(x.s);
+}
 
-    // Get an int (by value) from the argument, and convert it to a
-    // Python Int.
-    PyObject* unwrap_int(int x)
-    {
-        return PyInt_FromLong(x);
-    }
+// Get an int (by value) from the argument, and convert it to a
+// Python Int.
+PyObject* unwrap_int(int x)
+{
+    return PyInt_FromLong(x);
+}
 
-    // Get a non-const reference to an int from the argument
-    PyObject* unwrap_int_ref(int& x)
-    {
-        return PyInt_FromLong(x);
-    }
+// Get a non-const reference to an int from the argument
+PyObject* unwrap_int_ref(int& x)
+{
+    return PyInt_FromLong(x);
+}
 
-    // Get a const reference to an  int from the argument.
-    PyObject* unwrap_int_const_ref(int const& x)
-    {
-        return PyInt_FromLong(x);
-    }
-
-    // -------------------
+// Get a const reference to an  int from the argument.
+PyObject* unwrap_int_const_ref(int const& x)
+{
+    return PyInt_FromLong(x);
 }
 
 // MSVC6 bug workaround
