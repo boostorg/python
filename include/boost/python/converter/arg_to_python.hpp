@@ -117,7 +117,7 @@ namespace detail
             , typename mpl::if_<
                 mpl::or_<
                     is_function<T>
-                  , python::detail::is_pointer_to_function<T>
+                  , indirect_traits::is_pointer_to_function<T>
                   , is_member_function_pointer<T>
                 >
                 , function_arg_to_python<T>

@@ -7,7 +7,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/converter/arg_from_python.hpp>
-# include <boost/python/detail/indirect_traits.hpp>
 
 namespace boost { namespace python { 
 
