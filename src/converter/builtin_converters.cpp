@@ -222,9 +222,9 @@ namespace
       };
 
       // Remember that this will be used to construct the result object 
-      static char const* extract(PyObject* intermediate)
+      static std::string extract(PyObject* intermediate)
       {
-          return PyString_AsString(intermediate);
+          return std::string(PyString_AsString(intermediate),PyString_Size(intermediate));
       }
   };
 

@@ -1,4 +1,4 @@
-"""
+r"""
 >>> from builtin_converters import *
 
 # Synthesize idendity functions in case long long not supported
@@ -72,6 +72,11 @@
 'hello, world'
 >>> rewrap_value_string('yo, wassup?')
 'yo, wassup?'
+
+   wrap strings with embedded nulls:
+   
+>>> rewrap_value_string('yo,\0wassup?')
+'yo,\x00wassup?'
 
 >>> rewrap_value_handle(1)
 1

@@ -102,7 +102,7 @@ BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned LONG_LONG, PyLong_FromUnsignedLongLong(
 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromString(x.c_str()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, PyString_FromStringAndSize(x.c_str(),x.size()))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(long double, PyFloat_FromDouble(x))
