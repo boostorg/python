@@ -38,18 +38,22 @@ namespace boost { namespace python { namespace indexing {
 
   template<typename Container>
   struct base_container_traits
-    : public iterator_detail::traits_by_category <
+    : public ::boost::python::indexing::iterator_traits <
         typename mpl::if_ <
           is_const<Container>
           , typename Container::const_iterator
           , typename Container::iterator
         >::type
-      >::type
+      >
   {
   protected:
-    typedef typename
-      iterator_detail::traits_by_category<typename Container::iterator>
-      ::type base_type;
+    typedef ::boost::python::indexing::iterator_traits <
+      typename mpl::if_ <
+        is_const<Container>
+        , typename Container::const_iterator
+        , typename Container::iterator
+      >::type
+    > base_type;
 
     BOOST_STATIC_CONSTANT (bool,   is_mutable
                            = ! boost::is_const<Container>::value);
