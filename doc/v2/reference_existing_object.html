@@ -130,7 +130,7 @@ Singleton&amp; get_it()
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(singleton)
 {
-   module m("singleton")
+   module("singleton")
       .def("get_it", get_it)
       .add(
          class_&lt;Singleton&gt;()

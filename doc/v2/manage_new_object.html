@@ -104,7 +104,7 @@ Foo* make_foo(int x) { return new Foo(x); }
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
-   module m("my_module")
+   module("my_module")
       .def("make_foo", make_foo)
       .add(
          class_&lt;Foo&gt;()

@@ -118,7 +118,7 @@ struct Foo {
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
-   module m("my_module")
+   module("my_module")
       .add(
          class_&lt;Bar&gt;()
          )
