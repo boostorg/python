@@ -1,6 +1,6 @@
 <html>
 <head>
- <title>BPL Pickle Support</title>
+ <title>Boost.Python Pickle Support</title>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
 
 </body>
 <hr>
-<h1>BPL Pickle Support</h1>
+<h1>Boost.Python Pickle Support</h1>
 
 Pickle is a Python module for object serialization, also known
 as persistence, marshalling, or flattening.
@@ -39,16 +39,16 @@ described in detail in the Python Library Reference for pickle:
 </blockquote>
 
 <hr>
-<h1>The BPL Pickle Interface</h1>
+<h1>The Boost.Python Pickle Interface</h1>
 
-At the user level, the BPL pickle interface involves three special
+At the user level, the Boost.Python pickle interface involves three special
 methods:
 
 <dl>
 <dt>
 <strong>__getinitargs__</strong>
 <dd>
-  When an instance of a BPL extension class is pickled, the pickler
+  When an instance of a Boost.Python extension class is pickled, the pickler
   tests if the instance has a __getinitargs__ method. This method must
   return a Python tuple. When the instance is restored by the
   unpickler, the contents of this tuple are used as the arguments for
@@ -63,7 +63,7 @@ methods:
 <strong>__getstate__</strong>
 
 <dd>
-  When an instance of a BPL extension class is pickled, the pickler
+  When an instance of a Boost.Python extension class is pickled, the pickler
   tests if the instance has a __getstate__ method. This method should
   return a Python object representing the state of the instance.
 
@@ -76,7 +76,7 @@ methods:
 <strong>__setstate__</strong>
 
 <dd>
-  When an instance of a BPL extension class is restored by the
+  When an instance of a Boost.Python extension class is restored by the
   unpickler, it is first constructed using the result of
   __getinitargs__ as arguments (see above). Subsequently the unpickler
   tests if the new instance has a __setstate__ method. If so, this
@@ -96,13 +96,13 @@ __setstate__ methods can do what they want.
 <hr>
 <h1>Pitfalls and Safety Guards</h1>
 
-In BPL extension modules with many extension classes, providing
+In Boost.Python extension modules with many extension classes, providing
 complete pickle support for all classes would be a significant
 overhead. In general complete pickle support should only be implemented
 for extension classes that will eventually be pickled. However, the
-author of a BPL extension module might not anticipate correctly which
+author of a Boost.Python extension module might not anticipate correctly which
 classes need support for pickle. Unfortunately, the pickle protocol
-described above has two important pitfalls that the end user of a BPL
+described above has two important pitfalls that the end user of a Boost.Python
 extension module might not be aware of:
 
 <dl>
@@ -116,10 +116,10 @@ Both __getinitargs__ and __getstate__ are not defined.
   that of the new instance.
 
   <p>
-  However, most C++ classes wrapped with the BPL will have member data
+  However, most C++ classes wrapped with Boost.Python will have member data
   that are not restored correctly by this procedure. To alert the user
   to this problem, a safety guard is provided. If both __getinitargs__
-  and __getstate__ are not defined, the BPL tests if the class has an
+  and __getstate__ are not defined, Boost.Python tests if the class has an
   attribute __dict_defines_state__. An exception is raised if this
   attribute is not defined:
 
@@ -151,7 +151,7 @@ Both __getinitargs__ and __getstate__ are not defined.
 __getstate__ is defined and the instance's __dict__ is not empty.
 
 <dd>
-  The author of a BPL extension class might provide a __getstate__
+  The author of a Boost.Python extension class might provide a __getstate__
   method without considering the possibilities that:
 
   <p>
@@ -170,7 +170,7 @@ __getstate__ is defined and the instance's __dict__ is not empty.
 
   To alert the user to this highly unobvious problem, a safety guard is
   provided. If __getstate__ is defined and the instance's __dict__ is
-  not empty, the BPL tests if the class has an attribute
+  not empty, Boost.Python tests if the class has an attribute
   __getstate_manages_dict__. An exception is raised if this attribute
   is not defined:
 

@@ -12,10 +12,10 @@
 <h2>Inheritance in Python</h2>
 
       <p>
-         BPL extension classes support single and multiple-inheritance in
+         Boost.Python extension classes support single and multiple-inheritance in
          Python, just like regular Python classes. You can arbitrarily mix
          built-in Python classes with extension classes in a derived class'
-         tuple of bases. Whenever a BPL extension class is among the bases for a
+         tuple of bases. Whenever a Boost.Python extension class is among the bases for a
          new class in Python, the result is an extension class:
 <blockquote>
 <pre>
@@ -37,7 +37,7 @@
 
 <h2><a name="implicit_conversion">Reflecting C++ Inheritance Relationships</a></h2>
       <p>
-        BPL also allows us to represent C++ inheritance relationships so that
+        Boost.Python also allows us to represent C++ inheritance relationships so that
         wrapped derived classes may be passed where values, pointers, or
         references to a base class are expected as arguments. The
         <code>declare_base</code> member function of
@@ -76,11 +76,7 @@ int get_derived_x(const Derived& d) {
 // namespace alias for code brevity
 namespace python = boost::python;
 
-extern "C"
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-void initmy_module()
+BOOST_PYTHON_MODULE_INIT(my_module)
 {
     try
     {
@@ -115,11 +111,19 @@ void initmy_module()
 &gt;&gt;&gt; derived = Derived()
 &gt;&gt;&gt; get_name(base)
 'Base'
-</pre><i>objects of wrapped class Derived may be passed where Base is expected</i><pre>
+</pre>
+</blockquote>
+<i>objects of wrapped class Derived may be passed where Base is expected</i>
+<blockquote>
+<pre>
 &gt;&gt;&gt; get_name(derived) 
 'Derived'
-</pre><i>objects of wrapped class Derived can be passed where Derived is 
-expected but where type information has been lost.</i><pre>
+</pre>
+</blockquote>
+<i>objects of wrapped class Derived can be passed where Derived is 
+expected but where type information has been lost.</i>
+<blockquote>
+<pre>
 &gt;&gt;&gt; get_derived_x(derived_as_base()) 
 -1
 </pre>

@@ -18,104 +18,56 @@
 <pre>
 #include &lt;string&gt;
 
-namespace hello {
-  class world
-  {
-   public:
-      world(int);
-      ~world();
-      std::string greet() const { return "hi, world"; }
-    ...
-  };
-  std::size_t length(const world&amp; x) { return std::strlen(x.greet()); }
+namespace { // Avoid cluttering the global namespace.
+
+  // A couple of simple C++ functions that we want to expose to Python.
+  std::string greet() { return "hello, world"; }
+  int square(int number) { return number * number; }
 }
 
 </pre>
       </blockquote>
       <p>
-         Here is the C++ code for a python module called <code>hello</code>
-        which exposes the API using:
+        Here is the C++ code for a python module called <tt>getting_started1</tt>
+        which exposes the API.
       <blockquote>
 <pre>
 #include &lt;boost/python/class_builder.hpp&gt;
-// Python requires an exported function called init&lt;module-name&gt; in every
-// extension module. This is where we build the module contents.
-extern "C"
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-void inithello()
+namespace python = boost::python;
+
+BOOST_PYTHON_MODULE_INIT(getting_started1)
 {
-    try
-    {
-       // create an object representing this extension module
-       boost::python::module_builder m("hello");
-       // Create the Python type object for our extension class
-       boost::python::class_builder&lt;hello::world&gt; world_class(m, "world");
-       // Add the __init__ function
-       world_class.def(boost::python::constructor&lt;int&gt;());
-       // Add a regular member function
-       world_class.def(&amp;hello::world::get, "get");
-       // Add a regular function to the module
-       m.def(hello::length, "length");
-    }
-    catch(...)
-    {
-       boost::python::handle_exception();    // Deal with the exception for Python
-    }
+  try
+  {
+    // Create an object representing this extension module.
+    python::module_builder this_module("getting_started1");
+
+    // Add regular functions to the module.
+    this_module.def(greet, "greet");
+    this_module.def(square, "square");
+  }
+  catch(...)
+  {
+    python::handle_exception(); // Deal with the exception for Python
+  }
 }
-// Win32 DLL boilerplate
-#if defined(_WIN32)
-#include &lt;windows.h&gt;
-extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
-{
-    return 1;
-}
-#endif // _WIN32
 </pre>
       </blockquote>
       <p>
          That's it! If we build this shared library and put it on our <code>
-        PYTHONPATH</code> we can now access our C++ class and function from
+        PYTHONPATH</code> we can now access our C++ functions from
         Python.
       <blockquote>
 <pre>
-&gt;&gt;&gt; import hello
-&gt;&gt;&gt; hi_world = hello.world(3)
-&gt;&gt;&gt; hi_world.greet()
-'hi, world'
-&gt;&gt;&gt; hello.length(hi_world)
-9
+&gt;&gt;&gt; import getting_started1
+&gt;&gt;&gt; print getting_started1.greet()
+hello, world
+&gt;&gt;&gt; number = 11
+&gt;&gt;&gt; print number, '*', number, '=', getting_started1.square(number)
+11 * 11 = 121
 </pre>
-      </blockquote>
       <p>
-         We can even make a subclass of <code>hello.world</code>:
-      <blockquote>
-<pre>
-&gt;&gt;&gt; class my_subclass(hello.world):
-...     def greet(self):
-...         return 'hello, world'
-...
-&gt;&gt;&gt; y = my_subclass(4)
-&gt;&gt;&gt; y.greet()
-'hello, world'
-</pre>
-      </blockquote>
-      <p>
-         Pretty cool! You can't do that with an ordinary Python extension type!
-      <blockquote>
-<pre>
-&gt;&gt;&gt; hello.length(y)
-9
-</pre>
-      </blockquote>
-      <p>
-         Of course, you may now have a slightly empty feeling in the pit of
-        your little pythonic stomach. Perhaps you feel your subclass deserves
-        to have a <code>length()</code> of <code>12</code>? If so, <a href= 
-        "overriding.html">read on</a>...
-      <p>
-        Next: <a href="overriding.html">Overridable virtual functions</a>
+        Next: <a href="exporting_classes.html">Exporting Classes</a>
          Previous: <a href="comparisons.html">Comparisons with other systems</a>  Up:
         <a href="index.html">Top</a>
       <p>
@@ -125,6 +77,6 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE, DWORD, LPVOID)
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>
-         Updated: Nov 26, 2000
+         Updated: Mar 6, 2000
     </div>
 

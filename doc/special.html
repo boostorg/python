@@ -12,7 +12,7 @@
          Overview
       </h2>
       <p>
-         BPL supports all of the standard <a href=
+         Boost.Python supports all of the standard <a href=
         "http://www.python.org/doc/current/ref/specialnames.html">
         special method names</a> supported by real Python class instances <em>
         except</em> <code>__complex__</code> (more on the reasons <a href=
@@ -44,7 +44,7 @@
           
           <pre>    my_class.def(boost::python::constructor<...>())</pre> 
           
-          (see section <a href="example1.html">"A Simple Example Using BPL"</a>).<p>
+          (see section <a href="example1.html">"A Simple Example Using Boost.Python"</a>).<p>
         <dt>
           <b><tt class='method'>__del__</tt></b>(<i>self</i>)
         <dd>
@@ -104,7 +104,7 @@ std::string to_string(Foo const&amp; f)
 boost::python::class_builder&lt;Foo&gt; foo_class(my_module, "Foo");
 foo_class.def(&amp;to_string, "__str__");
 </pre></blockquote>
-      Note that BPL also supports <em>automatic wrapping</em> of
+      Note that Boost.Python also supports <em>automatic wrapping</em> of
       <code>__str__</code> and <code>__cmp__</code>. This is explained in the <a
       href="#numeric">next section</a> and the <a href="#numeric_table">Table of
       Automatically Wrapped Methods</a>.
@@ -117,7 +117,7 @@ foo_class.def(&amp;to_string, "__str__");
       href="http://www.python.org/doc/current/ref/numeric-types.html">numeric
       protocols</a>. This is the same basic technique used to expose
       <code>to_string()</code> as <code>__str__()</code> above, and is <a
-      href="#numeric_manual">covered in detail below</a>.  BPL also supports
+      href="#numeric_manual">covered in detail below</a>.  Boost.Python also supports
       <i>automatic wrapping</i> of numeric operators whenever they have already
       been defined in C++.
 
@@ -174,7 +174,7 @@ a = i + b;
 bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;(), boost::python::right_operand&lt;int&gt;());
 bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;(), boost::python::left_operand&lt;int&gt;());
 </pre></blockquote>
-      BPL uses overloading to register several variants of the same
+      Boost.Python uses overloading to register several variants of the same
       operation (more on this in the context of <a href="#coercion">
       coercion</a>). Again, several operators can be exported at once: 
 <blockquote><pre>
@@ -283,13 +283,13 @@ bignum_class.def(&amp;rmod,  "__rmod__");
       coercion functions can be difficult if many type combinations must be
       supported. 
       <p>
-        BPL solves this problem the same way that C++ does: with <em><a
+        Boost.Python solves this problem the same way that C++ does: with <em><a
         href="overloading.html">overloading</a></em>. This technique drastically
         simplifies the code neccessary to support operators: you just register
-        operators for all desired type combinations, and BPL automatically
+        operators for all desired type combinations, and Boost.Python automatically
         ensures that the correct function is called in each case; there is no
         need for user-defined coercion functions. To enable operator
-        overloading, BPL provides a standard coercion which is <em>implicitly
+        overloading, Boost.Python provides a standard coercion which is <em>implicitly
         registered</em> whenever automatic operator wrapping is used.
       <p>
         If you wrap all operator functions manually, but still want to use
@@ -370,7 +370,7 @@ bignum_class.def((ternary_function2)&amp;power,  "__pow__");
 
       In the second variant, however, <code>BigNum</code> appears only as second
       argument, and in the last one it's the third argument. These functions
-      must be presented to BPL such that that the <code>BigNum</code>
+      must be presented to Boost.Python such that that the <code>BigNum</code>
       argument appears in first position:
 
 <blockquote><pre>
@@ -397,7 +397,7 @@ Note that "__rrpow__" is an extension not present in plain Python.
 
 <h2><a name="numeric_table">Table of Automatically Wrapped Methods</a></h2>
       <p>
-         BPL can automatically wrap the following <a href=
+         Boost.Python can automatically wrap the following <a href=
          "http://www.python.org/doc/current/ref/specialnames.html">
          special methods</a>:
 
@@ -772,13 +772,13 @@ KeyError: 2
 <h2><a name="getter_setter">Customized Attribute Access</a></h2>
 
       <p>
-        Just like built-in Python classes, BPL extension classes support <a
+        Just like built-in Python classes, Boost.Python extension classes support <a
         href="http://www.python.org/doc/current/ref/attribute-access.html">special
         the usual attribute access methods</a> <code>__getattr__</code>,
         <code>__setattr__</code>, and <code>__delattr__</code>.
         Because writing these functions can
         be tedious in the common case where the attributes being accessed are
-        known statically, BPL checks the special names
+        known statically, Boost.Python checks the special names
 
       <ul>
         <li>
@@ -794,7 +794,7 @@ KeyError: 2
       following shows how we can implement a ``computed attribute'' in Python: 
       <blockquote>
 <pre>
-&gt;&gt;&gt; class Range(AnyBPLExtensionClass):
+&gt;&gt;&gt; class Range(AnyBoost.PythonExtensionClass):
 ...    def __init__(self, start, end):
 ...        self.start = start
 ...        self.end = end
@@ -810,7 +810,7 @@ KeyError: 2
          Direct Access to Data Members
       </h4>
       <p>
-         BPL uses the special <code>
+         Boost.Python uses the special <code>
         __xxxattr__<em>&lt;name&gt;</em>__</code> functionality described above
         to allow direct access to data members through the following special
         functions on <code>class_builder&lt;&gt;</code> and <code>

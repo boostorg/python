@@ -13,7 +13,7 @@
 
       <p>
 In general, raw pointers passed to or returned from functions are problematic
-for BPL because pointers have too many potential meanings. Is it an iterator?
+for Boost.Python because pointers have too many potential meanings. Is it an iterator?
 A pointer to a single element? An array? When used as a return value, is the
 caller expected to manage (delete) the pointed-to object or is the pointer
 really just a reference? If the latter, what happens to Python references to the
@@ -46,7 +46,7 @@ const Foo& f_wrapper() { return *f(); }
 my_module.def(f_wrapper, "f");
 </pre></blockquote>
 <p>
-Foo must have a public copy constructor for this technique to work, since BPL
+Foo must have a public copy constructor for this technique to work, since Boost.Python
 converts <code>const T&</code> values <code>to_python</code> by copying the <code>T</code>
 value into a new extension instance.
 
