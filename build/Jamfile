@@ -66,7 +66,7 @@ local PYTHON_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_DYNAMIC_LIB 
 #######################
 rule bpl-test ( test-name : sources + )
 {
-    boost-python-test $(test-name) : $(sources) <lib>libboost_python ;
+    boost-python-test $(test-name) : $(sources) <dll>boost_python ;
 }
 
 #######################
@@ -81,14 +81,14 @@ local CPP_SOURCES =
   init_function module_builder objects cross_module errors
   ;
 
-lib libboost_python_static : ../src/$(CPP_SOURCES).cpp
+lib boost_python_static : ../src/$(CPP_SOURCES).cpp
     # requirements
     : $(BOOST_PYTHON_INCLUDES)
     <shared-linkable>true
       <define>BOOST_PYTHON_STATIC_LIB=1
     $(PYTHON_PROPERTIES) ;
 
-dll libboost_python
+dll boost_python
   # $(SUFDLL[1])
     : ../src/$(CPP_SOURCES).cpp
 	# requirements
@@ -104,7 +104,7 @@ bpl-test boost_python_test
       : ../test/comprehensive.cpp ;
 
 boost-python-runtest comprehensive
-         : ../test/comprehensive.py <lib>boost_python_test <lib>libboost_python ;
+         : ../test/comprehensive.py <pyd>boost_python_test <dll>boost_python ;
 
 ############# simple tests from ../example ############
 
@@ -114,7 +114,7 @@ rule boost-python-example-runtest ( name )
       : ../example/$(name).cpp ;
     
     boost-python-runtest $(name)
-      : ../example/test_$(name).py <lib>$(name) ;
+      : ../example/test_$(name).py <pyd>$(name) ;
 }
 
 
@@ -139,7 +139,7 @@ bpl-test noncopyable_import : ../example/noncopyable_import.cpp ;
 rule boost-python-multi-example-runtest ( test-name : modules + )
 {
     boost-python-runtest $(test-name)
-        : ../example/tst_$(test-name).py <lib>$(modules) <lib>libboost_python
+        : ../example/tst_$(test-name).py <pyd>$(modules) <dll>boost_python
         : : : $(PYTHON_VECT_ITERATIONS) ;
 }
 
