@@ -16,15 +16,7 @@
       intrusive on your C++ design. In most cases, you should not have to alter
       your C++ classes in any way in order to use them with Boost.Python. The system
       <em>should</em> simply ``reflect'' your C++ classes and functions into
-      Python. The major features of Boost.Python include support for:
-<ul>
-<li><a href="inheritance.html">Subclassing extension types in Python</a>
-<li><a href="overriding.html">Overriding virtual functions in Python</a>
-<li><a href="overloading.html">[Member] function Overloading</a>
-<li><a href="special.html#numeric_auto">Automatic wrapping of numeric operators</a>
-</ul>
-among others.
-
+      Python. 
 
 <h2>Supported Platforms</h2>
 <p>Boost.Python is known to have been tested
@@ -35,6 +27,13 @@ the following compilers:
   <li><a
   href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>.
   All tests pass.
+
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>
+  with <a href="http://www.stlport.org">STLPort</a>-4.5.3. A compiler bug interferes with
+  <a
+  href="../example/simple_vector.cpp">libs/python/example/simple_vector.cpp</a>. All
+  other tests pass.
 
   <p>
   <li><a href="http://msdn.microsoft.com/visualc/">MSVC++7 (Visual
