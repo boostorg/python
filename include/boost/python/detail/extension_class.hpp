@@ -1,4 +1,4 @@
-//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+//  (C) Copyright David Abrahams 2000-2001. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
@@ -205,7 +205,7 @@ class python_extension_class_converters
     /// defined below this class. Since template functions are instantiated only
     /// on demand, errors will be avoided unless T is noncopyable and the user
     /// writes code which causes us to try to copy a T.
-    PyObject* member_to_python(const T& x) const
+    PyObject* m_to_python(const T& x) const
     {
         boost::python::reference<boost::python::detail::extension_instance> result(create_instance());
         result->add_implementation(
@@ -364,7 +364,7 @@ class python_extension_class_converters
 template <class T>
 PyObject* to_python(boost::python::semantics, const T& x)
 {
-    return py_extension_class_converters(boost::python::type<T>()).member_to_python(x);
+    return py_extension_class_converters(boost::python::type<T>()).m_to_python(x);
 }
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE

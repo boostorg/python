@@ -66,7 +66,7 @@ class python_import_extension_class_converters
         return python_import_extension_class_converters();
     }
 
-    PyObject* member_to_python(const T& x) const {
+    PyObject* m_to_python(const T& x) const {
         return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 
@@ -223,7 +223,7 @@ template <class T>
 struct export_converter_object : export_converter_object_noncopyable<T>
 {
     virtual PyObject* dispatcher_to_python(const T& x) {
-        return py_extension_class_converters(type<T>()).member_to_python(x);
+        return py_extension_class_converters(type<T>()).m_to_python(x);
     }
 };
 
