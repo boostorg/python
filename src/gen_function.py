@@ -1,3 +1,60 @@
+r"""
+>>> template = '''    template <class T%(, class A%+%)>
+...     static PyObject* call( %1(T::*pmf)(%(A%+%:, %))%2, PyObject* args, PyObject* ) {
+...         PyObject* self;
+... %(        PyObject* a%+;
+... %)        if (!PyArg_ParseTuple(args, const_cast<char*>("O%(O%)"), &self%(, &a%+%)))
+...             return 0;
+...         T& target = from_python(self, type<T&>());
+...         %3to_python((target.*pmf)(%(
+...                 from_python(a%+, type<A%+>())%:,%)
+...                 ));%4
+...     }'''
+
+>>> print gen_function(template, 0, 'R ', '', 'return ', '')
+    template <class T>
+    static PyObject* call( R (T::*pmf)(), PyObject* args, PyObject* ) {
+        PyObject* self;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(
+                ));
+    }
+
+>>> print gen_function(template, 2, 'R ', '', 'return ', '')    
+    template <class T, class A1, class A2>
+    static PyObject* call( R (T::*pmf)(A1, A2), PyObject* args, PyObject* ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &self, &a1, &a2))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        return to_python((target.*pmf)(
+                from_python(a1, type<A1>()),
+                from_python(a2, type<A2>())
+                ));
+    }
+
+>>> print gen_function(template, 3, 'void ', ' const', '', '\n'+8*' ' + 'return none();')
+    template <class T, class A1, class A2, class A3>
+    static PyObject* call( void (T::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* ) {
+        PyObject* self;
+        PyObject* a1;
+        PyObject* a2;
+        PyObject* a3;
+        if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &self, &a1, &a2, &a3))
+            return 0;
+        T& target = from_python(self, type<T&>());
+        to_python((target.*pmf)(
+                from_python(a1, type<A1>()),
+                from_python(a2, type<A2>()),
+                from_python(a3, type<A3>())
+                ));
+        return none();
+    }
+"""
 import string
 
 def _find(s, sub, start=0, end=None):
@@ -35,19 +92,19 @@ def _gen_common_key(key, n, args, fill = _raise_no_argument):
     else:
         return key
 
-def _gen_arg(template, n, args, delimiter = '%', fill = _raise_no_argument):
+def _gen_arg(template, n, args, fill = _raise_no_argument):
     
     result = ''
     i = 0
     while i < len(template): # until the template is consumed
-        # consume everything up to the first delimiter
-        delimiter_pos = _find(template, delimiter, i)
+        # consume everything up to the first '%'
+        delimiter_pos = _find(template, '%', i)
         result = result + template[i:delimiter_pos]
         
-        # The start position of whatever comes after the delimiter+key
+        # The start position of whatever comes after the '%'+key
         start = delimiter_pos + 2
         key = template[start - 1 : start] # the key character. If there were no
-                                          # delimiters left, key will be empty
+                                          # '%'s left, key will be empty
 
         if 0 and key == 'n':
             result = result + `n`
@@ -64,7 +121,7 @@ def gen_function(template, n, *args, **keywords):
     Generate a function declaration based on the given template.
     
     Sections of the template between '%(', '%)' pairs are repeated n times. If '%:'
-    appears in the middle, it denotes the beginning of a delimiter.
+    appears in the middle, it denotes the beginning of a '%'.
     
     Sections of the template between '%{', '%}' pairs are ommitted if n == 0.
     
@@ -95,7 +152,7 @@ def gen_function(template, n, *args, **keywords):
     for example,
     
     >>> gen_function('%1 abc%x(%(int a%n%:, %));%{ // all args are ints%}', 2, 'void')
-    'void abc2(int a1, int a2); // all args are ints'
+    'void abc2(int a0, int a1); // all args are ints'
     
     >>> gen_function('%1 abc(%(int a%n%:, %));%{ // all args are ints%}', 0, 'x')
     'x abc();'
@@ -109,102 +166,54 @@ def gen_function(template, n, *args, **keywords):
     >>> gen_function('abc%[k%:v%]', 0, fill = lambda key, n, args, value = None: '<' + key + ',' + value + '>')
     'abc<k,v>'
 
-    >>> template = '''    template <class T%(, class A%n%)>
-    ...     static PyObject* call( %1(T::*pmf)(%(A%n%:, %))%2, PyObject* args, PyObject* /* keywords */ ) {
-    ...         PyObject* self;
-    ... %(        PyObject* a%n;
-    ... %)        if (!PyArg_ParseTuple(args, const_cast<char*>("O%(O%)"), &self%(, &a%n%)))
-    ...             return 0;
-    ...         T& target = from_python(self, type<T&>());
-    ...         %3to_python((target.*pmf)(%(
-    ...                 from_python(a%n, type<A%n>())%:,%)
-    ...                 ));%4
-    ...     }'''
-    
-    >>> print gen_function(template, 0, 'R ', '', 'return ', '')
-        template <class T>
-        static PyObject* call( R (T::*pmf)(), PyObject* args, PyObject* /* keywords */ ) {
-            PyObject* self;
-            if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
-                return 0;
-            T& target = from_python(self, type<T&>());
-            return to_python((target.*pmf)(
-                    ));
-        }
-    
-    >>> print gen_function(template, 2, 'R ', '', 'return ', '')    
-        template <class T, class A1, class A2>
-        static PyObject* call( R (T::*pmf)(A1, A2), PyObject* args, PyObject* /* keywords */ ) {
-            PyObject* self;
-            PyObject* a1;
-            PyObject* a2;
-            if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &self, &a1, &a2))
-                return 0;
-            T& target = from_python(self, type<T&>());
-            return to_python((target.*pmf)(
-                    from_python(a1, type<A1>()),
-                    from_python(a2, type<A2>())
-                    ));
-        }
-        
-    >>> print gen_function(template, 3, 'void ', ' const', '', '\n'+8*' ' + 'return none();')
-        template <class T, class A1, class A2, class A3>
-        static PyObject* call( void (T::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* /* keywords */ ) {
-            PyObject* self;
-            PyObject* a1;
-            PyObject* a2;
-            PyObject* a3;
-            if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &self, &a1, &a2, &a3))
-                return 0;
-            T& target = from_python(self, type<T&>());
-            to_python((target.*pmf)(
-                    from_python(a1, type<A1>()),
-                    from_python(a2, type<A2>()),
-                    from_python(a3, type<A3>())
-                    ));
-            return none();
-        }
 """
-    delimiter = keywords.get('delimiter', '%')
+    expand = (lambda s, n = n:
+              apply(gen_function, (s, n) + args, keywords))
+    
     fill = keywords.get('fill', _raise_no_argument);
     result = ''
     i = 0
     while i < len(template): # until the template is consumed
-        # consume everything up to the first delimiter
-        delimiter_pos = _find(template, delimiter, i)
+        # consume everything up to the first '%'
+        delimiter_pos = _find(template, '%', i)
         result = result + template[i:delimiter_pos]
         
-        # The start position of whatever comes after the delimiter+key            
+        # The start position of whatever comes after the '%'+key            
         start = delimiter_pos + 2
         key = template[start - 1 : start] # the key character. If there were no
-                                          # delimiters left, key will be empty
+                                          # '%'s left, key will be empty
 
         pairs = { '(':')', '{':'}', '[':']' }
         
         if key in pairs.keys():
-            end = string.find(template, delimiter + pairs[key], start)
-            assert end >= 0, "Matching '" + delimiter + pairs[key] +"' not found!"
+            end = string.find(template, '%' + pairs[key], start)
+            assert end >= 0, "Matching '" + '%' + pairs[key] +"' not found!"
             delimiter_pos = end
 
             if key == '{':
                 if n > 0:
-                    result = result + gen_function(template[start:end], n, args, delimiter)
+                    result = result + expand(template[start:end])
             else:
-                separator_pos = _find(template, delimiter + ':',
-                                      start, end)
+                separator_pos = _find(template, '%:', start, end)
                 remainder = template[separator_pos+2 : end]
                 
                 if key == '(':
-                    for x in range(1, n + 1):
-                        result = result + _gen_arg(template[start:separator_pos], x, args,
-                                                   delimiter)
-                        if x != n:
-                            result = result + remainder
+                    for x in range(n):
+                        
+                        iteration = expand(
+                            template[start:separator_pos], x)
+                        
+                        result = result + expand(iteration, x)
+
+                        if x != n - 1:
+                            result = result + expand(remainder, x)
                 else:
-                    result = result + fill(template[start:separator_pos], n, args, value = remainder)
+                    function_result = fill(
+                        template[start:separator_pos], n, args, value = remainder)
+                    result = result + expand(function_result)
                 
         else:
-            result = result + _gen_common_key(key, n, args, fill)
+            result = result + expand(_gen_common_key(key, n, args, fill))
             
         i = delimiter_pos + 2
         
@@ -218,8 +227,8 @@ def gen_functions(template, n, *args, **keywords):
 
     >>> print gen_functions('%1 abc(%(int a%n%:, %));%{ // all args are ints%}\n', 2, 'void'),
     void abc();
-    void abc(int a1); // all args are ints
-    void abc(int a1, int a2); // all args are ints
+    void abc(int a0); // all args are ints
+    void abc(int a0, int a1); // all args are ints
     
     """
     fill = keywords.get('fill', _raise_no_argument);

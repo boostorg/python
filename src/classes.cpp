@@ -766,6 +766,64 @@ PyObject* instance::ge(PyObject* other)
     return callback<PyObject*>::call_method(this, "__ge__", other);
 }
 
+PyObject* instance::inplace_add(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__iadd__", other);
+}
+
+PyObject* instance::inplace_subtract(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__isub__", other);
+}
+
+PyObject* instance::inplace_multiply(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__imul__", other);
+}
+
+PyObject* instance::inplace_divide(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__idiv__", other);
+}
+
+PyObject* instance::inplace_remainder(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__imod__", other);
+}
+
+PyObject* instance::inplace_power(PyObject* exponent, PyObject* modulus)
+{
+    if (modulus == Py_None)
+        return callback<PyObject*>::call_method(this, "__ipow__", exponent);
+    else
+        return callback<PyObject*>::call_method(this, "__ipow__", exponent, modulus);
+}
+
+PyObject* instance::inplace_lshift(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__ilshift__", other);
+}
+
+PyObject* instance::inplace_rshift(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__irshift__", other);
+}
+
+PyObject* instance::inplace_and(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__iand__", other);
+}
+
+PyObject* instance::inplace_or(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__ior__", other);
+}
+
+PyObject* instance::inplace_xor(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__ixor__", other);
+}
+
 namespace {
   struct named_capability
   {
@@ -783,6 +841,17 @@ namespace {
       { "__le__", detail::type_object_base::richcompare },
       { "__eq__", detail::type_object_base::richcompare },
       { "__ne__", detail::type_object_base::richcompare },
+      { "__iadd__", detail::type_object_base::number_inplace_add },
+      { "__isub__", detail::type_object_base::number_inplace_subtract },
+      { "__imul__", detail::type_object_base::number_inplace_multiply },
+      { "__idiv__", detail::type_object_base::number_inplace_divide },
+      { "__imod__", detail::type_object_base::number_inplace_remainder },
+      { "__ipow__", detail::type_object_base::number_inplace_power },
+      { "__ilshift__", detail::type_object_base::number_inplace_lshift },
+      { "__irshift__", detail::type_object_base::number_inplace_rshift },
+      { "__iand__", detail::type_object_base::number_inplace_and },
+      { "__ixor__", detail::type_object_base::number_inplace_xor },
+      { "__ior__", detail::type_object_base::number_inplace_or },
       { "__repr__", detail::type_object_base::repr },
       { "__str__", detail::type_object_base::str },
       { "__call__", detail::type_object_base::call },

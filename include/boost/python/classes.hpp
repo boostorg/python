@@ -78,6 +78,19 @@ class instance
     PyObject* gt(PyObject* other);
     PyObject* ge(PyObject* other);
 
+    // Inplace operations.
+    PyObject* inplace_add(PyObject* other);
+    PyObject* inplace_subtract(PyObject* other);
+    PyObject* inplace_multiply(PyObject* other);
+    PyObject* inplace_divide(PyObject* other);
+    PyObject* inplace_remainder(PyObject* other);
+    PyObject* inplace_power(PyObject* exponent, PyObject* modulus);
+    PyObject* inplace_lshift(PyObject* other);
+    PyObject* inplace_rshift(PyObject* other);
+    PyObject* inplace_and(PyObject* other);
+    PyObject* inplace_or(PyObject* other);
+    PyObject* inplace_xor(PyObject* other);
+
  private: // noncopyable, without the size bloat
     instance(const instance&);
     void operator=(const instance&);
@@ -177,6 +190,18 @@ class class_t
     PyObject* instance_number_float(PyObject*) const;
     PyObject* instance_number_oct(PyObject*) const;
     PyObject* instance_number_hex(PyObject*) const;
+
+    PyObject* instance_number_inplace_add(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_subtract(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_multiply(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_divide(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_remainder(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_power(PyObject*, PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_lshift(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_rshift(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_and(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_or(PyObject*, PyObject*) const;
+    PyObject* instance_number_inplace_xor(PyObject*, PyObject*) const;
 
  private: // Implement rich comparisons
     PyObject* instance_lt(PyObject*, PyObject*) const;
@@ -491,6 +516,72 @@ template <class T>
 PyObject* class_t<T>::instance_number_hex(PyObject* obj) const
 {
     return downcast<T>(obj)->hex();
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_add(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_add(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_subtract(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_subtract(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_multiply(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_multiply(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_divide(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_divide(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_remainder(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_remainder(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_power(PyObject* obj, PyObject* exponent, PyObject* modulus) const
+{
+    return downcast<T>(obj)->inplace_power(exponent, modulus);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_lshift(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_lshift(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_rshift(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_rshift(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_and(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_and(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_or(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_or(other);
+}
+
+template <class T>
+PyObject* class_t<T>::instance_number_inplace_xor(PyObject* obj, PyObject* other) const
+{
+    return downcast<T>(obj)->inplace_xor(other);
 }
 
 template <class T>

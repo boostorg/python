@@ -57,7 +57,11 @@ class type_object_base : public python_type
         number_positive, number_absolute, number_nonzero, number_invert,
         number_lshift, number_rshift, number_and, number_xor, number_or,
         number_coerce, number_int, number_long, number_float, number_oct,
-        number_hex
+        number_hex, number_inplace_add, number_inplace_subtract,
+        number_inplace_multiply, number_inplace_divide,
+        number_inplace_remainder, number_inplace_power,
+        number_inplace_lshift, number_inplace_rshift,
+        number_inplace_and, number_inplace_or, number_inplace_xor
     };
     
     void enable(capability);
@@ -115,6 +119,18 @@ class type_object_base : public python_type
     virtual PyObject* instance_number_float(PyObject*) const;
     virtual PyObject* instance_number_oct(PyObject*) const;
     virtual PyObject* instance_number_hex(PyObject*) const;
+
+    virtual PyObject* instance_number_inplace_add(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_subtract(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_multiply(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_divide(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_remainder(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_power(PyObject*, PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_lshift(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_rshift(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_and(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_or(PyObject*, PyObject*) const;
+    virtual PyObject* instance_number_inplace_xor(PyObject*, PyObject*) const;
 
  public: // Callbacks for rich comparisons
     virtual PyObject* instance_lt(PyObject*, PyObject*) const;

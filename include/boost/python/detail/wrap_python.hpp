@@ -35,12 +35,13 @@
 // than MSVC on Win32
 //
 #if defined(_WIN32)
-# ifdef __GNUC__
-
+# if defined(__GNUC__) && defined(__CYGWIN__)
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
 typedef int pid_t;
-#  define WORD_BIT 32
-#  define hypot _hypot
-#  include <stdio.h>
+#   define WORD_BIT 32
+#   define hypot _hypot
+#   include <stdio.h>
+#  endif 
 #  if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
 #   define HAVE_CLOCK
 #   define HAVE_STRFTIME
@@ -71,6 +72,13 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
+#  include <pyconfig.h>
+#  undef hypot // undo the evil #define left by Python.
+
+# elif defined(__BORLANDC__)
+#  include <pyconfig.h>
+#  undef HAVE_HYPOT
+#  define HAVE_HYPOT 1
 # elif defined(_MSC_VER)
 #  include <limits> // prevents Python.h from defining LONGLONG_MAX, LONGLONG_MIN, and ULONGLONG_MAX
 # endif
@@ -95,4 +103,6 @@ typedef int pid_t;
 
 #ifdef __MWERKS__
 # pragma warn_possunwant off
+#elif _MSC_VER
+# pragma warning(disable:4786)
 #endif
