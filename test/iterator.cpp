@@ -79,6 +79,7 @@ private:
 
 BOOST_PYTHON_MODULE(iterator_ext)
 {
+    using boost::python::iterator; // gcc 2.96 bug workaround
     def("range", &::range);
 
     class_<list_int>("list_int")
