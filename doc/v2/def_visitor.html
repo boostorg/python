@@ -129,7 +129,8 @@ void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) con
     <h2><a name="examples"></a>Example</h2>
 
     
-<pre>    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+<pre>    class X {/*...*/};<br>
+    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
     {
         friend class def_visitor_access;
 
@@ -142,11 +143,10 @@ void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) con
             ;
         }
 
-        static void foo(object self);
-        static void bar(object self);
+        static void foo(X&amp; self);
+        static void bar(X&amp; self);
     };
 
-    class X {/*...*/};
 
     BOOST_PYTHON_MODULE(my_ext)
     { 
