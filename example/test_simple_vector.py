@@ -15,6 +15,11 @@ r'''>>> import simple_vector
     >>> v[1] = 40
     >>> print v.as_tuple()
     (3.0, 40.0, 5.0)
+    >>> for e in v:
+    ...   print e
+    3.0
+    40.0
+    5.0
     >>> del v[1]
     >>> print v.as_tuple()
     (3.0, 5.0)
