@@ -22,9 +22,21 @@
 #include <boost/preprocessor/empty.hpp>
 #include <boost/config.hpp>
 
-///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//  func_stubs_base is used as a base class for all function
+//  stubs. This technique uses the "Curiously recurring template
+//  pattern" to disambiguate function calls. For instance, the
+//  interface:
+//
+//      template <typename DerivedT>
+//      void foo(func_stubs_base<DerivedT> const&)
+//
+//  will accept only subclasses of func_stubs_base.
+//
+///////////////////////////////////////////////////////////////////////////////
 template <typename DerivedT>
 struct func_stubs_base {
 
@@ -225,8 +237,74 @@ struct func_stubs_base {
 //
 //  MAIN MACROS
 //
+//      Given GENERATOR_NAME, FNAME, MIN_ARGS and MAX_ARGS, These macros
+//      generate function stubs that forward to a function or member function
+//      named FNAME. MAX_ARGS is the arity of the function or member function
+//      FNAME. FNAME can have default arguments. MIN_ARGS is the minimum
+//      arity that FNAME can accept.
+//
+//      There are two versions:
+//
+//          1. BOOST_PYTHON_FUNCTION_GENERATOR for free functions
+//          2. BOOST_PYTHON_MEM_FUN_GENERATOR for member functions.
+//
+//      For instance, given a function:
+//
+//      int
+//      foo(int a, char b = 1, unsigned c = 2, double d = 3)
+//      {
+//          return a + b + c + int(d);
+//      }
+//
+//      The macro invocation:
+//
+//          BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
+//
+//      Generates this code:
+//
+//      struct foo_stubs_NV  {
+//
+//          static const int n_funcs = 4;
+//          static const int max_args = n_funcs;
+//
+//          static char const* name() { return "foo"; }
+//
+//          template <typename SigT>
+//          struct gen {
+//
+//              typedef typename mpl::at<0, SigT>::type RT;
+//              typedef typename mpl::at<1, SigT>::type T0;
+//              typedef typename mpl::at<2, SigT>::type T1;
+//              typedef typename mpl::at<3, SigT>::type T2;
+//              typedef typename mpl::at<4, SigT>::type T3;
+//
+//              static RT func_0(T0 arg0)
+//              { return foo(arg0); }
+//              static RT func_1(T0 arg0,T1 arg1)
+//              { return foo(arg0, arg1); }
+//              static RT func_2(T0 arg0, T1 arg1, T2 arg2)
+//              { return foo(arg0, arg1, arg2); }
+//              static RT func_3(T0 arg0, T1 arg1, T2 arg2,T3 arg3)
+//              { return foo  (arg0, arg1, arg2, arg3); }
+//          };
+//      };
+//
+//      struct foo_stubs
+//      :   public boost::python::detail::func_stubs_base<foo_stubs> {
+//
+//          typedef foo_stubs_NV    nv_type;
+//          typedef foo_stubs_NV    v_type;
+//      };
+//
+//      The typedefs nv_type and v_type are used to handle compilers that
+//      do not support void returns. The example above typedefs nv_type
+//      and v_type to foo_stubs_NV. On compilers that do not support
+//      void returns, there are two versions: foo_stubs_NV and foo_stubs_V.
+//      The "V" version is almost identical to the "NV" version except
+//      for the return type (void) and the lack of the return keyword.
+//
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_FUNCTION_GEN(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)    \
+#define BOOST_PYTHON_FUNCTION_GENERATOR(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
     BPL_IMPL_GEN_FUNCTION_STUB                                                  \
     (                                                                           \
         FNAME,                                                                  \
@@ -235,7 +313,7 @@ struct func_stubs_base {
         BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                        \
     )                                                                           \
 
-#define BOOST_PYTHON_MEMBER_FUNCTION_GEN(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
+#define BOOST_PYTHON_MEM_FUN_GENERATOR(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
     BPL_IMPL_GEN_MEM_FUNCTION_STUB                                              \
     (                                                                           \
         FNAME,                                                                  \
