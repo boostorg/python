@@ -26,7 +26,7 @@ void Module::add(Ptr x, const char* name)
 {
 	PyObject* dictionary = PyModule_GetDict( m_module );
     PyDict_SetItemString(dictionary, const_cast<char*>(name), x.get());
-};
+}
 
 void Module::add(PyTypeObject* x, const char* name /*= 0*/)
 {
