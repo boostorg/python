@@ -8,77 +8,144 @@
        <img src="c++boost.gif" alt="c++boost.gif (8819 bytes)" width="277"
       align="center" height="86"> py_cpp<a href="#naming_contest">*</a>
     </h1>
+
     <p>
-       Py_cpp is a system for quickly and easily interfacing C++ code with <a
+       The source code for py_cpp, including a MSVC demo project is available <a
+      href="py_cpp_20001106.zip">here</a>. 
+
+<h2>Synopsis</h2>
+    <p>
+       py_cpp is a system for quickly and easily interfacing C++ code with <a
       href="http:www.python.org">Python</a> such that the Python interface is
       very similar to the C++ interface. It is designed to be minimally
       intrusive on your C++ design. In most cases, you should not have to alter
       your C++ classes in any way in order to use them with py_cpp. The system
       <em>should</em> simply "reflect" your C++ classes and functions into
       Python.
+
+<h2>Supported Platforms</h2>
+<p>py_cpp has been tested in the following configurations:
+
+<ul>
+<li>Against Python 1.5.2 using the following compiler/library: 
+
+  <ul>
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a> 
+
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>/<a
+  href="http://www.stlport.org">STLport 4.0</a> 
+
+  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a> [by <a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich
+  Koethe</a>]
+
+  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a>/<a href="http://www.stlport.org">STLport 4.0</a>
+
+  <li>Compaq C++ V6.2-024 for Digital UNIX V5.0 Rev. 910 (an <a
+  href="http://www.edg.com/">EDG</a>-based compiler) with <a
+  href="http://www.stlport.org/beta.html">STLport-4.1b3</a> [by <a
+  href="mailto:rwgk@cci.lbl.gov">Ralf W. Grosse-Kunstleve</a>] 
+
+  <li>An upcoming release of <a href="http://www.metrowerks.com/products/windows/">Metrowerks CodeWarrior
+        Pro6 for Windows</a> (the first release has a bug that's fatal to py_cpp)
+  </ul>
+<br>
+<li>Against Python 2.0 using the following compiler/library combinations:
+<ul>
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a> [by
+  <a href="mailto:aleaxit@yahoo.com">Alex Martelli</a>]
+</ul>
+</ul>
+
+<p>Py_cpp requires the <a href="http://www.boost.org">boost</a> libraries, and is
+      has been accepted for inclusion into the boost libraries pending &quot;boostification&quot;
+      (completion of the documentation, change in some naming conventions and
+      resolution of some namespace issues).
+
+<h2>Credits</h2>
     <p>
-       The source code for py_cpp, including a MSVC demo project is available <a
-      href="py_cpp_20001102.zip">here</a>. It has been tested against Python
-      1.5.2 with GCC 2.95.2 and Microsoft Visual C++ 6 sp4 using both the <a
-      href="http://www.stlport.org"> STLport</a> standard library implementation
-      <em>and</em> the library implementation which ships with the compiler. It
-      has also been tested against Python 2.0c1 with MSVC++ 6sp4 by Alex
-      Martelli. It will work with the next release of Metrowerks CodeWarrior
-      Pro6 (the first release has a bug that's fatal to py_cpp_).  Py_cpp
-      requires the <a href="http://www.boost.org">Boost</a> libraries, and is
-      currently under formal review on <a href=
-      "http://www.egroups.com/list/boost">the boost mailing list</a> for
-      acceptance into boost.
-    <p>
-       py_cpp was originally written by David Abrahams. Ullrich Koethe supplied
-      an early version of the overloading support and wrote the support for
-      implicit conversions of arguments that have a C++ inheritance
-      relationship. Alex Martelli supplied the first tests against Python 2.0.
-      The members of the boost mailing list and the Python community supplied
-      invaluable early feedback. The development of py_cpp wouldn't have been
-      possible without the generous support of Dragon Systems/Lernout and
-      Hauspie, Inc.
-    <h2>
-       Table of Contents
-    </h2>
+<ul>
+      <li><a href="mailto:abrahams@mediaone.net">David Abrahams</a> originated
+      and wrote py_cpp.
+
+      <li><a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich Koethe</a>
+      had independently developed a similar system. When he discovered py_cpp,
+      he generously contributed countless hours of coding and much insight into
+      improving it. He is responsible for an early version of the support for <a
+      href="overloading.html">function overloading</a> and wrote the support for
+      <a href="inheritance.html#implicit_conversion">reflecting C++ inheritance
+      relationships</a>. He has helped to improve error-reporting from both
+      Python and C++, and is currently doing valuable research into <a
+      href="special.html#reasons">the best approach for numeric coercion</a>.
+
+      <li>The members of the boost mailing list and the Python community supplied
+      invaluable early feedback. In particular, Ron Clarke, Mark Evans, Anton
+      Gluck, Ralf W. Grosse-Kunstleve, Prabhu Ramachandran, and Barry Scott took
+      the brave step of trying to use py_cpp while it was still in early stages
+      of development.
+
+      <li>The development of py_cpp wouldn't have been
+      possible without the generous support of <a href="http://www.dragonsys.com/">Dragon Systems/Lernout and
+      Hauspie, Inc</a> who supported its development as an open-source project.
+</ul>
+
+    <h2>Table of Contents</h2>
+
     <ol>
-      <li>
-        <a href="extending.html">A Brief Introduction to writing Python
+      <li><a href="extending.html">A Brief Introduction to writing Python
         extension modules</a>
-      <li>
-        <a href="comparisons.html">Comparisons between py_cpp and other systems
-        for extending Python</a>
-      <li>
-        <a href="example1.html">A Simple Example Using py_cpp</a>
-      <li>
-        <a href="overriding.html">Overridable Virtual Functions</a>
-      <li>
-        <a href="overloading.html">Function Overloading</a>
-      <li>
-        <a href="inheritance.html">Inheritance</a>
-      <li>
-        <a href="special.html">Special Method Name Support</a>
-      <li>
-        <a href="under-the-hood.html">A Peek Under the Hood</a>
-      <li>
-        <a href="building.html">Building a Module with Py_cpp</a>
-</ol>   
+
+      <li><a href="comparisons.html">Comparisons between py_cpp and other
+        systems for extending Python</a>
+
+      <li><a href="example1.html">A Simple Example Using py_cpp</a>
+
+      <li><a href="overriding.html">Overridable Virtual Functions</a>
+
+      <li><a href="overloading.html">Function Overloading</a>
+
+      <li><a href="inheritance.html">Inheritance</a>
+
+      <li><a href="special.html">Special Method Name Support</a>
+
+      <li><a href="under-the-hood.html">A Peek Under the Hood</a>
+
+      <li><a href="building.html">Building a Module with Py_cpp</a>
+
+      <li>Advanced Topics
+
+        <ol>
+          <li>ClassWrapper&lt;&gt;
+
+          <li><a href="enums.html">enums</a>
+
+          <li>References
+
+          <li><a href="pointers.html">Pointers and Smart Pointers</a>
+
+          <li>Built-in Python Types
+
+          <li>Other Extension Types
+
+          <li>Templates
+        </ol>
+          
+</ol>  
+ 
     <p>
-       More sophisticated examples, including examples which demonstrate that
-      these ExtensionClasses support some of Python's "special" member
-      functions (e.g. <code>__getattr__(self, name)</code>), are given in
+       More sophisticated examples are given in
       <code>extclass_demo.cpp</code>, <code> extclass_demo.h</code>, and <code>
       test_extclass.py</code> in the <a href="py_cpp.tgz">source code
       archive</a>. There's much more here, and much more documentation to
       come...
     <p>
        Questions should be directed to <a href= 
-      "http://www.egroups.com/list/boost">the boost mailing list</a> or to <a
-      href="mailto:abrahams@mediaone.net"> David Abrahams</a>, the primary
-      author and maintainer.
-    <h3>
-       Naming Contest
-    </h3>
+      "http://www.egroups.com/list/boost">the boost mailing list</a>.
+
+    <h2>Naming Contest</h2>
+
     <p>
        Yes, I know py_cpp is a lousy name. Problem is, the best names my puny
       imagination can muster (IDLE and GRAIL) are taken, so I'm holding a

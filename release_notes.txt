@@ -1,3 +1,19 @@
+======= Release =======
+2000-11-06 0:22 
+    Lots of documentation updates
+
+    added 4-argument template constructor to py::Tuple
+
+    added "add" member function to ClassWrapper<> to allow arbitrary Python
+    objects to be added to an extension class.
+
+    gen_all.py now generates support for n argument member functions and n+1
+    argument member functions at the suggestion of "Ralf W. Grosse-Kunstleve"
+    <rwgk@cci.lbl.gov>
+
+    Added regression tests and re-ordered declare_base calls to verify that the
+    phantom base class issue is resolved.
+
 2000-11-04 17:35
 
     Integrated Ullrich Koethe's brilliant from_python_experiment for better
@@ -49,6 +65,7 @@
     
     Remove conflicting /Ot option from vc6_prj release build
 
+======= Release =======
 2000-11-02 17:42
 
     Added a fix for interactions between default virtual function

@@ -35,31 +35,32 @@
 </pre>
 </blockquote>
 
-<h2>Reflecting C++ Inheritance Relationships</h2>
+<h2><a name="implicit_conversion">Reflecting C++ Inheritance Relationships</a></h2>
       <p>
         Py_cpp also allows us to represent C++ inheritance relationships so that
         wrapped derived classes may be passed where values, pointers, or
-        references to a base class are expected as arguments:
+        references to a base class are expected as arguments. The
+        <code>declare_base</code> member function of
+        <code>ClassWrapper&lt;&gt;</code> is used to establish the relationship
+        between base and derived classes:
 
 <blockquote>
 <pre>
-#include <memory> // for std::auto_ptr<>
+#include &lt;memory&gt; // for std::auto_ptr&lt;&gt;
 
-struct Base
-{
+struct Base {
     virtual ~Base() {}
     virtual const char* name() const { return "Base"; }
 };
 
-struct Derived
-{
+struct Derived : Base {
     Derived() : x(-1) {}
     virtual const char* name() const { return "Derived"; }
     int x;
 };
 
-std::auto_ptr<Base> base_factory() {
-    return std::auto_ptr<Base>(new Derived);
+std::auto_ptr&lt;Base&gt; derived_as_base() {
+    return std::auto_ptr&lt;Base&gt;(new Derived);
 }
 
 const char* get_name(const Base& b) {
@@ -86,10 +87,10 @@ void initmy_module()
 
        py::ClassWrapper&lt;Derived&gt; derived_class(my_module, "Derived");
        derived_class.def(py::Constructor&lt;void&gt;());
-       // This establishes the inheritance relationship between Base and Derived
-       derived_class.declare_base(base_class);
+       <b>// Establish the inheritance relationship between Base and Derived
+       derived_class.declare_base(base_class);</b>
 
-       my_module.def(base_factory, "base_factory");
+       my_module.def(derived_as_base, "derived_as_base");
        my_module.def(get_name, "get_name");
        my_module.def(get_derived_x, "get_derived_x");
     }
@@ -110,12 +111,12 @@ void initmy_module()
 &gt;&gt;&gt; derived = Derived()
 &gt;&gt;&gt; get_name(base)
 'Base'
-&gt;&gt;&gt; # objects of wrapped class Derived may be passed where Base is expected
+</pre><i>objects of wrapped class Derived may be passed where Base is expected</i><pre>
 &gt;&gt;&gt; get_name(derived) 
 'Derived'
-&gt;&gt;&gt; # objects of wrapped class Derived can be passed where Derived is 
-&gt;&gt;&gt; # expected but where type information has been lost.
-&gt;&gt;&gt; get_derived_x(base_factory()) 
+</pre><i>objects of wrapped class Derived can be passed where Derived is 
+expected but where type information has been lost.</i><pre>
+&gt;&gt;&gt; get_derived_x(derived_as_base()) 
 -1
 </pre>
 </blockquote>
