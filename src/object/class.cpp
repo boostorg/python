@@ -323,6 +323,26 @@ namespace objects
           throw_error_already_set();
   }
 
+  namespace
+  {
+    extern "C" PyObject* no_init(PyObject*, PyObject*)
+    {
+        ::PyErr_SetString(::PyExc_RuntimeError, "This class cannot be instantiated from Python");
+        return NULL;
+    }
+    static ::PyMethodDef no_init_def = {
+        "__init__", no_init, METH_VARARGS,
+        "Raises an exception\n"
+        "This class cannot be instantiated from Python\n"
+    };
+  }
+  
+  void class_base::def_no_init()
+  {
+      handle<> f(::PyCFunction_New(&no_init_def, 0));
+      this->setattr("__init__", object(f));
+  }
+
   void class_base::enable_pickling(bool getstate_manages_dict)
   {
       setattr("__reduce__", object(make_instance_reduce_function()));

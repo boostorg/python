@@ -242,7 +242,6 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
       .add(
           class_<A, shared_ptr<A> >("A")
-          .def_init()
           .def("name", &A::name)
           )
         
@@ -253,13 +252,11 @@ BOOST_PYTHON_MODULE_INIT(m1)
     m1
         .add(
             class_<B,bases<A>, shared_ptr<B> >("B")
-            .def_init()
             .def("name", &B::name)
             )
         
         .add(
             class_<C,bases<A>, shared_ptr<C> >("C")
-            .def_init()
             .def("name", &C::name)
             )
         ;
@@ -267,13 +264,12 @@ BOOST_PYTHON_MODULE_INIT(m1)
     m1
         .add(
             class_<D,shared_ptr<D>, bases<B,C> >("D")
-            .def_init()
             .def("name", &D::name)
             )
 
         .add(
-            class_<complicated>("complicated")
-            .def_init(args<simple const&,int>())
+            class_<complicated>("complicated",
+                                args<simple const&,int>())
             .def_init(args<simple const&>())
             .def("get_n", &complicated::get_n)
             )

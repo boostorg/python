@@ -138,8 +138,7 @@ BOOST_PYTHON_MODULE_INIT(list_ext)
 
         .def("exercise", exercise)
         
-        .add(class_<X>("X")
-             .def_init(args<int>())
+        .add(class_<X>("X", args<int>())
              .def( "__repr__", x_rep))
         ;
 }

@@ -87,19 +87,18 @@ BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
         
         .add(
             
-            class_<A>()
+            class_<A>(no_init)
             .def("content", &A::content)
             .def("get_inner", &A::get_inner, return_internal_reference<>())
             )
 
         .add(
-            class_<inner>()
+            class_<inner>(no_init)
             .def("change", &inner::change)
             )
         
         .add(
             class_<B>("B")
-            .def_init()
             .def_init(args<A*>(), with_custodian_and_ward_postcall<1,2>())
             
             .def("adopt", &B::adopt

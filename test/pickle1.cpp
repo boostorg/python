@@ -51,8 +51,8 @@ BOOST_PYTHON_MODULE_INIT(pickle1_ext)
 {
   using namespace boost::python;
   module("pickle1_ext")
-    .add(class_<world>("world")
-      .def_init(args<const std::string&>())
+    .add(class_<world>("world"
+                       , args<const std::string&>())
       .def("greet", &world::greet)
       .def_pickle(world_pickle_suite())
     )

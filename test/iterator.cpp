@@ -76,7 +76,6 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
         .def("range", &::range)
         .add(
             class_<list_int>("list_int")
-            .def_init()
             .def("push_back", push_back)
             .def("back", back)
             .def("__iter__", iterator<list_int>())
@@ -90,7 +89,6 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
             )
         .add(
             class_<two_lists>("two_lists")
-            .def_init()
 
             // We can spcify member functions
             .add_property(
@@ -118,7 +116,6 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
             )
         .add(
             class_<list_list>("list_list")
-            .def_init()
             .def("push_back", push_list_back)
             .def("__iter__", iterator<list_list,return_internal_reference<> >())
             )

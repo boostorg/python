@@ -19,12 +19,11 @@ BOOST_PYTHON_MODULE_INIT(bienstman3_ext)
   
   m
     .add(
-      class_<V, boost::noncopyable>("V")
+      class_<V, boost::noncopyable>("V", no_init)
       )
 
     .add(
-      class_<B>("B")
-      .def_init(args<const V&>())
+      class_<B>("B", args<const V&>())
       )
     ;
 }

@@ -40,12 +40,12 @@ BOOST_PYTHON_MODULE_INIT(docstring_ext)
             class_<X>("X",
                       "A simple class wrapper around a C++ int\n"
                       "includes some error-checking"
-                )
-            
-            .def_init(args<int>(),
+                      
+                      , args<int>(),
                       "this is the __init__ function\n"
                       "its documentation has two lines."
-                      )
+
+                )
             
             .def("value", &X::value,
                  "gets the value of the object")

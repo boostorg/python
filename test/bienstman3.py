@@ -1,5 +1,15 @@
 '''
 >>> from bienstman3_ext import *
+
+>>> try:
+...    V()
+... except RuntimeError, x:
+...    print x
+... else:
+...    print 'expected an exception'
+...
+This class cannot be instantiated from Python
+
 '''
 def run(args = None):
     import sys

@@ -28,6 +28,7 @@
 # include <boost/python/make_function.hpp>
 # include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/detail/def_helper.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
 
 namespace boost { namespace python { 
 
@@ -58,7 +59,9 @@ namespace detail
   template <class T, class Holder>
   static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, object const&, T* = 0)
   {
-  }  
+  }
+
+  template <class T> int assert_default_constructible(T const&);
 }
 
 //
@@ -75,7 +78,8 @@ template <
     >
 class class_ : public objects::class_base
 {
-    typedef objects::class_base base;
+ private: // types
+   typedef objects::class_base base;
 
     typedef class_<T,X1,X2,X3> self;
     BOOST_STATIC_CONSTANT(bool, is_copyable = (!detail::has_noncopyable<X1,X2,X3>::value));
@@ -86,17 +90,67 @@ class class_ : public objects::class_base
         X3
     >::type>::type>::type held_type;
     
+     typedef objects::class_id class_id;
+    
+    typedef typename detail::select_bases<X1
+            , typename detail::select_bases<X2
+              , typename boost::python::detail::select_bases<X3>::type
+              >::type
+            >::type bases;
+    
+    // A helper class which will contain an array of id objects to be
+    // passed to the base class constructor
+    struct id_vector
+    {
+        typedef objects::class_id class_id;
+        id_vector()
+        {
+            // Stick the derived class id into the first element of the array
+            ids[0] = type_id<T>();
+    
+            // Write the rest of the elements into succeeding positions.
+            class_id* p = ids + 1;
+            mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
+        }
+        
+        BOOST_STATIC_CONSTANT(
+            std::size_t, size = mpl::size<bases>::value + 1);
+        class_id ids[size];
+    };
+    friend struct id_vector;
+
  public:
     // Automatically derive the class name - only works on some
     // compilers because type_info::name is sometimes mangled (gcc)
-    class_();
+    class_();           // With default-constructor init function
+    class_(no_init_t);  // With no init function
     
-    // Construct with the class name.  [ Would have used a default
-    // argument but gcc-2.95.2 choked on typeid(T).name() as a default
-    // parameter value]
+    // Construct with the class name, with or without docstring, and default init() function
     class_(char const* name, char const* doc = 0);
 
+    // Construct with class name, no docstring, and no init() function
+    class_(char const* name, no_init_t);
+    
+    // Construct with class name, docstring, and no init() function
+    class_(char const* name, char const* doc, no_init_t);
 
+    template <class InitArgs>
+    inline class_(char const* name, detail::args_base<InitArgs> const&)
+        : base(name, id_vector::size, id_vector().ids)
+    {
+        this->register_();
+        this->def_init(InitArgs());
+    }
+    
+    
+    template <class InitArgs>
+    inline class_(char const* name, char const* doc, detail::args_base<InitArgs> const&, char const* initdoc = 0)
+        : base(name, id_vector::size, id_vector().ids, doc)
+    {
+        this->register_();
+        this->def_init(InitArgs(), initdoc);
+    }
+    
     // Wrap a member function or a non-member function which can take
     // a T, T cv&, or T cv* as its first parameter, or a callable
     // python object.
@@ -224,67 +278,68 @@ class class_ : public objects::class_base
         objects::add_to_namespace(*this, name, f, doc);
     }
 
- private: // types
-    typedef objects::class_id class_id;
-    
-    typedef typename detail::select_bases<X1
-            , typename detail::select_bases<X2
-              , typename boost::python::detail::select_bases<X3>::type
-              >::type
-            >::type bases;
-    
-    // A helper class which will contain an array of id objects to be
-    // passed to the base class constructor
-    struct id_vector
-    {
-        typedef objects::class_id class_id;
-        id_vector()
-        {
-            // Stick the derived class id into the first element of the array
-            ids[0] = type_id<T>();
-    
-            // Write the rest of the elements into succeeding positions.
-            class_id* p = ids + 1;
-            mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
-        }
-        
-        BOOST_STATIC_CONSTANT(
-            std::size_t, size = mpl::size<bases>::value + 1);
-        class_id ids[size];
-    };
-    friend struct id_vector;
+    inline void register_() const;
 };
 
 
 //
 // implementations
 //
+        // register converters
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_()
-    : base(typeid(T).name(), id_vector::size, id_vector().ids)
+inline void class_<T,X1,X2,X3>::register_() const
 {
-    // register converters
     objects::register_class_from_python<T,bases>();
     
     detail::register_copy_constructor<T>(
         mpl::bool_t<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , *this);
+}
+
+
+
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_()
+    : base(typeid(T).name(), id_vector::size, id_vector().ids)
+{
+    this->register_();
+    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
+    this->def_init();
+}
+
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(no_init_t)
+    : base(typeid(T).name(), id_vector::size, id_vector().ids)
+{
+    this->register_();
+    this->def_no_init();
 }
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
-    // register converters
-    objects::register_class_from_python<T,bases>();
-    
-    detail::register_copy_constructor<T>(
-        mpl::bool_t<is_copyable>()
-        , objects::select_holder<T,held_type>((held_type*)0).get()
-        , *this);
+    this->register_();
+    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
+    this->def_init();
 }
 
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name, no_init_t)
+    : base(name, id_vector::size, id_vector().ids)
+{
+    this->register_();
+    this->def_no_init();
+}
+
+template <class T, class X1, class X2, class X3>
+inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
+    : base(name, id_vector::size, id_vector().ids, doc)
+{
+    this->register_();
+    this->def_no_init();
+}
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, object const& fget)

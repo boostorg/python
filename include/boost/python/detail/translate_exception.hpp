@@ -6,12 +6,11 @@
 #ifndef TRANSLATE_EXCEPTION_DWA2002810_HPP
 # define TRANSLATE_EXCEPTION_DWA2002810_HPP
 
+# include <boost/python/detail/exception_handler.hpp>
 # include <boost/function/function0.hpp>
 # include <boost/call_traits.hpp>
 
 namespace boost { namespace python { namespace detail { 
-
-struct exception_handler;
 
 // A ternary function object used to translate C++ exceptions of type
 // ExceptionType into Python exceptions by invoking an object of type

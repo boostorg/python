@@ -30,7 +30,7 @@ BOOST_PYTHON_MODULE_INIT(bienstman1_ext)
     .add(class_<A, shared_ptr<A> >("A"))
 
     .add(
-      class_<V, boost::noncopyable>("V")
+      class_<V, boost::noncopyable>("V", no_init)
       .def("inside", &V::inside, 
            return_value_policy<reference_existing_object>())
       .def("outside", outside, 

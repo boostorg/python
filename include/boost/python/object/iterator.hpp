@@ -131,7 +131,7 @@ namespace detail
                   bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies)
               , 1);
     
-      return class_<range_>(name)
+      return class_<range_>(name, no_init)
           .def("__iter__", identity_function())
           .setattr("next", next_function)
           ;

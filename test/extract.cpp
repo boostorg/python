@@ -47,7 +47,19 @@ std::string extract_string(object x)
 
 std::string const& extract_string_cref(object x)
 {
+#if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
+# pragma warning(push)
+# pragma warning(disable:4172) // msvc lies about returning a reference to temporary
+#elif defined(_MSC_VER) && defined(__ICL) && __ICL <= 600
+# pragma warning(push)
+# pragma warning(disable:473) // intel/win32 does too
+#endif 
+    
     return extract<std::string const&>(x);
+    
+#if defined(BOOST_MSVC) && BOOST_MSVC <= 1300 || defined(_MSC_VER) && defined(__ICL) && __ICL <= 600
+# pragma warning(pop)
+#endif 
 }
 
 X extract_X(object x)
@@ -87,10 +99,9 @@ BOOST_PYTHON_MODULE_INIT(extract_ext)
 {
     implicitly_convertible<int, X>();
     
-    class_<X> x_class("X");
+    class_<X> x_class("X", args<int>());
     
     x_class
-        .def_init(args<int>())
         .def( "__repr__", x_rep)
         ;
         

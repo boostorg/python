@@ -41,6 +41,7 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     void add_property(char const* name, object const& fget, object const& fset);
     void setattr(char const* name, object const&);
     void enable_pickling(bool getstate_manages_dict);
+    void def_no_init();
 };
 
 BOOST_PYTHON_DECL type_handle registered_class_object(class_id id);

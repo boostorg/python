@@ -24,16 +24,14 @@ BOOST_PYTHON_MODULE_INIT(data_members_ext)
 {
     module("data_members_ext")
         .add(
-            class_<X>("X")
-            .def_init(args<int>())
+            class_<X>("X", args<int>())
             .def("value", &X::value)
             .def("set", &X::set)
             .def_readonly("x", &X::x)
             .add_property("get_fair_value", object(&get_fair_value))
             )
         .add(
-            class_<Y>("Y")
-            .def_init(args<int>())
+            class_<Y>("Y", args<int>())
             .def("value", &Y::value)
             .def("set", &Y::set)
             .def_readwrite("x", &Y::x)

@@ -16,11 +16,10 @@ BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
 
   module("multi_arg_constructor_ext")
   
-    .add(class_<A, shared_ptr<A> >("A")
-         .def_init(args<double, double, double, double, double
-                   , double, double
-                   , double, double
-                   >())
+    .add(class_<A, shared_ptr<A> >(
+             "A"
+             , args<double, double, double, double, double, double, double, double, double>()
+             )
         )
       ;
 

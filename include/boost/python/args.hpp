@@ -16,13 +16,25 @@
 #  include <boost/preprocessor/cat.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 
+namespace boost { namespace python {
+
+enum no_init_t { no_init };
+
+namespace detail
+{
+  template <class Args>
+  struct args_base {};
+}
+}}
+
 #  if !defined(__EDG_VERSION__) || __EDG_VERSION__ > 245
 
 namespace boost { namespace python {
 
 // A type list for specifying arguments
 template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, boost::mpl::null_argument) >
-struct args : boost::mpl::type_list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A) >::type
+struct args : detail::args_base<args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
+      , boost::mpl::type_list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A) >::type
 {};
 
 }} // namespace boost::python
@@ -36,7 +48,7 @@ struct args : boost::mpl::type_list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_AR
 namespace boost { namespace python {
 
 template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, boost::mpl::null_argument) >
-struct args
+struct args : detail::args_base<args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
 {};
 
 }} // namespace boost::python
