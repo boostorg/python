@@ -221,14 +221,14 @@ class GCCXMLParser(object):
         bases = self.GetBases(element.get('bases'))        
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
-        if isinstance(context, Class): # a nested class
+        if isinstance(context, str): 
+            class_ = Class(name, context, [], abstract, bases)
+            self.AddDecl(class_)
+        else:
+            # a nested class
             visib = element.get('access', Scope.public)
             class_ = NestedClass(
                 name, context.FullName(), visib, [], abstract, bases)
-        else:            
-            assert isinstance(context, str)
-            class_ = Class(name, context, [], abstract, bases)
-            self.AddDecl(class_)
         # we have to add the declaration of the class before trying        
         # to parse its members, to avoid recursion.
         class_.location = location
@@ -251,10 +251,6 @@ class GCCXMLParser(object):
         type_ = self.GetType(element.get('type'))
         min = element.get('min')
         max = element.get('max')
-        if min:
-            min = int(min)
-        if max: 
-            max = int(max)
         array = ArrayType(type_.name, min, max, type_.const)
         self.Update(id, array)
 
@@ -349,7 +345,7 @@ class GCCXMLParser(object):
 
     def ParseTypedef(self, id, element):
         name = element.get('name')
-        type = self.GetDecl(element.get('type'))        
+        type = self.GetType(element.get('type'))        
         context = self.GetDecl(element.get('context'))
         if isinstance(context, Class):
             context = context.FullName()
