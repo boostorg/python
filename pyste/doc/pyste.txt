@@ -397,7 +397,7 @@ Pyste expects them to be a [*pointer]. Doing otherwise will prevent your
 code to compile when you set a wrapper for a virtual method.
 ]
 
-[page:1 Exporting All Declarations from a Header]
+[page:1 Exporting An Entire Header]
 
 Pyste also supports a mechanism to export all declarations found in a header
 file. Suppose again our file, [^hello.h]:
