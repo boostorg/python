@@ -69,9 +69,8 @@ void test()
     Py_Initialize();
 
     // Retrieve the main module
-    python::object main_module = python::extract<python::object>(
-        PyImport_AddModule("__main__")
-    )();
+    python::object main_module((
+        python::handle<>(python::borrowed(PyImport_AddModule("__main__")))));
 
     // Retrieve the main module's namespace
     python::object main_namespace((main_module.attr("__dict__")));
@@ -106,7 +105,11 @@ void test()
     // But now creating and using instances of the Python class is almost
     // as easy!
     python::object py_base = PythonDerived();
-    Base& py = python::extract<Base&>(py_base)();
+    Base& py = python::extract<Base&>(py_base)
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+        ()
+#endif 
+        ;
     std::cout << py.hello() << std::endl;
 }
 
