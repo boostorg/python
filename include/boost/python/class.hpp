@@ -132,6 +132,19 @@ class class_ : public objects::class_base
         return *this;
     }
 
+    template <class Args, class CallPolicy>
+    self& def_init(Args const&, CallPolicy policy)
+    {
+        def("__init__",
+            make_constructor<Args>(
+                policy
+                // Using runtime type selection works around a CWPro7 bug.
+                , objects::select_holder<T,held_type>((held_type*)0).get()
+                )
+            );
+        return *this;
+    }
+
     // Define the default constructor.
     self& def_init()
     {

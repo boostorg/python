@@ -49,6 +49,20 @@ objects::function* make_constructor(Holder* = 0, ArgList* = 0)
         , nargs + 1);
 }
 
+template <class ArgList, class Holder, class Policies>
+objects::function* make_constructor(Policies const& policies, Holder* = 0, ArgList* = 0)
+{
+    enum { nargs = mpl::size<ArgList>::value };
+    
+    return new objects::function(
+        objects::py_function(
+            ::boost::bind<PyObject*>(detail::caller(),
+                 objects::make_holder<nargs>
+                            ::template apply<Holder,ArgList>::execute
+                 , _1, _2, policies))
+        , nargs + 1);
+}
+
 }} // namespace boost::python
 
 #endif // MAKE_FUNCTION_DWA20011221_HPP

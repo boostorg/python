@@ -60,6 +60,7 @@ struct A
 struct B
 {
     B() : x(0) {}
+    B(A* x_) : x(x_) {}
     
     inner const* adopt(A* x) { this->x = x; return &x->get_inner(); }
 
@@ -101,6 +102,7 @@ BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
         .add(
             class_<B>("B")
             .def_init()
+            .def_init(args<A*>(), with_custodian_and_ward_postcall<1,2>())
             
             .def("adopt", &B::adopt
                  // Adopt returns a pointer referring to a subobject of its 2nd argument (1st being "self")

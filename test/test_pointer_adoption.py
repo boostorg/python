@@ -48,6 +48,28 @@
 >>> del b
 >>> num_a_instances()
 0
+
+Test call policies for constructors here
+
+>>> a = create('second a')
+>>> num_a_instances()
+1
+>>> b = B(a)
+>>> num_a_instances()
+1
+>>> a.content()
+'second a'
+
+>>> del a
+>>> num_a_instances()
+1
+>>> b.a_content()
+'second a'
+
+>>> del b
+>>> num_a_instances()
+0
+
 """
 def run(args = None):
     import sys

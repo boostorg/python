@@ -7,6 +7,7 @@
 # define INDIRECT_TRAITS_DWA2002131_HPP
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
+# include <boost/type_traits/function_traits.hpp>
 # include <boost/mpl/select_type.hpp>
 
 namespace boost { namespace python { namespace detail { 
@@ -22,6 +23,68 @@ template <class T>
 struct is_reference_to_const<T const&>
 {
     BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+#   if 0 // Corresponding code doesn't work on MSVC yet
+template <class T>
+struct is_reference_to_function
+{
+    BOOST_STATIC_CONSTANT(bool, value = false);
+};
+
+template <class T>
+struct is_reference_to_function<T&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_reference_to_function<T const&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_reference_to_function<T volatile&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_reference_to_function<T const volatile&>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+#   endif
+
+template <class T>
+struct is_pointer_to_function
+{
+    BOOST_STATIC_CONSTANT(bool, value = false);
+};
+
+template <class T>
+struct is_pointer_to_function<T*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_pointer_to_function<T const*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_pointer_to_function<T volatile*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
+};
+
+template <class T>
+struct is_pointer_to_function<T const volatile*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
 
 template <class T>
@@ -112,6 +175,25 @@ struct is_pointer_help
         , inner_yes_type
         , inner_no_type
         >::type type;
+};
+
+#   if 0 // doesn't seem to work yet
+template <class T>
+struct is_reference_to_function
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = sizeof(::boost::detail::is_function_tester(t)) == sizeof(::boost::type_traits::yes_type));
+#   endif
+
+template <class T>
+struct is_pointer_to_function
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = sizeof(::boost::detail::is_function_tester(t)) == sizeof(::boost::type_traits::yes_type));
 };
 
 template <typename V>
