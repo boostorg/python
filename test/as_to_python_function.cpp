@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/converter/to_python_function_type.hpp>
+#include <boost/python/converter/as_to_python_function.hpp>
 
 struct hopefully_illegal
 {

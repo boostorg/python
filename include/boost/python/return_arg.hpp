@@ -7,6 +7,7 @@
 # define RETURN_ARG_DWA2003719_HPP
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/detail/none.hpp>
+# include <boost/python/detail/value_arg.hpp>
 
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
@@ -40,11 +41,7 @@ namespace detail
                   return true;
               }
               
-              PyObject *operator()(
-                  typename add_reference<
-                      typename add_const<T>::type
-                  >::type
-              ) const
+              PyObject *operator()( typename value_arg<T>::type ) const
               {
                   return none();
               }

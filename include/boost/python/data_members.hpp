@@ -19,6 +19,7 @@
 
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/python/detail/not_specified.hpp>
+# include <boost/python/detail/value_arg.hpp>
 
 # include <boost/type_traits/add_const.hpp>
 # include <boost/type_traits/add_reference.hpp>
@@ -51,10 +52,6 @@ namespace detail
   template <class Data, class Class>
   struct member
   {
-   private:
-      typedef typename add_const<Data>::type data_const;
-      typedef typename add_reference<data_const>::type data_cref;
-      
    public:      
       member(Data Class::*which) : m_which(which) {}
       
@@ -63,7 +60,7 @@ namespace detail
           return c.*m_which;
       }
 
-      void operator()(Class& c, data_cref d) const
+      void operator()(Class& c, typename value_arg<Data>::type d) const
       {
           c.*m_which = d;
       }
@@ -76,10 +73,6 @@ namespace detail
   template <class Data>
   struct datum
   {
-   private:
-      typedef typename add_const<Data>::type data_const;
-      typedef typename add_reference<data_const>::type data_cref;
-      
    public:      
       datum(Data *which) : m_which(which) {}
       
@@ -88,7 +81,7 @@ namespace detail
           return *m_which;
       }
 
-      void operator()(data_cref d) const
+      void operator()(typename value_arg<Data>::type d) const
       {
           *m_which = d;
       }
@@ -112,11 +105,11 @@ namespace detail
       : mpl::and_<
           mpl::bool_<
               to_python_value<
-                  typename add_reference<typename add_const<T>::type>::type
+                  typename value_arg<T>::type
               >::uses_registry
           >
         , is_reference_to_class<
-              typename add_reference<typename add_const<T>::type>::type
+              typename value_arg<T>::type
           >
        >
   {

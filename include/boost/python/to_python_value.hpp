@@ -19,6 +19,7 @@
 # include <boost/python/converter/shared_ptr_to_python.hpp>
 
 # include <boost/python/detail/value_is_shared_ptr.hpp>
+# include <boost/python/detail/value_arg.hpp>
 
 # include <boost/type_traits/transform_traits.hpp>
 
@@ -32,9 +33,7 @@ namespace detail
   template <class T>
   struct object_manager_to_python_value
   {
-      typedef typename add_reference<
-          typename add_const<T>::type
-      >::type argument_type;
+      typedef typename value_arg<T>::type argument_type;
     
       PyObject* operator()(argument_type) const;
 
@@ -48,9 +47,7 @@ namespace detail
   template <class T>
   struct registry_to_python_value
   {
-      typedef typename add_reference<
-          typename add_const<T>::type
-      >::type argument_type;
+      typedef typename value_arg<T>::type argument_type;
     
       PyObject* operator()(argument_type) const;
 
@@ -63,9 +60,7 @@ namespace detail
   template <class T>
   struct shared_ptr_to_python_value
   {
-      typedef typename add_reference<
-          typename add_const<T>::type
-      >::type argument_type;
+      typedef typename value_arg<T>::type argument_type;
     
       PyObject* operator()(argument_type) const;
 

@@ -12,6 +12,8 @@
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
 
+# include <boost/python/detail/value_arg.hpp>
+
 namespace boost { namespace python { 
 
 struct return_by_value
@@ -20,9 +22,7 @@ struct return_by_value
     struct apply
     {
        typedef to_python_value<
-           typename add_reference<
-               typename add_const<R>::type
-           >::type
+           typename detail::value_arg<R>::type
        > type;
     };
 };

@@ -176,6 +176,8 @@ namespace api
 # endif
       
    private: // def visitation for adding callable objects as class methods
+      using def_visitor<U>::visit;
+      
       template <class ClassT, class DocStringT>
       void visit(ClassT& cl, char const* name, python::detail::def_helper<DocStringT> const& helper) const
       {

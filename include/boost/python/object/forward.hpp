@@ -11,10 +11,14 @@
 # include <boost/type_traits/add_const.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/ref.hpp>
+# include <boost/python/detail/value_arg.hpp>
+# include <boost/python/detail/copy_ctor_mutates_rhs.hpp>
 # if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
 #  include <boost/type_traits/is_enum.hpp>
 #  include <boost/mpl/and.hpp>
 #  include <boost/mpl/not.hpp>
+# else
+#  include <boost/mpl/or.hpp>
 # endif 
 
 namespace boost { namespace python { namespace objects { 
@@ -48,7 +52,7 @@ struct forward
               >
           >
 # else 
-          is_scalar<T>
+          mpl::or_<python::detail::copy_ctor_mutates_rhs<T>, is_scalar<T> >
 # endif 
         , T
         , reference_to_value<T>
@@ -71,10 +75,8 @@ struct unforward<reference_to_value<T> >
 
 template <typename T>
 struct unforward_cref
-  : add_reference<
-        typename add_const<
-            typename unwrap_reference<T>::type
-        >::type
+  : python::detail::value_arg<
+        typename unwrap_reference<T>::type
     >
 {
 };
@@ -122,10 +124,8 @@ namespace detail
   {
       template <class T>
       struct apply
-        : add_reference<
-              typename add_const<
-                  typename unwrap_reference<T>::type
-              >::type
+        : python::detail::value_arg<
+              typename unwrap_reference<T>::type
           >
       {          
       };
@@ -136,11 +136,9 @@ namespace detail
   {
       template <class T>
       struct apply
-          : add_reference<
-                typename add_const<
-                    typename T::reference
-                >::type
-            >
+        : python::detail::value_arg<
+              typename T::reference
+          >
       {
       };
   };
