@@ -12,18 +12,20 @@ from exporterutils import FunctionWrapper
 #==============================================================================
 # DeclarationInfo
 #==============================================================================
-class DeclarationInfo(object):
+class DeclarationInfo:
     
     def __init__(self, otherInfo=None):
         self.__infos = {}
         self.__attributes = {}
         if otherInfo is not None:
-            self.__infos = otherInfo.__infos.copy()
-            self.__attributes = otherInfo.__attributes.copy()
+            self.__infos = copy.deepcopy(otherInfo.__infos)
+            self.__attributes = copy.deepcopy(otherInfo.__attributes)
 
 
     def __getitem__(self, name):
         'Used to access sub-infos'        
+        if name.startswith('__'):
+            raise AttributeError
         default = DeclarationInfo()
         default._Attribute('name', name)
         return self.__infos.setdefault(name, default)
@@ -61,8 +63,8 @@ class FunctionInfo(DeclarationInfo):
 #==============================================================================
 class ClassInfo(DeclarationInfo):
 
-    def __init__(self, name, include, tail=None, otherOption=None):
-        DeclarationInfo.__init__(self, otherOption)
+    def __init__(self, name, include, tail=None, otherInfo=None):
+        DeclarationInfo.__init__(self, otherInfo)
         self._Attribute('name', name)
         self._Attribute('include', include)
         # create a ClassExporter
