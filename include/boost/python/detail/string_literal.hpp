@@ -26,7 +26,19 @@ struct is_string_literal<char const[n]>
 {
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
+
+#   if defined(__DECCXX_VER) && __DECCXX_VER <= 60590014
+// This compiler mistakenly gets the type of string literals as char*
+// instead of char[NN].
+template <>
+struct is_string_literal<char* const>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+#   endif
+
 #  else
+
 // CWPro7 has trouble with the array type deduction above
 template <class T, std::size_t n>
 struct is_string_literal<T[n]>
