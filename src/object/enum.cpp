@@ -29,9 +29,10 @@ static PyMemberDef enum_members[] = {
 };
 
 
-extern "C" {
+extern "C"
+{
     static int
-    enum_print(PyObject *v, std::FILE *fp, int flags)
+    enum_print(PyObject *v, BOOST_CSTD_::FILE *fp, int flags)
     {
         PyObject* s
             = (flags & Py_PRINT_RAW) ? v->ob_type->tp_str(v) : v->ob_type->tp_repr(v);
@@ -42,7 +43,7 @@ extern "C" {
         if (text == 0)
             return -1;
         
-        std::fprintf(fp, text);
+        BOOST_CSTD_::fprintf(fp, text);
         return 0;
     }
     
@@ -195,7 +196,7 @@ void enum_base::add_value(char const* name_, long value)
 
 PyObject* enum_base::to_python(PyTypeObject* type_, long x)
 {
-    object type(type_handle(borrowed(type_)));
+    object type((type_handle(borrowed(type_))));
 
     dict d = extract<dict>(type.attr("values"))();
     object v = d.get(x, object());
