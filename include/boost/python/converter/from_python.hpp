@@ -43,6 +43,8 @@ struct from_python_base
 template <class T>
 struct pointer_const_reference_from_python
 {
+    typedef T result_type;
+    
     pointer_const_reference_from_python(PyObject*);
     T operator()(PyObject*) const;
     bool convertible() const;
@@ -55,6 +57,8 @@ struct pointer_const_reference_from_python
 template <class T>
 struct pointer_from_python : from_python_base
 {
+    typedef T result_type;
+    
     pointer_from_python(PyObject*);
     T operator()(PyObject*) const;
 };
@@ -63,6 +67,8 @@ struct pointer_from_python : from_python_base
 template <class T>
 struct reference_from_python : from_python_base
 {
+    typedef T result_type;
+    
     reference_from_python(PyObject*);
     T operator()(PyObject*) const;
 };
@@ -72,13 +78,12 @@ struct reference_from_python : from_python_base
 // Used for the case where T is a non-pointer, non-reference type OR
 // is a const non-volatile reference to a non-pointer type.
 template <class T>
-class rvalue_from_python
+struct rvalue_from_python
 {
     typedef typename boost::add_reference<
         typename boost::add_const<T>::type
     >::type result_type;
     
- public:
     rvalue_from_python(PyObject*);
     bool convertible() const;
     
@@ -97,6 +102,8 @@ template <class T>
 struct back_reference_from_python
     : boost::python::from_python<typename T::type>
 {
+    typedef T result_type;
+    
     back_reference_from_python(PyObject*);
     T operator()(PyObject*);
  private:

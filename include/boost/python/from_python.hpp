@@ -22,6 +22,8 @@ struct from_python
 template <>
 struct from_python<PyObject*>
 {
+    typedef PyObject* result_type;
+    
     from_python(PyObject*) {}
     bool convertible() const { return true; }
     PyObject* operator()(PyObject* source) const { return source; }
@@ -30,6 +32,7 @@ struct from_python<PyObject*>
 template <>
 struct from_python<PyObject* const&>
 {
+    typedef PyObject* const& result_type;
     from_python(PyObject*) {}
     bool convertible() const { return true; }
     PyObject*const& operator()(PyObject*const& source) const { return source; }
