@@ -67,8 +67,7 @@ namespace {
 
   ref global_class_reduce()
   {
-      static ref result(detail::new_wrapped_function(class_reduce));
-      return result;
+      return ref(detail::new_wrapped_function(class_reduce));
   }
   
 
@@ -120,8 +119,7 @@ namespace {
 
   ref global_instance_reduce()
   {
-      static ref result(detail::new_wrapped_function(instance_reduce));
-      return result;
+      return ref(detail::new_wrapped_function(instance_reduce));
   }
 }
 
@@ -186,7 +184,7 @@ namespace detail {
       if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
       {
           ref target(as_object(this), ref::increment_count);
-          return new bound_function(target, global_class_reduce());
+          return bound_function::create(target, global_class_reduce());
       }
       
       ref local_attribute = m_name_space.get_item(string(name).reference());
@@ -357,7 +355,7 @@ PyObject* instance::getattr(const char* name, bool use_special_function)
 
     if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
     {
-      return new detail::bound_function(ref(this, ref::increment_count), global_instance_reduce());
+      return detail::bound_function::create(ref(this, ref::increment_count), global_instance_reduce());
     }
     
     ref local_attribute = m_name_space.get_item(string(name).reference());
