@@ -464,20 +464,20 @@ template <std::size_t> struct category_type;
 
 #define DECLARE_CAPABILITY_TYPE(field, sub_structure) \
      template <> \
-     struct category_type<(offsetof(PyTypeObject, tp_as_##field))> \
+     struct category_type<(PY_OFFSETOF(PyTypeObject, tp_as_##field))> \
      { \
          typedef sub_structure type; \
      }
 
 #define CAPABILITY(field) \
-        { offsetof(PyTypeObject, tp_##field), 0, Dispatch(do_instance_##field), 0, -1 }
+        { PY_OFFSETOF(PyTypeObject, tp_##field), 0, Dispatch(do_instance_##field), 0, -1 }
 
 #define CAPABILITY2(category, field) \
-        { offsetof(PyTypeObject, tp_as_##category), \
-          offsetof(category_type<offsetof(PyTypeObject, tp_as_##category)>::type, field), \
+        { PY_OFFSETOF(PyTypeObject, tp_as_##category), \
+          PY_OFFSETOF(category_type<PY_OFFSETOF(PyTypeObject, tp_as_##category)>::type, field), \
           Dispatch(do_instance_##field), \
-          sizeof(category_type<offsetof(PyTypeObject, tp_as_##category)>::type), \
-          offsetof(AllMethods, category) \
+          sizeof(category_type<PY_OFFSETOF(PyTypeObject, tp_as_##category)>::type), \
+          PY_OFFSETOF(AllMethods, category) \
         }
 
 DECLARE_CAPABILITY_TYPE(mapping, PyMappingMethods);
