@@ -6,6 +6,9 @@
 #ifndef MEMBER_FUNCTION_CAST_DWA2002410_HPP
 # define MEMBER_FUNCTION_CAST_DWA2002410_HPP
 
+// emacs commands used to pre-clean preprocessor output
+// (replace-regexp "> *stage1(" ">\nstage1(")
+
 template<class S,class R>
 static cast_helper<S,R(T::*)()>
 stage1(R(S::*)())
@@ -65,6 +68,42 @@ static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)>
 stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9))
 {
     return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14,class A15>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15))
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)>();
 }
 template<class S,class R>
 static cast_helper<S,R(T::*)()const>
@@ -126,6 +165,42 @@ stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)const)
 {
     return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)const>();
 }
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14,class A15>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const>();
+}
 template<class S,class R>
 static cast_helper<S,R(T::*)()volatile>
 stage1(R(S::*)()volatile)
@@ -185,6 +260,42 @@ static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)volatile>
 stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)volatile)
 {
     return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14,class A15>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)volatile>();
 }
 template<class S,class R>
 static cast_helper<S,R(T::*)()const volatile>
@@ -246,5 +357,40 @@ stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)const volatile)
 {
     return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9)const volatile>();
 }
-
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10)const volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11)const volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12)const volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13)const volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14)const volatile>();
+}
+template<class S,class R,class A1,class A2,class A3,class A4,class A5,class A6,class A7,class A8,class A9,class A10,class A11,class A12,class A13,class A14,class A15>
+static cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const volatile>
+stage1(R(S::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const volatile)
+{
+    return cast_helper<S,R(T::*)(A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11,A12,A13,A14,A15)const volatile>();
+}
 #endif // MEMBER_FUNCTION_CAST_DWA2002410_HPP

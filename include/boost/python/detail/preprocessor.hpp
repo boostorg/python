@@ -35,13 +35,13 @@ namespace boost { namespace python { namespace detail {
 # endif 
 
 #ifndef BOOST_PYTHON_DEBUGGABLE_ARITY
-# define BOOST_PYTHON_DEBUGGABLE_ARITY 10
+# define BOOST_PYTHON_DEBUGGABLE_ARITY 15
 #endif 
 
 #ifndef BOOST_PYTHON_MAX_ARITY
 # if !defined(__EDG_VERSION__) || __EDG_VERSION__ > 245
 // Generate at least two more arguments just to test the syntax
-#  define BOOST_PYTHON_MAX_ARITY 12
+#  define BOOST_PYTHON_MAX_ARITY 17
 # else
 // Current EDG compilers have a really slow preprocessor which makes
 // it important not to generate new functions with it unless
@@ -53,15 +53,17 @@ namespace boost { namespace python { namespace detail {
 #ifdef BOOST_PYTHON_GENERATE_CODE
 # undef BOOST_STATIC_CONSTANT
 # define BOOST_PYTHON_ARITY_START 0
-# define BOOST_PYTHON_ARITY_FINISH BOOST_PYTHON_DEBUGGABLE_ARITY
+# define BOOST_PYTHON_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
 # define BOOST_PYTHON_MF_ARITY_START 1
-# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
+# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY))
 #else
-# define BOOST_PYTHON_ARITY_START BOOST_PYTHON_DEBUGGABLE_ARITY
-# define BOOST_PYTHON_ARITY_FINISH BOOST_PYTHON_MAX_ARITY
-# define BOOST_PYTHON_MF_ARITY_START BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
-# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
+# define BOOST_PYTHON_ARITY_START BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
+# define BOOST_PYTHON_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
+# define BOOST_PYTHON_MF_ARITY_START BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY))
+# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY))
 #endif 
+
+#if BOOST_PYTHON_MAX_ARITY > BOOST_PYTHON_DEBUGGABLE_ARITY
 
 # define BOOST_PYTHON_FN(inner,start,count) \
     R(inner)(BOOST_MPL_TEMPLATE_PARAMETERS(start,count,A))
@@ -93,6 +95,15 @@ namespace boost { namespace python { namespace detail {
 
 # define BOOST_PYTHON_PROJECT_1ST(a1,a2) a1
 # define BOOST_PYTHON_PROJECT_2ND(a1,a2) a2
+#else
+
+# define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)
+# define BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,data) 
+# define BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(function)
+# define BOOST_PYTHON_REPEAT_MF_CV_2ND(function)
+# define BOOST_PYTHON_REPEAT_PMF_CV(index, function, cv)
+
+#endif
 
 }}} // namespace boost::python::detail
 
