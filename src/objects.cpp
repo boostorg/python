@@ -9,7 +9,7 @@
 // TODO: Move inline implementations from objects.cpp here
 
 #ifndef BOOST_PYTHON_SOURCE
-r# define BOOST_PYTHON_SOURCE
+# define BOOST_PYTHON_SOURCE
 #endif 
 
 #include <boost/python/objects.hpp>
