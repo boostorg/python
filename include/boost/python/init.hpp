@@ -270,13 +270,13 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     typedef typename mpl::fold<
         required_args
         , mpl::list0<>
-        , mpl::push_front<>
+        , mpl::push_front<mpl::_,mpl::_>
     >::type reversed_required;
 
     typedef typename mpl::fold<
         optional_args
         , reversed_required
-        , mpl::push_front<>
+        , mpl::push_front<mpl::_,mpl::_>
     >::type reversed_args;
 
     // Count the maximum number of arguments
@@ -310,7 +310,7 @@ namespace detail
       typedef typename mpl::fold<
           ReversedArgs
           , mpl::list0<>
-          , mpl::push_front<>
+          , mpl::push_front<mpl::_,mpl::_>
           >::type args;
 
       typedef typename ClassT::holder_selector holder_selector_t;
