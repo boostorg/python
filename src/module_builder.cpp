@@ -1,4 +1,4 @@
-//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+ //  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
@@ -50,7 +50,7 @@ module_builder_base::add(detail::function* x, const char* name)
 
 void module_builder_base::add(ref x, const char* name)
 {
-	PyObject* dictionary = PyModule_GetDict(m_module);
+        PyObject* dictionary = PyModule_GetDict(m_module);
     PyDict_SetItemString(dictionary, const_cast<char*>(name), x.get());
 }
 

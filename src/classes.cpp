@@ -364,7 +364,7 @@ PyObject* instance::getattr(const char* name, bool use_special_function)
         if (PyEval_GetRestricted()) {
             PyErr_SetString(PyExc_RuntimeError,
                             "instance.__dict__ not accessible in restricted mode");
-				return 0;
+                                return 0;
         }
         Py_INCREF(m_name_space.get());
         return m_name_space.get();

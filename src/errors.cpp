@@ -49,7 +49,7 @@ void BOOST_PYTHON_DECL throw_error_already_set()
     throw error_already_set();
 }
 
-BOOST_PYTHON_DECL PyObject* expect_non_null(PyObject* x)
+BOOST_PYTHON_DECL PyObject* expect_non_null_impl(PyObject* x)
 {
     if (x == 0)
         throw_error_already_set();
