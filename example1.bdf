@@ -1,4 +1,0 @@
-TargetName=example1
-TargetType=dll
-SourceFiles=example1.cpp
-Libs=py_cpp python utils

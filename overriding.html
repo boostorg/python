@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>
+      Overridable Virtual Functions
+    </title>
+    <h1>
+      <img src="c++boost.gif" alt="c++boost.gif (8819 bytes)" align="center"
+      width="277" height="86">
+    </h1>
+    <h1>
+      Overridable Virtual Functions
+    </h1>
+    <p>
+      In the <a href="example1.html">previous example</a> we exposed a simple
+      C++ class in Python and showed that we could write a subclass. We even
+      redefined one of the functions in our derived class. Now we will learn
+      how to make the function <em>behave virtually</em>. Of course, the first
+      step if we want it to act like a virtual function when called from our
+      C++ code, is to <em>make</em> it virtual:
+    <blockquote>
+<pre>
+  class world
+  {
+    ...
+      <strong>virtual</strong> const char* get() const { return "hi, world"; }
+    ...
+  };
+</pre>
+    </blockquote>
+    <p>
+      Then we'll need a derived class<a href="#why_derived">*</a> to help us
+      dispatch the call to Python:
+    <blockquote>
+<pre>
+struct world_callback : hello::world
+{
+    // The first argument must by a PyObject* (the corresponding Python object)
+    // The rest of the argument list should match the base class constructor
+    world_callback(PyObject* self, int x)
+        : world(x),            // dispatch to base object
+          m_self(self) {}      // hang onto the Python object
+
+    // Dispatch the call to Python
+    const char* get() const
+    {
+        // Any function arguments would go at the end of the argument list
+        // The return type is a template parameter
+        return py::Callback&lt;const char*&gt;::call_method(m_self, "get");
+    }
+
+    // <a name=
+"default_implementation">Something Python can call</a> in case there is no override of get()
+    const char* default_get() const
+        { return this-&gt;hello::world::get(); }
+ private:
+    PyObject* m_self; // A way to hold onto the Python object
+};
+</pre>
+    </blockquote>
+    <p>
+      Finally, we add <code>world_callback</code> to the <code>
+      ClassWrapper&lt;&gt;</code> declaration in our module initialization
+      function:
+    <blockquote>
+<pre>
+// Create the <a name=
+"world_class">Python type object</a> for our extension class
+py::ClassWrapper&lt;hello::world<strong>,world_callback&gt;</strong> world_class(hello, "world");
+       ...
+</pre>
+    </blockquote>
+    <p>
+      ...and when we define the function, we must tell py_cpp about the default
+      implementation:
+    <blockquote>
+<pre>
+// Add a virtual member function
+world_class.def(&amp;hello::world::get, "get", &amp;world_callback::default_get);
+</pre>
+    </blockquote>
+    <p>
+      Now our subclass of <code>hello.world</code> behaves as expected:
+    <p>
+    <blockquote>
+<pre>
+&gt;&gt;&gt; class my_subclass(hello.world):
+...     def get(self):
+...         return 'hello, world'
+...
+&gt;&gt;&gt; hello.length(my_subclass())
+12
+</pre>
+    </blockquote>
+    <p>
+      <a name="why_derived">*</a>You may ask, "Why do we need this derived
+      class? This could have been designed so that everything gets done right
+      inside of <code>hello::world</code>." One of the goals of py_cpp is to be
+      minimally intrusive on an existing C++ design. In principle, it should be
+      possible to expose the interface for a 3rd party library without changing
+      it.
+    <h2>
+      Pure Virtual Functions
+    </h2>
+    <p>
+      A pure virtual function with no implementation is actually a lot easier
+      to deal with than a virtual function with a default implementation. First
+      of all, you obviously don't need to <a href="#default_implementation">
+      supply a default implementation</a>. Secondly, you don't need to call
+      <code>def()</code> on the <code>ExtensionClass&lt;&gt;</code> instance
+      for the virtual function. In fact, you wouldn't <em>want</em> to: if the
+      corresponding attribute on the Python class stays undefined, you'll get
+      an <code>AttributeError</code> in Python when you try to call the
+      function, indicating that it should have been implemented. For example:
+    <blockquote>
+<pre>
+struct baz
+{
+    <strong>virtual</strong> void pure(int) = 0;
+};
+
+struct baz_callback
+{
+    void pure(int x) { py::Callback&lt;void&gt;::call_method(m_self, "pure", x); }
+};
+
+extern "C"
+#ifdef _WIN32
+__declspec(dllexport)
+#endif
+initfoobar()
+{
+    try
+    {
+       py::Module foobar("foobar");
+       py::ClassWrapper&lt;baz,baz_callback&gt; baz_class("baz");
+       baz_class.def(&amp;baz::pure, "pure");
+    }
+    catch(...)
+    {
+       py::handle_exception();    // Deal with the exception for Python
+    }
+}
+</pre>
+    </blockquote>
+    <p>
+      Now in Python:
+    <blockquote>
+<pre>
+&gt;&gt;&gt; from foobar import baz
+&gt;&gt;&gt; x = baz()
+&gt;&gt;&gt; x.pure()
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+AttributeError: pure
+&gt;&gt;&gt; class mumble(baz):
+...    def pure(self, z): pass
+...
+&gt;&gt;&gt; y = mumble()
+&gt;&gt;&gt; y.pure()
+&gt;&gt;&gt; 
+</pre>
+    </blockquote>
+    <p>
+      Prev: <a href="example1.html">A Simple Example Using py_cpp</a> Next: <a
+      href="under-the-hood.html">A Peek Under the Hood</a> Up: <a href= 
+      "py_cpp.html">Top</a>
+    <p>
+      &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+      sell and distribute this document is granted provided this copyright
+      notice appears in all copies. This document is provided "as is" without
+      express or implied warranty, and with no claim as to its suitability for
+      any purpose.
+    <p>
+      Updated: Sept 30, 2000
+

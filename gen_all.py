@@ -11,7 +11,7 @@ def gen_all(args):
     open('init_function.h', 'w').write(gen_init_function(args))
     open('signatures.h', 'w').write(gen_signatures(args))
     open('singleton.h', 'w').write(gen_singleton(args))
-    open('extclass_pygen.h', 'w').write(gen_extclass(args))
+    open('extclass.h', 'w').write(gen_extclass(args))
 
 if __name__ == '__main__':
     import sys

@@ -20,9 +20,6 @@ class ClassWrapper
  public:
     ClassWrapper(Module& module, const char* name)
         : m_class(new ExtensionClass<T, U>(name))
-#if 0 // def PY_MSVC6_OR_EARLIER
-        , m_msvc_hack(name)
-#endif
     {
         module.add(Ptr(as_object(m_class.get()), Ptr::new_ref), name);
     }
@@ -68,11 +65,47 @@ class ClassWrapper
     template <class MemberType>
     void def_read_write(MemberType T::*pm, const char* name)
         { m_class->def_read_write(pm, name); }
+        
+    // declare the given class a base class of this one and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(ClassWrapper<S, V> const & base)
+    {
+        m_class->declare_base(base.get_extension_class());
+    }
+
+    // declare the given class a base class of this one and register 
+    // upcast conversion function
+    template <class S, class V>
+    void declare_base(ClassWrapper<S, V> const & base, WithoutDowncast)
+    {
+        m_class->declare_base(base.get_extension_class(), without_downcast);
+    }
+
+    // declare the given class a base class of this one and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base)
+    {
+        m_class->declare_base(base);
+    }
+        
+    // declare the given class a base class of this one and register 
+    // upcast conversion function
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
+    {
+        m_class->declare_base(base, without_downcast);
+    }
+    
+    // get the embedded ExtensioClass object
+    ExtensionClass<T, U> * get_extension_class() const 
+    {
+        return m_class.get();
+    }
+    
  private:
     PyPtr<ExtensionClass<T, U> > m_class;
-#if 0 // def PY_MSVC6_OR_EARLIER
-    PyExtensionClassConverters<T, U> m_msvc_hack;
-#endif
 };
 
 // The bug mentioned at the top of this file is that on certain compilers static

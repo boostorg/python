@@ -11,7 +11,15 @@ LIBSRC = \
 LIBOBJ = $(LIBSRC:.cpp=.o)
 OBJ = $(LIBOBJ) extclass_demo.o
 
+
+ifeq "$(OS)" "Windows_NT"
+PYTHON_LIB=c:/tools/python/libs/python15.lib
+INC = -Ic:/cygnus/usr/include/g++-3 -Ic:/cygnus/usr/include -Ic:/boost -Ic:/tools/python/include
+MODULE_EXTENSION=dll
+else
 INC = -I/home/koethe/include -I/home/koethe/C++/boost -I/home/koethe/python/include/python1.5
+MODULE_EXTENSION=so
+endif
 
 %.o: %.cpp
 	g++ -fPIC $(INC) -c $*.cpp
@@ -23,11 +31,11 @@ INC = -I/home/koethe/include -I/home/koethe/C++/boost -I/home/koethe/python/incl
                 [ -s $@ ] || rm -f $@
 
 demo: extclass_demo.o libpycpp.a
-	g++ -shared -o demomodule.so extclass_demo.o  -L. -lpycpp
+	g++ -shared -o demomodule.$(MODULE_EXTENSION) $(PYTHON_LIB) extclass_demo.o -L. -lpycpp
 	python test_extclass.py
 
 clean:
-	rm -rf *.o *.so *.a *.d *.pyc *.bak a.out
+	rm -rf *.o *.$(MODULE_EXTENSION) *.a *.d *.pyc *.bak a.out
 
 libpycpp.a: $(LIBOBJ)
 	rm -f libpycpp.a

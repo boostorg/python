@@ -15,10 +15,11 @@ a single long parameter.
       File "<stdin>", line 1, in ?
     TypeError: function requires exactly 1 argument; 0 given
 
-    >>> ext = Foo('foo')
-    Traceback (innermost last):
-      File "<stdin>", line 1, in ?
-    TypeError: illegal argument type for built-in operation
+    >>> try: ext = Foo('foo')
+    ... except TypeError, err:
+    ...     assert re.match(
+    ... '(illegal argument type for built-in operation)|(an integer is required)', str(err))
+    ... else: print 'no exception'
 
     >>> ext = Foo(1)
 
@@ -129,7 +130,7 @@ But objects not derived from Bar cannot:
     >>> baz.pass_bar(baz)
     Traceback (innermost last):
         ...
-    TypeError: extension class 'Baz' is not derived from 'Bar'.
+    TypeError: extension class 'Baz' is not convertible into 'Bar'.
 
 The clone function on Baz returns a smart pointer; we wrap it into an
 ExtensionInstance and  make it look just like any other Baz instance.
@@ -144,6 +145,8 @@ Functions expecting an std::auto_ptr<Baz> parameter will not accept a raw Baz
     ... except RuntimeError, err:
     ...     assert re.match("Object of extension class 'Baz' does not wrap <.*>.",
     ...                     str(err))
+    ... else:
+    ...     print 'no exception'
 
 We can pass std::auto_ptr<Baz> where it is expected
 
@@ -159,6 +162,8 @@ And if the auto_ptr has given up ownership?
     ...     try: baz_clone.clone()
     ...     except RuntimeError, err:
     ...         assert re.match('Converting from python, pointer or smart pointer to <.*> is NULL.', str(err))
+    ...     else:
+    ...         print 'no exeption'
     
 Polymorphism also works:
     
@@ -232,6 +237,7 @@ Overloading tests:
     ...     assert re.match(
     ... 'No overloaded functions match [(]Range, string[)]\. Candidates are:\n.*\n.*',
     ...  str(e))
+    ... else: print 'no exception'
     
 Sequence tests:
     >>> len(Range(3, 10))
@@ -258,6 +264,22 @@ Sequence tests:
     >>> map(lambda x:x, Range(3, 10)[0:4])
     [3, 4, 5, 6]
 
+Numeric tests:
+    >>> x = Rational(2,3)
+    >>> y = Rational(1,4)
+    >>> print x + y
+    11/12
+    >>> print x - y
+    5/12
+    >>> print x * y
+    1/6
+    >>> print x / y
+    8/3
+    >>> print x + 1 # testing coercion
+    5/3
+    >>> print 1 + x # coercion the other way
+    5/3
+    
 delete non-existent attribute:
     del m.foobar
     Traceback (innermost last):
@@ -368,7 +390,7 @@ some __str__ and __repr__ tests:
     >>> range = Range(5, 20)
     >>> str(range)
     '(5, 20)'
-    >>> assert re.match('<Range object at [0-9a-f]+>', repr(range))
+    >>> assert re.match('<Range object at [0-9a-fA-F]+>', repr(range))
 
 
 __hash__ and __cmp__ tests:
@@ -406,6 +428,146 @@ Testing __call__:
     0
     >>> comparator(couple2, couple)
     1
+
+Testing overloaded free functions
+    >>> overloaded()
+    'Hello world!'
+    >>> overloaded(1)
+    1
+    >>> overloaded('foo')
+    'foo'
+    >>> overloaded(1,2)
+    3
+    >>> overloaded(1,2,3)
+    6
+    >>> overloaded(1,2,3,4)
+    10
+    >>> overloaded(1,2,3,4,5)
+    15
+    >>> try: overloaded(1, 'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
+    
+Testing overloaded constructors
+
+    >>> over = OverloadTest()
+    >>> over.getX()
+    1000
+    >>> over = OverloadTest(1)
+    >>> over.getX()
+    1
+    >>> over = OverloadTest(1,1)
+    >>> over.getX()
+    2
+    >>> over = OverloadTest(1,1,1)
+    >>> over.getX()
+    3
+    >>> over = OverloadTest(1,1,1,1)
+    >>> over.getX()
+    4
+    >>> over = OverloadTest(1,1,1,1,1)
+    >>> over.getX()
+    5
+    >>> over = OverloadTest(over)
+    >>> over.getX()
+    5
+    >>> try: over = OverloadTest(1, 'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
+    
+Testing overloaded methods
+
+    >>> over.setX(3)
+    >>> over.overloaded()
+    3
+    >>> over.overloaded(1)
+    1
+    >>> over.overloaded(1,1)
+    2
+    >>> over.overloaded(1,1,1)
+    3
+    >>> over.overloaded(1,1,1,1)
+    4
+    >>> over.overloaded(1,1,1,1,1)
+    5
+    >>> try: over.overloaded(1,'foo')
+    ... except TypeError, err:
+    ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
+    ...                     str(err))
+    ... else:
+    ...     print 'no exception'
+
+Testing base class conversions
+
+    >>> testUpcast(over)
+    Traceback (innermost last):
+    TypeError: extension class 'OverloadTest' is not convertible into 'Base'.
+    >>> der1 = Derived1(333)
+    >>> der1.x()
+    333
+    >>> testUpcast(der1)
+    333
+    >>> der1 = derived1Factory(1000)
+    >>> testDowncast1(der1)
+    1000
+    >>> testDowncast2(der1)
+    Traceback (innermost last):
+    TypeError: extension class 'Base' is not convertible into 'Derived2'.
+    >>> der2 = Derived2(444)
+    >>> der2.x()
+    444
+    >>> testUpcast(der2)
+    444
+    >>> der2 = derived2Factory(1111)
+    >>> testDowncast2(der2)
+    Traceback (innermost last):
+    TypeError: extension class 'Base' is not convertible into 'Derived2'.
+    
+Testing interaction between callbacks, base declarations, and overloading
+- testCallback() calls callback() (within C++)
+- callback() is overloaded (in the wrapped class CallbackTest)
+- callback() is redefined in RedefineCallback (overloading is simulated by type casing)
+- testCallback() should use the redefined callback()
+
+    >>> c = CallbackTest()
+    >>> c.testCallback(1)
+    2
+    >>> c.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
+    >>> c.callback(1)
+    2
+    >>> c.callback('foo')
+    'foo 1'
+    
+    >>> import types
+    >>> class RedefineCallback(CallbackTest):
+    ...     def callback(self, x): 
+    ...             if type(x) is types.IntType:
+    ...                     return x - 2
+    ...             else:
+    ...                     return CallbackTest.callback(self,x)
+    ... 
+    >>> r = RedefineCallback()
+    >>> r.callback(1)
+    -1
+    >>> r.callback('foo')
+    'foo 1'
+    >>> r.testCallback('foo')
+    Traceback (innermost last):
+      File "<stdin>", line 1, in ?
+    TypeError: illegal argument type for built-in operation
+    >>> r.testCallback(1)
+    -1
+    >>> testCallback(r, 1)
+    -1
 '''
 
 from demo import *

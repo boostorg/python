@@ -8,6 +8,7 @@
 #include "extclass_demo.h"
 #include "class_wrapper.h"
 #include <stdio.h> // used for portability on broken compilers
+#include <boost/rational.hpp>
 
 namespace extclass_demo {
 
@@ -290,6 +291,245 @@ long range_hash(const Range& r)
     return r.m_start * 123 + r.m_finish;
 }
 
+/************************************************************/
+/*                                                          */
+/*           some functions to test overloading             */
+/*                                                          */
+/************************************************************/
+
+static std::string testVoid()
+{
+   return std::string("Hello world!");  
+}
+
+static int testInt(int i)
+{
+   return i;
+}
+
+static std::string testString(std::string i)
+{
+   return i;
+}
+
+static int test2(int i1, int i2)
+{
+    return i1+i2;
+}
+
+static int test3(int i1, int i2, int i3)
+{
+    return i1+i2+i3;
+}
+
+static int test4(int i1, int i2, int i3, int i4)
+{
+    return i1+i2+i3+i4;
+}
+
+static int test5(int i1, int i2, int i3, int i4, int i5)
+{
+    return i1+i2+i3+i4+i5;
+}
+
+/************************************************************/
+/*                                                          */
+/*               a class to test overloading                */
+/*                                                          */
+/************************************************************/
+
+struct OverloadTest
+{
+    OverloadTest(): x_(1000) {}
+    OverloadTest(int x): x_(x) {}
+    OverloadTest(int x,int y): x_(x+y) { }
+    OverloadTest(int x,int y,int z): x_(x+y+z) {}
+    OverloadTest(int x,int y,int z, int a): x_(x+y+z+a) {}
+    OverloadTest(int x,int y,int z, int a, int b): x_(x+y+z+a+b) {}
+    
+    int x() const { return x_; }
+    void setX(int x) { x_ = x; }
+
+    int p1(int x) { return x;  }
+    int p2(int x, int y) { return x + y; }
+    int p3(int x, int y, int z) { return x + y + z; }
+    int p4(int x, int y, int z, int a) { return x + y + z + a; }
+    int p5(int x, int y, int z, int a, int b) { return x + y + z + a + b; }
+  private:
+    int x_;
+};
+
+static int getX(OverloadTest * u)
+{
+    return u->x();
+}
+
+
+/************************************************************/
+/*                                                          */
+/*    classes to test base declarations and conversions     */
+/*                                                          */
+/************************************************************/
+
+struct Dummy
+{
+    virtual ~Dummy() {}
+    int dummy_;
+};
+
+struct Base
+{
+    virtual int x() const { return 999; };
+    virtual ~Base() {}
+};
+
+// inherit Dummy so that the Base part of Concrete starts at an offset
+// otherwise, typecast tests wouldn't be very meaningful
+struct Derived1 : public Dummy, public Base
+{
+    Derived1(int x): x_(x) {}
+    virtual int x() const { return x_; }
+    
+  private:
+    int x_;
+};
+
+struct Derived2 : public Dummy, public Base
+{
+    Derived2(int x): x_(x) {}
+    virtual int x() const { return x_; }
+    
+  private:
+    int x_;
+};
+
+static int testUpcast(Base * b)
+{
+    return b->x();
+}
+
+static std::auto_ptr<Base> derived1Factory(int i)
+{
+    return std::auto_ptr<Base>(new Derived1(i));
+}
+
+static std::auto_ptr<Base> derived2Factory(int i)
+{
+    return std::auto_ptr<Base>(new Derived2(i));
+}
+
+static int testDowncast1(Derived1 * d)
+{
+    return d->x();
+}
+
+static int testDowncast2(Derived2 * d)
+{
+    return d->x();
+}
+
+/************************************************************/
+/*                                                          */
+/*       test classes for interaction of overloading,       */
+/*             base declarations,  and callbacks            */
+/*                                                          */
+/************************************************************/
+
+struct CallbackTestBase
+{
+  virtual int testCallback(int i) { return callback(i); }
+  virtual int callback(int i) = 0;
+  virtual ~CallbackTestBase() {}
+};
+
+struct CallbackTest : public CallbackTestBase
+{
+  virtual int callback(int i) { return i + 1; }
+  virtual std::string callbackString(std::string const & i) { return i + " 1"; }
+};
+
+struct CallbackTestCallback : public CallbackTest
+{
+  CallbackTestCallback(PyObject* self)
+  : m_self(self)
+  {}
+  
+  int callback(int x) 
+  { 
+    return py::Callback<int>::call_method(m_self, "callback", x); 
+  }
+  std::string callbackString(std::string const & x) 
+  { 
+    return py::Callback<std::string>::call_method(m_self, "callback", x); 
+  }
+
+  static int default_callback(CallbackTest * self, int x) 
+  { 
+    return self->CallbackTest::callback(x); 
+  }
+  static std::string default_callbackString(CallbackTest * self, std::string x) 
+  { 
+    return self->CallbackTest::callbackString(x); 
+  }
+  
+  PyObject * m_self;
+};
+
+int testCallback(CallbackTestBase * b, int i)
+{
+    return b->testCallback(i);
+}
+
+typedef boost::rational<int> Ratio;
+
+py::String ratio_str(const Ratio& r)
+{
+    char buf[200];
+    
+    if (r.denominator() == 1)
+        sprintf(buf, "%d", r.numerator());
+    else
+        sprintf(buf, "%d/%d", r.numerator(), r.denominator());
+    
+    return py::String(buf);
+}
+
+py::String ratio_repr(const Ratio& r)
+{
+    char buf[200];
+    sprintf(buf, "Rational(%d, %d)", r.numerator(), r.denominator());
+    return py::String(buf);
+}
+
+py::Tuple ratio_coerce(const Ratio& r1, int r2)
+{
+    return py::Tuple(r1, Ratio(r2));
+}
+
+// The most reliable way, across compilers, to grab the particular abs function
+// we're interested in.
+Ratio ratio_abs(const Ratio& r)
+{
+    return boost::abs(r);
+}
+
+// An experiment, to be integrated into the py_cpp library at some point.
+template <class T>
+struct StandardOps
+{
+    static T add(const T& x, const T& y) { return x + y; }
+    static T sub(const T& x, const T& y) { return x - y; }
+    static T mul(const T& x, const T& y) { return x * y; }
+    static T div(const T& x, const T& y) { return x / y; }
+    static T cmp(const T& x, const T& y) { return std::less<T>()(x, y) ? -1 : std::less<T>()(y, x) ? 1 : 0; }
+};
+
+/************************************************************/
+/*                                                          */
+/*                       init the module                    */
+/*                                                          */
+/************************************************************/
+
 void init_module(py::Module& m)
 {
     m.add(new Foo::PythonClass);
@@ -309,6 +549,21 @@ void init_module(py::Module& m)
     m.def(first_string, "first_string");
     m.def(second_string, "second_string");
 
+    // This shows the wrapping of a 3rd-party numeric type.
+    py::ClassWrapper<boost::rational<int> > rational(m, "Rational");
+    rational.def(py::Constructor<int, int>());
+    rational.def(py::Constructor<int>());
+    rational.def(py::Constructor<>());
+    rational.def(StandardOps<Ratio>::add, "__add__");
+    rational.def(StandardOps<Ratio>::sub, "__sub__");
+    rational.def(StandardOps<Ratio>::mul, "__mul__");
+    rational.def(StandardOps<Ratio>::div, "__div__");
+    rational.def(StandardOps<Ratio>::cmp, "__cmp__");
+    rational.def(ratio_coerce, "__coerce__");
+    rational.def(ratio_str, "__str__");
+    rational.def(ratio_repr, "__repr__");
+    rational.def(ratio_abs, "__abs__");
+    
     py::ClassWrapper<Range> range(m, "Range");
     range.def(py::Constructor<int>());
     range.def(py::Constructor<int, int>());
@@ -321,6 +576,64 @@ void init_module(py::Module& m)
     range.def(&range_hash, "__hash__");
     range.def_readonly(&Range::m_start, "start");
     range.def_readonly(&Range::m_finish, "finish");
+    
+    m.def(&testVoid, "overloaded");
+    m.def(&testInt, "overloaded");
+    m.def(&testString, "overloaded");
+    m.def(&test2, "overloaded");
+    m.def(&test3, "overloaded");
+    m.def(&test4, "overloaded");
+    m.def(&test5, "overloaded");
+
+    py::ClassWrapper<OverloadTest> over(m, "OverloadTest");
+    over.def(py::Constructor<py::Void>());
+    over.def(py::Constructor<OverloadTest const &>());
+    over.def(py::Constructor<int>());
+    over.def(py::Constructor<int, int>());
+    over.def(py::Constructor<int, int, int>());
+    over.def(py::Constructor<int, int, int, int>());
+    over.def(py::Constructor<int, int, int, int, int>());
+    over.def(&getX, "getX");
+    over.def(&OverloadTest::setX, "setX");
+    over.def(&OverloadTest::x, "overloaded");
+    over.def(&OverloadTest::p1, "overloaded");
+    over.def(&OverloadTest::p2, "overloaded");
+    over.def(&OverloadTest::p3, "overloaded");
+    over.def(&OverloadTest::p4, "overloaded");
+    over.def(&OverloadTest::p5, "overloaded");
+    
+    py::ClassWrapper<Base> base(m, "Base");
+    base.def(&Base::x, "x");
+    
+    py::ClassWrapper<Derived1> derived1(m, "Derived1");    
+    // this enables conversions between Base and Derived1
+    // and makes wrapped methods of Base available 
+    derived1.declare_base(base);
+    derived1.def(py::Constructor<int>());
+
+    py::ClassWrapper<Derived2> derived2(m, "Derived2");    
+    // don't enable downcast from Base to Derived2 
+    derived2.declare_base(base, py::without_downcast);
+    derived2.def(py::Constructor<int>());
+    
+    m.def(&testUpcast, "testUpcast");
+    m.def(&derived1Factory, "derived1Factory");
+    m.def(&derived2Factory, "derived2Factory");
+    m.def(&testDowncast1, "testDowncast1");
+    m.def(&testDowncast2, "testDowncast2");
+
+    py::ClassWrapper<CallbackTestBase> callbackTestBase(m, "CallbackTestBase");
+    callbackTestBase.def(&CallbackTestBase::testCallback, "testCallback");
+    m.def(&testCallback, "testCallback");
+
+    py::ClassWrapper<CallbackTest, CallbackTestCallback> callbackTest(m, "CallbackTest");
+    callbackTest.def(py::Constructor<py::Void>());
+    callbackTest.def(&CallbackTest::callback, "callback", 
+                   &CallbackTestCallback::default_callback);
+    callbackTest.def(&CallbackTest::callbackString, "callback", 
+                   &CallbackTestCallback::default_callbackString);
+
+    callbackTest.declare_base(callbackTestBase);     
 }
 
 void init_module()

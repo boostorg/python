@@ -1,0 +1,401 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+    <title>
+      Special Method Name Support
+    </title>
+    <div>
+      <h1>
+         <img width="277" height="86" id="_x0000_i1025" align="center" src= 
+        "c++boost.gif" alt="c++boost.gif (8819 bytes)">Special Method Name
+        Support
+      </h1>
+      <h2>
+         Overview
+      </h2>
+      <p>
+         Py_cpp supports all of the standard <a href= 
+        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
+         special method names</a> supported by real Python class instances <em>
+        except:</em>
+<ul>
+<li><a href= 
+        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/customization.html">
+         <code>__del__</code></a> (an oversight, to be corrected soon - but
+        don't worry, your underlying C++ objects are still properly destroyed!)
+<li>the <code>__r<em>&lt;name&gt;</em>__</code> "reversed operand" <a href= 
+        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
+         numeric methods</a>, and
+<li><code>__complex__</code>
+</ul>
+ 
+       (more on the latter two <a href="#reverse">below</a>). So, for example, we can wrap a
+        <code>std::map&lt;std::size_t,std::string&gt;</code> as follows:
+      <h2>
+         Example
+      </h2>
+      <blockquote>
+<pre>
+typedef std::map&lt;std::size_t, std::string&gt; StringMap;
+
+// A helper function for dealing with errors. Throw a Python exception
+// if p == m.end().
+void throw_key_error_if_end(
+        const StringMap&amp; m, 
+        StringMap::const_iterator p, 
+        std::size_t key)
+{
+    if (p == m.end())
+    {
+        PyErr_SetObject(PyExc_KeyError, py::converters::to_python(key));
+        throw py::ErrorAlreadySet();
+    }
+}
+
+// Define some simple wrapper functions which match the Python  protocol
+// for __getitem__, __setitem__, and __delitem__.  Just as in Python, a
+// free function with a "self" first parameter makes a fine class method.
+
+const std::string&amp; get_item(const StringMap&amp; self, std::size_t key)
+{
+    const StringMap::const_iterator p = self.find(key);
+    throw_key_error_if_end(self, p, key);
+    return p-&gt;second;
+}
+
+// Sets the item corresponding to key in the map.
+void StringMapPythonClass::set_item(StringMap&amp; self, std::size_t key, const std::string&amp; value)
+{
+    self[key] = value;
+}
+
+// Deletes the item corresponding to key from the map.
+void StringMapPythonClass::del_item(StringMap&amp; self, std::size_t key)
+{
+    const StringMap::iterator p = self.find(key);
+    throw_key_error_if_end(self, p, key);
+    self.erase(p);
+}
+
+ClassWrapper&lt;StringMap&gt; string_map(my_module, "StringMap");
+string_map.def(py::Constructor&lt;&gt;());
+string_map.def(&amp;StringMap::size, "__len__");
+string_map.def(get_item, "__getitem__");
+string_map.def(set_item, "__setitem__");
+string_map.def(del_item, "__delitem__");
+</pre>
+      </blockquote>
+      <p>
+         Then in Python:
+      <blockquote>
+<pre>
+&gt;&gt;&gt; m = StringMap()
+&gt;&gt;&gt; m[1]
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+KeyError: 1
+&gt;&gt;&gt; m[1] = 'hello'
+&gt;&gt;&gt; m[1]
+'hello'
+&gt;&gt;&gt; del m[1]
+&gt;&gt;&gt; m[1]            # prove that it's gone
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+KeyError: 1
+&gt;&gt;&gt; del m[2]
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+KeyError: 2
+&gt;&gt;&gt; len(m)
+0
+&gt;&gt;&gt; m[3] = 'farther'
+&gt;&gt;&gt; len(m)
+1
+</pre>
+      </blockquote>
+      <h2>
+         <a name="getter_setter">Getters and Setters</a>
+      </h2>
+      <p>
+         Py_cpp extension classes support some additional "special method"
+        protocols not supported by built-in Python classes. Because writing
+        <code>__getattr__</code>, <code> __setattr__</code>, and
+        <code>__delattr__</code> functions can be tedious in the common case
+        where the attributes being accessed are known statically, py_cpp checks
+        the special names
+      <ul>
+        <li>
+          <code>__getattr__<em>&lt;name&gt;</em>__</code>
+        <li>
+          <code>__setattr__<em>&lt;name&gt;</em>__</code>
+        <li>
+          <code>__delattr__<em>&lt;name&gt;</em>__</code>
+      </ul>
+      to provide functional access to the attribute <em>&lt;name&gt;</em>. This
+      facility can be used from C++ or entirely from Python. For example, the
+      following shows how we can implement a "computed attribute" in Python: 
+      <blockquote>
+<pre>
+&gt;&gt;&gt; class Range(AnyPy_cppExtensionClass):
+...    def __init__(self, start, end):
+...        self.start = start
+...        self.end = end
+...    def __getattr__length__(self):
+...        return self.end - self.start
+...
+&gt;&gt;&gt; x = Range(3, 9)
+&gt;&gt;&gt; x.length
+6
+</pre>
+      </blockquote>
+      <h2>
+         Direct Access to Data Members
+      </h2>
+      <p>
+         Py_cpp uses the special <code>
+        __xxxattr__<em>&lt;name&gt;</em>__</code> functionality described above
+        to allow direct access to data members through the following special
+        functions on <code>ClassWrapper&lt;&gt;</code> and <code>
+        ExtensionClass&lt;&gt;</code>:
+      <ul>
+        <li>
+          <code>def_getter(<em>pointer-to-member</em>, <em>name</em>)</code> //
+          read access to the member via attribute <em>name</em>
+        <li>
+          <code>def_setter(<em>pointer-to-member</em>, <em>name</em>)</code> //
+          write access to the member via attribute <em>name</em>
+        <li>
+          <code>def_readonly(<em>pointer-to-member</em>, <em>name</em>)</code>
+          // read-only access to the member via attribute <em>name</em>
+        <li>
+          <code>def_read_write(<em>pointer-to-member</em>, <em>
+          name</em>)</code> // read/write access to the member via attribute
+          <em>name</em>
+      </ul>
+      <p>
+         Note that the first two functions, used alone, may produce surprising
+        behavior. For example, when <code>def_getter()</code> is used, the
+        default functionality for <code>setattr()</code> and <code>
+        delattr()</code> remains in effect, operating on items in the extension
+        instance's name-space (i.e., its <code>__dict__</code>). For that
+        reason, you'll usually want to stick with <code>def_readonly</code> and
+        <code>def_read_write</code>.
+      <p>
+         For example, to expose a <code>std::pair&lt;int,long&gt;</code> we
+        might write:
+      <blockquote>
+<pre>
+typedef std::pair&lt;int,long&gt; Pil;
+int first(const Pil&amp; x) { return x.first; }
+long second(const Pil&amp; x) { return x.second; }
+   ...
+my_module.def(first, "first");
+my_module.def(second, "second");
+
+ClassWrapper&lt;Pil&gt; pair_int_long(my_module, "Pair");
+pair_int_long.def(py::Constructor&lt;&gt;());
+pair_int_long.def(py::Constructor&lt;int,long&gt;());
+pair_int_long.def_read_write(&amp;Pil::first, "first");
+pair_int_long.def_read_write(&amp;Pil::second, "second");
+</pre>
+      </blockquote>
+      <p>
+         Now your Python class has attributes <code>first</code> and <code>
+        second</code> which, when accessed, actually modify or reflect the
+        values of corresponding data members of the underlying C++ object. Now
+        in Python:
+      <blockquote>
+<pre>
+&gt;&gt;&gt; x = Pair(3,5)
+&gt;&gt;&gt; x.first
+3
+&gt;&gt;&gt; x.second
+5
+&gt;&gt;&gt; x.second = 8
+&gt;&gt;&gt; x.second
+8
+&gt;&gt;&gt; second(x) # Prove that we're not just changing the instance __dict__
+8
+</pre>
+      </blockquote>
+      <h2>
+         <a name="numerics">Numeric Method Support</a>
+      </h2>
+      <p>
+         Py_cpp supports the following <a href= 
+        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
+         Python special numeric method names</a>:
+      <p>
+      <table summary="special numeric methods" cellpadding="5" border="1">
+        <thead>
+          <tr>
+            <td>
+              Name
+            <td>
+              Notes
+          <tr>
+            <td>
+              <code>__add__(self,&nbsp;other)</code>
+            <td>
+              <code>operator+(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__sub__(self,&nbsp;other)</code>
+            <td>
+              <code>operator-(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__mul__(self,&nbsp;other)</code>
+            <td>
+              <code>operator*(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__div__(self,&nbsp;other)</code>
+            <td>
+              <code>operator/(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__mod__(self,&nbsp;other)</code>
+            <td>
+              <code>operator%(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__divmod__(self,&nbsp;other)</code>
+            <td>
+              return a <code> py::Tuple</code> initialized with <code>
+              (</code><em>quotient</em><code>,</code> <em>
+              remainder</em><code>)</code>.
+          <tr>
+            <td>
+              <code>__pow__(self,&nbsp;other&nbsp;[,&nbsp;modulo])</code>
+            <td>
+              use <a href="overloading.html">overloading</a> to support both
+              forms of __pow__
+          <tr>
+            <td>
+              <code>__lshift__(self,&nbsp;other)</code>
+            <td>
+              <code>operator&lt;&lt;(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__rshift__(self,&nbsp;other)</code>
+            <td>
+              <code>operator&gt;&gt;(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__and__(self,&nbsp;other)</code>
+            <td>
+              <code>operator&amp;(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__xor__(self,&nbsp;other)</code>
+            <td>
+              <code>operator^(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__or__(self,&nbsp;other)</code>
+            <td>
+              <code>operator|(const T&amp;,&nbsp;const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__neg__(self)</code>
+            <td>
+              <code>operator-(const T&amp;)</code> (unary negation)
+          <tr>
+            <td>
+              <code>__pos__(self)</code>
+            <td>
+              <code>operator+(const T&amp;)</code> (identity)
+          <tr>
+            <td>
+              <code>__abs__(self)</code>
+            <td>
+              Called to implement the built-in function abs()
+          <tr>
+            <td>
+              <code>__invert__(self)</code>
+            <td>
+              <code>operator~(const T&amp;)</code>
+          <tr>
+            <td>
+              <code>__int__(self)</code>
+            <td>
+              <code>operator long() const</code>
+          <tr>
+            <td>
+              <code>__long__(self)</code>
+            <td>
+              Should return a Python <code>long</code> object. Can be
+              implemented with <code>PyLong_FromLong(<em>value</em>)</code>,
+              for example.
+          <tr>
+            <td>
+              <code>__float__(self)</code>
+            <td>
+              <code>operator double() const</code>
+          <tr>
+            <td>
+              <code>__oct__(self)</code>
+            <td>
+              Called to implement the built-in function oct(). Should return a
+              string value.
+          <tr>
+            <td>
+              <code>__hex__(self)</code>
+            <td>
+              Called to implement the built-in function hex(). Should return a
+              string value.
+          <tr>
+            <td>
+              <code>__coerce__(self,&nbsp;other)</code>
+            <td>
+              Should return a Python 2-<em>tuple</em> (C++ code may return a
+              <code>py::Tuple</code>) where the elements represent the values
+              of <code> self</code> and <code>other</code> converted to the
+              same type.
+      </table>
+
+<h2><a name="reverse">Where are the <code>__r</code><i>&lt;name&gt;</i><code>__</code>
+functions?</a></h2>
+
+<p>
+  At first we thought that supporting <code>__radd__</code> and its ilk would be
+  impossible, since Python doesn't supply any direct support and in fact
+  implements a special case for its built-in class instances. <a
+  href="http://starship.python.net/crew/arcege/extwriting/pyextnum.html">This
+  article</a> gives a pretty good overview of the direct support for numerics
+  that Python supplies for extension types. We've since discovered that it can
+  be done, but there are some pretty convincing <a
+  href="http://starship.python.net/crew/lemburg/CoercionProposal.html">arguments</a>
+  out there that this arrangement is less-than-ideal. Instead of supplying a
+  sub-optimal solution for the sake of compatibility with built-in Python
+  classes, we're doing the neccessary research so we can "do it right". This
+  will also give us a little time to hear from users about what they want. The
+  direction we're headed in is based on the idea of <a
+  href="http://www.sff.net/people/neelk/open-source/Multimethod.py">multimethods</a>
+  rather than on trying to find a coercion function bound to one of the
+  arguments.
+
+<h3>And what about <code>__complex__</code>?</h3>
+ <p>That, dear reader, is one problem we don't know how to solve. The Python
+ source contains the following fragment, indicating the special-case code really
+ is hardwired:
+<blockquote>
+<pre>
+/* XXX Hack to support classes with __complex__ method */
+if (PyInstance_Check(r)) { ...
+</pre>
+</blockquote>
+      <p>
+         Previous: <a href="overloading.html">Function Overloading</a> Next: <a
+        href="under-the-hood.html">A Peek Under the Hood</a> Up: <a href= 
+        "py_cpp.html">Top</a>
+      <p>
+         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+        sell and distribute this document is granted provided this copyright
+        notice appears in all copies. This document is provided "as is" without
+        express or implied warranty, and with no claim as to its suitability
+        for any purpose.
+      <p>
+         Updated: Oct 19, 2000
+    </div>
+

@@ -38,12 +38,8 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     }
     else
     {
-        // Suspend the error while we try special methods method (if any).
-#if 0
-        SuspendError suspended_error(SuspendError::discard_new_error);
-#else
+        // Clear the error while we try special methods method (if any).
         PyErr_Clear();
-#endif
 
         // First we try the special method that comes from concatenating
         // "__getattr__" and <name> and 2 trailing underscores. This is an
@@ -67,15 +63,11 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         }
         
         // If there is no such method, throw now.
-#if 0
-        suspended_error.throw_if_error();
-#else
         if (PyErr_Occurred())
         {
             PyErr_SetString(PyExc_AttributeError, name);
             throw ErrorAlreadySet();
         }
-#endif
 
         // Take ownership of the method
         Ptr owner(getattr_method);
@@ -224,6 +216,131 @@ void Instance::set_slice(int start, int finish, PyObject* value)
         Callback<void>::call_method(this, "__setslice__", start, finish, value);
 }
 
+PyObject* Instance::add(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__add__", other);
+}
+
+PyObject* Instance::subtract(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__sub__", other);
+}
+
+PyObject* Instance::multiply(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__mul__", other);
+}
+
+PyObject* Instance::divide(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__div__", other);
+}
+
+PyObject* Instance::remainder(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__mod__", other);
+}
+
+PyObject* Instance::divmod(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__divmod__", other);
+}
+
+PyObject* Instance::power(PyObject* exponent, PyObject* modulus)
+{
+    if (as_object(modulus->ob_type) == Py_None)
+        return Callback<PyObject*>::call_method(this, "__pow__", exponent);
+    else
+        return Callback<PyObject*>::call_method(this, "__pow__", exponent, modulus);
+}
+
+PyObject* Instance::negative()
+{
+    return Callback<PyObject*>::call_method(this, "__neg__");
+}
+
+PyObject* Instance::positive()
+{
+    return Callback<PyObject*>::call_method(this, "__pos__");
+}
+
+PyObject* Instance::absolute()
+{
+    return Callback<PyObject*>::call_method(this, "__abs__");
+}
+
+int Instance::nonzero()
+{
+    return Callback<bool>::call_method(this, "__nonzero__");
+}
+
+PyObject* Instance::invert()
+{
+    return Callback<PyObject*>::call_method(this, "__invert__");
+}
+
+PyObject* Instance::lshift(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__lshift__", other);
+}
+
+PyObject* Instance::rshift(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__rshift__", other);
+}
+
+PyObject* Instance::do_and(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__and__", other);
+}
+
+PyObject* Instance::do_xor(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__xor__", other);
+}
+
+PyObject* Instance::do_or(PyObject* other)
+{
+    return Callback<PyObject*>::call_method(this, "__or__", other);
+}
+
+int Instance::coerce(PyObject** x, PyObject** y)
+{
+    assert(this == *x);
+    
+    // Coerce must return a tuple
+    Tuple result(Callback<Tuple>::call_method(this, "__coerce__", *y));
+    
+    *x = result[0].release();
+    *y = result[1].release();
+    return 0;
+}
+
+PyObject* Instance::as_int()
+{
+    return Callback<PyObject*>::call_method(this, "__int__");
+}
+
+PyObject* Instance::as_long()
+{
+    return Callback<PyObject*>::call_method(this, "__long__");
+}
+
+PyObject* Instance::as_float()
+{
+    return Callback<PyObject*>::call_method(this, "__float__");
+}
+
+PyObject* Instance::oct()
+{
+    return Callback<PyObject*>::call_method(this, "__oct__");
+}
+
+PyObject* Instance::hex()
+{
+    return Callback<PyObject*>::call_method(this, "__hex__");
+}
+
 namespace {
   struct NamedCapability
   {
@@ -250,7 +367,30 @@ namespace {
       { "__delitem__", TypeObjectBase::sequence_ass_item },
       { "__getslice__", TypeObjectBase::sequence_slice },
       { "__setslice__", TypeObjectBase::sequence_ass_slice },
-      { "__delslice__", TypeObjectBase::sequence_ass_slice }
+      { "__delslice__", TypeObjectBase::sequence_ass_slice },
+      { "__add__", TypeObjectBase::number_add },
+      { "__sub__", TypeObjectBase::number_subtract },
+      { "__mul__", TypeObjectBase::number_multiply },
+      { "__div__", TypeObjectBase::number_divide },
+      { "__mod__", TypeObjectBase::number_remainder },
+      { "__divmod__", TypeObjectBase::number_divmod },
+      { "__pow__", TypeObjectBase::number_power },
+      { "__neg__", TypeObjectBase::number_negative },
+      { "__pos__", TypeObjectBase::number_positive },
+      { "__abs__", TypeObjectBase::number_absolute },
+      { "__nonzero__", TypeObjectBase::number_nonzero },
+      { "__invert__", TypeObjectBase::number_invert },
+      { "__lshift__", TypeObjectBase::number_lshift },
+      { "__rshift__", TypeObjectBase::number_rshift },
+      { "__and__", TypeObjectBase::number_and },
+      { "__xor__", TypeObjectBase::number_xor },
+      { "__or__", TypeObjectBase::number_or },
+      { "__coerce__", TypeObjectBase::number_coerce },
+      { "__int__", TypeObjectBase::number_int },
+      { "__long__", TypeObjectBase::number_long },
+      { "__float__", TypeObjectBase::number_float },
+      { "__oct__", TypeObjectBase::number_oct },
+      { "__hex__", TypeObjectBase::number_hex }
   };
 
   bool is_prefix(const char* s1, const char* s2)
