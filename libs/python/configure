@@ -19,11 +19,11 @@ ac_help="$ac_help
                                     (including the dot) [UNIX: .so | Win32: .dll] "
 ac_help="$ac_help
   --with-shared-cxx-linker:  command for creating a shared library from C++ objects. 
-                             [  g++:         $(CXX) -shared
+                             [  g++:         $CXX -shared
                                 Comeau C++:  como-dyn-link
-                                Compaq C++:  $(CXX) -shared -expect_unresolved '*'
-                                SUN CC:      $(CXX) -G
-                                IRIX CC:     $(CXX) -shared
+                                Compaq C++:  $CXX -shared -expect_unresolved '*'
+                                SUN CC:      $CXX -G
+                                IRIX CC:     $CXX -shared
                                 HP-UX aCC:   ld -b   ] "
 ac_help="$ac_help
   --with-position-independent-code-flag:  flag that tells the compiler to generate
@@ -31,7 +31,7 @@ ac_help="$ac_help
                              [  gcc/g++:     -fPIC
                                 Comeau C++:  --pic
                                 Compaq C++:  <empty>
-                                SUN CC:      $(CXX) -pic
+                                SUN CC:      $CXX -pic
                                 IRIX CC:     <empty>
                                 HP-UX aCC:   +z   ] "
 ac_help="$ac_help

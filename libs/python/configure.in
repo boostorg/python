@@ -88,11 +88,11 @@ dnl        AC_SUBST(CC_SHARED_LINKER)
         AC_MSG_CHECKING(for shared linker for C++ objects )
         AC_ARG_WITH(shared-cxx-linker,
         [  --with-shared-cxx-linker:  command for creating a shared library from C++ objects. 
-                             [  g++:         $(CXX) -shared
+                             [  g++:         $CXX -shared
                                 Comeau C++:  como-dyn-link
-                                Compaq C++:  $(CXX) -shared -expect_unresolved '*'
-                                SUN CC:      $(CXX) -G
-                                IRIX CC:     $(CXX) -shared
+                                Compaq C++:  $CXX -shared -expect_unresolved '*'
+                                SUN CC:      $CXX -G
+                                IRIX CC:     $CXX -shared
                                 HP-UX aCC:   ld -b   ] ],
         , )
         if test "${with_shared_cxx_linker:+X}" != ""; then
@@ -109,7 +109,7 @@ dnl        AC_SUBST(CC_SHARED_LINKER)
                              [  gcc/g++:     -fPIC
                                 Comeau C++:  --pic
                                 Compaq C++:  <empty>
-                                SUN CC:      $(CXX) -pic
+                                SUN CC:      $CXX -pic
                                 IRIX CC:     <empty>
                                 HP-UX aCC:   +z   ] ],
         , )
