@@ -1,116 +1,109 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="../boost.css">
-<title>Boost.Python - &lt;boost/python/make_function.hpp&gt;</title>
-</head>
-<body link="#0000ff" vlink="#800080">
-<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+
+    <title>Boost.Python - &lt;boost/python/make_function.hpp&gt;</title>
+
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
     "header">
-  <tr> 
-    <td valign="top" width="300"> 
-      <h3><a href="../../../../index.htm"><img height="86" width="277" alt="C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
-    </td>
-    <td valign="top"> 
-      <h1 align="center">Boost.Python</h1>
-      <h2 align="center">Header &lt;boost/python/make_function.hpp&gt;</h2>
-    </td>
-  </tr>
-</table>
-<hr>
-<h2>Contents</h2>
-<dl class="page-index"> 
-  <dt><a href="#introduction">Introduction</a></dt>
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
 
-  <dt><a href="#functions">Functions</a></dt>
-  <dl class="page-index">
-    <dt><a href="#make_function-spec">make_function</a></dt>
-    <dt><a href="#make_constructor-spec">make_constructor</a></dt>
-  </dl>
+        <td valign="top">
+          <h1 align="center">Boost.Python</h1>
 
-  <dt><a href="#examples">Example</a></dt>
+          <h2 align="center">Header &lt;boost/python/make_function.hpp&gt;</h2>
+    </table>
+    <hr>
 
-</dl>
-<hr>
-<h2><a name="introduction"></a>Introduction</h2>
-<p>
+    <h2>Contents</h2>
 
-<code><a href="#make_function-spec">make_function</a>()</code> and
-<code><a href="#make_constructor-spec">make_constructor</a>()</code>
-are the functions used internally by <code>class_&lt;&gt;::<a
-href="class.html#class_-spec-modifiers">def</a></code>,
-<code>class_&lt;&gt;::<a
-href="module.html#module-spec-modifiers">def</a></code>,
-and
-<code>class_&lt;&gt;::<a
-href="class.html#class_-spec-modifiers">def_init</a></code>
-to produce Python callable objects which wrap C++ functions and member
-functions.
-</p>
+    <dl class="page-index">
+      <dt><a href="#introduction">Introduction</a>
 
-<h2><a name="functions"></a>Functions</h2>
+      <dt><a href="#functions">Functions</a>
 
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#make_function-spec">make_function</a>
+
+          <dt><a href="#make_constructor-spec">make_constructor</a>
+        </dl>
+
+      <dt><a href="#examples">Example</a>
+    </dl>
+    <hr>
+
+    <h2><a name="introduction"></a>Introduction</h2>
+
+    <p><code><a href="#make_function-spec">make_function</a>()</code> and
+    <code><a href="#make_constructor-spec">make_constructor</a>()</code> are
+    the functions used internally by <code>class_&lt;&gt;::<a href=
+    "class.html#class_-spec-modifiers">def</a></code>, <code>class_&lt;&gt;::<a
+    href="module.html#module-spec-modifiers">def</a></code>, and
+    <code>class_&lt;&gt;::<a href=
+    "class.html#class_-spec-modifiers">def_init</a></code> to produce Python
+    callable objects which wrap C++ functions and member functions.
+
+    <h2><a name="functions"></a>Functions</h2>
 <pre>
-<a name="make_function-spec">template &lt;class F&gt;
+<a name="make_function-spec">template &lt;class F&gt;</a>
 objects::function* make_function(F f)&lt;/a&gt;
 
 template &lt;class F, class Policies&gt;
 objects::function* make_function(F f, Policies const&amp; policies)
 </pre>
-<dl class="function-semantics"> 
 
-  <dt><b>Requires:</b> <code>F</code> is a function pointer or member
-  function pointer type</dt>
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>F</code> is a function pointer or member
+      function pointer type
 
-  <dt><b>Effects:</b> Creates a Python callable object which, when
-  called from Python, converts its arguments to C++ and calls
-  <code>f</code>. If <code>F</code> is a pointer-to-member-function
-  type, the target object of the function call (<code>*this</code>)
-  will be taken from the first Python argument, and subsequent Python
-  arguments will be used as the arguments to <code>f</code>. If
-  <code>policies</code> are supplied, it must be a model of <a
-  href="CallPolicies.html">CallPolicies</a>, and will be applied to
-  the function as described <a href="CallPolicies.html">here</a>.</dt>
+      <dt><b>Effects:</b> Creates a Python callable object which, when called
+      from Python, converts its arguments to C++ and calls <code>f</code>. If
+      <code>F</code> is a pointer-to-member-function type, the target object of
+      the function call (<code>*this</code>) will be taken from the first
+      Python argument, and subsequent Python arguments will be used as the
+      arguments to <code>f</code>. If <code>policies</code> are supplied, it
+      must be a model of <a href="CallPolicies.html">CallPolicies</a>, and will
+      be applied to the function as described <a href=
+      "CallPolicies.html">here</a>.
 
-  <dt><b>Returns:</b> A pointer convertible to <code>PyObject*</code>
-  which refers to the new Python callable object.</dt>
-</dl>
-
+      <dt><b>Returns:</b> A pointer convertible to <code>PyObject*</code> which
+      refers to the new Python callable object.
+    </dl>
 <pre>
-<a name="make_constructor-spec">template &lt;class T, class ArgList, class Generator&gt;
+<a name=
+"make_constructor-spec">template &lt;class T, class ArgList, class Generator&gt;
 objects::function* make_constructor();</a>
 </pre>
-<dl class="make_constructor-semantics"> 
 
-  <dt><b>Requires:</b> <code>T</code> is a class
-  type. <code>ArgList</code> is an <a
-  href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++
-  argument types (<i>A1,&nbsp;A2,...&nbsp;AN</i>) such that if
-  <code>a1,&nbsp;a2</code>...&nbsp;<code>aN</code> are objects of type
-  <i>A1,&nbsp;A2,...&nbsp;AN</i> respectively, the expression
-  <code>new Generator::apply&lt;T&gt;::type(a1,&nbsp;a2</code>...&nbsp;<code>aN</code>) is
-  valid. Generator is a model of <a
-  href="HolderGenerator.html">HolderGenerator</a>.
-</dt>
+    <dl class="make_constructor-semantics">
+      <dt><b>Requires:</b> <code>T</code> is a class type. <code>ArgList</code>
+      is an <a href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++
+      argument types (<i>A1, A2,... AN</i>) such that if
+      <code>a1, a2</code>... <code>aN</code> are objects of type
+      <i>A1, A2,... AN</i> respectively, the expression <code>new
+      Generator::apply&lt;T&gt;::type(a1, a2</code>... <code>aN</code>) is
+      valid. Generator is a model of <a href=
+      "HolderGenerator.html">HolderGenerator</a>.
 
-  <dt><b>Effects:</b> Creates a Python callable object which, when
-  called from Python, expects its first argument to be a Boost.Python
-  extension class object. It converts its remaining its arguments to
-  C++ and passes them to the constructor of a dynamically-allocated
-  <code>Generator::apply&lt;T&gt;::type</code> object. The result is
-  installed in the extension class object.
+      <dt><b>Effects:</b> Creates a Python callable object which, when called
+      from Python, expects its first argument to be a Boost.Python extension
+      class object. It converts its remaining its arguments to C++ and passes
+      them to the constructor of a dynamically-allocated
+      <code>Generator::apply&lt;T&gt;::type</code> object. The result is
+      installed in the extension class object.
 
-</dt>
+      <dt><b>Returns:</b> The new Python callable object
+    </dl>
 
-  <dt><b>Returns:</b> The new Python callable object</dt>
+    <h2><a name="examples"></a>Example</h2>
 
-</dl>
-
-<h2><a name="examples"></a>Example</h2>
-
-<p>C++ function exposed below returns a callable object wrapping one
-of two functions.
-
+    <p>C++ function exposed below returns a callable object wrapping one of two
+    functions.
 <pre>
 #include &lt;boost/python/make_function.hpp&gt;
 #include &lt;boost/python/module.hpp&gt;
@@ -132,8 +125,7 @@ BOOST_PYTHON_MODULE_INIT(make_function_test)
         .def("choose_function", choose_function);
 }
 </pre>
-</p>
-It can be used this way in Python:
+    It can be used this way in Python: 
 <pre>
 &gt;&gt;&gt; from make_function_test import *
 &gt;&gt;&gt; f = choose_function(1)
@@ -144,12 +136,11 @@ It can be used this way in Python:
 'bar'
 </pre>
 
-<p>
-<!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-14 February 2002
-<!--webbot bot="Timestamp" endspan i-checksum="39359" -->
-</p>
-<p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave Abrahams</a> 
-  2002. All Rights Reserved.</i></p>
-</body>
-</html>
+    <p>
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+    14 February 2002 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+
+
+    <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i>
+

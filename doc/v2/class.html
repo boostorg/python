@@ -1,105 +1,127 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href="../boost.css">
-<title>Boost.Python - &lt;boost/python/class.hpp&gt;, &lt;boost/python/class_fwd.hpp&gt;</title>
-</head>
-<body link="#0000ff" vlink="#800080">
-<table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+
+    <title>Boost.Python - &lt;boost/python/class.hpp&gt;,
+    &lt;boost/python/class_fwd.hpp&gt;</title>
+
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
     "header">
-  <tr> 
-    <td valign="top" width="300"> 
-      <h3><a href="../../../../index.htm"><img height="86" width="277" alt="C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
-    </td>
-    <td valign="top"> 
-      <h1 align="center">Boost.Python</h1>
-      <h2 align="center">Headers &lt;boost/python/class.hpp&gt;, &lt;boost/python/class_fwd.hpp&gt;</h2>
-    </td>
-  </tr>
-</table>
-<hr>
-<h2>Contents</h2>
-<dl class="page-index"> 
-  <dt><a href="#introduction">Introduction</a></dt>
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
 
-  <dt><a href="#classes">Classes</a></dt>
+        <td valign="top">
+          <h1 align="center">Boost.Python</h1>
 
-  <dl class="page-index">
+          <h2 align="center">Headers &lt;boost/python/class.hpp&gt;,
+          &lt;boost/python/class_fwd.hpp&gt;</h2>
+    </table>
+    <hr>
 
-    <dt><a href="#class_-spec">Class template <code>class_</code></a></dt>
-	<dl class="page-index">
-	  <dt><a href="#class_-spec-synopsis">Class <code>class_</code> synopsis</a></dt>
-	  <dt><a href="#class_-spec-ctors">Class <code>class_</code> constructors</a></dt>
-  	  <dt><a href="#class_-spec-modifiers">Class <code>class_</code> modifier functions</a></dt>
-  	  <dt><a href="#class_-spec-observers">Class <code>class_</code> observer functions</a></dt>
-	</dl>
+    <h2>Contents</h2>
 
-    <dt><a href="#bases-spec">Class template <code>bases</code></a></dt>
-	<dl class="page-index">
-	  <dt><a href="#bases-spec-synopsis">Class <code>bases</code> synopsis</a></dt>
-	</dl>
+    <dl class="page-index">
+      <dt><a href="#introduction">Introduction</a>
 
-    <dt><a href="#args-spec">Class template <code>args</code></a></dt>
-	<dl class="page-index">
-	  <dt><a href="#args-spec-synopsis">Class <code>args</code> synopsis</a></dt>
-	</dl>
+      <dt><a href="#classes">Classes</a>
 
-  </dl>
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#class_-spec">Class template <code>class_</code></a>
 
-  <dt><a href="#examples">Example(s)</a></dt>
-</dl>
-<hr>
-<h2><a name="introduction"></a>Introduction</h2>
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#class_-spec-synopsis">Class <code>class_</code>
+              synopsis</a>
 
-  <p><code>&lt;boost/python/class.hpp&gt;</code> defines the interface through
-  which users expose their C++ classes to Python. It declares the
-  <code>class_</code> class template, which is parameterized on the
-  class type being exposed, and the <code>args</code> and
-  <code>bases</code> utility class templates in the anonymous
-  namespace (the latter definitions will probably be moved in a future
-  release).
+              <dt><a href="#class_-spec-ctors">Class <code>class_</code>
+              constructors</a>
 
-  <p>
-  <code>&lt;boost/python/class_fwd.hpp&gt;</code>  contains a forward
-  declaration of the <code>class_</code> class template.
+              <dt><a href="#class_-spec-modifiers">Class <code>class_</code>
+              modifier functions</a>
+
+              <dt><a href="#class_-spec-observers">Class <code>class_</code>
+              observer functions</a>
+            </dl>
+
+          <dt><a href="#bases-spec">Class template <code>bases</code></a>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#bases-spec-synopsis">Class <code>bases</code>
+              synopsis</a>
+            </dl>
+
+          <dt><a href="#args-spec">Class template <code>args</code></a>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#args-spec-synopsis">Class <code>args</code>
+              synopsis</a>
+            </dl>
+        </dl>
+
+      <dt><a href="#examples">Example(s)</a>
+    </dl>
+    <hr>
+
+    <h2><a name="introduction"></a>Introduction</h2>
+
+    <p><code>&lt;boost/python/class.hpp&gt;</code> defines the interface
+    through which users expose their C++ classes to Python. It declares the
+    <code>class_</code> class template, which is parameterized on the class
+    type being exposed, and the <code>args</code> and <code>bases</code>
+    utility class templates in the anonymous namespace (the latter definitions
+    will probably be moved in a future release).
+
+    <p><code>&lt;boost/python/class_fwd.hpp&gt;</code> contains a forward
+    declaration of the <code>class_</code> class template.
+
+    <h2><a name="classes"></a>Classes</h2>
+
+    <h3><a name="class_-spec"></a>Class template <code>class_&lt;T, Bases, <a
+    href="HolderGenerator.html">HolderGenerator</a>&gt;</code></h3>
+
+    <p>Creates a Python class associated with the C++ type passed as its first
+    parameter. Its template arguments are:<br>
+    <br>
 
 
-<h2><a name="classes"></a>Classes</h2>
-
-<h3><a name="class_-spec">
-</a>Class template <code>class_&lt;T,&nbsp;Bases,&nbsp;<a
- href="HolderGenerator.html">HolderGenerator</a>&gt;</code></h3>
-
-<p>Creates a Python class associated with the C++ type passed as its
-first parameter. Its template arguments are:
-<br><br>
     <table border="1" summary="class_ template parameters">
       <tr>
         <th>Parameter
-        <th>Requirements
-        <th>Default
-      <tr>
-        <td><code>T</code>
-        <td>A class type.
-      <tr>
-        <td><code>Bases</code>
 
-        <td>An <a href="../../../mpl/doc/Sequences.html">MPL
-        sequence</a> of C++ base classes of <code>T</code>.
+        <th>Requirements
+
+        <th>Default
+
+      <tr>
+        <td><code>T</code> 
+
+        <td>A class type.
+
+      <tr>
+        <td><code>Bases</code> 
+
+        <td>An <a href="../../../mpl/doc/Sequences.html">MPL sequence</a> of
+        C++ base classes of <code>T</code>.
 
         <td>An unspecified empty sequence
 
       <tr>
-        <td><code>HolderGenerator</code>
+        <td><code>HolderGenerator</code> 
 
-        <td>A model of <code><a href="HolderGenerator.html">HolderGenerator</a></code>.
+        <td>A model of <code><a href=
+        "HolderGenerator.html">HolderGenerator</a></code>.
 
-        <td><code>boost::python::objects::value_holder_generator</code>
-      </table>
+        <td><code>boost::python::objects::value_holder_generator</code> 
+    </table>
 
-
-
-<h4><a name="class_-spec-synopsis"></a>Class template <code>class_</code> synopsis</h4>
+    <h4><a name="class_-spec-synopsis"></a>Class template <code>class_</code>
+    synopsis</h4>
 <pre>
 namespace boost { namespace python
 {
@@ -128,44 +150,42 @@ namespace boost { namespace python
 }}
 </pre>
 
-<h4><a name="class_-spec-ctors"></a>Class template <code>class_</code> constructors</h4>
+    <h4><a name="class_-spec-ctors"></a>Class template <code>class_</code>
+    constructors</h4>
 <pre>
 class_()
 </pre>
-<dl class="function-semantics"> 
 
-  <dt><b>Requires:</b> The platform's
-  <code>std::type_info::name()</code> implementation produces a string
-  which corresponds to the type's declaration in C++</dt>
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> The platform's <code>std::type_info::name()</code>
+      implementation produces a string which corresponds to the type's
+      declaration in C++
 
-  <dt><b>Effects:</b> Constructs a <code>class_</code> object which
-  generates a Boost.Python extension class with the same name as
-  <code>T</code>.</dt>
+      <dt><b>Effects:</b> Constructs a <code>class_</code> object which
+      generates a Boost.Python extension class with the same name as
+      <code>T</code>.
 
-  <dt><b>Rationale:</b> Many platforms can generate reasonable names
-  for Python classes without user intervention.</dt>
-
-</dl>
-
+      <dt><b>Rationale:</b> Many platforms can generate reasonable names for
+      Python classes without user intervention.
+    </dl>
 <pre>
 class_(char const* name)
 </pre>
-<dl class="function-semantics"> 
 
-  <dt><b>Requires:</b> Name is a ntbs which conforms to Python's <a
-  href="http://www.python.org/doc/current/ref/identifiers.html">identifier
-  naming rules</a>.</dt>
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
+      Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>.
 
-  <dt><b>Effects:</b> Constructs a <code>class_</code> object which
-  generates a Boost.Python extension class named
-  <code>name</code>.</dt>
+      <dt><b>Effects:</b> Constructs a <code>class_</code> object which
+      generates a Boost.Python extension class named <code>name</code>.
 
-  <dt><b>Rationale:</b> Gives the user full control over class naming.</dt>
+      <dt><b>Rationale:</b> Gives the user full control over class naming.
+    </dl>
 
-</dl>
-
-<h4><a name="class_-spec-modifiers"></a>Class template <code>class_</code> modifier functions</h4>
-
+    <h4><a name="class_-spec-modifiers"></a>Class template <code>class_</code>
+    modifier functions</h4>
 <pre>
 template &lt;class F&gt;
 class_&amp; def(char const* name, F f)
@@ -174,32 +194,23 @@ template &lt;class Fn, class CallPolicy&gt;
 class_&amp; def(char const* name, Fn fn, CallPolicy policy)
 </pre>
 
-<dl class="function-semantics"> 
-  <dt><b>Requires:</b>
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>f</code> is a non-null pointer-to-function or
+      pointer-to-member-function. <code>name</code> is a ntbs which conforms to
+      Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>. If supplied, <code>policy</code> conforms to the <a
+      href="CallPolicy.html">CallPolicy</a> concept requirements.
 
-    <code>f</code> is a non-null pointer-to-function or
-    pointer-to-member-function.
+      <dt><b>Effects:</b> Adds the result of <code><a href=
+      "make_function.html#make_function-spec">make_function</a>(f)</code> to
+      the Boost.Python extension class being defined, with the given
+      <code>name</code>. If the extension class already has an attribute named
+      <code><i>name</i></code>, the usual <a href=
+      "http:overloading.html">overloading procedure</a> applies.
 
-    <code>name</code> is a ntbs which conforms to Python's <a
-    href="http://www.python.org/doc/current/ref/identifiers.html">identifier
-    naming rules</a>.
-
-    If supplied, <code>policy</code> conforms to the <a
-    href="CallPolicy.html">CallPolicy</a> concept requirements.
-</dt>
-
-  <dt><b>Effects:</b> Adds the result of <code><a
-  href="make_function.html#make_function-spec">make_function</a>(f)</code>
-  to the Boost.Python extension class being defined, with the given
-  <code>name</code>. If the extension class already has an attribute
-  named <code><i>name</i></code>, the usual <a
-  href="http:overloading.html">overloading procedure</a> applies.
-
-  </dt>
-
-  <dt><b>Returns:</b> <code>*this</code></dt>
-</dl>
-
+      <dt><b>Returns:</b> <code>*this</code>
+    </dl>
 <pre>
 template &lt;class Args&gt;
 class_&amp; def_init(Args const&amp; argument_types)
@@ -207,61 +218,56 @@ class_&amp; def_init(Args const&amp; argument_types)
 class_&amp; def_init()
 </pre>
 
-<dl class="function-semantics"> 
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> in the first form, argument_types must be an <a
+      href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++ argument
+      types (<i>A1, A2,... AN</i>) such that if
+      <code>a1, a2</code>... <code>aN</code> are objects of type
+      <i>A1, A2,... AN</i> respectively, the expression
+      <code>T(a1, a2</code>... <code>aN</code>) is valid. In the second form,
+      the expression <code>T()</code> must be valid.
 
-  <dt><b>Requires:</b> in the first form, argument_types must be an <a
-  href="../../../mpl/doc/Sequences.html">MPL sequence</a> of C++
-  argument types (<i>A1,&nbsp;A2,...&nbsp;AN</i>) such that if
-  <code>a1,&nbsp;a2</code>...&nbsp;<code>aN</code> are objects of type
-  <i>A1,&nbsp;A2,...&nbsp;AN</i> respectively, the expression
-  <code>T(a1,&nbsp;a2</code>...&nbsp;<code>aN</code>) is
-  valid. In the second form, the expression <code>T()</code> must be
-  valid.
-</dt>
+      <dt><b>Effects:</b> Adds the result of <code><a href=
+      "make_function.html#make_constructor-spec">make_constructor</a>&lt;T,Args,HolderGenerator&gt;()</code>
+      to the Boost.Python extension class being defined with the name
+      "__init__". If the 2nd form is used, an unspecified empty <a href=
+      "../../../mpl/doc/Sequences.html">MPL sequence</a> type is substituted
+      for <code>Args</code>. If the extension class already has an "__init__"
+      attribute, the usual <a href="http:overloading.html">overloading
+      procedure</a> applies.
 
-  <dt><b>Effects:</b> Adds the result of <code><a
-  href="make_function.html#make_constructor-spec">
-  make_constructor</a>&lt;T,Args,HolderGenerator&gt;()</code> to the
-  Boost.Python extension class being defined with the name
-  &quot;__init__&quot;. If the 2nd form is used, an unspecified empty
-  <a href="../../../mpl/doc/Sequences.html">MPL sequence</a> type is
-  substituted for <code>Args</code>.
-  If the extension class already has an
-   &quot;__init__&quot; attribute, the usual <a
-  href="http:overloading.html">overloading procedure</a> applies.
+      <dt><b>Returns:</b> <code>*this</code>
 
-  <dt><b>Returns:</b> <code>*this</code></dt>
+      <dt><b>Rationale:</b> Allows users to easily expose a class' constructor
+      to Python.
+    </dl>
 
-  <dt><b>Rationale:</b> Allows users to easily expose a class'
-  constructor to Python.</dt>
-</dl>
-
-
-<h4><a name="class_-spec-observers"></a>Class template <code>class_</code> observer
-functions</h4>
+    <h4><a name="class_-spec-observers"></a>Class template <code>class_</code>
+    observer functions</h4>
 <pre>
 ref object() const;
 </pre>
-<dl class="function-semantics"> 
-  <dt><b>Returns:</b> A <code>ref</code> object which holds a
-  reference to the Boost.Python extension class object created by the
-  <code>class_</code> constructor.</dt>
 
-  <dt><b>Rationale:</b> Mostly not needed by users, since <code><a
-  href="module.html#add-spec">module::add</a>()</code> uses this to
-  insert the extension class in the module.</dt>
-</dl>
+    <dl class="function-semantics">
+      <dt><b>Returns:</b> A <code>ref</code> object which holds a reference to
+      the Boost.Python extension class object created by the
+      <code>class_</code> constructor.
 
+      <dt><b>Rationale:</b> Mostly not needed by users, since <code><a href=
+      "module.html#add-spec">module::add</a>()</code> uses this to insert the
+      extension class in the module.
+    </dl>
 
-<h3><a name="args-spec">
-</a>Class template <code>args&lt;T1,&nbsp;T2,</code>...<code>TN&gt;</code></h3>
+    <h3><a name="args-spec"></a>Class template
+    <code>args&lt;T1, T2,</code>...<code>TN&gt;</code></h3>
 
-<p>Essentially an alias for <code>boost::mpl::type_list</code> which
-users can use in <code>def_init</code> calls to make their code more
-readable. Currently it is in the global unnammed namespace, but that
-will probably change.
+    <p>Essentially an alias for <code>boost::mpl::type_list</code> which users
+    can use in <code>def_init</code> calls to make their code more readable.
+    Currently it is in the global unnammed namespace, but that will probably
+    change.
 
-<h4><a name="args-spec-synopsis"></a>Class template <code>args</code> synopsis</h4>
+    <h4><a name="args-spec-synopsis"></a>Class template <code>args</code>
+    synopsis</h4>
 <pre>
 namespace
 {
@@ -271,15 +277,16 @@ namespace
 }
 </pre>
 
-<h3><a name="bases-spec">
-</a>Class template <code>bases&lt;T1,&nbsp;T2,</code>...<code>TN&gt;</code></h3>
+    <h3><a name="bases-spec"></a>Class template
+    <code>bases&lt;T1, T2,</code>...<code>TN&gt;</code></h3>
 
-<p>Essentially an alias for <code>boost::mpl::type_list</code> which
-users can use in <code>class_&lt;</code>...<code>&gt;</code>
-instantiations to make their code more readable. Currently it is in
-the global unnammed namespace, but that will probably change.
+    <p>Essentially an alias for <code>boost::mpl::type_list</code> which users
+    can use in <code>class_&lt;</code>...<code>&gt;</code> instantiations to
+    make their code more readable. Currently it is in the global unnammed
+    namespace, but that will probably change.
 
-<h4><a name="bases-spec-synopsis"></a>Class template <code>bases</code> synopsis</h4>
+    <h4><a name="bases-spec-synopsis"></a>Class template <code>bases</code>
+    synopsis</h4>
 <pre>
 namespace
 {
@@ -289,10 +296,9 @@ namespace
 }
 </pre>
 
-<h2><a name="examples"></a>Example(s)</h2>
+    <h2><a name="examples"></a>Example(s)</h2>
 
-<p>Given a C++ class declaration:
-
+    <p>Given a C++ class declaration:
 <pre>
 class Foo : public Bar, public Baz
 {
@@ -306,9 +312,7 @@ class Foo : public Bar, public Baz
    ...
 };
 </pre>
-
-A corresponding Boost.Python extension class can be created with:
-
+    A corresponding Boost.Python extension class can be created with: 
 <pre>
 using namespace boost::python;
 ref foo =
@@ -319,15 +323,12 @@ class_&lt;Foo,bases&lt;Bar,Baz&gt; &gt;()
    .def("set_name", &amp;Foo::set_name)
    .object();
 </pre>
+    Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     05 November, 2001 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     
 
-</p>
+    <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i>
 
-<p>Revised 
-  <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  05 November, 2001 
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
-</p>
-<p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave Abrahams</a> 
-  2002. All Rights Reserved.</i></p>
-</body>
-</html>
