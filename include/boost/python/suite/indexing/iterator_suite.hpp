@@ -31,6 +31,12 @@
 #include <boost/type_traits.hpp>
 
 namespace indexing {
+  enum IndexStyle {
+    index_style_none         // No random access (iteration only)
+    , index_style_nonlinear  // Random access by key (no slicing)
+    , index_style_linear     // Random access by integer index (allows slicing)
+  };
+
   //////////////////////////////////////////////////////////////////////////
   // Indexing traits for containers based on iterator pairs
   //////////////////////////////////////////////////////////////////////////
@@ -49,10 +55,10 @@ namespace indexing {
     typedef typename std_traits::difference_type  index_type;
     typedef value_type                            key_type; // find, count, ...
 
-    static bool const has_copyable_iter  = false;
-    static bool const is_reversible      = false;
-    static bool const has_random_access  = false;
-    static bool const has_mutable_ref    = is_mutable_ref<reference>::value;
+    static bool const has_copyable_iter = false;
+    static bool const is_reversible     = false;
+    static bool const has_mutable_ref   = is_mutable_ref<reference>::value;
+    static IndexStyle const index_style = index_style_none;
   };
 
   template<typename Iterator>
@@ -73,7 +79,7 @@ namespace indexing {
   struct random_access_iterator_traits
     : public bidirectional_iterator_traits<Iterator>
   {
-    static bool const has_random_access = true;
+    static IndexStyle const index_style = index_style_linear;
   };
 
   namespace iterator_detail {
