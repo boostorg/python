@@ -31,23 +31,23 @@ namespace { // Avoid cluttering the global namespace.
   };
 
   void raise_vector_IndexError() {
-    PyErr_SetString(PyExc_IndexError, "IndexError: vector index out of range");
+    PyErr_SetString(PyExc_IndexError, "vector index out of range");
     throw python::error_already_set();
   }
 
   double getitem(const std::vector<double>& vd, std::size_t key) {
-    if (key < 0 || key >= vd.size()) raise_vector_IndexError();
+    if (key >= vd.size()) raise_vector_IndexError();
     return vd[key];
   }
 
   void setitem(std::vector<double>& vd, std::size_t key, double d) {
-    if (key < 0 || key >= vd.size()) raise_vector_IndexError();
+    if (key >= vd.size()) raise_vector_IndexError();
     std::vector<double>::iterator vditer = vd.begin();
     vditer[key] = d;
   }
 
   void delitem(std::vector<double>& vd, std::size_t key) {
-    if (key < 0 || key >= vd.size()) raise_vector_IndexError();
+    if (key >= vd.size()) raise_vector_IndexError();
     std::vector<double>::iterator vditer = vd.begin();
     vd.erase(&vditer[key]);
   }

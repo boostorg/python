@@ -24,7 +24,7 @@ PYINC=-I/usr/local/Python-1.5.2/include/python1.5
 STLPORTINC=-I$(BOOST)/boost/compatibility/cpp_c_headers
 
 STDOPTS=
-WARNOPTS=-woff 1001,1183,1234,1682
+WARNOPTS=-woff 1001,1234,1682
 OPTOPTS=-g
 
 CPP=CC -LANG:std -n32 -mips4
