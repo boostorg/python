@@ -73,12 +73,13 @@ if $(NT)
     PYTHON_ROOT ?= c:/tools/python ;
     PYTHON_INCLUDES ?= <include>$(PYTHON_ROOT)/include <gcc><*><include>/usr/include/python$(PYTHON_VERSION) ;
     PYTHON_LIBS ?= c:/cygnus/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).dll.a ;
-    PYTHON_LIB_PATH = $(PYTHON_ROOT)/libs ;
+    PYTHON_LIB_PATH ?= $(PYTHON_ROOT)/libs ;
 
     # common properties required for compiling any Python module.
     PYTHON_PROPERTIES ?=
         <gcc><*><define>SIZEOF_LONG=4
         <gcc><*><define>USE_DL_IMPORT
+        <debug><define>_DEBUG
         <runtime-link>dynamic
         ;
                         
@@ -89,6 +90,10 @@ else if $(UNIX)
     PYTHON_INCLUDES ?= <include>/usr/include/python$(PYTHON_VERSION) ;
     PYTHON_LIBS ?= /usr/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).a ;
 }
+
+local PYTHON_VERSION_NODOT
+        = [ SUBST $(PYTHON_VERSION) ([0-9]*)\.([0-9]*) $1$2 ]
+      ;
 
 # how do we invoke python?
 local PYTHON = $(PYTHON) ;
@@ -107,14 +112,22 @@ local BOOST_PYTHON_INCLUDES = <include>$(BOOST_ROOT) $(PYTHON_INCLUDES) ;
 
 # Base names of the source files for libboost_python
 local CPP_SOURCES =
-    classes conversions extension_class functions 
-    init_function module_builder objects types cross_module ;
+    types classes conversions extension_class functions 
+    init_function module_builder objects  cross_module ;
 
 lib libboost_python : ../src/$(CPP_SOURCES).cpp
     # requirements
     : $(BOOST_PYTHON_INCLUDES)
     <shared-linkable>true
     $(PYTHON_PROPERTIES) ;
+
+lib libboost_python_d : ../src/$(CPP_SOURCES).cpp
+    # requirements
+    : $(BOOST_PYTHON_INCLUDES)
+    <shared-linkable>true
+    $(PYTHON_PROPERTIES)
+    <define>BOOST_DEBUG_PYTHON
+    ;
     
 #######################
 
@@ -123,8 +136,14 @@ lib libboost_python : ../src/$(CPP_SOURCES).cpp
 # Declare a boost python module. Return a list of the DLL files generated.
 rule boost-python
 {
+    local debug ;
+    if ( <define>BOOST_DEBUG_PYTHON in $(3) ) || ( debug-python in $(BUILD) )
+    {
+        debug = _d ;
+    }
+    
     # declare a DLL; add the boost python library to sources
-     dll $(<) : <lib>libboost_python $(>)
+    dll $(<) : <lib>libboost_python$(debug) $(>)
             
             # Requirements
             : $(3) # caller-specified requirements
@@ -132,7 +151,7 @@ rule boost-python
                 # standard requirements
                 $(BOOST_PYTHON_INCLUDES)
                 <msvc><*><library-path>$(PYTHON_LIB_PATH)
-                <metrowerks><*><library-file>$(PYTHON_LIB_PATH)/python22.lib
+                <metrowerks><*><library-file>$(PYTHON_LIB_PATH)/python$(PYTHON_VERSION_NODOT)$(debug).lib
                 <gcc><*><library-file>$(PYTHON_LIBS)
                 $(PYTHON_PROPERTIES)
                 
@@ -146,9 +165,12 @@ rule boost-python
 rule boost-python-test
 {
     type-DEPENDS test : $(<) ;
+    type-DEPENDS test_d : $(<)_d ;
+    NOTFILE test_d ;
     
     local gSUPPRESS_FAKE_TARGETS = true ;
     boost-python $(1) : $(2) : $(3) : $(4) ;
+    boost-python $(1)_d : $(2) : $(3) <define>BOOST_DEBUG_PYTHON : $(4) ;
 }
 
 #######################
@@ -239,12 +261,17 @@ boost-python-runtest comprehensive
          : [ join-path $(DOTDOT) test comprehensive.py ]
            <lib>boost_python_test ;
 
+boost-python-runtest comprehensive_d
+         : [ join-path $(DOTDOT) test comprehensive.py ]
+           <lib>boost_python_test_d ;
+
 ############# simple tests from ../example ############
 
 rule boost-python-example-runtest
 {
     boost-python-test $(<) : ../example/$(<).cpp ;
     boost-python-runtest $(<) : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<) ;
+    boost-python-runtest $(<)_d : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<)_d ;
 }
 
 
