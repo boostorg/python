@@ -184,7 +184,7 @@ namespace api
           // the callable object is already wrapped.
           BOOST_STATIC_ASSERT(
               (is_same<char const*,DocStringT>::value
-               || detail::is_string_literal<DocStringT>::value));
+               || detail::is_string_literal<DocStringT const>::value));
         
           objects::add_to_namespace(cl, name, this->derived_visitor(), helper.doc());
       }
