@@ -195,12 +195,15 @@ bignum_class.def(boost::python::operators&lt;boost::python::op_add, BigNum&gt;()
         Note that automatic wrapping uses the <em>expression</em>
         ``<code>left + right</code>'' and can be used uniformly
         regardless of whether the C++ operators are supplied as free functions
-        <blockquote><pre>
+
+ <blockquote><pre>
 BigNum operator+(BigNum, BigNum)
 </pre></blockquote>
-        or as member
-        functions <blockquote><pre>
-BigNum BigNum::operator+(BigNum).
+
+        or as member functions
+
+<blockquote><pre>
+BigNum::operator+(BigNum).
 </pre></blockquote>
 
       <p>
@@ -319,17 +322,17 @@ PyObject* custom_coerce(PyObject* left, PyObject* right);
 some_class.def(&amp;custom_coerce, "__coerce__");
 </pre></blockquote>
 
-      Note that the standard coercion (defined by use of automatic operator wrapping on a
-      <code>class_builder</code> or a call to
-      &ldquo;<code>some_class.def_standard_coerce()</code>&rdquo;) will never be applied 
-      if a custom coercion function has been registered. Therefore, in your coercion function
-      you should call
+     Note that the standard coercion (defined by use of automatic 
+     operator wrapping on a <code>class_builder</code> or a call to
+     <code>class_builder::def_standard_coerce()</code>) will never be applied if
+     a custom coercion function has been registered. Therefore, in 
+     your coercion function you should call 
 
 <blockquote><pre>
-boost::python::detail::extension_class_coerce(left, right);
+boost::python::standard_coerce(left, right);
 </pre></blockquote>
 
-    for all cases that you don't want to handle yourself.
+     for all cases that you don't want to handle yourself.
 
 <h3><a name="ternary_pow">The Ternary <code>pow()</code> Operator</a></h3>
 
@@ -643,11 +646,12 @@ Note that "__rrpow__" is an extension not present in plain Python.
       to Python's iteration and access protocols. These protocols differ
       considerably from the ones found in C++. For example, Python's typical
       iteration idiom looks like
+
 <blockquote><pre>
 for i in S:
 </pre></blockquote>
 
-while in C++ one writes
+      while in C++ one writes
 
 <blockquote><pre>
 for (iterator i = S.begin(), end = S.end(); i != end; ++i)
