@@ -1,3 +1,28 @@
+2000-11-15 12:01
+    Fixed Ullrich's refcount bug
+
+    Moved operator_dispatcher into extclass.cpp
+    Gave it shared ownership of the objects it wraps
+
+    Introduced sequence points in extension_class_coerce for exception-safety
+
+    UPPER_CASE_MACRO_NAMES
+
+    MixedCase template type argument names
+
+    Changed internal error reporting to use Python exceptions so we don't force the
+    user to link in iostreams code
+
+    Changed error return value of call_cmp to -1
+
+    Moved unwrap_* functions out of operator_dispatcher. This was transitional: when
+    I realized they didn't need to be declared in extclass.h I moved them out, but
+    now that operator_dispatcher itself is in extclass.cpp they could go back in.
+
+    Numerous formatting tweaks
+
+    Updated the BoundFunction::create() optimization and enabled it so it could actually be used!
+
 2000-11-15 00:26
 
     Made Ullrich's operators support work with MSVC
