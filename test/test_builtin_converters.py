@@ -38,6 +38,13 @@ r"""
 42
 >>> rewrap_value_unsigned_long(42)
 42
+
+    test unsigned long values which don't fit in a signed long.
+    strip any 'L' characters in case the platform has > 32 bit longs
+        
+>>> hex(rewrap_value_unsigned_long(0x80000001L)).replace('L','')
+'0x80000001'
+
 >>> rewrap_value_long_long(42)
 42L
 >>> rewrap_value_unsigned_long_long(42)

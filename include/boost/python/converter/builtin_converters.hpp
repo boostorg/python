@@ -10,6 +10,7 @@
 # include <boost/python/handle.hpp>
 # include <string>
 # include <complex>
+# include <limits>
 
 // Since all we can use to decide how to convert an object to_python
 // is its C++ type, there can be only one such converter for each
@@ -80,9 +81,12 @@ namespace detail
         BOOST_PYTHON_ARG_TO_PYTHON_BY_VALUE(T,expr)
 
 // Specialize converters for signed and unsigned T to Python Int
-# define BOOST_PYTHON_TO_INT(T)                                         \
-    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, PyInt_FromLong(x))        \
-    BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned T, PyInt_FromLong(x))
+# define BOOST_PYTHON_TO_INT(T)                                                         \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, PyInt_FromLong(x))                        \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(                                                    \
+        unsigned T, static_cast<unsigned long>(x) > std::numeric_limits<long>::max()    \
+        ? PyLong_FromUnsignedLong(x)                                                    \
+        : PyInt_FromLong(x))
 
 // Bool is not signed.
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(bool, PyInt_FromLong(x))
