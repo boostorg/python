@@ -52,8 +52,10 @@ struct opaque_pointer_converter
         , detail::opaque_pointer_converter_requires_a_pointer_type<Pointer>
     >::type ptr_type;
 
+private:
     struct instance;
 
+public:
     explicit opaque_pointer_converter(char const* name)
     {
         type_object.tp_name = const_cast<char *> (name);
