@@ -35,8 +35,8 @@ namespace // <unnamed>
   registry_t& entries()
   {
       static registry_t registry;
-      
-#ifdef BOOST_PYTHON_DYNAMIC_LIB // this conditional should go away eventually.
+
+# ifdef BOOST_PYTHON_DYNAMIC_LIB // this conditional should go away eventually.
       static bool builtin_converters_initialized = false;
       if (!builtin_converters_initialized)
       {
@@ -46,13 +46,17 @@ namespace // <unnamed>
           
           initialize_builtin_converters();
       }
-#endif 
+# endif 
       return registry;
   }
 
   entry* find(type_info type)
   {
-      return &entries()[type];
+      registry_t& assoc = entries();
+      registry_t::iterator p = assoc.find(type);
+      return p != assoc.end()
+          ? &p->second
+          : &assoc[type];
   }
 
   entry::entry()

@@ -10,13 +10,16 @@
 # include <boost/python/detail/msvc_typeinfo.hpp>
 # include <boost/operators.hpp>
 # include <typeinfo>
+# include <cstring>
+# include <boost/static_assert.hpp>
+# include <boost/type_traits/same_traits.hpp>
 
 namespace boost { namespace python { 
 
 // for this compiler at least, cross-shared-library type_info
 // comparisons don't work, so use typeid(x).name() instead. It's not
 // yet clear what the best default strategy is.
-# if defined(__GNUC__) && __GNUC__ >= 3
+# if defined(__GNUC__) && __GNUC__ >= 3 || defined(_AIX)
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
 
@@ -55,6 +58,27 @@ inline type_info type_id(boost::type<T>* = 0)
 #  endif 
         );
 }
+
+#  if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ <= 245
+// KCC on this platform seems to mistakenly distinguish "int" from
+// "signed int", etc., but only in typeid() expressions. However
+// though int == signed int, the "signed" decoration is propagated
+// down into template instantiations. Explicit specialization stops
+// that from taking hold.
+
+#   define BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(T)      \
+template <>                                             \
+inline type_info type_id<T>(boost::type<T>*)            \
+{                                                       \
+    return type_info(typeid(T));                        \
+}
+
+BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(short)
+BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(int)
+BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(long)
+#   undef BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID
+#  endif
+
 
 inline type_info::type_info(std::type_info const& id)
     : m_base_type(

@@ -13,6 +13,7 @@
 # include <boost/python/reference.hpp>
 # include <boost/python/objects.hpp>
 # include <boost/python/detail/functions.hpp>
+# include <boost/python/detail/module_init.hpp>
 
 namespace boost { namespace python {
 

@@ -62,14 +62,6 @@
 #  define BOOST_CSTD_ std
 # endif
 
-# ifndef BOOST_PYTHON_MODULE_INIT
-#  if defined(_WIN32) || defined(__CYGWIN__)
-#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" __declspec(dllexport) void init##name() { boost::python::handle_exception(&init_module_##name); } void init_module_##name()
-#  else
-#   define BOOST_PYTHON_MODULE_INIT(name) void init_module_##name(); extern "C" void init##name() { boost::python::handle_exception(&init_module_##name); } void init_module_##name()
-#  endif
-# endif 
-
 /*****************************************************************************
  *
  *  Set up dll import/export options:

@@ -4,8 +4,16 @@ subproject libs/python ;
 SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
 include <module@>python.jam ;
 
+local bpl-ldflags ;
+
+if $(UNIX) && ( $(OS) = AIX )
+{
+    bpl-linkflags = <linkflags>"-e initlibbpl" ;
+}
+
 dll bpl
   : 
+  src/aix_init_module.cpp
   src/converter/from_python.cpp
   src/converter/registry.cpp
   src/converter/type_id.cpp
@@ -22,4 +30,5 @@ dll bpl
   :
   $(BOOST_PYTHON_V2_PROPERTIES)
     <define>BOOST_PYTHON_SOURCE
+    $(bpl-linkflags)
     ;
