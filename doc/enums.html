@@ -8,31 +8,36 @@
          <img width="277" height="86" id="_x0000_i1025" align="center"
         src="../../../c++boost.gif" alt= "c++boost.gif (8819 bytes)">Wrapping enums
       </h1>
+
 <p>Because there is in general no way to deduce that a value of arbitrary type T
-is an enumeration constant, py_cpp cannot automatically convert enum values to
-and from Python. To handle this case, you need to decide how you want the enum
-to show up in Python (since Python doesn't have enums). Once you have done that,
-you can write some simple <code>from_python()</code> and
-<code>to_python()</code> functions.
+is an enumeration constant, the Boost Python Library cannot automatically
+convert enum values to and from Python. To handle this case, you need to decide
+how you want the enum to show up in Python (since Python doesn't have
+enums). Once you have done that, you can write some simple
+<code>from_python()</code> and <code>to_python()</code> functions.
 
 <p>If you are satisfied with a Python int as a way to represent your enum
-values, py_cpp provides a shorthand for these functions. You just need to
+values, we provide a shorthand for these functions. You just need to
 instantiate <code>boost::python::enum_as_int_converters&lt;EnumType&gt;</code> where
 <code>EnumType</code> is your enumerated type. There are two convenient ways to do this:
 
 <ol>
 <li><blockquote>
 <pre>
+   ...
+} // close my_namespace
 // drop into namespace python and explicitly instantiate
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
+namespace my_namespace { // re-open my_namespace
+   ...
 </pre>
 </blockquote>
 <li><blockquote><pre>
 // instantiate as base class in any namespace
 struct EnumTypeConverters
-    : boost::python::py_enum_as_int_converters<EnumType>
+    : boost::python::enum_as_int_converters&lt;EnumType&gt;
 {
 };
 </blockquote></pre>
@@ -82,11 +87,15 @@ my_class.add(boost::python::to_python(enum_value_1), "enum_value_1");
 my_class.add(boost::python::to_python(enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
+               <p>
+         Next: <a href="pointers.html">Pointers</a>
+         Previous: <a href="building.html">Building an Extension Module</a>
+         Up: <a href="index.html">Top</a>
       <p>
          &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
         sell and distribute this document is granted provided this copyright
-        notice appears in all copies. This document is provided &ldquo;as
-        is&rdquo; without express or implied warranty, and with no claim as to
+        notice appears in all copies. This document is provided ``as
+        is'' without express or implied warranty, and with no claim as to
         its suitability for any purpose.
       <p>
          Updated: Nov 26, 2000

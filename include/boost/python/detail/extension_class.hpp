@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file automatically generated for 5-argument constructors by
+//  This file automatically generated for 10-argument constructors by
 //  gen_extclass.python
 
 #ifndef EXTENSION_CLASS_DWA052000_H_
@@ -363,8 +363,8 @@ class extension_class
     ~extension_class();
 
     // define constructors
-    template <class A1, class A2, class A3, class A4, class A5>
-    inline void def(constructor<A1, A2, A3, A4, A5>)
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    inline void def(constructor<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>)
     // The following incantation builds a signature1, signature2,... object. It
     // should _all_ get optimized away.
     { add_constructor(
@@ -373,7 +373,12 @@ class extension_class
         prepend(type<A3>::id(),
         prepend(type<A4>::id(),
         prepend(type<A5>::id(),
-                signature0()))))));
+        prepend(type<A6>::id(),
+        prepend(type<A7>::id(),
+        prepend(type<A8>::id(),
+        prepend(type<A9>::id(),
+        prepend(type<A10>::id(),
+                signature0())))))))))));
     }
 
 
@@ -625,6 +630,16 @@ public:
     held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
     held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : T(a1, a2, a3, a4, a5, a6) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : T(a1, a2, a3, a4, a5, a6, a7) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : T(a1, a2, a3, a4, a5, a6, a7, a8) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 };
 
 // Abstract base class for all obj holders. Base for template class
@@ -676,6 +691,21 @@ public:
     template <class A1, class A2, class A3, class A4, class A5>
     instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) :
         m_held(p, a1, a2, a3, a4, a5) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) :
+        m_held(p, a1, a2, a3, a4, a5, a6) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 
  public: // implementation of instance_holder_base required interface
     bool held_by_value() { return true; }
@@ -721,8 +751,6 @@ class extension_instance : public instance
 // Template function implementations
 //
 
-tuple extension_class_coerce(ref l, ref r);
-
 template <class T, class U>
 extension_class<T, U>::extension_class()
     : extension_class_base(typeid(T).name())
@@ -743,7 +771,7 @@ void extension_class<T, U>::def_standard_coerce()
     ref coerce_fct = dict().get_item(string("__coerce__"));
     
     if(coerce_fct.get() == 0) // not yet defined
-        this->def(&extension_class_coerce, "__coerce__");
+        this->def(&standard_coerce, "__coerce__");
 }
 
 template <class T, class U>
@@ -831,4 +859,3 @@ std::vector<derived_class_info> class_registry<T>::static_derived_class_info;
 }}} // namespace boost::python::detail
 
 #endif // EXTENSION_CLASS_DWA052000_H_
-

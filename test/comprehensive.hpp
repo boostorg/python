@@ -6,8 +6,8 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
-#ifndef EXTCLASS_DEMO_DWA052200_H_
-# define EXTCLASS_DEMO_DWA052200_H_
+#ifndef BPL_TEST_DWA052200_H_
+# define BPL_TEST_DWA052200_H_
 //
 // Example code demonstrating extension class usage
 //
@@ -21,7 +21,7 @@
 # include <string>
 # include <map>
 
-namespace extclass_demo {
+namespace bpl_test {
 
 //
 // example: Foo, Bar, and Baz are C++ classes we want to wrap.
@@ -226,6 +226,6 @@ struct CompareIntPairPythonClass
     CompareIntPairPythonClass(boost::python::module_builder&);
 };
 
-} // namespace extclass_demo
+} // namespace bpl_test
 
-#endif // EXTCLASS_DEMO_DWA052200_H_
+#endif // BPL_TEST_DWA052200_H_
