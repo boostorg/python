@@ -21,6 +21,9 @@ BOOST_PYTHON_DECL void* find(
 BOOST_PYTHON_DECL rvalue_stage1_data find(
     PyObject* source, rvalue_from_python_registration const*);
 
+BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
+    PyObject* source, rvalue_from_python_registration const*);
+
 }}} // namespace boost::python::converter
 
 #endif // FIND_FROM_PYTHON_DWA2002223_HPP

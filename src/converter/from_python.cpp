@@ -29,6 +29,18 @@ BOOST_PYTHON_DECL rvalue_stage1_data find(
     return data;
 }
 
+BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
+    PyObject* source
+    , rvalue_from_python_registration const* chain)
+{
+    for (;chain != 0; chain = chain->next)
+    {
+        if (chain->convertible(source))
+            break;
+    }
+    return chain;
+}
+
 BOOST_PYTHON_DECL void* find(
     PyObject* source
     , lvalue_from_python_registration const* chain)

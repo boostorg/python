@@ -22,7 +22,7 @@ namespace detail
   }
 
   // A function generator whose static execute() function is an lvalue
-  // from_python converter using the given Extractor. U is exepcted to
+  // from_python converter using the given Extractor. U is expected to
   // be the actual type of the PyObject instance from which the result
   // is being extracted.
   template <class Extractor, class U>
