@@ -12,6 +12,7 @@
 # include <boost/type_traits/is_class.hpp>
 # include <boost/type_traits/is_const.hpp>
 # include <boost/type_traits/is_volatile.hpp>
+# include <boost/type_traits/is_member_function_pointer.hpp>
 # include <boost/type_traits/remove_cv.hpp>
 # include <boost/type_traits/remove_reference.hpp>
 # include <boost/type_traits/remove_pointer.hpp>
@@ -70,6 +71,25 @@ struct is_pointer_to_function<T*> : is_function<T>
 };
 
 template <class T>
+struct is_reference_to_member_function_pointer_impl : mpl::bool_c<false>
+{
+};
+
+template <class T>
+struct is_reference_to_member_function_pointer_impl<T&>
+    : is_member_function_pointer<typename remove_cv<T>::type>
+{
+};
+
+
+template <class T>
+struct is_reference_to_member_function_pointer
+    : is_reference_to_member_function_pointer_impl<T>
+{
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
+};
+
+template <class T>
 struct is_reference_to_function_pointer_aux
 {
     // There's no such thing as a pointer-to-cv-function, so we don't need specializations for those
@@ -85,7 +105,11 @@ struct is_reference_to_function_pointer_aux
 
 template <class T>
 struct is_reference_to_function_pointer
-    : mpl::if_c<is_reference_to_function<T>::value, mpl::bool_c<false>, is_reference_to_function_pointer_aux<T> >::type
+    : mpl::if_c<
+        is_reference_to_function<T>::value
+        , mpl::bool_c<false>
+        , is_reference_to_function_pointer_aux<T>
+     >::type
 {
 };
 
@@ -372,16 +396,50 @@ struct is_reference_to_pointer
     BOOST_STATIC_CONSTANT(
         bool, value
         = (is_reference<T>::value
-           && sizeof(reference_to_pointer_helper(t)) == sizeof(inner_yes_type))
+           && sizeof((reference_to_pointer_helper)(t)) == sizeof(inner_yes_type))
         );
 };
 
 template <class T>
 struct is_reference_to_function_pointer
-    : mpl::if_<is_reference<T>
-        , is_pointer_to_function_aux<T>, mpl::bool_c<false> >::type
+    : mpl::if_<
+        is_reference<T>
+        , is_pointer_to_function_aux<T>
+        , mpl::bool_c<false>
+     >::type
 {
     BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_function_pointer,(T))
+};
+
+
+template <class T>
+struct is_member_function_pointer_help
+    : mpl::if_<is_member_function_pointer<T>, inner_yes_type, inner_no_type>
+{};
+
+template <typename V>
+typename is_member_function_pointer_help<V>::type member_function_pointer_helper(V&);
+outer_no_type member_function_pointer_helper(...);
+
+template <class T>
+struct is_pointer_to_member_function_aux
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = sizeof((member_function_pointer_helper)(t)) == sizeof(inner_yes_type));
+    typedef mpl::bool_c<value> type;
+};
+
+template <class T>
+struct is_reference_to_member_function_pointer
+    : mpl::if_<
+        is_reference<T>
+        , is_pointer_to_member_function_aux<T>
+        , mpl::bool_c<false>
+     >::type
+{
+    BOOST_MPL_AUX_LAMBDA_SUPPORT(1,is_reference_to_member_function_pointer,(T))
 };
 
 template <typename V>
