@@ -311,7 +311,7 @@ struct init : detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 {
     typedef boost::mpl::type_list<T0> l0;
     BOOST_PP_REPEAT
-        (BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY), BOOST_PYTHON_APPEND_TO_INIT, 0);
+        (BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY), BOOST_PYTHON_APPEND_TO_INIT, 0)
 
     typedef BOOST_PP_CAT(l, BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY)) sequence;
 
