@@ -40,6 +40,7 @@ namespace boost { namespace python { namespace indexing {
   private:
     typedef typename Algorithms::container container;
     typedef typename Algorithms::reference reference;
+    typedef typename Algorithms::slice_helper slice_helper;
 
     static boost::python::list get_slice (container &, slice);
     static void set_slice (container &, slice, boost::python::object);
@@ -66,52 +67,6 @@ namespace boost { namespace python { namespace indexing {
     private:
       Policy mBase;
     };
-  };
-
-  template<bool doit> struct maybe_insert {
-    template<class Algorithms>
-    static void apply (typename Algorithms::container &
-                       , typename Algorithms::index_param
-                       , typename Algorithms::value_param)
-    {
-      PyErr_SetString (PyExc_TypeError
-                       , "container does not support item insertion");
-
-      boost::python::throw_error_already_set ();
-    }
-  };
-
-  template<> struct maybe_insert<true> {
-    template<class Algorithms>
-    static void apply (typename Algorithms::container &c
-                       , typename Algorithms::index_param i
-                       , typename Algorithms::value_param v)
-    {
-      Algorithms::insert (c, i, v);
-    }
-  };
-
-  template<bool doit> struct maybe_erase {
-    template<class Algorithms>
-    static void apply (typename Algorithms::container &
-                       , typename Algorithms::index_param
-                       , typename Algorithms::index_param)
-    {
-      PyErr_SetString (PyExc_TypeError
-                       , "container does not support item deletion");
-
-      boost::python::throw_error_already_set ();
-    }
-  };
-
-  template<> struct maybe_erase<true> {
-    template<class Algorithms>
-    static void apply (typename Algorithms::container &c
-                       , typename Algorithms::index_param from
-                       , typename Algorithms::index_param to)
-    {
-      Algorithms::erase_range (c, from, to);
-    }
   };
 
   //////////////////////////////////////////////////////////////////////////
@@ -223,16 +178,14 @@ namespace boost { namespace python { namespace indexing {
 
     boost::python::list result;
 
-    sl.setLength (Algorithms::size(c));
+    slice_helper helper (sl, c);
 
-    for (int index = sl.start(); sl.inRange (index); index += sl.step())
+    while (helper.next())
       {
         // Apply the result converter (only) to each element before
         // appending. postcall is done in postcall_override
 
-        result.append
-          (boost::python::handle<>
-           (converter (Algorithms::get (c, index))));
+        result.append (boost::python::handle<> (converter (helper.current())));
       }
 
     return result;
@@ -247,17 +200,15 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::set_slice (container &c, slice sl, boost::python::object values)
   {
-    std::auto_ptr<python_iterator> iterPtr (make_iterator (values));
+    std::auto_ptr<python_iterator> read_ptr (make_iterator (values));
 
-    if (!iterPtr.get())
+    if (!read_ptr.get())
       {
         PyErr_SetString (PyExc_TypeError
                          , "Type assigned to slice must be a sequence");
 
         boost::python::throw_error_already_set();
       }
-
-    typedef typename Algorithms::container_traits traits;
 
     // Try two kinds of extractors - the first is more efficient (using
     // a reference to existing object, if possible and sensible) and the
@@ -276,77 +227,29 @@ namespace boost { namespace python { namespace indexing {
     // This could be prevented if the length of the replacement sequence
     // is known in advance (via __len__, for example) but not otherwise.
 
-    sl.setLength (Algorithms::size (c));   // Current length of our container
-    int index = sl.start();                // Index in our container for update
+    slice_helper write_helper (sl, c);
 
     // Overwrite and/or insert elements
-    while (iterPtr->next())
+    while (read_ptr->next())
       {
-        if (sl.inRange (index))
+        extractor1 ex1 (read_ptr->current());
+
+        if (ex1.check())
           {
-            extractor1 ex1 (iterPtr->current());
-
-            if (ex1.check())
-              {
-                Algorithms::assign (c, index, ex1);
-              }
-
-            else
-              {
-                Algorithms::assign (c, index, extractor2 (iterPtr->current()));
-              }
-          }
-
-        else if (sl.step() != 1)
-          {
-            PyErr_SetString (PyExc_ValueError
-                             , "attempt to insert via extended slice");
-
-            boost::python::throw_error_already_set ();
+            write_helper.write (ex1);
           }
 
         else
           {
-            // Could optimize this in some cases (i.e. if the length of
-            // the replacement sequence is known)
-
-            extractor1 ex1 (iterPtr->current());
-
-            if (ex1.check())
-              {
-                maybe_insert<traits::has_insert>
-                  ::template apply<Algorithms> (c, index, ex1);
-
-                Algorithms::assign (c, index, ex1);
-              }
-
-            else
-              {
-                maybe_insert<traits::has_insert>
-                  ::template apply<Algorithms>
-                  (c, index, extractor2 (iterPtr->current()));
-              }
+            write_helper.write (extractor2 (read_ptr->current()));
           }
-
-        index += sl.step();
       }
 
-    // Erase any remaining elements in the slice
-    if (sl.inRange(index))
+    if (write_helper.next())
       {
-        if (sl.step() != 1)
-          {
-            PyErr_SetString (PyExc_ValueError
-                             , "attempt to erase via extended slice");
-
-            boost::python::throw_error_already_set ();
-          }
-
-        else
-          {
-            maybe_erase<traits::has_erase>
-              ::template apply<Algorithms> (c, index, sl.stop());
-          }
+        // We've run out of elements to read, but write_helper is not
+        // finished. Erase the remaining element(s) in the slice
+        write_helper.erase_remaining();
       }
   }
 
@@ -359,13 +262,11 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::del_slice (container &c, slice sl)
   {
-    typename Algorithms::size_type length (Algorithms::size (c));
+    slice_helper helper (sl, c);
 
-    // avoid bounds check problems with deleting [0..0) when length==0
-    if (length)
+    if (helper.next())
       {
-        sl.setLength (length);
-        Algorithms::erase_range (c, sl.start(), sl.stop());
+        helper.erase_remaining();
       }
   }
 
@@ -378,12 +279,15 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::extend (container &c, boost::python::object values)
   {
+    // Set up a slice at the tail end of the container, and use
+    // set_slice to do all the hard work.
+
     boost::python::object length
-      ((boost::python::detail::new_reference
+      ((boost::python::handle<>
         (PyInt_FromLong (Algorithms::size (c)))));
 
     slice sl
-      ((boost::python::detail::new_reference
+      ((boost::python::handle<>
         (PySlice_New
          (length.ptr()
           , boost::python::object().ptr()
