@@ -190,7 +190,7 @@ struct X
     Y inner;
 };
 
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_f_overloads, X::f, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(f_member_overloads, f, 1, 3)
 
 BOOST_PYTHON_MODULE(args_ext)
 {
@@ -205,7 +205,7 @@ BOOST_PYTHON_MODULE(args_ext)
             
     class_&lt;X&gt;(&quot;X&quot;, &quot;This is X's docstring&quot;)
         .def(&quot;f1&quot;, &amp;X::f, 
-                X_f_overloads(
+                f_member_overloads(
                     args(&quot;x&quot;, &quot;y&quot;, &quot;z&quot;), &quot;f's docstring&quot;
                 )[return_internal_reference&lt;&gt;()]
         )

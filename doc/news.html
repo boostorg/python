@@ -29,13 +29,24 @@
     <hr>
 
     <dl class="page-index">
-      <dt>8 Sept 2004</dt>
+      <dt>19 November 2004 - 1.32 release</dt>
 
       <dd>
         <ul>
+                               <li>Updated to use the Boost Software License.</li>
+                               <li>A new, <a href="libs/python/doc/tutorial/doc/html/python/exposing.html#python.class_virtual_functions">better method of wrapping classes with virtual functions</a> has been implemented.</li>
+                               <li>Support for upcoming GCC symbol export control features have been folded in, thanks to Niall Douglas.</li>
+                               <li>Improved support for <code>std::auto_ptr</code>-like types.</li>
+                               <li>The Visual C++ bug that makes top-level <i>cv-qualification</i> of function parameter types part of the function type has been worked around.</li>
+                               <li>Components used by other libraries have been moved out of <code>python/detail</code> and into <code> boost/detail</code> to improve dependency relationships.</li>        
+                               <li>Miscellaneous bug fixes and compiler workarounds.</li>
+        </ul>
+      </dd>
+      <dt>8 Sept 2004</dt>
+
+      <dd>
         Support for Python's Bool type, thanks to <a
         mailto="dholth-at-fastmail.fm">Daniel Holth</a>.
-        </ul>
       </dd>
 
       <dt>11 Sept 2003</dt>
@@ -189,12 +200,12 @@ BOOST_PYTHON_MODULE(test)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     11 September 2003 
+     19 November 2004 
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href="../../../people/dave_abrahams.htm">Dave
-    Abrahams</a> 2002-2003. All Rights Reserved.</i></p>
+    Abrahams</a> 2002-2003.</i></p>
   </body>
 </html>
 

@@ -1,9 +1,9 @@
 index.html
-boost_python.hello.html
-boost_python.exposing.html
-boost_python.functions.html
-boost_python.object.html
-boost_python.embedding.html
-boost_python.iterators.html
-boost_python.exception.html
-boost_python.techniques.html
+python/hello.html
+python/exposing.html
+python/functions.html
+python/object.html
+python/embedding.html
+python/iterators.html
+python/exception.html
+python/techniques.html
