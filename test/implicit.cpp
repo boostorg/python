@@ -27,7 +27,7 @@ BOOST_PYTHON_MODULE_INIT(implicit_ext)
     def("x_value", x_value);
     def("make_x", make_x);
 
-    class_<X>("X", init<int>())
+    class_<X>("X", args<int>())
         .def("value", &X::value)
         .def("set", &X::set)
         ;

@@ -17,6 +17,6 @@ BOOST_PYTHON_MODULE_INIT(bienstman3_ext)
   using namespace boost::python;
 
   class_<V, boost::noncopyable>("V", no_init);
-  class_<B>("B", init<const V&>());
+  class_<B>("B", args<const V&>());
 
 }

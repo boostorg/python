@@ -17,7 +17,7 @@ BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
 
   class_<A, shared_ptr<A> >(
       "A"
-      , init<double, double, double, double, double, double, double, double, double>()
+      , args<double, double, double, double, double, double, double, double, double>()
       )
       ;
 

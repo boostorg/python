@@ -34,12 +34,12 @@ BOOST_PYTHON_MODULE_INIT(nested_ext)
 
     // Establish X as the current scope.
     scope x_class(
-        class_<X>("X", init<int>())
+        class_<X>("X", args<int>())
            .def(str(self))
         );
 
     // Y will now be defined in the current scope
-    class_<Y>("Y", init<int>())
+    class_<Y>("Y", args<int>())
         .def(str(self))
         ;
 }

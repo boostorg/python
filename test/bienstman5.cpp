@@ -17,7 +17,7 @@ BOOST_PYTHON_MODULE_INIT(bienstman5_ext)
 {
   using namespace boost::python;
 
-  class_<M>("M", init<std::complex<double> const&>())
+  class_<M>("M", args<std::complex<double> const&>())
       ;
 }
 

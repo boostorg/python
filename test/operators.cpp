@@ -59,7 +59,7 @@ std::ostream& operator<<(std::ostream& s, X const& x)
 
 BOOST_PYTHON_MODULE_INIT(operators_ext)
 {
-    class_<X>("X", init<int>())
+    class_<X>("X", args<int>())
         .def("value", &X::value)
         .def(self - self)
         .def(self - int())
@@ -77,7 +77,7 @@ BOOST_PYTHON_MODULE_INIT(operators_ext)
         .def(pow(int(),self))
         ;
 
-    class_<test_class<1> >("Z", init<int>())
+    class_<test_class<1> >("Z", args<int>())
         .def(int_(self))
         .def(float_(self))
         .def(complex_(self))

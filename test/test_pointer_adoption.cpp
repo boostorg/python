@@ -26,7 +26,7 @@ struct inner
     {
         this->s = new_s;
     }
-
+    
     std::string s;
 };
 
@@ -42,7 +42,7 @@ struct A : Base
     {
         ++a_instances;
     }
-
+    
     ~A()
     {
         --a_instances;
@@ -65,7 +65,7 @@ struct B
 {
     B() : x(0) {}
     B(A* x_) : x(x_) {}
-
+    
     inner const* adopt(A* x) { this->x = x; return &x->get_inner(); }
 
     std::string a_content()
@@ -96,29 +96,29 @@ BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
     def("create", create, return_value_policy<manage_new_object>());
 
     def("as_A", as_A, return_internal_reference<>());
-
+    
     class_<Base>("Base")
         ;
-
-    class_<A, bases<Base> >("A", no_init)
+        
+    class_<A, bases<Base> >(no_init)
         .def("content", &A::content)
         .def("get_inner", &A::get_inner, return_internal_reference<>())
         ;
-
-    class_<inner>("inner", no_init)
+    
+    class_<inner>(no_init)
         .def("change", &inner::change)
         ;
-
+        
     class_<B>("B")
-        .def(init<A*>()[with_custodian_and_ward_postcall<1,2>()])
-
+        .def_init(args<A*>(), with_custodian_and_ward_postcall<1,2>())
+            
         .def("adopt", &B::adopt
              // Adopt returns a pointer referring to a subobject of its 2nd argument (1st being "self")
              , return_internal_reference<2
              // Meanwhile, self holds a reference to the 2nd argument.
              , with_custodian_and_ward<1,2> >()
             )
-
+            
          .def("a_content", &B::a_content)
         ;
 }
