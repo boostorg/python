@@ -101,7 +101,10 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          return numeric_cast<T>(PyInt_AS_LONG(intermediate));
+          long x = PyInt_AsLong(intermediate);
+          if (PyErr_Occurred())
+              throw_error_already_set();
+          return numeric_cast<T>(x);
       }
   };
 
