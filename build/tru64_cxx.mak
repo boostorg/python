@@ -2,57 +2,62 @@
 #
 #   Create a new empty directory anywhere (preferably not in the boost tree).
 #   Copy this Makefile to that new directory and rename it to "Makefile"
-#   Set the BOOST pathname below.
+#   Adjust the pathnames below.
 #
 #   make softlinks     Create softlinks to source code and tests
 #   make               Compile all sources
 #   make test          Run doctest tests
 #   make clean         Remove all object files
 #   make unlink        Remove softlinks
+#
+# Revision history:
+#   12 Apr 01 new macro ROOT to simplify configuration (R.W. Grosse-Kunstleve)
+#   Initial version: R.W. Grosse-Kunstleve
 
-BOOST= /net/cci/rwgk/boost
+ROOT=$(HOME)
+BOOST=$(ROOT)/boost
 
-PYEXE= /usr/local/Python-1.5.2/bin/python
-PYINC= -I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE= /usr/local/Python-2.0/bin/python
-#PYINC= -I/usr/local/Python-2.0/include/python2.0
-#STLPORTINC= -I/usr/local/STLport-4.1b3/stlport
-#STLPORTINC= -I/usr/local/STLport-4.1b4/stlport
-#STLPORTINC= -I/net/anaconda/scratch1/rwgk/STLport-4.1b5/stlport
+PYEXE=/usr/local/Python-1.5.2/bin/python
+PYINC=-I/usr/local/Python-1.5.2/include/python1.5
+#PYEXE=/usr/local/Python-2.0/bin/python
+#PYINC=-I/usr/local/Python-2.0/include/python2.0
+#STLPORTINC=-I/usr/local/STLport-4.1b3/stlport
+#STLPORTINC=-I/usr/local/STLport-4.1b4/stlport
 #STLPORTOPTS= \
 # -D__USE_STD_IOSTREAM \
 # -D__STL_NO_SGI_IOSTREAMS \
 # -D__STL_USE_NATIVE_STRING \
 # -D__STL_NO_NEW_C_HEADERS \
 # -D_RWSTD_COMPILE_INSTANTIATE=1
-STLPORTINC= -I/net/cci/xp/C++_C_headers
+STLPORTINC=-I$(BOOST)/boost/compatibility/cpp_c_headers
 
-STDOPTS= -std strict_ansi
-WARNOPTS= -msg_disable 186,450,1115
+STDOPTS=-std strict_ansi
 # use -msg_display_number to obtain integer tags for -msg_disable
+WARNOPTS=-msg_disable 186,450,1115
+OPTOPTS=-g
 
-CPP= cxx
-CPPOPTS= $(STLPORTINC) $(STLPORTOPTS) -I$(BOOST) $(PYINC) \
-         $(STDOPTS) $(WARNOPTS) -g
-MAKEDEP= -Em
+CPP=cxx
+CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST) $(PYINC) \
+        $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
+MAKEDEP=-Em
 
-LD= cxx
-LDOPTS= -shared -expect_unresolved 'Py*' -expect_unresolved '_Py*'
+LD=cxx
+LDOPTS=-shared -expect_unresolved 'Py*' -expect_unresolved '_Py*'
 
-#HIDDEN= -hidden
+#HIDDEN=-hidden
 
-OBJ = classes.o conversions.o extension_class.o functions.o \
-      init_function.o module_builder.o \
-      objects.o types.o cross_module.o
-DEPOBJ= $(OBJ) \
-        comprehensive.o \
-        abstract.o \
-        getting_started1.o getting_started2.o getting_started3.o \
-        simple_vector.o \
-        do_it_yourself_converters.o \
-        pickle1.o pickle2.o pickle3.o \
-        noncopyable_export.o noncopyable_import.o \
-        ivect.o dvect.o
+OBJ=classes.o conversions.o extension_class.o functions.o \
+    init_function.o module_builder.o \
+    objects.o types.o cross_module.o
+DEPOBJ=$(OBJ) \
+       comprehensive.o \
+       abstract.o \
+       getting_started1.o getting_started2.o getting_started3.o \
+       simple_vector.o \
+       do_it_yourself_converters.o \
+       pickle1.o pickle2.o pickle3.o \
+       noncopyable_export.o noncopyable_import.o \
+       ivect.o dvect.o
 
 .SUFFIXES: .o .cpp
 
@@ -132,13 +137,7 @@ test:
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
-
-tst:
-	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect1.py
-	$(PYEXE) tst_dvect1.py
-	$(PYEXE) tst_ivect2.py
-	$(PYEXE) tst_dvect2.py
+	$(PYEXE) test_cross_module.py
 
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input

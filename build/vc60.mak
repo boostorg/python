@@ -5,27 +5,33 @@
 #   make test          Run doctest tests
 #   make clean         Remove all object files
 #   make del           Remove the sources and tests
+#
+# Revision history:
+#   12 Apr 01 new macro ROOT to simplify configuration (R.W. Grosse-Kunstleve)
+#   Initial version: R.W. Grosse-Kunstleve
 
-BOOST_WIN= "L:\boost"
-BOOST_UNIX= /net/cci/rwgk/boost
+ROOT=L:
+BOOST_WIN="$(ROOT)\boost"
+BOOST_UNIX=$(HOME)/boost
 
-PYEXE= "C:\Program files\Python\python.exe"
-PYINC= /I"C:\Program files\Python\include"
-PYLIB= "C:\Program files\Python\libs\python15.lib"
+PYEXE="C:\Program files\Python\python.exe"
+PYINC=/I"C:\Program files\Python\include"
+PYLIB="C:\Program files\Python\libs\python15.lib"
 
-STDOPTS= /nologo /MD /GR /GX /Zm200
+STDOPTS=/nologo /MD /GR /GX /Zm200
 WARNOPTS=
+OPTOPTS=
 
-CPP= cl.exe
-CPPOPTS= $(STLPORTINC) $(STLPORTOPTS) /I$(BOOST_WIN) $(PYINC) \
-         $(STDOPTS) $(WARNOPTS)
+CPP=cl.exe
+CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) /I$(BOOST_WIN) $(PYINC) \
+        $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
 
-LD= link.exe
-LDOPTS= /nologo /dll /incremental:no
+LD=link.exe
+LDOPTS=/nologo /dll /incremental:no
 
-OBJ = classes.obj conversions.obj extension_class.obj functions.obj \
-      init_function.obj module_builder.obj \
-      objects.obj types.obj cross_module.obj
+OBJ=classes.obj conversions.obj extension_class.obj functions.obj \
+    init_function.obj module_builder.obj \
+    objects.obj types.obj cross_module.obj
 
 .SUFFIXES: .obj .cpp
 
@@ -98,13 +104,7 @@ test:
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
-
-tst:
-	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect1.py
-	$(PYEXE) tst_dvect1.py
-	$(PYEXE) tst_ivect2.py --broken-auto-ptr
-	$(PYEXE) tst_dvect2.py --broken-auto-ptr
+	$(PYEXE) test_cross_module.py --broken-auto-ptr
 
 clean:
 	del *.obj

@@ -5,6 +5,10 @@
 #   make test          Run doctest tests
 #   make clean         Remove all object files
 #   make del           Remove the sources and tests
+#
+# Revision history:
+#   12 Apr 01 new macro ROOT to simplify configuration (R.W. Grosse-Kunstleve)
+#   Initial version: R.W. Grosse-Kunstleve
 
 # To install mingw32, follow instructions at:
 #   http://starship.python.net/crew/kernr/mingw32/Notes.html
@@ -26,26 +30,28 @@
 # -fvtable-thunks eliminates the compiler warning, but
 #                 "import boost_python_test" still causes a crash.
 
-BOOST_WIN= "L:\boost"
-BOOST_UNIX= /net/cci/rwgk/boost
+ROOT=L:
+BOOST_WIN="$(ROOT)\boost"
+BOOST_UNIX=$(HOME)/boost
 
-PYEXE= "C:\Program files\Python\python.exe"
-PYINC= -I"C:\usr\include\python1.5"
-PYLIB= "C:\usr\lib\libpython15.a"
+PYEXE="C:\Program files\Python\python.exe"
+PYINC=-I"C:\usr\include\python1.5"
+PYLIB="C:\usr\lib\libpython15.a"
 
-STDOPTS= -ftemplate-depth-21
+STDOPTS=-ftemplate-depth-21
 WARNOPTS=
+OPTOPTS=-g
 
-CPP= g++
-CPPOPTS= $(STLPORTINC) $(STLPORTOPTS) -I$(BOOST_WIN) $(PYINC) \
-         $(STDOPTS) $(WARNOPTS) -g
+CPP=g++
+CPPOPTS=$(STLPORTINC) $(STLPORTOPTS) -I$(BOOST_WIN) $(PYINC) \
+        $(STDOPTS) $(WARNOPTS) $(OPTOPTS)
 
-LD= g++
-LDOPTS= -shared
+LD=g++
+LDOPTS=-shared
 
-OBJ = classes.o conversions.o extension_class.o functions.o \
-      init_function.o module_builder.o \
-      objects.o types.o cross_module.o
+OBJ=classes.o conversions.o extension_class.o functions.o \
+    init_function.o module_builder.o \
+    objects.o types.o cross_module.o
 
 .SUFFIXES: .o .cpp
 
@@ -62,8 +68,8 @@ libboost_python.a: $(OBJ)
 	del libboost_python.a
 	ar r libboost_python.a $(OBJ)
 
-DLLWRAPOPTS= -s --driver-name g++ -s
-             --entry _DllMainCRTStartup@12 --target=i386-mingw32
+DLLWRAPOPTS=-s --driver-name g++ -s \
+            --entry _DllMainCRTStartup@12 --target=i386-mingw32
 
 boost_python_test.pyd: $(OBJ) comprehensive.o
 	dllwrap $(DLLWRAPOPTS) \
@@ -163,13 +169,7 @@ test:
 	$(PYEXE) test_pickle1.py
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
-
-tst:
-	$(PYEXE) tst_noncopyable.py
-	$(PYEXE) tst_ivect1.py
-	$(PYEXE) tst_dvect1.py
-	$(PYEXE) tst_ivect2.py
-	$(PYEXE) tst_dvect2.py
+	$(PYEXE) test_cross_module.py
 
 clean:
 	del *.o

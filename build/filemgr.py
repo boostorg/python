@@ -1,3 +1,7 @@
+# Revision history:
+#   12 Apr 01 use os.path, shutil
+#   Initial version: R.W. Grosse-Kunstleve
+
 bpl_src = "/libs/python/src"
 bpl_tst = "/libs/python/test"
 bpl_exa = "/libs/python/example"
@@ -36,7 +40,6 @@ bpl_exa + "/test_pickle3.py",
 bpl_exa + "/noncopyable.h",
 bpl_exa + "/noncopyable_export.cpp",
 bpl_exa + "/noncopyable_import.cpp",
-bpl_exa + "/tst_noncopyable.py",
 bpl_exa + "/dvect.h",
 bpl_exa + "/dvect.cpp",
 bpl_exa + "/dvect_conversions.cpp",
@@ -45,10 +48,12 @@ bpl_exa + "/ivect.h",
 bpl_exa + "/ivect.cpp",
 bpl_exa + "/ivect_conversions.cpp",
 bpl_exa + "/ivect_defs.cpp",
+bpl_exa + "/tst_noncopyable.py",
 bpl_exa + "/tst_dvect1.py",
 bpl_exa + "/tst_dvect2.py",
 bpl_exa + "/tst_ivect1.py",
 bpl_exa + "/tst_ivect2.py",
+bpl_exa + "/test_cross_module.py",
 )
 
 defs = (
@@ -70,7 +75,7 @@ defs = (
 
 if (__name__ == "__main__"):
 
-  import sys, os, string
+  import sys, os, shutil
 
   path = sys.argv[1]
   mode = sys.argv[2]
@@ -78,37 +83,35 @@ if (__name__ == "__main__"):
     raise RuntimeError, \
       "usage: python filemgr.py path <softlinks|unlink|cp|rm|copy|del>"
 
-  translation_table = string.maketrans("/", "\\")
-
-  if (mode == "copy"):
+  if (mode in ("cp", "copy")):
     for fn in files:
-      fn = string.translate(fn, translation_table)
-      os.system("copy " + path + fn + " .")
-
-  elif (mode == "cp"):
-    for fn in files:
-      os.system("cp " + path + fn + " .")
+      f = os.path.basename(fn)
+      print "Copying: " + f
+      shutil.copy(path + fn, ".")
 
   elif (mode == "softlinks"):
     for fn in files:
-      f = string.split(fn, "/")[-1]
-      if (os.access(f, os.F_OK)):
+      f = os.path.basename(fn)
+      if (os.path.exists(f)):
         print "File exists: " + f
       else:
         print "Linking: " + f
-        os.system("ln -s " + path + os.sep + fn + " .")
+        os.symlink(path + fn, f)
 
   elif (mode in ("rm", "del")):
     for fn in files:
-      flds = string.split(fn, "/")
-      try: os.unlink(flds[-1])
-      except: pass
+      f = os.path.basename(fn)
+      if (os.path.exists(f)):
+        print "Removing: " + f
+        try: os.unlink(f)
+        except: pass
 
   elif (mode == "unlink"):
     for fn in files:
-      f = string.split(fn, "/")[-1]
-      if (os.system("test -e " + f) == 0):
-        if (os.system("test -L " + f) == 0):
+      f = os.path.basename(fn)
+      if (os.path.exists(f)):
+        if (os.path.islink(f)):
+          print "Unlinking: " + f
           try: os.unlink(f)
           except: pass
         else:
@@ -117,6 +120,7 @@ if (__name__ == "__main__"):
   if (mode in ("softlinks", "cp", "copy")):
     for d in defs:
       fn = d + ".def"
+      print "Creating: " + fn
       f = open(fn, "w")
       f.write("EXPORTS\n")
       f.write("\tinit" + d + "\n")
@@ -125,5 +129,7 @@ if (__name__ == "__main__"):
   if (mode in ("unlink", "rm", "del")):
     for d in defs:
       fn = d + ".def"
-      try: os.unlink(fn)
-      except: pass
+      if (os.path.exists(fn)):
+        print "Removing: " + fn
+        try: os.unlink(fn)
+        except: pass
