@@ -31,7 +31,7 @@
 
 namespace boost { namespace python { namespace indexing {
 #if !BOOST_MSVC
-  enum IndexStyle {
+  enum index_style_t {
     index_style_none         // No random access (iteration only)
     , index_style_nonlinear  // Random access by key (no slicing)
     , index_style_linear     // Random access by integer index (allows slicing)
@@ -42,10 +42,10 @@ namespace boost { namespace python { namespace indexing {
   // like (traits::index_style == index_style_linear) is a
   // compile-time constant. However, the problem doesn't exist for
   // int.
-  typedef int IndexStyle;
-  IndexStyle const index_style_none = 0;
-  IndexStyle const index_style_nonlinear = 1;
-  IndexStyle const index_style_linear = 2;
+  typedef int index_style_t;
+  index_style_t const index_style_none = 0;
+  index_style_t const index_style_nonlinear = 1;
+  index_style_t const index_style_linear = 2;
 #endif
 
   //////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ namespace boost { namespace python { namespace indexing {
     BOOST_STATIC_CONSTANT (
         bool, has_mutable_ref = is_mutable_ref<reference>::value);
 
-    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_none);
+    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_none);
   };
 
   template<typename Iterator>
@@ -91,7 +91,7 @@ namespace boost { namespace python { namespace indexing {
   struct random_access_iterator_traits
     : public bidirectional_iterator_traits<Iterator>
   {
-    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_linear);
+    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_linear);
   };
 
   namespace iterator_detail {

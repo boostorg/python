@@ -76,7 +76,7 @@ namespace boost { namespace python { namespace indexing {
   // __getitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<IndexStyle>
+  template<index_style_t style>
   struct maybe_add_getitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -121,7 +121,7 @@ namespace boost { namespace python { namespace indexing {
   // __setitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, IndexStyle style>
+  template<bool doit, index_style_t style>
   struct maybe_add_setitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -166,7 +166,7 @@ namespace boost { namespace python { namespace indexing {
   // __delitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, IndexStyle style>
+  template<bool doit, index_style_t style>
   struct maybe_add_delitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -402,7 +402,7 @@ namespace boost { namespace python { namespace indexing {
   // count dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, IndexStyle>
+  template<bool doit, index_style_t style>
   struct maybe_add_count {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }

@@ -160,7 +160,7 @@ namespace boost { namespace python { namespace indexing {
     typedef typename boost::call_traits<key_type>::param_type   key_param;
     typedef typename boost::call_traits<index_type>::param_type index_param;
 
-    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
+    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool,   has_find        = true);
 
     BOOST_STATIC_CONSTANT (bool,   has_mutable_ref = false);
@@ -186,7 +186,7 @@ namespace boost { namespace python { namespace indexing {
     typedef typename boost::call_traits<key_type>::param_type   key_param;
     typedef typename boost::call_traits<index_type>::param_type index_param;
 
-    BOOST_STATIC_CONSTANT (IndexStyle,   index_style = index_style_nonlinear);
+    BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool,   has_find       = true);
     BOOST_STATIC_CONSTANT (bool,   is_reorderable = false);
     // std::map::reference (reference to the mapped type) is mutable,
