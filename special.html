@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
 "http://www.w3.org/TR/REC-html40/strict.dtd">
     <title>
-      Special Method Name Support
+      Special Method and Operator Support
     </title>
     <div>
       <h1>
          <img width="277" height="86" id="_x0000_i1025" align="center" src= 
-        "c++boost.gif" alt="c++boost.gif (8819 bytes)">Special Method Name
-        Support
+        "c++boost.gif" alt="c++boost.gif (8819 bytes)">Special Method
+        and Operator Support
       </h1>
       <h2>
          Overview
@@ -18,121 +18,515 @@
         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
          special method names</a> supported by real Python class instances <em>except</em> 
          <code>__complex__</code> (more on the reasons <a href="#reasons">below</a>). 
+         Supported operators include <a href="#general">general</a>,
+         <a href="#numeric">numeric</a>, and <a href="#sequence_and_mapping">sequence and 
+         mapping</a> operators. In addition, py_cpp provides a simple way to export member 
+         variables and define attributes by means of <a href="#getter_setter">getters and 
+         setters</a>.
 
 
-<h2>Numeric Operators</h2>
+<a name="general">
+<h2>General Operators</h2>
+</a>
 
-There are two fundamental ways to define numeric operators within py_cpp: automatic wrapping 
-and manual wrapping. Suppose, C++ defines an addition operator for type <code>Rational</code>, so that we can write:
+Python provides a number of special operatos for basic customization of a class:
+
+<dl>
+<dt><b><tt class='method'>__repr__:</tt></b>
+<dd>create a string representation from which the object can be reconstructed
+<p>
+<dt><b><tt class='method'>__str__:</tt></b>
+<dd>create a string representation which is suitable for printing
+<p>
+<dt><b><tt class='method'>__cmp__:</tt></b>
+<dd>three-way compare function, used to implement comparison operators (&lt; etc.)
+<p>
+<dt><b><tt class='method'>__hash__:</tt></b>
+<dd>needed to use the object as a dictionary key (only allowed if __cmp__ is also defined)
+<p>
+<dt><b><tt class='method'>__nonzero__:</tt></b>
+<dd>called if the object is used as a truth value (e.g. in an if statement)
+<p>
+<dt><b><tt class='method'>__call__:</tt></b>
+<dd>make instances of the class callable like a function
+<p>
+</dl>
+
+If we have a suitable C++ function that supports any of these features, we can export it like any other function, using its Python special name. For example, suppose that class <code>Foo</code> provides a string conversion function:
 
 <pre>
-    Rational a, b, c;
+    std::string to_string(Foo const &amp; f)
+    {
+        std::ostringstream s;
+        s &lt;&lt f;
+        return s.str();
+    }
+</pre>
+
+This function would be wrapped like this:
+
+<pre>
+    py::ClassWrapper&lt:Foo&gt; foo_class(my_module, "Foo");
+    foo_class.def(&amp;to_string, "__str__");
+</pre>
+
+Note that py_cpp also supports <em>automatic wrapping</em> in case of __str__ and __cmp__. This is explained in the <a href="#numeric">next section</a> and the <a href="#numeric_table">table of numeric operators</a>. 
+
+<a name="numeric">
+<h2>Numeric Operators</h2>
+</a>
+
+There are two fundamental ways to define numeric operators within py_cpp: manual wrapping (as is done with <a href="#general">general operators</a>) and automatic wrapping. Lets start with the second possibility. Suppose, C++ defines a class <code>Int</code> (which might represent an infinite-precision integer) which support addition, so that we can write (in C++):
+
+<pre>
+    Int a, b, c;
     ...
     c = a + b;
 </pre>
 
-To enable the same functionality in Python, we first wrap the Rational class as usual:
+To enable the same functionality in Python, we first wrap the <code>Int</code> class as usual:
 
 <pre>
-    py::ClassWrapper&lt;Rational&gt; rational_class(my_module, "Rational");
-    rational_class.def(py::Constructor&lt;&gt;());
+    py::ClassWrapper&lt;Int&gt; int_class(my_module, "Int");
+    int_class.def(py::Constructor&lt;&gt;());
     ...
 </pre>
 
 Then we export the addition operator like this:
 
 <pre>
-    rational_class.def(py::operators&lt;py::op_add&gt;());
+    int_class.def(py::operators&lt;py::op_add&gt;());
 </pre>
 
-Since Rational also supports subtraction, multiplication, adn division, we want to export those also. This can be done in a single command by 'or'ing the operator identifiers together (a complete list of these identifiers and the corresponding operators can be found in the <a href="#numeric_table">table</a>):
+Since Int also supports subtraction, multiplication, adn division, we want to export those also. This can be done in a single command by 'or'ing the operator identifiers together (a complete list of these identifiers and the corresponding operators can be found in the <a href="#numeric_table">table</a>):
 
 <pre>
-    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;());
+    int_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;());
 </pre>
 
-Note that the or-expression must be enclosed in parentheses. This form of operator definition will wrap homogeneous operators, that is operators whose left and right operand have the same type. Now, suppose that our C++ library also supports addition of Rationals and integers:
+Note that the or-expression must be enclosed in parentheses. This form of operator definition will wrap homogeneous operators, i.e. operators whose left and right operand have the same type. Now, suppose that our C++ library also supports addition of Ints and plain integers:
 
 <pre>
-    Rational a, b;
+    Int a, b;
     int i;
     ...
     a = b + i;
     a = i + b;
 </pre>
 
-To wrap these heterogeneous operators (left and right hand side have different types), we need a possibility to specify a different operand type. This is done using the <code>right_operand</code> and <code>left_operand</code> templates:
+To wrap these heterogeneous operators (left and right hand side have different types), we need a possibility to specify a different type for one of the operands. This is done using the <code>right_operand</code> and <code>left_operand</code> templates:
 
 <pre>
-    rational_class.def(py::operators&lt;py::op_add&gt;(), py::right_operand&lt;int&gt;());
-    rational_class.def(py::operators&lt;py::op_add&gt;(), py::left_operand&lt;int&gt;());
+    int_class.def(py::operators&lt;py::op_add&gt;(), py::right_operand&lt;int&gt;());
+    int_class.def(py::operators&lt;py::op_add&gt;(), py::left_operand&lt;int&gt;());
 </pre>
 
 Py_cpp uses overloading to register several variants of the same operation (more on this in the context of <a href="#coercion">coercion</a>). Again, several operators can be exported at once:
 
 <pre>
-    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(),
+    int_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(),
                        py::right_operand&lt;int&gt;());
-    rational_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(), 
+    int_class.def(py::operators&lt;(py::op_sub | py::op_mul | py::op_div)&gt;(), 
                        py::left_operand&lt;int&gt;());
 </pre>
 
 
-The type of the operand not mentioned is taken from the class object. In our example, the class object is <code>rational_class</code>, and thus the other operand's type is `<code>Rational const &amp;</code>'. You can override this default by explicitly specifying a type in the <code>operators</code> template:
+The type of the operand not mentioned is taken from the class object. In our example, the class object is <code>int_class</code>, and thus the other operand's type is `<code>Int const &amp;</code>'. You can override this default by explicitly specifying a type in the <code>operators</code> template:
 
 <pre>
-    rational_class.def(py::operators&lt;py::op_add, Rational&gt;(), py::right_operand&lt;int&gt;());
+    int_class.def(py::operators&lt;py::op_add, Int&gt;(), py::right_operand&lt;int&gt;());
 </pre>
 
-Here, `<code>Rational</code>' would be used instead of `<code>Rational const &amp;</code>'. 
+Here, `<code>Int</code>' would be used instead of `<code>Int const &amp;</code>'. 
 <p>
-Note that automatic wrapping doesn't need any specific form of <code>operator+()</code> (or any other operator), but rather wraps the <em>expression</em> `<code>left + right</code>'. That is, this mechanism can be used for any definition of <code>operator+()</code>, such as a free function `<code>Rational operator+(Rational, Rational)</code>' or a member function `<code>Rational Rational::operator+(Rational)</code>'.
+Note that automatic wrapping doesn't need any specific form of <code>operator+()</code> (or one of the other operators), but rather wraps the <em>expression</em> `<code>left + right</code>'. That is, this mechanism can be used for any definition of <code>operator+()</code>, such as a free function `<code>Int operator+(Int, Int)</code>' or a member function `<code>Int Int::operator+(Int)</code>'.
+<p>
+For the Python operators <code>pow()</code> and <code>abs()</code>, there is no corresponding C++ operator. Instead, automatic wrapping attempts to wrap C++ functions of the same name. This only works if those functions are known in namespace <code>py::detail</code>. Thus it might be necessary to add a using declaration prior to wrapping:
+
+<pre>
+    namespace py { 
+      namespace detail {
+        using my_namespace::pow;
+        using my_namespace::abs;
+    }}
+</pre>
+
 
 <p>
-In some cases, automatic wrapping of operators is not possible or not desirable. Suppose, for example, that the power operation for Rationals is defined by a set of functions <code>pow()</code>:
+In some cases, automatic wrapping of operators is not possible or not desirable. Suppose, for example, that the modulo operation for Ints is defined by a set of functions <code>mod()</code> (for automatic wrapping, we would need <code>operator%()</code>):
 
 <pre>
-    Rational pow(Rational const &amp; left, Rational const &amp; right);
-    Rational pow(Rational const &amp; left, int right);
-    Rational pow(int left, Rational const &amp; right);
+    Int mod(Int const &amp; left, Int const &amp; right);
+    Int mod(Int const &amp; left, int right);
+    Int mod(int left, Int const &amp; right);
 </pre>
 
-In order to create the Python operator "pow" from these functions, we have to wrap them manually:
+In order to create the Python operator "__mod__" from these functions, we have to wrap them manually:
 
 <pre>
-    rational_class.def((Rational (*)(Rational const &amp;, Rational const &amp;))&amp;pow, "__pow__");
-    rational_class.def((Rational (*)(Rational const &amp;, int))&amp;pow, "__pow__");
+    int_class.def((Int (*)(Int const &amp;, Int const &amp;))&amp;mod, "__mod__");
+    int_class.def((Int (*)(Int const &amp;, int))&amp;mod, "__mod__");
 </pre>
 
-The third form (with <code>int</code> as left operand) cannot be wrapped this way. We must first create a function <code>rpow()</code> with the operands reversed:
+The third form (with <code>int</code> as left operand) cannot be wrapped this way. We must first create a function <code>rmod()</code> with the operands reversed:
 
 <pre>
-    Rational rpow(Rational const &amp; right, int left)
+    Int rmod(Int const &amp; right, int left)
     {
-        return pow(left, right);
+        return mod(left, right);
     }
 </pre>
 
-This function must be wrapped under the name "__rpow__":
+This function must be wrapped under the name "__rmod__":
 
 <pre>
-    rational_class.def(&amp;rpow,  "__rpow__");
+    int_class.def(&amp;rmod,  "__rmod__");
 </pre>
 
 A list of the possible operator names is also found in the <a href="#numeric_table">table</a>.
-Special treatment is necessary to define the <a href="#ternary_pow">ternary pow</a>.
+Special treatment is necessary to export the <a href="#ternary_pow">ternary pow</a> operator.
 <p>
-Automatic and manual wrapping can be mixed arbitrarily.
+Automatic and manual wrapping can be mixed arbitrarily. Note that you cannot overload the same operator for a given extension class on both `<code>int</code>' and `<code>float</code>', because Python implicitly converts these types into each other. Thus, the overloaded variant found first (be it `<code>int</code>' or `<code>float</code>') will be used for either of the two types.
 
 <a name="coercion">
 <h4>Coercion</h4></a>
 
+Plain Python can only execute operators with identical types on the left and right hand side. If it encounters an expression where the types of the left and right operand differ, it tries to coerce these type to a common type before invoking the actual operator. Implementing good coercion functions can be difficult if many type combinations must be supported.
+<p>
+In contrast, py_cpp provides <em><a href="overloading.html">overloading</a></em>. By means of overloading, operator calling can be simplyfied drastically: you just register operators for all desired type combinations, and py_cpp automatically ensures that the correct function is called in each case. User defined coercion functions are <em>not necessary</em>. To enable operator overloading, py_cpp provides a standard coercion which is <em>implicitly registered</em> whenever automatic operator wrapping is used. 
+<p>
+If you wrap all operator functions manually, but still want to use operator overloading, you have to register the standard coercion function explicitly:
 
-        So, for example, we can wrap a
-        <code>std::map&lt;std::size_t,std::string&gt;</code> as follows:
-      <h2>
-         Example
-      </h2>
+<pre>
+    // this is not necessary if automatic operator wrapping is used
+    int_class.def_standard_coerce();
+</pre>
+
+In case you encounter a situation where you absolutely need a customized coercion, you can overload the "__coerce__" operator itself. The signature of a coercion function must look like this:
+
+<pre>
+    py::Tuple custom_coerce(PyObject * left, PyObject * right);
+</pre>
+
+The resulting <code>Tuple</code> must contain two elements which represent the values of <code>left</code> and <code>right</code> converted to the same type. Such a function is wrapped as usual:
+
+<pre>
+    some_class.def(&amp;custom_coerce, "__coerce__");
+</pre>
+
+Note that the custom coercion function is only used if it is defined <em>before</em> any automatic operator wrapping on the given class or a call to `<code>some_class.def_standard_coerce()</code>'.
+
+
+<a name="ternary_pow">
+<h4>The Ternary <code>pow()</code> Operator</h4></a>
+
+In addition to the usual binary <code>pow()</code>-operator (meaning <code>x^y</code>), Python also provides a ternary variant that implements <code>(x^y) % z</code> (presumably using a more efficient algorithm than concatenation of power and modulo operators). Automatic operator wrapping can only be used with the binary variant. Ternary <code>pow()</code> must always be wrapped manually. For a homgeneous ternary <code>pow()</code>, this is done as usual:
+
+<pre>
+    Int power(Int const &amp; first, Int const &amp; second, Int const &amp; module);
+    typedef Int (ternary_function1)(const Int&amp;, const Int&amp;, const Int&amp;);
+    ...
+    int_class.def((ternary_function1)&amp;power,  "__pow__");
+</pre>
+
+In case you want to support this function with non-uniform argument types, wrapping is a little more involved. Suppose, you have to wrap:
+
+<pre>
+    Int power(Int const &amp; first, int second, int module);
+    Int power(int first, Int const &amp; second, int module);
+    Int power(int first, int second, Int const &amp; module);
+</pre>
+
+The first variant can be wrapped as usual:
+
+<pre>
+    typedef Int (ternary_function2)(const Int&amp;, int, int);
+    int_class.def((ternary_function2)&amp;power,  "__pow__");
+</pre>
+
+In the second variant, however, <code>Int</code> appears only as second argument, and in the last one it is the third argument. Therefor we must first provide functions where the argumant order is changed so that <code>Int</code> appears in first place:
+
+<pre>
+    Int rpower(Int const &amp; second, int first, int module)
+    {
+        return power(first, second, third);
+    }
+    Int rrpower(Int const &amp; third, int first, int second)
+    {
+        return power(first, second, third);
+    }
+</pre>
+
+These functions must be wrapped under the names "__rpow__" and "__rrpow__" respectively:
+
+<pre>
+    int_class.def((ternary_function2)&amp;rpower,  "__rpow__");
+    int_class.def((ternary_function2)&amp;rrpower,  "__rrpow__");
+</pre>
+
+Note that "__rrpow__" is an extension not present in plain Python.
+
+<a name="numeric_table">
+<h4>Table of Numeric Operators</h4></a>
+
+      <p>
+         Py_cpp supports the <a href= 
+        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
+         Python operators</a> listed in the following table. Note that comparison (__cmp__) and 
+         string conversion  (__str__) operators are included 
+         in the list, although they are not strictly "numeric".
+      <p>
+      <table summary="special numeric methods" cellpadding="5" border="1" width="100%">
+          <tr>
+            <td align=center>
+              <b>Python Operator Name</b>
+            <td align=center>
+              <b>Python Expression</b>
+            <td align=center>
+              <b>C++ Operator Id</b>
+            <td align=center>
+              <b>C++ Expression Used For Automatic Wrapping</b><br>
+              with <code>cpp_left = from_python(left, Type&lt;Left&gt;())</code>,<br>
+               <code>cpp_right = from_python(right, Type&lt;Right&gt;())</code>,<br>
+               and <code>cpp_oper = from_python(oper, Type&lt;Oper&gt;())</code>
+          <tr>
+            <td>
+              <code>__add__, __radd__</code>
+            <td>
+              <code>left + right</code>
+            <td>
+              <code>py::op_add</code>
+            <td>
+              <code>cpp_left + cpp_right</code>
+          <tr>
+            <td>
+              <code>__sub__, __rsub__</code>
+            <td>
+              <code>left - right</code>
+            <td>
+              <code>py::op_sub</code>
+            <td>
+              <code>cpp_left - cpp_right</code>
+          <tr>
+            <td>
+              <code>__mul__, __rmul__</code>
+            <td>
+              <code>left * right</code>
+            <td>
+              <code>py::op_mul</code>
+            <td>
+              <code>cpp_left * cpp_right</code>
+          <tr>
+            <td>
+              <code>__div__, __rdiv__</code>
+            <td>
+              <code>left / right</code>
+            <td>
+              <code>py::op_div</code>
+            <td>
+              <code>cpp_left / cpp_right</code>
+          <tr>
+            <td>
+              <code>__mod__, __rmod__</code>
+            <td>
+              <code>left % right</code>
+            <td>
+              <code>py::op_mod</code>
+            <td>
+              <code>cpp_left % cpp_right</code>
+          <tr>
+            <td>
+              <code>__divmod__, __rdivmod__</code>
+            <td>
+              <code>(quotient, remainder) <br>= divmod(left, right)</code>
+            <td>
+              <code>py::op_divmod</code>
+            <td>
+              <code>cpp_left / cpp_right&nbsp;</code> and 
+              <code>&nbsp;cpp_left % cpp_right</code>
+          <tr>
+            <td>
+              <code>__pow__, __rpow__</code>
+            <td>
+              <code>pow(left, right)</code><br>
+              (binary power)
+            <td>
+              <code>py::op_pow</code>
+            <td>
+              <code>pow(cpp_left, cpp_right)</code>
+          <tr>
+            <td>
+              <code>__pow__</code>
+            <td>
+              <code>pow(left, right, modulo)</code><br>
+              (ternary power modulo)
+            <td colspan=2>
+              no automatic wrapping, <a href="#ternary_pow">special treatment</a> required
+          <tr>
+            <td>
+              <code>__lshift__, __rlshift__</code>
+            <td>
+              <code>left &lt;&lt; right</code>
+            <td>
+              <code>py::op_lshift</code>
+            <td>
+              <code>cpp_left &lt;&lt; cpp_right</code>
+          <tr>
+            <td>
+              <code>__rshift__, __rrshift__</code>
+            <td>
+              <code>left &gt;&gt; right</code>
+            <td>
+              <code>py::op_rshift</code>
+            <td>
+              <code>cpp_left &gt;&gt; cpp_right</code>
+          <tr>
+            <td>
+              <code>__and__, __rand__</code>
+            <td>
+              <code>left &amp; right</code>
+            <td>
+              <code>py::op_and</code>
+            <td>
+              <code>cpp_left &amp; cpp_right</code>
+          <tr>
+            <td>
+              <code>__xor__, __rxor__</code>
+            <td>
+              <code>left ^ right</code>
+            <td>
+              <code>py::op_xor</code>
+            <td>
+              <code>cpp_left ^ cpp_right</code>
+          <tr>
+            <td>
+              <code>__or__, __ror__</code>
+            <td>
+              <code>left | right</code>
+            <td>
+              <code>py::op_or</code>
+            <td>
+              <code>cpp_left | cpp_right</code>
+          <tr>
+            <td>
+              <code>__cmp__, __rcmp__</code>
+            <td>
+              <code>cmp(left, right)</code> (3-way compare) <br>
+              <code>left &lt; right</code><br>
+              <code>left &lt;= right</code><br>
+              <code>left &gt; right</code><br>
+              <code>left &gt;= right</code><br>
+              <code>left == right</code>
+            <td>
+              <code>py::op_cmp</code>
+            <td>
+              <code>cpp_left &lt; cpp_right&nbsp</code> and <code>&nbsp;cpp_right &lt; cpp_left</code>
+          <tr>
+            <td>
+              <code>__neg__</code>
+            <td>
+              <code>-oper&nbsp</code> (unary negation)
+            <td>
+              <code>py::op_neg</code>
+            <td>
+              <code>-cpp_oper</code>
+          <tr>
+            <td>
+              <code>__pos__</code>
+            <td>
+              <code>+oper&nbsp</code> (identity)
+            <td>
+              <code>py::op_pos</code>
+            <td>
+              <code>+cpp_oper</code>
+          <tr>
+            <td>
+              <code>__abs__</code>
+            <td>
+              <code>abs(oper)&nbsp</code> (absolute value)
+            <td>
+              <code>py::op_abs</code>
+            <td>
+              <code>abs(cpp_oper)</code>
+          <tr>
+            <td>
+              <code>__invert__</code>
+            <td>
+              <code>~oper&nbsp</code> (bitwise inversion)
+            <td>
+              <code>py::op_invert</code>
+            <td>
+              <code>~cpp_oper</code>
+          <tr>
+            <td>
+              <code>__int__</code>
+            <td>
+              <code>int(oper)&nbsp</code> (integer conversion)
+            <td>
+              <code>py::op_int</code>
+            <td>
+              <code>long(cpp_oper)</code>
+          <tr>
+            <td>
+              <code>__long__</code>
+            <td>
+              <code>long(oper)&nbsp</code><br> (infinite precision integer conversion)
+            <td>
+              <code>py::op_long</code>
+            <td>
+              <code>PyLong_FromLong(cpp_oper)</code>
+          <tr>
+            <td>
+              <code>__float__</code>
+            <td>
+              <code>float(oper)&nbsp</code> (float conversion)
+            <td>
+              <code>py::op_float</code>
+            <td>
+              <code>double(cpp_oper)</code>
+          <tr>
+            <td>
+              <code>__oct__</code>
+            <td>
+              <code>oct(oper)&nbsp</code>  (octal conversion)
+            <td colspan=2> 
+              must be wrapped manually (wrapped function should return a string)
+          <tr>
+            <td>
+              <code>__hex__</code>
+            <td>
+              <code>hex(oper)&nbsp</code>  (hex conversion)
+            <td colspan=2> 
+              must be wrapped manually (wrapped function should return a string)
+          <tr>
+            <td>
+              <code>__str__</code>
+            <td>
+              <code>str(oper)&nbsp</code> (string conversion)
+            <td>
+              <code>py::op_str</code>
+            <td>
+              <code>std::ostringstream s; s &lt;&lt; oper;</code>
+          <tr>
+            <td>
+              <code>__coerce__</code>
+            <td>
+              <code>coerce(left, right)</code>
+            <td colspan=2>
+              usually defined automatically, otherwise <a href="#coercion">special 
+              treatment</a> required
+         </table>
+
+<a name="sequence_and_mapping">
+<h2>Sequence and Mapping Operators</h2>
+</a>
+
+Sequence and mapping operators let wrapped objects behave in accordance to Python's iteration and access protocols. These protocols differ considerably from the ones found in C++. For example, Python's typically iteration idiom looks like &nbsp;"<code>for i in S:</code>"&nbsp;, while in C++ one uses &nbsp;"<code>for(iterator i = S.begin(); i != S.end(); ++i)</code>". One could try to wrap C++ iterators in order to carry the C++ idiom into Python. However, this does not work very well because (1) it leads to non-uniform Python code (wrapped types must be used in a different way than Python built-in types) and (2) iterators are often implemented as plain C++ pointers which cannot be wrapped easily because py_cpp is designed to handle objects only. 
+<p>
+Thus, it is a good idea to provide sequence and mapping operators for your wrapped containers. These operators have to be wrapped manually because there are no corresponding C++ operators that could be used for automatic wrapping. The Python documentation lists the relevant <a href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">container operators</a>. In particular, expose __getitem__, __setitem__ and remember to throw the <code>PyExc_IndexError</code> when the index is out-of-range in order to enable the &nbsp;"<code>for i in S:</code>"&nbsp; idiom.
+<p>
+Here is an example. Suppose you, we want to wrap a <code>std::map&lt;std::size_t,std::string&gt;</code>. This is done as follows as follows:
+
       <blockquote>
 <pre>
 typedef std::map&lt;std::size_t, std::string&gt; StringMap;
@@ -207,9 +601,19 @@ Traceback (innermost last):
 KeyError: 2
 &gt;&gt;&gt; len(m)
 0
-&gt;&gt;&gt; m[3] = 'farther'
+&gt;&gt;&gt; m[0] = 'zero'
+&gt;&gt;&gt; m[1] = 'one'
+&gt;&gt;&gt; m[2] = 'two'
+&gt;&gt;&gt; m[3] = 'three'
 &gt;&gt;&gt; len(m)
-1
+4
+&gt;&gt;&gt; for i in m:
+...    print i
+...
+zero
+one
+two
+three
 </pre>
       </blockquote>
       <h2>
@@ -247,9 +651,9 @@ KeyError: 2
 6
 </pre>
       </blockquote>
-      <h2>
+      <h4>
          Direct Access to Data Members
-      </h2>
+      </h4>
       <p>
          Py_cpp uses the special <code>
         __xxxattr__<em>&lt;name&gt;</em>__</code> functionality described above
@@ -317,165 +721,8 @@ pair_int_long.def_read_write(&amp;Pil::second, "second");
 8
 </pre>
       </blockquote>
-      <h2>
-         <a name="numerics">Numeric Method Support</a>
-      </h2>
-      <p>
-         Py_cpp supports the following <a href= 
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
-         Python special numeric method names</a>:
-      <p>
-      <table summary="special numeric methods" cellpadding="5" border="1">
-        <thead>
-          <tr>
-            <td>
-              Name
-            <td>
-              Notes
-          <tr>
-            <td>
-              <code>__add__(self,&nbsp;other)</code>
-            <td>
-              <code>operator+(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__sub__(self,&nbsp;other)</code>
-            <td>
-              <code>operator-(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__mul__(self,&nbsp;other)</code>
-            <td>
-              <code>operator*(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__div__(self,&nbsp;other)</code>
-            <td>
-              <code>operator/(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__mod__(self,&nbsp;other)</code>
-            <td>
-              <code>operator%(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__divmod__(self,&nbsp;other)</code>
-            <td>
-              return a <code> py::Tuple</code> initialized with <code>
-              (</code><em>quotient</em><code>,</code> <em>
-              remainder</em><code>)</code>.
-          <tr>
-            <td>
-              <code>__pow__(self,&nbsp;other&nbsp;[,&nbsp;modulo])</code>
-            <td>
-              use <a href="overloading.html">overloading</a> to support both
-              forms of __pow__
-          <tr>
-            <td>
-              <code>__lshift__(self,&nbsp;other)</code>
-            <td>
-              <code>operator&lt;&lt;(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__rshift__(self,&nbsp;other)</code>
-            <td>
-              <code>operator&gt;&gt;(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__and__(self,&nbsp;other)</code>
-            <td>
-              <code>operator&amp;(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__xor__(self,&nbsp;other)</code>
-            <td>
-              <code>operator^(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__or__(self,&nbsp;other)</code>
-            <td>
-              <code>operator|(const T&amp;,&nbsp;const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__neg__(self)</code>
-            <td>
-              <code>operator-(const T&amp;)</code> (unary negation)
-          <tr>
-            <td>
-              <code>__pos__(self)</code>
-            <td>
-              <code>operator+(const T&amp;)</code> (identity)
-          <tr>
-            <td>
-              <code>__abs__(self)</code>
-            <td>
-              Called to implement the built-in function abs()
-          <tr>
-            <td>
-              <code>__invert__(self)</code>
-            <td>
-              <code>operator~(const T&amp;)</code>
-          <tr>
-            <td>
-              <code>__int__(self)</code>
-            <td>
-              <code>operator long() const</code>
-          <tr>
-            <td>
-              <code>__long__(self)</code>
-            <td>
-              Should return a Python <code>long</code> object. Can be
-              implemented with <code>PyLong_FromLong(<em>value</em>)</code>,
-              for example.
-          <tr>
-            <td>
-              <code>__float__(self)</code>
-            <td>
-              <code>operator double() const</code>
-          <tr>
-            <td>
-              <code>__oct__(self)</code>
-            <td>
-              Called to implement the built-in function oct(). Should return a
-              string value.
-          <tr>
-            <td>
-              <code>__hex__(self)</code>
-            <td>
-              Called to implement the built-in function hex(). Should return a
-              string value.
-          <tr>
-            <td>
-              <code>__coerce__(self,&nbsp;other)</code>
-            <td>
-              Should return a Python 2-<em>tuple</em> (C++ code may return a
-              <code>py::Tuple</code>) where the elements represent the values
-              of <code> self</code> and <code>other</code> converted to the
-              same type.
-      </table>
 
-<h2><a name="reasons">Where are the <code>__r</code><i>&lt;name&gt;</i><code>__</code>
-functions?</a></h2>
-
-<p>
-  At first we thought that supporting <code>__radd__</code> and its ilk would be
-  impossible, since Python doesn't supply any direct support and in fact
-  implements a special case for its built-in class instances. <a
-  href="http://starship.python.net/crew/arcege/extwriting/pyextnum.html">This
-  article</a> gives a pretty good overview of the direct support for numerics
-  that Python supplies for extension types. We've since discovered that it can
-  be done, but there are some pretty convincing <a
-  href="http://starship.python.net/crew/lemburg/CoercionProposal.html">arguments</a>
-  out there that this arrangement is less-than-ideal. Instead of supplying a
-  sub-optimal solution for the sake of compatibility with built-in Python
-  classes, we're doing the neccessary research so we can "do it right". This
-  will also give us a little time to hear from users about what they want. The
-  direction we're headed in is based on the idea of <a
-  href="http://www.sff.net/people/neelk/open-source/Multimethod.py">multimethods</a>
-  rather than on trying to find a coercion function bound to one of the
-  arguments.
-
-<h3>And what about <code>__complex__</code>?</h3>
+<h2><a name="reasons">And what about <code>__complex__</code>?</a></h2>
  <p>That, dear reader, is one problem we don't know how to solve. The Python
  source contains the following fragment, indicating the special-case code really
  is hardwired:
@@ -490,12 +737,12 @@ if (PyInstance_Check(r)) { ...
         href="under-the-hood.html">A Peek Under the Hood</a> Up: <a href= 
         "py_cpp.html">Top</a>
       <p>
-         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+         &copy; Copyright David Abrahams and Ullrich Köthe 2000. Permission to copy, use, modify,
         sell and distribute this document is granted provided this copyright
         notice appears in all copies. This document is provided "as is" without
         express or implied warranty, and with no claim as to its suitability
         for any purpose.
       <p>
-         Updated: Oct 19, 2000
+         Updated: Nov 21, 2000
     </div>
 
