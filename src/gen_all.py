@@ -10,7 +10,7 @@ def gen_all(args):
     open('caller.hpp', 'w').write(gen_caller(args))
     open('init_function.hpp', 'w').write(gen_init_function(args))
     open('signatures.hpp', 'w').write(gen_signatures(args))
-    open('instance.hpp', 'w').write(gen_singleton(args))
+    open('singleton.hpp', 'w').write(gen_singleton(args))
     open('extension_class.hpp', 'w').write(gen_extclass(args))
 
 if __name__ == '__main__':
