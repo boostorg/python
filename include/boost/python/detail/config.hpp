@@ -100,7 +100,7 @@
 # define BOOST_PYTHON_EXPORT_CLASS_TEMPLATE(instantiation) struct ThIsTyPeNeVeRuSeD
 #endif
 
-#if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590031)
+#if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590040)
 // Replace broken Tru64/cxx offsetof macro
 # define BOOST_PYTHON_OFFSETOF(s_name, s_member) \
         ((size_t)__INTADDR__(&(((s_name *)0)->s_member)))

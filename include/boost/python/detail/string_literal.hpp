@@ -26,7 +26,7 @@ struct is_string_literal<char const[n]> : mpl::true_
 {
 };
 
-#   if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590031) \
+#   if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590040) \
   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730)
 // This compiler mistakenly gets the type of string literals as char*
 // instead of char[NN].
