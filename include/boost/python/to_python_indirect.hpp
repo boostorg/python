@@ -14,7 +14,7 @@
 
 namespace boost { namespace python {
 
-template <class T, class HolderGenerator>
+template <class T, class MakeHolder>
 struct to_python_indirect
 {
     static bool convertible();
@@ -61,14 +61,14 @@ namespace detail
   };
 }
 
-template <class T, class HolderGenerator>
-inline bool to_python_indirect<T,HolderGenerator>::convertible()
+template <class T, class MakeHolder>
+inline bool to_python_indirect<T,MakeHolder>::convertible()
 {
     return type() != 0;
 }
 
-template <class T, class HolderGenerator>
-inline PyObject* to_python_indirect<T,HolderGenerator>::operator()(T x) const
+template <class T, class MakeHolder>
+inline PyObject* to_python_indirect<T,MakeHolder>::operator()(T x) const
 {
     PyObject* raw_result = type()->tp_alloc(type(), 0);
 
@@ -82,7 +82,7 @@ inline PyObject* to_python_indirect<T,HolderGenerator>::operator()(T x) const
     // Build a value_holder to contain the object using the copy
     // constructor
     objects::instance_holder* p =
-        detail::unwind_type<HolderGenerator>(x);
+        detail::unwind_type<MakeHolder>(x);
 
     // Install it in the instance
     p->install(raw_result);
@@ -91,8 +91,8 @@ inline PyObject* to_python_indirect<T,HolderGenerator>::operator()(T x) const
     return result.release();
 }
 
-template <class T, class HolderGenerator>
-inline PyTypeObject* to_python_indirect<T,HolderGenerator>::type()
+template <class T, class MakeHolder>
+inline PyTypeObject* to_python_indirect<T,MakeHolder>::type()
 {
     return detail::unwind_type<detail::get_pointer_class,T>();
 }
