@@ -42,7 +42,8 @@
 R call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp;)
 </pre>
 <dl class="function-semantics"> 
-  <dt><b>Requires:</b> <code>R</code> is a complete type with an accessible copy constructor</dt>
+  <dt><b>Requires:</b> <code>R</code> is a pointer type, reference
+  type, or a complete type with an accessible copy constructor</dt>
 
   <dt><b>Effects:</b> Invokes <code>callable(a1,&nbsp;a2,&nbsp;...a<i>n</i>)</code> in
   Python, where <code>a1</code>...<code>a<i>n</i></code> are the arguments to
@@ -50,7 +51,7 @@ R call(PyObject* callable, A1 const&amp;, A2 const&amp;, ... A<i>n</i> const&amp
   <dt><b>Returns:</b> The result of the Python call, converted to the C++ type <code>R</code>.</dt>
 
 </dt>
-  <dt><b>Rationale:</b> For a complete semantic description of and
+  <dt><b>Rationale:</b> For a complete semantic description and
   rationale, see <a href="callbacks.html">this page</a>.
 </dt>
 </dl>
