@@ -56,9 +56,9 @@ bpl_exa + "/vector_wrapper.h",
 bpl_exa + "/richcmp1.cpp",
 bpl_exa + "/richcmp2.cpp",
 bpl_exa + "/richcmp3.cpp",
-bpl_exa + "/tst_richcmp1.py",
-bpl_exa + "/tst_richcmp2.py",
-bpl_exa + "/tst_richcmp3.py",
+bpl_exa + "/test_richcmp1.py",
+bpl_exa + "/test_richcmp2.py",
+bpl_exa + "/test_richcmp3.py",
 )
 
 defs = (

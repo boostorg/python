@@ -52,7 +52,7 @@ namespace vects {
 #   undef VECTOR_BINARY_OPERATORS
   };
 
-} // namespace vects
+} // namespace <anonymous>
 
 
 namespace {

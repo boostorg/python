@@ -131,6 +131,9 @@ test:
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
 	$(PYEXE) test_cross_module.py
+	$(PYEXE) test_richcmp1.py
+	$(PYEXE) test_richcmp2.py
+	$(PYEXE) test_richcmp3.py
 
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input

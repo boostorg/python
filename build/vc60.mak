@@ -114,14 +114,17 @@ test:
 	$(PYEXE) test_pickle2.py
 	$(PYEXE) test_pickle3.py
 	$(PYEXE) test_cross_module.py --broken-auto-ptr
+	$(PYEXE) test_richcmp1.py
+	$(PYEXE) test_richcmp2.py
+	$(PYEXE) test_richcmp3.py
 
 clean:
-	del *.obj
-	del *.lib
-	del *.exp
-	del *.idb
-	del *.pyd
-	del *.pyc
+	-del *.obj
+	-del *.lib
+	-del *.exp
+	-del *.idb
+	-del *.pyd
+	-del *.pyc
 
 softlinks:
 	python $(BOOST_UNIX)/libs/python/build/filemgr.py $(BOOST_UNIX) softlinks

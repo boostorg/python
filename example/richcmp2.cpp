@@ -24,11 +24,13 @@ namespace {
       int m_code;
   };
 
+#if PYTHON_API_VERSION >= 1010
   boost::python::ref
   NotImplemented(const code&, const code&) {
     return
     boost::python::ref(Py_NotImplemented, boost::python::ref::increment_count);
   }
+#endif
 }
 
 namespace {
@@ -41,10 +43,12 @@ namespace {
     py_code.def(boost::python::constructor<int>());
     py_code.def(boost::python::operators<(  boost::python::op_eq
                                           | boost::python::op_ne)>());
+#if PYTHON_API_VERSION >= 1010
     py_code.def(NotImplemented, "__lt__");
     py_code.def(NotImplemented, "__le__");
     py_code.def(NotImplemented, "__gt__");
     py_code.def(NotImplemented, "__ge__");
+#endif
   }
 
 } // namespace <anonymous>
