@@ -10,8 +10,9 @@
 // 04 Mar 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #include <boost/python/detail/extension_class.hpp>
-#include <cstring>
 #include <boost/utility.hpp>
+#include <boost/bind.hpp>
+#include <cstring>
 
 namespace boost { namespace python {
 namespace detail {
@@ -484,16 +485,19 @@ void operator_dispatcher_dealloc(PyObject* self)
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
-    try
+    PyObject* new_r = handle_exception(
+        bind(operator_dispatcher::create,
+                    ref(*r, ref::increment_count),
+                    ref()));
+    if (new_r)
     {
-        *r = operator_dispatcher::create(ref(*r, ref::increment_count), ref());
+        *r = new_r;
+        return 0;
     }
-    catch(...)
+    else
     {
-        handle_exception();
         return -1;
     }
-    return 0;
 }
 
 
