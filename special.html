@@ -18,17 +18,13 @@
          special method names</a> supported by real Python class instances <em>
         except:</em>
 <ul>
-<li><a href= 
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/customization.html">
-         <code>__del__</code></a> (an oversight, to be corrected soon - but
-        don't worry, your underlying C++ objects are still properly destroyed!)
 <li>the <code>__r<em>&lt;name&gt;</em>__</code> "reversed operand" <a href= 
         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">
          numeric methods</a>, and
 <li><code>__complex__</code>
 </ul>
  
-       (more on the latter two <a href="#reverse">below</a>). So, for example, we can wrap a
+       (more on the reasons <a href="#reasons">below</a>). So, for example, we can wrap a
         <code>std::map&lt;std::size_t,std::string&gt;</code> as follows:
       <h2>
          Example
@@ -354,7 +350,7 @@ pair_int_long.def_read_write(&amp;Pil::second, "second");
               same type.
       </table>
 
-<h2><a name="reverse">Where are the <code>__r</code><i>&lt;name&gt;</i><code>__</code>
+<h2><a name="reasons">Where are the <code>__r</code><i>&lt;name&gt;</i><code>__</code>
 functions?</a></h2>
 
 <p>
@@ -386,7 +382,7 @@ if (PyInstance_Check(r)) { ...
 </pre>
 </blockquote>
       <p>
-         Previous: <a href="overloading.html">Function Overloading</a> Next: <a
+         Previous: <a href="inheritance.html">Inheritance</a> Next: <a
         href="under-the-hood.html">A Peek Under the Hood</a> Up: <a href= 
         "py_cpp.html">Top</a>
       <p>
