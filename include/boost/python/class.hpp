@@ -113,10 +113,10 @@ namespace detail
   // wrapped.
   //
   template <class T>
-  inline void register_wrapper_class(T*, T*, int) {}
+  inline void register_wrapper_class_impl(T*, T*, int) {}
   
   template <class Wrapper, class T>
-  inline void register_wrapper_class(Wrapper*, T*, ...)
+  inline void register_wrapper_class_impl(Wrapper*, T*, ...)
   {
       objects::register_class_from_python<Wrapper, mpl::vector1<T> >();
       objects::copy_class_object(type_id<T>(), type_id<Wrapper>());
@@ -125,7 +125,7 @@ namespace detail
   template <class Held, class T>
   inline void register_wrapper_class(Held* = 0, T* = 0)
   {
-      register_wrapper_class((Held*)0, (T*)0,  0);
+      register_wrapper_class_impl((Held*)0, (T*)0,  0);
   }
   
 # ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
