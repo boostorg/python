@@ -27,6 +27,14 @@ struct from_python<PyObject*>
     PyObject* operator()(PyObject* source) const { return source; }
 };
 
+template <>
+struct from_python<PyObject* const&>
+{
+    from_python(PyObject*) {}
+    bool convertible() const { return true; }
+    PyObject*const& operator()(PyObject*const& source) const { return source; }
+};
+
 //
 // implementations
 //
