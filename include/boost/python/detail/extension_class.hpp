@@ -10,6 +10,7 @@
 //  gen_extclass.python
 
 //  Revision History:
+//  17 Apr 01  Comment added with reference to cross_module.hpp (R.W. Grosse-Kunstleve)
 //  05 Mar 01  Fixed a bug which prevented auto_ptr values from being converted
 //             to_python (Dave Abrahams)
 
@@ -166,6 +167,14 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 // and U. T is the class the user really intends to wrap. U is a class derived
 // from T with some virtual function overriding boilerplate, or if there are no
 // virtual functions, U = held_instance<T>.
+//
+// A look-alike of this class in root/boost/python/cross_module.hpp
+// is used for the implementation of the cross-module support
+// (export_converters and import_converters). If from_python
+// and to_python converters are added or removed from the class
+// below, the class python_import_extension_class_converters has
+// to be modified accordingly.
+//
 template <class T, class U = boost::python::detail::held_instance<T> >
 class python_extension_class_converters
 {
