@@ -742,7 +742,7 @@ namespace {
                   Ptr::null_ok);
               PyErr_Clear();
               if (attribute.get() != 0 && PyCallable_Check(attribute.get()))
-                  detail::add_capability(n, derived, all_methods);
+                  detail::add_capability(enablers[n].capability, derived, all_methods);
           }
       }
 
