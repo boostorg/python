@@ -146,6 +146,14 @@ get_signature
 ///////////////////////////////////////
 #if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
 
+# if defined(__MWERKS__) && __MWERKS__ <= 0x3002 && BOOST_PP_ITERATION() == 0
+template <typename RT>
+inline boost::mpl::type_list<RT>
+get_signature(signature<RT(void)>)
+{
+    return boost::mpl::type_list<RT>();
+}
+# else 
 template
 <
     typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
@@ -161,8 +169,10 @@ inline boost::mpl::type_list
     RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
 >
-get_signature
-    (signature<RT(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T))>)
+get_signature(
+    signature<
+       RT(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T))
+    >)
 {
     return boost::mpl::type_list
         <
@@ -170,6 +180,7 @@ get_signature
             BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
         >();
 }
+# endif
 
 #endif // !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
 
