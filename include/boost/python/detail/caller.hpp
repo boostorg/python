@@ -42,7 +42,7 @@ PyObject* operator()(                                                           
   , P const& policies                                                           \
   ) const                                                                       \
 {                                                                               \
-    return returning<R>::call(f, args, keywords, policies);                     \
+    return returning<R>::call(f, args, keywords,&policies);                     \
 }
 
 BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CALLER_PF, nil)
@@ -56,7 +56,7 @@ PyObject* operator()(                                                           
   , P const& policies                                                           \
   ) const                                                                       \
 {                                                                               \
-    return returning<R>::call(f, args, keywords, policies);                     \
+    return returning<R>::call(f, args, keywords,&policies);                     \
 }
 
 BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(BOOST_PYTHON_CALLER_PMF)
