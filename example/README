@@ -19,6 +19,3 @@ Examples for the cross-module support are provided by:
   ivect.cpp
 See also: libs/python/doc/cross_module.html
 
-The files example1.cpp and rwgk1.cpp are obsolete. They are only
-included because the Visual Studio project in the build directory still
-refers to them.
