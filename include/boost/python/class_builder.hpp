@@ -16,10 +16,14 @@ class class_builder
     : python_extension_class_converters<T, U> // Works around MSVC6.x/GCC2.95.2 bug described below
 {
  public:
-    class_builder(module_builder& module, const char* name)
+    class_builder(module_builder& module, const char* name,
+                  bool auto_pickle = false)
         : m_class(new detail::extension_class<T, U>(name))
     {
         module.add(ref(as_object(m_class.get()), ref::increment_count), name);
+        if (auto_pickle) {
+          add(ref(BOOST_PYTHON_CONVERSION::to_python(1)), "__auto_pickle__");
+        }
     }
     
     ~class_builder()
