@@ -25,8 +25,9 @@
    </tr>
 </table>
 <p>
-Continuing, now, at last, we can even derive from our base class Base in
-Python. Before we can do that, we have to set up our <tt>class_</tt> wrapper as:</p>
+Continuing, we can derive from our base class Base in Python and override
+the virtual function in Python. Before we can do that, we have to set up
+our <tt>class_</tt> wrapper as:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
         ;

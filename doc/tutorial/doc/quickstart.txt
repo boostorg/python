@@ -529,8 +529,9 @@ so will disallow abstract base classes such as [^Base] to be instantiated.
 
 [page:1 Deriving a Python Class]
 
-Continuing, now, at last, we can even derive from our base class Base in
-Python. Before we can do that, we have to set up our [^class_] wrapper as:
+Continuing, we can derive from our base class Base in Python and override
+the virtual function in Python. Before we can do that, we have to set up
+our [^class_] wrapper as:
 
     class_<Base, BaseWrap, boost::noncopyable>("Base")
         ;
@@ -892,16 +893,24 @@ these can be found [@../../v2/reference.html#models_of_call_policies here].
 [page:1 Overloading]
 
 The following illustrates a scheme for manually wrapping an overloaded
-member function or. Obviously, the same technique can be applied to
-wrapping overloaded non- member functions. Take note that this scheme
-applies to actual overloaded (member, non-member) functions as well as
-(member, non-member) functions with default arguments.
+member functions. Of course, the same technique can be applied to wrapping
+overloaded non-member functions.
 
-We have here our C++ classes:
+We have here our C++ class:
 
     struct X
     {
-        bool f(int a, double b = 0, char c = 'x')
+        bool f(int a)
+        {
+            return true;
+        }
+
+        bool f(int a, double b)
+        {
+            return true;
+        }
+
+        bool f(int a, double b, char c)
         {
             return true;
         }
@@ -912,20 +921,13 @@ We have here our C++ classes:
         };
     };
 
-Notice that class X has two overloaded functions with different signatures.
-The types of the arguments, and the return are totally different, unlike
-above where we have a common sequence of initial arguments.
-
-We shall start by introducing some member function pointer variables:
+Class X has 4 overloaded functions. We shall start by introducing some
+member function pointer variables:
 
     bool    (X::*fx1)(int)              = &X::f;
     bool    (X::*fx2)(int, double)      = &X::f;
     bool    (X::*fx3)(int, double, char)= &X::f;
     int     (X::*fx4)(int, int, int)    = &X::f;
-
-The first three member function pointers take care of the first X::f
-overload. The one with default arguments. The last member function pointer
-takes care of the second X::f overload.
 
 With these in hand, we can proceed to define and wrap this for Python:
 
@@ -1098,10 +1100,10 @@ Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] and
 its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Following up on our example
 presented in the section [@overloading.html on overloading], since the
-first overload has default arguments, we can use
-[^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the first
-three of the [^def]s above and manually wrap just the last. Here's how
-we'll do this:
+first 4 overload functins have a common sequence of initial arguments, we
+can use [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the
+first three of the [^def]s and manually wrap just the last. Here's
+how we'll do this:
 
     BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(xf_overloads, f, 1, 4)
 

@@ -76,10 +76,10 @@ automatic wrapping through <tt>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> and
 its sister, <tt>BOOST_PYTHON_FUNCTION_OVERLOADS</tt>. Following up on our example
 presented in the section <a href="overloading.html">
 on overloading</a>, since the
-first overload has default arguments, we can use
-<tt>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> to automatically wrap the first
-three of the <tt>def</tt>s above and manually wrap just the last. Here's how
-we'll do this:</p>
+first 4 overload functins have a common sequence of initial arguments, we
+can use <tt>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> to automatically wrap the
+first three of the <tt>def</tt>s and manually wrap just the last. Here's
+how we'll do this:</p>
 <code><pre>
     <span class=identifier>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class=special>(</span><span class=identifier>xf_overloads</span><span class=special>, </span><span class=identifier>f</span><span class=special>, </span><span class=number>1</span><span class=special>, </span><span class=number>4</span><span class=special>)
 </span></pre></code>

@@ -26,16 +26,24 @@
 </table>
 <p>
 The following illustrates a scheme for manually wrapping an overloaded
-member function or. Obviously, the same technique can be applied to
-wrapping overloaded non- member functions. Take note that this scheme
-applies to actual overloaded (member, non-member) functions as well as
-(member, non-member) functions with default arguments.</p>
+member functions. Of course, the same technique can be applied to wrapping
+overloaded non-member functions.</p>
 <p>
-We have here our C++ classes:</p>
+We have here our C++ class:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>X
     </span><span class=special>{
-        </span><span class=keyword>bool </span><span class=identifier>f</span><span class=special>(</span><span class=keyword>int </span><span class=identifier>a</span><span class=special>, </span><span class=keyword>double </span><span class=identifier>b </span><span class=special>= </span><span class=number>0</span><span class=special>, </span><span class=keyword>char </span><span class=identifier>c </span><span class=special>= </span><span class=literal>'x'</span><span class=special>)
+        </span><span class=keyword>bool </span><span class=identifier>f</span><span class=special>(</span><span class=keyword>int </span><span class=identifier>a</span><span class=special>)
+        {
+            </span><span class=keyword>return </span><span class=keyword>true</span><span class=special>;
+        }
+
+        </span><span class=keyword>bool </span><span class=identifier>f</span><span class=special>(</span><span class=keyword>int </span><span class=identifier>a</span><span class=special>, </span><span class=keyword>double </span><span class=identifier>b</span><span class=special>)
+        {
+            </span><span class=keyword>return </span><span class=keyword>true</span><span class=special>;
+        }
+
+        </span><span class=keyword>bool </span><span class=identifier>f</span><span class=special>(</span><span class=keyword>int </span><span class=identifier>a</span><span class=special>, </span><span class=keyword>double </span><span class=identifier>b</span><span class=special>, </span><span class=keyword>char </span><span class=identifier>c</span><span class=special>)
         {
             </span><span class=keyword>return </span><span class=keyword>true</span><span class=special>;
         }
@@ -47,21 +55,14 @@ We have here our C++ classes:</p>
     };
 </span></pre></code>
 <p>
-Notice that class X has two overloaded functions with different signatures.
-The types of the arguments, and the return are totally different, unlike
-above where we have a common sequence of initial arguments.</p>
-<p>
-We shall start by introducing some member function pointer variables:</p>
+Class X has 4 overloaded functions. We shall start by introducing some
+member function pointer variables:</p>
 <code><pre>
     <span class=keyword>bool    </span><span class=special>(</span><span class=identifier>X</span><span class=special>::*</span><span class=identifier>fx1</span><span class=special>)(</span><span class=keyword>int</span><span class=special>)              = &amp;</span><span class=identifier>X</span><span class=special>::</span><span class=identifier>f</span><span class=special>;
     </span><span class=keyword>bool    </span><span class=special>(</span><span class=identifier>X</span><span class=special>::*</span><span class=identifier>fx2</span><span class=special>)(</span><span class=keyword>int</span><span class=special>, </span><span class=keyword>double</span><span class=special>)      = &amp;</span><span class=identifier>X</span><span class=special>::</span><span class=identifier>f</span><span class=special>;
     </span><span class=keyword>bool    </span><span class=special>(</span><span class=identifier>X</span><span class=special>::*</span><span class=identifier>fx3</span><span class=special>)(</span><span class=keyword>int</span><span class=special>, </span><span class=keyword>double</span><span class=special>, </span><span class=keyword>char</span><span class=special>)= &amp;</span><span class=identifier>X</span><span class=special>::</span><span class=identifier>f</span><span class=special>;
     </span><span class=keyword>int     </span><span class=special>(</span><span class=identifier>X</span><span class=special>::*</span><span class=identifier>fx4</span><span class=special>)(</span><span class=keyword>int</span><span class=special>, </span><span class=keyword>int</span><span class=special>, </span><span class=keyword>int</span><span class=special>)    = &amp;</span><span class=identifier>X</span><span class=special>::</span><span class=identifier>f</span><span class=special>;
 </span></pre></code>
-<p>
-The first three member function pointers take care of the first X::f
-overload. The one with default arguments. The last member function pointer
-takes care of the second X::f overload.</p>
 <p>
 With these in hand, we can proceed to define and wrap this for Python:</p>
 <code><pre>
