@@ -54,61 +54,24 @@
 # PYTHON_VECT_ITERATIONS - specifies the number of test iterations to use for
 #                          the dvect and ivect tests above.
 
-
 # declare the location of this subproject relative to the root
 subproject libs/python/build ;
 
-# grab variables from command-line or environment.
-local PYTHON_VERSION = $(PYTHON_VERSION) ;
-local PYTHON_ROOT = $(PYTHON_ROOT) ;
-local PYTHON_INCLUDES = $(PYTHON_INCLUDES) ;
-local PYTHON_LIBS = $(PYTHON_LIBS) ;
-local PYTHON_LIB_PATH = $(PYTHON_LIB_PATH) ;
-local PYTHON_PROPERTIES = $(PYTHON_PROPERTIES) ;
+# bring in the rules for python
+SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
+include <module@>python.jam ;
 
-# Do some OS-specific setup
-if $(NT)
+#######################
+local rule bpl-test ( test-name : sources + )
 {
-    PYTHON_VERSION ?= 2.1 ;
-    PYTHON_ROOT ?= c:/tools/python ;
-    PYTHON_INCLUDES ?= <include>$(PYTHON_ROOT)/include <gcc><*><include>/usr/include/python$(PYTHON_VERSION) ;
-    PYTHON_LIBS ?= c:/cygnus/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).dll.a ;
-    PYTHON_LIB_PATH ?= $(PYTHON_ROOT)/libs ;
-
-    # common properties required for compiling any Python module.
-    PYTHON_PROPERTIES ?=
-        <gcc><*><define>SIZEOF_LONG=4
-        <gcc><*><define>USE_DL_IMPORT
-        <debug><define>_DEBUG
-        <runtime-link>dynamic
-        ;
-                        
+    boost-python-test $(test-name) : $(sources) <lib>libboost_python ;
 }
-else if $(UNIX)
-{
-    PYTHON_VERSION ?= 1.5 ;
-    PYTHON_INCLUDES ?= <include>/usr/include/python$(PYTHON_VERSION) ;
-    PYTHON_LIBS ?= /usr/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).a ;
-}
-
-local PYTHON_VERSION_NODOT
-        = [ SUBST $(PYTHON_VERSION) ([0-9]*)\.([0-9]*) $1$2 ]
-      ;
-
-# how do we invoke python?
-local PYTHON = $(PYTHON) ;
-PYTHON ?= python ;
-PYTHON = [ FAppendSuffix $(PYTHON:G=<executable-grist>) : $(SUFEXE) ] ;
-SEARCH on $(PYTHON) = $(PATH) ;
 
 #######################
 
 #
 # Declare the boost python static link library
 #
-
-# standard include requirements for anything using Boost.Python
-local BOOST_PYTHON_INCLUDES = <include>$(BOOST_ROOT) $(PYTHON_INCLUDES) ;
 
 # Base names of the source files for libboost_python
 local CPP_SOURCES =
@@ -121,162 +84,23 @@ lib libboost_python : ../src/$(CPP_SOURCES).cpp
     <shared-linkable>true
     $(PYTHON_PROPERTIES) ;
 
-lib libboost_python_d : ../src/$(CPP_SOURCES).cpp
-    # requirements
-    : $(BOOST_PYTHON_INCLUDES)
-    <shared-linkable>true
-    $(PYTHON_PROPERTIES)
-    <define>BOOST_DEBUG_PYTHON
-    ;
     
-#######################
-
-# boost-python name : sources : requirements : default-BUILD
-#
-# Declare a boost python module. Return a list of the DLL files generated.
-rule boost-python
-{
-    local debug = "" ;
-    if ( <define>BOOST_DEBUG_PYTHON in $(3) ) || ( debug-python in $(BUILD) )
-    {
-        debug = _d ;
-    }
-    
-    # declare a DLL; add the boost python library to sources
-    dll $(<) : <lib>libboost_python$(debug) $(>)
-            
-            # Requirements
-            : $(3) # caller-specified requirements
-            
-                # standard requirements
-                $(BOOST_PYTHON_INCLUDES)
-                <msvc><*><library-path>$(PYTHON_LIB_PATH)
-                <intel-win32><*><library-path>$(PYTHON_LIB_PATH)
-                <metrowerks><*><library-file>$(PYTHON_LIB_PATH)/python$(PYTHON_VERSION_NODOT)$(debug).lib
-                <gcc><*><library-file>$(PYTHON_LIBS)
-                $(PYTHON_PROPERTIES)
-                
-        : $(4) ;                      # pass on the default-BUILD, if any
-}
-
-# boost-python-test name : sources : requirements : default-BUILD
-#
-# Just like boost-python, but the result becomes part of the test pseudotarget
-# instead of being built by 'all'
-rule boost-python-test
-{
-    type-DEPENDS test : $(<) ;
-    type-DEPENDS test_d : $(<)_d ;
-    NOTFILE test_d ;
-    
-    local gSUPPRESS_FAKE_TARGETS = true ;
-    boost-python $(1) : $(2) : $(3) : $(4) ;
-    boost-python $(1)_d : $(2) : $(3) <define>BOOST_DEBUG_PYTHON : $(4) ;
-}
-
-#######################
-
-# boost-python-runtest target : python-script sources : requirements : local-build : args
-#
-# declare two python module tests: $(<).test which builds when out-of-date, and
-# $(<).run which builds unconditionally.
-rule boost-python-runtest
-{
-    # tell Jam that the python script is relative to this directory
-    SEARCH on $(>[1]) = $(SEARCH_SOURCE) ;
-    
-    # required command-line args can be specified in argument 5
-    # The user can add additional arguments in PYTHON_TEST_ARGS.
-    local gPYTHON_TEST_ARGS = $(5) $(PYTHON_TEST_ARGS) ;
-
-    # declare the two subsidiary tests.
-    declare-local-target $(<:S=.test) : $(>) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_TEST ;
-    declare-local-target $(<:S=.run) : $(>) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_RUNTEST ;
-}
-
-# special rules for two new target types: PYTHON_TEST and PYTHON_RUNTEST.
-# These are identical except that PYTHON_TEST runs the test when out-of-date, and
-# PYTHON_RUNTEST runs the test unconditionally. These are used by boost-python-runtest.
-SUFPYTHON_TEST = .test ;
-gGENERATOR_FUNCTION(PYTHON_TEST) = python-test-target ;
-rule python-test-target # test-target : sources : 
-{
-    python-runtest-aux $(<) : $(>) ;
-    Clean clean : $(<) ; # remove the test-target as part of any clean operation
-    local debug = [ SUBST $(<:B) (_d)$ $1 ] ;
-    debug ?= "" ;
-    type-DEPENDS test$(debug) : $(<) ;
-    MakeLocate $(<) : $(LOCATE_TARGET) ;
-}
-actions python-test-target bind PYTHON
-{
-    $(SHELL_SET)PYTHONPATH=$(PYTHONPATH)
-    $(SHELL_EXPORT)PYTHONPATH
-    $(PYTHON) "$(>)" $(ARGS) > "$(<)"
-}
-
-SUFPYTHON_RUNTEST = .run ;
-gGENERATOR_FUNCTION(PYTHON_RUNTEST) = python-runtest-target ;
-rule python-runtest-target # test-target : sources : 
-{
-    python-runtest-aux $(<) : $(>) ;
-    NOTFILE $(<) ;
-    ALWAYS $(<) ;
-}
-actions python-runtest-target bind PYTHON
-{
-    $(SHELL_SET)PYTHONPATH=$(PYTHONPATH)
-    $(SHELL_EXPORT)PYTHONPATH
-    $(PYTHON) "$(>)" $(ARGS)
-}
-
-rule python-runtest-aux # target : sources
-{
-    DEPENDS $(<) : $(>) ;
-
-    ARGS on $(<) += $(gPYTHON_TEST_ARGS) ;
-    
-    # Some tests need an extra command-line arg if built with
-    # msvc. Checking the target grist is a cheap way to
-    # find out. 
-    switch $(<)
-    {
-        case <*\\\\msvc\\\\*>* : ARGS on $(<) += --broken-auto-ptr ;
-        case <*\\\\intel-win32\\\\*>* : ARGS on $(<) += --broken-auto-ptr ;
-    }
-
-    # compute the PYTHONPATH environment variable that will allow the test to
-    # find all of the modules on which it depends.
-    PYTHONPATH on $(<) = [ join
-        $(gLOCATE($(>[1])))                     # location of python test file
-        $(gRUN_PATH($(<)))                      # location of module dependencies
-        [ join-path $(TOP) libs python test ]   # location of doctest
-        $(>:D)                                  # directory of python driver file(s)
-        $(PYTHONPATH)                           # base PYTHONPATH from environment
-        : $(SPLITPATH) ] ;                      # platform path separator
-
-    PYTHON on $(<) = $(PYTHON) ;
-    DEPENDS $(<) : $(PYTHON) ;
-}
-
 ############# comprehensive module and test ###########
-boost-python-test boost_python_test : ../test/comprehensive.cpp ;
+bpl-test boost_python_test
+      : ../test/comprehensive.cpp ;
 
 boost-python-runtest comprehensive
-         : [ join-path $(DOTDOT) test comprehensive.py ]
-           <lib>boost_python_test ;
-
-boost-python-runtest comprehensive_d
-         : [ join-path $(DOTDOT) test comprehensive.py ]
-           <lib>boost_python_test_d ;
+         : ../test/comprehensive.py <lib>boost_python_test <lib>libboost_python ;
 
 ############# simple tests from ../example ############
 
-rule boost-python-example-runtest
+local rule boost-python-example-runtest ( name )
 {
-    boost-python-test $(<) : ../example/$(<).cpp ;
-    boost-python-runtest $(<) : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<) ;
-    boost-python-runtest $(<)_d : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<)_d ;
+    bpl-test $(name)
+      : ../example/$(name).cpp ;
+    
+    boost-python-runtest $(name)
+      : ../example/test_$(name).py <lib>$(name) ;
 }
 
 
@@ -290,18 +114,18 @@ boost-python-example-runtest pickle2 ;
 boost-python-example-runtest pickle3 ;
 
 
-boost-python-test ivect : ../example/ivect.cpp ;
-boost-python-test dvect : ../example/dvect.cpp ;
-boost-python-test noncopyable_export : ../example/noncopyable_export.cpp ;
-boost-python-test noncopyable_import : ../example/noncopyable_import.cpp ;
+bpl-test ivect : ../example/ivect.cpp ;
+bpl-test dvect : ../example/dvect.cpp ;
+bpl-test noncopyable_export : ../example/noncopyable_export.cpp ;
+bpl-test noncopyable_import : ../example/noncopyable_import.cpp ;
 
 ############## cross-module tests from ../example ##########
 
 # A simple rule to build a test which depends on multiple modules in the PYTHONPATH
-rule boost-python-multi-example-runtest # test-name : python-file libs
+local rule boost-python-multi-example-runtest ( test-name : modules + )
 {
-    boost-python-runtest $(<)
-        : ../example/tst_$(<).py <lib>$(>)
+    boost-python-runtest $(test-name)
+        : ../example/tst_$(test-name).py <lib>$(modules) <lib>libboost_python
         : : : $(PYTHON_VECT_ITERATIONS) ;
 }
 
