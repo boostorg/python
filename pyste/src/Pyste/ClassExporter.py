@@ -255,7 +255,11 @@ class ClassExporter(Exporter):
         self.constructors = constructors[:]
         # don't export constructors if the class is abstract
         if self.class_.abstract:
-            constructors = []
+            for cons in constructors:
+                if cons.IsCopy():
+                    constructors.remove(cons)
+                    break
+            
         if not constructors:
             # declare no_init
             self.Add('constructor', py_ns + 'no_init') 
