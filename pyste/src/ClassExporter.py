@@ -53,7 +53,7 @@ class ClassExporter(Exporter):
         Exporter.SetDeclarations(self, declarations)
         decl = self.GetDeclaration(self.info.name)
         if isinstance(decl, Typedef):
-            self.class_ = decl.type
+            self.class_ = self.GetDeclaration(decl.type.name)
             if not self.info.rename:
                 self.info.rename = decl.name
         else:
