@@ -14,7 +14,7 @@
  span.c3 {color: #ff0000}
  h2.c2 {text-align: center}
  h1.c1 {text-align: center}
-    </style>
+        </style>
   </head>
 
   <body>
@@ -74,7 +74,6 @@
           <dt><a href="#allow_null-spec"><code>allow_null</code></a></dt>
         </dl>
       </dd>
-
     </dl>
     <hr>
 
@@ -91,13 +90,12 @@
     <p><code>handle</code> is a smart pointer to a Python object type; it
     holds a pointer of type <code>T*</code>, where T is its template
     parameter. <code>T</code> must be either a type derived from
-    <code>PyObject</code> or a <a href="definitions.html#POD">POD</a>
-    type whose initial <code>sizeof(PyObject)</code> bytes are
-    layout-compatible with <code>PyObject</code>. Use
-    <code>handle&lt;&gt;</code> at the boundary between tehe
-    Python/'C' API and high-level code; prefer <code><a
+    <code>PyObject</code> or a <a href="definitions.html#POD">POD</a> type
+    whose initial <code>sizeof(PyObject)</code> bytes are layout-compatible
+    with <code>PyObject</code>. Use <code>handle&lt;&gt;</code> at the
+    boundary between tehe Python/'C' API and high-level code; prefer <code><a
     href="object.html#object-spec">object</a></code> for a generalized
-    interface to Python objects.
+    interface to Python objects.</p>
 
     <p><a name="upcast"></a>In this document, the term "upcast" refers to an
     operation which converts a pointer <code>Y*</code> to a base class
@@ -174,7 +172,8 @@ virtual ~handle();
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> <code>Py_XDECREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p))</code></dt>
+      <dt><b>Effects:</b>
+      <code>Py_XDECREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p))</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -182,8 +181,9 @@ explicit handle(detail::borrowed&lt;null_ok&lt;Y&gt; &gt;* p);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> 
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
+      <dt><b>Effects:</b>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));
+      m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -192,7 +192,8 @@ explicit handle(null_ok&lt;detail::borrowed&lt;Y&gt; &gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));
+      m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -201,7 +202,8 @@ explicit handle(detail::borrowed&lt;Y&gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a href=
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));
+      m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a href=
       "errors.html#expect_non_null-spec">expect_non_null</a>(p));</code></dt>
     </dl>
 <pre>
@@ -211,7 +213,7 @@ explicit handle(null_ok&lt;Y&gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
+      <code>m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -220,8 +222,7 @@ explicit handle(Y* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a
-       href=
+      <code>m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a href=
       "errors.html#expect_non_null-spec">expect_non_null</a>(p));</code></dt>
     </dl>
 <pre>
@@ -252,7 +253,8 @@ handle&amp; operator=(handle&lt;Y&gt; const &amp; r); // never throws
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(r.m_p));&nbsp;Py_XDECREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p));&nbsp;m_p&nbsp;=&nbsp;r.m_p;</code></dt>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(r.m_p));&nbsp;Py_XDECREF(</code><i>
+      upcast</i><code>&lt;PyObject*&gt;(m_p));&nbsp;m_p&nbsp;=&nbsp;r.m_p;</code></dt>
     </dl>
 <pre>
 T* release();
@@ -262,13 +264,13 @@ T* release();
       <dt><b>Effects:</b> <code>T* x = m_p;&nbsp;m_p&nbsp;=&nbsp;0;return
       x;</code></dt>
     </dl>
-
 <pre>
 void reset();
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> <code>*this&nbsp;=&nbsp;handle&lt;T&gt;();</code></dt>
+      <dt><b>Effects:</b>
+      <code>*this&nbsp;=&nbsp;handle&lt;T&gt;();</code></dt>
     </dl>
 
     <h4><a name="handle-spec-observers">Class <code>handle</code>
@@ -301,28 +303,26 @@ operator bool_type() const; // never throws
 
     <h3><a name="borrowed-spec"></a><code>borrowed</code></h3>
 <pre>
-template <class T>
-detail::borrowed<T>* borrowed(T* p)
+template &lt;class T&gt;
+detail::borrowed&lt;T&gt;* borrowed(T* p)
 {
-    return (detail::borrowed<T>*)p;
+    return (detail::borrowed&lt;T&gt;*)p;
 }
 </pre>
 
     <h3><a name="allow_null-spec"></a><code>allow_null</code></h3>
-
 <pre>
-template <class T>
-null_ok<T>* allow_null(T* p)
+template &lt;class T&gt;
+null_ok&lt;T&gt;* allow_null(T* p)
 {
-    return (null_ok<T>*)p;
+    return (null_ok&lt;T&gt;*)p;
 }
 </pre>
 
-
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
-  <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     13 November, 2002 
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p class="c4">&copy; Copyright <a href=
