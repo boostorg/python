@@ -175,106 +175,106 @@ struct init_function
     template <class A1>
     static init* create(signature1<A1>) {
         return new init1<T,
-                       detail::parameter_traits<A1>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference>;
     }
 
     template <class A1, class A2>
     static init* create(signature2<A1, A2>) {
         return new init2<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference>;
     }
 
     template <class A1, class A2, class A3>
     static init* create(signature3<A1, A2, A3>) {
         return new init3<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4>
     static init* create(signature4<A1, A2, A3, A4>) {
         return new init4<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5>
     static init* create(signature5<A1, A2, A3, A4, A5>) {
         return new init5<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static init* create(signature6<A1, A2, A3, A4, A5, A6>) {
         return new init6<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference,
+                       typename detail::parameter_traits<A6>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static init* create(signature7<A1, A2, A3, A4, A5, A6, A7>) {
         return new init7<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference,
+                       typename detail::parameter_traits<A6>::const_reference,
+                       typename detail::parameter_traits<A7>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static init* create(signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
         return new init8<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference,
+                       typename detail::parameter_traits<A6>::const_reference,
+                       typename detail::parameter_traits<A7>::const_reference,
+                       typename detail::parameter_traits<A8>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static init* create(signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
         return new init9<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference,
-                       detail::parameter_traits<A9>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference,
+                       typename detail::parameter_traits<A6>::const_reference,
+                       typename detail::parameter_traits<A7>::const_reference,
+                       typename detail::parameter_traits<A8>::const_reference,
+                       typename detail::parameter_traits<A9>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static init* create(signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
         return new init10<T,
-                       detail::parameter_traits<A1>::const_reference,
-                       detail::parameter_traits<A2>::const_reference,
-                       detail::parameter_traits<A3>::const_reference,
-                       detail::parameter_traits<A4>::const_reference,
-                       detail::parameter_traits<A5>::const_reference,
-                       detail::parameter_traits<A6>::const_reference,
-                       detail::parameter_traits<A7>::const_reference,
-                       detail::parameter_traits<A8>::const_reference,
-                       detail::parameter_traits<A9>::const_reference,
-                       detail::parameter_traits<A10>::const_reference>;
+                       typename detail::parameter_traits<A1>::const_reference,
+                       typename detail::parameter_traits<A2>::const_reference,
+                       typename detail::parameter_traits<A3>::const_reference,
+                       typename detail::parameter_traits<A4>::const_reference,
+                       typename detail::parameter_traits<A5>::const_reference,
+                       typename detail::parameter_traits<A6>::const_reference,
+                       typename detail::parameter_traits<A7>::const_reference,
+                       typename detail::parameter_traits<A8>::const_reference,
+                       typename detail::parameter_traits<A9>::const_reference,
+                       typename detail::parameter_traits<A10>::const_reference>;
     }
 };
 

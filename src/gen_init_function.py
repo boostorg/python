@@ -169,7 +169,7 @@ struct init_function
     template <%(class A%n%:, %)>
 %}    static init* create(signature%x%{<%(A%n%:, %)>%}) {
         return new init%x<T%(,
-                       detail::parameter_traits<A%n>::const_reference%)>;
+                       typename detail::parameter_traits<A%n>::const_reference%)>;
     }
 """, args)+"""};
 
