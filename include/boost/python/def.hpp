@@ -73,7 +73,7 @@ template <class Arg1T, class Arg2T, class Arg3T>
 void def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3)
 {
     //  The arguments are definitely:
-    //      def(name, function, doc_string, policy)
+    //      def(name, function, policy, doc_string) // TODO: exchange policy, doc_string position
 
     detail::dispatch_def(&arg2, name, arg1, arg2, arg3);
 }

@@ -341,11 +341,11 @@ namespace detail
 ///////////////////////////////////////////////////////////////////////////////
 template <class ClassT, class InitT>
 void
-define_init(ClassT& cl, InitT const& init)
+define_init(ClassT& cl, InitT const& i)
 {
     typedef typename InitT::reversed_args reversed_args;
     detail::define_class_init_helper<InitT::n_defaults>::apply(
-        cl, init.call_policies(), reversed_args(), init.doc_string());
+        cl, i.call_policies(), reversed_args(), i.doc_string());
 }
 
 }} // namespace boost::python

@@ -157,44 +157,23 @@ class class_ : public objects::class_base
     // Construct with class name, docstring, and no init() function
     class_(char const* name, char const* doc, no_init_t);
 
-//    template <class InitArgs>
-//    inline class_(char const* name, detail::args_base<InitArgs> const&)
-//        : base(name, id_vector::size, id_vector().ids)
-//    {
-//        this->register_();
-//        this->def_init(InitArgs());
-//        this->set_instance_size(holder_selector::additional_size());
-//    }
-//
-//
-//    template <class InitArgs>
-//    inline class_(char const* name, char const* doc, detail::args_base<InitArgs> const&, char const* initdoc = 0)
-//        : base(name, id_vector::size, id_vector().ids, doc)
-//    {
-//        this->register_();
-//        this->def_init(InitArgs(), initdoc);
-//        this->set_instance_size(holder_selector::additional_size());
-//    }
-
-
     template <class DerivedT>
-    inline class_(char const* name, init_base<DerivedT> const& init)
+    inline class_(char const* name, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids)
     {
         this->register_();
-        define_init(*this, init.derived());
+        define_init(*this, i.derived());
         this->set_instance_size(holder_selector::additional_size());
     }
 
     template <class DerivedT>
-    inline class_(char const* name, char const* doc, init_base<DerivedT> const& init)
+    inline class_(char const* name, char const* doc, init_base<DerivedT> const& i)
         : base(name, id_vector::size, id_vector().ids, doc)
     {
         this->register_();
-        define_init(*this, init.derived());
+        define_init(*this, i.derived());
         this->set_instance_size(holder_selector::additional_size());
     }
-
 
     // Wrap a member function or a non-member function which can take
     // a T, T cv&, or T cv* as its first parameter, or a callable
@@ -206,34 +185,12 @@ class class_ : public objects::class_base
         return *this;
     }
 
-//    template <BOOST_PYTHON_TEMPLATE_TYPES>
-//    self& def(init<BOOST_PYTHON_TEMPLATE_ARGS> const& i)
-//    {
-//        define_init(*this, i, default_call_policies());
-//        return *this;
-//    }
-
     template <class DerivedT>
-    self& def(init_base<DerivedT> const& init)
+    self& def(init_base<DerivedT> const& i)
     {
-        define_init(*this, init.derived());
+        define_init(*this, i.derived());
         return *this;
     }
-
-
-
-//    template <class CallPolicyOrDoc, BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class T)>
-//    self& def(
-//        init<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, T)> const& i,
-//        CallPolicyOrDoc const& policy_or_doc,
-//        char const* doc = 0)
-//    {
-//        typedef detail::def_helper<CallPolicyOrDoc> helper;
-//        define_init(*this, i,
-//            helper::get_policy(policy_or_doc),
-//            helper::get_doc(policy_or_doc, doc));
-//        return *this;
-//    }
 
     template <class Arg1T, class Arg2T>
     self& def(char const* name, Arg1T arg1, Arg2T const& arg2)
@@ -252,23 +209,11 @@ class class_ : public objects::class_base
     self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3)
     {
         //  The arguments are definitely:
-        //      def(name, function, doc_string, policy)
+        //      def(name, function, policy, doc_string) // TODO: exchange policy, doc_string position
 
         dispatch_def(&arg2, name, arg1, arg2, arg3);
         return *this;
     }
-
-//    template <class Arg1T, class Arg2T, class Arg3T>
-//    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, char const* doc)
-//    {
-//        //  The arguments are definitely:
-//        //  arg1:   signature
-//        //  arg2:   stubs
-//        //  arg3:   policy
-//
-//        dispatch_def(&arg2, name, arg1, arg2, arg3, doc);
-//        return *this;
-//    }
 
     template <detail::operator_id id, class L, class R>
     self& def(detail::operator_<id,L,R> const& op)
@@ -434,26 +379,6 @@ inline void class_<T,X1,X2,X3>::register_() const
         , holder_selector::execute((held_type*)0)
         );
 }
-
-
-
-//template <class T, class X1, class X2, class X3>
-//inline class_<T,X1,X2,X3>::class_()
-//    : base(typeid(T).name(), id_vector::size, id_vector().ids)
-//{
-//    this->register_();
-//    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
-//    this->def_init();
-//    this->set_instance_size(holder_selector::additional_size());
-//}
-
-//template <class T, class X1, class X2, class X3>
-//inline class_<T,X1,X2,X3>::class_(no_init_t)
-//    : base(typeid(T).name(), id_vector::size, id_vector().ids)
-//{
-//    this->register_();
-//    this->def_no_init();
-//}
 
 template <class T, class X1, class X2, class X3>
 inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)

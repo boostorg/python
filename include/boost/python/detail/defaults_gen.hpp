@@ -61,13 +61,11 @@ struct func_stubs_with_call_policies
 
 }} // namespace boost::python
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PYTHON_TYPEDEF_GEN(z, index, data)                                \
-    typedef typename ::boost::mpl::at_c<                                        \
-        BOOST_PP_ADD_D(1, index, data),                                         \
-        SigT>::type BOOST_PP_CAT(T, index);                                     \
+    typedef typename BOOST_PP_CAT(iter, index)::next                            \
+        BOOST_PP_CAT(iter, BOOST_PP_INC(index));                                \
+    typedef typename BOOST_PP_CAT(iter, index)::type BOOST_PP_CAT(T, index);    \
 
 #define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                           \
     static RT BOOST_PP_CAT(func_, index) (                                      \
@@ -90,12 +88,14 @@ struct func_stubs_with_call_policies
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename ::boost::mpl::front<SigT>::type RT;                \
+            typedef typename ::boost::mpl::begin<SigT>::type rt_iter;           \
+            typedef typename rt_iter::type RT;                                  \
+            typedef typename rt_iter::next iter0;                               \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 n_args,                                                         \
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
-                1)                                                              \
+                0)                                                              \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 BOOST_PP_INC(n_dflts),                                          \
@@ -128,13 +128,17 @@ struct func_stubs_with_call_policies
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename ::boost::mpl::front<SigT>::type RT;                \
-            typedef typename ::boost::mpl::at_c<1, SigT>::type ClassT;          \
+            typedef typename ::boost::mpl::begin<SigT>::type rt_iter;           \
+            typedef typename rt_iter::type RT;                                  \
+                                                                                \
+            typedef typename rt_iter::next class_iter;                          \
+            typedef typename class_iter::type ClassT;                           \
+            typedef typename class_iter::next iter0;                            \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 n_args,                                                         \
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
-                2)                                                              \
+                0)                                                              \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 BOOST_PP_INC(n_dflts),                                          \
@@ -142,7 +146,6 @@ struct func_stubs_with_call_policies
                 (fname, BOOST_PP_SUB_D(1, n_args, n_dflts), ret))               \
         };                                                                      \
     };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 #if defined(BOOST_MSVC)
@@ -319,11 +322,17 @@ struct func_stubs_with_call_policies
 //          template <typename SigT>
 //          struct gen {
 //
-//              typedef typename ::boost::mpl::at_c<0, SigT>::type RT;
-//              typedef typename ::boost::mpl::at_c<1, SigT>::type T0;
-//              typedef typename ::boost::mpl::at_c<2, SigT>::type T1;
-//              typedef typename ::boost::mpl::at_c<3, SigT>::type T2;
-//              typedef typename ::boost::mpl::at_c<4, SigT>::type T3;
+//              typedef typename ::boost::mpl::begin<SigT>::type    rt_iter;
+//              typedef typename rt_iter::type                      RT;
+//              typedef typename rt_iter::next                      iter0;
+//              typedef typename iter0::type                        T0;
+//              typedef typename iter0::next                        iter1;
+//              typedef typename iter1::type                        T1;
+//              typedef typename iter1::next                        iter2;
+//              typedef typename iter2::type                        T2;
+//              typedef typename iter2::next                        iter3;
+//              typedef typename iter3::type                        T3;
+//              typedef typename iter3::next                        iter4;
 //
 //              static RT func_0(T0 arg0)
 //              { return foo(arg0); }
