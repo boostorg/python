@@ -88,6 +88,8 @@ bpl-test pickle1 ;
 bpl-test pickle2 ;
 bpl-test pickle3 ;
 
+bpl-test nested ;
+
 if $(TEST_BIENSTMAN_NON_BUGS)
 {
     bpl-test bienstman4 ;
