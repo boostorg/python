@@ -13,6 +13,9 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
+# include <boost/lexical_cast.hpp>
+# include <string>
+# include <complex>
 
 namespace boost { namespace python { 
 
@@ -132,7 +135,7 @@ namespace detail
   };
 }
 
-# define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)                      \
+# define BOOST_PYTHON_BINARY_OPERATION(id, rid, expr)                   \
 namespace detail                                                        \
 {                                                                       \
   template <>                                                           \
@@ -143,7 +146,7 @@ namespace detail                                                        \
       {                                                                 \
           static inline PyObject* execute(L const& l, R const& r)       \
           {                                                             \
-              return detail::convert_result(l op r);                    \
+              return detail::convert_result(expr);                      \
           }                                                             \
       };                                                                \
       static char const* name() { return "__" #id "__"; }               \
@@ -157,12 +160,15 @@ namespace detail                                                        \
       {                                                                 \
           static inline PyObject* execute(R const& r, L const& l)       \
           {                                                             \
-              return detail::convert_result(l op r);                    \
+              return detail::convert_result(expr);                      \
           }                                                             \
       };                                                                \
       static char const* name() { return "__" #rid "__"; }              \
   };                                                                    \
-}                                                                       \
+} 
+
+# define BOOST_PYTHON_BINARY_OPERATOR(id, rid, op)                      \
+BOOST_PYTHON_BINARY_OPERATION(id, rid, l op r)                          \
 namespace self_ns                                                       \
 {                                                                       \
   template <class L, class R>                                           \
@@ -189,6 +195,44 @@ BOOST_PYTHON_BINARY_OPERATOR(lt, gt, <)
 BOOST_PYTHON_BINARY_OPERATOR(le, ge, <=)
 BOOST_PYTHON_BINARY_OPERATOR(eq, eq, ==)
 BOOST_PYTHON_BINARY_OPERATOR(ne, ne, !=)
+
+// pow isn't an operator in C++; handle it specially.
+BOOST_PYTHON_BINARY_OPERATION(pow, rpow, pow(l,r))
+namespace self_ns
+{
+# ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+  template <class L, class R>
+  inline detail::operator_<detail::op_pow,L,R>
+  pow(L const&, R const&)
+  {
+      return detail::operator_<detail::op_pow,L,R>();
+  }
+# else
+  // When there's no argument-dependent lookup, we need these
+  // overloads to handle the case when everything is imported into the
+  // global namespace. Note that the plain overload below does /not/
+  // take const& arguments. This is needed by MSVC6 at least, or it
+  // complains of ambiguities, since there's no partial ordering.
+  inline detail::operator_<detail::op_pow,self_t,self_t>
+  pow(self_t, self_t)
+  {
+      return detail::operator_<detail::op_pow,self_t,self_t>();
+  }
+  template <class R>
+  inline detail::operator_<detail::op_pow,self_t,R>
+  pow(self_t const&, R const&)
+  {
+      return detail::operator_<detail::op_pow,self_t,R>();
+  }
+  template <class L>
+  inline detail::operator_<detail::op_pow,L,self_t>
+  pow(L const&, self_t const&)
+  {
+      return detail::operator_<detail::op_pow,L,self_t>();
+  }
+# endif 
+}
+
 
 # define BOOST_PYTHON_INPLACE_OPERATOR(id, op)                  \
 namespace detail                                                \
@@ -263,6 +307,8 @@ BOOST_PYTHON_UNARY_OPERATOR(invert, ~, operator~)
 BOOST_PYTHON_UNARY_OPERATOR(int, long, int_)
 BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)
+BOOST_PYTHON_UNARY_OPERATOR(complex, std::complex<double>, complex_)
+BOOST_PYTHON_UNARY_OPERATOR(str, lexical_cast<std::string>, str)
     
 }} // namespace boost::python
 
@@ -271,6 +317,9 @@ using boost::python::self_ns::abs;
 using boost::python::self_ns::int_;
 using boost::python::self_ns::long_;
 using boost::python::self_ns::float_;
+using boost::python::self_ns::complex_;
+using boost::python::self_ns::str;
+using boost::python::self_ns::pow;
 # endif
 
 #endif // OPERATORS2_DWA2002530_HPP

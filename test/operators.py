@@ -53,12 +53,23 @@
 >>> x -= y
 >>> x.value()
 5
+>>> str(x)
+'5'
 
 >>> z = Z(10)
 >>> int(z)
 10
 >>> float(z)
 10.0
+>>> complex(z)
+(10+0j)
+
+>>> pow(2,x)
+32
+>>> pow(x,2).value()
+25
+>>> pow(X(2),x).value()
+32
 '''
 
 def run(args = None):

@@ -8,6 +8,15 @@
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include "test_class.hpp"
+#if __GNUC__ != 2
+# include <ostream>
+#else
+# include <ostream.h>
+#endif
+
+// Just use math.h here; trying to use std::pow() causes too much
+// trouble for non-conforming compilers and libraries.
+#include <math.h>
 
 using namespace boost::python;
 
@@ -27,6 +36,26 @@ bool operator<(int x, X const& y) { return x < y.value(); }
 
 X abs(X x) { return X(x.value() < 0 ? -x.value() : x.value()); }
 
+X pow(X x, int y)
+{
+    return X(int(pow(double(x.value()), y)));
+}
+
+X pow(X x, X y)
+{
+    return X(int(pow(double(x.value()), y.value())));
+}
+
+int pow(int x, X y)
+{
+    return int(pow(double(x), y.value()));
+}
+
+std::ostream& operator<<(std::ostream& s, X const& x)
+{
+    return s << x.value();
+}
+
 BOOST_PYTHON_MODULE_INIT(operators_ext)
 {
     module("operators_ext")
@@ -43,12 +72,18 @@ BOOST_PYTHON_MODULE_INIT(operators_ext)
             .def(1 < self)
             .def(self -= self)
             .def(abs(self))
+            .def(str(self))
+            
+            .def(pow(self,self))
+            .def(pow(self,int()))
+            .def(pow(int(),self))
             )
         .add(
             class_<test_class<1> >("Z")
             .def_init(args<int>())
             .def(int_(self))
             .def(float_(self))
+            .def(complex_(self))
             )
         ;
 }

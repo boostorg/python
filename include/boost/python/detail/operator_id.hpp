@@ -46,7 +46,8 @@ enum operator_id
     op_irshift,
     op_iand,
     op_ixor,
-    op_ior
+    op_ior,
+    op_complex,
 };
 
 }}} // namespace boost::python::detail
