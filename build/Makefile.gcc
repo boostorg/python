@@ -27,7 +27,7 @@ PYINC= -I/usr/local/Python-1.5.2/include/python1.5
 #STLPORTOPTS= -D__NO_USE_STD_IOSTREAM -D__STL_NO_SGI_IOSTREAMS
 #STLPORTINC= -I/net/cci/xp/C++_C_headers
 
-STDOPTS=
+STDOPTS= -ftemplate-depth-21
 WARNOPTS=
 
 CPP= g++
