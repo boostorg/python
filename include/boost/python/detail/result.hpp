@@ -14,7 +14,7 @@
 #  include <boost/python/detail/preprocessor.hpp>
 
 #  include <boost/type_traits/object_traits.hpp>
-#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/if.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
@@ -60,7 +60,7 @@ struct void_type
 template <class T>
 struct result_result
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_class<T>::value
         , get_result_type<T>
         , void_type

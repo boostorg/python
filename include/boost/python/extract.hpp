@@ -87,13 +87,13 @@ namespace converter
       BOOST_STATIC_CONSTANT(
           bool, ref = is_reference<T>::value);
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           obj_mgr
           , extract_object_manager<T>
-          , typename mpl::select_type<
+          , typename mpl::if_c<
               ptr
               , extract_pointer<T>
-              , typename mpl::select_type<
+              , typename mpl::if_c<
                   ref
                   , extract_reference<T>
                   , extract_rvalue<T>

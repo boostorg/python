@@ -23,7 +23,8 @@
 #include <boost/preprocessor/empty.hpp>
 #include <boost/preprocessor/comma_if.hpp>
 #include <boost/config.hpp>
-#include <boost/python/detail/type_list_utils.hpp>
+#include <boost/mpl/at.hpp>
+#include <boost/mpl/front.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -39,7 +40,7 @@ struct func_stubs_base {};
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BPL_IMPL_TYPEDEF_GEN(z, INDEX, DATA)                                    \
-    typedef typename boost::python::detail::type_at                             \
+    typedef typename ::boost::mpl::at_c                                                    \
     <                                                                           \
         BOOST_PP_ADD_D(1, INDEX, DATA),                                         \
         SigT                                                                    \
@@ -70,7 +71,7 @@ struct func_stubs_base {};
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
+            typedef typename ::boost::mpl::front<SigT>::type RT;  \
                                                                                 \
             BOOST_PP_REPEAT_2ND                                                 \
             (                                                                   \
@@ -113,8 +114,8 @@ struct func_stubs_base {};
         template <typename SigT>                                                        \
         struct gen {                                                                    \
                                                                                         \
-            typedef typename boost::python::detail::type_at<0, SigT>::type RT;          \
-            typedef typename boost::python::detail::type_at<1, SigT>::type ClassT;      \
+            typedef typename ::boost::mpl::front<SigT>::type RT;          \
+            typedef typename ::boost::mpl::at_c<1, SigT>::type ClassT;      \
                                                                                         \
             BOOST_PP_REPEAT_2ND                                                         \
             (                                                                           \
@@ -224,11 +225,11 @@ struct func_stubs_base {};
 //          template <typename SigT>
 //          struct gen {
 //
-//              typedef typename mpl::at<0, SigT>::type RT;
-//              typedef typename mpl::at<1, SigT>::type T0;
-//              typedef typename mpl::at<2, SigT>::type T1;
-//              typedef typename mpl::at<3, SigT>::type T2;
-//              typedef typename mpl::at<4, SigT>::type T3;
+//              typedef typename ::boost::mpl::at_c<0, SigT>::type RT;
+//              typedef typename ::boost::mpl::at_c<1, SigT>::type T0;
+//              typedef typename ::boost::mpl::at_c<2, SigT>::type T1;
+//              typedef typename ::boost::mpl::at_c<3, SigT>::type T2;
+//              typedef typename ::boost::mpl::at_c<4, SigT>::type T3;
 //
 //              static RT func_0(T0 arg0)
 //              { return foo(arg0); }

@@ -11,7 +11,7 @@
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/not_specified.hpp>
 # include <boost/python/back_reference.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
@@ -120,15 +120,15 @@ namespace detail
   // self_t
   template <operator_id id, class L = not_specified, class R = not_specified>
   struct operator_
-      : mpl::select_type<
-             (is_same<L,self_t>::value)
-            , typename mpl::select_type<
-                 (is_same<R,self_t>::value)
+      : mpl::if_<
+            is_same<L,self_t>
+            , typename mpl::if_<
+                 is_same<R,self_t>
                 , binary_op<id>
                 , binary_op_l<id,typename unwrap_other<R>::type>
               >::type
-            , typename mpl::select_type<
-                 (is_same<L,not_specified>::value)
+            , typename mpl::if_<
+                is_same<L,not_specified>
                 , unary_op<id>
                 , binary_op_r<id,typename unwrap_other<L>::type>
                  >::type

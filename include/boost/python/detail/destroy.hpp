@@ -67,8 +67,8 @@ inline void destroy_referent_impl(void* p, T& (*)())
     // note: cv-qualification needed for MSVC6
     // must come *before* T for metrowerks
     value_destroyer<
-        (boost::is_array<T>::value)
-        , (boost::has_trivial_destructor<T>::value)
+         (boost::is_array<T>::value)
+        ,(boost::has_trivial_destructor<T>::value)
         >::execute((const volatile T*)p);
 }
 

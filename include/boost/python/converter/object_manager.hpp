@@ -10,7 +10,7 @@
 # include <boost/python/cast.hpp>
 # include <boost/python/converter/pyobject_traits.hpp>
 # include <boost/type_traits/object_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 
 // Facilities for dealing with types which always manage Python
@@ -102,7 +102,7 @@ struct default_object_manager_traits
 
 template <class T>
 struct object_manager_traits
-    : mpl::select_type<
+    : mpl::if_c<
          is_handle<T>::value
        , handle_object_manager_traits<T>
        , default_object_manager_traits<T>
@@ -164,7 +164,7 @@ namespace detail
   template <class T>
   struct is_object_manager_help
   {
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           is_object_manager<T>::value
           , yes_reference_to_object_manager
           , no_reference_to_object_manager
@@ -217,7 +217,7 @@ namespace detail
 template <class T>
 struct is_reference_to_object_manager
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_reference<T>::value
         , detail::is_reference_to_object_manager_ref<T>
         , detail::is_reference_to_object_manager_nonref<T>

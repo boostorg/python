@@ -15,7 +15,9 @@
 #  include <boost/python/detail/wrap_python.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 
-#  include <boost/mpl/at.hpp>
+#  include <boost/mpl/next.hpp>
+#  include <boost/mpl/begin_end.hpp>
+#  include <boost/mpl/apply.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
@@ -29,8 +31,10 @@ namespace boost { namespace python { namespace objects {
 template <int nargs> struct make_holder;
 
 #  define BOOST_PYTHON_FORWARD_ARG(z, index, _)             \
-    typedef typename mpl::at<index,ArgList>::type t##index; \
-    typedef typename forward<t##index>::type f##index;
+    typedef typename iter##index::type t##index;        \
+    typedef typename forward<t##index>::type f##index;  \
+    typedef typename mpl::next<iter##index>::type       \
+    BOOST_PP_CAT(iter,BOOST_PP_INC(index));
 
 #  define BOOST_PYTHON_DO_FORWARD_ARG(z, index, _) , f##index(a##index)
 
@@ -56,6 +60,7 @@ struct make_holder<N>
     template <class Holder, class ArgList>
     struct apply
     {
+        typedef typename mpl::begin<ArgList>::type iter0;
         BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FORWARD_ARG, nil)
         static void execute(
             PyObject* p

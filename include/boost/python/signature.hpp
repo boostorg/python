@@ -19,8 +19,19 @@
 #  include <boost/preprocessor/empty.hpp>
 #  include <boost/preprocessor/arithmetic/sub.hpp>
 #  include <boost/preprocessor/iterate.hpp>
-#  include <boost/mpl/type_list.hpp>
+#  include <boost/python/detail/type_list.hpp>
+
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/arithmetic/sub.hpp>
+#  include <boost/preprocessor/arithmetic/inc.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
+
+# define BOOST_PYTHON_FUNCTION_SIGNATURE_LIST(n)        \
+   BOOST_PP_CAT(mpl::list, BOOST_PP_INC(n))
+
+# define BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST(n)         \
+   BOOST_PP_CAT(mpl::list, BOOST_PP_INC(BOOST_PP_INC(n)))
+
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {
@@ -30,28 +41,28 @@ namespace boost { namespace python { namespace detail {
 //  The following macros generate expansions for:
 //
 //      template <class RT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, T0...TN>
+//      inline mpl::list<RT, T0...TN>
 //      get_signature(RT(*)(T0...TN))
 //      {
-//          return boost::mpl::type_list<RT, T0...TN>();
+//          return mpl::list<RT, T0...TN>();
 //      }
 //
 //      template <class RT, class ClassT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      inline mpl::list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN)))
 //      {
-//          return boost::mpl::type_list<RT, ClassT, T0...TN>();
+//          return mpl::list<RT, ClassT, T0...TN>();
 //      }
 //
 //      template <class RT, class ClassT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      inline mpl::list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN) const))
 //      {
-//          return boost::mpl::type_list<RT, ClassT const, T0...TN>();
+//          return mpl::list<RT, ClassT const, T0...TN>();
 //      }
 //
 //  These functions extract the return type, class (for member functions)
-//  and arguments of the input signature and stuffs them in an mpl::type_list.
+//  and arguments of the input signature and stuffs them in an mpl::list.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -65,6 +76,10 @@ namespace boost { namespace python { namespace detail {
 
 }} // namespace boost::python
 
+
+# undef BOOST_PYTHON_FUNCTION_SIGNATURE_LIST
+# undef BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST
+
 ///////////////////////////////////////////////////////////////////////////////
 # endif // SIGNATURE_JDG20020813_HPP
 
@@ -73,47 +88,38 @@ namespace boost { namespace python { namespace detail {
 # define N BOOST_PP_ITERATION()
 
 template <
-    class RT BOOST_PP_COMMA_IF(N)
-    BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
-    RT BOOST_PP_COMMA_IF(N)
-    BOOST_PP_ENUM_PARAMS(N, T)>
+    class RT BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
+inline BOOST_PYTHON_FUNCTION_SIGNATURE_LIST(N)<
+    RT BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>
 get_signature(RT(*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
-    return boost::mpl::type_list<
-            RT BOOST_PP_COMMA_IF(N)
-            BOOST_PP_ENUM_PARAMS(N, T)>();
+    return BOOST_PYTHON_FUNCTION_SIGNATURE_LIST(N)<
+            RT BOOST_PP_ENUM_TRAILING_PARAMS(N, T)
+        >();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 #if N <= (BOOST_PYTHON_MAX_ARITY - 2)
 
 template <
-    class RT, class ClassT BOOST_PP_COMMA_IF(N)
-    BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
-    RT, ClassT BOOST_PP_COMMA_IF(N)
-    BOOST_PP_ENUM_PARAMS(N, T)>
+    class RT, class ClassT BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
+inline BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST(N)<
+    RT, ClassT BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>
 get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
-    return boost::mpl::type_list<
-            RT, ClassT BOOST_PP_COMMA_IF(N)
-            BOOST_PP_ENUM_PARAMS(N, T)>();
+    return BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST(N)<
+        RT, ClassT BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>();
 }
 
 ///////////////////////////////////////
 template <
-    class RT, class ClassT BOOST_PP_COMMA_IF(N)
-    BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
-    RT, ClassT const BOOST_PP_COMMA_IF(N)
-    BOOST_PP_ENUM_PARAMS(N, T)>
+    class RT, class ClassT BOOST_PP_ENUM_TRAILING_PARAMS(N, class T)>
+inline BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST(N)<
+    RT, ClassT const BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>
 get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)) const)
 {
-    return boost::mpl::type_list<
-            RT, ClassT const
-            BOOST_PP_COMMA_IF(N)
-            BOOST_PP_ENUM_PARAMS(N, T)>();
+    return BOOST_PYTHON_MEMBER_FUNCTION_SIGNATURE_LIST(N)<
+        RT, ClassT const BOOST_PP_ENUM_TRAILING_PARAMS(N, T)>();
 }
 
 #endif // N < (BOOST_PYTHON_MAX_ARITY - 2)

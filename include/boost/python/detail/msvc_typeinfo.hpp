@@ -8,8 +8,10 @@
 
 #include <boost/type.hpp>
 #include <typeinfo>
-#include <boost/type_traits/array_traits.hpp>
-#include <boost/type_traits/reference_traits.hpp>
+#include <boost/type_traits/is_array.hpp>
+#include <boost/type_traits/is_reference.hpp>
+#include <boost/type_traits/is_const.hpp>
+#include <boost/type_traits/is_volatile.hpp>
 //
 // Fix for MSVC's broken typeid() implementation which doesn't strip
 // decoration. This fix doesn't handle cv-qualified array types. It

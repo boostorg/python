@@ -12,7 +12,7 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
@@ -165,22 +165,22 @@ struct select_arg_from_python
         bool, back_ref =
         boost::python::is_back_reference<T>::value);
 
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         obj_mgr
         , object_manager_value_arg_from_python<T>
-        , typename mpl::select_type<
+        , typename mpl::if_c<
             obj_mgr_ref
             , object_manager_ref_arg_from_python<T>
-            , typename mpl::select_type<
+            , typename mpl::if_c<
                 ptr
                 , pointer_arg_from_python<T>
-                , typename mpl::select_type<
+                , typename mpl::if_c<
                     ptr_cref
                     , pointer_cref_arg_from_python<T>
-                    , typename mpl::select_type<
+                    , typename mpl::if_c<
                         ref
                         , reference_arg_from_python<T>
-                        , typename mpl::select_type<
+                        , typename mpl::if_c<
                             back_ref
                             , back_reference_arg_from_python<T>
                             , arg_rvalue_from_python<T>

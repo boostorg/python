@@ -9,7 +9,7 @@
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/reference_existing_object.hpp>
 # include <boost/python/with_custodian_and_ward.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 
 namespace boost { namespace python { 
 
@@ -30,7 +30,7 @@ struct return_internal_reference
  private:
     BOOST_STATIC_CONSTANT(bool, legal = owner_arg > 0);
  public:
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         legal
         , reference_existing_object
         , detail::return_internal_reference_owner_arg_must_be_greater_than_zero<owner_arg>
