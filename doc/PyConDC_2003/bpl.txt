@@ -91,11 +91,23 @@ facilities provided by Python alone for integration with C++ are
 relatively meager.  Some of this, such as the need to manage
 reference-counting manually and lack of C++ exception-handling
 support, comes from the limitations of the 'C' language in which the
-API is implemented.
+API is implemented.  Most of the remaining issues can be handled if
+the code understands the C++ type system.  For example:
 
-Most of the hard problems and much of the tedium of exposing C++ in
-Python extension modules can be handled if the code understands the C++
-type system.  The Boost.Python Library (BPL) leverages the power of C++
+* Every argument of every wrapped function requires some kind of
+  extraction code to convert it from Python to C++.  Likewise, the
+  function return value has to be converted from C++ to Python.
+  Appropriate Python exceptions must be raised if the conversion
+  fails. Argument and return types are part of the function's type,
+  and much of this tedium can be relieved if the wrapping system can
+  extract that information through  introspection.
+
+* Passing a wrapped C++ derived class instance to a C++ function
+  accepting a pointer or reference to a base class requires knowledge
+  of the inheritance relationship and how to translate the address of
+  a base class into that of a derived class.
+
+The Boost.Python Library (BPL) leverages the power of C++
 meta-programming techniques to introspect about the C++ type system,
 and presents a simple, IDL-like C++ interface for exposing C++ code in
 extension modules.
@@ -114,17 +126,6 @@ literally: the idioms of each language must be respected.  For
 example, though C++ and Python both have an iterator concept, they are
 expressed very differently.  Boost.Python has to be able to bridge the
 interface gap.
-
-Every argument of every wrapped function must be converted
-automatically from Python to C++.  Likewise, the function return value
-must be converted automatically from C++ to Python.  Appropriate
-Python exceptions must be raised if the conversion fails.
-
-It must be possible to pass a wrapped C++ derived class instance to a
-C++ function accepting a pointer or reference to a base class.  For
-this Boost.Python has to maintain a graph of the inheritance
-relationships including information on how to translate the address of
-a base class into that of a derived class.
 
 It must be possible to insulate Python users from crashes resulting
 from trivial misuses of C++ interfaces, such as accessing
@@ -612,8 +613,9 @@ generate these dispatchers (and other wrapping code) automatically.
 If these are successful it will mark a move away from wrapping
 everything directly in pure C++ for many of our users.
 
-Serialization
-=============
+---------------
+ Serialization
+---------------
 
 *Serialization* is the process of converting objects in memory to a
 form that can be stored on disk or sent over a network connection. The
@@ -673,9 +675,9 @@ a little more work than is shown in this example, but the ``object``
 interface (see next section) greatly helps in keeping the code
 manageable.
 
-==================
+------------------
  Object interface
-==================
+------------------
 
 Experienced extension module authors will be familiar with the 'C' view
 of Python objects, the ubiquitous ``PyObject*``. Most if not all Python
