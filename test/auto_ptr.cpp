@@ -47,7 +47,11 @@ std::auto_ptr<X> callback(object f)
 
 std::auto_ptr<X> extract_(object o)
 {
-    return extract<std::auto_ptr<X>&>(o);
+    return extract<std::auto_ptr<X>&>(o)
+#if BOOST_MSVC <= 1300
+        ()
+#endif 
+        ;
 }
 
 BOOST_PYTHON_MODULE(auto_ptr_ext)
