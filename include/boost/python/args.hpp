@@ -136,10 +136,6 @@ namespace detail
 # endif 
 }
 
-#if defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730
-class old_edg_workaround_for_arg { friend class arg; };
-#endif
-
 namespace detail
 {
   template <std::size_t nkeywords>
