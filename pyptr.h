@@ -163,7 +163,7 @@ private:
 typedef reference<PyObject> ref;
 
 template <class T>
-ref make_ptr(const T& x)
+ref make_ref(const T& x)
 {
     return ref(to_python(x));
 }

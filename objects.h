@@ -81,7 +81,7 @@ class tuple : public object
     template <class T>
     void set_item(std::size_t pos, const T& rhs)
     {
-        this->set_item(pos, make_ptr(rhs));
+        this->set_item(pos, make_ref(rhs));
     }
     
     void set_item(std::size_t pos, const ref& rhs);
@@ -108,24 +108,24 @@ class list : public object
 
     template <class T>
     void set_item(std::size_t pos, const T& x)
-        { this->set_item(pos, make_ptr(x)); }
+        { this->set_item(pos, make_ref(x)); }
     void set_item(std::size_t pos, const ref& );
     
 //    void set_item(std::size_t pos, const object& );
 
     template <class T>
     void insert(std::size_t index, const T& x)
-        { this->insert(index, make_ptr(x)); }
+        { this->insert(index, make_ref(x)); }
     void insert(std::size_t index, const ref& item);
 
     template <class T>
     void push_back(const T& item)
-        { this->push_back(make_ptr(item)); }
+        { this->push_back(make_ref(item)); }
     void push_back(const ref& item);
     
     template <class T>
     void append(const T& item)
-        { this->append(make_ptr(item)); }
+        { this->append(make_ref(item)); }
     void append(const ref& item);
     
     list slice(int low, int high) const;
@@ -191,32 +191,32 @@ class dictionary : public object
  public:
     template <class Key>
     proxy operator[](const Key& key)
-        { return this->operator[](make_ptr(key)); }
+        { return this->operator[](make_ref(key)); }
     proxy operator[](ref key);
     
     template <class Key>
     ref operator[](const Key& key) const
-        { return this->operator[](make_ptr(key)); }
+        { return this->operator[](make_ref(key)); }
     ref operator[](ref key) const;
 
     template <class Key>
     ref get_item(const Key& key) const
-        { return this->get_item(make_ptr(key)); }
+        { return this->get_item(make_ref(key)); }
     ref get_item(const ref& key) const;
     
     template <class Key, class Default>
     ref get_item(const Key& key, const Default& default_) const
-        { return this->get_item(make_ptr(key), make_ptr(default_)); }
+        { return this->get_item(make_ref(key), make_ref(default_)); }
     ref get_item(const ref& key, const ref& default_) const;
     
     template <class Key, class Value>
     void set_item(const Key& key, const Value& value)
-        { this->set_item(make_ptr(key), make_ptr(value)); }
+        { this->set_item(make_ref(key), make_ref(value)); }
     void set_item(const ref& key, const ref& value);
 
     template <class Key>
     void erase(const Key& key)
-        { this->erase(make_ptr(key)); }
+        { this->erase(make_ref(key)); }
     void erase(ref key);
 
 //    proxy operator[](const object& key);
@@ -239,7 +239,7 @@ struct dictionary::proxy
 {
     template <class T>
     const ref& operator=(const T& rhs)
-        { return (*this) = make_ptr(rhs); }
+        { return (*this) = make_ref(rhs); }
     const ref& operator=(const ref& rhs);
 
     operator ref() const;
@@ -260,7 +260,7 @@ struct list::proxy
 {
     template <class T>
     const ref& operator=(const T& rhs)
-        { return (*this) = make_ptr(rhs); }
+        { return (*this) = make_ref(rhs); }
     const ref& operator=(const ref& rhs);
     
     operator ref() const;
