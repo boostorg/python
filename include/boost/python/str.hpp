@@ -11,6 +11,7 @@
 #undef isalpha
 #undef isdigit
 #undef isalnum
+#undef isupper
 
 namespace boost { namespace python {
 
