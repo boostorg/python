@@ -11,6 +11,8 @@
 # include <boost/get_pointer.hpp>
 # include <boost/detail/binary_search.hpp>
 # include <boost/numeric/conversion/cast.hpp>
+# include <boost/detail/workaround.hpp>
+# include <boost/config.hpp>
 # include <vector>
 # include <map>
 #include <iostream>
@@ -590,7 +592,15 @@ namespace boost { namespace python { namespace detail {
                     from = 0;
                 if (from > max_index) // Clip upper bounds to max_index.
                     from = max_index;
+
+// agurt 21/sep/04: here and below -- MSVC 6.x ICEs in 'vector_indexing_suite.cpp'
+// unless we get skip 'boost::numeric_cast' layer and directly invoke the
+// underlaying convertor's method
+#if !BOOST_WORKAROUND(BOOST_MSVC, < 1300)
                 from_ = boost::numeric_cast<Index>(from);
+#else
+                from_ = boost::numeric::converter<Index,long>::convert(from);
+#endif
             }
 
             if (Py_None == slice->stop) {
@@ -604,7 +614,12 @@ namespace boost { namespace python { namespace detail {
                     to = 0;
                 if (to > max_index)
                     to = max_index;
+
+#if !BOOST_WORKAROUND(BOOST_MSVC, < 1300)
                 to_ = boost::numeric_cast<Index>(to);
+#else
+                to_ = boost::numeric::converter<Index,long>::convert(to);
+#endif
             }
         }        
    
