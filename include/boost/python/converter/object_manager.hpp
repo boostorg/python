@@ -21,8 +21,9 @@ class object;
 namespace boost { namespace python { namespace converter { 
 
 template <class T>
-class is_object_manager
+struct is_object_manager
 {
+ private:
     BOOST_STATIC_CONSTANT(bool, hdl = is_handle<T>::value);
     BOOST_STATIC_CONSTANT(bool, borrowed = python::detail::is_borrowed_ptr<T>::value);
  public:

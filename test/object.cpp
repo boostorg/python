@@ -113,6 +113,22 @@ bool test_not_item(object y, object key)
     return !y[key];
 }
 
+bool check_string_slice()
+{
+    object s("hello, world");
+
+    if (s.slice(_,-3) != "hello, wo")
+        return false;
+    
+    if (s.slice(-3,_) != "rld")
+        return false;
+    
+    if (", " != s.slice(5,7))
+        return false;
+
+    return s.slice(2,-1).slice(1,-1)  == "lo, wor";
+}
+
 bool check_binary_operators()
 {
     int y;
@@ -295,6 +311,7 @@ BOOST_PYTHON_MODULE_INIT(object_ext)
 
         .def("check_binary_operators", check_binary_operators)
         .def("check_inplace", check_inplace)
+        .def("check_string_slice", check_string_slice)
         ;
 }
 

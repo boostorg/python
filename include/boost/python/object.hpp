@@ -9,6 +9,7 @@
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_attributes.hpp>
 # include <boost/python/object_items.hpp>
+# include <boost/python/object_slices.hpp>
 # include <boost/python/object_operators.hpp>
 
 namespace boost { namespace python {

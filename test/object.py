@@ -80,10 +80,15 @@
 >>> test_not_item(d, 'foo')
 1
 
+        Slices
+        
+>>> assert check_string_slice()
+
         Operators
 
         
 >>> assert check_binary_operators()
+
 >>> class X: pass
 ...
 >>> assert check_inplace(range(3), X())

@@ -13,13 +13,15 @@ namespace boost { namespace python { namespace api {
 template <class Policies>
 class proxy : public object_operators<proxy<Policies> >
 {
+    typedef typename Policies::key_type key_type;
+    
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
     typedef proxy const& copy_ctor_self;
 # else
     typedef proxy copy_ctor_self;
 # endif
  public:
-    proxy(object const& target, object const& key);
+    proxy(object const& target, key_type const& key);
     operator object() const;
 
     // to support a[b] = c[d]
@@ -31,18 +33,28 @@ class proxy : public object_operators<proxy<Policies> >
         Policies::set(m_target, m_key, object(rhs));
         return *this;
     }
-    
+
+ public: // implementation detail
+    void del() const;
+        
  private:
     object m_target;
-    object m_key;
+    key_type m_key;
 };
+
+
+template <class T>
+inline void del(proxy<T> const& x)
+{
+    x.del();
+}
 
 //
 // implementation
 //
 
 template <class Policies>
-inline proxy<Policies>::proxy(object const& target, object const& key)
+inline proxy<Policies>::proxy(object const& target, key_type const& key)
     : m_target(target), m_key(key)
 {}
 
@@ -77,6 +89,12 @@ BOOST_PYTHON_PROXY_INPLACE(&=)
 BOOST_PYTHON_PROXY_INPLACE(^=)
 BOOST_PYTHON_PROXY_INPLACE(|=)
 # undef BOOST_PYTHON_PROXY_INPLACE
+
+template <class Policies>
+inline void proxy<Policies>::del() const
+{
+    Policies::del(m_target, m_key);
+}
 
 }}} // namespace boost::python::api
 

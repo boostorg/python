@@ -14,12 +14,14 @@ namespace boost { namespace python { namespace api {
 
 struct const_item_policies
 {
+    typedef object key_type;
     static object get(object const& target, object const& key);
 };
   
 struct item_policies : const_item_policies
 {
     static object const& set(object const& target, object const& key, object const& value);
+    static void del(object const& target, object const& key);
 };
 
 //
@@ -29,7 +31,7 @@ template <class U>
 inline object_item
 object_operators<U>::operator[](self_cref key)
 {
-    object const& x = *static_cast<U*>(this);
+    object_cref x = *static_cast<U*>(this);
     return object_item(x, key);
 }
 
@@ -37,7 +39,7 @@ template <class U>
 inline const_object_item
 object_operators<U>::operator[](self_cref key) const
 {
-    object const& x = *static_cast<U const*>(this);
+    object_cref x = *static_cast<U const*>(this);
     return const_object_item(x, key);
 }
 
@@ -62,7 +64,7 @@ object_operators<U>::operator[](T const& key)
 
 inline object const_item_policies::get(object const& target, object const& key)
 {
-    return python::getitem(target, key);
+    return getitem(target, key);
 }
 
 inline object const& item_policies::set(
@@ -70,33 +72,17 @@ inline object const& item_policies::set(
     , object const& key
     , object const& value)
 {
-    python::setitem(target, key, value);
+    setitem(target, key, value);
     return value;
 }
 
-} // namespace api
-
-namespace converter
+inline void item_policies::del(
+    object const& target
+    , object const& key)
 {
-  // These specializations are a lie; the proxies do not directly
-  // manage an object. What actually happens is that the implicit
-  // conversion to object takes hold and its conversion to_python is
-  // used. That's OK in part because the object temporary *is*
-  // actually managing the object during the duration of the
-  // conversion.
-  template <>
-  struct is_object_manager<api::object_item>
-  {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
-
-  template <>
-  struct is_object_manager<api::const_object_item>
-  {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
+    delitem(target, key);
 }
 
-}} // namespace boost::python
+}}} // namespace boost::python::api
 
 #endif // OBJECT_ITEMS_DWA2002615_HPP

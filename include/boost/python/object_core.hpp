@@ -10,6 +10,8 @@
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/call.hpp>
 # include <boost/preprocessor/max.hpp>
+# include <boost/python/slice_nil.hpp>
+# include <boost/type.hpp>
 
 namespace boost { namespace python { 
 
@@ -27,12 +29,74 @@ namespace api
   struct attribute_policies;
   struct const_item_policies;
   struct item_policies;
+  struct const_slice_policies;
+  struct slice_policies;
 
   typedef proxy<const_attribute_policies> const_object_attribute;
   typedef proxy<attribute_policies> object_attribute;
   typedef proxy<const_item_policies> const_object_item;
   typedef proxy<item_policies> object_item;
+  typedef proxy<const_slice_policies> const_object_slice;
+  typedef proxy<slice_policies> object_slice;
 
+  //
+  // is_proxy -- proxy type detection
+  //
+# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+  template <class T>
+  struct is_proxy
+  {
+      BOOST_STATIC_CONSTANT(bool, value = false);
+  };
+  template <class T>
+  struct is_proxy<proxy<T> >
+  {
+      BOOST_STATIC_CONSTANT(bool, value = true);
+  };
+# else
+  typedef char yes_proxy;
+  typedef char (&no_proxy)[2];
+  template <class T>
+  yes_proxy is_proxy_helper(boost::type<proxy<T> >*);
+  no_proxy is_proxy_helper(...);
+  template <class T>
+  struct is_proxy
+  {
+      BOOST_STATIC_CONSTANT(
+          bool, value = (sizeof(is_proxy_helper((boost::type<T>*)0))
+                         == sizeof(yes_proxy)));
+  };
+# endif 
+
+  //
+  // object_handle -- get the handle to construct the object with,
+  // based on whether T is a proxy or not
+  //
+  template <bool = false>
+  struct object_handle
+  {
+      template <class T>
+      static handle<> get(T const& x)
+      {
+          return handle<>(
+              python::borrowed(
+                  python::allow_null( // null check is already done
+                      converter::arg_to_python<T>(x).get())
+                  )
+              );
+      }
+  };
+      
+  template <>
+  struct object_handle<true>
+  {
+      template <class Policies>
+      static handle<> get(proxy<Policies> const& x)
+      {
+          return x.operator object().ptr();
+      }
+  };
+      
   // A way to turn a conrete type T into a type dependent on U. This
   // keeps conforming compilers from complaining about returning an
   // incomplete T from a template member function (which must be
@@ -54,12 +118,19 @@ namespace api
 # else 
       typedef object self_cref;
 # endif
+
+     // there appears to be a codegen bug here. We prevent the early
+     // destruction of a temporary in CWPro8 by binding a named
+     // object instead.
+# if __MWERKS__ != 0x3000 
+    typedef object const& object_cref;
+# else
+    typedef object const object_cref;
+# endif
       
    public:
-      // Attribute access via x.attr("attribute_name")
-      const_object_attribute attr(char const*) const;
-      object_attribute attr(char const*);
-
+      // function call
+      //
       object operator()() const;
 
 # ifndef BOOST_PYTHON_GENERATE_CODE
@@ -81,10 +152,17 @@ namespace api
           , BOOST_PYTHON_OBJECT_CALL, ignored)
 
       // truth value testing
+      //
       operator bool_type() const;
       bool operator!() const; // needed for vc6
 
+      // Attribute access
+      //
+      const_object_attribute attr(char const*) const;
+      object_attribute attr(char const*);
+
       // item access
+      //
       const_object_item operator[](self_cref) const;
       object_item operator[](self_cref);
     
@@ -110,6 +188,47 @@ namespace api
       }
 # endif
 
+      // slicing
+      //
+      const_object_slice slice(self_cref, self_cref) const;
+      object_slice slice(self_cref, self_cref);
+
+      const_object_slice slice(slice_nil, self_cref) const;
+      object_slice slice(slice_nil, self_cref);
+                             
+      const_object_slice slice(self_cref, slice_nil) const;
+      object_slice slice(self_cref, slice_nil);
+                             
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+      template <class T, class V>
+      const_object_slice
+      slice(T const& start, V const& end) const;
+    
+      template <class T, class V>
+      object_slice
+      slice(T const& start, V const& end);
+
+# else
+      template <class T, class V>
+      const_object_slice
+      slice(T const& start, V const& end) const
+      {
+          return this->slice(
+               slice_bound<T>::type(start)
+              ,  slice_bound<V>::type(end));
+      }
+    
+      template <class T, class V>
+      object_slice
+      slice(T const& start, V const& end)
+      {
+          return this->slice(
+              slice_bound<T>::type(start)
+              , slice_bound<V>::type(end));
+      }
+# endif
+
+
 # if BOOST_MSVC == 1200
       // For whatever reason, VC6 generates incorrect code unless we
       // define this
@@ -128,12 +247,7 @@ namespace api
       // explicit conversion from any C++ object to Python
       template <class T>
       explicit object(T const& x)
-          : m_ptr(
-              python::borrowed(
-                  python::allow_null( // null check is already done
-                      converter::arg_to_python<T>(x).get())
-                  )
-              )
+          : m_ptr(object_handle<is_proxy<T>::value>::get(x))
       {
       }
 
@@ -141,12 +255,7 @@ namespace api
       // literals. Otherwise, they get deduced as char[N]const& above
       // and conversion fails at runtime.
       explicit object(char const* x)
-          : m_ptr(
-              python::borrowed(
-                  python::allow_null( // null check is already done
-                      converter::arg_to_python<char const*>(x).get())
-                  )
-              )
+          : m_ptr(object_handle<>::get(x))
       {
       }
     
