@@ -22,6 +22,7 @@
 
 #include <boost/python/def_visitor.hpp>
 #include <boost/python/iterator.hpp>
+#include <boost/type_traits/ice.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 
@@ -507,14 +508,16 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_delitem<traits::has_erase, traits::index_style>
         ::apply (pyClass, algorithms(), m_policy);
 
-      bool const iter_condition = (traits::index_style != index_style_linear)
-        && traits::has_copyable_iter;
-      maybe_add_iter<iter_condition>
-        ::apply (pyClass, algorithms(), m_policy);
+      maybe_add_iter<
+          type_traits::ice_and <
+              traits::index_style != index_style_linear
+              , traits::has_copyable_iter
+          >::value
+      >::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_sort
-        <traits::is_reorderable, value_traits_::lessthan_comparable>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_sort <
+          traits::is_reorderable, value_traits_::lessthan_comparable
+      >::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_reverse<traits::is_reorderable>
         ::apply (pyClass, algorithms(), precallPolicy);
@@ -525,15 +528,19 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_insert<traits::has_insert>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      bool const extend_condition = (traits::index_style == index_style_linear)
-        && traits::has_insert;
-      maybe_add_extend<extend_condition>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_extend <
+          type_traits::ice_and <
+              traits::index_style == index_style_linear
+              , traits::has_insert
+          >::value
+      >::apply (pyClass, algorithms(), precallPolicy);
 
-      bool const index_condition = (traits::index_style == index_style_linear)
-        && traits::has_find;
-      maybe_add_index<index_condition>
-        ::apply (pyClass, algorithms(), precallPolicy);
+      maybe_add_index <
+          type_traits::ice_and <
+              traits::index_style == index_style_linear
+              , traits::has_find
+          >::value
+      >::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_count<traits::has_find, traits::index_style>
         ::apply (pyClass, algorithms(), precallPolicy);
