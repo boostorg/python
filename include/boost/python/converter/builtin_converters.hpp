@@ -111,9 +111,9 @@ BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUn
 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),x.size()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),static_cast<int>(x.size())))
 # ifndef BOOST_NO_STD_WSTRING
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),x.size()))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),static_cast<int>(x.size())))
 # endif 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, ::PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, ::PyFloat_FromDouble(x))

@@ -75,7 +75,7 @@ namespace
 
           // Get the location in which to construct
           void* storage = ((rvalue_from_python_storage<T>*)data)->storage.bytes;
-          new (storage) T(SlotPolicy::extract(intermediate.get()));
+          new (storage) T(static_cast<T>(SlotPolicy::extract(intermediate.get())));
 
           // record successful construction
           data->convertible = storage;
