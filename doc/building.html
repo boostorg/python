@@ -77,10 +77,10 @@
     library, but if multiple Boost.Python extension modules are used
     together, it will prevent sharing of types across extension modules, and
     consume extra code space. To build <code>boost_python</code>, use <a
-    href="../../../tools/build/v1/build_system.htm">Boost.Build</a> in the usual way
-    from the <code>libs/python/build</code> subdirectory of your boost
-    installation (if you have already built boost from the top level this may
-    have no effect, since the work is already done).</p>
+    href="../../../tools/build/v1/build_system.htm">Boost.Build</a> in the
+    usual way from the <code>libs/python/build</code> subdirectory of your
+    boost installation (if you have already built boost from the top level
+    this may have no effect, since the work is already done).</p>
 
     <h3><a name="configuration">Basic Configuration</a></h3>
     You may need to configure the following variables to point Boost.Build at
@@ -266,48 +266,79 @@ bjam -sTOOLS=<i><a href=
     passes. 
 
     <h2><a name="building_ext">Building your Extension Module</a></h2>
-    Though there are other approaches, the smoothest and most reliable
-    way to build an extension module using Boost.Python is with
-    Boost.Build. If you have to use another build system, you should
-    use Boost.Build at least once with the
-    "<code><b>-n</b></code>" option so you can see the command-lines it uses,
-    and replicate them. You are likely to run into compilation or linking
-    problems otherwise. 
+    Though there are other approaches, the smoothest and most reliable way to
+    build an extension module using Boost.Python is with Boost.Build. If you
+    have to use another build system, you should use Boost.Build at least
+    once with the "<code><b>-n</b></code>" option so you can see the
+    command-lines it uses, and replicate them. You are likely to run into
+    compilation or linking problems otherwise. 
 
-    The <code><a href="../example">libs/python/example</a></code>
-    subdirectory of your boost installation contains a small example
-    which builds and tests two extensions. To build your own
-    extensions copy the example subproject and make the following two edits:
+    <p>The files required to build a Boost.Python extension module using bjam
+    are the "local" files <tt>Jamfile</tt>, <tt>Jamrules</tt>, and
+    <tt>boost_build.jam</tt>, and the <tt>boost/</tt>
+    and <tt>tools/build/v1/</tt> subdirectories of your Boost
+    tree. The latter directory contains the source code of the
+    Boost.Build system, which is used to generate the correct build
+    commands for your extension module.  The '<tt>v1</tt>' refers to
+    Boost.Build version 1. Version 2 is pre-release and currently not
+    ready for general use.
 
-<ol>
-<li><code><a
-href="../example/boost-build.jam"><b>boost-build.jam</b></a></code> -
-edit the line which reads
+    <p>
+    The <tt>libs/python/example/</tt> project we're going to build is
+    set up to automatically rebuild the Boost.Python library in place
+    whenever it's out-of-date rather than just reusing an existing
+    library, so you'll also need the Boost.Python library sources in
+    <tt>boost/python/src/</tt>.
+    </p>
 
-<blockquote>
+    <blockquote>
+      <b>Note:</b> Third-party package and distribution maintainers
+      for various operating systems sometimes split up Boost's
+      structure or omit parts of it, so if you didn't download an
+      official <a href=
+    "http://sourceforge.net/project/showfiles.php?group_id=7586">Boost
+    release</a> you might want to <a href=
+      "http://cvs.sourceforge.net/viewcvs.py/boost/boost/">browse our CVS
+      structure</a> to make sure you have everything you need, and in the
+      right places.
+    </blockquote>
+
+    <p>The <code><a href="../example">libs/python/example</a></code>
+    subdirectory of your boost installation contains a small example which
+    builds and tests two extensions. To build your own extensions copy the
+    example subproject and make the following two edits:</p>
+
+    <ol>
+      <li>
+        <code><a href=
+        "../example/boost-build.jam"><b>boost-build.jam</b></a></code> - edit
+        the line which reads 
+
+        <blockquote>
 <pre>
 boost-build ../../../tools/build/v1 ;
 </pre>
-</blockquote>
+        </blockquote>
+        so that the path refers to the <code>tools/build/v1</code>
+        subdirectory of your Boost installation. 
+      </li>
 
-so that the path refers to the <code>tools/build/v1</code> subdirectory
-of your Boost installation.
+      <li>
+        <code><a href="../example/Jamrules"><b>Jamrules</b></a></code> - edit
+        the line which reads 
 
-
-<li><code><a href="../example/Jamrules"><b>Jamrules</b></a></code> -
-edit the line which reads
-
-<blockquote>
+        <blockquote>
 <pre>
 path-global BOOST_ROOT : ../../.. ;
 </pre>
-</blockquote>
-so that the path refers to the root directory of your Boost installation.
-</ol>
+        </blockquote>
+        so that the path refers to the root directory of your Boost
+        installation.
+      </li>
+    </ol>
 
-<p>
-    The instructions <a href="#testing">above</a> for testing Boost.Python
-    apply equally to your new extension modules in this subproject. 
+    <p>The instructions <a href="#testing">above</a> for testing Boost.Python
+    apply equally to your new extension modules in this subproject.</p>
 
     <h2><a name="variants">Build Variants</a></h2>
     Three <a href=
@@ -412,13 +443,13 @@ so that the path refers to the root directory of your Boost installation.
     </blockquote>
     <hr>
 
-    <p>&copy; Copyright David Abrahams 2002. Permission to copy, use, modify,
-    sell and distribute this document is granted provided this copyright
-    notice appears in all copies. This document is provided ``as is'' without
-    express or implied warranty, and with no claim as to its suitability for
-    any purpose.</p>
+    <p>&copy; Copyright David Abrahams 2002-2004. Permission to copy,
+    use, modify, sell and distribute this document is granted provided
+    this copyright notice appears in all copies. This document is
+    provided ``as is'' without express or implied warranty, and with
+    no claim as to its suitability for any purpose.</p>
 
-    <p>Updated: 29 December, 2002 (David Abrahams)</p>
+    <p>Updated: 13 April 2004 (David Abrahams)</p>
   </body>
 </html>
 
