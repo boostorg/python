@@ -57,7 +57,7 @@
 #  define BOOST_CSTD_ std
 # endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__CYGWIN__)
 # define BOOST_PYTHON_MODULE_INIT(name) extern "C" __declspec(dllexport) void init##name()
 #else
 # define BOOST_PYTHON_MODULE_INIT(name) extern "C" void init##name()

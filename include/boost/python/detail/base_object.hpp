@@ -39,7 +39,7 @@ typedef base_object<PyTypeObject> python_type;
 
 
 //
-// class_t template member function implementations 
+// base_object member function implementations 
 //
 template <class python_type>
 base_object<python_type>::base_object(PyTypeObject* type_obj)

@@ -91,8 +91,8 @@ initialization. These bind the corresponding enum values to the appropriate
 names so they can be used from Python:
 
 <blockquote><pre>
-mymodule.add(boost::python::to_python(enum_value_1), "enum_value_1");
-mymodule.add(boost::python::to_python(enum_value_2), "enum_value_2");
+mymodule.add(boost::python::make_ref(enum_value_1), "enum_value_1");
+mymodule.add(boost::python::make_ref(enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
 

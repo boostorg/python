@@ -19,6 +19,16 @@ namespace { // Avoid cluttering the global namespace.
   }
 }
 
+# ifdef BOOST_MSVC // fixes for JIT debugging
+#  include <windows.h>
+extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS*)
+{
+    throw;
+}
+extern "C" void (*old_translator)(unsigned int, EXCEPTION_POINTERS*)
+    = _set_se_translator(structured_exception_translator);
+# endif
+
 BOOST_PYTHON_MODULE_INIT(noncopyable_import)
 {
   try

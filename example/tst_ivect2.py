@@ -87,12 +87,18 @@ if (__name__ == "__main__"):
   import sys, string
   broken_auto_ptr = 0
   n = 1
-  if (len(sys.argv) > 1):
-    if (sys.argv[1] == "--broken-auto-ptr"):
-      broken_auto_ptr = 1
-      if (len(sys.argv) > 2):
-        n = string.atoi(sys.argv[2])
-    else:
-      n = string.atoi(sys.argv[1])
+
+  if len(sys.argv) > 1:
+      argv = []
+      
+      for x in sys.argv:
+        if x != '--broken-auto-ptr':
+          argv.append(x)
+      broken_auto_ptr = argv != sys.argv
+      sys.argv = argv
+
+      if len(sys.argv) > 1:
+        n = string.atoi(sys.argv[1])
+        
   for i in xrange(n):
     f(broken_auto_ptr)
