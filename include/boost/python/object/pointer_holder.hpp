@@ -12,12 +12,16 @@
 #  include <boost/type.hpp>
 
 #  include <boost/python/instance_holder.hpp>
-#  include <boost/python/type_id.hpp>
 #  include <boost/python/object/inheritance_query.hpp>
 #  include <boost/python/object/forward.hpp>
+
 #  include <boost/python/pointee.hpp>
+#  include <boost/python/type_id.hpp>
+
+#  include <boost/python/detail/wrapper_base.hpp>
 #  include <boost/python/detail/force_instantiate.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
+
 
 #  include <boost/mpl/if.hpp>
 #  include <boost/mpl/apply.hpp>
@@ -30,6 +34,13 @@
 #  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 #  include <boost/detail/workaround.hpp>
+
+namespace boost { namespace python {
+
+template <class T> class wrapper;
+
+}}
+
 
 namespace boost { namespace python { namespace objects {
 
@@ -55,6 +66,17 @@ struct pointer_holder : instance_holder
     
  private: // required holder implementation
     void* holds(type_info);
+    
+    template <class T>
+    inline void* holds_wrapped(type_info dst_t, wrapper<T>*,T* p)
+    {
+        return python::type_id<T>() == dst_t ? p : 0;
+    }
+    
+    inline void* holds_wrapped(type_info, ...)
+    {
+        return 0;
+    }
 
  private: // data members
     Pointer m_p;
@@ -107,6 +129,9 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t)
     if (p == 0)
         return 0;
     
+    if (void* wrapped = holds_wrapped(dst_t, p, p))
+        return wrapped;
+    
     type_info src_t = python::type_id<Value>();
     return src_t == dst_t ? p : find_dynamic_type(p, src_t, dst_t);
 }
@@ -145,11 +170,13 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 # if (N != 0)
     template< BOOST_PP_ENUM_PARAMS_Z(1, N, class A) >
 # endif
-    pointer_holder(PyObject* BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
+    pointer_holder(PyObject* self BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
         : m_p(new Value(
                 BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             ))
-    {}
+    {
+        python::detail::initialize_wrapper(self, &*this->m_p);
+    }
 
 # undef N
 

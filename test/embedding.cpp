@@ -74,7 +74,7 @@ void test()
     )();
 
     // Retrieve the main module's namespace
-    python::object main_namespace(main_module.attr("__dict__"));
+    python::object main_namespace((main_module.attr("__dict__")));
 
     // Define the derived class in Python.
     // (You'll normally want to put this in a .py file.)
@@ -115,12 +115,12 @@ test_tutorial()
 {
     using namespace boost::python;
 
-    object main_module(
-        handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_module((
+        handle<>(borrowed(PyImport_AddModule("__main__")))));
 
     object main_namespace = main_module.attr("__dict__");
 
-    handle<>(PyRun_String(
+    handle<> ignored((PyRun_String(
 
         "hello = file('hello.txt', 'w')\n"
         "hello.write('Hello world!')\n"
@@ -129,7 +129,7 @@ test_tutorial()
       , Py_file_input
       , main_namespace.ptr()
       , main_namespace.ptr())
-    );
+    ));
 }
 
 void
@@ -137,29 +137,29 @@ test_tutorial2()
 {
     using namespace boost::python;
 
-    object main_module(
-        handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_module((
+         handle<>(borrowed(PyImport_AddModule("__main__")))));
 
     object main_namespace = main_module.attr("__dict__");
 
-    handle<>(PyRun_String(
+    handle<> ignored((PyRun_String(
 
         "result = 5 ** 2"
 
         , Py_file_input
         , main_namespace.ptr()
         , main_namespace.ptr())
-    );
+    ));
 
     int five_squared = extract<int>(main_namespace["result"]);
     assert(five_squared == 25);
 
-    object result(handle<>(
+    object result((handle<>(
         PyRun_String("5 ** 2"
             , Py_eval_input
             , main_namespace.ptr()
             , main_namespace.ptr()))
-    );
+    ));
 
     int five_squared2 = extract<int>(result);
     assert(five_squared2 == 25);

@@ -53,6 +53,7 @@ if [ check-python-config ]
     object/iterator.cpp
     object_protocol.cpp
     object_operators.cpp
+    wrapper.cpp
     ;
   
   dll boost_python

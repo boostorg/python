@@ -9,9 +9,11 @@
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
+# include <boost/python/converter/object_manager.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/python/detail/void_return.hpp>
 # include <boost/python/errors.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/type_traits/has_trivial_copy.hpp>
 # include <boost/mpl/and.hpp>
 # include <boost/mpl/bool.hpp>

@@ -75,7 +75,7 @@ struct register_base_of
 // need some registration of their own.
 //
 template <class T, class Bases>
-void register_shared_ptr_from_python_and_casts(T*, Bases)
+inline void register_shared_ptr_from_python_and_casts(T*, Bases)
 {
     // Constructor performs registration
     python::detail::force_instantiate(converter::shared_ptr_from_python<T>());
@@ -166,16 +166,13 @@ struct class_metadata
         use_value_holder
       , mpl::identity<held_type>
       , pointee<held_type>
-    >::type wrapper;
+    >::type wrapped;
 
-    // Determine whether wrapper needs to be separately registered
-    typedef is_base_and_derived<T,wrapper> use_callback_class;
-
-    // Determine whether to use a holder with a back-reference
+    // Determine whether to use a "back-reference holder"
     typedef mpl::or_<
-        use_callback_class
-      , has_back_reference<T>
+        has_back_reference<T>
       , is_same<held_type_arg,T>
+      , is_base_and_derived<T,wrapped>
     > use_back_reference;
 
     // Select the holder.
@@ -183,7 +180,7 @@ struct class_metadata
         use_back_reference
       , mpl::if_<
             use_value_holder
-          , value_holder_back_reference<T, wrapper>
+          , value_holder_back_reference<T, wrapped>
           , pointer_holder_back_reference<held_type,T>
         >
       , mpl::if_<
@@ -195,52 +192,75 @@ struct class_metadata
     
     inline static void register_() // Register the runtime metadata.
     {
-        objects::register_shared_ptr_from_python_and_casts((T*)0, bases());
-
-        class_metadata::maybe_register_callback_class(use_callback_class());
-
-        class_metadata::maybe_register_class_to_python(is_noncopyable());
-        
-        class_metadata::maybe_register_pointer_to_python(
-            (use_value_holder*)0, (use_back_reference*)0);
+        class_metadata::register_aux((T*)0);
     }
 
  private:
+    template <class T2>
+    inline static void register_aux(python::wrapper<T2>*) 
+    {
+        class_metadata::register_aux2((T2*)0, mpl::true_());
+    }
+
+    inline static void register_aux(void*) 
+    {
+        typedef typename is_base_and_derived<T,wrapped>::type use_callback;
+        class_metadata::register_aux2((T*)0, use_callback());
+    }
+
+    template <class T2, class Callback>
+    inline static void register_aux2(T2*, Callback) 
+    {
+        objects::register_shared_ptr_from_python_and_casts((T2*)0, bases());
+        
+        class_metadata::maybe_register_callback_class((T2*)0, Callback());
+
+        class_metadata::maybe_register_class_to_python((T2*)0, is_noncopyable());
+        
+        class_metadata::maybe_register_pointer_to_python(
+            (T2*)0, (use_value_holder*)0, (use_back_reference*)0);
+    }
+
+
     //
     // Support for converting smart pointers to python
     //
-    inline static void maybe_register_pointer_to_python(void*,void*) {}
-    
-    inline static void maybe_register_pointer_to_python(mpl::false_*, mpl::false_*)
+    inline static void maybe_register_pointer_to_python(void*,void*,void*) {}
+
+    template <class T2>
+    inline static void maybe_register_pointer_to_python(T2*, mpl::false_*, mpl::false_*)
     {
         python::detail::force_instantiate(
             objects::class_value_wrapper<
                 held_type
-              , make_ptr_instance<T, pointer_holder<held_type, T> >
+              , make_ptr_instance<T2, pointer_holder<held_type, T2> >
             >()
         );
     }
     //
     // Support for registering to-python converters
     //
-    inline static void maybe_register_class_to_python(mpl::true_) {}
-    inline static void maybe_register_class_to_python(mpl::false_)
+    inline static void maybe_register_class_to_python(void*, mpl::true_) {}
+    
+    template <class T2>
+    inline static void maybe_register_class_to_python(T2*, mpl::false_)
     {
-        python::detail::force_instantiate(class_cref_wrapper<T, make_instance<T, holder> >());
+        python::detail::force_instantiate(class_cref_wrapper<T2, make_instance<T2, holder> >());
     }
 
     //
     // Support for registering callback classes
     //
-    inline static void maybe_register_callback_class(mpl::false_) {}
+    inline static void maybe_register_callback_class(void*, mpl::false_) {}
 
-    inline static void maybe_register_callback_class(mpl::true_)
+    template <class T2>
+    inline static void maybe_register_callback_class(T2*, mpl::true_)
     {
         objects::register_shared_ptr_from_python_and_casts(
-            (wrapper*)0, mpl::single_view<T>());
+            (wrapped*)0, mpl::single_view<T2>());
 
         // explicit qualification of type_id makes msvc6 happy
-        objects::copy_class_object(python::type_id<T>(), python::type_id<wrapper>());
+        objects::copy_class_object(python::type_id<T2>(), python::type_id<wrapped>());
     }
 };
 

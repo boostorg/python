@@ -29,6 +29,8 @@
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/def_helper.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
+# include <boost/python/detail/unwrap_type_id.hpp>
+# include <boost/python/detail/unwrap_wrapper.hpp>
 
 # include <boost/type_traits/is_same.hpp>
 # include <boost/type_traits/is_member_function_pointer.hpp>
@@ -151,7 +153,7 @@ namespace detail
 // This is the primary mechanism through which users will expose
 // C++ classes to Python.
 template <
-    class T // class being wrapped
+    class W // class being wrapped
     , class X1 // = detail::not_specified
     , class X2 // = detail::not_specified
     , class X3 // = detail::not_specified
@@ -160,9 +162,9 @@ class class_ : public objects::class_base
 {
  public: // types
     typedef objects::class_base base;
-    typedef class_<T,X1,X2,X3> self;
-    typedef typename objects::class_metadata<T,X1,X2,X3> metadata;
-    typedef T wrapped_type;
+    typedef class_<W,X1,X2,X3> self;
+    typedef typename objects::class_metadata<W,X1,X2,X3> metadata;
+    typedef W wrapped_type;
     
  private: // types
 
@@ -175,7 +177,7 @@ class class_ : public objects::class_base
         id_vector()
         {
             // Stick the derived class id into the first element of the array
-            ids[0] = type_id<T>();
+            ids[0] = detail::unwrap_type_id((W*)0, (W*)0);
 
             // Write the rest of the elements into succeeding positions.
             type_info* p = ids + 1;
@@ -231,7 +233,9 @@ class class_ : public objects::class_base
     template <class F>
     self& def(char const* name, F f)
     {
-        this->def_impl(name, f, detail::def_helper<char const*>(0), &f);
+        this->def_impl(
+            detail::unwrap_wrapper((W*)0)
+          , name, f, detail::def_helper<char const*>(0), &f);
         return *this;
     }
 
@@ -250,9 +254,10 @@ class class_ : public objects::class_base
         //      def(name, function, doc_string, policy)
 
         this->def_impl(
-            name, fn
-            , detail::def_helper<A1,A2>(a1,a2)
-            , &fn);
+            detail::unwrap_wrapper((W*)0)
+          , name, fn
+          , detail::def_helper<A1,A2>(a1,a2)
+          , &fn);
 
         return *this;
     }
@@ -261,9 +266,10 @@ class class_ : public objects::class_base
     self& def(char const* name, Fn fn, A1 const& a1, A2 const& a2, A3 const& a3)
     {
         this->def_impl(
-            name, fn
-            , detail::def_helper<A1,A2,A3>(a1,a2,a3)
-            , &fn);
+            detail::unwrap_wrapper((W*)0)
+          , name, fn
+          , detail::def_helper<A1,A2,A3>(a1,a2,a3)
+          , &fn);
 
         return *this;
     }
@@ -371,7 +377,8 @@ class class_ : public objects::class_base
         typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
         
         return this->make_fn_impl(
-            f, is_obj_or_proxy(), (char*)0, detail::is_data_member_pointer<F>()
+            detail::unwrap_wrapper((W*)0)
+          , f, is_obj_or_proxy(), (char*)0, detail::is_data_member_pointer<F>()
         );
     }
     
@@ -381,32 +388,33 @@ class class_ : public objects::class_base
         typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
         
         return this->make_fn_impl(
-            f, is_obj_or_proxy(), (int*)0, detail::is_data_member_pointer<F>()
+            detail::unwrap_wrapper((W*)0)
+          , f, is_obj_or_proxy(), (int*)0, detail::is_data_member_pointer<F>()
         );
     }
     
-    template <class F>
-    object make_fn_impl(F const& f, mpl::false_, void*, mpl::false_)
+    template <class T, class F>
+    object make_fn_impl(T*, F const& f, mpl::false_, void*, mpl::false_)
     {
         return python::make_function(f, default_call_policies(), detail::get_signature(f, (T*)0));
     }
 
-    template <class D, class B>
-    object make_fn_impl(D B::*pm_, mpl::false_, char*, mpl::true_)
+    template <class T, class D, class B>
+    object make_fn_impl(T*, D B::*pm_, mpl::false_, char*, mpl::true_)
     {
         D T::*pm = pm_;
         return python::make_getter(pm);
     }
 
-    template <class D, class B>
-    object make_fn_impl(D B::*pm_, mpl::false_, int*, mpl::true_)
+    template <class T, class D, class B>
+    object make_fn_impl(T*, D B::*pm_, mpl::false_, int*, mpl::true_)
     {
         D T::*pm = pm_;
         return python::make_setter(pm);
     }
 
-    template <class F>
-    object make_fn_impl(F const& x, mpl::true_, void*, mpl::false_)
+    template <class T, class F>
+    object make_fn_impl(T*, F const& x, mpl::true_, void*, mpl::false_)
     {
         return x;
     }
@@ -462,9 +470,10 @@ class class_ : public objects::class_base
     // generic visitor and everything else.
     //
     // @group def_impl {
-    template <class Helper, class LeafVisitor, class Visitor>
+    template <class T, class Helper, class LeafVisitor, class Visitor>
     inline void def_impl(
-        char const* name
+        T*
+      , char const* name
       , LeafVisitor
       , Helper const& helper
       , def_visitor<Visitor> const* v
@@ -473,9 +482,10 @@ class class_ : public objects::class_base
         v->visit(*this, name,  helper);
     }
 
-    template <class Fn, class Helper>
+    template <class T, class Fn, class Helper>
     inline void def_impl(
-        char const* name
+        T*
+      , char const* name
       , Fn fn
       , Helper const& helper
       , ...
@@ -510,7 +520,7 @@ class class_ : public objects::class_base
         , Helper const& helper
         , mpl::bool_<true>)
     {
-        detail::error::virtual_function_default<T,Fn>::must_be_derived_class_member(
+        detail::error::virtual_function_default<W,Fn>::must_be_derived_class_member(
             helper.default_implementation());
             
         objects::add_to_namespace(
@@ -554,7 +564,8 @@ class class_ : public objects::class_base
         , ...)
     {
         this->def_impl(
-            name
+            detail::unwrap_wrapper((W*)0)
+          , name
           , fn
           , detail::def_helper<A1>(a1)
           , &fn
@@ -569,23 +580,23 @@ class class_ : public objects::class_base
 // implementations
 //
 
-template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
+template <class W, class X1, class X2, class X3>
+inline class_<W,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->initialize(init<>());
 //  select_holder::assert_default_constructible();
 }
 
-template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_(char const* name, no_init_t)
+template <class W, class X1, class X2, class X3>
+inline class_<W,X1,X2,X3>::class_(char const* name, no_init_t)
     : base(name, id_vector::size, id_vector().ids)
 {
     this->initialize(no_init);
 }
 
-template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
+template <class W, class X1, class X2, class X3>
+inline class_<W,X1,X2,X3>::class_(char const* name, char const* doc, no_init_t)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->initialize(no_init);

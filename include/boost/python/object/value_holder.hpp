@@ -13,6 +13,7 @@
 
 #  include <boost/python/instance_holder.hpp>
 #  include <boost/python/type_id.hpp>
+#  include <boost/python/wrapper.hpp>
 
 #  include <boost/python/object/inheritance_query.hpp>
 #  include <boost/python/object/forward.hpp>
@@ -49,7 +50,17 @@ struct value_holder : instance_holder
 
  private: // required holder implementation
     void* holds(type_info);
-
+    
+    template <class T>
+    inline void* holds_wrapped(type_info dst_t, wrapper<T>*,T* p)
+    {
+        return python::type_id<T>() == dst_t ? p : 0;
+    }
+    
+    inline void* holds_wrapped(type_info, ...)
+    {
+        return 0;
+    }
  private: // data members
     Value m_held;
 };
@@ -76,6 +87,9 @@ private: // required holder implementation
 template <class Value>
 void* value_holder<Value>::holds(type_info dst_t)
 {
+    if (void* wrapped = holds_wrapped(dst_t, &m_held, &m_held))
+        return wrapped;
+    
     type_info src_t = python::type_id<Value>();
     return src_t == dst_t ? &m_held
         : find_static_type(&m_held, src_t, dst_t);
@@ -114,11 +128,13 @@ void* value_holder_back_reference<Value,Held>::holds(
     template <BOOST_PP_ENUM_PARAMS_Z(1, N, class A)>
 # endif
     value_holder(
-      PyObject* BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
+      PyObject* self BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, a))
         : m_held(
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
-    {}
+    {
+        python::detail::initialize_wrapper(self, &this->m_held);
+    }
 
 # undef N
 

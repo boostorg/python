@@ -99,6 +99,7 @@ bpl-test crossmod_exception
 [ bpl-test staticmethod ]
 [ bpl-test shared_ptr ]
 [ bpl-test polymorphism ]
+[ bpl-test polymorphism2 ]
 [ bpl-test auto_ptr ]
 [ bpl-test minimal ]
 [ bpl-test args ]

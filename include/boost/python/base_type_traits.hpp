@@ -32,6 +32,12 @@ struct base_type_traits<PyTypeObject>
     typedef PyObject type;
 };
 
+template <>
+struct base_type_traits<PyMethodObject>
+{
+    typedef PyObject type;
+};
+
 }} // namespace boost::python
 
 #endif // BASE_TYPE_TRAITS_DWA2002614_HPP
