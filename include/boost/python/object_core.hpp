@@ -66,14 +66,14 @@ namespace api
 #  include <boost/python/preprocessed/object_call.hpp>
 # endif
 
-# define BOOST_PYTHON_OBJECT_CALL(nargs,ignored)                                \
-      template <BOOST_PP_ENUM_PARAMS(nargs, class A)>                           \
-      typename dependent<object,A0>::type                                       \
-      operator()(BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))) const          \
-      {                                                                         \
-          typedef typename dependent<object,A0>::type obj;                      \
-          obj const& f = *static_cast<U const*>(this);                          \
-          return call<obj>(f.ptr().get(), BOOST_PP_ENUM_PARAMS(nargs, a));      \
+# define BOOST_PYTHON_OBJECT_CALL(nargs,ignored)                                                        \
+      template <BOOST_PP_ENUM_PARAMS(nargs, class A)>                                                   \
+      typename dependent<object,A0>::type                                                               \
+      operator()(BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))) const                                  \
+      {                                                                                                 \
+          typedef typename dependent<object,A0>::type obj;                                              \
+          U const& self = *static_cast<U const*>(this);                                                 \
+          return call<obj>(converter::get_managed_object(self), BOOST_PP_ENUM_PARAMS(nargs, a));        \
       }
 
       BOOST_PP_REPEAT_FROM_TO_2ND(

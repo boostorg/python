@@ -28,7 +28,8 @@ class proxy : public object_operators<proxy<Policies> >
     template <class T>
     inline proxy const& operator=(T const& rhs) const
     {
-        Policies::set(m_target, m_key, python::object(rhs));
+        python::object const& x(rhs);
+        Policies::set(m_target, m_key, x);
         return *this;
     }
     

@@ -29,14 +29,16 @@ template <class U>
 inline object_item
 object_operators<U>::operator[](self_cref key)
 {
-    return object_item(*static_cast<U*>(this), key);
+    object const& x = *static_cast<U*>(this);
+    return object_item(x, key);
 }
 
 template <class U>
 inline const_object_item
 object_operators<U>::operator[](self_cref key) const
 {
-    return const_object_item(*static_cast<U const*>(this), key);
+    object const& x = *static_cast<U const*>(this);
+    return const_object_item(x, key);
 }
 
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
