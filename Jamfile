@@ -27,6 +27,7 @@ dll bpl
   src/object/function.cpp
   src/object/inheritance.cpp
   src/object/life_support.cpp
+  src/object/pickle_support.cpp
   src/errors.cpp
   src/module.cpp
   src/converter/builtin_converters.cpp

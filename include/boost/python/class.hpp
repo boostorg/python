@@ -25,6 +25,7 @@
 # include <boost/python/data_members.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/detail/operator_id.hpp>
+# include <boost/python/object/pickle_support.hpp>
 
 namespace boost { namespace python { 
 
@@ -194,6 +195,19 @@ class class_ : public objects::class_base
     self& add_property(char const* name, handle<> const& fget, handle<> const& fset);
 
     self& setattr(char const* name, handle<> const&);
+
+    // Pickle support
+    template <typename PickleGroupType>
+    self& def_pickle(PickleGroupType)
+    {
+      detail::pickle_group_finalize<PickleGroupType>::register_(
+        *this,
+        &PickleGroupType::getinitargs,
+        &PickleGroupType::getstate,
+        &PickleGroupType::setstate,
+        PickleGroupType::getstate_manages_dict());
+      return *this;
+    }
 
  private: // types
     typedef objects::class_id class_id;

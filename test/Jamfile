@@ -82,6 +82,10 @@ bpl-test iterator : iterator.py iterator.cpp input_iterator.cpp ;
 
 bpl-test extract ;
 
+bpl-test pickle1 ;
+bpl-test pickle2 ;
+bpl-test pickle3 ;
+
 if $(TEST_BIENSTMAN_NON_BUGS)
 {
     bpl-test bienstman4 ;

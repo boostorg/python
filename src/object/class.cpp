@@ -6,6 +6,7 @@
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/find_instance.hpp>
+#include <boost/python/object/pickle_support.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/python/object.hpp>
 #include <boost/detail/binary_search.hpp>
@@ -302,6 +303,16 @@ namespace objects
   {
       if (PyObject_SetAttrString(upcast<PyObject>(object().get()), const_cast<char*>(name), x.get()) < 0)
           throw_error_already_set();
+  }
+
+  void class_base::enable_pickling(bool getstate_manages_dict)
+  {
+      setattr("__reduce__", make_instance_reduce_function());
+      handle<> one(PyInt_FromLong(1));
+      setattr("__safe_for_unpickling__", one);
+      if (getstate_manages_dict) {
+        setattr("__getstate_manages_dict__", one);
+      }
   }
 
   BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
