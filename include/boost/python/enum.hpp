@@ -66,7 +66,7 @@ void enum_<T>::construct(PyObject* obj, converter::rvalue_from_python_stage1_dat
 template <class T>
 inline enum_<T>& enum_<T>::value(char const* name, T x)
 {
-    objects::enum_base::add_value(name, static_cast<long>(x));
+    this->add_value(name, static_cast<long>(x));
     return *this;
 }
 
