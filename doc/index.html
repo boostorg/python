@@ -27,39 +27,60 @@ among others.
 
 
 <h2>Supported Platforms</h2>
-<p>Boost.Python is known to have been tested in the following configurations:
-
-
-<ul>
-<li>Against <a href="http://www.python/org/2.2.1">Python 2.2.1</a> using
-the following compilers (Note that pickling doesn't work with Python
-2.2 due to a core language bug;
-<a href="http://www.python/org/2.2.1">2.2.1</a> fixes that).
+<p>Boost.Python is known to have been tested
+against <a href="http://www.python/org/2.2.1">Python 2.2.1</a> using
+the following compilers:
 
 <ul>
   <li><a
-  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>. All
-  tests pass.
+  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>.
+  All tests pass.
 
+  <p>
   <li><a href="http://msdn.microsoft.com/visualc/">MSVC++7 (Visual
        Studio .NET)</a>. All tests pass.
 
+  <p>
   <li><a href="http://www.metrowerks.com/products/windows/">Metrowerks
-        CodeWarrior Pro7.2 for Windows</a>. All tests pass.
+        CodeWarrior Pro7.2 and Pro7.0 for Windows</a>. All tests pass.
 
+  <p>
   <li><a href="http://gcc.gnu.org">GCC 3.0.4</a> under <a
-  href="www.cygwin.com">Cygwin</a>. All tests pass.
+       href="www.cygwin.com">Cygwin</a> and
+       <a href="http://www.redhat.com/">RedHat Linux 7.1</a>.
+       All tests pass.
 
+  <p>
+  <li>Compaq C++ V6.2-024 for Digital UNIX (an <a
+      href="http://www.edg.com/">EDG</a>-based compiler).
+      All tests pass.<br>
+      Note that the Boost.Compatibility
+      library must be included (see e.g. tru64_cxx.mak in the build
+      directory).
+
+  <p>
+  <li>Silicon Graphics MIPSpro Version 7.3.1.2m (an <a
+      href="http://www.edg.com/">EDG</a>-based compiler).
+      All tests pass.<br>
+      Note that the Boost.Compatibility
+      library must be included (see e.g. irix_CC.mak in the build
+      directory).
+
+  <p>
   <li><a href="http://gcc.gnu.org">GCC 2.95.2</a> under <a
-    href="www.mingw.org">MinGW</a>. Comprehensive test fails at
-    runtime due to a compiler code-generation bug. Other tests seem to
-    work.
+       href="www.mingw.org">MinGW</a> and <a
+       href="http://www.redhat.com/">RedHat Linux 7.1</a>.
+       Compilation succeeds, but some tests fail at runtime due to
+       exception handling bugs. It is therefore highly recommended
+       to use GCC 3.0.4 instead.
 
+  <p>
   <li><a
         href="http://developer.intel.com/software/products/compilers/c50/">Intel
         C++ 6.0</a> beta: Comprehensive test fails to link due to a
         linker bug. Other tests seem to work.
 
+  <p>
   <li><a
         href="http://developer.intel.com/software/products/compilers/c50/">Intel
         C++ 5.0</a> Comprehensive test fails at runtime due to an
@@ -67,38 +88,15 @@ the following compilers (Note that pickling doesn't work with Python
 
 </ul>
 
+<p>
+Note that pickling doesn't work with Python 2.2
+due to a core language bug. This is fixed in
+<a href="http://www.python/org/2.2.1">2.2.1</a>.
 
-<li>Against Python 2.0 using the following compilers:
-<ul>
-  <li><a
-  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>.
-
-</ul>
-
-<li>Against Python 1.5.2 using the following compiler/library combinations: 
-
-  <ul>
-  <li><a
-  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a> 
-
-  <li><a
-  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>/<a
-  href="http://www.stlport.org">STLport 4.0</a> 
-
-  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a> [by <a href="mailto:koethe@informatik.uni-hamburg.de">Ullrich
-  Koethe</a>]
-
-  <li><a href="http://gcc.gnu.org/">GCC 2.95.2</a>/<a href="http://www.stlport.org">STLport 4.0</a>
-
-  <li>Compaq C++ V6.2-024 for Digital UNIX V5.0 Rev. 910 (an <a
-  href="http://www.edg.com/">EDG</a>-based compiler) with <a
-  href="http://www.stlport.org/beta.html">STLport-4.1b3</a> [by <a
-  href="mailto:rwgk@cci.lbl.gov">Ralf W. Grosse-Kunstleve</a>] 
-
-  <li>An upcoming release of <a href="http://www.metrowerks.com/products/windows/">Metrowerks CodeWarrior
-        Pro6 for Windows</a> (the first release has a bug that's fatal to Boost.Python)
-  </ul>
-</ul>
+<p>
+Boost.Python has also been used with other versions of Python back to
+Python 1.5.2. It is expected that the older Python releases still work,
+but we are not regularly testing for backward compatibility.
 
 <h2>Credits</h2>
 <ul>
@@ -179,8 +177,8 @@ the following compilers (Note that pickling doesn't work with Python
       href="../test/comprehensive.cpp">cpp</a>]</code>
 
     <p>
-       Questions should be directed to <a href= 
-      "http://www.yahoogroups.com/list/boost">the boost mailing list</a>.
+       Questions should be directed to the <a href= 
+      "http://www.python.org/sigs/c++-sig/">Python C++ SIG</a>.
 
     <p>
        &copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
@@ -189,5 +187,5 @@ the following compilers (Note that pickling doesn't work with Python
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
     <p>
-       Updated: Mar 6, 2001
+       Updated: Apr 2002
 
