@@ -12,7 +12,7 @@
 
 namespace boost { namespace python { 
 
-template <class T, class Derived>
+template <class T, class Conversion>
 struct to_python_converter
 {
     to_python_converter();
@@ -22,11 +22,11 @@ struct to_python_converter
 // implementation
 //
 
-template <class T, class Derived>
-to_python_converter<T,Derived>::to_python_converter()
+template <class T, class Conversion>
+to_python_converter<T,Conversion>::to_python_converter()
 {
     typedef converter::as_to_python_value_function<
-        T, Derived
+        T, Conversion
         > normalized;
         
     converter::registry::insert(
