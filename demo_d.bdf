@@ -1,0 +1,4 @@
+TargetName=demo_d
+TargetType=dll
+SourceFiles=extclass_demo_d.cpp
+Libs=py_cpp_d python_d utils

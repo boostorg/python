@@ -1,0 +1,63 @@
+Better python and C++ exception handling/error reporting.
+long long support
+use Python generic numeric coercion in from_python() for C++ numeric types
+Document error-handling
+Consider renaming PyPtr to Reference.
+Report Cygwin linker memory issues
+handle more arguments
+Remove one level of indirection on type objects (no vtbl?).
+Much more testing, especially of things in objects.h
+Make multiple inheritance from real Python classes work.
+Handle polymorphism (passing a Wrapped<Derived> as a Base*).
+Specializations of Caller<> for commmon combinations of argument types (?)
+
+Documentation:
+    special member functions
+    adding conversions for fundamental types
+        generic conversions for template types (with partial spec).
+    extending multiple-argument support.
+    differences between Python classes and ExtensionClasses
+        additional capabilities of ExtensionClasses
+    exception handling
+    building
+    dealing with non-const reference/pointer parameters
+
+Boost remarks:
+
+    > > One of us is completely nuts ;->. How can I move the test
+    > > (is_prefix(enablers[i].name + 2, name + 2)) outside the loop if it
+    depends
+    > > on the loop index, i?
+    > >
+    >   name += 2;
+    >    for()
+    > {
+    >    if (is_prefix(enablers[i].name + 2, name))
+    > }
+
+    I see now. I guess I should stop pussyfooting and either go for optimization
+    or clarity here, eh?
+
+    ------
+
+    > Re: Dict                                                                      
+    >    Why abbreviate this? Code is read 5 or 6 times for every time its          
+    > written. The few extra characters don't affect compile time or program        
+    > speed. It's part of my personal goal of write what you mean, name them        
+    what                                                                            
+    > they are.                                                                     
+                                                                                    
+    I completely agree. Abbrevs rub me the wrong way, 2 ;-> 
+ 
+    -------
+
+
+                                                                                    
+                                                                                    
+Later:
+       keyword and varargs?
+       Put explicit Type<> arguments at the beginnings of overloads, to make them look more like template instance specifications.
+
+Known bugs
+      can't handle 'const void' return values
+      Who returns 'const void'? I did it once, by mistake ;)
