@@ -101,7 +101,7 @@ be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip 
 The complete list of bjam pre-built
 executables can be found [@../../../../../tools/build/index.html#Jam here].
 
-[h2 Lets Jam!]
+[h2 Let's Jam!]
 [$theme/jam.png]
 
 Here is our minimalist Jamfile:
