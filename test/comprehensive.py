@@ -8,13 +8,10 @@ r'''
 //  producing this work.
 
 //  Revision History:
+//  2001 Nov 01 Python 2.2 pickle problems fixed (rwgk)
 //  04 Mar 01 Changed name of extension module so it would work with DebugPython,
 //            fixed exception message checking to work with Python 2.0
 //            (Dave Abrahams)
-
-Load up the extension module
-
-    >>> from boost_python_test import *
 
 Automatic checking of the number and type of arguments. Foo's constructor takes
 a single long parameter. 
@@ -274,19 +271,12 @@ Pickle safety measures:
     ... except RuntimeError, err: print err[0]
     ... 
     Incomplete pickle support (__dict_defines_state__ not set)
-    >>> class myrational(Rational):
-    ...   __dict_defines_state__ = 1 # this is a lie but good enough for testing.
-    ...             
     >>> r=myrational(3, 4)
     >>> r
     Rational(3, 4)
     >>> s=pickle.dumps(r)
+    >>> u=pickle.loads(s)
 
-    >>> class myworld(world):
-    ...   def __init__(self):
-    ...     world.__init__(self, 'anywhere')
-    ...     self.x = 1
-    ... 
     >>> w = myworld()
     >>> w.greet()
     'Hello from anywhere!'
@@ -297,9 +287,6 @@ Pickle safety measures:
     ... 
     Incomplete pickle support (__getstate_manages_dict__ not set)
 
-    >>> class myunsafeworld(myworld):
-    ...   __getstate_manages_dict__ = 1 # this is a lie but good enough for testing.
-    ... 
     >>> w = myunsafeworld()
     >>> w.greet()
     'Hello from anywhere!'
@@ -1190,6 +1177,23 @@ test methodologies for wrapping functions that return a pointer
 
 '''
 #'
+
+from boost_python_test import *
+
+# pickle requires these derived classes to be
+# at the global scope of the module
+
+class myrational(Rational):
+  __dict_defines_state__ = 1 # this is a lie but good enough for testing.
+
+class myworld(world):
+  def __init__(self):
+    world.__init__(self, 'anywhere')
+    self.x = 1
+
+class myunsafeworld(myworld):
+  __getstate_manages_dict__ = 1 # this is a lie but good enough for testing.
+
 
 def assert_integer_expected(err):
   """Handle a common error report which appears differently in Python 1.5.x and 2.0"""
