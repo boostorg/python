@@ -127,7 +127,7 @@
 <pre>
 namespace boost { namespace python { namespace self_ns {
 {
-   class self_t {};
+   <i>unspecified-type-declaration</i> self_t;
 
    // inplace operators
    template &lt;class T&gt; <a href=
@@ -803,7 +803,7 @@ namespace boost { namespace python { namespace detail
 <pre>
 namespace boost { namespace python
 {
-  extern self_ns self;
+  using self_ns::self;
 }}
 </pre>
 
