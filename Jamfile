@@ -20,6 +20,7 @@ PYTHON_PROPERTIES
       src/object/class.cpp
       src/object/function.cpp
       src/object/inheritance.cpp
+      src/object/life_support.cpp
       src/errors.cpp
       src/module.cpp
       src/objects.cpp

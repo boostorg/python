@@ -6,7 +6,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/manage_new_object.hpp>
-#include <boost/python/reference_existing_object.hpp>
+#include <boost/python/return_internal_reference.hpp>
 #include <boost/python/class.hpp>
 #include <boost/mpl/type_list.hpp>
 
@@ -75,7 +75,7 @@ BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
             
             class_<A>()
             .def("content", &A::content)
-            .def("get_inner", &A::get_inner, return_value_policy<reference_existing_object>())
+            .def("get_inner", &A::get_inner, return_internal_reference<>())
             )
 
         .add(

@@ -16,10 +16,16 @@
 >>> a.content()
 'with an exposed reference'
 
->>> innards = None
+# The a instance should be kept alive...
 >>> a = None
 >>> num_a_instances()
+1
+
+# ...until we're done with its innards
+>>> innards = None
+>>> num_a_instances()
 0
+
 """
 def run(args = None):
     import sys
