@@ -16,36 +16,33 @@
 # include <cassert>
 # include "signatures.h"
 # include "errors.h"
+# include "py.h"
 
-namespace py {
+PY_BEGIN_CONVERSION_NAMESPACE
 
-
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-}
-#endif
-
-template <class T, class Base>
+template <class T, class Value, class Base>
 struct PyPtrConversions : Base
 {
     inline friend T from_python(PyObject* x, py::Type<const T&>)
-        { return T(py::Downcast<typename T::value_type>(x).get(), T::new_ref); }
+        { return T(py::Downcast<Value>(x).get(), T::new_ref); }
 
     inline friend T from_python(PyObject* x, py::Type<T>)
-        { return T(py::Downcast<typename T::value_type>(x).get(), T::new_ref); }
+        { return T(py::Downcast<Value>(x).get(), T::new_ref); }
     
     inline friend PyObject* to_python(T x)
         { return py::as_object(x.release()); }
     
 };
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+PY_END_CONVERSION_NAMESPACE
+
 namespace py {
-using ::PyPtrConversions;
-#endif
+
+PY_IMPORT_CONVERSION(PyPtrConversions);
 
 template <class T>
 class PyPtr
-	: public PyPtrConversions<PyPtr<T>,
+	: public PyPtrConversions<PyPtr<T>, T,
        boost::dereferenceable<PyPtr<T>, T*> > // supplies op->
 {
 public:
