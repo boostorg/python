@@ -66,7 +66,7 @@ class handle
     ~handle();
 
     template <class Y>
-    handle(Y* p)
+    explicit handle(Y* p)
         : m_p(
             python::upcast<T>(
                 detail::manage_ptr(p, 0)
