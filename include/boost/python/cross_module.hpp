@@ -125,9 +125,9 @@ BOOST_PYTHON_IMPORT_CONVERSION(python_import_extension_class_converters);
 template <class T>
 struct export_converter_object_base
 {
-  virtual const int get_api_major() const {
+  virtual int get_api_major() const {
     return detail::export_converters_api_major; }
-  virtual const int get_api_minor() const {
+  virtual int get_api_minor() const {
     return detail::export_converters_api_minor; }
   virtual PyObject* to_python(const T& x) = 0;
   virtual PyObject* to_python(std::auto_ptr<T> x) = 0;
