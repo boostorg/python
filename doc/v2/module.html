@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="../boost.css">
+
+    <title>Boost.Python - &lt;boost/python/module.hpp&gt;</title>
+
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../../../../index.htm"><img height="86" width="277" alt=
+          "C++ Boost" src="../../../../c++boost.gif" border="0"></a></h3>
+
+        <td valign="top">
+          <h1 align="center">Boost.Python</h1>
+
+          <h2 align="center">Header &lt;boost/python/module.hpp&gt;</h2>
+    </table>
+    <hr>
+
+    <h2>Contents</h2>
+
+    <dl class="page-index">
+      <dt><a href="#introduction">Introduction</a>
+
+      <dt><a href="#macros">Macros</a>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href=
+          "#BOOST_PYTHON_MODULE_INIT-spec">BOOST_PYTHON_MODULE_INIT</a>
+        </dl>
+
+      <dt><a href="#classes">Classes</a>
+
+      <dd>
+        <dl class="page-index">
+          <dt><a href="#module-spec">Class <code>module</code></a>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#module-spec-synopsis">Class <code>module</code>
+              synopsis</a>
+
+              <dt><a href="#module-spec-ctors">Class <code>module</code>
+              constructor</a>
+
+              <dt><a href="#module-spec-modifiers">Class <code>module</code>
+              modifier functions</a>
+
+              <dt><a href="#module-spec-observers">Class <code>module</code>
+              observer functions</a>
+            </dl>
+        </dl>
+
+      <dt><a href="#examples">Example(s)</a>
+    </dl>
+    <hr>
+
+    <h2><a name="introduction"></a>Introduction</h2>
+
+    <p>{{Introductory text}}
+
+    <h2><a name="macros"></a>Macros</h2>
+
+    <p><a name=
+    "BOOST_PYTHON_MODULE_INIT-spec"><code>BOOST_PYTHON_MODULE_INIT(name)</code></a>
+    is used to declare Python <a href=
+    "http://www.python.org/doc/current/ext/methodTable.html#SECTION003400000000000000000">
+    module initialization functions</a>. The <code>name</code> argument must
+    exactly match the name of the module to be initialized, and must conform to
+    Python's <a href=
+    "http://www.python.org/doc/current/ref/identifiers.html">identifier naming
+    rules</a>. Where you would normally write
+<pre>
+void init<i>name</i>()
+{
+   ...
+</pre>
+    Boost.Python modules should be initialized with 
+<pre>
+BOOST_PYTHON_MODULE_INIT(<i>name</i>)
+{
+   ...
+</pre>
+
+    <h2><a name="classes"></a>Classes</h2>
+
+    <h3><a name="module-spec">Class <code>module</code></a></h3>
+
+    <p>This class represents the Python extension module under construction. It
+    provides functions for adding attributes and for retrieving the underlying
+    Python module object.
+
+    <h4><a name="module-spec-synopsis"></a>Class <code>module</code>
+    synopsis</h4>
+<pre>
+namespace boost { namespace python
+{
+  class module : public module_base
+  {
+   public:
+      module(const char* name);
+
+      // modifier functions
+      module&amp; setattr(const char* name, PyObject*);
+      module&amp; setattr(const char* name, PyTypeObject*);
+      module&amp; setattr(const char* name, ref const&amp;);
+
+      module&amp; add(PyTypeObject* x);
+      template &lt;class T, class Bases, class HolderGenerator&gt;
+      module&amp; add(class_&lt;T,Bases,HolderGenerator&gt; const&amp; c);
+
+      template &lt;class Fn&gt;
+      module&amp; def(char const* name, Fn fn);
+      template &lt;class Fn, class ResultHandler&gt;
+      module&amp; def(char const* name, Fn fn, ResultHandler handler);
+
+      // observer function
+      ref object() const;
+  };
+
+}}
+</pre>
+
+    <h4><a name="module-spec-ctors">Class <code>module</code></a>
+    constructor</h4>
+<pre>
+module(const char* name);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is a ntbs whose value matches the
+      argument passed to <a href=
+      "#BOOST_PYTHON_MODULE_INIT-spec">BOOST_PYTHON_MODULE_INIT</a>.
+
+      <dt><b>Effects:</b> Creates a <code>module</code> object representing a
+      Python module named <code>name</code>.
+    </dl>
+
+    <h4><a name="module-spec-modifiers">Class <code>module</code></a> modifier
+    functions</h4>
+<pre>
+module&amp; setattr(const char* name, PyObject* obj);
+module&amp; setattr(const char* name, PyTypeObject* obj);
+module&amp; setattr(const char* name, ref const&amp; r);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is a ntbs which conforms to
+      Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>. In the first two forms, <code>obj</code> is non-null.
+      In the third form, <code>r.get()</code> is non-null.
+
+      <dt><b>Effects:</b> Adds the given Python object to the module. If the
+      object is a product of <code><a href=
+      "make_function.html#make_function-spec">make_function</a>()</code>, the
+      usual <a href="http:overloading.html">overloading procedure</a> applies.
+      In the first two forms, ownership of a reference to obj is transferred
+      from caller to callee, even if an exception is thrown.
+
+      <dt><b>Returns:</b> <code>*this</code>
+    </dl>
+<pre>
+module&amp; add(PyTypeObject* x);
+
+template &lt;class T, class Bases, class HolderGenerator&gt;
+module&amp; add(class_&lt;T,Bases,HolderGenerator&gt; const&amp; c);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> In the first form, <code>x</code> is non-null
+
+      <dt><b>Effects:</b> The first form adds the Python type object named by
+      <code>x</code> to the Python module under construction, with the name
+      given by the type's <code><a href=
+      "http://www.python.org/doc/current/ext/dnt-type-methods.html">tp_name</a></code>
+      field. The second form adds the extension class object being constructed
+      by <code>c</code> to the module, with the same name that was passed to
+      <code>c</code>'s constructor.
+
+      <dt><b>Returns:</b> <code>*this</code>
+
+      <dt><b>Rationale:</b> Provides a way to set type attributes in the module
+      without having to explicitly specify the name.
+    </dl>
+<pre>
+template &lt;class Fn&gt;
+module&amp; def(char const* name, Fn fn);
+
+template &lt;class Fn, class ResultHandler&gt;
+module&amp; def(char const* name, Fn fn, ResultHandler handler);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>f</code> is a non-null pointer-to-function or
+      pointer-to-member-function. <code>name</code> is a ntbs which conforms to
+      Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>. If supplied, <code>policy</code> conforms to the <a
+      href="CallPolicy.html">CallPolicy</a> concept requirements.
+
+      <dt><b>Effects:</b> Adds the result of <code><a href=
+      "make_function.html#make_function-spec">make_function</a>(f)</code> to
+      the extension module being defined, with the given <code>name</code>. If
+      the module already has an attribute named <code><i>name</i></code>, the
+      usual <a href="http:overloading.html">overloading procedure</a> applies.
+
+      <dt><b>Returns:</b> <code>*this</code>
+    </dl>
+
+    <h4><a name="module-spec-observers">Class <code>module</code></a> observer
+    functions</h4>
+<pre>
+ref object() const;
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Returns:</b> A <code>ref</code> object which holds a reference to
+      the Python module object created by the <code>module</code> constructor.
+    </dl>
+
+    <h2><a name="examples"></a>Example(s)</h2>
+
+    <p>C++ module definition:
+<pre>
+#include &lt;boost/python/module.hpp&gt;
+
+char const* greet()
+{
+    return "hello, Boost.Python!";
+}
+
+BOOST_PYTHON_MODULE_INIT(boost_greet)
+{
+    module("boost_greet")
+        .def("greet", greet);
+}
+</pre>
+
+Interactive Python: 
+<pre>
+&gt;&gt;&gt; import boost_greet
+&gt;&gt;&gt; boost_greet.greet()
+'hello, Boost.Python!'
+</pre>
+
+    <p>Revised 
+    <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
+     14 February, 2002
+    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+
+
+    <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
+    Abrahams</a> 2002. All Rights Reserved.</i>
+
