@@ -32,23 +32,14 @@ namespace api
   typedef proxy<const_item_policies> const_object_item;
   typedef proxy<item_policies> object_item;
 
-  // A way to turn a conrete type T into a type dependent on U. This
-  // keeps conforming compilers from complaining about returning an
-  // incomplete T from a template member function (which must be
-  // defined in the class body to keep MSVC happy).
-  template <class T, class U>
-  struct dependent
-  {
-      typedef T type;
-  };
-
   class object
   {
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
       typedef object const& self_cref;
 # else 
       typedef object self_cref;
-# endif 
+# endif
+      
    public:
 # ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
       // copy constructor without NULL checking, for efficiency
@@ -78,7 +69,6 @@ namespace api
                   )
               )
       {
-        
       }
     
       // Throw error_already_set() if the handle is null.
@@ -116,30 +106,29 @@ namespace api
       object_item operator[](self_cref);
     
       template <class T>
-# if BOOST_MSVC != 1300
-      typename dependent<const_object_item,T>::type
-# else
       const_object_item
-# endif 
       operator[](T const& key) const
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+          ;
+# else 
       {
           return (*this)[object(key)];
       }
+# endif 
     
       template <class T>
-# if BOOST_MSVC != 1300
-      typename dependent<object_item,T>::type
-# else
       object_item
-# endif 
       operator[](T const& key)
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+          ;
+# else 
       {
           return (*this)[object(key)];
       }
+# endif
     
       // Underlying object access
-      PyObject* operator->() const;
-      PyObject& operator*() const;
+      handle<> const& ptr() const;
 
    public: // implementation detail -- for internal use only
       object(null_ok<detail::borrowed<PyObject> >*);
@@ -218,7 +207,7 @@ inline object::object(handle<> const& x)
 # ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
 // copy constructor without NULL checking, for efficiency
 inline object::object(object const& rhs)
-    : m_ptr(python::allow_null(python::borrowed(&*rhs)))
+    : m_ptr(python::allow_null(python::borrowed(rhs.m_ptr.get())))
 {}
 # endif 
 
@@ -238,24 +227,19 @@ inline object::object(object::new_pyobject_reference* p)
     : m_ptr((PyObject*)p)
 {}
 
-inline PyObject* object::operator->() const
+inline handle<> const& object::ptr() const
 {
-    return m_ptr.operator->();
-}
-
-inline PyObject& object::operator*() const
-{
-    return *m_ptr;
+    return m_ptr;
 }
 
 inline object::operator object::bool_type() const
 {
-    return PyObject_IsTrue(&**this) ? &object::m_ptr : 0;
+    return PyObject_IsTrue(m_ptr.get()) ? &object::m_ptr : 0;
 }
 
 inline bool object::operator!() const
 {
-    return !PyObject_IsTrue(&**this);
+    return !PyObject_IsTrue(m_ptr.get());
 }
 
 //
@@ -302,7 +286,7 @@ namespace converter
 
   inline PyObject* get_managed_object(object const& x)
   {
-      return &*x;
+      return x.ptr().get();
   }
 }
 

@@ -35,6 +35,22 @@ inline const_object_item object::operator[](object::self_cref key) const
     return const_object_item(*this, key);
 }
 
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+template <class T>
+inline const_object_item
+object::operator[](T const& key) const
+{
+    return (*this)[object(key)];
+}
+
+template <class T>
+inline object_item
+object::operator[](T const& key)
+{
+    return (*this)[object(key)];
+}
+# endif 
+
 
 inline object const_item_policies::get(object const& target, object const& key)
 {

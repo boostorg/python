@@ -12,23 +12,23 @@ namespace boost { namespace python { namespace api {
 
 BOOST_PYTHON_DECL object getattr(object const& target, object const& key)
 {
-    return object((object::new_pyobject_reference*)PyObject_GetAttr(&*target, &*key));
+    return object((object::new_pyobject_reference*)PyObject_GetAttr(target.ptr().get(), key.ptr().get()));
 }
     
 BOOST_PYTHON_DECL void setattr(object const& target, object const& key, object const& value)
 {
-    if (PyObject_SetAttr(&*target, &*key, &*value) == -1)
+    if (PyObject_SetAttr(target.ptr().get(), key.ptr().get(), value.ptr().get()) == -1)
         throw_error_already_set();
 }
 
 BOOST_PYTHON_DECL object getitem(object const& target, object const& key)
 {
-    return object((object::new_pyobject_reference*)PyObject_GetItem(&*target, &*key));
+    return object((object::new_pyobject_reference*)PyObject_GetItem(target.ptr().get(), key.ptr().get()));
 }
     
 BOOST_PYTHON_DECL void setitem(object const& target, object const& key, object const& value)
 {
-    if (PyObject_SetItem(&*target, &*key, &*value) == -1)
+    if (PyObject_SetItem(target.ptr().get(), key.ptr().get(), value.ptr().get()) == -1)
         throw_error_already_set();
 }
 

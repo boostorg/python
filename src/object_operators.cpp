@@ -13,7 +13,7 @@ BOOST_PYTHON_DECL object operator op(object const& l, object const& r)  \
 {                                                                       \
     return object(                                                      \
         (object::new_pyobject_reference*)                               \
-        PyNumber_##name(&*l, &*r));                                     \
+        PyNumber_##name(l.ptr().get(), r.ptr().get()));                 \
 }
 
 BOOST_PYTHON_BINARY_OPERATOR(+, Add)
@@ -33,7 +33,7 @@ BOOST_PYTHON_DECL object& operator op##=(object& l, object const& r)    \
 {                                                                       \
     return l = object(                                                  \
         (object::new_pyobject_reference*)                               \
-        PyNumber_InPlace##name(&*l, &*r));                              \
+        PyNumber_InPlace##name(l.ptr().get(), r.ptr().get()));          \
 }
     
 BOOST_PYTHON_INPLACE_OPERATOR(+, Add)

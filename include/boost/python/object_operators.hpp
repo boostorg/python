@@ -10,11 +10,12 @@
 
 namespace boost { namespace python { namespace api {
 
-# define BOOST_PYTHON_COMPARE_OP(op, opid)                              \
-template <class L, class R>                                             \
-bool operator op(L const& l, R const& r)                                \
-{                                                                       \
-    return PyObject_RichCompareBool(&*object(l), &*object(r), opid);    \
+# define BOOST_PYTHON_COMPARE_OP(op, opid)                      \
+template <class L, class R>                                     \
+bool operator op(L const& l, R const& r)                        \
+{                                                               \
+    return PyObject_RichCompareBool(                            \
+        object(l).ptr().get(), object(r).ptr().get(), opid);    \
 }
 BOOST_PYTHON_COMPARE_OP(>, Py_GT)
 BOOST_PYTHON_COMPARE_OP(>=, Py_GE)
