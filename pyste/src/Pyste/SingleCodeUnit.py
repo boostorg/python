@@ -17,6 +17,7 @@ class SingleCodeUnit:
     Represents a cpp file, where other objects can write in one of the     
     predefined sections.
     The avaiable sections are:
+        pchinclude - The pre-compiled header area
         include - The include area of the cpp file
         declaration - The part before the module definition
         module - Inside the BOOST_PYTHON_MODULE macro
@@ -27,6 +28,8 @@ class SingleCodeUnit:
         self.filename = filename
         # define the avaiable sections
         self.code = {}
+        # include section
+        self.code['pchinclude'] = '' 
         # include section
         self.code['include'] = ''
         # declaration section (inside namespace)        
@@ -74,15 +77,17 @@ class SingleCodeUnit:
         fout.write('\n')
         # includes
         # boost.python header
-        fout.write(left_equals('Boost Includes'))        
-        fout.write('#include <boost/python.hpp>\n')
-        # include numerical boost for int64 definitions
-        fout.write('#include <boost/cstdint.hpp>\n') 
-        if settings.msvc:
-            # include precompiled header directive
+        if self.code['pchinclude']:
+            fout.write(left_equals('PCH'))        
+            fout.write(self.code['pchinclude']+'\n')
             fout.write('#ifdef _MSC_VER\n')
             fout.write('#pragma hdrstop\n')
-            fout.write('#endif\n')
+            fout.write('#endif\n') 
+        else:
+            fout.write(left_equals('Boost Includes'))        
+            fout.write('#include <boost/python.hpp>\n')
+            # include numerical boost for int64 definitions
+            fout.write('#include <boost/cstdint.hpp>\n') 
         fout.write('\n')
         # other includes        
         if self.code['include']:

@@ -598,7 +598,7 @@ class ClassExporter(Exporter):
             nested_info = self.info[nested_class.name]
             nested_info.include = self.info.include
             nested_info.name = nested_class.FullName()
-            exporter = ClassExporter(nested_info)
+            exporter = self.__class__(nested_info)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, exported_names)

@@ -51,7 +51,7 @@ from CppParser import CppParser, CppParserError
 import time
 import declarations
 
-__version__ = '0.9.27'
+__version__ = '0.9.28'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -182,15 +182,21 @@ def ParseArguments():
     ProcessIncludes(includes)
     return includes, defines, module, out, files, multiple, cache_dir, create_cache, generate_main
 
+
+def PCHInclude(*headers):
+    code = '\n'.join(['#include <%s>' % x for x in headers])
+    infos.CodeInfo(code, 'pchinclude')
+
     
 def CreateContext():
     'create the context where a interface file will be executed'
     context = {}
-    context['Import'] = ExecuteInterface
+    context['Import'] = Import
     # infos
     context['Function'] = infos.FunctionInfo
     context['Class'] = infos.ClassInfo
     context['Include'] = lambda header: infos.CodeInfo('#include <%s>\n' % header, 'include')
+    context['PCHInclude'] = PCHInclude
     context['Template'] = infos.ClassTemplateInfo
     context['Enum'] = infos.EnumInfo
     context['AllFromHeader'] = infos.HeaderInfo
@@ -278,6 +284,12 @@ def ExecuteInterface(interface):
     context['INTERFACE_FILE'] = os.path.abspath(interface)
     execfile(interface, context)
     exporters.current_interface = old_interface
+
+
+def Import(interface):
+    exporters.importing = True
+    ExecuteInterface(interface)
+    exporters.importing = False
 
     
 def JoinTails(exports):

@@ -44,7 +44,9 @@ def makeid(name):
 def remove_duplicated_lines(text):
     includes = text.splitlines()
     d = dict([(include, 0) for include in includes])
-    return '\n'.join(d.keys())
+    includes = d.keys()
+    includes.sort()
+    return '\n'.join(includes)
 
 
 #==============================================================================
