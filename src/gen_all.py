@@ -6,12 +6,12 @@ from gen_singleton import *
 from gen_extclass import *
 
 def gen_all(args):
-    open('callback.h', 'w').write(gen_callback(args))
-    open('caller.h', 'w').write(gen_caller(args))
-    open('init_function.h', 'w').write(gen_init_function(args))
-    open('signatures.h', 'w').write(gen_signatures(args))
-    open('instance.h', 'w').write(gen_singleton(args))
-    open('extclass.h', 'w').write(gen_extclass(args))
+    open('callback.hpp', 'w').write(gen_callback(args))
+    open('caller.hpp', 'w').write(gen_caller(args))
+    open('init_function.hpp', 'w').write(gen_init_function(args))
+    open('signatures.hpp', 'w').write(gen_signatures(args))
+    open('singleton.hpp', 'w').write(gen_singleton(args))
+    open('extension_class.hpp', 'w').write(gen_extclass(args))
 
 if __name__ == '__main__':
     import sys

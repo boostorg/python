@@ -9,7 +9,7 @@
     <h1>Overridable Virtual Functions</h1>
 
 <p> 
-  In the <a href="example1.html">previous example</a> we exposed a simple
+  In the <a href="exporting_classes.html">previous example</a> we exposed a simple
   C++ class in Python and showed that we could write a subclass. We even
   redefined one of the functions in our derived class. Now we will learn
   how to make the function behave virtually <em>when called from C++</em>. 
@@ -17,16 +17,17 @@
 
 <h2><a name="overriding_example">Example</a></h2>
 
-<p>In this example, it is assumed that <code>world::get()</code> is a virtual
+<p>In this example, it is assumed that <code>hello::greet()</code> is a virtual
 member function:
 
 <blockquote><pre>
-class world
+class hello
 {
  public:
-    world(int);
-    virtual ~world();
-    <b>virtual</b> std::string get() const { return "hi, world"; }
+    hello(const std::string&amp; country) { this-&gt;country = country; }
+    <b>virtual</b> std::string greet() const { return "Hello from " + country; }
+    virtual ~hello(); // Good practice 
+    ...
 };
 </pre></blockquote>
 
@@ -37,21 +38,28 @@ class world
 
 <ol>
 
-  <li><a name="derived_1">A</a> <code>PyObject*</code> data member that holds a
-  reference to the corresponding Python object.
+  <li><a name="derived_1">A</a> <code>PyObject*</code> data member (usually
+  called <tt>self</tt>) that holds a pointer to the Python object corresponding
+  to our C++ <tt>hello</tt> instance.
 
-  <li><a name="derived_2">A</a> constructor for each exposed constructor of the
-  base class which stores an additional initial <code>PyObject*</code> argument
-  in the data member described above.
+  <li><a name="derived_2">For</a>  each exposed constructor of the
+  base class <tt>T</tt>, a constructor which takes the same parameters preceded by an initial
+  <code>PyObject*</code> argument. The initial argument should be stored in the <tt>self</tt> data
+  member described above. 
+
+  <li>If the class being wrapped is ever returned <i>by
+  value</i> from a wrapped function, be sure you do the same for the
+  <tt>T</tt>'s copy constructor: you'll need a constructor taking arguments
+  <tt>(PyObject*,&nbsp;const&nbsp;T&amp;)</tt>.
 
   <li><a name="derived_3">An</a> implementation of each virtual function you may
   wish to override in Python which uses
-  <code>boost::python::callback&lt<i>return-type</i>&gt;::call_method()</code> to call
+  <tt>callback&lt</tt><i>return-type</i><tt>&gt;::call_method(self,&nbsp;&quot;</tt><i>name</i><tt>&quot;,&nbsp;</tt><i>args...</i><tt>)</tt> to call
   the Python override.
 
   <li><a name="derived_4">For</a> each non-pure virtual function meant to be
   overridable from Python, a static member function (or a free function) taking
-  a reference or pointer to the base type as the first parameter and which
+  a reference or pointer to the <tt>T</tt> as the first parameter and which
   forwards any additional parameters neccessary to the <i>default</i>
   implementation of the virtual function. See also <a href="#private">this
   note</a> if the base class virtual function is private.
@@ -59,52 +67,60 @@ class world
 </ol>
 
 <blockquote><pre>
-struct world_callback : world
+struct hello_callback : hello
 {
-    world_callback(PyObject* self, int x) // <a href="#derived_2">2</a>
-        : world(x),
-          m_self(self) {}
+    // hello constructor storing initial self_ parameter
+    hello_callback(PyObject* self_, const std::string&amp; x) // <a href="#derived_2">2</a>
+        : hello(x), self(self_) {}
 
-    std::string get() const // <a href="#derived_3">3</a>
-        { return boost::python::callback&lt;std::string&gt;::call_method(m_self, "get"); }
+    // In case hello is returned by-value from a wrapped function
+    hello_callback(PyObject* self_, const hello&amp; x) // <a href="#derived_3">3</a>
+        : hello(x), self(self_) {}
 
-    static std::string <a name= "default_implementation">default_get</a>(const hello::world& self) const // <a href="#derived_4">4</a>
-        { return self.world::get(); }
+    // Override greet to call back into Python
+    std::string greet() const // <a href="#derived_4">4</a>
+        { return boost::python::callback&lt;std::string&gt;::call_method(self, "greet"); }
+
+    // Supplies the default implementation of greet
+    static std::string <a name= "default_implementation">default_greet</a>(const hello& self_) const // <a href="#derived_5">5</a>
+        { return self_.hello::greet(); }
  private:
-    PyObject* m_self; // <a href="#derived_1">1</a>
+    PyObject* self; // <a href="#derived_1">1</a>
 };
 </pre></blockquote>
 
 <p>
-  Finally, we add <code>world_callback</code> to the <code>
-  class_builder&lt;&gt;</code> declaration in our module initialization
-  function, and when we define the function, we must tell py_cpp about the default
+  Finally, we add <tt>hello_callback</tt> to the <tt>
+  class_builder&lt;&gt;</tt> declaration in our module initialization
+  function, and when we define the function, we must tell Boost.Python about the default
   implementation:
 
 <blockquote><pre>
 // Create the <a name=
-"world_class">Python type object</a> for our extension class
-boost::python::class_builder&lt;hello::world<strong>,world_callback&gt;</strong> world_class(hello, "world");
+"hello_class">Python type object</a> for our extension class
+boost::python::class_builder&lt;hello<strong>,hello_callback&gt;</strong> hello_class(hello, "hello");
 // Add a virtual member function
-world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>);
+hello_class.def(&amp;hello::greet, "greet", &amp;<b>hello_callback::default_greet</b>);
 </pre></blockquote>
 
 <p>
- Now our subclass of <code>hello.world</code> behaves as expected:
+ Now our Python subclass of <tt>hello</tt> behaves as expected:
 
 <blockquote><pre>
-&gt;&gt;&gt; class my_subclass(hello.world):
-...     def get(self):
-...         return 'hello, world'
+&gt;&gt;&gt; class wordy(hello):
+...     def greet(self):
+...         return hello.greet(self) + ', where the weather is fine'
 ...
-&gt;&gt;&gt; hello.length(my_subclass())
-12
+&gt;&gt;&gt; hi2 = wordy('Florida')
+&gt;&gt;&gt; hi2.greet()
+'Hello from Florida, where the weather is fine'
+&gt;&gt;&gt; invite(hi2)
+'Hello from Florida, where the weather is fine! Please come soon!'
 </pre></blockquote>
-
     <p>
       <a name="why_derived">*</a>You may ask, "Why do we need this derived
       class? This could have been designed so that everything gets done right
-      inside of <code>hello::world</code>." One of the goals of py_cpp is to be
+      inside of <tt>hello</tt>." One of the goals of Boost.Python is to be
       minimally intrusive on an existing C++ design. In principle, it should be
       possible to expose the interface for a 3rd party library without changing
       it. To unintrusively hook into the virtual functions so that a Python
@@ -117,32 +133,29 @@ world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>)
       deal with than a virtual function with a default implementation. First of
       all, you obviously don't need to <a href="#default_implementation"> supply
       a default implementation</a>. Secondly, you don't need to call
-      <code>def()</code> on the <code>extension_class&lt;&gt;</code> instance
+      <tt>def()</tt> on the <tt>extension_class&lt;&gt;</tt> instance
       for the virtual function. In fact, you wouldn't <em>want</em> to: if the
       corresponding attribute on the Python class stays undefined, you'll get an
-      <code>AttributeError</code> in Python when you try to call the function,
+      <tt>AttributeError</tt> in Python when you try to call the function,
       indicating that it should have been implemented. For example:
     <blockquote>
 <pre>
 struct baz {
     <strong>virtual</strong> int pure(int) = 0;
+    int calls_pure(int x) { return pure(x) + 1000; }
 };
 
 struct baz_callback {
     int pure(int x) { boost::python::callback&lt;int&gt;::call_method(m_self, "pure", x); }
 };
 
-extern "C"
-#ifdef _WIN32
-__declspec(dllexport)
-#endif
-initfoobar()
+BOOST_PYTHON_MODULE_INIT(foobar)
 {
     try
     {
        boost::python::module_builder foobar("foobar");
        boost::python::class_builder&lt;baz,baz_callback&gt; baz_class("baz");
-       baz_class.def(&amp;baz::pure, "pure");
+       baz_class.def(&amp;baz::calls_pure, "calls_pure");
     }
     catch(...)
     {
@@ -161,12 +174,18 @@ initfoobar()
 Traceback (innermost last):
   File "&lt;stdin&gt;", line 1, in ?
 AttributeError: pure
+&gt;&gt;&gt; x.calls_pure(1)
+Traceback (innermost last):
+  File "&lt;stdin&gt;", line 1, in ?
+AttributeError: pure
 &gt;&gt;&gt; class mumble(baz):
 ...    def pure(self, x): return x + 1
 ...
 &gt;&gt;&gt; y = mumble()
 &gt;&gt;&gt; y.pure(99)
 100
+&gt;&gt;&gt; y.calls_pure(99)
+1100
 </pre></blockquote>
 
 <a name="private"><h2>Private Non-Pure Virtual Functions</h2></a>
@@ -180,16 +199,17 @@ this limited way without breaking binary compatibility (though it will certainly
 break the <a
 href="http://cs.calvin.edu/c++/C++Standard-Nov97/basic.html#basic.def.odr">ODR</a>).
 
+<hr>
     <p>
-      Prev: <a href="example1.html">A Simple Example Using py_cpp</a> Next: <a
-      href="overloading.html">Function Overloading</a> Up: <a href= 
-      "index.html">Top</a>
+      Next: <a href="overloading.html">Function Overloading</a>
+      Previous: <a href="exporting_classes.html">Exporting Classes</a>
+      Up: <a href="index.html">Top</a>
     <p>
-      &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+      &copy; Copyright David Abrahams 2001. Permission to copy, use, modify,
       sell and distribute this document is granted provided this copyright
       notice appears in all copies. This document is provided "as is" without
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
     <p>
-      Updated: Nov 26, 2000
+      Updated: Mar 6, 2001
 
