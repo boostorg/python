@@ -31,10 +31,10 @@ boost::python::indexing::slice::slice (slice const &copy)
 // integer_slice constructor
 /////////////////////////////////////////////////////////////////////////////
 
-boost::python::indexing::integer_slice::integer_slice (slice const &sl
-                                                       , int sequenceLength)
+boost::python::indexing::integer_slice
+::integer_slice (slice const &sl, index_type sequenceLength)
   : mSlice (sl)
-  // Leave int members uninitialized
+  // Leave index members uninitialized
 {
   PySlice_GetIndices (reinterpret_cast<PySliceObject *> (mSlice.ptr())
                       , sequenceLength
@@ -58,7 +58,7 @@ boost::python::indexing::integer_slice::integer_slice (slice const &sl
 // Check if an index is within the range of this integer_slice
 /////////////////////////////////////////////////////////////////////////////
 
-bool boost::python::indexing::integer_slice::in_range (int index)
+bool boost::python::indexing::integer_slice::in_range (index_type index)
 {
   return ((mStop - index) * mDirection) > 0;
 }

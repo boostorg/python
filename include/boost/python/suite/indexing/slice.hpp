@@ -39,24 +39,26 @@ namespace boost { namespace python { namespace indexing {
     // This class provides a convenient interface to Python slice
     // objects that contain integer bound and stride values.
 
-    integer_slice (slice const &, int sequenceLength);
+    typedef int index_type;
+
+    integer_slice (slice const &, index_type sequenceLength);
     // integer_slice must know how big the container is so it can
     // adjust for negative indexes, etc...
 
-    int start() const { return mStart; }
-    int step() const  { return mStep; }
-    int stop() const  { return mStop; }
+    index_type start() const { return mStart; }
+    index_type step() const  { return mStep; }
+    index_type stop() const  { return mStop; }
 
-    int size() const { return (mStop - mStart) / mStep; }
+    index_type size() const { return (mStop - mStart) / mStep; }
 
-    bool in_range (int index);
+    bool in_range (index_type index);
 
   private:
     slice mSlice;
-    int mStart;
-    int mStep;
-    int mStop;
-    int mDirection;
+    index_type mStart;
+    index_type mStep;
+    index_type mStop;
+    index_type mDirection;
   };
 } } }
 
