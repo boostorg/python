@@ -220,35 +220,41 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
 
 void * ExtensionClassBase::try_class_conversions(InstanceHolderBase * object) const
 {
-    void * result = try_subclass_conversions(object);
-    if(result) return result;
-    result = try_superclass_conversions(object);
+    void * result = try_derived_class_conversions(object);
+    if(result) 
+        return result;
+    result = try_base_class_conversions(object);
     return result;
 }
 
-void * ExtensionClassBase::try_superclass_conversions(InstanceHolderBase * object) const
+void * ExtensionClassBase::try_base_class_conversions(InstanceHolderBase * object) const
 {
     void * result = 0;
     for(int i=0; i<base_classes().size(); ++i)
     {
-        if(base_classes()[i].convert == 0) continue;
+        if(base_classes()[i].convert == 0) 
+            continue;
         result = base_classes()[i].class_object->convert_from_holder(object);
-        if(result) return (*base_classes()[i].convert)(result);
-        result = base_classes()[i].class_object->try_superclass_conversions(object);
-        if(result) return (*base_classes()[i].convert)(result);
+        if(result) 
+            return (*base_classes()[i].convert)(result);
+        result = base_classes()[i].class_object->try_base_class_conversions(object);
+        if(result) 
+            return (*base_classes()[i].convert)(result);
     }
     return 0;
 }
 
-void * ExtensionClassBase::try_subclass_conversions(InstanceHolderBase * object) const
+void * ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase * object) const
 {
     void * result = 0;
-    for(int i=0; i<sub_classes().size(); ++i)
+    for(int i=0; i<derived_classes().size(); ++i)
     {
-        result = sub_classes()[i].class_object->convert_from_holder(object);
-        if(result) return (*sub_classes()[i].convert)(result);
-        result = sub_classes()[i].class_object->try_subclass_conversions(object);
-        if(result) return (*sub_classes()[i].convert)(result);
+        result = derived_classes()[i].class_object->convert_from_holder(object);
+        if(result) 
+            return (*derived_classes()[i].convert)(result);
+        result = derived_classes()[i].class_object->try_derived_class_conversions(object);
+        if(result) 
+            return (*derived_classes()[i].convert)(result);
     }
     return 0;
 }

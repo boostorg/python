@@ -52,18 +52,24 @@ T* check_non_null(T* p)
 }
 
 template <class T> class HeldInstance;
-typedef void * (*ConversionFct)(void *);
+
+namespace detail 
+{
+
+typedef void * (*ConversionFunction)(void *);
 
 struct BaseClassInfo
 {
-    BaseClassInfo(TypeObjectBase * t, ConversionFct f)
+    BaseClassInfo(Class<ExtensionInstance> * t, ConversionFunction f)
     :class_object(t), convert(f)
     {}
     
-    TypeObjectBase *class_object;
-    ConversionFct convert;
+    Class<ExtensionInstance> * class_object;
+    ConversionFunction convert;
 };
-typedef BaseClassInfo SubClassInfo;
+typedef BaseClassInfo DerivedClassInfo;
+
+}
 
 class ExtensionClassBase : public Class<ExtensionInstance>
 {
@@ -80,10 +86,10 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void add_getter_method(Function*, const char* name);
     
     virtual void * try_class_conversions(InstanceHolderBase*) const;
-    virtual void * try_superclass_conversions(InstanceHolderBase*) const;
-    virtual void * try_subclass_conversions(InstanceHolderBase*) const;
-    virtual std::vector<BaseClassInfo> const & base_classes() const = 0;
-    virtual std::vector<SubClassInfo> const & sub_classes() const = 0;
+    virtual void * try_base_class_conversions(InstanceHolderBase*) const;
+    virtual void * try_derived_class_conversions(InstanceHolderBase*) const;
+    virtual std::vector<py::detail::BaseClassInfo> const & base_classes() const = 0;
+    virtual std::vector<py::detail::DerivedClassInfo> const & derived_classes() const = 0;
 };
 
 template <class T>
@@ -94,14 +100,14 @@ class ClassRegistry
         { return static_class_object; }
     static void register_class(py::Class<py::ExtensionInstance>*);
     static void unregister_class(py::Class<py::ExtensionInstance>*);
-    static void register_base_class(BaseClassInfo const &);
-    static void register_sub_class(SubClassInfo const &);
-    static std::vector<BaseClassInfo> const & base_classes();
-    static std::vector<SubClassInfo> const & sub_classes();
+    static void register_base_class(py::detail::BaseClassInfo const &);
+    static void register_derived_class(py::detail::DerivedClassInfo const &);
+    static std::vector<py::detail::BaseClassInfo> const & base_classes();
+    static std::vector<py::detail::DerivedClassInfo> const & derived_classes();
  private:
     static py::Class<py::ExtensionInstance>* static_class_object;
-    static std::vector<BaseClassInfo> static_base_class_info;
-    static std::vector<SubClassInfo> static_sub_class_info;
+    static std::vector<py::detail::BaseClassInfo> static_base_class_info;
+    static std::vector<py::detail::DerivedClassInfo> static_derived_class_info;
 };
 
 #ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // back to global namespace for this GCC bug
@@ -278,8 +284,11 @@ class ReadOnlySetattrFunction : public Function
     String m_name;
 };
 
+namespace detail
+{
+
 template <class From, class To>
-struct ConversionFunction
+struct DefineConversion
 {
     static void * upcast_ptr(void * v)
     {
@@ -291,6 +300,8 @@ struct ConversionFunction
         return dynamic_cast<To *>(static_cast<From *>(v));
     }
 };
+
+}
 
 enum WithoutDowncast { without_downcast };
 
@@ -395,12 +406,14 @@ class ExtensionClass
     template <class S, class V>
     void declare_base(ExtensionClass<S, V> * base)
     {
-        BaseClassInfo baseInfo(base, &ConversionFunction<S, T>::downcast_ptr);
+        detail::BaseClassInfo baseInfo(base, 
+                            &detail::DefineConversion<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
         add_base(Ptr(as_object(base), Ptr::new_ref));
         
-        SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
-        ClassRegistry<S>::register_sub_class(subInfo);
+        detail::DerivedClassInfo derivedInfo(this, 
+                            &detail::DefineConversion<T, S>::upcast_ptr);
+        ClassRegistry<S>::register_derived_class(derivedInfo);
     }
         
     // declare the given class a base class of this and register 
@@ -408,19 +421,20 @@ class ExtensionClass
     template <class S, class V>
     void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
     {
-        BaseClassInfo baseInfo(base, 0);
+        detail::BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
         add_base(Ptr(as_object(base), Ptr::new_ref));
         
-        SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
-        ClassRegistry<S>::register_sub_class(subInfo);
+        detail::DerivedClassInfo derivedInfo(this, 
+                           &detail::DefineConversion<T, S>::upcast_ptr);
+        ClassRegistry<S>::register_derived_class(derivedInfo);
     }
     
  private:
     typedef InstanceValueHolder<T,U> Holder;
     
-    virtual std::vector<BaseClassInfo> const & base_classes() const;
-    virtual std::vector<SubClassInfo> const & sub_classes() const;
+    virtual std::vector<detail::BaseClassInfo> const & base_classes() const;
+    virtual std::vector<detail::DerivedClassInfo> const & derived_classes() const;
     virtual void * convert_from_holder(InstanceHolderBase * v) const;
 
     template <class Signature>
@@ -541,16 +555,18 @@ ExtensionClass<T, U>::ExtensionClass(const char* name)
 
 template <class T, class U>
 inline
-std::vector<BaseClassInfo> const & ExtensionClass<T, U>::base_classes() const
+std::vector<detail::BaseClassInfo> const & 
+ExtensionClass<T, U>::base_classes() const
 {
     return ClassRegistry<T>::base_classes();
 }
 
 template <class T, class U>
 inline
-std::vector<SubClassInfo> const & ExtensionClass<T, U>::sub_classes() const
+std::vector<detail::DerivedClassInfo> const & 
+ExtensionClass<T, U>::derived_classes() const
 {
-    return ClassRegistry<T>::sub_classes();
+    return ClassRegistry<T>::derived_classes();
 }
        
 template <class T, class U>
@@ -585,27 +601,27 @@ inline void ClassRegistry<T>::unregister_class(Class<ExtensionInstance>* p)
 }
 
 template <class T>
-void ClassRegistry<T>::register_base_class(BaseClassInfo const & i)
+void ClassRegistry<T>::register_base_class(py::detail::BaseClassInfo const & i)
 {
     static_base_class_info.push_back(i);
 }
 
 template <class T>
-void ClassRegistry<T>::register_sub_class(SubClassInfo const & i)
+void ClassRegistry<T>::register_derived_class(py::detail::DerivedClassInfo const & i)
 {
-    static_sub_class_info.push_back(i);
+    static_derived_class_info.push_back(i);
 }
 
 template <class T>
-std::vector<BaseClassInfo> const & ClassRegistry<T>::base_classes()
+std::vector<py::detail::BaseClassInfo> const & ClassRegistry<T>::base_classes()
 {
     return static_base_class_info;
 }
 
 template <class T>
-std::vector<SubClassInfo> const & ClassRegistry<T>::sub_classes()
+std::vector<py::detail::DerivedClassInfo> const & ClassRegistry<T>::derived_classes()
 {
-    return static_sub_class_info;
+    return static_derived_class_info;
 }
 
 //
@@ -614,9 +630,9 @@ std::vector<SubClassInfo> const & ClassRegistry<T>::sub_classes()
 template <class T>
 Class<py::ExtensionInstance>* ClassRegistry<T>::static_class_object;
 template <class T>
-std::vector<BaseClassInfo> ClassRegistry<T>::static_base_class_info;
+std::vector<py::detail::BaseClassInfo> ClassRegistry<T>::static_base_class_info;
 template <class T>
-std::vector<SubClassInfo> ClassRegistry<T>::static_sub_class_info;
+std::vector<py::detail::DerivedClassInfo> ClassRegistry<T>::static_derived_class_info;
 
 } // namespace py
 
