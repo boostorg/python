@@ -299,8 +299,8 @@ namespace objects
   void class_base::add_property(char const* name, object const& fget)
   {
       object property(
-          python::detail::new_reference(
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr())));
+          (python::detail::new_reference)
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.ptr()));
       
       this->setattr(name, property);
   }
@@ -308,8 +308,8 @@ namespace objects
   void class_base::add_property(char const* name, object const& fget, object const& fset)
   {
       object property(
-          python::detail::new_reference(
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr())));
+          (python::detail::new_reference)
+              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.ptr(), fset.ptr()));
       
       this->setattr(name, property);
   }

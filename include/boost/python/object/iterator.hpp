@@ -43,9 +43,9 @@ struct default_iterator_call_policies
 template <class NextPolicies, class Iterator>
 struct iterator_range
 {
-    iterator_range(handle<> sequence, Iterator start, Iterator finish);
+    iterator_range(object sequence, Iterator start, Iterator finish);
 
-    handle<> m_sequence; // Keeps the sequence alive while iterating.
+    object m_sequence; // Keeps the sequence alive while iterating.
     Iterator m_start;
     Iterator m_finish;
 };
@@ -134,7 +134,7 @@ namespace detail
     
       return class_<range_>(name)
           .def("__iter__", identity_function())
-          .bind("next", next_function)
+          .setattr("next", next_function)
           ;
   }
 
@@ -173,7 +173,7 @@ namespace detail
           // Build and convert the iterator_range<>.
           return cr(
               iterator_range<NextPolicies,Iterator>(
-                  handle<>(python::borrowed(arg0))
+                  object((python::detail::borrowed_reference)arg0)
                   , get_start(x), get_finish(x)));
       }
   };
@@ -210,7 +210,7 @@ inline object make_iterator_function(
 //
 template <class NextPolicies, class Iterator>
 inline iterator_range<NextPolicies,Iterator>::iterator_range(
-    handle<> sequence, Iterator start, Iterator finish)
+    object sequence, Iterator start, Iterator finish)
     : m_sequence(sequence), m_start(start), m_finish(finish)
 {
 }
