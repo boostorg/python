@@ -19,21 +19,21 @@ namespace boost { namespace python { namespace api {
 
 # if !defined(BOOST_NO_SFINAE) && !defined(BOOST_NO_IS_CONVERTIBLE)
 
-template <class X> char
-is_object_operators_helper(object_operators<X> const&);
+template <class X>
+char is_object_operators_helper(object_operators<X> const*);
     
 typedef char (&no_type)[2];
 no_type is_object_operators_helper(...);
 
-template <class X> X& make();
+template <class X> X* make_ptr();
 
 template <class L, class R>
 struct is_object_operators
 {
     enum {
         value 
-        = (sizeof(api::is_object_operators_helper(api::make<L>()))
-           + sizeof(api::is_object_operators_helper(api::make<R>()))
+        = (sizeof(api::is_object_operators_helper(api::make_ptr<L>()))
+           + sizeof(api::is_object_operators_helper(api::make_ptr<R>()))
            < 4
         )
     };
