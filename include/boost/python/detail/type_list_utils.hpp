@@ -23,6 +23,8 @@
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/dec.hpp>
 
+# include <boost/mpl/type_list.hpp>
+
 namespace boost { namespace python { namespace detail {
 
 # if (!defined(__EDG_VERSION__) || __EDG_VERSION__ > 245)                       \
