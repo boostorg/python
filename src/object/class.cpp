@@ -163,7 +163,7 @@ void instance_holder::install(PyObject* self) throw()
 }
 
 BOOST_PYTHON_DECL void*
-find_instance_impl(PyObject* inst, converter::type_id_t type)
+find_instance_impl(PyObject* inst, converter::undecorated_type_id_t type)
 {
     if (inst->ob_type->ob_type != &class_metatype_object)
         return 0;

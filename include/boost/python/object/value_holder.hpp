@@ -134,7 +134,7 @@ struct value_holder : instance_holder
     {}
 
  private: // required holder implementation
-    void* holds(converter::type_id_t);
+    void* holds(converter::undecorated_type_id_t);
 
  private: // data members
     Held m_held;
@@ -151,9 +151,9 @@ struct value_holder_generator
 };
 
 template <class Held>
-void* value_holder<Held>::holds(converter::type_id_t dst_t)
+void* value_holder<Held>::holds(converter::undecorated_type_id_t dst_t)
 {
-    converter::type_id_t src_t = converter::type_id<Held>();
+    converter::undecorated_type_id_t src_t = converter::undecorated_type_id<Held>();
     return src_t == dst_t ? &m_held
         : find_static_type(&m_held, src_t, dst_t);
 }

@@ -53,7 +53,7 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
     // return the next holder in a chain
     instance_holder* next() const;
 
-    virtual void* holds(converter::type_id_t) = 0;
+    virtual void* holds(converter::undecorated_type_id_t) = 0;
 
     void install(PyObject* inst) throw();
     
@@ -85,15 +85,19 @@ struct instance
     instance_holder* objects;
 };
 
-// Given a type_id, find the instance data which corresponds to it, or
-// return 0 in case no such type is held.
-BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, converter::type_id_t);
+// Given an undecorated type_id, find the instance data which
+// corresponds to it, or return 0 in case no such type is held.
+BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, converter::undecorated_type_id_t);
 
+// This produces a function with the right signature for use in from_python conversions
 template <class T>
-T* find_instance(PyObject* p, T* = 0)
+struct instance_finder
 {
-    return static_cast<T*>(find_instance_impl(p, converter::type_id<T>()));
-}
+    static inline void* execute(PyObject* p)
+    {
+        return find_instance_impl(p, converter::undecorated_type_id<T>());
+    }
+};
 
 BOOST_PYTHON_DECL ref class_metatype();
 BOOST_PYTHON_DECL ref class_type();

@@ -9,25 +9,19 @@
 # include <boost/python/detail/char_array.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/same_traits.hpp>
-# include <boost/type.hpp>
+# include <boost/type_traits/alignment_traits.hpp>
+# include <boost/type_traits/transform_traits.hpp>
+# include <boost/static_assert.hpp>
+# include <boost/python/converter/from_python_stage1_data.hpp>
 
 // Keep these for the metaprogram which EDG is choking on.
 # if !defined(__EDG__) || (__EDG_VERSION__ > 245)
 #  include <boost/mpl/type_list.hpp>
 #  include <boost/mpl/for_each.hpp>
-#  include <boost/type_traits/alignment_traits.hpp>
 #  include <boost/type_traits/composite_traits.hpp>
 # endif 
 
 namespace boost { namespace python { namespace converter { 
-
-// A POD which is layout-compatible with the real intermediate data
-// for all from_python conversions. There may be additional storage if
-// we are converting a reference type.
-struct from_python_data
-{
-    void* stage1;
-};
 
 namespace detail
 {
@@ -74,8 +68,8 @@ namespace detail
   
   template <class T> struct referent_size
   {
-      static T t;
-      BOOST_STATIC_CONSTANT(std::size_t, value = sizeof(t));
+      static T f();
+      BOOST_STATIC_CONSTANT(std::size_t, value = sizeof(f()));
   };
   
 # endif
@@ -130,17 +124,13 @@ namespace detail
 #endif // EDG is too slow
   
   template <class Align, std::size_t size>
-  struct aligned_storage
+  union aligned_storage
   {
-      typedef Align align_t;
-      union 
-      {
-          Align align;
-          char bytes[size
-                     // this is just a STATIC_ASSERT. For some reason
-                     // MSVC was barfing on the boost one.
-              - (is_same<align_t,unknown_alignment>::value ? size : 0)];
-      };
+      Align align;
+      char bytes[size
+                 // this is just a STATIC_ASSERT. For some reason
+                 // MSVC was barfing on the boost one.
+                 - (is_same<Align,unknown_alignment>::value ? size : 0)];
   };
 
   template <class Reference>
@@ -151,55 +141,38 @@ namespace detail
       typedef mpl::for_each<
           align_types
           , unknown_alignment
-          , best_alignment_type<referent_alignment<Reference>::value>
+          , best_alignment_type<
+          referent_alignment<Reference>::value
+      >
       > loop;
+    
       typedef typename loop::state align_t;
 #else
       // The Python source makes the assumption that double has
       // maximal alignment anyway
       typedef double align_t;
-#endif 
-
+    
+#endif
+      BOOST_STATIC_CONSTANT(std::size_t, alignment1 = alignment_of<align_t>::value);
+      BOOST_STATIC_CONSTANT(std::size_t, alignment2 = referent_alignment<Reference>::value);
+    
+      BOOST_STATIC_ASSERT(alignment1 >= alignment2);
+      BOOST_STATIC_ASSERT(alignment1 % alignment2 == 0);
+    
       typedef aligned_storage<align_t,referent_size<Reference>::value> type;
   };
-
-  template <class T>
-  struct intermediate_data : from_python_data
-  {
-      typename referent_storage<T>::type stage2;
-  };
-
-  template <>
-  struct intermediate_data<void> : from_python_data
-  {
-  };
-
+  
 }
 
-// -------------------------------------------------------------------------
-// Auxiliary POD storage where the convertible and/or convert functions of a
-// from_python object may place arbitrary data.
-//
-// Always starts with a void*
-//
-// For references, we produce additional aligned storage sufficient to
-// store the referent
-
 template <class T>
-struct from_python_intermediate_data
+struct rvalue_data
 {
-    typedef typename mpl::select_type<
-        is_reference<T>::value, T, void>::type just_reference_t;
-
-    typedef detail::intermediate_data<just_reference_t> type;
+    rvalue_stage1_data stage1;
+    
+    typename detail::referent_storage<
+        typename add_reference<T>::type
+    >::type storage;
 };
-
-template <class T>
-void* get_storage(from_python_data& x, boost::type<T>* = 0)
-{
-    typedef typename from_python_intermediate_data<T>::type layout;
-    return static_cast<layout*>(&x)->stage2.bytes;
-}
 
 }}} // namespace boost::python::converter
 

@@ -3,16 +3,19 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef FROM_PYTHON_FUNCTION_DWA2002128_HPP
-# define FROM_PYTHON_FUNCTION_DWA2002128_HPP
+#ifndef FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP
+# define FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/converter/from_python_function.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-struct rvalue_stage1_data;
-typedef void (*constructor_function)(PyObject* source, rvalue_stage1_data*);
+struct rvalue_stage1_data
+{
+    void* convertible;
+    constructor_function construct;
+};
 
 }}} // namespace boost::python::converter
 
-#endif // FROM_PYTHON_FUNCTION_DWA2002128_HPP
+#endif // FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP

@@ -139,7 +139,7 @@ struct pointer_holder : instance_holder
     {}
 
  private: // required holder implementation
-    void* holds(converter::type_id_t);
+    void* holds(converter::undecorated_type_id_t);
 
  private: // data members
     Pointer m_p;
@@ -186,12 +186,12 @@ pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
 }
 
 template <class Pointer, class Value>
-void* pointer_holder<Pointer, Value>::holds(converter::type_id_t dst_t)
+void* pointer_holder<Pointer, Value>::holds(converter::undecorated_type_id_t dst_t)
 {
-    if (dst_t == converter::type_id<Pointer>())
+    if (dst_t == converter::undecorated_type_id<Pointer>())
         return &this->m_p;
 
-    converter::type_id_t src_t = converter::type_id<Value>();
+    converter::type_id_t src_t = converter::undecorated_type_id<Value>();
     return src_t == dst_t ? &*this->m_p
         : find_dynamic_type(&*this->m_p, src_t, dst_t);
 }

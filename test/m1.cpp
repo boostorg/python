@@ -9,15 +9,13 @@
 #include "complicated.hpp"
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
+#include <boost/python/type_from_python.hpp>
 #include <boost/python/object/value_holder.hpp>
 #include <boost/python/object/pointer_holder.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
-#include <boost/python/converter/class.hpp>
-#include <boost/python/lvalue_from_python.hpp>
 #include <boost/python/to_python_converter.hpp>
-#include <boost/python/value_from_python.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/mpl/type_list.hpp>
 #include <string.h>
@@ -105,7 +103,6 @@ PyObject* new_simple()
 // description of how the type parameters to wrapper<> and unwrapper<>
 // are selected.
 //
-using boost::python::converter::from_python_data;
 using boost::python::to_python_converter;
 
 // Wrap a simple by copying it into a Simple
@@ -120,16 +117,13 @@ struct simple_to_python
     }
 };
 
-int noddy_to_int(PyObject* p, from_python_data&)
+struct int_from_noddy_extractor
 {
-    return static_cast<NoddyObject*>(p)->x;
-}
-
-// Extract a mutable reference to an int from a Noddy.
-int& noddy_to_int_ref(PyObject* p, from_python_data&) 
-{
-    return static_cast<NoddyObject*>(p)->x;
-}
+    static int& execute(NoddyObject& p)
+    {
+        return p.x;
+    }
+};
 
 //
 // Some C++ functions to expose to Python
@@ -205,40 +199,23 @@ D take_d(D const& d) { return d; }
     
 BOOST_PYTHON_MODULE_INIT(m1)
 {
-    using boost::python::module;
-    using boost::python::class_;
-    using boost::python::converter::from_python_converter;
-    using boost::python::lvalue_from_python;
-    using boost::python::value_from_python;
-    using boost::python::type_from_python;
-    using boost::python::get_member;
-    using boost::python::copy_const_reference;
-    using boost::python::return_value_policy;
+    using namespace boost::python;
     using boost::mpl::type_list;
     
-    // Create the converters; they are self-registering/unregistering.
-    static simple_to_python c1;
+    simple_to_python();
 
-    static from_python_converter<int> c2(
-        &(boost::python::type_from_python<&NoddyType>::convertible), noddy_to_int);
-    
-    static from_python_converter<int&> c3(
-        &(boost::python::type_from_python<&NoddyType>::convertible), noddy_to_int_ref);
+    type_from_python<&NoddyType,int_from_noddy_extractor>();
 
-    static boost::python::lvalue_from_python<
+    boost::python::type_from_python<
         &SimpleType
-        , simple
-        , SimpleObject
 #if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-        , boost::python::get_member<SimpleObject, simple, &SimpleObject::x>
+        , member_extractor<SimpleObject, simple, &SimpleObject::x>
 #else 
         , extract_simple_object
 #endif 
-        >
-        unwrap_simple;
+        >();
 
-    static boost::python::lvalue_from_python<&SimpleType, SimpleObject>
-        unwrap_simple2;
+    type_from_python<&SimpleType, identity_extractor<SimpleObject> >();
     
     module m1("m1");
 

@@ -4,14 +4,18 @@ subproject libs/python ;
 SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
 include <module@>python.jam ;
 
-PYTHON_PROPERTIES 
-  += <metrowerks><*><cxxflags>"-inline deferred" 
-  <cxx><*><include>$(BOOST_ROOT)/boost/compatibility/cpp_c_headers
-    <define>BOOST_PYTHON_DYNAMIC_LIB
-    <define>BOOST_PYTHON_V2
-    ;
 
 {
+    local BOOST_PYTHON_V2_PROPERTIES 
+      = $(PYTHON_PROPERTIES)
+        <metrowerks><*><cxxflags>"-inline deferred" 
+        <cxx><*><include>$(BOOST_ROOT)/boost/compatibility/cpp_c_headers
+          <define>BOOST_PYTHON_DYNAMIC_LIB
+          <define>BOOST_PYTHON_V2
+          ;
+    
+    local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
+    
     dll bpl
       : 
       src/converter/from_python.cpp
@@ -26,7 +30,7 @@ PYTHON_PROPERTIES
       src/objects.cpp
       src/converter/builtin_converters.cpp
       :
-      $(PYTHON_PROPERTIES)
+      $(BOOST_PYTHON_V2_PROPERTIES)
         <define>BOOST_PYTHON_SOURCE
         ;
 
@@ -67,4 +71,20 @@ PYTHON_PROPERTIES
       :
       : debug-python
       ;
+    
 }
+
+unit-test indirect_traits_test
+  : test/indirect_traits_test.cpp : <include>$(BOOST_ROOT)  ;
+unit-test destroy_test
+  : test/destroy_test.cpp : <include>$(BOOST_ROOT)  ;
+unit-test pointer_type_id_test
+  : test/pointer_type_id_test.cpp : <include>$(BOOST_ROOT)  ;
+
+unit-test select_from_python_test
+  : test/select_from_python_test.cpp
+  src/converter/type_id.cpp
+  src/converter/registry.cpp # MWerks needs this for some reason
+  : $(PYTHON_PROPERTIES)
+    ;
+

@@ -7,177 +7,120 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/converter/builtin_converters.hpp>
-#include <boost/python/converter/target.hpp>
-#include <boost/python/value_from_python.hpp>
 #include <boost/python/converter/from_python_data.hpp>
+#include <boost/python/converter/registry.hpp>
 #include <boost/python/reference.hpp>
 #include <boost/cast.hpp>
-//#include <boost/mpl/type_list.hpp>
 #include <string>
 
 namespace boost { namespace python { namespace converter {
 
 namespace
 {
-  // Only an object which we know is holding a char const* can be
-  // converted to one
-  struct convertible_to_cstring
+  // An lvalue conversion function which extracts a char const* from a
+  // Python String.
+  void* convert_to_cstring(PyObject* obj)
   {
-      static unaryfunc* execute(PyObject* obj)
-      {
-          return PyString_Check(obj) ? &obj->ob_type->tp_str : 0;
-      }
-  };
+      return PyString_Check(obj) ? PyString_AsString(obj) : 0;
+  }
 
-  struct extract_cstring
+  // Given a target type and a SlotPolicy describing how to perform a
+  // given conversion, registers from_python converters which use the
+  // SlotPolicy to extract the type.
+  template <class T, class SlotPolicy>
+  struct slot_rvalue_from_python
   {
-      static char const* execute(PyObject* obj)
-      {
-          return PyString_AsString(obj);
-      }
-  };
-
-  // Any object which can be converted to a Python string can also be
-  // converted to a C++ string, since the latter owns its bytes.
-  struct convertible_to_string
-  {
-      static unaryfunc* execute(PyObject* obj)
-      {
-          return obj->ob_type->tp_str ? &obj->ob_type->tp_str : 0;
-      }
-  };
-  
-  // Transform a function returning a unaryfunc* into one that returns a void*
-  template <class F>
-  struct return_void_ptr
-  {
-      static void* execute(PyObject* p) { return F::execute(p); }
-  };
-  
-  template <
-      class T                   // The target type
-      , class Convertible       // returns a pointer to a unaryfunc producing an object
-      , class TExtract          // ...from which TExtract extracts T's constructor argument
-      >
-  struct tp_scalar_from_python
-      : from_python_converter<T>
-  {
-   private:
-      typedef return_void_ptr<Convertible> convertible_fn;
-      
    public:
-      tp_scalar_from_python()
-          : from_python_converter<T>(
-              &convertible_fn::execute
-              , convert)
-      {}
-      
-      static T convert(PyObject* obj, from_python_data& data)
+      slot_rvalue_from_python()
       {
-          unaryfunc converter = *(unaryfunc*)data.stage1;
-          ref converted(converter(obj));
-          return TExtract::execute(converted.get());
+          registry::insert(
+              &slot_rvalue_from_python<T,SlotPolicy>::convertible
+              , &slot_rvalue_from_python<T,SlotPolicy>::construct
+              , undecorated_type_id<T>()
+              );
       }
-  };
-
-  // Extract a reference to T using the functions in the source
-  // object's type slots
-  template <
-      class T                   // The target type
-      , class Convertible       // returns a pointer to a unaryfunc producing an object
-      , class TExtract          // ...from which TExtract extracts T's constructor argument
-      >
-  struct tp_cref_from_python
-      : value_from_python<T, tp_cref_from_python<T,Convertible,TExtract> >
-  {
+      
    private:
-      typedef tp_cref_from_python<T,Convertible,TExtract> self;
-      typedef value_from_python<T,tp_cref_from_python<T,Convertible,TExtract> > base;
-      
-   public:
-      tp_cref_from_python()
-          : base(&return_void_ptr<Convertible>::execute)
-      {}
-      
-      static T const& convert(PyObject* obj, from_python_data& data)
+      static void* convertible(PyObject* obj)
       {
-          unaryfunc converter = *(unaryfunc*)data.stage1;
-          
-          void* storage = self::get_storage(data);
-          
-          ref converted(converter(obj));
-              
-          T* const p = new (storage) T(TExtract::execute(converted.get()));
-          
-          // note that construction is successful.
-          data.stage1 = p;
-          
-          return *p;
+          unaryfunc* slot = SlotPolicy::get_slot(obj);
+          return slot && *slot ? slot : 0;
+      }
+
+      static void construct(PyObject* obj, rvalue_stage1_data* data)
+      {
+          // Get the (intermediate) source object
+          unaryfunc creator = *static_cast<unaryfunc*>(data->convertible);
+          ref intermediate(creator(obj));
+
+          // Get the location in which to construct
+          void* storage = ((rvalue_data<T>*)data)->storage.bytes;
+          new (storage) T(SlotPolicy::extract(intermediate.get()));
+
+          // record successful construction
+          data->convertible = storage;
       }
   };
 
-  struct convertible_to_int
+  // A SlotPolicy for extracting integer types from Python objects
+  struct int_rvalue_from_python
   {
-      static unaryfunc* execute(PyObject* obj)
+      static unaryfunc* get_slot(PyObject* obj)
       {
           PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
           if (number_methods == 0)
               return 0;
 
           // For floating types, return the float conversion slot to avoid
-          // creating a new object. We'll handle that in
-          // py_int_or_float_as_long, below
+          // creating a new object. We'll handle that below
           if (PyObject_TypeCheck(obj, &PyFloat_Type) && number_methods->nb_float)
               return &number_methods->nb_float;
       
-          return number_methods && number_methods->nb_int
-              ? &number_methods->nb_int : 0;
+          return &number_methods->nb_int;
       }
-  };
-
-  struct py_int_or_float_as_long
-  {
-      static long execute(PyObject* obj)
+      
+      static long extract(PyObject* intermediate)
       {
-          if (PyObject_TypeCheck(obj, &PyFloat_Type))
+          if (PyObject_TypeCheck(intermediate, &PyFloat_Type))
           {
-              return numeric_cast<long>(PyFloat_AS_DOUBLE(obj));
+              return numeric_cast<long>(PyFloat_AS_DOUBLE(intermediate));
           }
           else
           {
-              return PyInt_AS_LONG(obj);
+              return PyInt_AS_LONG(intermediate);
           }
       }
   };
 
+
+  // identity_unaryfunc/non_null -- manufacture a unaryfunc "slot"
+  // which just returns its argument. Used for bool conversions, since
+  // all Python objects are directly convertible to bool
   extern "C" PyObject* identity_unaryfunc(PyObject* x)
   {
       Py_INCREF(x);
       return x;
   }
-  
   unaryfunc non_null = identity_unaryfunc;
-  
-  struct convertible_to_bool
+
+  // A SlotPolicy for extracting bool from a Python object
+  struct bool_rvalue_from_python
   {
-      static unaryfunc* execute(PyObject* obj)
+      static unaryfunc* get_slot(PyObject*)
       {
           return &non_null;
       }
-  };
-
-  struct py_object_as_bool
-  {
-      static bool execute(PyObject* obj)
+      
+      static bool extract(PyObject* intermediate)
       {
-          return PyObject_IsTrue(obj);
+          return PyObject_IsTrue(intermediate);
       }
   };
 
-  
-  struct convertible_to_double
+  // A SlotPolicy for extracting floating types from Python objects.
+  struct float_rvalue_from_python
   {
-      static unaryfunc* execute(PyObject* obj)
+      static unaryfunc* get_slot(PyObject* obj)
       {
           PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
           if (number_methods == 0)
@@ -189,67 +132,63 @@ namespace
           if (PyObject_TypeCheck(obj, &PyInt_Type) && number_methods->nb_int)
               return &number_methods->nb_int;
       
-          return number_methods && number_methods->nb_float
-              ? &number_methods->nb_float : 0;
+          return &number_methods->nb_float;
       }
-  };
-
-  struct py_float_or_int_as_double
-  {
-      static double execute(PyObject* obj)
+      
+      static double extract(PyObject* intermediate)
       {
-          if (PyObject_TypeCheck(obj, &PyInt_Type))
+          if (PyObject_TypeCheck(intermediate, &PyInt_Type))
           {
-              return PyInt_AS_LONG(obj);
+              return PyInt_AS_LONG(intermediate);
           }
           else
           {
-              return PyFloat_AS_DOUBLE(obj);
+              return PyFloat_AS_DOUBLE(intermediate);
           }
       }
   };
 
-  template <class T, class Convertible, class Convert>
-  struct scalar_from_python
+  // A SlotPolicy for extracting C++ strings from Python objects.
+  struct string_rvalue_from_python
   {
-      tp_cref_from_python<T,Convertible,Convert> cref_converter;
-      tp_scalar_from_python<T,Convertible,Convert> value_converter;
-  };
-  
-  template <class T>
-  void register_int_converters(T* = 0)
-  {
-      static scalar_from_python<T, convertible_to_int, py_int_or_float_as_long> x;
-  }
-}    
+      // If the underlying object is "string-able" this will succeed
+      static unaryfunc* get_slot(PyObject* obj)
+      {
+          return &obj->ob_type->tp_str;
+      };
 
-#define REGISTER_INT_CONVERTERS(U) register_int_converters<U>()
+      // Remember that this will be used to construct the result object 
+      static char const* extract(PyObject* intermediate)
+      {
+          return PyString_AsString(intermediate);
+      }
+  };
+} 
+
+#define REGISTER_INT_CONVERTERS(U) slot_rvalue_from_python<U,int_rvalue_from_python>()
 #define REGISTER_INT_CONVERTERS2(U) REGISTER_INT_CONVERTERS(signed U); REGISTER_INT_CONVERTERS(unsigned U)  
 
 void initialize_builtin_converters()
 {
-    static scalar_from_python<
-        bool, convertible_to_bool, py_object_as_bool> bool_from_python;
-    
+    // booleans
+    slot_rvalue_from_python<bool,bool_rvalue_from_python>();
+
+    // integer types
     REGISTER_INT_CONVERTERS2(char);
     REGISTER_INT_CONVERTERS2(short);
     REGISTER_INT_CONVERTERS2(int);
     REGISTER_INT_CONVERTERS2(long);
 
-    static scalar_from_python<
-        float,convertible_to_double,py_float_or_int_as_double> float_from_python;
+    // floating types
+    slot_rvalue_from_python<float,float_rvalue_from_python>();
+    slot_rvalue_from_python<double,float_rvalue_from_python>();
+    slot_rvalue_from_python<long double,float_rvalue_from_python>();
     
-    static scalar_from_python<
-        double,convertible_to_double,py_float_or_int_as_double> double_from_python;
-    
-    static scalar_from_python<
-        long double,convertible_to_double,py_float_or_int_as_double> long_double_from_python;
-    
-    static scalar_from_python<
-        char const*, convertible_to_cstring, extract_cstring> cstring_from_python;
+    // Add an lvalue converter for char which gets us char const*
+    registry::insert(convert_to_cstring,undecorated_type_id<char>());
 
-    static tp_cref_from_python<
-        std::string, convertible_to_string, extract_cstring> string_from_python;
+    // Register by-value converters to std::string
+    slot_rvalue_from_python<std::string, string_rvalue_from_python>();
 }
 
 }}} // namespace boost::python::converter
