@@ -25,6 +25,8 @@
 #include <boost/preprocessor/comma_if.hpp>
 #include <boost/config.hpp>
 #include <boost/mpl/begin_end.hpp>
+#include <boost/mpl/next.hpp>
+#include <boost/mpl/apply.hpp>
 
 namespace boost { namespace python {
 
@@ -115,9 +117,10 @@ namespace detail
 
 
 #define BOOST_PYTHON_TYPEDEF_GEN(z, index, data)                                \
-    typedef typename BOOST_PP_CAT(iter, index)::next                            \
+    typedef typename ::boost::mpl::next<BOOST_PP_CAT(iter, index)>::type        \
         BOOST_PP_CAT(iter, BOOST_PP_INC(index));                                \
-    typedef typename BOOST_PP_CAT(iter, index)::type BOOST_PP_CAT(T, index);
+    typedef typename ::boost::mpl::apply0<BOOST_PP_CAT(iter, index)>::type      \
+        BOOST_PP_CAT(T, index);
 
 #define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                   \
     static RT BOOST_PP_CAT(func_,                                       \
@@ -142,8 +145,8 @@ namespace detail
         struct gen                                                              \
         {                                                                       \
             typedef typename ::boost::mpl::begin<SigT>::type rt_iter;           \
-            typedef typename rt_iter::type RT;                                  \
-            typedef typename rt_iter::next iter0;                               \
+            typedef typename ::boost::mpl::apply0<rt_iter>::type RT;            \
+            typedef typename ::boost::mpl::next<rt_iter>::type iter0;           \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 n_args,                                                         \
@@ -181,11 +184,11 @@ namespace detail
         struct gen                                                              \
         {                                                                       \
             typedef typename ::boost::mpl::begin<SigT>::type rt_iter;           \
-            typedef typename rt_iter::type RT;                                  \
+            typedef typename ::boost::mpl::apply0<rt_iter>::type RT;            \
                                                                                 \
-            typedef typename rt_iter::next class_iter;                          \
-            typedef typename class_iter::type ClassT;                           \
-            typedef typename class_iter::next iter0;                            \
+            typedef typename ::boost::mpl::next<rt_iter>::type class_iter;      \
+            typedef typename ::boost::mpl::apply0<class_iter>::type ClassT;     \
+            typedef typename ::boost::mpl::next<class_iter>::type iter0;        \
                                                                                 \
             BOOST_PP_REPEAT_2ND(                                                \
                 n_args,                                                         \
