@@ -47,7 +47,7 @@ object getitem(Target const& target, Key const& key)
 template <class Key, class Value>
 void setitem(object const& target, Key const& key, Value const& value)
 {
-    return setitem(target, object(key), object(value));
+    setitem(target, object(key), object(value));
 }
 
 template <class Key>
