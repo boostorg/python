@@ -64,11 +64,16 @@
 
     <h3><a name="scope-spec"></a>Class <code>scope</code></h3>
 
-    <p>The <code>scope</code> class has an associated global Python object
-    which controls the Python namespace in which new extension classes and
-    wrapped functions will be defined as attributes. Default-constructing a
-    new <code>scope</code> object binds that object to the associated Python
-    object. Constructing a is associated with , and</p>
+    <p>The <code>scope</code> class has an associated global Python
+    object which controls the Python namespace in which new extension
+    classes and wrapped functions will be defined as
+    attributes. Default-constructing a new <code>scope</code> object
+    binds it to the associated global Python object. Constructing a
+    <code>scope</code> object with an argument changes the associated
+    global Python object to the one held by the argument, until the
+    lifetime of the <code>scope</code> object ends, at which time the
+    associated global Python object reverts to what it was before the
+    <code>scope</code> object was constructed.</p>
 
     <h4><a name="scope-spec-synopsis"></a>Class <code>scope</code>
     synopsis</h4>
@@ -121,15 +126,22 @@ struct X
 {
   void f();
 
-  struct Y { int g() { return 0; } };
+  struct Y { int g() { return 42; } };
 };
 
 BOOST_PYTHON_MODULE(nested)
 {
+   // add some constants to the current (module) scope
+   scope().attr("yes") = 1;
+   scope().attr("no") = 0;
+
+   // Change the current scope 
    scope outer
        = class_&lt;X&gt;("X")
             .def("f", &amp;X::f)
             ;
+
+   // Define a class Y in the current scope, X
    class_&lt;Y&gt;("Y")
       .def("g", &amp;Y::g)
       ;
@@ -138,12 +150,14 @@ BOOST_PYTHON_MODULE(nested)
     Interactive Python: 
 <pre>
 &gt;&gt;&gt; import nested
+&gt;&gt;&gt; nested.yes
+1
 &gt;&gt;&gt; y = nested.X.Y()
 &gt;&gt;&gt; y.g()
-0
+42
 </pre>
 
-    <p>Revised 03 October, 2002</p>
+    <p>Revised 09 October, 2002</p>
 
     <p><i>&copy; Copyright <a href=
     "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002. All Rights
