@@ -82,8 +82,8 @@ struct hello_callback : hello
         { return boost::python::callback&lt;std::string&gt;::call_method(self, "greet"); }
 
     // Supplies the default implementation of greet
-    static std::string <a name= "default_implementation">default_greet</a>(const hello& self) const // <a href="#derived_5">5</a>
-        { return self.hello::greet(); }
+    static std::string <a name= "default_implementation">default_greet</a>(const hello& self_) const // <a href="#derived_5">5</a>
+        { return self_.hello::greet(); }
  private:
     PyObject* self; // <a href="#derived_1">1</a>
 };
