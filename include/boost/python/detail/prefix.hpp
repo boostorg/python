@@ -10,6 +10,9 @@
 // headers (so it can get control over some awful macros).
 // Unfortunately, Boost.Python needs to #include <limits.h> first, at
 // least... but this gets us as close as possible.
+# if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION == 741
+#  include <complex>
+# endif
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
 
