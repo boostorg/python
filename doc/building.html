@@ -46,6 +46,9 @@
 
           <dt><a href="#cygwin">Notes for Cygwin GCC Users</a></dt>
 
+          <dt><a href="#mingw">Notes for MinGW (and Cygwin with -mno-cygwin)
+          GCC Users</a></dt>
+
           <dt><a href="#testing">Testing</a></dt>
         </dl>
       </dd>
@@ -221,6 +224,19 @@
     "#cygwin_configuration">above</a> make it possible to use a regular Win32
     build of bjam to build and test Boost.Python and Boost.Python extensions
     using Cygwin GCC and targeting a Cygwin build of Python.</p>
+
+    <h3><a name="mingw">Notes for MinGW (and Cygwin with -mno-cygwin) GCC
+    Users</a></h3>
+
+    <p>You will need to create a MinGW-compatible version of the Python
+    library; the one shipped with Python will only work with a
+    Microsoft-compatible linker. Follow the instructions in the
+    "Non-Microsoft" section of the "Building Extensions: Tips And Tricks"
+    chapter in <a href=
+    "http://www.python.org/doc/current/inst/index.html">Installing Python
+    Modules</a> to create <code>libpythonXX.a</code>, where <code>XX</code>
+    corresponds to the major and minor version numbers of your Python
+    installation.</p>
 
     <h3><a name="results">Results</a></h3>
 
