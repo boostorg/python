@@ -19,6 +19,8 @@
 #  include <boost/mpl/type_list.hpp>
 #  include <boost/mpl/for_each.hpp>
 #  include <boost/type_traits/composite_traits.hpp>
+# else
+#  include <boost/type_traits/cv_traits.hpp>
 # endif 
 
 namespace boost { namespace python { namespace converter { 
@@ -105,24 +107,23 @@ namespace detail
               bool, choose_t2 = (
                   aligned2 && (
                       is_same<T1,unknown_alignment>::value
-                      | (align2 < alignment_of<T1>::value)
+                      | (align2 < align1)
                       | (sizeof(T2) < sizeof(T1)))
                   ));
           
-          typedef mpl::select_type<choose_t2, T2, T1>::type type;
+          typedef typename mpl::select_type<choose_t2, T2, T1>::type type;
       };
   };
 
   typedef mpl::type_list<
-      char,short,int,long,float,double,long double
+      char,short,int,long, float,double,long double
       ,void*
       ,void(*)()
       ,void (alignment_dummy::*)()
       , char (alignment_dummy::*)
-  >
+  >::type
   align_types;
-#endif // EDG is too slow
-  
+#endif // EDG is too slow  
   template <class Align, std::size_t size>
   union aligned_storage
   {
@@ -148,10 +149,27 @@ namespace detail
     
       typedef typename loop::state align_t;
 #else
+      typedef typename remove_cv<typename remove_reference<Reference>::type>::type referent;
+      
       // The Python source makes the assumption that double has
-      // maximal alignment anyway
-      typedef double align_t;
-    
+      // maximal alignment, but that fails on some platforms
+      BOOST_STATIC_CONSTANT(
+          std::size_t, target_align = alignment_of<referent>::value);
+
+      // Here we make some assumptions and leave out some possible
+      // types worth checking, but this should work most of the time.
+      typedef typename mpl::select_type<
+          is_POD<referent>::value
+          , referent
+          , typename mpl::select_type< 
+              alignment_of<long>::value >= target_align
+              , long
+              , typename mpl::select_type<
+                  alignment_of<double>::value >= target_align
+                  , double
+                  , long double>::type
+          >::type
+      >::type align_t;
 #endif
       BOOST_STATIC_CONSTANT(std::size_t, alignment1 = alignment_of<align_t>::value);
       BOOST_STATIC_CONSTANT(std::size_t, alignment2 = referent_alignment<Reference>::value);
