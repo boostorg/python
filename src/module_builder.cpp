@@ -30,7 +30,7 @@ module_builder::module_builder(const char* name)
     : m_module(Py_InitModule(const_cast<char*>(name), initial_methods))
 {
     // If this fails, you've created more than 1 module_builder object in your module    
-    assert(name_holder.get() == 0);
+//    assert(name_holder.get() == 0);
     name_holder = ref(PyObject_GetAttrString(m_module, const_cast<char*>("__name__")));
 }
 

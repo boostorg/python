@@ -26,6 +26,7 @@ def gen_extclass(args):
 # include <memory>
 # include <boost/python/detail/init_function.hpp>
 # include <typeinfo>
+# include <stdexcept>
 # include <boost/smart_ptr.hpp>
 
 namespace boost { namespace python {
@@ -492,9 +493,15 @@ class extension_class
 
     // declare the given class a base class of this one and register 
     // up and down conversion functions
-    template <class S, class V>
-    void declare_base(extension_class<S, V>* base)
+    template <class S>
+    void declare_base(type<S>)
     {
+        extension_class_base * base = class_registry<S>::class_object();
+        
+        if(base == 0)
+            throw std::runtime_error(
+               "extension_class::declare_base(type<S>): base undefined.");
+
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
         base_class_info baseInfo(base, 
@@ -506,12 +513,19 @@ class extension_class
                             &define_conversion<T, S>::upcast_ptr);
         class_registry<S>::register_derived_class(derivedInfo);
     }
+            
         
     // declare the given class a base class of this one and register 
     // only up conversion function
-    template <class S, class V>
-    void declare_base(extension_class<S, V>* base, without_downcast_t)
+    template <class S>
+    void declare_base(type<S>, without_downcast_t)
     {
+        extension_class_base * base = class_registry<S>::class_object();
+        
+        if(base == 0)
+            throw std::runtime_error(
+               "extension_class::declare_base(type<S>, without_downcast_t): base undefined.");
+
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
         base_class_info baseInfo(base, 0);
@@ -522,7 +536,6 @@ class extension_class
                            &define_conversion<T, S>::upcast_ptr);
         class_registry<S>::register_derived_class(derivedInfo);
     }
-    
  private: // types
     typedef instance_value_holder<T,U> holder;
 

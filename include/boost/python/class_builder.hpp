@@ -98,10 +98,26 @@ class class_builder
     
     // declare the given class a base class of this one and register 
     // conversion functions
+    template <class S>
+    void declare_base(type<S> const & t)
+    {
+        m_class->declare_base(t);
+    }
+
+    // declare the given class a base class of this one and register 
+    // upcast conversion function
+    template <class S>
+    void declare_base(type<S> const & t, without_downcast_t)
+    {
+        m_class->declare_base(t, without_downcast);
+    }
+
+    // declare the given class a base class of this one and register 
+    // conversion functions
     template <class S, class V>
     void declare_base(class_builder<S, V> const & base)
     {
-        m_class->declare_base(base.get_extension_class());
+        declare_base(type<S>());
     }
 
     // declare the given class a base class of this one and register 
@@ -109,7 +125,7 @@ class class_builder
     template <class S, class V>
     void declare_base(class_builder<S, V> const & base, without_downcast_t)
     {
-        m_class->declare_base(base.get_extension_class(), without_downcast);
+        declare_base(type<S>(), without_downcast);
     }
 
     // get the embedded ExtensioClass object
