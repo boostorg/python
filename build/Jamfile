@@ -121,7 +121,7 @@ rule boost-python-example-runtest ( name )
       : ../example/$(name).cpp ;
     
     boost-python-runtest $(name)
-      : ../example/test_$(name).py <pyd>$(name) ;
+      : ../example/test_$(name).py <pyd>$(name) <dll>boost_python ;
 }
 
 

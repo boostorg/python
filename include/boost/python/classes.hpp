@@ -145,8 +145,7 @@ namespace detail {
 // A type which acts a lot like a built-in Python class. T is the obj type,
 // so class_t<instance> is a very simple "class-alike".
 template <class T>
-class BOOST_PYTHON_DECL_TEMPLATE class_t
-    : public boost::python::detail::class_base
+class class_t : public boost::python::detail::class_base
 {
  public:
     class_t(meta_class<T>* meta_class_obj, string name, tuple bases, const dictionary& name_space);
@@ -227,7 +226,7 @@ class BOOST_PYTHON_DECL_TEMPLATE class_t
 
 // The type of a class_t<T> object.
 template <class T>
-class BOOST_PYTHON_DECL_TEMPLATE meta_class
+class meta_class
     : public boost::python::detail::reprable<
                 boost::python::detail::callable<
                    boost::python::detail::getattrable<

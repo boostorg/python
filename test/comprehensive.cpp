@@ -167,7 +167,7 @@ int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
         PyErr_SetString(PyExc_AttributeError, s.c_str());
         throw boost::python::error_already_set();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2407
     return 0;
 #endif
 }

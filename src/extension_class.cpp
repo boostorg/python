@@ -10,6 +10,7 @@
 // 04 Mar 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #define BOOST_PYTHON_SOURCE
+#define BOOST_PYTHON_EXPORT
 
 #include <boost/python/detail/extension_class.hpp>
 #include <boost/python/detail/call_object.hpp>
@@ -680,10 +681,5 @@ PyNumberMethods operator_dispatcher::number_methods =
 }; 
 
 } // namespace detail
-
-# ifndef BOOST_PYTHON_NO_TEMPLATE_EXPORT
-template class BOOST_PYTHON_DECL meta_class<detail::extension_instance>;
-template class BOOST_PYTHON_DECL class_t<detail::extension_instance>;
-# endif
 
 }} // namespace boost::python

@@ -70,10 +70,8 @@ namespace detail
 
 } // namespace detail
 
-# ifndef BOOST_PYTHON_NO_TEMPLATE_EXPORT
-BOOST_PYTHON_EXPORT_TEMPLATE_CLASS class_t<detail::extension_instance>;
-BOOST_PYTHON_EXPORT_TEMPLATE_CLASS meta_class<detail::extension_instance>;
-# endif 
+BOOST_PYTHON_EXPORT_CLASS_TEMPLATE(class_t<detail::extension_instance>);
+BOOST_PYTHON_EXPORT_CLASS_TEMPLATE(meta_class<detail::extension_instance>);
 
 namespace detail {
 
