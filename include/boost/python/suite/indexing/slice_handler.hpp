@@ -205,15 +205,7 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::set_slice (container &c, slice sl, boost::python::object values)
   {
-    std::auto_ptr<python_iterator> read_ptr (make_iterator (values));
-
-    if (!read_ptr.get())
-      {
-        PyErr_SetString(
-            PyExc_TypeError, "Type assigned to slice must be a sequence");
-
-        boost::python::throw_error_already_set();
-      }
+    python_iterator value_iter (values);
 
     // Try two kinds of extractors - the first is more efficient (using
     // a reference to existing object, if possible and sensible) and the
@@ -235,9 +227,9 @@ namespace boost { namespace python { namespace indexing {
     slice_helper write_helper (Algorithms::make_slice_helper (c, sl));
 
     // Overwrite and/or insert elements
-    while (read_ptr->next())
+    while (value_iter.next())
       {
-        extractor1 ex1 (read_ptr->current());
+        extractor1 ex1 (value_iter.current());
 
         if (ex1.check())
           {
@@ -246,7 +238,7 @@ namespace boost { namespace python { namespace indexing {
 
         else
           {
-            write_helper.write (extractor2 (read_ptr->current()));
+            write_helper.write (extractor2 (value_iter.current()));
           }
       }
 
