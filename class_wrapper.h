@@ -25,14 +25,14 @@ class ClassWrapper
     }
     
     // define constructors
-    template <class A1, class A2, class A3, class A4, class A5>
-    void def(Constructor<A1, A2, A3, A4, A5> signature)
+    template <class Signature>
+    void def(const Signature& signature)
         { m_class->def(signature); }
 
     // define member functions. In fact this works for free functions, too -
     // they act like static member functions, or if they start with the
-    // appropriate self argument (as a pointer), they can be used just like
-    // ordinary member functions -- just like Python!
+    // appropriate self argument (as a pointer or reference), they can be used
+    // just like ordinary member functions -- just like Python!
     template <class Fn>
     void def(Fn fn, const char* name)
         { m_class->def(fn, name); }
