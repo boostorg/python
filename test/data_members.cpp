@@ -22,14 +22,14 @@ double get_fair_value(X const& x) { return x.value(); }
 
 BOOST_PYTHON_MODULE_INIT(data_members_ext)
 {
-    class_<X>("X", args<int>())
+    class_<X>("X", init<int>())
         .def("value", &X::value)
         .def("set", &X::set)
         .def_readonly("x", &X::x)
         .add_property("fair_value", &get_fair_value)
         ;
     
-    class_<Y>("Y", args<int>())
+    class_<Y>("Y", init<int>())
         .def("value", &Y::value)
         .def("set", &Y::set)
         .def_readwrite("x", &Y::x)

@@ -259,8 +259,8 @@ BOOST_PYTHON_MODULE_INIT(m1)
         ;
 
     class_<complicated>("complicated",
-                        args<simple const&,int>())
-        .def_init(args<simple const&>())
+                        init<simple const&,int>())
+        .def(init<simple const&>())
         .def("get_n", &complicated::get_n)
         ;
 }
