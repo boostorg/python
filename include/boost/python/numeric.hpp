@@ -20,7 +20,7 @@ namespace aux
   struct BOOST_PYTHON_DECL array_base : object
   {
 # define BOOST_PP_LOCAL_MACRO(n)                                \
-      array_base(BOOST_PP_ENUM_PARAMS(n, object const& x));
+      array_base(BOOST_PP_ENUM_PARAMS_Z(1, n, object const& x));
 # define BOOST_PP_LOCAL_LIMITS (1, 7)
 # include BOOST_PP_LOCAL_ITERATE()
 
@@ -116,9 +116,9 @@ class array : public aux::array_base
     }
     
 # define BOOST_PP_LOCAL_MACRO(n)                                \
-      void resize(BOOST_PP_ENUM_PARAMS(n, long x))              \
+      void resize(BOOST_PP_ENUM_PARAMS_Z(1, n, long x))              \
       {                                                         \
-          resize(make_tuple(BOOST_PP_ENUM_PARAMS(n, x)));       \
+          resize(make_tuple(BOOST_PP_ENUM_PARAMS_Z(1, n, x)));       \
       }
 # define BOOST_PP_LOCAL_LIMITS (1, BOOST_PYTHON_MAX_ARITY)
 # include BOOST_PP_LOCAL_ITERATE()
@@ -130,9 +130,9 @@ class array : public aux::array_base
     }
     
 # define BOOST_PP_LOCAL_MACRO(n)                                \
-    void setshape(BOOST_PP_ENUM_PARAMS(n, long x))              \
+    void setshape(BOOST_PP_ENUM_PARAMS_Z(1, n, long x))              \
     {                                                           \
-        setshape(make_tuple(BOOST_PP_ENUM_PARAMS(n, x)));       \
+        setshape(make_tuple(BOOST_PP_ENUM_PARAMS_Z(1, n, x)));       \
     }
 # define BOOST_PP_LOCAL_LIMITS (1, BOOST_PYTHON_MAX_ARITY)
 # include BOOST_PP_LOCAL_ITERATE()
@@ -199,9 +199,9 @@ class array : public aux::array_base
 
 # define BOOST_PYTHON_ENUM_AS_OBJECT(z, n, x) object(BOOST_PP_CAT(x,n))
 # define BOOST_PP_LOCAL_MACRO(n)                                        \
-    template <BOOST_PP_ENUM_PARAMS(n, class T)>                         \
-    explicit array(BOOST_PP_ENUM_BINARY_PARAMS(n, T, const& x))         \
-    : base(BOOST_PP_ENUM(n, BOOST_PYTHON_ENUM_AS_OBJECT, x))            \
+    template <BOOST_PP_ENUM_PARAMS_Z(1, n, class T)>                    \
+    explicit array(BOOST_PP_ENUM_BINARY_PARAMS_Z(1, n, T, const& x))    \
+    : base(BOOST_PP_ENUM_1(n, BOOST_PYTHON_ENUM_AS_OBJECT, x))          \
     {}
 # define BOOST_PP_LOCAL_LIMITS (1, 7)
 # include BOOST_PP_LOCAL_ITERATE()
