@@ -10,6 +10,7 @@
 #include <memory>
 #include <boost/shared_ptr.hpp>
 #include <boost/python/make_constructor.hpp>
+#include <boost/python/args.hpp>
 
 using namespace boost::python;
 
@@ -29,7 +30,11 @@ BOOST_PYTHON_MODULE(injected_ext)
     class_<X>("X", init<int>())
         .def("__init__", make_constructor(empty))
         .def("__init__", make_constructor(sum))
-        .def("__init__", make_constructor(product), "this is product's docstring")
+        .def("__init__", make_constructor(product
+            , default_call_policies()
+            , ( arg_("a"), arg_("b"), arg_("c"))
+            ),
+            "this is product's docstring")
         .def("value", &X::value)
         ;
 }

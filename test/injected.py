@@ -5,7 +5,7 @@
 >>> from injected_ext import *
 >>> X(3,5).value() - (3+5)
 0
->>> X(3,5,7).value() - (3*5*7)
+>>> X(a=3,b=5,c=7).value() - (3*5*7)
 0
 >>> X().value()
 1000
