@@ -30,6 +30,40 @@ Package=<4>
 
 ###############################################################################
 
+Project: "getting_started1"=.\getting_started1\getting_started1.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name bpl_static
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "getting_started2"=.\getting_started2\getting_started2.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+    begin source code control
+    getting_started2
+    .\getting_started2
+    end source code control
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name bpl_static
+    End Project Dependency
+}}}
+
+###############################################################################
+
 Project: "rwgk1"=.\rwgk1\rwgk1.dsp - Package Owner=<4>
 
 Package=<5>
