@@ -14,8 +14,8 @@
 #include <boost/python/detail/config.hpp>
 #include <boost/python/convert.hpp>
 #include <boost/python/object/value_holder.hpp>
-#include <boost/python/object/class_unwrapper.hpp>
 #include <boost/python/object/class.hpp>
+#include <boost/python/converter/class.hpp>
 #include <boost/python/make_function.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/mpl/type_list.hpp>
@@ -141,12 +141,12 @@ struct simple_ref_wrapper
 struct native_int_unwrapper
     : boost::python::converter::unwrapper<int>
 {
-    bool convertible(PyObject* p) const
+    void* can_convert(PyObject* p) const
     {
-        return PyInt_Check(p);
+        return PyInt_Check(p) ? non_null : 0;
     }
     
-    int convert(PyObject* p, void*&) const
+    int convert(PyObject* p, void*, boost::type<int>) const
     {
         return PyInt_AsLong(p);
     }
@@ -155,12 +155,12 @@ struct native_int_unwrapper
 struct noddy_int_unwrapper
     : boost::python::converter::unwrapper<int>
 {
-    bool convertible(PyObject* p) const
+    void* can_convert(PyObject* p) const
     {
-        return p->ob_type == &NoddyType;
+        return p->ob_type == &NoddyType ? non_null : 0;
     }
     
-    int convert(PyObject* p, void*&) const
+    int convert(PyObject* p, void*, boost::type<int>) const
     {
         return static_cast<NoddyObject*>(p)->x;
     }
@@ -169,12 +169,12 @@ struct noddy_int_unwrapper
 struct noddy_int_ref_unwrapper
     : boost::python::converter::unwrapper<int&>
 {
-    bool convertible(PyObject* p) const
+    void* can_convert(PyObject* p) const
     {
-        return p->ob_type == &NoddyType;
+        return p->ob_type == &NoddyType ? non_null : 0;
     }
     
-    int& convert(PyObject* p, void*&) const
+    int& convert(PyObject* p, void*, boost::type<int&>) const
     {
         return static_cast<NoddyObject*>(p)->x;
     }
@@ -183,12 +183,12 @@ struct noddy_int_ref_unwrapper
 struct simple_ref_unwrapper
     : boost::python::converter::unwrapper<simple&>
 {
-    bool convertible(PyObject* p) const
+    void* can_convert(PyObject* p) const
     {
-        return p->ob_type == &SimpleType;
+        return p->ob_type == &SimpleType ? non_null : 0;
     }
     
-    simple& convert(PyObject* p, void*&) const
+    simple& convert(PyObject* p, void*, boost::type<simple&>) const
     {
         return static_cast<SimpleObject*>(p)->x;
     }
@@ -197,12 +197,12 @@ struct simple_ref_unwrapper
 struct simple_const_ref_unwrapper
     : boost::python::converter::unwrapper<simple const&>
 {
-    bool convertible(PyObject* p) const
+    void* can_convert(PyObject* p) const
     {
-        return p->ob_type == &SimpleType;
+        return p->ob_type == &SimpleType ? non_null : 0;
     }
     
-    simple const& convert(PyObject* p, void*&) const
+    simple const& convert(PyObject* p, void*, boost::type<simple const&>) const
     {
         return static_cast<SimpleObject*>(p)->x;
     }
@@ -228,12 +228,12 @@ BOOST_PYTHON_MODULE_INIT(m1)
     static noddy_int_unwrapper unwrap_int2;
     static noddy_int_ref_unwrapper unwrap_int3;
     static simple_ref_unwrapper unwrap_simple;
+    static simple_const_ref_unwrapper unwrap_simple_const_ref;
 #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     // These compilers will need additional converters
-    static simple_const_ref_unwrapper unwrap_simple_const_ref;
     static simple_ref_wrapper wrap_simple_ref;
 #endif
-    static boost::python::object::class_unwrapper<complicated> unwrap_complicated;
+    static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
     
     PyObject* d = PyModule_GetDict(m1);
     if (d == NULL)
