@@ -35,6 +35,10 @@ struct BOOST_PYTHON_DECL registration
     // Convert the appropriately-typed data to Python
     PyObject* to_python(void const volatile*) const;
 
+    // Return the class object, or raise an appropriate Python
+    // exception if no class has been registered.
+    PyTypeObject* get_class_object() const;
+
  public: // data members. So sue me.
     const python::type_info target_type;
 
@@ -45,7 +49,7 @@ struct BOOST_PYTHON_DECL registration
     rvalue_from_python_chain* rvalue_chain;
     
     // The class object associated with this type
-    PyTypeObject* class_object;
+    PyTypeObject* m_class_object;
 
     // The unique to_python converter for the associated C++ type.
     to_python_function_t m_to_python;
@@ -64,7 +68,7 @@ inline registration::registration(type_info target_type)
       , lvalue_chain(0)
       , rvalue_chain(0)
       , m_to_python(0)
-      , class_object(0)
+      , m_class_object(0)
 {}
 
 inline bool operator<(registration const& lhs, registration const& rhs)

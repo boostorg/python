@@ -36,7 +36,6 @@ namespace detail
           typedef typename Policies::result_converter result_converter;
           typedef typename boost::add_reference<Data>::type source;
           typename mpl::apply1<result_converter,source>::type cr;
-          if (!cr.convertible()) return 0;
         
           if (!policies.precall(args_)) return 0;
 

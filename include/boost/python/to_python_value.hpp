@@ -27,7 +27,6 @@ namespace detail
           typename add_const<T>::type
       >::type argument_type;
     
-      static bool convertible();
       PyObject* operator()(argument_type) const;
 
       // This information helps make_getter() decide whether to try to
@@ -44,7 +43,6 @@ namespace detail
           typename add_const<T>::type
       >::type argument_type;
     
-      static bool convertible();
       PyObject* operator()(argument_type) const;
 
       // This information helps make_getter() decide whether to try to
@@ -74,21 +72,9 @@ struct to_python_value
 namespace detail
 {
   template <class T>
-  inline bool registry_to_python_value<T>::convertible()
-  {
-      return converter::registered<argument_type>::converters.to_python != 0;
-  }
-
-  template <class T>
   inline PyObject* registry_to_python_value<T>::operator()(argument_type x) const
   {
       return converter::registered<argument_type>::converters.to_python(&x);
-  }
-
-  template <class T>
-  inline bool object_manager_to_python_value<T>::convertible()
-  {
-      return true;
   }
 
   template <class T>

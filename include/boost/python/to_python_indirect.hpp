@@ -21,7 +21,6 @@ namespace boost { namespace python {
 template <class T, class MakeHolder>
 struct to_python_indirect
 {
-    static bool convertible();
     PyObject* operator()(T ptr) const;
  private:
     static PyTypeObject* type();
@@ -91,15 +90,10 @@ namespace detail
 }
 
 template <class T, class MakeHolder>
-inline bool to_python_indirect<T,MakeHolder>::convertible()
-{
-    BOOST_STATIC_ASSERT(is_pointer<T>::value || is_reference<T>::value);
-    return type() != 0;
-}
-
-template <class T, class MakeHolder>
 inline PyObject* to_python_indirect<T,MakeHolder>::operator()(T x) const
 {
+    BOOST_STATIC_ASSERT(is_pointer<T>::value || is_reference<T>::value);
+        
     PyObject* const null_result = detail::null_pointer_to_none(x, 1L);
     if (null_result != 0)
         return null_result;

@@ -43,14 +43,6 @@ namespace detail
          (converters.to_python(source))
   {
   }
-
-  BOOST_PYTHON_DECL void throw_no_class_registered()
-  {
-      PyErr_SetString(
-          PyExc_TypeError
-          , const_cast<char*>("class not registered for to_python type"));
-      throw_error_already_set();
-  }
 }
 
 }}} // namespace boost::python::converter

@@ -298,7 +298,7 @@ namespace objects
         converter::registration const* p = converter::registry::query(id);
         return type_handle(
             python::borrowed(
-                python::allow_null(p ? p->class_object : 0))
+                python::allow_null(p ? p->m_class_object : 0))
             );
     }
 
@@ -371,7 +371,7 @@ namespace objects
           converter::registry::lookup(types[0]));
 
       // Class object is leaked, for now
-      converters.class_object = (PyTypeObject*)incref(this->ptr());
+      converters.m_class_object = (PyTypeObject*)incref(this->ptr());
   }
 
   void class_base::set_instance_size(std::size_t instance_size)

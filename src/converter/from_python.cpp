@@ -10,6 +10,8 @@
 #include <boost/python/handle.hpp>
 #include <boost/python/detail/raw_pyobject.hpp>
 #include <boost/python/cast.hpp>
+
+#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <algorithm>
 
@@ -244,14 +246,6 @@ BOOST_PYTHON_DECL void* pointer_result_from_python(
     return (lvalue_result_from_python)(source, converters, "pointer");
 }
   
-BOOST_PYTHON_DECL void throw_no_class_registered()
-{
-    PyErr_SetString(
-        PyExc_TypeError
-        , const_cast<char*>("class not registered for to_python type"));
-    throw_error_already_set();
-}
-  
 BOOST_PYTHON_DECL void void_result_from_python(PyObject* o)
 {
     Py_DECREF(expect_non_null(o));
@@ -264,14 +258,12 @@ pytype_check(PyTypeObject* type_, PyObject* source)
 {
     if (!PyObject_IsInstance(source, python::upcast<PyObject>(type_)))
     {
-        handle<> keeper(source);
-        handle<> msg(
-            ::PyString_FromFormat(
-                "Expecting an object of type %s; got an object of type %s instead"
-                , type_->tp_name
-                , source->ob_type->tp_name
-                ));
-        PyErr_SetObject(PyExc_TypeError, msg.get());
+        ::PyErr_Format(
+            PyExc_TypeError
+            , "Expecting an object of type %s; got an object of type %s instead"
+            , type_->tp_name
+            , source->ob_type->tp_name
+            );
         throw_error_already_set();
     }
     return source;

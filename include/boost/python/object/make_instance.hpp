@@ -20,7 +20,8 @@ struct make_instance
     static PyObject* execute(Arg& x)
     {
         BOOST_STATIC_ASSERT(is_class<T>::value);
-        PyTypeObject* type = converter::registered<T>::converters.class_object;
+        
+        PyTypeObject* type = converter::registered<T>::converters.get_class_object();
 
         PyObject* raw_result = type->tp_alloc(
             type, objects::additional_instance_size<Holder>::value);

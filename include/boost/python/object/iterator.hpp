@@ -87,7 +87,6 @@ namespace detail
       {
           typedef typename Policies::result_converter result_converter;
           typename mpl::apply1<result_converter,ValueType&>::type cr;
-          if (!cr.convertible()) return 0;
 
           return cr(x);
       }
@@ -96,7 +95,6 @@ namespace detail
       {
           typedef typename Policies::result_converter result_converter;
           typename mpl::apply1<result_converter,ValueType const&>::type cr;
-          if (!cr.convertible()) return 0;
 
           return cr(x);
       }
@@ -149,11 +147,6 @@ namespace detail
           detail::demand_iterator_class("iterator", (Iterator*)0, NextPolicies());
 
           to_python_value<iterator_range<NextPolicies,Iterator> > cr;
-
-          // This check is probably redundant, since we ensure the
-          // type is registered above.
-          if (!cr.convertible())
-              return 0;
 
           // Extract x from the first argument
           PyObject* arg0 = PyTuple_GET_ITEM(args_, 0);

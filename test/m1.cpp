@@ -15,6 +15,7 @@
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/errors.hpp>
+#include <boost/python/manage_new_object.hpp>
 #include <string.h>
 
 // Declare some straightforward extension types
@@ -202,6 +203,8 @@ boost::shared_ptr<A> d_factory() { return boost::shared_ptr<B>(new D); }
 struct Unregistered {};
 Unregistered make_unregistered(int) { return Unregistered(); }
 
+Unregistered* make_unregistered2(int) { return new Unregistered; }
+
 BOOST_PYTHON_MODULE(m1)
 {
     using namespace boost::python;
@@ -226,6 +229,7 @@ BOOST_PYTHON_MODULE(m1)
     def("new_simple", new_simple);
 
     def("make_unregistered", make_unregistered);
+    def("make_unregistered2", make_unregistered2, return_value_policy<manage_new_object>());
 
       // Expose f() in all its variations
     def("f", f);

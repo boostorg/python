@@ -169,7 +169,7 @@ enum_base::enum_base(
         = const_cast<converter::registration&>(
             converter::registry::lookup(id));
             
-    converters.class_object = downcast<PyTypeObject>(this->ptr());
+    converters.m_class_object = downcast<PyTypeObject>(this->ptr());
     converter::registry::insert(to_python, id);
     converter::registry::insert(convertible, construct, id);
 }

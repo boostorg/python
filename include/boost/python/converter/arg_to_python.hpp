@@ -29,8 +29,6 @@ template <class T> struct is_object_manager;
 
 namespace detail
 {
-  BOOST_PYTHON_DECL void throw_no_class_registered();
-
   template <class T>
   struct function_arg_to_python : handle<>
   {
@@ -209,8 +207,6 @@ namespace detail
   inline PyObject* reference_arg_to_python<T>::get_object(T& x)
   {
       to_python_indirect<T&,python::detail::make_reference_holder> convert;
-      if (!convert.convertible())
-          throw_no_class_registered();
       return convert(x);
   }
 
@@ -231,9 +227,7 @@ namespace detail
   inline PyObject* pointer_shallow_arg_to_python<Ptr>::get_object(Ptr x)
   {
       to_python_indirect<Ptr,python::detail::make_reference_holder> convert;
-      if (!convert.convertible())
-          throw_no_class_registered();
-      return x ? convert(x) : python::detail::none();
+      return convert(x);
   }
 }
 
