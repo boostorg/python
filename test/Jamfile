@@ -103,6 +103,7 @@ bpl-test crossmod_exception
 [ bpl-test auto_ptr ]
 [ bpl-test minimal ]
 [ bpl-test args ]
+[ bpl-test raw_ctor ]
 [ bpl-test numpy ]
 [ bpl-test enum ]
 [ bpl-test exception_translator ]
