@@ -5,6 +5,10 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+
+//  Revision History:
+//  04 Mar 01  Changed name of extension module so it would work with DebugPython,
+//             eliminated useless test that aggravated MSVC (David Abrahams)
 #include "comprehensive.hpp"
 #include <boost/python/class_builder.hpp>
 #include <stdio.h> // used for portability on broken compilers
@@ -818,7 +822,14 @@ namespace bpl_test {
   // Test plain char converters.
   char get_plain_char() { return 'x'; }
   std::string use_plain_char(char c) { return std::string(3, c); }
-  std::string use_const_plain_char(const char c) { return std::string(5, c); }
+
+  // This doesn't test anything but the compiler, since it has the same signature as the above.
+  // Since MSVC is broken and gets the signature wrong, we'll skip it.
+  std::string use_const_plain_char(
+#ifndef BOOST_MSVC6_OR_EARLIER
+      const 
+#endif
+      char c) { return std::string(5, c); }
 
   // Test std::complex<double> converters.
   std::complex<double> dpolar(double rho, double theta) {
@@ -1091,18 +1102,18 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
 
 void init_module()
 {
-    boost::python::module_builder test("test");
-    init_module(test);
+    boost::python::module_builder boost_python_test("boost_python_test");
+    init_module(boost_python_test);
 
     // Just for giggles, add a raw metaclass.
-    test.add(new boost::python::meta_class<boost::python::instance>);
+    boost_python_test.add(new boost::python::meta_class<boost::python::instance>);
 }
 
 extern "C"
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-void inittest()
+void initboost_python_test()
 {
     try {
         bpl_test::init_module();
