@@ -1,5 +1,22 @@
+//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
+//  distribute this software is granted provided this copyright notice appears
+//  in all copies. This software is provided "as is" without express or implied
+//  warranty, and with no claim as to its suitability for any purpose.
+//
+//  The author gratefully acknowleges the support of Dragon Systems, Inc., in
+//  producing this work.
+
+//  This file serves as a wrapper around <Python.h> which allows it to be
+//  compiled with GCC 2.95.2 under Win32 and which disables the default MSVC
+//  behavior so that a program may be compiled in debug mode without requiring a
+//  special debugging build of the Python library.
+
+
+//  To use the Python debugging library, #define BOOST_DEBUG_PYTHON on the
+//  compiler command-line.
+
 #ifdef _DEBUG
-# ifndef DEBUG_PYTHON
+# ifndef BOOST_DEBUG_PYTHON
 #  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
 #  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # endif

@@ -17,7 +17,7 @@
 
 <h2><a name="overriding_example">Example</a></h2>
 
-<p>In this example, it is assumed that <code>world::get()</code> is a virtual
+<p>In this example, it is assumed that <code>world::greet()</code> is a virtual
 member function:
 
 <blockquote><pre>
@@ -26,7 +26,7 @@ class world
  public:
     world(int);
     virtual ~world();
-    <b>virtual</b> std::string get() const { return "hi, world"; }
+    <b>virtual</b> std::string greet() const { return "hi, world"; }
 };
 </pre></blockquote>
 
@@ -65,11 +65,11 @@ struct world_callback : world
         : world(x),
           m_self(self) {}
 
-    std::string get() const // <a href="#derived_3">3</a>
+    std::string greet() const // <a href="#derived_3">3</a>
         { return boost::python::callback&lt;std::string&gt;::call_method(m_self, "get"); }
 
     static std::string <a name= "default_implementation">default_get</a>(const hello::world& self) const // <a href="#derived_4">4</a>
-        { return self.world::get(); }
+        { return self.world::greet(); }
  private:
     PyObject* m_self; // <a href="#derived_1">1</a>
 };
@@ -94,7 +94,7 @@ world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>)
 
 <blockquote><pre>
 &gt;&gt;&gt; class my_subclass(hello.world):
-...     def get(self):
+...     def greet(self):
 ...         return 'hello, world'
 ...
 &gt;&gt;&gt; hello.length(my_subclass())
@@ -181,9 +181,9 @@ break the <a
 href="http://cs.calvin.edu/c++/C++Standard-Nov97/basic.html#basic.def.odr">ODR</a>).
 
     <p>
-      Prev: <a href="example1.html">A Simple Example Using py_cpp</a> Next: <a
-      href="overloading.html">Function Overloading</a> Up: <a href= 
-      "index.html">Top</a>
+      Next: <a href="overloading.html">Function Overloading</a>
+      Previous: <a href="example1.html">A Simple Example Using py_cpp</a>
+      Up: <a href="index.html">Top</a>
     <p>
       &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
       sell and distribute this document is granted provided this copyright

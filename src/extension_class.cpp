@@ -46,24 +46,19 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace boost { namespace python { 
 
-namespace detail {
+tuple standard_coerce(ref l, ref r)
+{
+    // Introduced sequence points for exception-safety.
+    ref first(detail::operator_dispatcher::create(l, l));
+    
+    ref second(r->ob_type == &detail::operator_dispatcher::type_obj
+               ? r
+               : ref(detail::operator_dispatcher::create(r, ref())));
 
-  tuple extension_class_coerce(ref l, ref r)
-  {
-      // Introduced sequence points for exception-safety.
-      ref first(operator_dispatcher::create(l, l));
-      ref second;
-      
-      if(r->ob_type == &operator_dispatcher::type_obj)
-      {
-           second = r;
-      }
-      else
-      {
-           second = ref(operator_dispatcher::create(r, ref()));
-      }
-      return boost::python::tuple(first, second);
-  }
+    return tuple(first, second);
+}
+
+namespace detail {
 
   enum { unwrap_exception_code = -1000 };
 

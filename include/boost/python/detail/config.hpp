@@ -21,7 +21,7 @@
 # else
 #  define BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE namespace boost { namespace python {
 #  define BOOST_PYTHON_END_CONVERSION_NAMESPACE }} // namespace boost::python
-#  define BOOST_PYTHON_CONVERSION python
+#  define BOOST_PYTHON_CONVERSION boost::python
 #  define BOOST_PYTHON_IMPORT_CONVERSION(x) void never_defined() // so we can follow the macro with a ';'
 # endif
 

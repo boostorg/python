@@ -1,14 +1,21 @@
 #ifndef OPERATORS_UK112000_H_
 #define OPERATORS_UK112000_H_
 
-#include <boost/python/detail/functions.hpp>
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
-# include <sstream>
-#else
-# include <strstream>
-#endif
+# include <boost/python/reference.hpp>
+# include <boost/python/detail/functions.hpp>
+
+// When STLport is used with native streams, _STL::ostringstream().str() is not
+// _STL::string, but std::string. This confuses to_python(), so we'll use
+// strstream instead. Also, GCC 2.95.2 doesn't have sstream.
+# if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
+#  include <sstream>
+# else
+#  include <strstream>
+# endif
 
 namespace boost { namespace python {
+
+tuple standard_coerce(ref l, ref r);
 
 namespace detail {
   
@@ -473,17 +480,15 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
+// When STLport is used with native streams, _STL::ostringstream().str() is not
+// _STL::string, but std::string.
+#if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
               std::ostringstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>());
+              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
 #else
               std::ostrstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>()) << char();
-#endif
-
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
-              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
-#else
               return BOOST_PYTHON_CONVERSION::to_python(const_cast<char const *>(s.str())); 
 #endif
           }

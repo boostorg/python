@@ -38,11 +38,11 @@
     </ul>
     This last item typically occupies a great deal of code in an extension
     module. Remember that Python is a completely dynamic language. A callable
-    object receives its arguments in a tuple; it is up to that object to
-    extract those arguments from the tuple, check their types, and raise
-    appropriate exceptions. There are numerous other tedious details that need
-    to be managed; too many to mention here. Py_cpp is designed to lift most of
-    that burden.<br>
+    object receives its arguments in a tuple; it is up to that object to extract
+    those arguments from the tuple, check their types, and raise appropriate
+    exceptions. There are numerous other tedious details that need to be
+    managed; too many to mention here. The Boost Python Library is designed to
+    lift most of that burden.<br>
     <br>
      
     <p>
@@ -56,10 +56,10 @@
       sublcassing the extension type. Aside from being tedious, it's not really
       the same as having a true class, because there's no way for the user to
       override a method of the extension type which is called from the
-      extension module. Py_cpp solves this problem by taking advantage of <a
+      extension module. BPL solves this problem by taking advantage of <a
       href="http://www.python.org/doc/essays/metaclasses/">Python's metaclass
       feature</a> to provide objects which look, walk, and hiss almost exactly
-      like regular Python classes. Py_cpp classes are actually cleaner than
+      like regular Python classes. BPL classes are actually cleaner than
       Python classes in some subtle ways; a more detailed discussion will
       follow (someday).</p>
     <p>Next: <a href="comparisons.html">Comparisons with Other Systems</a> Up: <a
