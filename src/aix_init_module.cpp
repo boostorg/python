@@ -23,10 +23,20 @@ namespace boost { namespace python { namespace detail {
 
 namespace
 {
-  extern "C" void initlibbpl()
+  static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } };
+  extern "C" void initlibboost_python()
   {
-      static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } };
-      Py_InitModule("libbpl", initial_methods);
+      Py_InitModule("libbboost_python", initial_methods);
+  }
+
+  extern "C" void initlibboost_python_debug()
+  {
+      Py_InitModule("libbboost_python_debug", initial_methods);
+  }
+
+  extern "C" void initlibboost_python_pydebug()
+  {
+      Py_InitModule("libbboost_python_pydebug", initial_methods);
   }
 
   struct find_and_open_file
