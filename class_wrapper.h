@@ -36,14 +36,14 @@ class ClassWrapper
     // (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
     //                       py::left_operand<int const &>());
-    template <int which, class left, class right>
+    template <long which, class left, class right>
     void def(operators<which, right> o1, left_operand<left> o2)
         { m_class->def(o1, o2); }
 
     // export heterogeneous operators (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
     //                       py::right_operand<int const &>());
-    template <int which, class left, class right>
+    template <long which, class left, class right>
     void def(operators<which, left> o1, right_operand<right> o2)
         { m_class->def(o1, o2); }
 
