@@ -227,11 +227,38 @@ Both <tt>__getinitargs__</tt> and <tt>__getstate__</tt> are not defined.
 </ul>
 
 <hr>
-<h2>Example</h2>
+<h2>Examples</h2>
 
-An example that shows how to configure pickle support is available in the
-<tt>boost/lib/python/example</tt> directory
-(<tt>getting_started3.cpp</tt>).
+There are three files in <tt>boost/libs/python/example</tt> that
+show how so provide pickle support.
+
+<h3><a href="../example/pickle1.cpp"><tt>pickle1.cpp</tt></a></h3>
+
+    The C++ class in this example can be fully restored by passing the
+    appropriate argument to the constructor. Therefore it is sufficient
+    to define the pickle interface method <tt>__getinitargs__</tt>.
+
+<h3><a href="../example/pickle2.cpp"><tt>pickle2.cpp</tt></a></h3>
+
+    The C++ class in this example contains member data that cannot be
+    restored by any of the constructors. Therefore it is necessary to
+    provide the <tt>__getstate__</tt>/<tt>__setstate__</tt> pair of
+    pickle interface methods.
+
+    <p>
+    For simplicity, the <tt>__dict__</tt> is not included in the result
+    of <tt>__getstate__</tt>. This is not generally recommended, but a
+    valid approach if it is anticipated that the object's
+    <tt>__dict__</tt> will always be empty. Note that the safety guards
+    will catch the cases where this assumption is violated.
+
+<h3><a href="../example/pickle3.cpp"><tt>pickle3.cpp</tt></a></h3>
+
+    This example is similar to <a
+    href="../example/pickle2.cpp"><tt>pickle2.cpp</tt></a>. However, the
+    object's <tt>__dict__</tt> is included in the result of
+    <tt>__getstate__</tt>.  This requires more code but is unavoidable
+    if the object's <tt>__dict__</tt> is not always empty.
 
 <hr>
 &copy; Copyright Ralf W. Grosse-Kunstleve 2001. Permission to copy,
@@ -241,5 +268,5 @@ is" without express or implied warranty, and with no claim as to its
 suitability for any purpose.
 
 <p>
-Updated: March 10, 2001
+Updated: March 21, 2001
 </div>
