@@ -133,6 +133,21 @@ inline enum_&lt;T&gt;&amp; value(char const* name, T x);
 
     </dl>
 
+<pre>
+inline enum_&lt;T&gt;&amp; export_values();
+</pre>
+
+    <dl class="function-semantics">
+
+      <dt><b>Effects:</b> sets attributes in the current <a
+        href="scope.html#scope-spec"><code>scope</code></a> with the
+        same names and values as all enumeration values exposed so far
+        by calling <code>value()</code></dt>.
+
+      <dt><b>Returns:</b> <code>*this</code></dt>
+
+    </dl>
+
     <h2><a name="examples"></a>Example(s)</h2>
 
     <p>C++ module definition
@@ -152,6 +167,7 @@ BOOST_PYTHON_MODULE(enums)
     enum_&lt;color&gt;(&quot;color&quot;)
         .value(&quot;red&quot;, red)
         .value(&quot;green&quot;, green)
+        .export_values()
         .value(&quot;blue&quot;, blue)
         ;
     
@@ -162,11 +178,22 @@ BOOST_PYTHON_MODULE(enums)
 <pre>
 &gt;&gt;&gt; from enums import *
 
+&gt;&gt;&gt; identity(red)
+enums.color.red
+
 &gt;&gt;&gt; identity(color.red)
 enums.color.red
 
+&gt;&gt;&gt; identity(green)
+enums.color.green
+
 &gt;&gt;&gt; identity(color.green)
 enums.color.green
+
+&gt;&gt;&gt; identity(blue)
+Traceback (most recent call last):
+  File &quot;&lt;stdin&gt;&quot;, line 1, in ?
+NameError: name blue' is not defined
 
 &gt;&gt;&gt; identity(color.blue)
 enums.color.blue
