@@ -10,9 +10,23 @@
 
 namespace py {
 
+namespace {
+  Ptr name_holder;
+}
+
+String Module::name()
+{
+    // If this fails, you haven't created a Module object
+    assert(name_holder.get() != 0);
+    return String(name_holder);
+}
+
 Module::Module(const char* name)
     : m_module(Py_InitModule(const_cast<char*>(name), initial_methods))
 {
+    // If this fails, you've created more than 1 Module object in your module    
+    assert(name_holder.get() == 0);
+    name_holder = Ptr(PyObject_GetAttrString(m_module, "__name__"));
 }
 
 void
@@ -24,14 +38,13 @@ Module::add(Function* x, const char* name)
 
 void Module::add(Ptr x, const char* name)
 {
-	PyObject* dictionary = PyModule_GetDict( m_module );
+	PyObject* dictionary = PyModule_GetDict(m_module);
     PyDict_SetItemString(dictionary, const_cast<char*>(name), x.get());
 }
 
 void Module::add(PyTypeObject* x, const char* name /*= 0*/)
 {
-    this->add(Ptr(as_object(x)),
-        name ? name : x->tp_name);
+    this->add(Ptr(as_object(x)), name ? name : x->tp_name);
 }
 
 PyMethodDef Module::initial_methods[] = { { 0, 0, 0, 0 } };

@@ -11,6 +11,7 @@
 
 # include "pyconfig.h"
 # include "pyptr.h"
+# include "objects.h"
 # include "functions.h"
 
 namespace py {
@@ -19,13 +20,13 @@ class Module
 {
     typedef PyObject * (*RawFunctionPtr)(py::Tuple const &, py::Dict const &);
     
-public:
+ public:
+    // Create a module. REQUIRES: only one Module is created per module.
     Module(const char* name);
 
+    // Add elements to the module
     void add(Function* x, const char* name);
-    
     void add(PyTypeObject* x, const char* name = 0);
-    
     void add(Ptr x, const char*name);
 
     template <class Fn>
@@ -39,6 +40,9 @@ public:
     {
         add(new_wrapped_function(fn), name);
     }
+
+    static String name();
+    
  private:
     PyObject* m_module;
     static PyMethodDef initial_methods[1];
