@@ -316,7 +316,7 @@ namespace detail {
   extern const CapabilityEntry capabilities[];
   extern const std::size_t num_capabilities;
 
-  void add_capability(std::size_t index, PyTypeObject* dest, AllMethods&);
+  void add_capability(TypeObjectBase::Capability, PyTypeObject* dest, AllMethods&);
 
   class UniquePodSet
   {

@@ -533,7 +533,7 @@ const CapabilityEntry capabilities[] = {
   const std::size_t num_capabilities = PY_ARRAY_LENGTH(capabilities);
 
   void add_capability(
-      std::size_t n,
+      TypeObjectBase::Capability n,
       PyTypeObject* dest_,
       AllMethods& all_methods)
   {
