@@ -57,7 +57,7 @@
           special debugging version of the Python DLL. Since this debug DLL
           isn't supplied with the default Python installation for Windows,
           Boost.Python uses <tt><a href=
-          "../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a></tt>
+          "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a></tt>
           to temporarily undefine <tt>_DEBUG</tt> when <tt>Python.h</tt> is
           <tt>#include</tt>d.
 
@@ -77,7 +77,7 @@
 
           <p>If you do not <tt>#define BOOST_DEBUG_PYTHON</tt>, be sure that
           any source files <tt>#include &lt;<a href=
-          "../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a>&gt;</tt>
+          "../../../boost/python/detail/wrap_python.hpp">boost/python/detail/wrap_python.hpp</a>&gt;</tt>
           instead of the usual <tt>Python.h</tt>, or you will have link
           incompatibilities.<br>
           <br>
