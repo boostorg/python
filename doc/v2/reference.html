@@ -17,8 +17,8 @@
       <tr>
         <td valign="top" width="300">
           <h3><a href="http://www.boost.org"><img height="86" width=
-          "277" alt="C++ Boost" src="../../../../c++boost.gif" border="0">
-          </a></h3>
+          "277" alt="C++ Boost" src="../../../../c++boost.gif" border=
+          "0"></a></h3>
 
         <td valign="top">
           <h1 class="c1">Boost.Python</h1>
@@ -41,6 +41,9 @@
           <dt><a href="#models_of_call_policies">Models of
           CallPolicies</a>
 
+          <dt><a href="#models_of_result_converter">Models of
+          ResultConverter</a>
+
           <dt><a href="#result_converter_generators">Models of
           ResultConverterGenerator</a>
         </dl>
@@ -48,31 +51,31 @@
       <dt><a href="#type_conversion">To/From Python Type Conversion</a>
 
       <dt><a href="#utility">Utility and Infrastructure</a>
-
     </dl>
-<hr>
+    <hr>
     <!-- xxxxx -->
 
     <h2><a name="concepts">Concepts</a></h2>
-        <dl class="index">
-          <dt><a href=
-          "CallPolicies.html#CallPolicies-concept">CallPolicies</a>
 
-          <dt><a href=
-          "Dereferenceable.html#Dereferenceable-concept">Dereferenceable</a>
+    <dl class="index">
+      <dt><a href=
+      "CallPolicies.html#CallPolicies-concept">CallPolicies</a>
 
-          <dt><a href=
-          "Dereferenceable.html#Extractor-concept">Extractor</a>
+      <dt><a href=
+      "Dereferenceable.html#Dereferenceable-concept">Dereferenceable</a>
 
-          <dt><a href=
-          "HolderGenerator.html#HolderGenerator-concept">HolderGenerator</a>
+      <dt><a href=
+      "Dereferenceable.html#Extractor-concept">Extractor</a>
 
-          <dt><a href=
-          "ResultConverter.html#ResultConverter-concept">ResultConverter</a>
+      <dt><a href=
+      "HolderGenerator.html#HolderGenerator-concept">HolderGenerator</a>
 
-          <dt><a href= 
-          "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a>
-        </dl>
+      <dt><a href=
+      "ResultConverter.html#ResultConverter-concept">ResultConverter</a>
+
+      <dt><a href=
+      "ResultConverter.html#ResultConverterGenerator-concept">ResultConverterGenerator</a>
+    </dl>
 
     <h2><a name="high_level">High Level Components</a></h2>
 
@@ -330,6 +333,38 @@
                 </dl>
             </dl>
         </dl>
+        <a name="models_of_result_converter"></a> 
+
+        <h3>Models of ResultConverter</h3>
+
+        <dl class="index">
+          <dt><a href=
+          "to_python_indirect.html">to_python_indirect.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="to_python_indirect.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href= 
+                  "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
+                </dl>
+            </dl>
+
+          <dt><a href="to_python_value.html">to_python_value.hpp</a>
+
+          <dd>
+            <dl class="index">
+              <dt><a href="to_python_value.html#classes">Classes</a>
+
+              <dd>
+                <dl class="index">
+                  <dt><a href=
+                  "to_python_value.html#to_python_value-spec">to_python_value</a>
+                </dl>
+            </dl>
+        </dl>
         <a name="result_converter_generators"></a> 
 
         <h3>Models of ResultConverterGenerator</h3>
@@ -353,6 +388,7 @@
 
           <dt><a href=
           "copy_non_const_reference.html">copy_non_const_reference.hpp</a>
+
           <dd>
             <dl class="index">
               <dt><a href=
@@ -368,6 +404,7 @@
 
           <dt><a href=
           "manage_new_object.html">manage_new_object.hpp</a>
+
           <dd>
             <dl class="index">
               <dt><a href="manage_new_object.html#classes">Classes</a>
@@ -381,6 +418,7 @@
 
           <dt><a href=
           "reference_existing_object.html">reference_existing_object.hpp</a>
+
           <dd>
             <dl class="index">
               <dt><a href=
@@ -393,7 +431,6 @@
                   reference_existing_object</a>
                 </dl>
             </dl>
-
         </dl>
     </dl>
 
@@ -427,22 +464,24 @@
             </dl>
         </dl>
 
-          <dt><a href=
-          "lvalue_from_pytype.html">lvalue_from_pytype.hpp</a>
+      <dt><a href="lvalue_from_pytype.html">lvalue_from_pytype.hpp</a>
+
+      <dd>
+        <dl class="index">
+          <dt><a href="lvalue_from_pytype.html#classes">Classes</a>
+
           <dd>
             <dl class="index">
-              <dt><a href="lvalue_from_pytype.html#classes">Classes</a>
+              <dt><a href= 
+              "lvalue_from_pytype.html#lvalue_from_pytype-spec">lvalue_from_pytype</a>
 
-              <dd>
-                <dl class="index">
-                  <dt><a href= 
-                  "lvalue_from_pytype.html#lvalue_from_pytype-spec">lvalue_from_pytype</a>
-                  <dt><a href=
-                  "lvalue_from_pytype.html#extract_identity-spec">extract_identity</a>
-                  <dt><a href=
-                  "lvalue_from_pytype.html#extract_member-spec">extract_member</a>
-                </dl>
+              <dt><a href=
+              "lvalue_from_pytype.html#extract_identity-spec">extract_identity</a>
+
+              <dt><a href=
+              "lvalue_from_pytype.html#extract_member-spec">extract_member</a>
             </dl>
+        </dl>
 
       <dt><a href=
       "to_python_converter.html">to_python_converter.hpp</a>
@@ -458,42 +497,20 @@
             </dl>
         </dl>
 
-      <dt><a href="to_python_indirect.html">to_python_indirect.hpp</a>
-
-      <dd>
-        <dl class="index">
-          <dt><a href="to_python_indirect.html#classes">Classes</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href= 
-              "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>
-            </dl>
-        </dl>
-
-      <dt><a href="to_python_value.html">to_python_value.hpp</a>
-
-      <dd>
-        <dl class="index">
-          <dt><a href="to_python_value.html#classes">Classes</a>
-
-          <dd>
-            <dl class="index">
-              <dt><a href=
-              "to_python_value.html#to_python_value-spec">to_python_value</a>
-            </dl>
-        </dl>
-
       <dt><a href="lvalue_from_python.html">type_from_python.hpp</a>
+
       <dd>
         <dl class="index">
           <dt><a href="type_from_python.html#classes">Classes</a>
+
           <dd>
             <dl class="index">
               <dt><a href=
               "type_from_python.html#type_from_python-spec">type_from_python</a>
+
               <dt><a href=
               "type_from_python.html#identity_extractor-spec">identity_extractor</a>
+
               <dt><a href=
               "type_from_python.html#member_extractor-spec">member_extractor</a>
             </dl>
@@ -529,21 +546,18 @@
             </dl>
         </dl>
 
-        <dt><a href=
-        "instance_holder.html">instance_holder.hpp</a>
+      <dt><a href="instance_holder.html">instance_holder.hpp</a>
 
-        <dd>
-          <dl class="index">
-            <dt><a href=
-            "instance_holder.html#classes">Classes</a>
+      <dd>
+        <dl class="index">
+          <dt><a href="instance_holder.html#classes">Classes</a>
 
-            <dd>
-              <dl class="index">
-                <dt><a href= 
-                "instance_holder.html#instance_holder-spec">
-                instance_holder</a>
-              </dl>
-          </dl>
+          <dd>
+            <dl class="index">
+              <dt><a href=
+              "instance_holder.html#instance_holder-spec">instance_holder</a>
+            </dl>
+        </dl>
 
       <dt><a href="pointee.html">pointee.hpp</a>
 

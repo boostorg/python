@@ -146,7 +146,7 @@ struct tag_to_noddy
 
 BOOST_PYTHON_MODULE_INIT(to_python_converter)
 {
-    module to_python(&quot;to_python_converter&quot;)
+    module(&quot;to_python_converter&quot;)
         .def(&quot;make_tag&quot;, make_tag)
         ;
     to_python_converter&lt;tag, tag_to_noddy&gt;();
