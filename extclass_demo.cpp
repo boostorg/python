@@ -516,14 +516,14 @@ const char* call_overrideA1(const A1& a) { return a.overrideA1(); }
 const char* call_overrideB1(const B1& b) { return b.overrideB1(); }
 const char* call_inheritA1(const A1& a) { return a.inheritA1(); }
 
-auto_ptr<A1> factoryA1asA1() { return auto_ptr<A1>(new A1); }
-auto_ptr<A1> factoryB1asA1() { return auto_ptr<A1>(new B1); }
-auto_ptr<A1> factoryB2asA1() { return auto_ptr<A1>(new B2); }
-auto_ptr<A1> factoryCasA1() { return auto_ptr<A1>(new C); }
-auto_ptr<A2> factoryA2asA2() { return auto_ptr<A2>(new A2); }
-auto_ptr<A2> factoryB1asA2() { return auto_ptr<A2>(new B1); }
-auto_ptr<B1> factoryB1asB1() { return auto_ptr<B1>(new B1); }
-auto_ptr<B1> factoryCasB1() { return auto_ptr<B1>(new C); }
+std::auto_ptr<A1> factoryA1asA1() { return std::auto_ptr<A1>(new A1); }
+std::auto_ptr<A1> factoryB1asA1() { return std::auto_ptr<A1>(new B1); }
+std::auto_ptr<A1> factoryB2asA1() { return std::auto_ptr<A1>(new B2); }
+std::auto_ptr<A1> factoryCasA1() { return std::auto_ptr<A1>(new C); }
+std::auto_ptr<A2> factoryA2asA2() { return std::auto_ptr<A2>(new A2); }
+std::auto_ptr<A2> factoryB1asA2() { return std::auto_ptr<A2>(new B1); }
+std::auto_ptr<B1> factoryB1asB1() { return std::auto_ptr<B1>(new B1); }
+std::auto_ptr<B1> factoryCasB1() { return std::auto_ptr<B1>(new C); }
 
 struct B_callback : B1 {
    B_callback(PyObject* self) : m_self(self) {}
@@ -607,10 +607,14 @@ struct Fubar {
 
 /************************************************************/
 /*                                                          */
-/*                   This test from Mark Evans              */
+/* double tests from Mark Evans(<mark.evans@clarisay.com>)  */
 /*                                                          */
 /************************************************************/
 double sizelist(py::List list) { return list.size(); }
+void vd_push_back(std::vector<double>& vd, const double& x)
+{
+    vd.push_back(x);
+}
 
 /************************************************************/
 /*                                                          */
@@ -621,6 +625,10 @@ double sizelist(py::List list) { return list.size(); }
 void init_module(py::Module& m)
 {
     m.def(sizelist, "sizelist");
+    
+    py::ClassWrapper<std::vector<double> >  vector_double(m, "vector_double");
+    vector_double.def(py::Constructor<>());
+    vector_double.def(vd_push_back, "push_back");
     
     py::ClassWrapper<Fubar> fubar(m, "Fubar");
     fubar.def(py::Constructor<Foo&>());
