@@ -6,52 +6,18 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
-#include <boost/python/object/function_object.hpp>
-#include <boost/python/detail/module_base.hpp>
-#include <boost/python/cast.hpp>
 #include <boost/python/scope.hpp>
-#include <boost/python/borrowed.hpp>
-#include <boost/python/object.hpp>
-#include <boost/python/detail/raw_pyobject.hpp>
-#include <boost/python/scope.hpp>
+#include <boost/python/object/add_to_namespace.hpp>
 
 namespace boost { namespace python { namespace detail {
 
-module_base::module_base(char const* name, char const* doc)
-    : m_module(
-        allow_null(python::borrowed(
-                       scope().ptr()
-                       )))
-{
-    if (doc != 0)
-        scope().attr("__doc__") = doc;
-}
-
-module_base::~module_base()
-{
-}
-
-void module_base::setattr_doc(const char* name, python::object const& x, char const* doc)
-{
-    // Use function::add_to_namespace to achieve overloading if
-    // appropriate.
-    objects::add_to_namespace(python::object(m_module), name, x, doc);
-}
-
-void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& x, char const* doc)
+BOOST_PYTHON_DECL void scope_setattr_doc(char const* name, object const& x, char const* doc)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
     scope current;
     objects::add_to_namespace(current, name, x, doc);
 }
-
-void module_base::add(type_handle const& x)
-{
-    this->setattr_doc(x->tp_name, python::object(x), 0);
-}
-
-PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };
 
 namespace
 {
@@ -66,8 +32,6 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
 
     if (m != 0)
     {
-        ;
-        
         // Create the current module scope
         scope current_module(
             (object(
