@@ -51,7 +51,7 @@ inline PyObject* as_object(PyTypeObject* p) { return reinterpret_cast<PyObject*>
 // If I didn't have to support stupid MSVC6 we could just use a simple template function:
 // template <class T> T* downcast(PyObject*).
 template <class T>
-struct downcast : boost::dereferenceable<downcast<T>, T*>
+struct downcast
 {
     downcast(PyObject* p)
         : m_p(detail::downcast_traits<T>::cast(detail::as_base_object((T*)0, p)))
@@ -70,6 +70,11 @@ struct downcast : boost::dereferenceable<downcast<T>, T*>
         {}
     
     operator T*() const { return m_p; }
+
+    // MSVC doesn't like boost::dereferencable unless T has a default
+    // constructor, so operator-> must be defined by hand :(
+    T* operator->() const { return &**this; }
+    
     T* get() const { return m_p; }
     T& operator*() const { return *m_p; }
  private:

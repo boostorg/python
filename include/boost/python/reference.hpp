@@ -20,7 +20,7 @@
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-template <class T, class Value, class Base>
+template <class T, class Value, class Base = boost::detail::empty_base>
 struct py_ptr_conversions : Base
 {
     inline friend T from_python(PyObject* x, boost::python::type<const T&>)
@@ -42,8 +42,7 @@ BOOST_PYTHON_IMPORT_CONVERSION(py_ptr_conversions);
 
 template <class T>
 class reference
-	: public py_ptr_conversions<reference<T>, T,
-       boost::dereferenceable<reference<T>, T*> > // supplies op->
+	: public py_ptr_conversions<reference<T>, T>
 {
 public:
     typedef T value_type;
@@ -116,6 +115,10 @@ public:
 	}
 	
 	T& operator*() const { return *m_p; }
+    
+    // MSVC doesn't like boost::dereferencable unless T has a default
+    // constructor, so operator-> must be defined by hand :(
+    T* operator->() const { return &**this; } 
     
 	T* get() const { return m_p; }
 
