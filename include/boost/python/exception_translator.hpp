@@ -5,10 +5,11 @@
 // to its suitability for any purpose.
 #ifndef EXCEPTION_TRANSLATOR_DWA2002810_HPP
 # define EXCEPTION_TRANSLATOR_DWA2002810_HPP
+
+# include <boost/bind.hpp>
+# include <boost/type.hpp>
 # include <boost/python/detail/translate_exception.hpp>
 # include <boost/python/detail/exception_handler.hpp>
-# include <boost/type.hpp>
-# include <boost/bind.hpp>
 
 namespace boost { namespace python { 
 
