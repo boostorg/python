@@ -7,6 +7,7 @@
 //  producing this work.
 //
 // Revision History:
+// 05 Apr 01  added: from_python std::string type checking (rwgk)
 // 12 Mar 01  Python 1.5.2 fixes (Ralf W. Grosse-Kunstleve)
 // 11 Mar 01  std::string *MAY* include nulls (Alex Martelli)
 // 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
@@ -250,6 +251,10 @@ PyObject* to_python(const std::string& s)
 
 std::string from_python(PyObject* p, boost::python::type<std::string>)
 {
+    if (! PyString_Check(p)) {
+        PyErr_SetString(PyExc_TypeError, "expected a string");
+        throw boost::python::argument_error();
+    }
     return std::string(PyString_AsString(p), PyString_Size(p));
 }
 
