@@ -16,6 +16,7 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 
+#include <boost/python/detail/api_placeholder.hpp>
 #include <boost/python/detail/signature.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 
@@ -233,13 +234,13 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
     object message = "Python argument types in\n    %s.%s("
         % make_tuple(this->m_namespace, this->m_name);
     
-    list actual;
+    list actual_args;
     for (int i = 0; i < PyTuple_Size(args); ++i)
     {
         char const* name = PyTuple_GetItem(args, i)->ob_type->tp_name;
-        actual.append(str(name));
+        actual_args.append(str(name));
     }
-    message += str(", ").join(actual);
+    message += str(", ").join(actual_args);
     message += ")\ndid not match C++ signature:\n    ";
 
     list signatures;
@@ -248,27 +249,39 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
         py_function const& impl = f->m_fn;
         
         python::detail::signature_element const* s
-            = impl.signature();
+            = impl.signature() + 1; // skip over return type
         
-        list formal;
+        list formal_params;
         if (impl.max_arity() == 0)
-            formal.append("void");
+            formal_params.append("void");
 
-        for (unsigned n = 1; n <= impl.max_arity(); ++n)
+        for (unsigned n = 0; n < impl.max_arity(); ++n)
         {
             if (s[n].basename == 0)
             {
-                formal.append("...");
+                formal_params.append("...");
                 break;
             }
+
+            str param(s[n].basename);
+            if (s[n].lvalue)
+                param += " {lvalue}";
             
-            formal.append(
-                str(s[n].basename) + (s[n].lvalue ? " {lvalue}" : "")
-                );
+            if (f->m_arg_names) // None or empty tuple will test false
+            {
+                object kv(f->m_arg_names[n]);
+                if (kv)
+                {
+                    char const* const fmt = len(kv) > 1 ? " %s=%r" : " %s";
+                    param += fmt % kv;
+                }
+            }
+            
+            formal_params.append(param);
         }
 
         signatures.append(
-            "%s(%s)" % make_tuple(f->m_name, str(", ").join(formal))
+            "%s(%s)" % make_tuple(f->m_name, str(", ").join(formal_params))
             );
     }
 
