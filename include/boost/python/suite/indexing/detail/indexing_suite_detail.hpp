@@ -98,7 +98,7 @@ namespace boost { namespace python { namespace detail {
         {
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Erase the proxy with index i 
-            replace(i, i, 0);
+            replace(i, i+1, 0);
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
 
@@ -109,9 +109,14 @@ namespace boost { namespace python { namespace detail {
             // Erase the proxy with index i 
             
             iterator iter = first_proxy(i);
-            if (iter != proxies.end()
-                && extract<Proxy&>(*iter)().get_index() == i)
+            extract<Proxy&> p(*iter);
+            
+            if (iter != proxies.end() && p().get_index() == i)
+            {
+                extract<Proxy&> p(*iter);
+                p().detach();
                 proxies.erase(iter);
+            }
             BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
 
@@ -214,6 +219,17 @@ namespace boost { namespace python { namespace detail {
                     PyErr_SetString(PyExc_RuntimeError, 
                         "Invariant: Proxy vector in an inconsistent state");
                     throw_error_already_set();
+                }
+                
+                if (i+1 != proxies.end())
+                {
+                    if (extract<Proxy&>(*(i+1))().get_index() ==
+                        extract<Proxy&>(*(i))().get_index())
+                    {
+                        PyErr_SetString(PyExc_RuntimeError, 
+                            "Invariant: Proxy vector in an inconsistent state (duplicate proxy)");
+                        throw_error_already_set();
+                    }
                 }
             }
         }

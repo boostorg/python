@@ -64,30 +64,32 @@ namespace boost { namespace python {
         typedef typename Container::size_type size_type;
         typedef typename Container::difference_type difference_type;
         
-//         template <class Class>
-//         static void 
-//         extension_def(Class& cl)
-//         {
+        template <class Class>
+        static void 
+        extension_def(Class& cl)
+        {
 //             cl
 //                 .def("append", &base_append)
 //                 .def("extend", &base_extend)
 //             ;
-//         }
+        }
         
         static data_type& 
         get_item(Container& container, index_type i_)
         { 
             typename Container::iterator i = container.find(i_);
-            key_check(container, i);
+            if (i == container.end())
+            {
+                PyErr_SetString(PyExc_KeyError, "Invalid key");
+                throw_error_already_set();
+            }
             return i->second;
         }
 
         static void 
-        set_item(Container& container, index_type i_, data_type const& v)
+        set_item(Container& container, index_type i, data_type const& v)
         { 
-            typename Container::iterator i = container.find(i_);
-            key_check(container, i);
-            i->second = v;
+            container[i] = v;
         }
 
         static void 
@@ -132,18 +134,6 @@ namespace boost { namespace python {
             PyErr_SetString(PyExc_TypeError, "Invalid index type");
             throw_error_already_set();
             return index_type();
-        }
-
-    private:
-
-        static void
-        key_check(Container& container, typename Container::iterator i)
-        {
-            if (i == container.end())
-            {
-                PyErr_SetString(PyExc_KeyError, "Invalid key");
-                throw_error_already_set();
-            }
         }
     };
        
