@@ -102,7 +102,7 @@ template <
     >
 class class_ : public objects::class_base
 {
- private: // types
+ public: // types
    typedef objects::class_base base;
 
     typedef class_<T,X1,X2,X3> self;
@@ -116,11 +116,14 @@ class class_ : public objects::class_base
 
     typedef objects::select_holder<T,held_type> holder_selector;
 
+ private:
+
     typedef typename detail::select_bases<X1
             , typename detail::select_bases<X2
               , typename boost::python::detail::select_bases<X3>::type
               >::type
             >::type bases;
+
 
     // A helper class which will contain an array of id objects to be
     // passed to the base class constructor
@@ -221,42 +224,6 @@ class class_ : public objects::class_base
     {
         typedef detail::operator_<id,L,R> op_t;
         return this->def(op.name(), &op_t::template apply<T>::execute);
-    }
-
-    // Define the constructor with the given Args, which should be an
-    // MPL sequence of types.
-    template <class Args>
-    self& def_init(Args const&)
-    {
-        return this->def("__init__",
-            python::make_constructor<Args>(
-                // Using runtime type selection works around a CWPro7 bug.
-                holder_selector::execute((held_type*)0).get()
-                )
-            );
-    }
-
-    template <class Args, class CallPolicyOrDoc>
-    self& def_init(Args const&, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
-    {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
-
-        return this->def(
-            "__init__",
-            python::make_constructor<Args>(
-                helper::get_policy(policy_or_doc)
-                // Using runtime type selection works around a CWPro7 bug.
-                , holder_selector::execute((held_type*)0).get()
-                )
-            , helper::get_doc(policy_or_doc, doc)
-            );
-    }
-
-    // Define the default constructor.
-    self& def_init()
-    {
-        this->def_init(mpl::list0<>::type());
-        return *this;
     }
 
     //
@@ -400,7 +367,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
 {
     this->register_();
     detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
-    this->def_init();
+    this->def(init<>());
     this->set_instance_size(holder_selector::additional_size());
 }
 

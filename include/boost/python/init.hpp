@@ -269,7 +269,15 @@ namespace detail
           , mpl::push_front<>
           >::type args;
 
-      cl.def_init(args(), policies, doc);
+      cl.def(
+            "__init__",
+            python::make_constructor<args>(
+                policies
+                // Using runtime type selection works around a CWPro7 bug.
+                , ClassT::holder_selector::execute((ClassT::held_type*)0).get()
+                )
+            , doc
+            );
   }
 
   ///////////////////////////////////////////////////////////////////////////////
