@@ -13,7 +13,7 @@ namespace boost { namespace python { namespace api {
 template <class U>
 object object_operators<U>::operator()() const
 {
-    object const& f = *static_cast<U const*>(this);
+    object_cref2 f = *static_cast<U const*>(this);
     return call<object>(f.ptr());
 }
 
@@ -22,7 +22,7 @@ template <class U>
 inline
 object_operators<U>::operator bool_type() const
 {
-    object const& x = *static_cast<U const*>(this);
+    object_cref2 x = *static_cast<U const*>(this);
     return PyObject_IsTrue(x.ptr()) ? &object::ptr : 0;
 }
 
@@ -30,7 +30,7 @@ template <class U>
 inline bool
 object_operators<U>::operator!() const
 {
-    object const& x = *static_cast<U const*>(this);
+    object_cref2 x = *static_cast<U const*>(this);
     return !PyObject_IsTrue(x.ptr());
 }
 
