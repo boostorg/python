@@ -104,11 +104,11 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t)
     if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
-    if (get_pointer(this->m_p) == 0)
+    Value* p = get_pointer(this->m_p);
+    if (p == 0)
         return 0;
     
     type_info src_t = python::type_id<Value>();
-    Value* p = &*this->m_p;
     return src_t == dst_t ? p : find_dynamic_type(p, src_t, dst_t);
 }
 
@@ -121,11 +121,12 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
     if (!get_pointer(this->m_p))
         return 0;
     
+    Value* p = get_pointer(m_p);
+    
     if (dst_t == python::type_id<held_type>())
-        return &*this->m_p;
+        return p;
 
     type_info src_t = python::type_id<Value>();
-    Value* p = &*this->m_p;
     return src_t == dst_t ? p : find_dynamic_type(p, src_t, dst_t);
 }
 
