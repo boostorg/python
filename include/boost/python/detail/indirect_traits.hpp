@@ -176,15 +176,6 @@ template <class T>
 struct is_reference_to_class
     : mpl::and_<
           is_reference<T>
-#   if 0 && BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-        , mpl::not_<
-              is_enum<
-                  typename remove_cv<
-                      typename remove_reference<T>::type
-                  >::type
-              >
-          >
-#   endif 
         , is_class<
               typename remove_cv<
                   typename remove_reference<T>::type
@@ -198,15 +189,6 @@ template <class T>
 struct is_pointer_to_class
     : mpl::and_<
           is_pointer<T>
-#   if 0 && BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-        , mpl::not_<
-              is_enum<
-                  typename remove_cv<
-                      typename remove_pointer<T>::type
-                  >::type
-              >
-          >
-#   endif 
         , is_class<
               typename remove_cv<
                   typename remove_pointer<T>::type
