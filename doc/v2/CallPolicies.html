@@ -20,6 +20,7 @@
 <hr>
 <dl class="page-index"> 
   <dt><a href="#introduction">Introduction</a></dt>
+  <dt><a href="#composition">CallPolicies Composition</a></dt>
   <dt><a href="#concept-requirements">Concept Requirements</a></dt>
   <dl class="page-index"> 
     <dt><a href="#CallPolicies-concept">CallPolicies Concept</a></dt>
@@ -39,6 +40,26 @@ the wrapped object is invoked
 <li> <code>postcall</code> - Python argument tuple and result
 management after the wrapped object is invoked
 </ol>
+
+<h2><a name="composition"></a>CallPolicies Composition</h2>
+
+In order to allow the use of multiple models of CallPolicies in the
+same callable object, Boost.Python's CallPolicies class templates
+provide a chaining interface which allows them to be recursively
+composed. This interface takes the form of an optional template
+parameter, <code>Base</code> which defaults to <a
+href="default_call_policies.html#default_call_policies-spec">
+<code>default_call_policies</code></a>.  By convention, the
+<code>precall</code> function of the
+<code>Base</code> is invoked <i>after</i> the <code>precall</code>
+function supplied by the outer template, and the <code>postcall</code>
+function of the <code>Base</code> is invoked <i>before</i> the
+<code>postcall</code> function of the outer template. If a
+<code>result_converter</code> is supplied by the outer template, it
+<i>replaces</i> any <code>result_converter</code> supplied by the
+<code>Base</code>. For an example, see <a
+href="return_internal_reference.html#return_internal_reference-spec">
+<code>return_internal_reference</code></a>.
 
 <h2><a name="concept-requirements"></a>Concept Requirements</h2>
 <h3><a name="CallPolicies-concept"></a>CallPolicies Concept</h3>
