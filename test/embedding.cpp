@@ -105,7 +105,7 @@ void test()
     // as easy!
     python::object py_base = PythonDerived();
     Base& py = python::extract<Base&>(py_base)
-#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(BOOST_INTEL_WIN, <= 800)
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300) || BOOST_WORKAROUND(BOOST_INTEL_WIN, <= 810)
         ()
 #endif 
         ;
