@@ -63,7 +63,7 @@
     <h2><a name="introduction"></a>Introduction</h2>
 
     <p><code>&lt;boost/python/has_back_reference.hpp&gt;</code> defines the
-    traits class template <code>has_back_reference&lt;&gt;</code>, which can
+    predicate metafunction <code>has_back_reference&lt;&gt;</code>, which can
     be specialized by the user to indicate that a wrapped class instance
     holds a <code>PyObject*</code> corresponding to a Python object.</p>
 
@@ -82,28 +82,34 @@ namespace boost { namespace python
 {
     template&lt;class WrappedClass&gt; class has_back_reference
     { 
-        static <i>unspecified</i> value = false;
+        typedef <i>unspecified</i> type;
     };
 }}
 </pre>
-
-    <p>A "<a href="../../../../more/generic_programming.html#traits">traits
-    class</a>" which is inspected by Boost.Python to determine how wrapped
-    classes can be constructed.</p>
+    <p>A "<a href="../../../mpl/doc/paper/html/usage.html#metafunctions">
+    metafunction</a>" which is inspected by Boost.Python to determine how 
+    wrapped classes can be constructed.</p>
 
     <dl class="traits-semantics">
-      <dt><code>value</code> is an integral constant convertible to bool of
-      unspecified type.</dt>
+      <dt><code>type::value</code> is an integral constant convertible to bool
+      of unspecified type.</dt>
 
-      <dt>Specializations may substitute a value convertible to
-      <code>true</code> for <code>value</code> iff for each invocation of
-      <code>class_&lt;WrappedClass&gt;::def(init&lt;</code><i>type-sequence...</i><code>
-      &gt;())</code>, there exists a corresponding constructor
-      <code>WrappedClass::WrappedClass(PyObject*,&nbsp;</code><i>type-sequence...</i>
-      <code>)</code>. If such a specialization exists, the
-      <code>WrappedClass</code> constructors will be called with a "back
+      <dt>Specializations may substitute a typedef with a nested 
+      <code>value</code> convertible to
+      <code>true</code> for <code>type</code> iff for each invocation of
+      <code>class_&lt;WrappedClass&gt;::def(init&lt;</code>
+      <i>type-sequence...</i><code>&gt;())</code> and the implicitly provided
+      copy constructor (unless it is <a href="class.html#class_-spec">
+      noncopyable</a>), there exists a corresponding constructor 
+      <code>WrappedClass::WrappedClass(PyObject*,&nbsp;</code>
+      <i>type-sequence...</i><code>)</code>. If such a specialization exists,
+      the <code>WrappedClass</code> constructors will be called with a "back
       reference" pointer to the corresponding Python object whenever they are
-      invoked from Python.</dt>
+      invoked from Python. The easiest way to provide this typedef is to 
+      inherit from <code>mpl::true_</code>, or to 
+      <code>typedef mpl::true_ type</code>. Alternatively, the specialization
+      may provide its own metafunction.
+      </dt>
     </dl>
 
     <h2><a name="examples"></a>Example</h2>
@@ -117,18 +123,20 @@ namespace boost { namespace python
 #include &lt;boost/shared_ptr.hpp&gt;
 
 using namespace boost::python;
+using boost::shared_ptr;
 
 struct X
 {
     X(PyObject* self) : m_self(self), m_x(0) {}
     X(PyObject* self, int x) : m_self(self), m_x(x) {}
+    X(PyObject* self, X const& other) : m_self(self), m_x(other.m_x) {}
     
     handle&lt;&gt; self() { return handle&lt;&gt;(borrowed(m_self)); }
     int get() { return m_x; }
     void set(int x) { m_x = x; }
 
     PyObject* m_self;
-    int x;
+    int m_x;
 };
 
 // specialize has_back_reference for X
@@ -137,8 +145,8 @@ namespace boost { namespace python
   template &lt;&gt;
   struct has_back_reference&lt;X&gt;
   {
-     enum { value = true; }
-  }
+     typedef mpl::true_ type;
+  };
 }}
 
 struct Y
@@ -148,10 +156,11 @@ struct Y
     int get() { return m_x; }
     void set(int x) { m_x = x; }
 
-    int x;
+    int m_x;
 };
 
-boost::shared_ptr&lt;Y&gt; Y_self(boost::shared_ptr&lt;Y&gt; self) const { return self; }
+boost::shared_ptr&lt;Y&gt; 
+Y_self(boost::shared_ptr&lt;Y&gt; self) { return self; }
 
 BOOST_PYTHON_MODULE(back_references)
 {
