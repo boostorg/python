@@ -23,12 +23,12 @@ namespace detail
     {
         if (converters.to_python == 0)
         {
+            handle<> msg(
+                ::PyString_FromFormat(
+                    "No to_python (by-value) converter found for C++ type: %s"
+                    , converters.target_type.name()));
             
-            PyErr_SetObject(
-                PyExc_TypeError
-                , (object("no to_python (by-value) converter found for C++ type: ")
-                   + converters.target_type.name()).ptr()
-                );
+            PyErr_SetObject(PyExc_TypeError, msg.get());
 
             throw_error_already_set();
         }
@@ -56,23 +56,27 @@ namespace detail
       handle<> holder(source);
       if (source->ob_refcnt <= 2)
       {
-          PyErr_SetObject(
-              PyExc_ReferenceError
-              , (object("Attempt to return dangling pointer/reference to object of type ")
-                 + converters.target_type.name()).ptr()
-              );
+          handle<> msg(
+              ::PyString_FromFormat(
+                  "Attempt to return dangling pointer/reference to object of type: %s"
+                  , converters.target_type.name()));
+          
+          PyErr_SetObject(PyExc_ReferenceError, msg.get());
+
           throw_error_already_set();
       }
       void* result = get_lvalue_from_python(source, converters);
       if (!result)
       {
           handle<> repr(PyObject_Repr(source));
-          PyErr_SetObject(
-              PyExc_TypeError
-              , (object("no registered converter was able to convert ")
-                 + repr + " to a C++ lvalue of type "
-                 + converters.target_type.name()).ptr()
-              );
+          handle<> msg(
+              ::PyString_FromFormat(
+                  "No registered converter was able to convert %s to a C++ lvalue of type %s"
+                  , PyString_AS_STRING(repr.get())
+                  , converters.target_type.name()));
+              
+          PyErr_SetObject(PyExc_TypeError, msg.get());
+
           throw_error_already_set();
       }
       return result;
