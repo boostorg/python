@@ -29,10 +29,46 @@
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
 
+// For exception safety tests
+struct throwing_int : public int_wrapper {
+  static bool our_throw_flag;
+
+  throwing_int () : int_wrapper () { }
+  explicit throwing_int (int p) : int_wrapper (p) { }
+
+  throwing_int (throwing_int const &other)
+    : int_wrapper (other)
+  {
+    maybe_throw ();
+  }
+
+  throwing_int &operator= (throwing_int const &other)
+  {
+    int_wrapper::operator= (other);
+    maybe_throw ();
+    return *this;
+  }
+
+private:
+  void maybe_throw () const
+  {
+    if (our_throw_flag)
+      {
+        if (our_trace_flag) {
+          printf ("throwing a bool\n");
+        }
+
+        throw our_throw_flag;
+      }
+  }
+};
+
+bool throwing_int::our_throw_flag = false;
+
 #if !BOOST_WORKAROUND (BOOST_MSVC, <= 1300)
 // Works with element_proxy instances because of the reference
 // conversion operator
-static void increment (int_wrapper &int_wrap, int val) {
+static void increment (throwing_int &int_wrap, int val) {
   int_wrap.increment (val);
 }
 #else
@@ -52,41 +88,41 @@ void initial_tests (ProxyContainer &proxy_container)
   BOOST_CHECK (proxy_container.size() == 4);
   BOOST_CHECK (proxy_container.is_valid());
 
-  proxy_container.insert (proxy_container.begin(), int_wrapper (1));
+  proxy_container.insert (proxy_container.begin(), throwing_int (1));
 
   reference ref0 (proxy_container[0]);
   BOOST_CHECK (ref0.use_count() == 2);
-  BOOST_CHECK (ref0 == int_wrapper (1));
+  BOOST_CHECK (ref0 == throwing_int (1));
 
-  proxy_container.insert (proxy_container.begin(), int_wrapper (2));
+  proxy_container.insert (proxy_container.begin(), throwing_int (2));
   BOOST_CHECK (proxy_container.is_valid());
 
   BOOST_CHECK (ref0.use_count() == 2);
-  BOOST_CHECK (ref0 == int_wrapper (1));
-  BOOST_CHECK (proxy_container[0] == int_wrapper (2));
+  BOOST_CHECK (ref0 == throwing_int (1));
+  BOOST_CHECK (proxy_container[0] == throwing_int (2));
 
   proxy_container.swap_elements (0, 1);
   BOOST_CHECK (proxy_container.is_valid());
 
   BOOST_CHECK (ref0.use_count() == 2);
-  BOOST_CHECK (ref0 == int_wrapper (1));
-  BOOST_CHECK (proxy_container[1] == int_wrapper (2));
+  BOOST_CHECK (ref0 == throwing_int (1));
+  BOOST_CHECK (proxy_container[1] == throwing_int (2));
 
   proxy_container.swap_elements (0, 1);
   proxy_container.erase (proxy_container.begin());
   BOOST_CHECK (proxy_container.is_valid());
 
   BOOST_CHECK (ref0.use_count() == 2);
-  increment (proxy_container[0], 2);
-  BOOST_CHECK (ref0 == int_wrapper (3));
-  BOOST_CHECK (proxy_container[0] == int_wrapper (3));
+  ::increment (proxy_container[0], 2);
+  BOOST_CHECK (ref0 == throwing_int (3));
+  BOOST_CHECK (proxy_container[0] == throwing_int (3));
 
   proxy_container.erase (proxy_container.begin());
   BOOST_CHECK (proxy_container.is_valid());
 
   BOOST_CHECK (ref0.use_count() == 1);
-  BOOST_CHECK (ref0 == int_wrapper (3));
-  BOOST_CHECK (proxy_container[0] == int_wrapper ());
+  BOOST_CHECK (ref0 == throwing_int (3));
+  BOOST_CHECK (proxy_container[0] == throwing_int ());
 
   BOOST_CHECK (proxy_container.size() == 4);
   BOOST_CHECK (proxy_container.is_valid());
@@ -114,10 +150,10 @@ void test_direct_proxy ()
 
     reference ref0 ((*proxy_auto_p)[0]);
     reference refn ((*proxy_auto_p)[proxy_auto_p->size() - 1]);
-    increment (ref0, 5);
-    increment (refn, 10);
-    BOOST_CHECK (ref0 == int_wrapper (5));
-    BOOST_CHECK (refn == int_wrapper (10));
+    ::increment (ref0, 5);
+    ::increment (refn, 10);
+    BOOST_CHECK (ref0 == throwing_int (5));
+    BOOST_CHECK (refn == throwing_int (10));
     BOOST_CHECK (ref0.use_count() == 2);
     BOOST_CHECK (refn.use_count() == 2);
 
@@ -126,8 +162,8 @@ void test_direct_proxy ()
 
     BOOST_CHECK (ref0.use_count() == 1);  // Detached
     BOOST_CHECK (refn.use_count() == 1);  // Detached
-    BOOST_CHECK (ref0 == int_wrapper (5));   // Value copied
-    BOOST_CHECK (refn == int_wrapper (10));  // Value copied
+    BOOST_CHECK (ref0 == throwing_int (5));   // Value copied
+    BOOST_CHECK (refn == throwing_int (10));  // Value copied
   }
 
   {
@@ -139,9 +175,9 @@ void test_direct_proxy ()
     BOOST_CHECK (proxy_container.size() == raw_container.size());
 
     reference ref1 (proxy_container[1]);
-    increment (ref1, 5);
+    ::increment (ref1, 5);
     proxy_container_type temp;
-    temp.push_back (int_wrapper (10));
+    temp.push_back (throwing_int (10));
     reference ref2 (temp[0]);
 
     proxy_container = temp;  // Use assignment operator
@@ -149,10 +185,40 @@ void test_direct_proxy ()
     BOOST_CHECK (proxy_container.is_valid());
     BOOST_CHECK (temp.is_valid());
     BOOST_CHECK (ref2.use_count() == 2);
-    BOOST_CHECK (ref2 == int_wrapper (10));
-    BOOST_CHECK (proxy_container[0] == int_wrapper (10));
+    BOOST_CHECK (ref2 == throwing_int (10));
+    BOOST_CHECK (proxy_container[0] == throwing_int (10));
     BOOST_CHECK (ref1.use_count() == 1);
-    BOOST_CHECK (ref1 == int_wrapper (5));
+    BOOST_CHECK (ref1 == throwing_int (5));
+  }
+
+  {
+    // Very basic check on exception safety of assignment operator. A
+    // better test would cause an exception during the allocation of
+    // proxies, maybe by using the Generator parameter to install a
+    // container with a throwing allocator.
+
+    proxy_container_type temp1;
+    proxy_container_type temp2;
+    temp1.push_back (throwing_int (10));
+    temp2.push_back (throwing_int (20));
+
+    throwing_int::our_throw_flag = true;
+
+    try
+      {
+        temp1 = temp2; // Should throw
+        BOOST_ERROR ("No exception thrown from assignment");
+      }
+    catch (bool)
+      {
+        // Container contents unchanged
+        BOOST_CHECK (temp1.is_valid());
+        BOOST_CHECK (temp2.is_valid());
+        BOOST_CHECK (temp1[0] == throwing_int (10));
+        BOOST_CHECK (temp2[0] == throwing_int (20));
+      }
+
+    throwing_int::our_throw_flag = false;
   }
 }
 
@@ -180,39 +246,39 @@ void test_indirect_proxy ()
 
   reference ref2 (proxy_container[2]);
   BOOST_CHECK (ref2.use_count() == 2);   // Still attached
-  increment (proxy_container[2], 5);
-  BOOST_CHECK (ref2 == int_wrapper (5));
+  ::increment (proxy_container[2], 5);
+  BOOST_CHECK (ref2 == throwing_int (5));
 
   // Notify proxy of insert in raw container (*after* insert)
-  raw_container.insert (raw_container.begin(), int_wrapper(7));
+  raw_container.insert (raw_container.begin(), throwing_int(7));
   proxy_container.notify_insertion (0, 1);
   BOOST_CHECK (proxy_container.is_valid());
   BOOST_CHECK (ref2.use_count() == 2);   // Still attached
-  increment (proxy_container[3], 5);
-  BOOST_CHECK (ref2 == int_wrapper (10));
+  ::increment (proxy_container[3], 5);
+  BOOST_CHECK (ref2 == throwing_int (10));
 
   // Create reference to about-to-be-erased value
   reference ref0 (proxy_container[0]);
   BOOST_CHECK (ref0.use_count() == 2);
-  BOOST_CHECK (ref0 == int_wrapper (7));
+  BOOST_CHECK (ref0 == throwing_int (7));
 
   // Notify proxy of erase in raw container (*before* erase)
   proxy_container.prepare_erase (0, 2);
   raw_container.erase (raw_container.begin(), raw_container.begin() + 2);
   BOOST_CHECK (proxy_container.is_valid());
   BOOST_CHECK (ref0.use_count() == 1);  // Ref to erased value detached
-  BOOST_CHECK (ref0 == int_wrapper (7)); // Value copied before erase
+  BOOST_CHECK (ref0 == throwing_int (7)); // Value copied before erase
   BOOST_CHECK (ref2.use_count() == 2);  // Other ref still attached
-  increment (proxy_container[1], 5);
-  BOOST_CHECK (ref2 == int_wrapper (15));
+  ::increment (proxy_container[1], 5);
+  BOOST_CHECK (ref2 == throwing_int (15));
 
   // Notify proxy of replacement in raw container (*before* assignment)
   proxy_container.detach_proxy (1);
-  raw_container[1] = int_wrapper (4);
+  raw_container[1] = throwing_int (4);
   BOOST_CHECK (proxy_container.is_valid());
-  BOOST_CHECK (proxy_container[1] == int_wrapper (4)); // New value installed
+  BOOST_CHECK (proxy_container[1] == throwing_int (4)); // New value installed
   BOOST_CHECK (ref2.use_count() == 1);  // Ref is detached
-  BOOST_CHECK (ref2 == int_wrapper (15)); // Value copied before overwrite
+  BOOST_CHECK (ref2 == throwing_int (15)); // Value copied before overwrite
 }
 
 template<typename RawContainer, typename Generator>
@@ -232,15 +298,15 @@ struct deque_generator {
 };
 
 // Make the indirect holders work with broken compilers
-BOOST_TT_BROKEN_COMPILER_SPEC (std::vector<int_wrapper>)
-BOOST_TT_BROKEN_COMPILER_SPEC (std::deque<int_wrapper>)
+BOOST_TT_BROKEN_COMPILER_SPEC (std::vector<throwing_int>)
+BOOST_TT_BROKEN_COMPILER_SPEC (std::deque<throwing_int>)
 
 int test_main (int argc, char *argv[])
 {
   namespace indexing = boost::python::indexing;
 
-  int_wrapper::setTrace (false);
-  test_proxy<std::vector<int_wrapper>, indexing::vector_generator>();
-  test_proxy<std::deque<int_wrapper>, ::deque_generator>();
+  throwing_int::setTrace (false);
+  test_proxy<std::vector<throwing_int>, indexing::vector_generator>();
+  test_proxy<std::deque<throwing_int>, ::deque_generator>();
   return 0;
 }
