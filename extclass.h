@@ -89,9 +89,7 @@ class ExtensionClassBase : public Class<ExtensionInstance>
 
  protected:
     void add_method(PyPtr<Function> method, const char* name);
-    void add_default_method(PyPtr<Function> method, const char* name);
     void add_method(Function* method, const char* name);
-    void add_default_method(Function* method, const char* name);
     
     void add_constructor_object(Function*);
     void add_setter_method(Function*, const char* name);
@@ -139,18 +137,18 @@ class PyExtensionClassConverters
     // not copyable? Apparently there is no problem with g++ or MSVC unless this
     // is actually used. With a conforming compiler we will have a problem.
     friend PyObject* to_python(const T& x)
-        {
-            py::PyPtr<py::ExtensionInstance> result(create_instance(false));
-            result->add_implementation(
-                std::auto_ptr<py::InstanceHolderBase>(
-                    new py::InstanceValueHolder<T,U>(result.get(), x)));
-            return result.release();
-        }
+    {
+        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        result->add_implementation(
+            std::auto_ptr<py::InstanceHolderBase>(
+                new py::InstanceValueHolder<T,U>(result.get(), x)));
+        return result.release();
+    }
 #else
     friend py::Type<U> py_holder_type(const T&)
         { return py::Type<U>(); }
 #endif
-    
+
     // Convert to T*
     friend T* from_python(PyObject* obj, py::Type<T*>)
     {
@@ -194,27 +192,23 @@ class PyExtensionClassConverters
 
     template <class PtrType>
     static PyObject* ptr_to_python(PtrType x)
-        {
-            py::PyPtr<py::ExtensionInstance> result(create_instance(true));
-            result->add_implementation(
-                std::auto_ptr<py::InstanceHolderBase>(
-                    new py::InstancePtrHolder<PtrType,T>(x)));
-            return result.release();
-        }
+    {
+        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        result->add_implementation(
+            std::auto_ptr<py::InstanceHolderBase>(
+                new py::InstancePtrHolder<PtrType,T>(x)));
+        return result.release();
+    }
 
-    static py::PyPtr<py::ExtensionInstance> create_instance(bool seek_base)
-        {
-            if (py::ClassRegistry<T>::class_object() == 0)
-                py::report_missing_class_object(typeid(T));
+    static py::PyPtr<py::ExtensionInstance> create_instance()
+    {
+        PyTypeObject* class_object = py::ClassRegistry<T>::class_object();
+        if (class_object == 0)
+            py::report_missing_class_object(typeid(T));
             
-            py::Class<py::ExtensionInstance>* class_
-                = seek_base && py::ClassRegistry<T>::class_object()->bases().size() > 0
-                ? py::Downcast<py::Class<py::ExtensionInstance> >(
-                    py::ClassRegistry<T>::class_object()->bases()[0].get()).get()
-                : py::ClassRegistry<T>::class_object();
-            
-            return py::PyPtr<py::ExtensionInstance>(new py::ExtensionInstance(class_));
-        }
+        return py::PyPtr<py::ExtensionInstance>(
+            new py::ExtensionInstance(class_object));
+    }
 
     // Convert to const T*
     friend const T* from_python(PyObject* p, py::Type<const T*>)
@@ -374,8 +368,7 @@ class ExtensionClass
     template <class Fn, class DefaultFn>
     void def(Fn fn, const char* name, DefaultFn default_fn)
     {
-        this->add_default_method(new_wrapped_function(default_fn), name);
-        this->add_method(new_wrapped_function(fn), name);
+        this->add_method(py::detail::new_virtual_function(Type<T>(), fn, default_fn), name);
     }
 
     // Provide a function which implements x.<name>, reading from the given
@@ -420,11 +413,8 @@ class ExtensionClass
         detail::BaseClassInfo baseInfo(base, 
                             &detail::DefineConversion<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
-        
-        Class<ExtensionInstance>* target = (bases().size() == 0)
-            ? this
-            : Downcast<Class<ExtensionInstance> >(bases()[0].get()).get();
-        target->add_base(Ptr(as_object(base), Ptr::new_ref));
+
+        this->add_base(Ptr(as_object(base), Ptr::new_ref));
         
         detail::DerivedClassInfo derivedInfo(this, 
                             &detail::DefineConversion<T, S>::upcast_ptr);
@@ -441,11 +431,7 @@ class ExtensionClass
         detail::BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
 
-        Class<ExtensionInstance>* target = (bases().size() == 0)
-            ? this
-            : Downcast<Class<ExtensionInstance> >(bases()[0].get()).get();
-        target->add_base(Ptr(as_object(base), Ptr::new_ref));
-        
+        this->add_base(Ptr(as_object(base), Ptr::new_ref));
         
         detail::DerivedClassInfo derivedInfo(this, 
                            &detail::DefineConversion<T, S>::upcast_ptr);
@@ -476,34 +462,44 @@ class HeldInstance : public T
     // There are no member functions: we want to avoid inadvertently overriding
     // any virtual functions in T.
 public:
-    HeldInstance(PyObject* p) : T(), m_self(p) {}
+    HeldInstance(PyObject*) : T() {}
     template <class A1>
-    HeldInstance(PyObject* p, A1 a1) : T(a1), m_self(p) {}
+    HeldInstance(PyObject*, A1 a1) : T(a1) {}
     template <class A1, class A2>
-    HeldInstance(PyObject* p, A1 a1, A2 a2) : T(a1, a2), m_self(p) {}
+    HeldInstance(PyObject*, A1 a1, A2 a2) : T(a1, a2) {}
     template <class A1, class A2, class A3>
-    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3) : T(a1, a2, a3), m_self(p) {}
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3) : T(a1, a2, a3) {}
     template <class A1, class A2, class A3, class A4>
-    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4), m_self(p) {}
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
-    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5), m_self(p) {}
-protected:
-    PyObject* m_self; // Not really needed; doesn't really hurt.
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5) {}
 };
 
+// Abstract base class for all instance holders. Base for template class
+// InstanceHolder<>, below.
 class InstanceHolderBase
 {
 public:
     virtual ~InstanceHolderBase() {}
+    virtual bool held_by_value() = 0;
 };
 
+// Abstract base class which holds a Held, somehow. Provides a uniform way to
+// get a pointer to the held object
 template <class Held>
 class InstanceHolder : public InstanceHolderBase
 {
 public:
     virtual Held *target() = 0;
 };
-    
+
+// Concrete class which holds a Held by way of a wrapper class Wrapper. If Held
+// can be constructed with arguments (A1...An), Wrapper must have a
+// corresponding constructor for arguments (PyObject*, A1...An). Wrapper is
+// neccessary to implement virtual function callbacks (there must be a
+// back-pointer to the actual Python object so that we can call any
+// overrides). HeldInstance (above) is used as a default Wrapper class when
+// there are no virtual functions.
 template <class Held, class Wrapper>
 class InstanceValueHolder : public InstanceHolder<Held>
 {
@@ -528,10 +524,17 @@ public:
     template <class A1, class A2, class A3, class A4, class A5>
     InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) :
         m_held(p, a1, a2, a3, a4, a5) {}
-private:
+
+ public: // implementation of InstanceHolderBase required interface
+    bool held_by_value() { return true; }
+
+ private:
     Wrapper m_held;
 };
 
+// Concrete class which holds a HeldType by way of a (possibly smart) pointer
+// PtrType. By default, these are only generated for PtrType ==
+// std::auto_ptr<HeldType> and PtrType == boost::shared_ptr<HeldType>.
 template <class PtrType, class HeldType>
 class InstancePtrHolder : public InstanceHolder<HeldType>
 {
@@ -540,6 +543,9 @@ class InstancePtrHolder : public InstanceHolder<HeldType>
     PtrType& ptr() { return m_ptr; }
 
     InstancePtrHolder(PtrType ptr) : m_ptr(ptr) {}
+    
+ public: // implementation of InstanceHolderBase required interface
+    bool held_by_value() { return false; }
  private:
     PtrType m_ptr;
 };
