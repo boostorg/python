@@ -138,7 +138,7 @@ template &lt;class ArgList, class Generator, class Policies&gt;
     two functions.</p>
 <pre>
 #include &lt;boost/python/make_function.hpp&gt;
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 
 char const* foo() { return "foo"; }
 char const* bar() { return "bar"; }
@@ -152,7 +152,7 @@ object choose_function(bool selector)
         return boost::python::make_function(bar);
 }
 
-BOOST_PYTHON_MODULE_INIT(make_function_test)
+BOOST_PYTHON_MODULE(make_function_test)
 {
     def("choose_function", choose_function);
 }

@@ -111,7 +111,7 @@ namespace boost { namespace python
     <h3>C++ module definition</h3>
 <pre>
 #include &lt;boost/python/class.hpp&gt;
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/has_back_reference.hpp&gt;
 #include &lt;boost/python/handle.hpp&gt;
 #include &lt;boost/shared_ptr.hpp&gt;
@@ -153,7 +153,7 @@ struct Y
 
 boost::shared_ptr&lt;Y&gt; Y_self(boost::shared_ptr&lt;Y&gt; self) const { return self; }
 
-BOOST_PYTHON_MODULE_INIT(back_references)
+BOOST_PYTHON_MODULE(back_references)
 {
     class_&lt;X&gt;("X")
        .def(init&lt;int&gt;())

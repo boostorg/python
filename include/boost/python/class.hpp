@@ -13,7 +13,6 @@
 # include <boost/python/object.hpp>
 
 # include <boost/python/type_id.hpp>
-# include <boost/python/detail/member_function_cast.hpp>
 # include <boost/python/object/class_converters.hpp>
 # include <boost/type_traits/ice.hpp>
 # include <boost/type_traits/same_traits.hpp>
@@ -25,16 +24,18 @@
 # include <boost/python/object/make_instance.hpp>
 # include <boost/python/data_members.hpp>
 # include <boost/utility.hpp>
-# include <boost/python/detail/operator_id.hpp>
 # include <boost/python/object/pickle_support.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/object/add_to_namespace.hpp>
-# include <boost/python/detail/def_helper.hpp>
-# include <boost/python/detail/force_instantiate.hpp>
-# include <boost/python/detail/defaults_def.hpp>
 # include <boost/python/signature.hpp>
 # include <boost/python/init.hpp>
 # include <boost/python/args_fwd.hpp>
+
+# include <boost/python/detail/overloads_fwd.hpp>
+# include <boost/python/detail/operator_id.hpp>
+# include <boost/python/detail/member_function_cast.hpp>
+# include <boost/python/detail/def_helper.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
 
 namespace boost { namespace python {
 

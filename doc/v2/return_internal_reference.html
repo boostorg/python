@@ -158,7 +158,7 @@ PyObject* postcall(PyObject* args, PyObject* result);
 
     <h3>C++ module definition</h3>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/return_internal_reference.hpp&gt;
 
@@ -184,7 +184,7 @@ class Foo
 };
 
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(internal_refs)
+BOOST_PYTHON_MODULE(internal_refs)
 {
    class_&lt;Bar&gt;("Bar")
       .def("get_x", &amp;Bar::get_x)

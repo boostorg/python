@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
 #include <boost/python/implicit.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include "test_class.hpp"
 
@@ -20,7 +20,7 @@ int x_value(X const& x)
 
 X make_x(int n) { return X(n); }
 
-BOOST_PYTHON_MODULE_INIT(implicit_ext)
+BOOST_PYTHON_MODULE(implicit_ext)
 {
     implicitly_convertible<int,X>();
     

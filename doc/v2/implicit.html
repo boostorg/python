@@ -103,7 +103,7 @@ void implicitly_convertible();
 <pre>
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/implicit.hpp&gt;
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 
 using namespace boost::python;
 
@@ -121,7 +121,7 @@ int x_value(X const&amp; x)
 
 X make_x(int n) { return X(n); }
 
-BOOST_PYTHON_MODULE_INIT(implicit_ext)
+BOOST_PYTHON_MODULE(implicit_ext)
 {
     def("x_value", x_value);
     def("make_x", make_x);

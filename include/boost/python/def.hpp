@@ -9,7 +9,7 @@
 # include <boost/python/object_fwd.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/detail/def_helper.hpp>
-# include <boost/python/detail/defaults_def.hpp>
+# include <boost/python/detail/overloads_fwd.hpp>
 # include <boost/python/scope.hpp>
 # include <boost/python/signature.hpp>
 # include <boost/python/detail/scope.hpp>

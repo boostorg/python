@@ -6,7 +6,7 @@
 #include <string>
 #include <boost/python/operators.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/scope.hpp>
 #include <boost/python/manage_new_object.hpp>
@@ -30,7 +30,7 @@ unsigned long fact(unsigned long n)
     return n <= 1 ? n : n * fact(n - 1);
 }
 
-BOOST_PYTHON_MODULE_INIT(docstring_ext)
+BOOST_PYTHON_MODULE(docstring_ext)
 {
     scope().attr("__doc__") =
         "A simple test module for documentation strings\n"

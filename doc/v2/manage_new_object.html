@@ -97,7 +97,7 @@ template &lt;class T&gt; struct apply
 
     <p>In C++:</p>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/manage_new_object.hpp&gt;
 #include &lt;boost/python/return_value_policy.hpp&gt;
@@ -113,7 +113,7 @@ Foo* make_foo(int x) { return new Foo(x); }
 
 // Wrapper code
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(my_module)
+BOOST_PYTHON_MODULE(my_module)
 {
     def("make_foo", make_foo, return_value_policy&lt;manage_new_object&gt;())
     class_&lt;Foo&gt;("Foo")

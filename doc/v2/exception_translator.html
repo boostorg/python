@@ -97,7 +97,7 @@ void f(ExceptionType x) { translate(x); }
 
     <h2><a name="examples"></a>Example</h2>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/def.hpp&gt;
 #include &lt;boost/python/exception_translator.hpp&gt;
 #include &lt;exception&gt;
@@ -120,7 +120,7 @@ void something_which_throws()
     ...
 }
 
-BOOST_PYTHON_MODULE_INIT(exception_translator_ext)
+BOOST_PYTHON_MODULE(exception_translator_ext)
 {
   using namespace boost::python;
   register_exception_translator&lt;my_exception&gt;(&amp;translate);

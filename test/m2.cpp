@@ -7,7 +7,7 @@
 // This module exercises the converters exposed in m1 at a low level
 // by exposing raw Python extension functions that use wrap<> and
 // unwrap<> objects.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/copy_non_const_reference.hpp>
 #include <boost/python/copy_const_reference.hpp>
@@ -61,7 +61,7 @@ struct rewrap
     static T f(T x) { return x; }
 };
 
-BOOST_PYTHON_MODULE_INIT(m2)
+BOOST_PYTHON_MODULE(m2)
 {
     using boost::python::return_value_policy;
     using boost::python::copy_const_reference;

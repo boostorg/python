@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
@@ -87,7 +87,7 @@ namespace { // Avoid cluttering the global namespace.
 
 }
 
-BOOST_PYTHON_MODULE_INIT(pickle2_ext)
+BOOST_PYTHON_MODULE(pickle2_ext)
 {
     boost::python::class_<world>(
         "world", boost::python::init<const std::string&>())

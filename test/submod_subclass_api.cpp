@@ -110,7 +110,7 @@ struct main_args {
 int python_main(main_args const &ma);
 
 // python module init
-BOOST_PYTHON_MODULE_INIT(python_main)
+BOOST_PYTHON_MODULE(python_main)
 {
     DEF(python_main);
     CLASS(main_args);
@@ -121,7 +121,7 @@ namespace sm {
 
 int test_func() { return 7; }
 
-BOOST_PYTHON_MODULE_INIT(sm_test)
+BOOST_PYTHON_MODULE(sm_test)
 {
     // define a submodule
     boost::python::module(".sm");
@@ -160,7 +160,7 @@ c1::c2 test_func() {
     return c1().t;
 }
 
-BOOST_PYTHON_MODULE_INIT(sc_test)
+BOOST_PYTHON_MODULE(sc_test)
 {
     class_<c1::c2>("c1.c2")
         .def_init()

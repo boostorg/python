@@ -29,7 +29,7 @@
       <dd>
         <dl class="page-index">
           <dt><a href=
-          "#BOOST_PYTHON_MODULE_INIT-spec">BOOST_PYTHON_MODULE_INIT</a>
+          "#BOOST_PYTHON_MODULE-spec">BOOST_PYTHON_MODULE</a>
         </dl>
 
       <dt><a href="#classes">Classes</a>
@@ -66,7 +66,7 @@
     <h2><a name="macros"></a>Macros</h2>
 
     <p><a name=
-    "BOOST_PYTHON_MODULE_INIT-spec"><code>BOOST_PYTHON_MODULE_INIT(name)</code></a>
+    "BOOST_PYTHON_MODULE-spec"><code>BOOST_PYTHON_MODULE(name)</code></a>
     is used to declare Python <a href=
     "http://www.python.org/doc/2.2/ext/methodTable.html#SECTION003400000000000000000">
     module initialization functions</a>. The <code>name</code> argument must
@@ -81,7 +81,7 @@ void init<i>name</i>()
 </pre>
     Boost.Python modules should be initialized with 
 <pre>
-BOOST_PYTHON_MODULE_INIT(<i>name</i>)
+BOOST_PYTHON_MODULE(<i>name</i>)
 {
    ...
 </pre>
@@ -134,7 +134,7 @@ module(const char* name);
     <dl class="function-semantics">
       <dt><b>Requires:</b> <code>name</code> is a ntbs whose value matches the
       argument passed to <a href=
-      "#BOOST_PYTHON_MODULE_INIT-spec">BOOST_PYTHON_MODULE_INIT</a>.
+      "#BOOST_PYTHON_MODULE-spec">BOOST_PYTHON_MODULE</a>.
 
       <dt><b>Effects:</b> Creates a <code>module</code> object representing a
       Python module named <code>name</code>.
@@ -238,7 +238,7 @@ char const* greet()
     return "hello, Boost.Python!";
 }
 
-BOOST_PYTHON_MODULE_INIT(boost_greet)
+BOOST_PYTHON_MODULE(boost_greet)
 {
     module("boost_greet")
         .def("greet", greet);

@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/reference_existing_object.hpp>
@@ -18,7 +18,7 @@ struct V
 
 const A* outside(const V& v) {return &v.a;}
 
-BOOST_PYTHON_MODULE_INIT(bienstman1_ext)
+BOOST_PYTHON_MODULE(bienstman1_ext)
 {
   using namespace boost::python;
   using boost::shared_ptr;

@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 
@@ -12,7 +12,7 @@ struct B
     B(const V&) {}    
 };
 
-BOOST_PYTHON_MODULE_INIT(bienstman3_ext)
+BOOST_PYTHON_MODULE(bienstman3_ext)
 {
   using namespace boost::python;
 

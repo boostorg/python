@@ -113,7 +113,7 @@ template &lt;class T&gt; struct apply
 
     <p>In C++:</p>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/reference_existing_object.hpp&gt;
 #include &lt;boost/python/return_value_policy.hpp&gt;
@@ -141,7 +141,7 @@ Singleton&amp; get_it()
 
 // Wrapper code
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(singleton)
+BOOST_PYTHON_MODULE(singleton)
 {
     def("get_it", get_it, reference_existing_object());
     class_&lt;Singleton&gt;("Singleton")

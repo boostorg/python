@@ -204,7 +204,7 @@ struct X
    int v;
 };
 
-BOOST_PYTHON_MODULE_INIT(extract_ext)
+BOOST_PYTHON_MODULE(extract_ext)
 {
     object x_class(
        class_&lt;X&gt;(&quot;X&quot;, init&lt;int&gt;())

@@ -116,7 +116,7 @@ namespace boost { namespace python
 
     <h3>C++ Module Definition</h3>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/copy_const_reference.hpp&gt;
 #include &lt;boost/python/return_value_policy.hpp&gt;
@@ -133,7 +133,7 @@ struct Foo {
 
 // Wrapper code
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(my_module)
+BOOST_PYTHON_MODULE(my_module)
 {
    class_&lt;Bar&gt;("Bar");
 

@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/operators.hpp>
 #include <boost/python/scope.hpp>
@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& s, Y const& x)
 }
 
 
-BOOST_PYTHON_MODULE_INIT(nested_ext)
+BOOST_PYTHON_MODULE(nested_ext)
 {
     using namespace boost::python;
 

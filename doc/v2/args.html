@@ -87,7 +87,7 @@ using namespace boost::python;
 
 int f(int x, int y, int z);
 
-BOOST_PYTHON_MODULE_INIT(xxx)
+BOOST_PYTHON_MODULE(xxx)
 {
    def("f", f, args("x", "y", "z"));
 }

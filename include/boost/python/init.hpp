@@ -12,6 +12,8 @@
 
 #include <boost/python/detail/type_list.hpp>
 #include <boost/python/args_fwd.hpp>
+#include <boost/python/detail/make_keyword_range_fn.hpp>
+
 #include <boost/mpl/fold_backward.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/apply_if.hpp>

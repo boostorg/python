@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/call_method.hpp>
 #include <boost/ref.hpp>
@@ -87,7 +87,7 @@ struct concrete_callback : concrete
 
 int X::counter;
 
-BOOST_PYTHON_MODULE_INIT(virtual_functions_ext)
+BOOST_PYTHON_MODULE(virtual_functions_ext)
 {
     class_<concrete, concrete_callback>("concrete", init<int>())
         .def("value", &concrete::value)

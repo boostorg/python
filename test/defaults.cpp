@@ -5,11 +5,11 @@
 // to its suitability for any purpose.
 
 #include <boost/python/def.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
-#include <boost/python/module.hpp>
+#include <boost/python/overloads.hpp>
 #include <boost/python/return_internal_reference.hpp>
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
@@ -147,16 +147,10 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_3_stubs, foo, 2, 3)
 
 ///////////////////////////////////////////////////////////////////////////////
 
-BOOST_PYTHON_MODULE_INIT(defaults_ext)
+BOOST_PYTHON_MODULE(defaults_ext)
 {
     def("foo", foo, foo_stubs());
     def("bar", (object(*)(int, char, std::string, double))0, bar_stubs());
-
-    // Show that this works with the old obsolete module version of def().
-    module("defaults_ext")
-        .def("foobar", foo, foo_stubs())
-        .def("barfoo", (object(*)(int, char, std::string, double))0, bar_stubs())
-        ;
 
     class_<Y>("Y", init<>("doc of Y init")) // this should work
 	    .def("get_state", &Y::get_state)

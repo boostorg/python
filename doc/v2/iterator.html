@@ -355,13 +355,13 @@ template &lt;class Accessor1, class Accessor2&gt;
 
     <h2><a name="examples"></a>Examples</h2>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 
 #include &lt;vector&gt;
 
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(demo)
+BOOST_PYTHON_MODULE(demo)
 {
     class_&lt;std::vector&lt;double&gt; &gt;("dvec")
         .def("__iter__", iterator&lt;std::vector&lt;double&gt; &gt;())

@@ -7,7 +7,7 @@
 #include "test_class.hpp"
 #include <boost/python/extract.hpp>
 #include <boost/python/list.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/reference_existing_object.hpp>
@@ -96,7 +96,7 @@ std::string x_rep(X const& x)
     return "X("  + boost::lexical_cast<std::string>(x.value()) + ")";
 }
 
-BOOST_PYTHON_MODULE_INIT(extract_ext)
+BOOST_PYTHON_MODULE(extract_ext)
 {
     implicitly_convertible<int, X>();
 

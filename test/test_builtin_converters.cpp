@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <string>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <complex>
 #include <boost/python/handle.hpp>
@@ -57,7 +57,7 @@ handle<> return_null_handle()
 
 char const* rewrap_value_mutable_cstring(char* x) { return x; }
 
-BOOST_PYTHON_MODULE_INIT(builtin_converters)
+BOOST_PYTHON_MODULE(builtin_converters)
 {
     def("get_type", get_type);
     def("return_null_handle", return_null_handle);

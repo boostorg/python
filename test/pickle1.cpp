@@ -10,7 +10,7 @@
     For more information refer to boost/libs/python/doc/pickle.html.
  */
 
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
@@ -45,7 +45,7 @@ namespace {
 
 }
 
-BOOST_PYTHON_MODULE_INIT(pickle1_ext)
+BOOST_PYTHON_MODULE(pickle1_ext)
 {
   using namespace boost::python;
   class_<world>("world", init<const std::string&>())

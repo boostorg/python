@@ -6,7 +6,7 @@
 #include <string>
 #include <boost/python/operators.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include "test_class.hpp"
 #if __GNUC__ != 2
@@ -57,7 +57,7 @@ std::ostream& operator<<(std::ostream& s, X const& x)
     return s << x.value();
 }
 
-BOOST_PYTHON_MODULE_INIT(operators_ext)
+BOOST_PYTHON_MODULE(operators_ext)
 {
     class_<X>("X", init<int>())
         .def("value", &X::value)

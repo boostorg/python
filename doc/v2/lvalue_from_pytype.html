@@ -239,7 +239,7 @@ static MemberType&amp; execute(InstanceType&amp; c);
     <h3>C++ module definition</h3>
 <pre>
 #include &lt;boost/python/reference.hpp&gt;
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 
 // definition lifted from the Python docs
 typedef struct {
@@ -259,7 +259,7 @@ void set_cache(noddy_NoddyObject* x)
    cache.reset((PyObject*)x, ref::increment_count);
 }
 
-BOOST_PYTHON_MODULE_INIT(noddy_cache)
+BOOST_PYTHON_MODULE(noddy_cache)
 {
    def("is_cached", is_cached);
    def("set_cache", set_cache);

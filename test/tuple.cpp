@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
@@ -19,7 +19,7 @@ tuple mktuple0() { return make_tuple(); }
 tuple mktuple1(int x) { return make_tuple(x); }
 tuple mktuple2(char const* a1, int x) { return make_tuple(a1, x); }
 
-BOOST_PYTHON_MODULE_INIT(tuple_ext)
+BOOST_PYTHON_MODULE(tuple_ext)
 {
     def("convert_to_tuple",convert_to_tuple);
     def("test_operators",test_operators);

@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include "test_class.hpp"
 
 #if defined(_AIX) && defined(__EDG_VERSION__) && __EDG_VERSION__ < 245
@@ -20,7 +20,7 @@ typedef test_class<1> Y;
 
 double get_fair_value(X const& x) { return x.value(); }
 
-BOOST_PYTHON_MODULE_INIT(data_members_ext)
+BOOST_PYTHON_MODULE(data_members_ext)
 {
     class_<X>("X", init<int>())
         .def("value", &X::value)

@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/utility.hpp>
@@ -49,7 +49,7 @@ public:
 
 };
 
-BOOST_PYTHON_MODULE_INIT(cltree)
+BOOST_PYTHON_MODULE(cltree)
 {
     boost::python::class_<basic>("basic")
         .def("__repr__",&basic::repr)

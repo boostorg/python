@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/implicit.hpp>
@@ -16,7 +16,7 @@ struct Term {Term(Type1 const&) {} };
 
 struct Expression {void add(Term const&) {} };
 
-BOOST_PYTHON_MODULE_INIT(bienstman4_ext)
+BOOST_PYTHON_MODULE(bienstman4_ext)
 {
   using namespace boost::python;
   using boost::mpl::list;

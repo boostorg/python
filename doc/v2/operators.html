@@ -809,7 +809,7 @@ namespace boost { namespace python
 
     <h2><a name="examples"></a>Example</h2>
 <pre>
-#include &lt;boost/python/module_init.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/operators.hpp&gt;
 #include &lt;boost/operators.hpp&gt;
@@ -836,7 +836,7 @@ struct number
 };
 
 using namespace boost::python;
-BOOST_PYTHON_MODULE_INIT(demo)
+BOOST_PYTHON_MODULE(demo)
 {
    class_&lt;number&gt;("number")
       // interoperate with self
