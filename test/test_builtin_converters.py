@@ -49,7 +49,7 @@
 ... except OverflowError: pass
 ... else: print 'expected an OverflowError!'
 
->>> try: rewrap_value_int(must_be_long)
+>>> try: rewrap_value_int(sys.maxint * 2)
 ... except OverflowError: pass
 ... else: print 'expected an OverflowError!'
 
@@ -181,13 +181,6 @@ Check that classic classes also work
 1
 
 """
-# compute a long value that's too big for an int
-# note that some day these may be integrated, so 
-big_int = 1
-while (big_int << 1) > 0:
-    big_int <<= 1
-must_be_long = long(big_int) << 1
-
 
 def run(args = None):
     import sys
