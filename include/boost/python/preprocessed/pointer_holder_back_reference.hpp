@@ -1,13 +1,13 @@
-// Copyright David Abrahams 2002. Permission to copy, use,
-// modify, sell and distribute this software is granted provided this
-// copyright notice appears in all copies. This software is provided
-// "as is" without express or implied warranty, and with no claim as
-// to its suitability for any purpose.
+//Copyright David Abrahams 2002.Permission to copy,use,
+//modify,sell and distribute this software is granted provided this
+//copyright notice appears in all copies.This software is provided
+//"as is" without express or implied warranty,and with no claim as
+//to its suitability for any purpose.
 #ifndef POINTER_HOLDER_BACK_REFERENCE_DWA2002411_HPP
-# define POINTER_HOLDER_BACK_REFERENCE_DWA2002411_HPP
+#define POINTER_HOLDER_BACK_REFERENCE_DWA2002411_HPP
 
 pointer_holder_back_reference(PyObject*p)
-    :m_p(new held_type(p,))
+    :m_p(new held_type(p))
 {
     void const*x=&instance_finder<held_type>::registration;
     (void)x;
@@ -111,5 +111,6 @@ template<class A0,class A1,class A2,class A3,class A4,class A5,class A6,class A7
     void const*x=&instance_finder<held_type>::registration;
     (void)x;
 }
+ 
 
-#endif // POINTER_HOLDER_BACK_REFERENCE_DWA2002411_HPP
+#endif//POINTER_HOLDER_BACK_REFERENCE_DWA2002411_HPP

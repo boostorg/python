@@ -91,6 +91,8 @@ namespace boost { namespace python { namespace detail {
 
 #define BOOST_PYTHON_ENUM_PARAMS2(N, Pair) BOOST_PP_ENUM(N, BOOST_PYTHON_NUMBER_PAIR, Pair)
 
+# define BOOST_PYTHON_PROJECT_1ST(a1,a2) a1
+# define BOOST_PYTHON_PROJECT_2ND(a1,a2) a2
 
 }}} // namespace boost::python::detail
 

@@ -74,7 +74,7 @@ struct pointer_holder_back_reference : instance_holder
                    BOOST_PP_COMMA_IF(nargs)                                     \
                    BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,a)))                     \
         : m_p(new held_type(                                                    \
-                    p,                                                          \
+                    p BOOST_PP_COMMA_IF(nargs)                                  \
                     BOOST_PP_ENUM(nargs, BOOST_PYTHON_UNFORWARD, nil)           \
             ))                                                                  \
     {                                                                           \

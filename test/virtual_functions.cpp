@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
-#include <boost/python/returning.hpp>
+#include <boost/python/call_method.hpp>
 #include <boost/ref.hpp>
 #include <boost/utility.hpp>
 
@@ -55,7 +55,7 @@ struct abstract_callback : abstract
 
     int f(Y const& y)
     {
-        return returning<int>::call_method(self, "f", boost::ref(y));
+        return call_method<int>(self, "f", boost::ref(y));
     }
 
     PyObject* self;
@@ -73,7 +73,7 @@ struct concrete_callback : concrete
 
     int f(Y const& y)
     {
-        return returning<int>::call_method(self, "f", boost::ref(y));
+        return call_method<int>(self, "f", boost::ref(y));
     }
 
     int f_impl(Y const& y)

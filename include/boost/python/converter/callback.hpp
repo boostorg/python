@@ -17,6 +17,7 @@
 # include <boost/python/to_python_indirect.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/ptr.hpp>
+# include <boost/python/errors.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -132,6 +133,33 @@ template <class T>
 struct callback_from_python
     : detail::select_callback_from_python<T>::type
 {
+    typedef T result_type;
+};
+
+struct void_result
+{
+ private: 
+    void_result() {}
+    void operator=(void_result const&);
+    
+    // I would prefer to make this completely untouchable, but few
+    // compilers support template friends
+# if 0
+    void_result(void_result const&);
+# endif
+    friend struct callback_from_python<void>;
+};
+
+// Specialization as a convenience for call and call_method
+template <>
+struct callback_from_python<void>
+{
+    typedef void_result result_type;
+    result_type operator()(PyObject* x) const
+    {
+        Py_DECREF(expect_non_null(x));
+        return result_type();
+    }
 };
 
 template <class T>
@@ -143,6 +171,14 @@ struct callback_to_python
     // Throw an exception if the conversion can't succeed
     callback_to_python(T const& x);
 };
+
+// Convenience macros for call<> and call_method<> code generation
+# define BOOST_PYTHON_CALLBACK_TO_PYTHON_GET(index,ignored)     \
+    converter::callback_to_python<BOOST_PP_CAT(A,index)>(       \
+        BOOST_PP_CAT(a,index)).get()
+
+# define BOOST_PYTHON_ARG_STRING(nargs)                         \
+    "(" BOOST_PP_REPEAT(nargs,BOOST_PYTHON_PROJECT_2ND,"O") ")"
 
 //
 // Implementations

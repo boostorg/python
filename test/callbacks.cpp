@@ -4,23 +4,24 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/module.hpp>
-#include <boost/python/returning.hpp>
+//#include <boost/python/returning.hpp>
 #include <boost/python/class.hpp>
 #include <boost/ref.hpp>
 #include <boost/python/ptr.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/reference_existing_object.hpp>
+#include <boost/python/call.hpp>
 
 using namespace boost::python;
 
 int apply_int_int(PyObject* f, int x)
 {
-    return returning<int>::call(f, x);
+    return call<int>(f, x);
 }
 
 void apply_void_int(PyObject* f, int x)
 {
-    returning<void>::call(f, x);
+    call<void>(f, x);
 }
 
 struct X
@@ -42,52 +43,52 @@ struct X
 
 X apply_X_X(PyObject* f, X x)
 {
-    return returning<X>::call(f, x);
+    return call<X>(f, x);
 }
 
 void apply_void_X_ref(PyObject* f, X& x)
 {
-    returning<void>::call(f, boost::ref(x));
+    call<void>(f, boost::ref(x));
 }
 
 X& apply_X_ref_pyobject(PyObject* f, PyObject* obj)
 {
-    return returning<X&>::call(f, obj);
+    return call<X&>(f, obj);
 }
 
 X* apply_X_ptr_pyobject(PyObject* f, PyObject* obj)
 {
-    return returning<X*>::call(f, obj);
+    return call<X*>(f, obj);
 }
 
 void apply_void_X_cref(PyObject* f, X const& x)
 {
-    returning<void>::call(f, boost::cref(x));
+    call<void>(f, boost::cref(x));
 }
 
 void apply_void_X_ptr(PyObject* f, X* x)
 {
-    returning<void>::call(f, ptr(x));
+    call<void>(f, ptr(x));
 }
 
 void apply_void_X_deep_ptr(PyObject* f, X* x)
 {
-    returning<void>::call(f, x);
+    call<void>(f, x);
 }
 
 char const* apply_cstring_cstring(PyObject* f, char const* s)
 {
-    return returning <char const*>::call(f, s);
+    return call<char const*>(f, s);
 }
 
 char const* apply_cstring_pyobject(PyObject* f, PyObject* s)
 {
-    return returning <char const*>::call(f, s);
+    return call<char const*>(f, s);
 }
 
 char apply_char_char(PyObject* f, char c)
 {
-    return returning <char>::call(f, c);
+    return call<char>(f, c);
 }
 
 int X::counter;
