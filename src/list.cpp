@@ -7,7 +7,7 @@
 
 namespace boost { namespace python { 
 
-BOOST_PYTHON_DECL detail::new_non_null_reference list::call(object const& arg_)
+detail::new_non_null_reference list::call(object const& arg_)
 {
     return (detail::new_non_null_reference)
         (expect_non_null)(
@@ -16,15 +16,15 @@ BOOST_PYTHON_DECL detail::new_non_null_reference list::call(object const& arg_)
                 arg_.ptr()));
 }
 
-BOOST_PYTHON_DECL list::list()
+list::list()
     : object(detail::new_reference(PyList_New(0)))
 {}
 
-BOOST_PYTHON_DECL list::list(object_cref sequence)
+list::list(object_cref sequence)
     : object(list::call(sequence))
 {}
 
-BOOST_PYTHON_DECL void list::append(object_cref x)
+void list::append(object_cref x)
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -37,7 +37,7 @@ BOOST_PYTHON_DECL void list::append(object_cref x)
     }
 }
 
-BOOST_PYTHON_DECL long list::count(object_cref value) const
+long list::count(object_cref value) const
 {
     object result_obj(this->attr("count")(value));
     long result = PyInt_AsLong(result_obj.ptr());
@@ -46,12 +46,12 @@ BOOST_PYTHON_DECL long list::count(object_cref value) const
     return result;
 }
 
-BOOST_PYTHON_DECL void list::extend(object_cref sequence)
+void list::extend(object_cref sequence)
 {
     this->attr("extend")(sequence);
 }
 
-BOOST_PYTHON_DECL long list::index(object_cref value) const
+long list::index(object_cref value) const
 {
     object result_obj(this->attr("index")(value));
     long result = PyInt_AsLong(result_obj.ptr());
@@ -60,7 +60,7 @@ BOOST_PYTHON_DECL long list::index(object_cref value) const
     return result;
 }
 
-BOOST_PYTHON_DECL void list::insert(int index, object_cref item)
+void list::insert(int index, object_cref item)
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -73,7 +73,7 @@ BOOST_PYTHON_DECL void list::insert(int index, object_cref item)
     }
 }
 
-BOOST_PYTHON_DECL void list::insert(object const& index, object_cref x)
+void list::insert(object const& index, object_cref x)
 {
     long index_ = PyInt_AsLong(index.ptr());
     if (index_ == -1 && PyErr_Occurred())
@@ -81,27 +81,27 @@ BOOST_PYTHON_DECL void list::insert(object const& index, object_cref x)
     this->insert(index_, x);
 }
 
-BOOST_PYTHON_DECL object list::pop()
+object list::pop()
 {
     return this->attr("pop")();
 }
 
-BOOST_PYTHON_DECL object list::pop(long index)
+object list::pop(long index)
 {
     return this->pop(object(index));
 }
 
-BOOST_PYTHON_DECL object list::pop(object const& index)
+object list::pop(object const& index)
 {
     return this->attr("pop")(index);
 }
 
-BOOST_PYTHON_DECL void list::remove(object_cref value)
+void list::remove(object_cref value)
 {
     this->attr("remove")(value);
 }
     
-BOOST_PYTHON_DECL void list::reverse()
+void list::reverse()
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -114,7 +114,7 @@ BOOST_PYTHON_DECL void list::reverse()
     }
 }
 
-BOOST_PYTHON_DECL void list::sort()
+void list::sort()
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -127,7 +127,7 @@ BOOST_PYTHON_DECL void list::sort()
     }
 }
 
-BOOST_PYTHON_DECL void list::sort(object_cref cmpfunc)
+void list::sort(object_cref cmpfunc)
 {
     this->attr("sort")(cmpfunc);
 }

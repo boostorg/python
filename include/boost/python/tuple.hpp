@@ -6,14 +6,14 @@
 
 namespace boost { namespace python {
 
-class tuple : public object
+class BOOST_PYTHON_DECL tuple : public object
 {
  public:
     // tuple() -> an empty tuple
-    BOOST_PYTHON_DECL tuple();
+    tuple();
 
     // tuple(sequence) -> tuple initialized from sequence's items
-    BOOST_PYTHON_DECL tuple(object_cref sequence);
+    tuple(object_cref sequence);
 
     template <class T>
     explicit tuple(T const& sequence)
@@ -25,7 +25,7 @@ class tuple : public object
     BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(tuple)
 
  private:
-    static BOOST_PYTHON_DECL detail::new_reference call(object const&);
+    static detail::new_reference call(object const&);
 };
 
 //

@@ -24,22 +24,22 @@ namespace
   }
 }
 
-BOOST_PYTHON_DECL detail::new_reference dict::call(object const& arg_)
+detail::new_reference dict::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
         (PyObject*)&PyDict_Type, "(O)", 
         arg_.ptr());
 }
 
-BOOST_PYTHON_DECL dict::dict()
+dict::dict()
     : object(detail::new_reference(PyDict_New()))
 {}
     
-BOOST_PYTHON_DECL dict::dict(object_cref data)
+dict::dict(object_cref data)
     : object(dict::call(data))
 {}
     
-BOOST_PYTHON_DECL void dict::clear()
+void dict::clear()
 {
     if (check_exact(this))
         PyDict_Clear(this->ptr());
@@ -47,7 +47,7 @@ BOOST_PYTHON_DECL void dict::clear()
         this->attr("clear")();
 }
 
-BOOST_PYTHON_DECL dict dict::copy()
+dict dict::copy()
 {
     if (check_exact(this))
     {
@@ -62,7 +62,7 @@ BOOST_PYTHON_DECL dict dict::copy()
     }
 }
 
-BOOST_PYTHON_DECL object dict::get(object_cref k) const
+object dict::get(object_cref k) const
 {
     if (check_exact(this))
     {
@@ -75,17 +75,17 @@ BOOST_PYTHON_DECL object dict::get(object_cref k) const
     }
 }
 
-BOOST_PYTHON_DECL object dict::get(object_cref k, object_cref d) const
+object dict::get(object_cref k, object_cref d) const
 {
     return this->attr("get")(k,d);
 }
 
-BOOST_PYTHON_DECL bool dict::has_key(object_cref k) const
+bool dict::has_key(object_cref k) const
 {
     return extract<bool>(this->attr("has_key")(k)); 
 }
 
-BOOST_PYTHON_DECL list dict::items() const
+list dict::items() const
 {
     if (check_exact(this))
     {
@@ -98,22 +98,22 @@ BOOST_PYTHON_DECL list dict::items() const
     }
 }
 
-BOOST_PYTHON_DECL object dict::iteritems() const
+object dict::iteritems() const
 {
     return this->attr("iteritems")();
 }
 
-BOOST_PYTHON_DECL object dict::iterkeys() const
+object dict::iterkeys() const
 {
     return this->attr("iterkeys")();
 }
 
-BOOST_PYTHON_DECL object dict::itervalues() const
+object dict::itervalues() const
 {
     return this->attr("itervalues")();
 }
 
-BOOST_PYTHON_DECL list dict::keys() const
+list dict::keys() const
 {
     if (check_exact(this))
     {
@@ -126,24 +126,24 @@ BOOST_PYTHON_DECL list dict::keys() const
     }
 }
 
-BOOST_PYTHON_DECL tuple dict::popitem()
+tuple dict::popitem()
 {
     return tuple(detail::borrowed_reference(
                      this->attr("popitem")().ptr()
                      ));
 }
 
-BOOST_PYTHON_DECL object dict::setdefault(object_cref k)
+object dict::setdefault(object_cref k)
 {
     return this->attr("setdefault")(k);
 }
 
-BOOST_PYTHON_DECL object dict::setdefault(object_cref k, object_cref d)
+object dict::setdefault(object_cref k, object_cref d)
 {
     return this->attr("setdefault")(k,d);
 }
 
-BOOST_PYTHON_DECL void dict::update(object_cref other)
+void dict::update(object_cref other)
 {
     if (check_exact(this))
     {
@@ -156,7 +156,7 @@ BOOST_PYTHON_DECL void dict::update(object_cref other)
     }
 }
 
-BOOST_PYTHON_DECL list dict::values() const
+list dict::values() const
 {
     if (check_exact(this))
     {
