@@ -31,7 +31,7 @@ class module : public detail::module_base
     template <class T, class Bases, class HolderGenerator>
     module& add(class_<T,Bases,HolderGenerator> const& c)
     {
-        this->generic_add_class(c.object());
+        this->add_class(c.object());
         return *this;
     }
     
