@@ -7,7 +7,6 @@
 //  producing this work.
 
 #include "py.h"
-#include <boost/config.hpp>
 #include <typeinfo>
 #ifndef BOOST_NO_LIMITS
 # include <boost/cast.hpp>
@@ -49,34 +48,29 @@ void handle_exception()
     }
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-}
-#endif
+} // namespace py
+
+PY_BEGIN_CONVERSION_NAMESPACE
 
 long from_python(PyObject* p, py::Type<long>)
 {
     // Why am I clearing the error here before trying to convert? I know there's a reason...
     long result;
     {
-//        py::SuspendError suspended_error(py::SuspendError::discard_old_error);
         result = PyInt_AsLong(p);
         if (PyErr_Occurred())
             throw py::ArgumentError();
-//        suspended_error.throw_if_error();
     }
     return result;
 }
 
 double from_python(PyObject* p, py::Type<double>)
 {
-    // Why am I clearing the error here before trying to convert? I know there's a reason...
     double result;
     {
-//        py::SuspendError suspended_error(py::SuspendError::discard_old_error);
         result = PyFloat_AsDouble(p);
         if (PyErr_Occurred())
             throw py::ArgumentError();
-//        suspended_error.throw_if_error();
     }
     return result;
 }
@@ -106,7 +100,7 @@ T integer_from_python(PyObject* p, py::Type<T>)
         PyErr_SetString(PyExc_ValueError, buffer);
         throw py::ArgumentError();
     }
-#if defined(__MWERKS__) && __MWERKS__ < 0x6000
+#if defined(__MWERKS__) && __MWERKS__ < 0x2400
     return 0; // Not smart enough to know that the catch clause always rethrows
 #endif
 }
@@ -246,9 +240,5 @@ PyObject* to_python(float f)
 }
 #endif // PY_MSVC6_OR_EARLIER
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-namespace py {
-#endif
-
-}
+PY_END_CONVERSION_NAMESPACE
 
