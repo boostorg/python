@@ -10,158 +10,48 @@
 # include <boost/python/object/forward.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/preprocessor.hpp>
+# include <boost/preprocessor/repeat.hpp>
+# include <boost/preprocessor/enum.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
 template <int nargs> struct make_holder;
 
-template <>
-struct make_holder<0>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        static void execute(
-            PyObject* p)
-        {
-            (new Holder(p))->install(p);
-        }
-    };
-};
+# ifndef BOOST_PYTHON_GENERATE_CODE
+#  include <boost/python/preprocessed/make_holder.hpp>
+# endif
 
 
-template <>
-struct make_holder<1>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        
-        static void execute(
-            PyObject* p
-            , t0 a0)
-        {
-            (new Holder(p, f0(a0)))->install(p);
-        }
-    };
+# define BOOST_PYTHON_FORWARD_ARG(index, ignored)                                       \
+    typedef typename mpl::at<index,ArgList>::type BOOST_PP_CAT(t,index);                \
+    typedef typename forward<BOOST_PP_CAT(t,index)>::type BOOST_PP_CAT(f,index);
+
+# define BOOST_PYTHON_DO_FORWARD_ARG(index, ignored)    \
+    BOOST_PP_CAT(f,index)(BOOST_PP_CAT(a, index))
+
+# define BOOST_PYTHON_MAKE_HOLDER(nargs,ignored)                                \
+template <>                                                                     \
+struct make_holder<nargs>                                                       \
+{                                                                               \
+    template <class Holder, class ArgList>                                      \
+    struct apply                                                                \
+    {                                                                           \
+        BOOST_PP_REPEAT(nargs, BOOST_PYTHON_FORWARD_ARG, nil)                   \
+                                                                                \
+        static void execute(                                                    \
+            PyObject* p                                                         \
+            BOOST_PP_COMMA_IF(nargs) BOOST_PYTHON_ENUM_PARAMS2(nargs, (t,a)) )  \
+        {                                                                       \
+            (new Holder(                                                        \
+                p                                                               \
+                BOOST_PP_COMMA_IF(nargs) BOOST_PP_ENUM(                         \
+                    nargs,BOOST_PYTHON_DO_FORWARD_ARG,nil)))->install(p);       \
+        }                                                                       \
+    };                                                                          \
 };
 
-template <>
-struct make_holder<2>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
-        typedef typename forward<t1>::type f1;
-        
-        static void execute(
-            PyObject* p, t0 a0, t1 a1)
-        {
-            (new Holder(p, f0(a0), f1(a1)))->install(p);
-        }
-    };
-};
-
-template <>
-struct make_holder<3>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
-        typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
-        typedef typename forward<t2>::type f2;
-        
-        static void execute(
-            PyObject* p, t0 a0, t1 a1, t2 a2)
-        {
-            (new Holder(p, f0(a0), f1(a1), f2(a2)))->install(p);
-        }
-    };
-};
-
-template <>
-struct make_holder<4>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
-        typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
-        typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
-        typedef typename forward<t3>::type f3;
-        
-        static void execute(
-            PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3)
-        {
-            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3)))->install(p);
-        }
-    };
-};
-
-template <>
-struct make_holder<5>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
-        typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
-        typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
-        typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
-        typedef typename forward<t4>::type f4;
-        
-        static void execute(
-            PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3, t4 a4)
-        {
-            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4)))->install(p);
-        }
-    };
-};
-
-template <>
-struct make_holder<6>
-{
-    template <class Holder, class ArgList>
-    struct apply
-    {
-        typedef typename mpl::at<0,ArgList>::type t0;
-        typedef typename forward<t0>::type f0;
-        typedef typename mpl::at<1,ArgList>::type t1;
-        typedef typename forward<t1>::type f1;
-        typedef typename mpl::at<2,ArgList>::type t2;
-        typedef typename forward<t2>::type f2;
-        typedef typename mpl::at<3,ArgList>::type t3;
-        typedef typename forward<t3>::type f3;
-        typedef typename mpl::at<4,ArgList>::type t4;
-        typedef typename forward<t4>::type f4;
-        typedef typename mpl::at<5,ArgList>::type t5;
-        typedef typename forward<t5>::type f5;
-        
-        static void execute(
-            PyObject* p, t0 a0, t1 a1, t2 a2, t3 a3, t4 a4, t5 a5)
-        {
-            (new Holder(p, f0(a0), f1(a1), f2(a2), f3(a3), f4(a4), f5(a5)))->install(p);
-        }
-    };
-};
+BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_MAKE_HOLDER,nil)
 
 }}} // namespace boost::python::objects
 

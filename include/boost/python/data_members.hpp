@@ -12,7 +12,7 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/return_value_policy.hpp>
-# include <boost/python/copy_mutable_reference.hpp>
+# include <boost/python/copy_non_const_reference.hpp>
 
 namespace boost { namespace python { 
 
@@ -63,7 +63,7 @@ namespace detail
 template <class C, class D>
 objects::function* make_getter(D C::*pm)
 {
-    typedef return_value_policy<copy_mutable_reference> default_policy;
+    typedef return_value_policy<copy_non_const_reference> default_policy;
     return new objects::function(
         objects::py_function(
             ::boost::bind(
