@@ -5,13 +5,16 @@
 #
 # Boost.Python build and test Jamfile
 #
+# To run all tests quietly: jam test
+# To run all tests with verbose output: jam -sPYTHON_TEST_ARGS=-v test
+#
 # Declares the following targets:
 #   1. libboost_python, a static link library to be linked with all
 #      Boost.Python modules
 #
 #   2. pairs of test targets of the form <name>.test and <name>.run
-#      <name>.test runs the test when it is out-of-date, and the "all" target
-#      depends on it so that it it is built by default. <name>.run runs
+#      <name>.test runs the test when it is out-of-date, and the "test"
+#      pseudotarget depends on it. <name>.run runs
 #      a test unconditionally, and can be used to force a test to run.. Each
 #      test target builds one or more Boost.Python modules and runs a Python
 #      script to test them. The test names are:
@@ -38,6 +41,12 @@
 #
 # subproject-specific environment/command-line variables:
 #
+# PYTHON                - How to invoke the Python interpreter. Defaults to "python"
+#
+# PYTHON_ROOT           - Windows only: where Python is installed. Defaults to "c:/tools/python"
+#
+# PYTHON_VERSION        - Version of Python. Defaults to "2.1" on Windows, "1.5" on Unix
+#
 # PYTHON_TEST_ARGS      - specifies arguments to be passed to test scripts on
 #                         the command line. "-v" can be useful if you want to
 #                         see the output of successful tests.
@@ -49,12 +58,21 @@
 # declare the location of this subproject relative to the root
 subproject libs/python/build ;
 
+# grab variables from command-line or environment.
+local PYTHON_VERSION = $(PYTHON_VERSION) ;
+local PYTHON_ROOT = $(PYTHON_ROOT) ;
+local PYTHON_INCLUDES = $(PYTHON_INCLUDES) ;
+local PYTHON_LIBS = $(PYTHON_LIBS) ;
+local PYTHON_LIB_PATH = $(PYTHON_LIB_PATH) ;
+local PYTHON_PROPERTIES = $(PYTHON_PROPERTIES) ;
+
 # Do some OS-specific setup
 if $(NT)
 {
+    PYTHON_VERSION ?= 2.1 ;
     PYTHON_ROOT ?= c:/tools/python ;
-    PYTHON_INCLUDES ?= <include>$(PYTHON_ROOT)/include <gcc><*><include>/usr/include/python2.1 ;
-    PYTHON_LIBS ?= c:/cygnus/lib/python2.1/config/libpython2.1.dll.a ;
+    PYTHON_INCLUDES ?= <include>$(PYTHON_ROOT)/include <gcc><*><include>/usr/include/python$(PYTHON_VERSION) ;
+    PYTHON_LIBS ?= c:/cygnus/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).dll.a ;
     PYTHON_LIB_PATH = $(PYTHON_ROOT)/libs ;
 
     # common properties required for compiling any Python module.
@@ -64,16 +82,19 @@ if $(NT)
         <runtime-link>dynamic
         ;
                         
-    SHELL_SET ?= "set " ;
-    SHELL_EXPORT ?= ; # shell variables are exported by default
 }
 else if $(UNIX)
 {
-    PYTHON_INCLUDES ?= <include>/usr/include/python1.5 ;
-    PYTHON_LIBS ?= /usr/lib/python1.5/config/libpython1.5.a ;
-    SHELL_SET ?= "" ;
-    SHELL_EXPORT ?= "export " ;
+    PYTHON_VERSION ?= 1.5 ;
+    PYTHON_INCLUDES ?= <include>/usr/include/python$(PYTHON_VERSION) ;
+    PYTHON_LIBS ?= /usr/lib/python$(PYTHON_VERSION)/config/libpython$(PYTHON_VERSION).a ;
 }
+
+# how do we invoke python?
+local PYTHON = $(PYTHON) ;
+PYTHON ?= python ;
+PYTHON = [ FAppendSuffix $(PYTHON:G=<executable-grist>) : $(SUFEXE) ] ;
+SEARCH on $(PYTHON) = $(PATH) ;
 
 #######################
 
@@ -82,10 +103,10 @@ else if $(UNIX)
 #
 
 # standard include requirements for anything using Boost.Python
-BOOST_PYTHON_INCLUDES = <include>$(BOOST_ROOT) $(PYTHON_INCLUDES) ;
+local BOOST_PYTHON_INCLUDES = <include>$(BOOST_ROOT) $(PYTHON_INCLUDES) ;
 
 # Base names of the source files for libboost_python
-CPP_SOURCES =
+local CPP_SOURCES =
     classes conversions extension_class functions 
     init_function module_builder objects types cross_module ;
 
@@ -117,13 +138,25 @@ rule boost-python
         : $(4) ;                      # pass on the default-BUILD, if any
 }
 
+# boost-python-test name : sources : requirements : default-BUILD
+#
+# Just like boost-python, but the result becomes part of the test pseudotarget
+# instead of being built by 'all'
+rule boost-python-test
+{
+    type-DEPENDS test : $(<) ;
+    
+    local gSUPPRESS_FAKE_TARGETS = true ;
+    boost-python $(1) : $(2) : $(3) : $(4) ;
+}
+
 #######################
 
-# boost-python-test target : python-script sources : requirements : local-build : args
+# boost-python-runtest target : python-script sources : requirements : local-build : args
 #
 # declare two python module tests: $(<).test which builds when out-of-date, and
 # $(<).run which builds unconditionally.
-rule boost-python-test
+rule boost-python-runtest
 {
     # tell Jam that the python script is relative to this directory
     SEARCH on $(>[1]) = $(SEARCH_SOURCE) ;
@@ -131,28 +164,25 @@ rule boost-python-test
     # required command-line args can be specified in argument 5
     # The user can add additional arguments in PYTHON_TEST_ARGS.
     local gPYTHON_TEST_ARGS = $(5) $(PYTHON_TEST_ARGS) ;
-    
+
     # declare the two subsidiary tests.
     declare-local-target $(<:S=.test) : $(>) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_TEST ;
     declare-local-target $(<:S=.run) : $(>) : $(PYTHON_PROPERTIES) : $(4) : PYTHON_RUNTEST ;
 }
 
-# how do we invoke python?
-PYTHON ?= python ;
-
 # special rules for two new target types: PYTHON_TEST and PYTHON_RUNTEST.
 # These are identical except that PYTHON_TEST runs the test when out-of-date, and
-# PYTHON_RUNTEST runs the test unconditionally. These are used by boost-python-test.
+# PYTHON_RUNTEST runs the test unconditionally. These are used by boost-python-runtest.
 SUFPYTHON_TEST = .test ;
 gGENERATOR_FUNCTION(PYTHON_TEST) = python-test-target ;
 rule python-test-target # test-target : sources : 
 {
-    python-test-aux $(<) : $(>) ;
+    python-runtest-aux $(<) : $(>) ;
     Clean clean : $(<) ; # remove the test-target as part of any clean operation
     type-DEPENDS test : $(<) ;
     MakeLocate $(<) : $(LOCATE_TARGET) ;
 }
-actions python-test-target
+actions python-test-target bind PYTHON
 {
     $(SHELL_SET)PYTHONPATH=$(PYTHONPATH)
     $(SHELL_EXPORT)PYTHONPATH
@@ -163,18 +193,18 @@ SUFPYTHON_RUNTEST = .run ;
 gGENERATOR_FUNCTION(PYTHON_RUNTEST) = python-runtest-target ;
 rule python-runtest-target # test-target : sources : 
 {
-    python-test-aux $(<) : $(>) ;
+    python-runtest-aux $(<) : $(>) ;
     NOTFILE $(<) ;
     ALWAYS $(<) ;
 }
-actions python-runtest-target
+actions python-runtest-target bind PYTHON
 {
     $(SHELL_SET)PYTHONPATH=$(PYTHONPATH)
     $(SHELL_EXPORT)PYTHONPATH
     $(PYTHON) "$(>)" $(ARGS)
 }
 
-rule python-test-aux # target : sources
+rule python-runtest-aux # target : sources
 {
     DEPENDS $(<) : $(>) ;
 
@@ -196,50 +226,60 @@ rule python-test-aux # target : sources
         [ join-path $(TOP) libs python test ]   # location of doctest
         $(PYTHONPATH)                           # base PYTHONPATH from environment
         : $(SPLITPATH) ] ;                      # platform path separator
+
+    PYTHON on $(<) = $(PYTHON) ;
+    DEPENDS $(<) : $(PYTHON) ;
 }
 
 ############# comprehensive module and test ###########
-boost-python boost_python_test : ../test/comprehensive.cpp ;
-boost-python-test comprehensive : [ join-path $(DOTDOT) test comprehensive.py ] <lib>boost_python_test ;
+boost-python-test boost_python_test : ../test/comprehensive.cpp ;
+
+boost-python-runtest comprehensive
+         : [ join-path $(DOTDOT) test comprehensive.py ]
+           <lib>boost_python_test ;
 
 ############# simple tests from ../example ############
 
-rule boost-python-example-test
+rule boost-python-example-runtest
 {
-    boost-python $(<) : ../example/$(<).cpp ;
-    boost-python-test $(<) : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<) ;
+    boost-python-test $(<) : ../example/$(<).cpp ;
+    boost-python-runtest $(<) : [ join-path $(DOTDOT) example test_$(<).py ] <lib>$(<) ;
 }
 
 
-boost-python-example-test abstract ;
-boost-python-example-test getting_started1 ;
-boost-python-example-test getting_started2 ;
-boost-python-example-test simple_vector ;
-boost-python-example-test do_it_yourself_convts ;
-boost-python-example-test pickle1 ;
-boost-python-example-test pickle2 ;
-boost-python-example-test pickle3 ;
+boost-python-example-runtest abstract ;
+boost-python-example-runtest getting_started1 ;
+boost-python-example-runtest getting_started2 ;
+boost-python-example-runtest simple_vector ;
+boost-python-example-runtest do_it_yourself_convts ;
+boost-python-example-runtest pickle1 ;
+boost-python-example-runtest pickle2 ;
+boost-python-example-runtest pickle3 ;
 
 
-boost-python ivect : ../example/ivect.cpp ;
-boost-python dvect : ../example/dvect.cpp ;
-boost-python noncopyable_export : ../example/noncopyable_export.cpp ;
-boost-python noncopyable_import : ../example/noncopyable_import.cpp ;
+boost-python-test ivect : ../example/ivect.cpp ;
+boost-python-test dvect : ../example/dvect.cpp ;
+boost-python-test noncopyable_export : ../example/noncopyable_export.cpp ;
+boost-python-test noncopyable_import : ../example/noncopyable_import.cpp ;
 
 ############## cross-module tests from ../example ##########
 
 # A simple rule to build a test which depends on multiple modules in the PYTHONPATH
-rule boost-python-multi-example-test # test-name : python-file libs
+rule boost-python-multi-example-runtest # test-name : python-file libs
 {
-    boost-python-test $(<) : ../example/tst_$(<).py <lib>$(>) : : : $(PYTHON_VECT_ITERATIONS) ;
+    boost-python-runtest $(<)
+        : ../example/tst_$(<).py <lib>$(>)
+        : : : $(PYTHON_VECT_ITERATIONS) ;
 }
+
 PYTHON_VECT_ITERATIONS ?= 10 ;
 
-boost-python-multi-example-test dvect1 : ivect dvect ;
-boost-python-multi-example-test dvect2 : ivect dvect ;
+boost-python-multi-example-runtest dvect1 : ivect dvect ;
+boost-python-multi-example-runtest dvect2 : ivect dvect ;
 
-boost-python-multi-example-test ivect1 : ivect dvect ;
-boost-python-multi-example-test ivect2 : ivect dvect ;
+boost-python-multi-example-runtest ivect1 : ivect dvect ;
+boost-python-multi-example-runtest ivect2 : ivect dvect ;
 
-boost-python-multi-example-test noncopyable : noncopyable_import noncopyable_export ;
+boost-python-multi-example-runtest
+        noncopyable : noncopyable_import noncopyable_export ;
 
