@@ -22,24 +22,23 @@ class HeaderExporter(Exporter):
         pass
 
 
-    def SetDeclarations(self, declarations):
-        def IsInternalName(name):
-            '''Returns true if the given name looks like a internal compiler
-            structure'''
-            return name.startswith('_')
+    def IsInternalName(self, name):
+        '''Returns true if the given name looks like a internal compiler
+        structure'''
+        return name.startswith('_')
         
-        Exporter.SetDeclarations(self, declarations)
+
+    def Export(self, codeunit, exported_names):
         header = os.path.normpath(self.parser_header)
-        for decl in declarations:
+        for decl in self.declarations:
             # check if this declaration is in the header
             location = os.path.normpath(decl.location[0])
-            if location != header or IsInternalName(decl.name):
-                continue
-            # ok, check the type of the declaration and export it accordingly
-            self.HandleDeclaration(decl)
+            if location == header and not self.IsInternalName(decl.name):
+                # ok, check the type of the declaration and export it accordingly
+                self.HandleDeclaration(decl, codeunit, exported_names)
             
 
-    def HandleDeclaration(self, decl):
+    def HandleDeclaration(self, decl, codeunit, exported_names):
         '''Dispatch the declaration to the appropriate method, that must create
         a suitable info object for a Exporter, create a Exporter, set its
         declarations and append it to the list of exporters.
@@ -53,10 +52,10 @@ class HeaderExporter(Exporter):
         
         exporter_class = dispatch_table.get(type(decl))
         if exporter_class is not None:
-            self.HandleExporter(decl, exporter_class)
+            self.HandleExporter(decl, exporter_class, codeunit, exported_names)
 
             
-    def HandleExporter(self, decl, exporter_type):
+    def HandleExporter(self, decl, exporter_type, codeunit, exported_names):
         # only export complete declarations
         if not getattr(decl, "incomplete", False):
             info = self.info[decl.name]
@@ -64,7 +63,9 @@ class HeaderExporter(Exporter):
             info.include = self.info.include
             exporter = exporter_type(info)
             exporter.SetDeclarations(self.declarations)
-            exporters.exporters.append(exporter)
+            exporter.SetParsedHeader(self.parser_header)
+            codeunit.SetCurrent(exporter.Unit())
+            exporter.GenerateCode(codeunit, exported_names)
 
     
     def Unit(self):

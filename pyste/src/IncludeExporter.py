@@ -22,3 +22,6 @@ class IncludeExporter(Exporter):
 
     def Unit(self):
         return '__all__'    # include it in all generated cpps (multiple mode)
+
+    def Header(self):
+        return None  # means "don't try to parse me!"

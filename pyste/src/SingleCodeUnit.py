@@ -49,6 +49,14 @@ class SingleCodeUnit:
     def Section(self, section):
         return self.code[section]
 
+
+    def SetCurrent(self, current):
+        pass
+
+
+    def Current(self):
+        pass 
+
     
     def Save(self):
         'Writes this code unit to the filename'

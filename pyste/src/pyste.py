@@ -33,11 +33,13 @@ import MultipleCodeUnit
 import infos
 import exporterutils
 import settings
+import gc
+import sys
 from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.9.2'
+__VERSION__ = '0.9.3'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -157,32 +159,63 @@ def Main():
     for interface in interfaces:
         context = CreateContext()
         execfile(interface, context)        
-    # parse all the C++ code        
+    # create the parser
     parser = CppParser(includes, defines) 
-    exports = exporters.exporters[:]
-    for export in exports:
-        try:
-            export.Parse(parser)
-        except CppParserError, e:            
-            print '\n'
-            print '***', e, ': exitting'
-            return 2
-    print 
-    # sort the exporters by its order
-    exports = [(x.Order(), x) for x in exporters.exporters]
-    exports.sort()
-    exports = [x for _, x in exports]
-    # now generate the wrapper code
+    # prepare to generate the wrapper code
     if multiple:
         codeunit = MultipleCodeUnit.MultipleCodeUnit(module, out)
     else:
-        codeunit = SingleCodeUnit.SingleCodeUnit(module, out)
-    exported_names = []
-    for export in exports:
-        if multiple:
-            codeunit.SetCurrent(export.Unit())
-        export.GenerateCode(codeunit, exported_names)    
-        exported_names.append(export.Name())
+        codeunit = SingleCodeUnit.SingleCodeUnit(module, out) 
+    # group exporters by header files    
+    groups = {}
+    for export in exporters.exporters:
+        header = export.Header()
+        if header in groups:
+            groups[header].append(export)
+        else:
+            groups[header] = [export] 
+    # stop referencing the exporters here
+    exporters.exporters = None 
+    # export all the exporters in each group, releasing memory as doing so
+    while len(groups) > 0:
+        # get the first group
+        header = groups.keys()[0]
+        exports = groups[header]
+        del groups[header]
+        # gather all tails into one
+        all_tails = []
+        for export in exports:
+            if export.Tail():
+                all_tails.append(export.Tail())
+        all_tails = '\n'.join(all_tails)
+        # parse header (if there's one)
+        if header:
+            try:
+                declarations, parsed_header = parser.parse(header, all_tails)
+            except CppParserError, e:            
+                print>>sys.stderr, '\n\n***', e, ': exitting'
+                return 2
+        else:
+            declarations = []
+            parsed_header = None
+        # first set the declarations and parsed_header for all the exporters
+        for export in exports:
+            export.SetDeclarations(declarations)
+            export.SetParsedHeader(parsed_header)
+        # sort the exporters by their order
+        exports = [(x.Order(), x) for x in exports]
+        exports.sort()
+        exports = [x for _, x in exports]
+        # maintain a dict of exported_names for this group
+        exported_names = {}
+        for export in exports:
+            if multiple:
+                codeunit.SetCurrent(export.Unit())
+            export.GenerateCode(codeunit, exported_names)
+            exported_names[export.Name()] = 1
+        # force collect of cyclic references
+        gc.collect()
+    # finally save the code unit
     codeunit.Save()                
     print 'Module %s generated' % module
     return 0

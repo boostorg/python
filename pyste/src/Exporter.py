@@ -16,6 +16,10 @@ class Exporter:
     def Name(self):
         return self.info.name
 
+
+    def Tail(self):
+        return self.parser_tail
+
         
     def Parse(self, parser):
         self.parser = parser
@@ -24,6 +28,10 @@ class Exporter:
         declarations, parser_header = parser.parse(header, tail)
         self.parser_header = parser_header
         self.SetDeclarations(declarations)
+
+
+    def SetParsedHeader(self, parsed_header):
+        self.parser_header = parsed_header 
 
 
     def SetDeclarations(self, declarations):
@@ -44,12 +52,11 @@ class Exporter:
         pass
     
                     
-    def Unit(self):
-        raise NotImplementedError
-
-    
     def GetDeclarations(self, fullname):
-        decls = [x for x in self.declarations if x.FullName() == fullname]
+        decls = []
+        for decl in self.declarations:
+            if decl.FullName() == fullname:
+                decls.append(decl)
         if not decls:
             raise RuntimeError, 'no %s declaration found!' % fullname
         return decls
@@ -69,4 +76,8 @@ class Exporter:
 
 
     def Unit(self):
+        return self.info.include
+
+
+    def Header(self):
         return self.info.include

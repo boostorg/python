@@ -16,7 +16,7 @@ class FunctionExporter(Exporter):
         Exporter.__init__(self, info, tail)
         self._exported_opaque_pointers = {}
         
-        
+
     def Export(self, codeunit, exported_names):
         if not self.info.exclude:
             decls = self.GetDeclarations(self.info.name)

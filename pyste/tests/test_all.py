@@ -176,7 +176,7 @@ if __name__ == '__main__':
     else:
         module = None
     try:
-        main('--multiple', module)
+        #main('--multiple', module)
         main('', module)
     except RuntimeError, e:
         print e        

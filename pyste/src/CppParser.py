@@ -19,8 +19,6 @@ class CppParser:
             defines = []
         self.includes = includes
         self.defines = defines
-        self._cache = []
-        self._CACHE_SIZE = 5
 
 
     def _includeparams(self, filename):
@@ -37,21 +35,6 @@ class CppParser:
         defines = ['-D "%s"' % x for x in self.defines]
         return ' '.join(defines)
     
-        
-    def UpdateCache(self, include, tail, decl_name, declarations, header):
-        self._cache.append((include, tail, decl_name, declarations, header))
-        if len(self._cache) > self._CACHE_SIZE:
-            self._cache.pop(0)
-
-            
-    def Cache(self, include, tail, decl_name):
-        for cache_include, cache_tail, cache_decl, declarations, header in self._cache:
-            if cache_include == include \
-            and cache_tail == tail \
-            and cache_decl == decl_name:
-                return declarations, header
-        return None
-        
     
     def FindFileName(self, include):
         if os.path.isfile(include):
@@ -71,10 +54,6 @@ class CppParser:
         filename and the tail code is appended to it before being passed on to gcc.
         This temp filename is then returned.
         '''        
-        # check if this header was already parsed
-        cached = self.Cache(include, tail, decl_name)
-        if cached:
-            return cached
         filename = self.FindFileName(include)
         # copy file to temp folder, if needed
         if tail:
@@ -101,8 +80,6 @@ class CppParser:
                 raise CppParserError, 'Error executing gccxml'
             # parse the resulting xml
             declarations = ParseDeclarations(xmlfile)
-            # cache the results
-            self.UpdateCache(include, tail, decl_name, declarations, infilename)
             # return the declarations                         
             return declarations, infilename
         finally:

@@ -15,8 +15,7 @@ import re
 #==============================================================================
 class ClassExporter(Exporter):
     'Generates boost.python code to export a class declaration'
-    
-
+ 
     def __init__(self, info, parser_tail=None):
         Exporter.__init__(self, info, parser_tail)
         # sections of code
@@ -566,7 +565,8 @@ class ClassExporter(Exporter):
             nested_info.include = self.info.include
             nested_info.name = nested_class.FullName()
             exporter = ClassExporter(nested_info)
-            exporter.SetDeclarations(self.declarations + [nested_class])
+            self.declarations.append(nested_class)
+            exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, exported_names)
             self.nested_codeunits.append(codeunit)
@@ -579,7 +579,8 @@ class ClassExporter(Exporter):
             enum_info.include = self.info.include
             enum_info.name = enum.FullName()
             exporter = EnumExporter(enum_info)
-            exporter.SetDeclarations(self.declarations + [enum])
+            self.declarations.append(enum)
+            exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
             exporter.Export(codeunit, None)
             self.nested_codeunits.append(codeunit)
