@@ -18,13 +18,10 @@ if $(NT)
         <msvc><*><threading>multi
         ;
                         
-    SHELL_EXPORT ?= set ;
 }
 else if $(UNIX)
 {
-    PYTHON_INCLUDES ?= <include>/usr/include/python1.5  ;
-    PYTHON_LIBS ?=  /usr/lib/python1.5/config/libpython1.5.a ;
-    SHELL_EXPORT ?= export ;
+    PYTHON_INCLUDES ?= <include>/software/python-2.0/include/python2.0  ;
 }
 
 #######################
@@ -93,12 +90,6 @@ rule python-test-target # test-target : sources :
     type-DEPENDS test : $(<) ;
     MakeLocate $(<) : $(LOCATE_TARGET) ;
 }
-actions python-test-target
-{
-    $(SHELL_EXPORT)PYTHONPATH="$(PYTHONPATH)"
-    $(PYTHON) "$(>)" $(ARGS) > "$(<)"
-}
-
 SUFPYTHON_RUNTEST = .run ;
 gGENERATOR_FUNCTION(PYTHON_RUNTEST) = python-runtest-target ;
 rule python-runtest-target # test-target : sources : 
@@ -107,12 +98,6 @@ rule python-runtest-target # test-target : sources :
     NOTFILE $(<) ;
     ALWAYS $(<) ;
 }
-actions python-runtest-target
-{
-    $(SHELL_EXPORT)PYTHONPATH="$(PYTHONPATH)"
-    $(PYTHON) "$(>)" $(ARGS)
-}
-
 rule python-test-aux # target : sources
 {
     DEPENDS $(<) : $(>) ;
@@ -133,6 +118,37 @@ rule python-test-aux # target : sources
         [ join-path $(TOP) libs python test ]   # location of doctest
         $(PYTHONPATH)                           # base PYTHONPATH from environment
         : $(SPLITPATH) ] ;
+}
+
+if $(NT)
+{
+    actions python-test-target
+    {
+        set PYTHONPATH=$(PYTHONPATH)
+        $(PYTHON) "$(>)" $(ARGS) > "$(<)"
+    }
+
+    actions python-runtest-target
+    {
+        set PYTHONPATH=$(PYTHONPATH)
+        $(PYTHON) "$(>)" $(ARGS)
+    }
+}
+else
+{
+    actions python-test-target
+    {
+        PYTHONPATH=$(PYTHONPATH)
+        export PYTHONPATH
+        $(PYTHON) "$(>)" $(ARGS) > "$(<)"
+    }
+
+    actions python-runtest-target
+    {
+        PYTHONPATH=$(PYTHONPATH)
+        export PYTHONPATH
+        $(PYTHON) "$(>)" $(ARGS)
+    }
 }
 
 ############# comprehensive module and test ###########
