@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../boost.css">
 
@@ -212,7 +212,7 @@
 namespace boost { namespace python
 {
   template &lt;class T
-   <font color="#007F00">     , class Bases = bases&lt;&gt;
+   <font color="#007F00">   , class Bases = bases&lt;&gt;
             , class HeldType = T
             , class NonCopyable = <i>unspecified</i>
            &gt;
@@ -261,11 +261,22 @@ namespace boost { namespace python
     template &lt;class D&gt;
     class_&amp; def_readwrite(char const* name, D T::*pm);
 
+    // exposing static data members
+    template &lt;class D&gt;
+    class_&amp; def_readonly(char const* name, D const&amp; d);
+    template &lt;class D&gt;
+    class_&amp; def_readwrite(char const* name, D&amp; d);
+
     // property creation
     template &lt;class Get&gt;
     void add_property(char const* name, Get const&amp; fget);
     template &lt;class Get, class Set&gt;
     void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
+
+    template &lt;class Get&gt;
+    void add_static_property(char const* name, Get const&amp; fget);
+    template &lt;class Get, class Set&gt;
+    void add_static_property(char const* name, Get const&amp; fget, Set const&amp; fset);
 
     // pickle support
     template &lt;typename PickleSuite&gt;
@@ -579,8 +590,40 @@ void add_property(char const* name, Get const&amp; fget, Set const&amp; fset);
     </dl>
     <br>
 <pre>
+template &lt;class Get&gt;
+void add_static_property(char const* name, Get const&amp; fget);
+template &lt;class Get, class Set&gt;
+void add_static_property(char const* name, Get const&amp; fget, Set const&amp; fset);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>name</code> is an <a href=
+      "definitions.html#ntbs">ntbs</a> which conforms to Python's <a href=
+      "http://www.python.org/doc/current/ref/identifiers.html">identifier
+      naming rules</a>.</dt>
+
+      <dt><b>Effects:</b> Creates a Boost.Python.StaticProperty object,
+      passing <code><a href=
+      "object.html#object-spec-ctors">object</a>(fget)</code> (and <code><a
+      href="object.html#object-spec-ctors">object</a>(fset)</code> in the
+      second form) to its constructor, then adds that property to the Python
+      class under construction with the given attribute <code>name</code>.
+      StaticProperty is a special subclass of Python's <a href=
+      "http://www.python.org/2.2.2/descrintro.html#property"><code>property</code></a>
+      class which can be called without an initial <code>self</code>
+      argument.</dt>
+
+      <dt><b>Returns:</b> <code>*this</code></dt>
+
+      <dt><b>Rationale:</b> Allows users to easily expose functions that can
+      be invoked from Python with static attribute access syntax.</dt>
+    </dl>
+    <br>
+<pre>
 template &lt;class D&gt;
 class_&amp; def_readonly(char const* name, D T::*pm);
+template &lt;class D&gt;
+class_&amp; def_readonly(char const* name, D const&amp; d);
 </pre>
 
     <dl class="function-semantics">
@@ -596,17 +639,26 @@ class_&amp; def_readonly(char const* name, D T::*pm);
 this-&gt;add_property(name, <a href=
 "data_members.html#make_getter-spec">make_getter</a>(pm));
 </pre>
+        and 
+<pre>
+this-&gt;add_static_property(name, <a href=
+"data_members.html#make_getter-spec">make_getter</a>(pm));
+</pre>
+        respectively.<br>
+        <br>
       </dd>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
       <dt><b>Rationale:</b> Allows users to easily expose a class' data
-      member such that it can be inspected from Python with a natural
-      syntax.</dt>
+      member or free variable such that it can be inspected from Python with
+      a natural syntax.</dt>
     </dl>
 <pre>
 template &lt;class D&gt;
 class_&amp; def_readwrite(char const* name, D T::*pm);
+template &lt;class D&gt;
+class_&amp; def_readwrite(char const* name, D&amp; d);
 </pre>
 
     <dl class="function-semantics">
@@ -618,13 +670,21 @@ this-&gt;add_property(name, <a href=
 "data_members.html#make_getter-spec">make_getter</a>(pm), <a href=
 "data_members.html#make_setter-spec">make_setter</a>(pm));
 </pre>
+        and 
+<pre>
+this-&gt;add_static_property(name, <a href=
+"data_members.html#make_getter-spec">make_getter</a>(pm), <a href=
+"data_members.html#make_setter-spec">make_setter</a>(pm));
+</pre>
+        respectively.<br>
+        <br>
       </dd>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
-      <dt><b>Rationale:</b> Allows users to easily expose a class' data
-      member such that it can be inspected and set from Python with a natural
-      syntax.</dt>
+      <dt><b>Rationale:</b> Allows users to easily expose a class' data or
+      free variable member such that it can be inspected and set from Python
+      with a natural syntax.</dt>
     </dl>
 <pre>
 template &lt;typename PickleSuite&gt;
@@ -714,8 +774,7 @@ class_&lt;Derived, bases&lt;Base&gt; &gt;("Derived");
 </pre>
     Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     13 November, 2002 
-    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     5 August, 2002 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
      
 
     <p><i>&copy; Copyright <a href=

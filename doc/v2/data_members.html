@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="../boost.css">
 
@@ -92,6 +92,39 @@ template &lt;class C, class D, class Policies&gt;
       callable object.</dt>
     </dl>
 <pre>
+template &lt;class D&gt;
+<a href="object.html#object-spec">object</a> make_getter(D const&amp; d);
+template &lt;class D, class Policies&gt;
+<a href=
+"object.html#object-spec">object</a> make_getter(D const&amp; d, Policies const&amp; policies);
+
+template &lt;class D&gt;
+<a href="object.html#object-spec">object</a> make_getter(D const* p);
+template &lt;class D, class Policies&gt;
+<a href=
+"object.html#object-spec">object</a> make_getter(D const* p, Policies const&amp; policies);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>Policies</code> is a model of <a href=
+      "CallPolicies.html">CallPolicies</a>.</dt>
+
+      <dt><b>Effects:</b> Creates a Python callable object which accepts no
+      arguments and returns <code>d</code> or <code>*p</code>, converted
+      <code>to_python</code> on demand. If <code>policies</code> is supplied,
+      it will be applied to the function as described <a href=
+      "CallPolicies.html">here</a>. Otherwise, the library attempts to
+      determine whether <code>D</code> is a user-defined class type, and if
+      so uses <code><a href=
+      "reference_existing_object.html#reference_existing_object-spec">reference_existing_object</a></code></dt>
+
+      <dt>for <code>Policies</code>.</dt>
+
+      <dt><b>Returns:</b> An instance of <a href=
+      "object.html#object-spec">object</a> which holds the new Python
+      callable object.</dt>
+    </dl>
+<pre>
 <a name="make_setter-spec">template &lt;class C, class D&gt;</a>
 <a href="object.html#object-spec">object</a> make_setter(D C::*pm);
 
@@ -109,6 +142,34 @@ template &lt;class C, class D, class Policies&gt;
       <code>from_python</code> to <code>C*</code> and
       <code>D&nbsp;const&amp;</code>, respectively, and sets the
       corresponding <code>D</code> member of the <code>C</code> object. If
+      <code>policies</code> is supplied, it will be applied to the function
+      as described <a href="CallPolicies.html">here</a>.</dt>
+
+      <dt><b>Returns:</b> An instance of <a href=
+      "object.html#object-spec">object</a> which holds the new Python
+      callable object.</dt>
+    </dl>
+<pre>
+template &lt;class D&gt;
+<a href="object.html#object-spec">object</a> make_setter(D&amp; d);
+template &lt;class D, class Policies&gt;
+<a href=
+"object.html#object-spec">object</a> make_setter(D&amp; d, Policies const&amp; policies);
+
+template &lt;class D&gt;
+<a href="object.html#object-spec">object</a> make_setter(D* p);
+template &lt;class D, class Policies&gt;
+<a href=
+"object.html#object-spec">object</a> make_setter(D* p, Policies const&amp; policies);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>Policies</code> is a model of <a href=
+      "CallPolicies.html">CallPolicies</a>.</dt>
+
+      <dt><b>Effects:</b> Creates a Python callable object which accepts one
+      argument, which is converted from Python to <code>D const&amp;</code>
+      and written into <code>d</code> or <code>*p</code>, respectively. If
       <code>policies</code> is supplied, it will be applied to the function
       as described <a href="CallPolicies.html">here</a>.</dt>
 
@@ -155,8 +216,7 @@ BOOST_PYTHON_MODULE_INIT(data_members_example)
 
     <p>
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     13 November, 2002 
-    <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
+     5 August, 2003 <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
