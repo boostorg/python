@@ -89,6 +89,16 @@ namespace { // Avoid cluttering the global namespace.
     if (number != 42)
       w.set_secret_number(number);
   }
+
+  template <class T>
+  class a_number {
+    private:
+      T m_number;
+    public:
+      a_number() : m_number(0) {}
+      a_number(T number) : m_number(number) {}
+      const T get() const { return m_number; }
+  };
 }
 
 extern "C"
@@ -114,6 +124,20 @@ initgetting_started3()
     world_class.def(world_getinitargs, "__getinitargs__");
     world_class.def(world_getstate, "__getstate__");
     world_class.def(world_setstate, "__setstate__");
+
+    // This Python class has no pickle support.
+    python::class_builder<a_number<int> >
+    py_a_lame_number(this_module, "a_lame_number");
+    py_a_lame_number.def(python::constructor<>());
+    py_a_lame_number.def(python::constructor<int>());
+    py_a_lame_number.def(&a_number<int>::get, "get");
+
+    // The third argument enables pickling of the object's __dict__.
+    python::class_builder<a_number<double> >
+    py_a_number(this_module, "a_number", true);
+    py_a_number.def(python::constructor<>());
+    py_a_number.def(python::constructor<double>());
+    py_a_number.def(&a_number<double>::get, "get");
   }
   catch(...)
   {
