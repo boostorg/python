@@ -378,8 +378,8 @@ attributes can just be a different syntax for a method call. Wrapping our
 [^Num] class using Boost.Python:
 
     class_<Num>("Num")
-        .add_property("rovalue", &Var::get)
-        .add_property("value", &Var::get, &Var::set);
+        .add_property("rovalue", &Num::get)
+        .add_property("value", &Num::get, &Num::set);
 
 And at last, in Python:
 
@@ -392,7 +392,7 @@ And at last, in Python:
 Take note that the class property [^rovalue] is exposed as [*read-only]
 since the [^rovalue] setter member function is not passed in:
 
-    .add_property("rovalue", &Var::get)
+    .add_property("rovalue", &Num::get)
 
 [page:1 Inheritance]
 
@@ -520,7 +520,7 @@ available, since Base is an abstract class.
 In Python, let us try to instantiate our [^Base] class:
 
     >>> base = Base()
-    AttributeError: ...
+    RuntimeError: This class cannot be instantiated from Python
 
 Why is it an error? [^Base] is an abstract class. As such it is advisable
 to define the Python wrapper with [^no_init] as we have done above. Doing
@@ -528,7 +528,15 @@ so will disallow abstract base classes such as [^Base] to be instantiated.
 
 [h2 Deriving a Python class]
 
-Now, at last, we can even derive from our base class [^Base] in Python:
+Now, at last, we can even derive from our base class Base in Python. Before
+we can do that, we have to set up our class_ wrapper as:
+
+    class_<Base, BaseWrap, boost::noncopyable>("Base")
+        ;
+
+Otherwise, we have to suppress the Base class' [^no_init] by adding an
+[^__init__()] method to all our derived classes. [^no_init] actually adds
+an [^__init__] method that raises a Python RuntimeError exception.
 
     >>> class Derived(Base):
     ...     def f(self):
@@ -1122,7 +1130,7 @@ the construct:
         .value("blue", blue)
         ;
 
-can be used to expose it to Python. The new enum type is created in the
+can be used to expose to Python. The new enum type is created in the
 current [^scope()], which is usually the current module. The snippet above
 creates a Python class derived from Python's [^int] type which is
 associated with the C++ type passed as its first parameter.
