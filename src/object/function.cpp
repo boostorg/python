@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include <stdio.h>
+
 namespace boost { namespace python { namespace objects { 
 
 py_function_impl_base::~py_function_impl_base()
@@ -177,8 +179,10 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
 {
     static handle<> exception(
         PyErr_NewException("Boost.Python.ArgumentError", PyExc_TypeError, 0));
+
+    object message = "Python argument types in\n    %s.%s("
+        % make_tuple(this->m_namespace, this->m_name);
     
-    str message("Python argument types\n    (");
     list actual;
     for (int i = 0; i < PyTuple_Size(args); ++i)
     {
@@ -214,12 +218,13 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
         }
 
         signatures.append(
-            "(%s) -> %s" % make_tuple(str(", ").join(formal), s[0].basename)
+            "%s(%s) -> %s" % make_tuple(f->m_name, str(", ").join(formal), s[0].basename)
             );
     }
 
     message += str("\n    ").join(signatures);
 
+    printf("\n--------\n%s\n--------\n", extract<const char*>(message)());
     PyErr_SetObject(exception.get(), message.ptr());
     throw_error_already_set();
 }
@@ -338,17 +343,19 @@ void function::add_to_namespace(
         if (dict == 0)
             throw_error_already_set();
 
-        // This isn't quite typesafe. We'll shoot first by assuming
-        // the thing is a function*, then ask questions later. The code works nicer that way.
-        handle<function> existing(
-            allow_null(downcast<function>(::PyObject_GetItem(dict, name.ptr())))
-            );
+        handle<> existing(allow_null(::PyObject_GetItem(dict, name.ptr())));
         
         if (existing)
         {
             if (existing->ob_type == &function_type)
             {
-                new_func->add_overload(existing);
+                new_func->add_overload(
+                    handle<function>(
+                        borrowed(
+                            downcast<function>(existing.get())
+                        )
+                    )
+                );
             }
             else if (existing->ob_type == &PyStaticMethod_Type)
             {
@@ -376,9 +383,16 @@ void function::add_to_namespace(
         // A function is named the first time it is added to a namespace.
         if (new_func->name().ptr() == Py_None)
             new_func->m_name = name;
+
+        handle<> name_space_name(
+            allow_null(::PyObject_GetAttrString(name_space.ptr(), "__name__")));
+        
+        if (name_space_name)
+            new_func->m_namespace = object(name_space_name);
     }
 
-    // The PyObject_GetAttrString() call above left an active error
+    // The PyObject_GetAttrString() or PyObject_GetItem calls above may
+    // have left an active error
     PyErr_Clear();
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
         throw_error_already_set();
@@ -489,7 +503,9 @@ extern "C"
     
 static PyGetSetDef function_getsetlist[] = {
     {"__name__", (getter)function_get_name, 0 },
+    {"func_name", (getter)function_get_name, 0 },
     {"__doc__", (getter)function_get_doc, (setter)function_set_doc},
+    {"func_doc", (getter)function_get_doc, (setter)function_set_doc},
     {NULL} /* Sentinel */
 };
 

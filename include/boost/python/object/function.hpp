@@ -48,6 +48,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     py_function m_fn;
     handle<function> m_overloads;
     object m_name;
+    object m_namespace;
     object m_doc;
     object m_arg_names;
 };
