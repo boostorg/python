@@ -1,3 +1,22 @@
+2000-11-04 0:36
+
+    Removed the need for the phantom base class that screwed up inheritance
+    hierarchies, introduced error-prone ordering dependencies, and complexified
+    logic in many places!
+    
+    extclass.h: Added some explanatory comments, removed wasteful m_self member
+    of HeldInstance
+
+    extclass_demo.cpp: Added #pragmas which allow compilation in ansi strict
+    mode under Metrowerks
+
+    functions.h: Added virtual_function as part of phantom base class removal;
+    expanded commentary
+
+    pyptr.h: Added some missing 'typename's and a GCC workaround fix
+
+    subclass.cpp: Added missing string literal const_cast<>s.
+
 2000-11-03 10:58
 
     Fix friend function instantiation bug caught by Metrowerks (thanks
