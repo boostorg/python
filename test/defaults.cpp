@@ -18,6 +18,10 @@ using namespace std;
 char const* const format = "int(%s); char(%s); string(%s); double(%s); ";
 
 ///////////////////////////////////////////////////////////////////////////////
+//
+//  Overloaded functions
+//
+///////////////////////////////////////////////////////////////////////////////
 object
 bar(int a, char b, std::string c, double d)
 {
@@ -45,6 +49,10 @@ bar(int a)
 BOOST_PYTHON_FUNCTION_GENERATOR(bar_stubs, bar, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
+//
+//  Functions with default arguments
+//
+///////////////////////////////////////////////////////////////////////////////
 object
 foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
 {
@@ -54,7 +62,10 @@ foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
 BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
-
+//
+//  Overloaded member functions with default arguments
+//
+///////////////////////////////////////////////////////////////////////////////
 struct X {
 
     object
@@ -92,24 +103,13 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
     module("defaults_ext")
         .def("foo", foo, foo_stubs())
-
-#if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1200))
-        .def("bar", signature<object(*)(int, char, std::string, double)>(), bar_stubs())
-#else // signature does not work on VC6 only (VC7 is ok)
         .def("bar", (object(*)(int, char, std::string, double))0, bar_stubs())
-#endif
         ;
 
     class_<X>("X")
         .def("bar", &X::bar, X_bar_stubs())
         .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
-
-#if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1200))
-        .def("foo", signature<object(X::*)(int, bool) const>(), X_foo_2_stubs())
-#else // signature does not work on VC6 only (VC7 is ok)
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())
-#endif
-
         .def("foo", (object(X::*)(list, list, bool) const)0, X_foo_3_stubs())
         ;
 }
