@@ -11,8 +11,6 @@
 
 namespace boost { namespace python { 
 
-enum custodial_timing { pre_call, post_call };
-                        
 template <std::size_t custodian, std::size_t ward, class Base = default_call_policies>
 struct with_custodian_and_ward : Base
 {
