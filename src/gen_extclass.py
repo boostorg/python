@@ -324,6 +324,98 @@ class read_only_setattr_function : public function
     string m_name;
 };
 
+
+/* helper class to wrap STL conforming iterators. 
+
+Given a wrapped container ("FooList", say), this template is used to create
+an auxiliary class "FooList_cursor" that wraps the container's iterator.
+The cursor can be used in Python loops likes this:
+
+   >>> for i in foo_list.cursor():
+   ...     print i.get_data()
+   
+The auxiliary cursor class can be created for any STL conforming
+container. It implements random access functions (get_item() and
+set_item()) for any iterator, but these will only be as efficient as the
+underlying iterator allows. However, this is not a problem because 
+the above Python loop accesses the items in forward order anyway. 
+*/
+template <class Container>
+struct cursor
+{
+    typedef typename Container::iterator iterator;
+    typedef typename Container::value_type value_type;
+    
+    cursor(Container & c, ref python_object)
+    : m_python_object(python_object),
+      m_begin(c.begin()), 
+      m_iter(c.begin()),
+      m_size(c.size()),
+      m_index(0)
+    {}
+    
+    void advance(int index, std::forward_iterator_tag)
+    {
+        if(index < 0 || index >= m_size)
+        {
+            PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(index));
+            throw python::error_already_set();            
+        }
+        
+        int delta = index - m_index;
+        if(delta < 0)
+        {
+            m_iter = m_begin;
+            delta = index;
+        }
+        std::advance(m_iter, delta);
+        m_index = index;
+    }
+    
+    void advance(int index, std::bidirectional_iterator_tag)
+    {
+        if(index < 0 || index >= m_size)
+        {
+            PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(index));
+            throw python::error_already_set();            
+        }
+        int delta = index - m_index;
+        std::advance(m_iter, delta);
+        m_index = index;
+    }
+    
+    value_type const & get_item(int index)
+    {
+        advance(index, std::iterator_category(m_iter));
+        return *m_iter;
+    }
+    
+    void set_item(int index, value_type const & v)
+    {
+        advance(index, std::iterator_category(m_iter));
+        *m_iter = v;
+    }
+    
+    int len() const
+        { return m_size; }
+        
+    ref m_python_object;
+    iterator m_begin, m_iter;
+    int m_index, m_size;
+};
+
+/* create a cursor for an STL conforming container */
+template <class T>
+struct extension_class_cursor_factory
+{
+    static cursor<T> get(ref container)
+    {
+        return cursor<T>(
+            BOOST_PYTHON_CONVERSION::from_python(container.get(), type<T&>()), 
+            container);
+    }
+};
+
   template <class From, class To>
   struct define_conversion
   {

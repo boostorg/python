@@ -657,7 +657,7 @@ for i in S:
 for (iterator i = S.begin(), end = S.end(); i != end; ++i)
 </pre></blockquote>
 
-<p>One could try to wrap C++ iterators in order to carry the C++ idiom into
+<p>One could try to wrap C++ iterators directly in order to carry the C++ idiom into
       Python. However, this does not work very well because 
 
 <ol>
@@ -671,10 +671,78 @@ for (iterator i = S.begin(), end = S.end(); i != end; ++i)
 </ol>
 
       <p>
-        It is a better idea to support the standard <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">Python
-        sequence and mapping protocols</a> for your wrapped containers. These
-        operators have to be wrapped manually because there are no corresponding
+        Therefore, BPL provides a special helper class "cursor" that acts as
+        an adapter for STL iterators and enables them to be used within 
+        normal Python loops. Suppose, for example, that we want to wrap a
+        <code>std::list&lt;BigNum&gt;</code>. First, we have to wrap this class itself,
+        as usual:
+        
+<blockquote><pre>
+// wrap an STL conforming container
+boost::python::class_builder&lt;std::list&lt;BigNum&gt; &gt; bignum_list_class(my_module, "BigNumList");
+
+bignum_list_class.def(boost::python::constructor&lt;&gt;());
+
+bignum_list_class.def((void (std::list&lt;BigNum&gt;::*)(BigNum const &amp;))
+                                &amp;std::list&lt;BigNum&gt;::push_back, "push_back");
+</pre></blockquote>
+
+        Since <code>std::list</code> conforms to the requirements
+        of an STL container, we may create a cursor for it:
+        
+<blockquote><pre>
+// define cursor for an STL conforming container
+my_module.def_cursor_for(bignum_list_class);
+</pre></blockquote>
+
+        This enables the following use of <code>BigNumList</code> within Python:        
+        
+<blockquote><pre>
+>>> l = BigNumList()
+>>>
+>>> l.push_back(BigNum(1))  # fill the list
+>>> l.push_back(BigNum(2))
+>>> l.push_back(BigNum(3))
+>>>
+>>> for i in l.cursor():    # use list's cursor in a loop
+...     print i
+...
+1
+2
+3
+</pre></blockquote>
+        
+        The cursor defines random access functions ("__getitem__" and 
+        "__setitem__") for any iterator, but these functions will only be 
+        as efficient as the underlying iterator allows. Indices are in the
+        range <code>[0, cursor.len()-1]</code>. You can always 
+        access items in any order:
+        
+<blockquote><pre>
+>>> cursor = l.cursor()     # get cursor
+>>> cursor.len()            # length of the sequence
+3
+>>> print cursor[2]         # read element at index  
+3
+>>> print cursor[0]
+1
+>>> cursor[1] = BigNum(42)  # write element at index
+>>> print cursor[1]
+42
+</pre></blockquote>
+        
+        but this may be slow (linear time per access) on a large list
+        which provides only a forward or bi-directional iterator. Note that this
+        is not a problem for the loop above because it always accesses items
+        in forward order.
+
+        <p>
+        An alternative way of wrapping your containers is to support 
+        Python's standard <a
+        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">
+        sequence and mapping protocols</a>. The special functions
+        required by these protocols have to be wrapped manually because there 
+        are no corresponding
         C++ operators that could be used for automatic wrapping. The Python
         documentation lists the relevant <a href=
         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">

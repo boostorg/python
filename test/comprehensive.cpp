@@ -10,6 +10,7 @@
 #include <stdio.h> // used for portability on broken compilers
 #include <math.h>  // for pow()
 #include <boost/rational.hpp>
+#include <list>
 
 namespace bpl_test {
 
@@ -1009,6 +1010,15 @@ void init_module(boost::python::module_builder& m)
     // export non-operator function as heterogeneous reverse-argument operator
     int_class.def(&rmul, "__rmul__");
     
+    // wrap an STL conforming container
+    boost::python::class_builder<std::list<Int> > intlist_class(m, "IntList");
+
+    intlist_class.def(boost::python::constructor<>());
+    intlist_class.def((void (std::list<Int>::*)(Int const &))
+                             &std::list<Int>::push_back, "append");
+    
+    // wrap the iterator of an STL conforming container in a cursor
+    m.def_cursor_for(intlist_class);
 
     boost::python::class_builder<EnumOwner> enum_owner(m, "EnumOwner");
     enum_owner.def(boost::python::constructor<EnumOwner::enum_type, const EnumOwner::enum_type&>());

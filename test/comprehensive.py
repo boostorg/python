@@ -1029,6 +1029,30 @@ Test operator export to a subclass
     >>> j.i()
     15
 
+========= Test creation of a cursor for an STL conforming container ==========
+
+    >>> i1 = Int(1)
+    >>> i2 = Int(2)
+    >>> i3 = Int(3)
+    >>> l = IntList()
+    >>> l.append(i1)
+    >>> l.append(i2)
+    >>> l.append(i3)
+    >>> for i in l.cursor():
+    ...     print i.i()
+    1
+    2
+    3
+
+test that cursor keeps a reference to its container
+
+    >>> c = l.cursor()
+    >>> del l
+    >>> for i in c:
+    ...     print i.i()
+    1
+    2
+    3
 
 ========= Prove that the "phantom base class" issue is resolved ==========
 
