@@ -21,4 +21,11 @@ unwrapper_base::~unwrapper_base()
         registry::remove(*this);
 }
 
+namespace
+{
+  int arbitrary;
+}
+
+void* const unwrapper_base::non_null = &arbitrary;
+
 }}} // namespace boost::python::converter

@@ -13,7 +13,7 @@ namespace
   struct pyobject_unwrapper : unwrapper_base
   {
       pyobject_unwrapper();
-      bool convertible(PyObject*) const;
+      void* can_convert(PyObject*) const;
   };
   
   pyobject_unwrapper static_unwrapper;
@@ -23,13 +23,13 @@ namespace
   {
   }
       
-  bool pyobject_unwrapper::convertible(PyObject*) const
+  void* pyobject_unwrapper::can_convert(PyObject*) const
   {
-      return true;
+      return non_null;
   }
 }
 
-BOOST_PYTHON_EXPORT unwrapper_base*
-unwrap_more_<PyObject*>::m_unwrapper = &static_unwrapper;
+BOOST_PYTHON_DECL std::pair<unwrapper_base*,void*>
+unwrap_more_<PyObject*>::m_unwrapper(&static_unwrapper,&static_unwrapper);
 
 }}} // namespace boost::python::converter

@@ -39,35 +39,6 @@ namespace registry
   {
   }
 
-  namespace // <unnamed>
-  {
-    // A UnaryFunction type which deletes its argument
-    struct delete_item
-    {
-        template <class T>
-        void operator()(T* x) const
-        {
-            delete x;
-        }
-    };
-
-    // A UnaryFunction type which returns true iff its argument is a
-    // unwrapper which can convert the given Python object.
-    struct convertible
-    {
-        convertible(PyObject* p)
-            : m_p(p)
-        {}
-        
-        bool operator()(unwrapper_base* converter) const
-        {
-            return converter->convertible(m_p);
-        }
-        
-        PyObject* m_p;
-    };
-  }
-
   entry::~entry()
   {
       if (m_wrapper != 0)
@@ -79,12 +50,25 @@ namespace registry
       }
   }
 
-  unwrapper_base* entry::unwrapper(PyObject* p) const
+  std::pair<unwrapper_base*,void*>
+  entry::unwrapper(PyObject* p) const
   {
-      unwrappers::const_iterator q =
-          std::find_if(m_unwrappers.begin(), m_unwrappers.end(), convertible(p));
+      unwrapper_base* body = 0;
+      void* data = 0;
       
-      return q == m_unwrappers.end() ? 0 : *q;
+      for (unwrappers::const_iterator q = m_unwrappers.begin(),
+               finish = m_unwrappers.end();
+           q != finish;
+           ++q)
+      {
+          data = (*q)->can_convert(p);
+          if (data != 0)
+          {
+              body = *q;
+              break;
+          }
+      }
+      return std::make_pair(body,data);
   }
   
   wrapper_base* entry::wrapper() const
