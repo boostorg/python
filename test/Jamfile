@@ -55,6 +55,7 @@ bpl-test try : newtest.py m1.cpp m2.cpp ;
 bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters.cpp ;
 bpl-test test_pointer_adoption ;
 bpl-test callbacks ;
+bpl-test virtual_functions ;
 
 # --- unit tests of library components ---
 unit-test indirect_traits_test

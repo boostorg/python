@@ -12,6 +12,7 @@
 # include <boost/python/object/value_holder_fwd.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
+# include <boost/python/detail/member_function_cast.hpp>
 # include <boost/mpl/type_list.hpp>
 # include <boost/python/object/class_converters.hpp>
 # include <boost/mpl/size.hpp>
@@ -103,14 +104,24 @@ class class_ : private objects::class_base
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
         objects::function::add_to_namespace(
-            this->object(), name, ref(detail::wrap_function(f)));
+            this->object(), name,
+            ref(detail::wrap_function(
+                    // This bit of nastiness casts F to a member function of T if possible. 
+                    detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f)
+                    )));
         return *this;
     }
 
     template <class Fn, class CallPolicy>
     self& def(char const* name, Fn fn, CallPolicy policy)
     {
-        this->def(name, boost::python::make_function(fn, policy));
+        this->def(name
+                  , boost::python::make_function(
+                      // This bit of nastiness casts F to a member function of T if possible. 
+                      detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
+                      , policy)
+            );
+        
         return *this;
     }
     

@@ -10,6 +10,7 @@
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/object/inheritance.hpp>
+# include <boost/python/object/find_instance.hpp>
 # include <boost/ref.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -146,14 +147,20 @@ struct value_holder_back_reference : instance_holder
 {
     // Forward construction to the held object
     value_holder_back_reference(PyObject* p)
-        : m_held() {}
+        : m_held() {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1>
     value_holder_back_reference(PyObject* p, A1 a1)
         : m_held(p
             , (typename unwrap_reference<A1>::type&)(a1)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2)
@@ -161,7 +168,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A1>::type&)(a1)
             , (typename unwrap_reference<A2>::type&)(a2)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3)
@@ -170,7 +180,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A2>::type&)(a2)
             , (typename unwrap_reference<A3>::type&)(a3)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4)
@@ -180,7 +193,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A3>::type&)(a3)
             , (typename unwrap_reference<A4>::type&)(a4)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
@@ -190,7 +206,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A3>::type&)(a3)
             , (typename unwrap_reference<A4>::type&)(a4)
             , (typename unwrap_reference<A5>::type&)(a5)
-            ) {}
+            ) {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6)
@@ -201,7 +220,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A4>::type&)(a4)
             , (typename unwrap_reference<A5>::type&)(a5)
             , (typename unwrap_reference<A6>::type&)(a6)
-            ) {}
+            ) {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7)
@@ -214,7 +236,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A6>::type&)(a6)
             , (typename unwrap_reference<A7>::type&)(a7)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8)
@@ -228,7 +253,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A7>::type&)(a7)
             , (typename unwrap_reference<A8>::type&)(a8)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9)
@@ -243,7 +271,10 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A8>::type&)(a8)
             , (typename unwrap_reference<A9>::type&)(a9)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
+
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     value_holder_back_reference(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10)
@@ -259,7 +290,9 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A9>::type&)(a9)
             , (typename unwrap_reference<A10>::type&)(a10)
             )
-    {}
+    {
+        (void)instance_finder<BackReferenceType>::registration;
+    }
 
  private: // required holder implementation
     void* holds(converter::undecorated_type_id_t);
