@@ -222,10 +222,10 @@ namespace api
             object_initializer<
                 BOOST_DEDUCED_TYPENAME unwrap_reference<T>::type
             >::get(
-                do_unforward(x)
+                object::do_unforward(x)
               , detail::convertible<object const*>::check(
                     to_ptr(
-                        do_unforward(x)
+                        object::do_unforward(x)
                     )
                 )
           ))
