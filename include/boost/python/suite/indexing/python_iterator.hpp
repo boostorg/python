@@ -21,46 +21,24 @@
 #define BOOST_PYTHON_INDEXING_PYTHON_ITERATOR_HPP
 
 #include <boost/python/object.hpp>
-#include <memory>
 
 namespace boost { namespace python { namespace indexing {
   struct BOOST_PYTHON_DECL python_iterator
   {
-    virtual ~python_iterator ();
-    virtual bool next () = 0;
-    virtual boost::python::object current() const = 0;
-  };
+    python_iterator (boost::python::object);
+    // Sets a python type exception and calls throw_error_already_set if
+    // the passed object is not iterable via PyObject_GetIter
 
-  BOOST_PYTHON_DECL
-  std::auto_ptr<python_iterator>
-  make_iterator (boost::python::object);
-  // Returns null auto_ptr if object does not provide __iter__ nor
-  // __getitem__, otherwise a pointer to a suitable implementation of
-  // python_iterator
+    bool next ();
+    // Get the next item from the iterator, returning true for success
 
-  struct BOOST_PYTHON_DECL python_getitem_iterator : public python_iterator
-  {
-  public:
-    python_getitem_iterator (boost::python::object);
-    virtual bool next ();
-    virtual boost::python::object current() const;
+    boost::python::object current() const;
+    // Callable only after a successful next()
 
   private:
-    boost::python::object m_getitem_method;
-    int m_index;
-    boost::python::object m_current;
-  };
-
-  struct BOOST_PYTHON_DECL python_iter_iterator : public python_iterator
-  {
-  public:
-    python_iter_iterator (boost::python::object);
-    virtual bool next ();
-    virtual boost::python::object current() const;
-
-  private:
-    boost::python::object m_next_method;
-    boost::python::object m_current;
+    ::boost::python::object m_iter_obj;
+    ::boost::python::object m_next_method;
+    ::boost::python::object m_current;
   };
 } } }
 
