@@ -29,7 +29,7 @@ CPPOPTS= $(STLPORTINC) $(STLPORTOPTS) -I$(BOOST) $(PYINC) \
 MAKEDEP= -M
 
 LD= CC -LANG:std -n32 -mips4
-LDOPTS= -shared -all
+LDOPTS= -shared
 
 OBJ = classes.o conversions.o extension_class.o functions.o \
       init_function.o module_builder.o \
@@ -58,7 +58,7 @@ all: libboost_python.a \
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a
-	$(CPP) -ar -all -o libboost_python.a $(OBJ)
+	$(CPP) -ar -o libboost_python.a $(OBJ)
 
 boost_python_test.so: $(OBJ) comprehensive.o
 	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o boost_python_test.so -lm
