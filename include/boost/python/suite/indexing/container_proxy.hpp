@@ -769,20 +769,21 @@ namespace boost { namespace python { namespace indexing {
     typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
         key_param;
 
-#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    typedef value_traits<reference> value_traits_;
-#else
+#if defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+    // value_traits for the reference type (i.e. our element_proxy
+    // instance) supplies a custom visitor_helper. Compilers without
+    // partial specialization need help here.
+
     typedef element_proxy_traits<Container> value_traits_;
 
-    // Forward visitor_helper to eleemnt_proxy_traits
+    // Hide base class visitor_helper, which would call the
+    // unspecialized value_traits version
     template<typename PythonClass, typename Policy>
     static void visitor_helper (PythonClass &pyClass, Policy const &policy)
     {
       value_traits_::visitor_helper (pyClass, policy);
     }
 #endif
-    // Get value_traits for the reference type (i.e. element_proxy)
-    // to get the custom visitor_helper
   };
 
 #if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
