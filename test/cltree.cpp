@@ -83,3 +83,6 @@ BOOST_PYTHON_MODULE_INIT(cltree) {
 	 )
     ;
 }
+
+#include "module_tail.cpp"
+

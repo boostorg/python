@@ -8,7 +8,7 @@
 
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/inheritance.hpp>

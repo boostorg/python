@@ -27,7 +27,7 @@ namespace detail
   template <class T>
   PyObject* convert_result(T const& x)
   {
-      return converter::arg_to_python<T>(x).get_incref();
+      return converter::arg_to_python<T>(x).release();
   }
 
   // Operator implementation template declarations. The nested apply

@@ -7,8 +7,7 @@
 # define BUILTIN_CONVERTERS_DWA2002124_HPP
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/none.hpp>
-# include <boost/python/reference.hpp>
-# include <boost/python/converter/arg_to_python_base.hpp>
+# include <boost/python/handle.hpp>
 # include <string>
 # include <complex>
 
@@ -65,10 +64,10 @@ namespace detail
     namespace converter                                 \
     {                                                   \
       template <> struct arg_to_python< T >             \
-        : detail::arg_to_python_holder                  \
+        : handle<>                                      \
       {                                                 \
           arg_to_python(T const& x)                     \
-            : detail::arg_to_python_holder(expr) {}     \
+            : python::handle<>(expr) {}                 \
       };                                                \
     } 
 

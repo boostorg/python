@@ -6,7 +6,7 @@
 #ifndef CLASS_WRAPPER_DWA20011221_HPP
 # define CLASS_WRAPPER_DWA20011221_HPP
 
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/python/to_python_converter.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -15,7 +15,7 @@ template <class T, class Holder>
 struct class_wrapper
     : to_python_converter<T,class_wrapper<T,Holder> >
 {
-    class_wrapper(ref const& type_)
+    class_wrapper(handle<> const& type_)
         : m_class_object_keeper(type_)
     {
         assert(type_->ob_type == (PyTypeObject*)class_metatype().get());
@@ -34,7 +34,7 @@ struct class_wrapper
 
         // Everything's OK; Bypass NULL checks but guard against
         // exceptions.
-        ref result(raw_result, ref::allow_null());
+        handle<> result(python::allow_null(raw_result));
 
         // Build a value_holder to contain the object using the copy
         // constructor
@@ -48,7 +48,7 @@ struct class_wrapper
     }
     
  private:
-    ref m_class_object_keeper;
+    handle<> m_class_object_keeper;
     static PyTypeObject* m_class_object;
 };
 

@@ -98,6 +98,10 @@ unit-test pointee
 unit-test result
   : result.cpp : <sysinclude>$(BOOST_ROOT) ;
 
+unit-test upcast
+  : upcast.cpp
+  : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES) ;
+
 unit-test select_holder
   : select_holder.cpp
   : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)

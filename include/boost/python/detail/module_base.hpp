@@ -6,7 +6,7 @@
 #ifndef MODULE_BASE_DWA2002227_HPP
 # define MODULE_BASE_DWA2002227_HPP
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -19,25 +19,24 @@ class BOOST_PYTHON_DECL module_base
 
     // Add elements to the module
     void setattr(const char* name, PyObject*);
-    void setattr(const char* name, ref const&);
-    void add(PyTypeObject* x); // just use the type's name
-    void add_type(ref);
+    void setattr(const char* name, handle<> const&);
+    void add(type_handle const&); // just use the type's name
     
     // Return a reference to the Python module object being built
-    inline ref object() const;
+    inline handle<> object() const;
 
  protected:
-    void add_class(ref const& class_obj);
+    void add_class(type_handle const& class_obj);
 
  private:
-    ref m_module;
+    handle<> m_module;
     static PyMethodDef initial_methods[1];
 };
 
 //
 // inline implementations
 //
-inline ref module_base::object() const
+inline handle<> module_base::object() const
 {
     return m_module;
 }

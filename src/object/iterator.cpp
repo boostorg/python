@@ -6,7 +6,7 @@
 
 #include <boost/python/object/iterator_core.hpp>
 #include <boost/python/object/function.hpp>
-#include <boost/python/reference.hpp>
+#include <boost/python/handle.hpp>
 #include <boost/bind.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -18,9 +18,9 @@ static PyObject* identity(PyObject* args_, PyObject*)
     return x;
 }
 
-BOOST_PYTHON_DECL ref identity_function()
+BOOST_PYTHON_DECL handle<> identity_function()
 {
-    static ref result(new objects::function(py_function(&identity), 1));
+    static handle<> result(new objects::function(py_function(&identity), 1));
     return result;
 }
 

@@ -10,7 +10,7 @@
 # include <boost/python/detail/config.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/type_id.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/python/instance_holder.hpp>
 # include <cstddef>
 
@@ -35,15 +35,15 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
         );
 
     // Retrieve the underlying object
-    ref object() const { return m_object; }
-    void add_property(char const* name, ref const& fget);
-    void add_property(char const* name, ref const& fget, ref const& fset);
-    void setattr(char const* name, ref const&);
+    type_handle object() const { return m_object; }
+    void add_property(char const* name, handle<> const& fget);
+    void add_property(char const* name, handle<> const& fget, handle<> const& fset);
+    void setattr(char const* name, handle<> const&);
  private:
-    ref m_object;
+    type_handle m_object;
 };
 
-BOOST_PYTHON_DECL ref registered_class_object(class_id id);
+BOOST_PYTHON_DECL type_handle registered_class_object(class_id id);
 
 // Each extension instance will be one of these
 struct instance
@@ -52,8 +52,8 @@ struct instance
     instance_holder* objects;
 };
 
-BOOST_PYTHON_DECL ref class_metatype();
-BOOST_PYTHON_DECL ref class_type();
+BOOST_PYTHON_DECL type_handle class_metatype();
+BOOST_PYTHON_DECL type_handle class_type();
 
 }}} // namespace boost::python::objects
 

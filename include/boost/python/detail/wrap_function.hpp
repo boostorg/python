@@ -31,7 +31,7 @@ template <class F>
 inline PyObject* wrap_function_aux(F f, PyObject*) { return f; }
 
 template <class F, class T>
-inline PyObject* wrap_function_aux(F f, boost::python::reference<T> x) { return x.release(); }
+inline PyObject* wrap_function_aux(F f, boost::python::handle<T> x) { return x.release(); }
 
 template <class F>
 inline PyObject* wrap_function_aux(F f, ...) { return make_function(f); }

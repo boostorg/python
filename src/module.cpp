@@ -8,13 +8,14 @@
 
 #include <boost/python/detail/module_base.hpp>
 #include <boost/python/object/function.hpp>
+#include <boost/python/cast.hpp>
 
 namespace boost { namespace python { namespace detail {
 
 module_base::module_base(const char* name)
     : m_module(
-        Py_InitModule(const_cast<char*>(name), initial_methods)
-        , ref::increment_count)
+        borrow(Py_InitModule(const_cast<char*>(name), initial_methods))
+        )
 {
 }
 
@@ -24,38 +25,33 @@ module_base::~module_base()
 
 void module_base::setattr(const char* name, PyObject* x)
 {
-    setattr(name, ref(x));
+    setattr(name, handle<>(x));
 }
 
-void module_base::setattr(char const* name, ref const& x)
+void module_base::setattr(char const* name, handle<> const& x)
 {
     // Use function::add_to_namespace to achieve overloading if
     // appropriate.
     objects::function::add_to_namespace(m_module, name, x);
 }
 
-void module_base::add(PyTypeObject* x)
+void module_base::add(type_handle const& x)
 {
-    this->setattr(x->tp_name, (PyObject*)x);
+    this->setattr(x->tp_name, x);
 }
 
-void module_base::add_type(ref x)
+void module_base::add_class(type_handle const& class_obj)
 {
-    assert(PyObject_TypeCheck(x.get(), &PyType_Type));
-    add((PyTypeObject*)x.release());
-}
-
-void module_base::add_class(ref const& class_obj)
-{
-    this->add_type(class_obj);
+    this->add(class_obj);
     
-    ref module_name(
+    handle<> module_name(
         PyObject_GetAttrString(
             m_module.get(), const_cast<char*>("__name__"))
         );
     
     int status = PyObject_SetAttrString(
-        class_obj.get(), const_cast<char*>("__module__"), module_name.get());
+        python::upcast<PyObject>(class_obj.get())
+        , const_cast<char*>("__module__"), module_name.get());
     
     if (status == -1)
         throw_error_already_set();

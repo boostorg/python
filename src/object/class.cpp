@@ -101,16 +101,16 @@ void instance_holder::install(PyObject* self) throw()
 namespace objects
 {
 // Get the metatype object for all extension classes.
-  BOOST_PYTHON_DECL ref class_metatype()
+  BOOST_PYTHON_DECL type_handle class_metatype()
   {
       if (class_metatype_object.tp_dict == 0)
       {
           class_metatype_object.ob_type = &PyType_Type;
           class_metatype_object.tp_base = &PyType_Type;
           if (PyType_Ready(&class_metatype_object))
-              return ref();
+              return type_handle();
       }
-      return ref((PyObject*)&class_metatype_object, ref::increment_count);
+      return type_handle(borrow(&class_metatype_object));
   }
   extern "C"
   {
@@ -172,16 +172,16 @@ namespace objects
       PyType_GenericNew
   };
 
-  BOOST_PYTHON_DECL ref class_type()
+  BOOST_PYTHON_DECL type_handle class_type()
   {
       if (class_type_object.tp_dict == 0)
       {
-          class_type_object.ob_type = (PyTypeObject*)class_metatype().release();
+          class_type_object.ob_type = incref(class_metatype().get());
           class_type_object.tp_base = &PyBaseObject_Type;
           if (PyType_Ready(&class_type_object))
-              return ref();
+              return type_handle();
       }
-      return ref((PyObject*)&class_type_object, ref::increment_count);
+      return type_handle(borrow(&class_type_object));
   }
 
   BOOST_PYTHON_DECL void*
@@ -206,11 +206,11 @@ namespace objects
     struct class_registry
     {
      public:
-        ref get(class_id id) const;
-        ref query(class_id id) const;
-        void set(class_id, ref class_object);
+        type_handle get(class_id id) const;
+        type_handle query(class_id id) const;
+        void set(class_id, type_handle class_object);
      private:
-        typedef detail::map_entry<class_id,ref> entry;
+        typedef detail::map_entry<class_id,type_handle> entry;
         std::vector<entry> m_impl;
     };
 
@@ -220,7 +220,7 @@ namespace objects
         return x;
     }
 
-    inline ref class_registry::query(class_id id) const
+    inline type_handle class_registry::query(class_id id) const
     {
         std::vector<entry>::const_iterator start = m_impl.begin();
         std::vector<entry>::const_iterator finish = m_impl.end();
@@ -228,12 +228,12 @@ namespace objects
         std::vector<entry>::const_iterator p
             = boost::detail::lower_bound(start, finish, id);
 
-        return (p == finish || p->key != id) ? ref() : p->value;
+        return (p == finish || p->key != id) ? type_handle() : p->value;
     }
   
-    inline ref class_registry::get(class_id id) const
+    inline type_handle class_registry::get(class_id id) const
     {
-        ref result(this->query(id));
+        type_handle result(this->query(id));
 
         if (result.get() == 0)
         {
@@ -245,7 +245,7 @@ namespace objects
         return result;
     }
 
-    inline void class_registry::set(class_id id, ref object)
+    inline void class_registry::set(class_id id, type_handle object)
     {
         std::vector<entry>::iterator start = m_impl.begin();
         std::vector<entry>::iterator finish = m_impl.end();
@@ -276,8 +276,10 @@ namespace objects
       args.set_item(0, string(name).reference());
       args.set_item(1, bases.reference());
       args.set_item(2, dictionary().reference());
-    
-      m_object = ref(PyObject_CallObject(class_metatype().get(), args.get()));
+
+      PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
+      assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
+      m_object = type_handle((PyTypeObject*)c);
       r.set(types[0], m_object);
   }
 
@@ -287,25 +289,25 @@ namespace objects
       extern DL_IMPORT(PyTypeObject) PyProperty_Type;
   }
 
-  void class_base::add_property(char const* name, ref const& fget)
+  void class_base::add_property(char const* name, handle<> const& fget)
   {
-      ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
+      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
       setattr(name, property);
   }
 
-  void class_base::add_property(char const* name, ref const& fget, ref const& fset)
+  void class_base::add_property(char const* name, handle<> const& fget, handle<> const& fset)
   {
-      ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
+      handle<> property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
       setattr(name, property);
   }
 
-  void class_base::setattr(char const* name, ref const& x)
+  void class_base::setattr(char const* name, handle<> const& x)
   {
-      if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), x.get()) < 0)
+      if (PyObject_SetAttrString(upcast<PyObject>(object().get()), const_cast<char*>(name), x.get()) < 0)
           throw_error_already_set();
   }
 
-  BOOST_PYTHON_DECL ref registered_class_object(class_id id)
+  BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
   {
       return registry().query(id);
   }

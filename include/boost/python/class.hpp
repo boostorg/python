@@ -9,7 +9,7 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/bases.hpp>
 # include <boost/python/args.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/type_id.hpp>
 # include <boost/python/detail/wrap_function.hpp>
@@ -46,14 +46,14 @@ namespace detail
   // to the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, ref const& obj, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, handle<> const& obj, T* = 0)
   {
       objects::class_wrapper<T,Holder> x(obj);
   }
 
   // Tag dispatched to have no effect.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, ref const&, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, handle<> const&, T* = 0)
   {
   }
 }
@@ -104,7 +104,7 @@ class class_ : public objects::class_base
         // appropriate.
         objects::function::add_to_namespace(
             this->object(), name,
-            ref(detail::wrap_function(
+            handle<>(detail::wrap_function(
                     // This bit of nastiness casts F to a member function of T if possible. 
                     detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f)
                     )));
@@ -132,7 +132,7 @@ class class_ : public objects::class_base
         // appropriate.
         objects::function::add_to_namespace(
             this->object(), op.name(), 
-            ref(detail::wrap_function(&op_t::template apply<T>::execute)));
+            handle<>(detail::wrap_function(&op_t::template apply<T>::execute)));
         return *this;
     }
     
@@ -176,7 +176,7 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readonly(char const* name, D T::*pm)
     {
-        ref fget(make_getter(pm));
+        handle<> fget(make_getter(pm));
         this->add_property(name, fget);
         return *this;
     }
@@ -184,16 +184,16 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readwrite(char const* name, D T::*pm)
     {
-        ref fget(make_getter(pm));
-        ref fset(make_setter(pm));
+        handle<> fget(make_getter(pm));
+        handle<> fset(make_setter(pm));
         return this->add_property(name, fget, fset);
     }
 
     // Property creation
-    self& add_property(char const* name, ref const& fget);
-    self& add_property(char const* name, ref const& fget, ref const& fset);
+    self& add_property(char const* name, handle<> const& fget);
+    self& add_property(char const* name, handle<> const& fget, handle<> const& fset);
 
-    self& setattr(char const* name, ref const&);
+    self& setattr(char const* name, handle<> const&);
 
  private: // types
     typedef objects::class_id class_id;
@@ -258,21 +258,21 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
 
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ref const& fget)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, handle<> const& fget)
 {
     base::add_property(name, fget);
     return *this;
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, ref const& fget, ref const& fset)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::add_property(char const* name, handle<> const& fget, handle<> const& fset)
 {
     base::add_property(name, fget, fset);
     return *this;
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, ref const& x)
+inline class_<T,X1,X2,X3>& class_<T,X1,X2,X3>::setattr(char const* name, handle<> const& x)
 {
     base::setattr(name, x);
     return *this;

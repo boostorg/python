@@ -11,6 +11,8 @@
 # include <boost/python/converter/pointee_to_python_function.hpp>
 # include <boost/python/converter/arg_to_python_base.hpp>
 # include <boost/python/to_python_indirect.hpp>
+// Bring in specializations
+# include <boost/python/converter/builtin_converters.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -19,7 +21,7 @@ namespace detail
   BOOST_PYTHON_DECL void throw_no_class_registered();
 
   template <class T>
-  struct reference_arg_to_python : arg_to_python_holder
+  struct reference_arg_to_python : handle<>
   {
       reference_arg_to_python(T& x);
    private:
@@ -41,7 +43,7 @@ namespace detail
   };
 
   template <class Ptr>
-  struct pointer_shallow_arg_to_python : arg_to_python_holder
+  struct pointer_shallow_arg_to_python : handle<>
   {
       // Throw an exception if the conversion can't succeed
       pointer_shallow_arg_to_python(Ptr);
@@ -129,13 +131,13 @@ namespace detail
 
   template <class T>
   inline reference_arg_to_python<T>::reference_arg_to_python(T& x)
-      : arg_to_python_holder(get_object(x))
+      : handle<>(get_object(x))
   {
   }
 
   template <class Ptr>
   inline pointer_shallow_arg_to_python<Ptr>::pointer_shallow_arg_to_python(Ptr x)
-      : arg_to_python_holder(get_object(x))
+      : handle<>(get_object(x))
   {}
 
   template <class Ptr>

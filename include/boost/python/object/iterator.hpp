@@ -11,7 +11,7 @@
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_const_reference.hpp>
 # include <boost/python/object/function.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/type.hpp>
 # include <boost/python/arg_from_python.hpp>
 # include <boost/mpl/apply.hpp>
@@ -42,9 +42,9 @@ struct default_iterator_call_policies
 template <class NextPolicies, class Iterator>
 struct iterator_range
 {
-    iterator_range(ref sequence, Iterator start, Iterator finish);
+    iterator_range(handle<> sequence, Iterator start, Iterator finish);
 
-    ref m_sequence; // Keeps the sequence alive while iterating.
+    handle<> m_sequence; // Keeps the sequence alive while iterating.
     Iterator m_start;
     Iterator m_finish;
 };
@@ -113,18 +113,18 @@ namespace detail
   // policies, creating it if neccessary. Requires: NextPolicies is
   // default-constructible.
   template <class Iterator, class NextPolicies>
-  ref demand_iterator_class(char const* name, Iterator* = 0, NextPolicies const& policies = NextPolicies())
+  handle<> demand_iterator_class(char const* name, Iterator* = 0, NextPolicies const& policies = NextPolicies())
   {
       typedef iterator_range<NextPolicies,Iterator> range_;
 
       // Check the registry. If one is already registered, return it.
-      ref result(
+      handle<> result(
           objects::registered_class_object(python::type_id<range_>()));
         
       if (result.get() == 0)
       {
           // Make a callable object which can be used as the iterator's next() function.
-          ref next_function(
+          handle<> next_function(
               new objects::function(
                   objects::py_function(
                       bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies))
@@ -174,7 +174,7 @@ namespace detail
           // Build and convert the iterator_range<>.
           return cr(
               iterator_range<NextPolicies,Iterator>(
-                  ref(arg0, ref::increment_count)
+                  handle<>(python::borrow(arg0))
                   , get_start(x), get_finish(x)));
       }
   };
@@ -187,13 +187,13 @@ namespace detail
 // iterators for the range, and an instance of NextPolicies is used as
 // CallPolicies for the Python iterator's next() function. 
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-inline ref make_iterator_function(
+inline handle<> make_iterator_function(
     Accessor1 const& get_start, Accessor2 const& get_finish
     , boost::type<Target>* = 0, NextPolicies* = 0)
 {
     typedef typename Accessor1::result_type result_type;
       
-    return ref(
+    return handle<>(
         new objects::function(
             objects::py_function(
                 boost::bind(
@@ -210,7 +210,7 @@ inline ref make_iterator_function(
 //
 template <class NextPolicies, class Iterator>
 inline iterator_range<NextPolicies,Iterator>::iterator_range(
-    ref sequence, Iterator start, Iterator finish)
+    handle<> sequence, Iterator start, Iterator finish)
     : m_sequence(sequence), m_start(start), m_finish(finish)
 {
 }

@@ -8,7 +8,7 @@
 
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 # include <boost/function/function2.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -27,7 +27,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     // a function object (this class), and an existing function is
     // already there, add it as an overload.
     static void add_to_namespace(
-        ref const& name_space, char const* name, ref const& attribute);
+        handle<> const& name_space, char const* name, handle<> const& attribute);
     
  private: // helper functions
     void argument_error(PyObject* args, PyObject* keywords) const;

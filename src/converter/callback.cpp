@@ -7,7 +7,7 @@
 #include <boost/python/converter/arg_to_python_base.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/converter/find_from_python.hpp>
-#include <boost/python/reference.hpp>
+#include <boost/python/handle.hpp>
 #include <boost/python/detail/none.hpp>
 
 namespace boost { namespace python { namespace converter { 
@@ -35,7 +35,7 @@ namespace detail
   
   arg_to_python_base::arg_to_python_base(
       void const volatile* source, to_python_function_t converter)
-      : arg_to_python_holder(convert(source, converter))
+      : handle<>(convert(source, converter))
   {
   }
 
@@ -65,7 +65,7 @@ namespace detail
       PyObject* source
       , lvalue_from_python_registration*const& converters)
   {
-      ref holder(source);
+      handle<> holder(source);
       if (source->ob_refcnt <= 2)
       {
           PyErr_SetString(
@@ -106,7 +106,7 @@ namespace detail
   
   BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_stage1_data& data, void* storage)
   {
-      ref holder(src);
+      handle<> holder(src);
       
       data = find(src, static_cast<rvalue_from_python_registration*>(data.convertible));
       

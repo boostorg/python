@@ -107,7 +107,7 @@ inline PyObject* to_python_indirect<T,MakeHolder>::operator()(T x) const
 
     // Everything's OK; Bypass NULL checks but guard against
     // exceptions.
-    ref result(raw_result, ref::allow_null());
+    handle<> result(python::allow_null(raw_result));
 
     // Build a value_holder to contain the object using the copy
     // constructor

@@ -149,14 +149,14 @@ namespace
   function* not_implemented_function()
   {
       static function* result = new function(py_function(&not_implemented_impl), 2, 3);
-      static ref keeper(result);
+      static handle<> keeper(result);
       
       return result;
   }
 }
 
 void function::add_to_namespace(
-    ref const& name_space, char const* name_, ref const& attribute)
+    handle<> const& name_space, char const* name_, handle<> const& attribute)
 {
     string const name(name_);
     PyObject* const ns = name_space.get();
@@ -175,7 +175,7 @@ void function::add_to_namespace(
         if (dict == 0)
             throw_error_already_set();
         
-        ref existing(PyObject_GetItem(dict, name.get()), ref::null_ok);
+        handle<> existing( allow_null(PyObject_GetItem(dict, name.get())) );
         
         if (existing.get())
         {

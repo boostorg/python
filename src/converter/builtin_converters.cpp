@@ -9,7 +9,7 @@
 #include <boost/python/converter/builtin_converters.hpp>
 #include <boost/python/converter/from_python_data.hpp>
 #include <boost/python/converter/registry.hpp>
-#include <boost/python/reference.hpp>
+#include <boost/python/handle.hpp>
 #include <boost/python/type_id.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/cast.hpp>
@@ -54,7 +54,7 @@ namespace
       {
           // Get the (intermediate) source object
           unaryfunc creator = *static_cast<unaryfunc*>(data->convertible);
-          ref intermediate(creator(obj));
+          handle<> intermediate(creator(obj));
 
           // Get the location in which to construct
           void* storage = ((rvalue_base_data<T>*)data)->storage.bytes;

@@ -27,7 +27,7 @@ class module : public detail::module_base
     // Add elements to the module
     module& setattr(const char* name, PyObject*);
     module& setattr(const char* name, PyTypeObject*);
-    module& setattr(const char* name, ref const&);
+    module& setattr(const char* name, handle<> const&);
     module& add(PyTypeObject* x); // just use the type's name
     
     template <class T, class Bases, class HolderGenerator>
@@ -68,7 +68,7 @@ inline module& module::setattr(const char* name, PyTypeObject* x)
     return *this;
 }
 
-inline module& module::setattr(const char* name, ref const& x)
+inline module& module::setattr(const char* name, handle<> const& x)
 {
     this->base::setattr(name, x);
     return *this;

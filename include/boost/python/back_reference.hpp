@@ -6,7 +6,7 @@
 #ifndef BACK_REFERENCE_DWA2002510_HPP
 # define BACK_REFERENCE_DWA2002510_HPP
 
-# include <boost/python/reference.hpp>
+# include <boost/python/handle.hpp>
 
 namespace boost { namespace python { 
 
@@ -17,10 +17,10 @@ struct back_reference
     typedef T type;
     
     back_reference(PyObject*, T);
-    ref reference() const;
+    handle<> reference() const;
     T get() const;
  private:
-    ref m_reference;
+    handle<> m_reference;
     T m_value;
 };
 
@@ -75,13 +75,13 @@ class is_back_reference
 //
 template <class T>
 back_reference<T>::back_reference(PyObject* p, T x)
-    : m_reference(p, ref::increment_count)
+    : m_reference(python::borrow(p))
       , m_value(x)
 {
 }
 
 template <class T>
-ref back_reference<T>::reference() const
+handle<> back_reference<T>::reference() const
 {
     return m_reference;
 }

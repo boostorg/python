@@ -19,7 +19,7 @@ namespace detail
   // objects::make_iterator(...), which allows us to pass member
   // function and member data pointers.
   template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-  inline ref make_iterator(
+  inline handle<> make_iterator(
       Accessor1 get_start, Accessor2 get_finish, boost::type<Target>* target = 0, NextPolicies* = 0)
   {
       return objects::make_iterator_function<NextPolicies,Target>(
@@ -68,7 +68,7 @@ struct iterators
 // accessors. Deduce the Target type from the accessors. The iterator
 // returns copies of the inderlying elements.
 template <class Accessor1, class Accessor2>
-ref range(Accessor1 start, Accessor2 finish)
+handle<> range(Accessor1 start, Accessor2 finish)
 {
     return detail::make_iterator<objects::default_iterator_call_policies>(
         start, finish
@@ -78,7 +78,7 @@ ref range(Accessor1 start, Accessor2 finish)
 // Create an iterator-building function which uses the given accessors
 // and next() policies. Deduce the Target type.
 template <class NextPolicies, class Accessor1, class Accessor2>
-ref range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
+handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 {
     return detail::make_iterator<NextPolicies>(start, finish, detail::target(start));
 }
@@ -86,7 +86,7 @@ ref range(Accessor1 start, Accessor2 finish, NextPolicies* = 0)
 // Create an iterator-building function which uses the given accessors
 // and next() policies, operating on the given Target type
 template <class NextPolicies, class Target, class Accessor1, class Accessor2>
-ref range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
+handle<> range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Target>* = 0)
 {
     typedef typename add_reference<Target>::type target;
     return detail::make_iterator<NextPolicies, target>(start, finish);
@@ -98,10 +98,10 @@ ref range(Accessor1 start, Accessor2 finish, NextPolicies* = 0, boost::type<Targ
 // next() function.
 template <class Container
           , class NextPolicies = objects::default_iterator_call_policies>
-struct iterator : ref
+struct iterator : handle<>
 {
     iterator()
-        : ref(
+        : handle<>(
             range<NextPolicies>(
                 &iterators<Container>::begin, &iterators<Container>::end
                 ))
