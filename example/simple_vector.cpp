@@ -49,7 +49,7 @@ namespace { // Avoid cluttering the global namespace.
   void delitem(std::vector<double>& vd, std::size_t key) {
     if (key >= vd.size()) raise_vector_IndexError();
     std::vector<double>::iterator vditer = vd.begin();
-    vd.erase(&vditer[key]);
+    vd.erase(vditer + key);
   }
 
   // Convert vector_double to a regular Python tuple.
