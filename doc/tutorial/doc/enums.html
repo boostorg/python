@@ -67,10 +67,10 @@ You can access those values in Python as</p>
 where my_module is the module where the enum is declared. You can also
 create a new scope around a class:</p>
 <code><pre>
-    <span class=identifier>scope </span><span class=identifier>in_X</span><span class=special>(</span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>X</span><span class=special>&gt;(</span><span class=string>&quot;X&quot;</span><span class=special>)
+    <span class=identifier>scope </span><span class=identifier>in_X</span> <span class=special>=</span> <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>X</span><span class=special>&gt;(</span><span class=string>&quot;X&quot;</span><span class=special>)
                     </span><span class=special>.</span><span class=identifier>def</span><span class=special>( </span><span class=special>... </span><span class=special>)
                     </span><span class=special>.</span><span class=identifier>def</span><span class=special>( </span><span class=special>... </span><span class=special>)
-                </span><span class=special>);
+                </span><span class=special>;
 
     </span><span class=comment>// Expose X::nested as X.nested
     </span><span class=identifier>enum_</span><span class=special>&lt;</span><span class=identifier>X</span><span class=special>::</span><span class=identifier>nested</span><span class=special>&gt;(</span><span class=string>&quot;nested&quot;</span><span class=special>)

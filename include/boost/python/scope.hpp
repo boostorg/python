@@ -13,16 +13,20 @@
 namespace boost { namespace python { 
 
 class BOOST_PYTHON_DECL scope
-    : public object, private noncopyable
+    : public object
 {
  public:
-    explicit inline scope(object const&);
+    inline scope(scope const&);
+    inline scope(object const&);
     inline scope();
     inline ~scope();
     
  private: // data members
     PyObject* m_previous_scope;
 
+ private: // unimplemented functions
+    void operator=(scope const&);
+    
  private: // static members
     
     // Use a PyObject* to avoid problems with static destruction after Py_Finalize
@@ -57,6 +61,14 @@ namespace converter
       : object_manager_traits<object>
   {
   };
+}
+
+// Placing this after the specialization above suppresses a CWPro8.3 bug
+inline scope::scope(scope const& new_scope)
+    : object(new_scope)
+    , m_previous_scope(current_scope)
+{
+    current_scope = python::incref(new_scope.ptr());
 }
 
 }} // namespace boost::python

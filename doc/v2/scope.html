@@ -81,13 +81,15 @@
 namespace boost { namespace python
 {
   class scope : public <a href=
-"object.html#object-spec">object</a>, private <a href=
-"../../../utility/utility.htm#Class noncopyable">noncopyable</a>
+"object.html#object-spec">object</a>
   {
    public:
-      explicit scope(object const&amp;);
+      scope(scope const&amp;);
+      scope(object const&amp;);
       scope();
       ~scope()
+   private:
+      void operator=(scope const&amp;);
   };
 }}
 </pre>
@@ -95,6 +97,7 @@ namespace boost { namespace python
     <h4><a name="scope-spec-ctors"></a>Class <code>scope</code> constructors
     and destructor</h4>
 <pre>
+explicit scope(scope const&amp; x);
 explicit scope(object const&amp; x);
 </pre>
     Stores a reference to the current associated scope object, and sets the

@@ -1148,10 +1148,10 @@ You can access those values in Python as
 where my_module is the module where the enum is declared. You can also
 create a new scope around a class:
 
-    scope in_X(class_<X>("X")
+    scope in_X = class_<X>("X")
                     .def( ... )
                     .def( ... )
-                );
+                ;
 
     // Expose X::nested as X.nested
     enum_<X::nested>("nested")
