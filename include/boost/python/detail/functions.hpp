@@ -29,7 +29,7 @@ class extension_instance;
 // function --
 //      the common base class for all overloadable function and method objects
 //      supplied by the library.
-class function : public python_object
+class BOOST_PYTHON_DECL function : public python_object
 {
  public:
     function();
@@ -201,7 +201,7 @@ inline function* new_virtual_function(
 // the expression a.b where a is an instance or extension_instance object and b
 // is a callable object not found in the obj namespace but on its class or
 // a base class.
-class bound_function : public python_object
+class BOOST_PYTHON_DECL bound_function : public python_object
 {
  public:
     static bound_function* create(const ref& target, const ref& fn);

@@ -65,4 +65,68 @@
 #  endif
 # endif 
 
+/*****************************************************************************
+ *
+ *  Set up dll import/export options:
+ *
+ ****************************************************************************/
+
+// backwards compatibility:
+#ifdef BOOST_RE_STATIC_LIB
+#  define BOOST_PYTHON_STATIC_LINK
+#endif
+
+#if defined(BOOST_MSVC) && defined(_DLL)
+#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+#endif
+
+#if defined(__BORLANDC__) && defined(_RTLDLL)
+#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+#endif
+
+#if defined(__ICL) && defined(_DLL)
+#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+#endif
+
+#if defined(BOOST_PYTHON_HAS_DLL_RUNTIME) && !defined(BOOST_PYTHON_STATIC_LINK)
+#  if defined(BOOST_PYTHON_SOURCE)
+#     define BOOST_PYTHON_DECL __declspec(dllexport)
+#     define BOOST_PYTHON_BUILD_DLL
+#  else
+#     define BOOST_PYTHON_DECL __declspec(dllimport)
+#  endif
+#endif
+
+#ifndef BOOST_PYTHON_DECL
+#  define BOOST_PYTHON_DECL
+#endif
+
+#if (defined(BOOST_MSVC) || defined(__BORLANDC__)) && !defined(BOOST_PYTHON_NO_LIB) && !defined(BOOST_PYTHON_SOURCE)
+#  include <boost/python/detail/python_library_include.hpp>
+#endif
+
+// Borland C++ Fix/error check:
+#if defined(__BORLANDC__)
+#  if (__BORLANDC__ == 0x550) || (__BORLANDC__ == 0x551)
+      // problems with std::basic_string and dll RTL:
+#     if defined(_RTLDLL) && defined(_RWSTD_COMPILE_INSTANTIATE)
+#        ifdef BOOST_PYTHON_BUILD_DLL
+#           error _RWSTD_COMPILE_INSTANTIATE must not be defined when building regex++ as a DLL
+#        else
+#           pragma warn defining _RWSTD_COMPILE_INSTANTIATE when linking to the DLL version of the RTL may produce memory corruption problems in std::basic_string, as a result of separate versions of basic_string's static data in the RTL and you're exe/dll: be warned!!
+#        endif
+#     endif
+#     ifndef _RTLDLL
+         // this is harmless for a staic link:
+#        define _RWSTD_COMPILE_INSTANTIATE
+#     endif
+#  endif
+   //
+   // VCL support:
+   // if we're building a console app then there can't be any VCL (can there?)
+#  if !defined(__CONSOLE__) && !defined(_NO_VCL)
+#     define BOOST_PYTHON_USE_VCL
+#  endif
+#endif
+
 #endif // CONFIG_DWA052200_H_
