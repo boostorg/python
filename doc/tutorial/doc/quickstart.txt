@@ -1458,10 +1458,10 @@ The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
 namespace of the [^__main__] module:
 
-    object main_module(
-        handle<>(borrowed(PyImport_AddModule("__main__"))));
-    object main_namespace = main_module.attr("__dict__");
+    object main_module((
+        handle<>(borrowed(PyImport_AddModule("__main__")))));
 
+    object main_namespace = main_module.attr("__dict__");
 
 For a function returning a ['new reference] we can just create a [^handle]
 out of the raw [^PyObject*] without wrapping it in a call to borrowed. One
@@ -1510,12 +1510,12 @@ For most intents and purposes you can use the namespace dictionary of the
 We have already seen how to get the [^__main__] module's namespace so let's
 run some Python code in it:
 
-    object main_module(
-        handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_module((
+        handle<>(borrowed(PyImport_AddModule("__main__")))));
 
     object main_namespace = main_module.attr("__dict__");
 
-    handle<>(PyRun_String(
+    handle<> ignored((PyRun_String(
 
         "hello = file('hello.txt', 'w')\n"
         "hello.write('Hello world!')\n"
@@ -1524,7 +1524,7 @@ run some Python code in it:
       , Py_file_input
       , main_namespace.ptr()
       , main_namespace.ptr())
-    );
+    ));
 
 Because the Python/C API doesn't know anything about [^object]s, we used
 the object's [^ptr] member function to retrieve the [^PyObject*].
@@ -1547,33 +1547,34 @@ named [^object] class and it's derivatives. We've already seen that they
 can be constructed from a [^handle]. The following examples should further
 illustrate this fact:
 
-    object main_module(
-        handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_module((
+         handle<>(borrowed(PyImport_AddModule("__main__")))));
 
     object main_namespace = main_module.attr("__dict__");
 
-    handle<>(PyRun_String(
+    handle<> ignored((PyRun_String(
 
         "result = 5 ** 2"
 
         , Py_file_input
         , main_namespace.ptr()
         , main_namespace.ptr())
-    );
+    ));
 
-    int five_squared = extract<int>(main_namespace["result"] );
+    int five_squared = extract<int>(main_namespace["result"]);
 
 Here we create a dictionary object for the [^__main__] module's namespace.
 Then we assign 5 squared to the result variable and read this variable from
 the dictionary. Another way to achieve the same result is to let
 PyRun_String return the result directly with Py_eval_input:
 
-    object result(handle<>(PyRun_String(
-        "5 ** 2"
-      , Py_eval_input
-      , main_namespace.ptr()
-      , main_namespace.ptr()))
-    );
+    object result((handle<>(
+        PyRun_String("5 ** 2"
+            , Py_eval_input
+            , main_namespace.ptr()
+            , main_namespace.ptr()))
+    ));
+
     int five_squared = extract<int>(result);
 
 __note__ [*Note] that [^object]'s member function to return the wrapped
@@ -1587,12 +1588,12 @@ If an exception occurs in the execution of some Python code, the PyRun_String fu
 
     try
     {
-        object result(handle<>(PyRun_String(
+        object result((handle<>(PyRun_String(
             "5/0"
           , Py_eval_input
           , main_namespace.ptr()
           , main_namespace.ptr()))
-        );
+        ));
 
         // execution will never get here:
         int five_divided_by_zero = extract<int>(result);
@@ -1621,11 +1622,11 @@ The [^error_already_set] exception class doesn't carry any information in itself
 
 If you'd rather not have [^handle] throw a C++ exception when it is constructed, you can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same way you'd use borrowed:
 
-    handle<> result(allow_null(PyRun_String(
+    handle<> result((allow_null(PyRun_String(
         "5/0"
        , Py_eval_input
        , main_namespace.ptr()
-       , main_namespace.ptr())));
+       , main_namespace.ptr()))));
 
     if (!result)
         // Python exception occurred

@@ -54,8 +54,9 @@ The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
 namespace of the <tt>__main__</tt> module:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
-        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>((
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>)))));
+
     </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
 </span></pre></code>
 <p>
@@ -117,12 +118,12 @@ For most intents and purposes you can use the namespace dictionary of the
 We have already seen how to get the <tt>__main__</tt> module's namespace so let's
 run some Python code in it:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
-        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>((
+        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>)))));
 
     </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
 
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+    </span><span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>ignored</span><span class=special>((</span><span class=identifier>PyRun_String</span><span class=special>(
 
         </span><span class=string>&quot;hello = file('hello.txt', 'w')\n&quot;
         </span><span class=string>&quot;hello.write('Hello world!')\n&quot;
@@ -131,7 +132,7 @@ run some Python code in it:</p>
       </span><span class=special>, </span><span class=identifier>Py_file_input
       </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
       , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())
-    );
+    ));
 </span></pre></code>
 <p>
 Because the Python/C API doesn't know anything about <tt>object</tt>s, we used
@@ -155,21 +156,21 @@ named <tt>object</tt> class and it's derivatives. We've already seen that they
 can be constructed from a <tt>handle</tt>. The following examples should further
 illustrate this fact:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
-        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
+    <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>((
+         </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>)))));
 
     </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
 
-    </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+    </span><span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>ignored</span><span class=special>((</span><span class=identifier>PyRun_String</span><span class=special>(
 
         </span><span class=string>&quot;result = 5 ** 2&quot;
 
         </span><span class=special>, </span><span class=identifier>Py_file_input
         </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
         , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())
-    );
+    ));
 
-    </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>main_namespace</span><span class=special>[</span><span class=string>&quot;result&quot;</span><span class=special>] );
+    </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>main_namespace</span><span class=special>[</span><span class=string>&quot;result&quot;</span><span class=special>]);
 </span></pre></code>
 <p>
 Here we create a dictionary object for the <tt>__main__</tt> module's namespace.
@@ -179,12 +180,13 @@ the dictionary. Another way to achieve the same result is to let
 PyRun_String</a> return the result directly with <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58">
 Py_eval_input</a>:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
-        </span><span class=string>&quot;5 ** 2&quot;
-      </span><span class=special>, </span><span class=identifier>Py_eval_input
-      </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
-      , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))
-    );
+    <span class=identifier>object </span><span class=identifier>result</span><span class=special>((</span><span class=identifier>handle</span><span class=special>&lt;&gt;(
+        </span><span class=identifier>PyRun_String</span><span class=special>(</span><span class=string>&quot;5 ** 2&quot;
+            </span><span class=special>, </span><span class=identifier>Py_eval_input
+            </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
+            , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))
+    ));
+
     </span><span class=keyword>int </span><span class=identifier>five_squared </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>result</span><span class=special>);
 </span></pre></code>
 <p>
@@ -199,12 +201,12 @@ error_already_set</a>, so basically, the Python exception is automatically trans
 <code><pre>
     <span class=keyword>try
     </span><span class=special>{
-        </span><span class=identifier>object </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
+        </span><span class=identifier>object </span><span class=identifier>result</span><span class=special>((</span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
             </span><span class=string>&quot;5/0&quot;
           </span><span class=special>, </span><span class=identifier>Py_eval_input
           </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
           , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))
-        );
+        ));
 
         // </span><span class=identifier>execution </span><span class=identifier>will </span><span class=identifier>never </span><span class=identifier>get </span><span class=identifier>here</span><span class=special>:
         </span><span class=keyword>int </span><span class=identifier>five_divided_by_zero </span><span class=special>= </span><span class=identifier>extract</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>result</span><span class=special>);
@@ -240,11 +242,11 @@ here</a>.)</p>
 If you'd rather not have <tt>handle</tt> throw a C++ exception when it is constructed, you can use the <a href="../../v2/handle.html#allow_null-spec">
 allow_null</a> function in the same way you'd use borrowed:</p>
 <code><pre>
-    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>result</span><span class=special>(</span><span class=identifier>allow_null</span><span class=special>(</span><span class=identifier>PyRun_String</span><span class=special>(
+    <span class=identifier>handle</span><span class=special>&lt;&gt; </span><span class=identifier>result</span><span class=special>((</span><span class=identifier>allow_null</span><span class=special>(</span><span class=identifier>PyRun_String</span><span class=special>(
         </span><span class=string>&quot;5/0&quot;
        </span><span class=special>, </span><span class=identifier>Py_eval_input
        </span><span class=special>, </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()
-       , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>())));
+       , </span><span class=identifier>main_namespace</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))));
 
     </span><span class=keyword>if </span><span class=special>(!</span><span class=identifier>result</span><span class=special>)
         // </span><span class=identifier>Python </span><span class=identifier>exception </span><span class=identifier>occurred

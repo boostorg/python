@@ -22,7 +22,7 @@
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="deriving_a_python_class.html"><img src="theme/l_arr.gif" border="0"></a></td>
     <td width="20"><a href="class_operators_special_functions.html"><img src="theme/r_arr.gif" border="0"></a></td>
-  </tr>
+   </tr>
 </table>
 <p>
 Recall that in the <a href="class_virtual_functions.html">
@@ -63,12 +63,10 @@ Then, Boost.Python needs to keep track of 1) the dispatch function <tt>f</tt> an
 2) the forwarding function to its default implementation <tt>default_f</tt>.
 There's a special <tt>def</tt> function for this purpose. Here's how it is
 applied to our example above:</p>
-<code>
-<pre>
-    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
+<code><pre>
+    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
         .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;f&quot;</span><span class=special>, &amp;</span><span class=identifier>Base</span><span class=special>::</span><span class=identifier>f</span><span class=special>, &amp;</span><span class=identifier>BaseWrap</span><span class=special>::</span><span class=identifier>default_f</span><span class=special>)
-</span></pre>
-</code>
+</span></pre></code>
 <p>
 Note that we are allowing <tt>Base</tt> objects to be instantiated this time,
 unlike before where we specifically defined the <tt>class_&lt;Base&gt;</tt> with
@@ -112,7 +110,7 @@ Calling <tt>call_f</tt>, passing in a <tt>derived</tt> object:</p>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="deriving_a_python_class.html"><img src="theme/l_arr.gif" border="0"></a></td>
     <td width="20"><a href="class_operators_special_functions.html"><img src="theme/r_arr.gif" border="0"></a></td>
-  </tr>
+   </tr>
 </table>
 <br>
 <hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
