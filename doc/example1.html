@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
+"http://www.w3.org/TR/REC-html40/strict.dtd">
+    <title>
+      A Simple Example
+    </title>
+    <div>
+      <h1>
+         <img width="277" height="86" id="_x0000_i1025" src="../../../c++boost.gif" alt=
+        "c++boost.gif (8819 bytes)">
+      </h1>
+      <h1>
+         A Simple Example
+      </h1>
+      <p>
+         Suppose we have the following C++ API which we want to expose in
+        Python:
+      <blockquote>
+<pre>
+#include &lt;string&gt;
+
+namespace { // Avoid cluttering the global namespace.
+
+  // A couple of simple C++ functions that we want to expose to Python.
+  std::string greet() { return "hello, world"; }
+  int square(int number) { return number * number; }
+}
+
+</pre>
+      </blockquote>
+      <p>
+        Here is the C++ code for a python module called <tt>getting_started1</tt>
+        which exposes the API.
+      <blockquote>
+<pre>
+#include &lt;boost/python/class_builder.hpp&gt;
+namespace python = boost::python;
+
+BOOST_PYTHON_MODULE_INIT(getting_started1)
+{
+    // Create an object representing this extension module.
+    python::module_builder this_module("getting_started1");
+
+    // Add regular functions to the module.
+    this_module.def(greet, "greet");
+    this_module.def(square, "square");
+}
+</pre>
+      </blockquote>
+      <p>
+         That's it! If we build this shared library and put it on our <code>
+        PYTHONPATH</code> we can now access our C++ functions from
+        Python.
+      <blockquote>
+<pre>
+&gt;&gt;&gt; import getting_started1
+&gt;&gt;&gt; print getting_started1.greet()
+hello, world
+&gt;&gt;&gt; number = 11
+&gt;&gt;&gt; print number, '*', number, '=', getting_started1.square(number)
+11 * 11 = 121
+</pre>
+      <p>
+        Next: <a href="exporting_classes.html">Exporting Classes</a>
+         Previous: <a href="comparisons.html">Comparisons with other systems</a>  Up:
+        <a href="index.html">Top</a>
+      <p>
+         &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,
+        sell and distribute this document is granted provided this copyright
+        notice appears in all copies. This document is provided "as is" without
+        express or implied warranty, and with no claim as to its suitability
+        for any purpose.
+      <p>
+         Updated: Mar 6, 2000
+    </div>
+

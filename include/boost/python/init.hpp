@@ -138,16 +138,16 @@ struct init_base
     init_base(char const* doc_, detail::keyword_range const& keywords_)
         : m_doc(doc_), m_keywords(keywords_)
     {}
-        
+
     init_base(char const* doc_)
         : m_doc(doc_)
     {}
-        
+
     DerivedT const& derived() const
     {
         return *static_cast<DerivedT const*>(this);
     }
-    
+
     char const* doc_string() const
     {
         return m_doc;
@@ -162,7 +162,7 @@ struct init_base
     {
         return default_call_policies();
     }
-    
+
  private: // data members
     char const* m_doc;
     detail::keyword_range m_keywords;
@@ -192,7 +192,7 @@ class init_with_call_policies
     {
         return this->m_policies;
     }
-    
+
  private: // data members
     CallPoliciesT m_policies;
 };
@@ -355,7 +355,7 @@ namespace detail
 
           if (keywords.second > keywords.first)
               --keywords.second;
-          
+
           typename mpl::pop_front<ReversedArgs>::type next;
           define_class_init_helper<N-1>::apply(cl, policies, next, doc, keywords);
       }
