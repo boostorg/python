@@ -17,7 +17,7 @@
 #include <boost/python/def_visitor.hpp>
 
 #include <boost/mpl/if.hpp>
-#include <boost/mpl/apply_if.hpp>
+#include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/iterator_range.hpp>
 #include <boost/mpl/empty.hpp>
@@ -269,20 +269,20 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     typedef detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS> signature_;
 
     typedef detail::is_optional<
-        typename mpl::apply_if<
+        typename mpl::eval_if<
             mpl::empty<signature_>
           , mpl::false_
           , mpl::back<signature_>
         >::type
     > back_is_optional;
     
-    typedef typename mpl::apply_if<
+    typedef typename mpl::eval_if<
         back_is_optional
       , mpl::back<signature_>
       , mpl::vector0<>
     >::type optional_args;
 
-    typedef typename mpl::apply_if<
+    typedef typename mpl::eval_if<
         back_is_optional
       , mpl::if_<
             mpl::empty<optional_args>

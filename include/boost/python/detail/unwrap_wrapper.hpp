@@ -7,7 +7,7 @@
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/is_wrapper.hpp>
 #  if defined(BOOST_PYTHON_NO_SFINAE)
-#   include <boost/mpl/apply_if.hpp>
+#   include <boost/mpl/eval_if.hpp>
 #   include <boost/mpl/identity.hpp>
 #  else 
 #   include <boost/python/detail/enable_if.hpp>
@@ -23,7 +23,7 @@ struct unwrap_wrapper_helper
 };
   
 template <class T>
-typename mpl::apply_if<is_wrapper<T>,unwrap_wrapper_helper<T>,mpl::identity<T> >::type*
+typename mpl::eval_if<is_wrapper<T>,unwrap_wrapper_helper<T>,mpl::identity<T> >::type*
 unwrap_wrapper(T*)
 {
     return 0;

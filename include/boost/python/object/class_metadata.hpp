@@ -23,7 +23,7 @@
 # include <boost/type_traits/is_polymorphic.hpp>
 
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/apply_if.hpp>
+# include <boost/mpl/eval_if.hpp>
 # include <boost/mpl/bool.hpp>
 # include <boost/mpl/or.hpp>
 # include <boost/mpl/identity.hpp>
@@ -162,7 +162,7 @@ struct class_metadata
     
     // Compute the "wrapped type", that is, if held_type is a smart
     // pointer, we're talking about the pointee.
-    typedef typename mpl::apply_if<
+    typedef typename mpl::eval_if<
         use_value_holder
       , mpl::identity<held_type>
       , pointee<held_type>
@@ -176,7 +176,7 @@ struct class_metadata
     > use_back_reference;
 
     // Select the holder.
-    typedef typename mpl::apply_if<
+    typedef typename mpl::eval_if<
         use_back_reference
       , mpl::if_<
             use_value_holder

@@ -13,7 +13,7 @@
 # include <boost/python/detail/not_specified.hpp>
 # include <boost/python/back_reference.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/mpl/apply_if.hpp>
+# include <boost/mpl/eval_if.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
@@ -128,7 +128,7 @@ namespace detail
       template <class ClassT>
       void visit(ClassT& cl) const
       {
-          typedef typename mpl::apply_if<
+          typedef typename mpl::eval_if<
               is_same<L,self_t>
             , mpl::if_<
                   is_same<R,self_t>
