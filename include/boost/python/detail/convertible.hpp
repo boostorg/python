@@ -21,7 +21,7 @@ typedef int* no_convertible;
 template <class Target>
 struct convertible
 {
-# if !defined(__EDG_VERSION__) || __EDG_VERSION__ > 241
+# if !defined(__EDG_VERSION__) || __EDG_VERSION__ > 241 || __EDG_VERSION__ == 238
     static inline no_convertible check(...) { return 0; }
     static inline yes_convertible check(Target) { return 0; }
 # else
