@@ -32,6 +32,18 @@
 
 namespace boost { namespace python { namespace objects {
 
+template <class T>
+typename bool is_null(T const& p, ...)
+{
+    return p.get() == 0;
+}
+
+template <class T>
+bool is_null(T* p, int)
+{
+    return p == 0;
+}
+
 #  define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)(a##n)
 
 template <class Pointer, class Value>
@@ -98,9 +110,12 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t)
     if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
+    if (objects::is_null(this->m_p, 0))
+        return 0;
+    
     type_info src_t = python::type_id<Value>();
-    return src_t == dst_t ? &*this->m_p
-        : find_dynamic_type(&*this->m_p, src_t, dst_t);
+    Value* p = &*this->m_p;
+    return src_t == dst_t ? p : find_dynamic_type(p, src_t, dst_t);
 }
 
 template <class Pointer, class Value>
@@ -109,6 +124,9 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
     if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
+    if (objects::is_null(this->m_p, 0))
+        return 0;
+    
     if (dst_t == python::type_id<held_type>())
         return &*this->m_p;
 
