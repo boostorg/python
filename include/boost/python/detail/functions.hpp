@@ -46,7 +46,7 @@ class function : public python_object
  private:
     struct type_object;
  private:
-    reference<function> m_overloads;
+    reference<function> m_overloads; // A linked list of the function overloads
 };
 
 // wrapped_function_pointer<> --
@@ -66,7 +66,12 @@ struct wrapped_function_pointer : function
 
  private:
 	PyObject* do_call(PyObject* args, PyObject* keywords) const
-        { return caller<R>::call(m_pf, args, keywords); }
+        {
+            // This is where the boundary between the uniform Python function
+            // interface and the statically-checked C++ function interface is
+            // crossed.
+            return caller<R>::call(m_pf, args, keywords);
+        }
     
     const char* description() const
         { return typeid(F).name(); }

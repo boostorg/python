@@ -15,14 +15,6 @@
 namespace boost { namespace python {
 
 namespace detail {
-  // The default way of converting a PyObject* or PyTypeObject* to a T*
-  template <class T>
-  struct downcast_traits
-  {
-      template <class U>
-      static T* cast(U* p) { return static_cast<T*>(p); }
-  };
-
   inline PyTypeObject* as_base_object(const PyTypeObject*, PyObject* p)
   {
       return reinterpret_cast<PyTypeObject*>(p);
@@ -54,19 +46,19 @@ template <class T>
 struct downcast
 {
     downcast(PyObject* p)
-        : m_p(detail::downcast_traits<T>::cast(detail::as_base_object((T*)0, p)))
+        : m_p(static_cast<T*>(detail::as_base_object((T*)0, p)))
         {}
     
     downcast(const PyObject* p)
-        : m_p(detail::downcast_traits<T>::cast(detail::as_base_object((const T*)0, p)))
+        : m_p(static_cast<T*>(detail::as_base_object((const T*)0, p)))
         {}
     
     downcast(PyTypeObject* p)
-        : m_p(detail::downcast_traits<T>::cast(p))
+        : m_p(static_cast<T*>(p))
         {}
     
     downcast(const PyTypeObject* p)
-        : m_p(detail::downcast_traits<T>::cast(p))
+        : m_p(static_cast<T*>(p))
         {}
     
     operator T*() const { return m_p; }

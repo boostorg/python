@@ -61,6 +61,8 @@ function::function()
 
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
+    // Traverse the linked list of function overloads until we find one that
+    // matches.
     for (const function* f = this; f != 0; f = f->m_overloads.get())
     {
         PyErr_Clear();
@@ -75,9 +77,14 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
         }
     }
 
+    // If we get here, no overloads matched the arguments
+
+    // Allow the single-function error-reporting to take effect unless there was
+    // an overload
     if (m_overloads.get() == 0)
         return 0;
 
+    // Synthesize a more-explicit error message
     PyErr_Clear();
     string message("No overloaded functions match (");
     tuple arguments(ref(args, ref::increment_count));

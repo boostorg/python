@@ -21,10 +21,10 @@ namespace boost { namespace python { namespace detail {
 
 // base_object - adds a constructor and non-virtual destructor to a
 // base Python type (e.g. PyObject, PyTypeObject).
-template <class python_type>
-struct base_object : python_type
+template <class PythonType>
+struct base_object : PythonType
 {
-    typedef python_type base_python_type;
+    typedef PythonType base_python_type;
 
     // Initializes type and reference count. All other fields of base_python_type are 0
     base_object(PyTypeObject* type_obj);
@@ -41,8 +41,8 @@ typedef base_object<PyTypeObject> python_type;
 //
 // base_object member function implementations 
 //
-template <class python_type>
-base_object<python_type>::base_object(PyTypeObject* type_obj)
+template <class PythonType>
+base_object<PythonType>::base_object(PyTypeObject* type_obj)
 {
     base_python_type* bp = this;
 #if !defined(_MSC_VER) || defined(__STLPORT)
@@ -53,8 +53,8 @@ base_object<python_type>::base_object(PyTypeObject* type_obj)
     PyObject_INIT(bp, type_obj);
 }
 
-template <class python_type>
-inline base_object<python_type>::~base_object()
+template <class PythonType>
+inline base_object<PythonType>::~base_object()
 {
     Py_DECREF(ob_type);
 }

@@ -24,6 +24,11 @@ namespace {
 
   using detail::type_object_base;
 
+  // Define a family of forwarding functions that can be calle from a
+  // PyTypeObject's slots. These functions dispatch through a (virtual) member
+  // function pointer in the type_object_base, and handle exceptions in a
+  // uniform way, preventing us from having to rewrite the dispatching code over
+  // and over.
   PyObject* call(PyObject* obj, PyObject* (type_object_base::*f)(PyObject*) const)
   {
       try
@@ -154,6 +159,10 @@ namespace {
 
 extern "C" {
 
+//
+// These functions actually go into the type object's slots, and dispatch to the
+// "call" wrappers defined above.
+//
 static PyObject* do_instance_repr(PyObject* obj)
 {
     return call(obj, &type_object_base::instance_repr);
