@@ -113,8 +113,12 @@ Ptr BoundFunction::create(Ptr target, Ptr fn)
     return Ptr(result, Ptr::new_ref);
 }
 
+// The singleton class whose instance represents the type of BoundFunction
+// objects in Python. BoundFunctions must be GetAttrable so the __doc__
+// attribute of built-in Python functions can be accessed when bound.
 struct BoundFunction::TypeObject :
-    Singleton<BoundFunction::TypeObject, Callable<py::TypeObject<BoundFunction> > >
+    Singleton<BoundFunction::TypeObject,
+              Getattrable<Callable<py::TypeObject<BoundFunction> > > >
 {
     TypeObject() : SingletonBase(&PyType_Type) {}
     
@@ -146,6 +150,11 @@ BoundFunction::call(PyObject* args, PyObject* keywords) const
     }
 
     return PyEval_CallObjectWithKeywords(m_unbound_function.get(), all_arguments.get(), keywords);
+}
+
+PyObject* BoundFunction::getattr(const char* name)
+{
+    return PyObject_GetAttrString(m_unbound_function.get(), const_cast<char*>(name));
 }
 
 void BoundFunction::TypeObject::dealloc(BoundFunction* instance) const
