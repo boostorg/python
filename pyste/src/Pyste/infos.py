@@ -14,7 +14,7 @@ from VarExporter import VarExporter
 from CodeExporter import CodeExporter
 from exporterutils import FunctionWrapper
 from utils import makeid
-
+import warnings
 
 #==============================================================================
 # DeclarationInfo
@@ -149,6 +149,7 @@ class EnumInfo(DeclarationInfo):
 class HeaderInfo(DeclarationInfo):
 
     def __init__(self, include, exporter_class = HeaderExporter):
+        warnings.warn('AllFromHeader is not working in all cases in the current version.')
         DeclarationInfo.__init__(self)
         self._Attribute('include', include)
         exporter = exporter_class(InfoWrapper(self))
