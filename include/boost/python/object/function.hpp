@@ -8,21 +8,30 @@
 
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
+# include <boost/python/reference.hpp>
 # include <boost/function.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 // We use boost::function to avoid generating lots of virtual tables
 typedef boost::function2<PyObject*, PyObject*, PyObject*> py_function;
 
 struct BOOST_PYTHON_DECL function : PyObject
 {
-    function(py_function);
+    function(py_function, unsigned min_args, unsigned max_args = 0);
     ~function();
     
     PyObject* call(PyObject*, PyObject*) const;
- private:    
+    void add_overload(function* overload);
+    
+ private: // helper functions
+    void argument_error(PyObject* args, PyObject* keywords) const;
+    
+ private: // data members
     py_function m_fn;
+    unsigned m_min_args;
+    unsigned m_max_args;
+    function* m_overloads;
 };
 
 extern BOOST_PYTHON_DECL PyTypeObject function_type;
@@ -31,6 +40,6 @@ extern BOOST_PYTHON_DECL PyTypeObject function_type;
 // implementations
 //
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // FUNCTION_DWA20011214_HPP
