@@ -78,7 +78,7 @@ namespace detail
   {
       typedef typename add_cv<Source>::type src_t;
       typedef typename add_cv<Target>::type target_t;
-      static bool const same = is_same<src_t,target_t>::value;
+      bool const same = is_same<src_t,target_t>::value;
       
       return detail::upcaster<same>::execute(x, (Target*)0);
   }
