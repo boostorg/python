@@ -31,7 +31,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     
  private: // helper functions
     void argument_error(PyObject* args, PyObject* keywords) const;
-    void add_overload(function* overload);
+    void add_overload(function*);
     
  private: // data members
     py_function m_fn;

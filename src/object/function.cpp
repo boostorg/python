@@ -63,9 +63,9 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
     PyErr_BadArgument();
 }
 
-void function::add_overload(function* overload)
+void function::add_overload(function* overload_)
 {
-    Py_XINCREF(overload);
+    Py_XINCREF(overload_);
     
     function* parent = this;
     
@@ -73,7 +73,7 @@ void function::add_overload(function* overload)
     {
         parent = parent->m_overloads;
     }
-    parent->m_overloads = overload;
+    parent->m_overloads = overload_;
 }
 
 void function::add_to_namespace(
