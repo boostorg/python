@@ -245,9 +245,12 @@ namespace detail
     template <class T, class Prev>
     struct select_held_type
         : mpl::select_type<
-        !(specifies_bases<T>::value  | is_same<T,noncopyable>::value)
-                , T
-                , Prev
+            type_traits::ice_or<
+                type_traits::ice_not<specifies_bases<T>::value>::value
+               , is_same<T,noncopyable>::value
+            >::value
+            , T
+            , Prev
           >
     {
     };

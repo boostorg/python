@@ -22,8 +22,10 @@ namespace detail
   template <class T, class Held>
   struct select_value_holder
   {
+      BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,Held>::value) | has_back_reference<T>::value);
+  
       typedef typename mpl::select_type<
-          (!is_same<T,Held>::value) | has_back_reference<T>::value
+          selector
           , value_holder_back_reference<T,Held>
           , value_holder<T>
       >::type holder;
@@ -35,9 +37,10 @@ namespace detail
   struct select_pointer_holder
   {
       typedef typename python::detail::pointee<Ptr>::type pointee;
+      BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
       
       typedef typename mpl::select_type<
-          (!is_same<pointee,T>::value) | has_back_reference<T>::value
+          selector
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
       >::type holder;
