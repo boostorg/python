@@ -1,22 +1,28 @@
-[library Boost Python
+[library python
     [version 1.0]
-    [authors Joel de Guzman, David Abrahams]
+    [authors [de Guzman, Joel], [Abrahams, David]]
     [copyright 2002 2003 2004 Joel de Guzman, David Abrahams]
     [category inter-language support]
     [purpose
         Reflects C++ classes and functions into Python
     ]
+    [license
+        Distributed under the Boost Software License, Version 1.0.
+        (See accompanying file LICENSE_1_0.txt or copy at
+        <ulink url="http://www.boost.org/LICENSE_1_0.txt">
+            http://www.boost.org/LICENSE_1_0.txt
+        </ulink>)
+    ]
 ]
 
 [/ QuickBook Document version 0.9 ]
 
-[def __note__       [$images/note.gif]]
-[def __alert__      [$images/alert.gif]]
-[def __detail__     [$images/lens.gif]]
-[def __tip__        [$images/bulb.gif]]
-[def :-)            [$images/smiley.gif]]
+[def __note__       [$../images/note.png]]
+[def __alert__      [$../images/alert.png]]
+[def __tip__        [$../images/tip.png]]
+[def :-)            [$../images/smiley.png]]
 
-[beginpage QuickStart]
+[section QuickStart]
 
 The Boost Python Library is a framework for interfacing Python and
 C++. It allows you to quickly and seamlessly expose C++ classes
@@ -58,8 +64,8 @@ resulting DLL is now visible to Python. Here's a sample Python session:
 
 [:['[*Next stop... Building your Hello World module from start to finish...]]]
 
-[endpage]
-[beginpage:hello Building Hello World]
+[endsect]
+[section:hello Building Hello World]
 
 [h2 From Start To Finish]
 
@@ -68,16 +74,14 @@ try it for yourself in Python. In this section, we shall outline the steps
 necessary to achieve that. We shall use the build tool that comes bundled
 with every boost distribution: [*bjam].
 
-[blurb __detail__ [*Building without bjam][br][br]]
-
-Besides bjam, there are of course other ways to get your module built.
-What's written here should not be taken as "the one and only way".
-There are of course other build tools apart from [^bjam].
-
-Take note however that the preferred build tool for Boost.Python is bjam.
-There are so many ways to set up the build incorrectly. Experience shows
-that 90% of the "I can't build Boost.Python" problems come from people
-who had to use a different tool.
+[blurb __note__ [*Building without bjam]\n\n
+    Besides bjam, there are of course other ways to get your module built.
+    What's written here should not be taken as "the one and only way".
+    There are of course other build tools apart from [^bjam].\n\n
+    Take note however that the preferred build tool for Boost.Python is bjam.
+    There are so many ways to set up the build incorrectly. Experience shows
+    that 90% of the "I can't build Boost.Python" problems come from people
+    who had to use a different tool.
 ]
 
 We shall skip over the details. Our objective will be to simply create the
@@ -107,10 +111,8 @@ minimalist ['bjam] script that builds the DLLs for us.
 Before anything else, you should have the bjam executable in your boost
 directory or somewhere in your path such that [^bjam] can be executed in
 the command line. Pre-built Boost.Jam executables are available for most
-platforms. For example, a pre-built Microsoft Windows bjam executable can
-be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip here].
-The complete list of bjam pre-built
-executables can be found [@../../../../../tools/build/index.html#Jam here].
+platforms. The complete list of Bjam executables can be found 
+[@http://sourceforge.net/project/showfiles.php?group_id=7586 here].
 
 [h2 Let's Jam!]
 [$images/jam.png]
@@ -173,8 +175,10 @@ Python modules. Example:
 
 The above assumes that the Python installation is in [^c:/dev/tools/python]
 and that we are using Python version 2.2. You'll have to tweak this path
-appropriately. __note__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
-even if that's the version you have.
+appropriately. 
+
+[blurb __tip__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
+even if that's the version you have.]
 
 Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
 where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
@@ -185,7 +189,7 @@ Finally:
 
 We are again assuming that we are using Microsoft Visual C++ version 6. If
 not, then you will have to specify the appropriate tool. See
-[@../../../../../tools/build/index.html Building Boost Libraries] for
+[@../../../../../../../tools/build/index.html Building Boost Libraries] for
 further details.
 
 It should be building now:
@@ -240,8 +244,8 @@ You may now fire up Python and run our hello module:
 
 [:[*There you go... Have fun!]]
 
-[endpage]
-[beginpage:exposing Exposing Classes]
+[endsect]
+[section:exposing Exposing Classes]
 
 Now let's expose a C++ class to Python.
 
@@ -278,7 +282,7 @@ may use our class [^World] in Python. Here's a sample Python session:
     >>> planet.greet()
     'howdy'
 
-[beginpage Constructors]
+[section Constructors]
 
 Our previous example didn't have any explicit constructors.
 Since [^World] is declared as a plain struct, it has an implicit default
@@ -336,8 +340,8 @@ all, we may use [^no_init] instead:
 This actually adds an [^__init__] method which always raises a
 Python RuntimeError exception.
 
-[endpage]
-[beginpage Class Data Members]
+[endsect]
+[section Class Data Members]
 
 Data members may also be exposed to Python so that they can be
 accessed as attributes of the corresponding Python class. Each data
@@ -375,8 +379,8 @@ as [*read-write].
     AttributeError: can't set attribute
 ]
 
-[endpage]
-[beginpage Class Properties]
+[endsect]
+[section Class Properties]
 
 In C++, classes with public data members are usually frowned
 upon. Well designed classes that take advantage of encapsulation hide
@@ -414,8 +418,8 @@ since the [^rovalue] setter member function is not passed in:
 
     .add_property("rovalue", &Num::get)
 
-[endpage]
-[beginpage Inheritance]
+[endsect]
+[section Inheritance]
 
 In the previous examples, we dealt with classes that are not polymorphic.
 This is not often the case. Much of the time, we will be wrapping
@@ -470,8 +474,8 @@ Boost.Python [@call_policies.html call policies] later.
     def("factory", factory,
         return_value_policy<manage_new_object>());
 
-[endpage]
-[beginpage Class Virtual Functions]
+[endsect]
+[section Class Virtual Functions]
 
 In this section, we shall learn how to make functions behave
 polymorphically through virtual functions. Continuing our example, let us
@@ -512,7 +516,7 @@ need to create a class wrapper:
         PyObject* self;
     };
 
-[blurb __detail__ [*member function and methods][br][br] Python, like
+[blurb __note__ [*member function and methods]\n\n Python, like
 many object oriented languages uses the term [*methods].  Methods
 correspond roughly to C++'s [*member functions]]
 
@@ -521,17 +525,17 @@ virtual member function [^f] in effect calls the corresponding method
 of the Python object [^self], which is a pointer back to the Python
 [^Base] object holding our [^BaseWrap] instance.
 
-[blurb __note__ [*Why do we need BaseWrap?][br][br]]
+[blurb __note__ [*Why do we need BaseWrap?]\n\n]
 
 ['You may ask], "Why do we need the [^BaseWrap] derived class? This could
 have been designed so that everything gets done right inside of
-Base."[br][br]
+Base."\n\n
 
 One of the goals of Boost.Python is to be minimally intrusive on an
 existing C++ design. In principle, it should be possible to expose the
 interface for a 3rd party library without changing it. To unintrusively
 hook into the virtual functions so that a Python override may be called, we
-must use a derived class.[br][br]
+must use a derived class.\n\n
 
 Note however that you don't need to do this to get methods overridden
 in Python to behave virtually when called ['from] [*Python]. The only
@@ -560,8 +564,8 @@ Why is it an error? [^Base] is an abstract class. As such it is advisable
 to define the Python wrapper with [^no_init] as we have done above. Doing
 so will disallow abstract base classes such as [^Base] to be instantiated.
 
-[endpage]
-[beginpage Deriving a Python Class]
+[endsect]
+[section Deriving a Python Class]
 
 Continuing, we can derive from our base class Base in Python and override
 the virtual function in Python. Before we can do that, we have to set up
@@ -607,8 +611,8 @@ Here's what's happening:
 # [^call_method<int>(self, "f");] dispatches the call back to Python.
 # [^def f(self): return 42] is finally called.
 
-[endpage]
-[beginpage Virtual Functions with Default Implementations]
+[endsect]
+[section Virtual Functions with Default Implementations]
 
 Recall that in the [@class_virtual_functions.html previous section], we
 wrapped a class with a pure virtual function that we then implemented in
@@ -681,8 +685,8 @@ Calling [^call_f], passing in a [^derived] object:
     >>> call_f(derived)
     42
 
-[endpage]
-[beginpage Class Operators/Special Functions]
+[endsect]
+[section Class Operators/Special Functions]
 
 [h2 Python Operators]
 
@@ -745,14 +749,14 @@ that correspond to these Python ['special functions]. Example:
 
 Need we say more?
 
-[blurb __detail__ What is the business of [^operator<<] [^.def(str(self))]?
+[blurb __note__ What is the business of [^operator<<] [^.def(str(self))]?
 Well, the method [^str] requires the [^operator<<] to do its work (i.e.
 [^operator<<] is used by the method defined by def(str(self)).]
 
-[endpage]
-[endpage] [/ Exposing Classes ]
+[endsect]
+[endsect] [/ Exposing Classes ]
 
-[beginpage Functions]
+[section Functions]
 
 In this chapter, we'll look at Boost.Python powered functions in closer
 detail. We shall see some facilities to make exposing C++ functions to
@@ -790,7 +794,7 @@ But before you do, you might want to fire up Python 2.2 or later and type
     Namespaces are one honking great idea -- let's do more of those!
 ]
 
-[beginpage Call Policies]
+[section Call Policies]
 
 In C++, we often deal with arguments and return types such as pointers
 and references. Such primitive types are rather, ummmm, low level and
@@ -916,21 +920,21 @@ or more policies can be composed by chaining. Here's the general syntax:
 Here is the list of predefined call policies. A complete reference detailing
 these can be found [@../../v2/reference.html#models_of_call_policies here].
 
-* [*with_custodian_and_ward][br] Ties lifetimes of the arguments
-* [*with_custodian_and_ward_postcall][br] Ties lifetimes of the arguments and results
-* [*return_internal_reference][br] Ties lifetime of one argument to that of result
-* [*return_value_policy<T> with T one of:][br]
-* [*reference_existing_object][br]naive (dangerous) approach
-* [*copy_const_reference][br]Boost.Python v1 approach
-* [*copy_non_const_reference][br]
-* [*manage_new_object][br] Adopt a pointer and hold the instance
+* [*with_custodian_and_ward]\n Ties lifetimes of the arguments
+* [*with_custodian_and_ward_postcall]\n Ties lifetimes of the arguments and results
+* [*return_internal_reference]\n Ties lifetime of one argument to that of result
+* [*return_value_policy<T> with T one of:]\n
+* [*reference_existing_object]\nnaive (dangerous) approach
+* [*copy_const_reference]\nBoost.Python v1 approach
+* [*copy_non_const_reference]\n
+* [*manage_new_object]\n Adopt a pointer and hold the instance
 
-[blurb :-) [*Remember the Zen, Luke:][br][br]
-"Explicit is better than implicit"[br]
-"In the face of ambiguity, refuse the temptation to guess"[br]]
+[blurb :-) [*Remember the Zen, Luke:]\n\n
+"Explicit is better than implicit"\n
+"In the face of ambiguity, refuse the temptation to guess"\n]
 
-[endpage]
-[beginpage Overloading]
+[endsect]
+[section Overloading]
 
 The following illustrates a scheme for manually wrapping an overloaded
 member functions. Of course, the same technique can be applied to wrapping
@@ -976,8 +980,8 @@ With these in hand, we can proceed to define and wrap this for Python:
     .def("f", fx3)
     .def("f", fx4)
 
-[endpage]
-[beginpage Default Arguments]
+[endsect]
+[section Default Arguments]
 
 Boost.Python wraps (member) function pointers. Unfortunately, C++ function
 pointers carry no default argument info. Take a function [^f] with default
@@ -1091,8 +1095,8 @@ You can easily add this constructor to Boost.Python in one shot:
 Notice the use of [^init<...>] and [^optional<...>] to signify the default
 (optional arguments).
 
-[endpage]
-[beginpage Auto-Overloading]
+[endsect]
+[section Auto-Overloading]
 
 It was mentioned in passing in the previous section that
 [^BOOST_PYTHON_FUNCTION_OVERLOADS] and [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]
@@ -1159,10 +1163,10 @@ Then...
     .def("f", fx1, xf_overloads());
     .def("f", fx2)
 
-[endpage]
-[endpage] [/ Functions ]
+[endsect]
+[endsect] [/ Functions ]
 
-[beginpage:object Object Interface]
+[section:object Object Interface]
 
 Python is dynamically typed, unlike C++ which is statically typed. Python
 variables may hold an integer, a float, list, dict, tuple, str, long etc.,
@@ -1177,7 +1181,7 @@ should minimize the learning curve significantly.
 
 [$images/python.png]
 
-[beginpage Basic Interface]
+[section Basic Interface]
 
 Class [^object] wraps [^PyObject*]. All the intricacies of dealing with
 [^PyObject]s such as managing reference counting are handled by the
@@ -1213,8 +1217,8 @@ Apart from cosmetic differences due to the fact that we are writing the
 code in C++, the look and feel should be immediately apparent to the Python
 coder.
 
-[endpage]
-[beginpage Derived Object types]
+[endsect]
+[section Derived Object types]
 
 Boost.Python comes with a set of derived [^object] types corresponding to
 that of Python's:
@@ -1292,8 +1296,8 @@ We can use this to create wrapped instances. Example:
 
     assert(vec345.attr("length") == 5.0);
 
-[endpage]
-[beginpage Extracting C++ objects]
+[endsect]
+[section Extracting C++ objects]
 
 At some point, we will need to get C++ values out of object instances. This
 can be achieved with the [^extract<T>] function. Consider the following:
@@ -1330,8 +1334,8 @@ facility in fact solves the mutable copying problem:
     d['whatever'] = 3;          # modifies x.__dict__ !
 
 
-[endpage]
-[beginpage Enums]
+[endsect]
+[section Enums]
 
 Boost.Python has a nifty facility to capture and wrap C++ enums. While
 Python has no [^enum] type, we'll often want to expose our C++ enums to
@@ -1354,7 +1358,7 @@ current [^scope()], which is usually the current module. The snippet above
 creates a Python class derived from Python's [^int] type which is
 associated with the C++ type passed as its first parameter.
 
-[blurb __detail__ [*what is a scope?][br][br] The scope is a class that has an
+[blurb __note__ [*what is a scope?]\n\n The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
 attributes. Details can be found [@../../v2/scope.html here].]
@@ -1392,10 +1396,10 @@ create a new scope around a class:
 [def PyModule_New           [@http://www.python.org/doc/current/api/moduleObjects.html#l2h-591   PyModule_New]]
 [def PyModule_GetDict       [@http://www.python.org/doc/current/api/moduleObjects.html#l2h-594   PyModule_GetDict]]
 
-[endpage]
-[endpage] [/ Object Interface]
+[endsect]
+[endsect] [/ Object Interface]
 
-[beginpage Embedding]
+[section Embedding]
 
 By now you should know how to use Boost.Python to call your C++ code from
 Python. However, sometimes you may need to do the reverse: call Python code
@@ -1453,11 +1457,11 @@ Being able to build is nice, but there is nothing to build yet. Embedding
 the Python interpreter into one of your C++ programs requires these 4
 steps:
 
-# '''#include''' [^<boost/python.hpp>][br][br]
+# '''#include''' [^<boost/python.hpp>]\n\n
 
-# Call Py_Initialize() to start the interpreter and create the [^__main__] module.[br][br]
+# Call Py_Initialize() to start the interpreter and create the [^__main__] module.\n\n
 
-# Call other Python C API routines to use the interpreter.[br][br]
+# Call other Python C API routines to use the interpreter.\n\n
 
 # Call Py_Finalize() to stop the interpreter and release its resources.
 
@@ -1465,7 +1469,7 @@ steps:
 
 [:['[*Now that we can embed the interpreter in our programs, lets see how to put it to use...]]]
 
-[beginpage Using the interpreter]
+[section Using the interpreter]
 
 As you probably already know, objects in Python are reference-counted.
 Naturally, the [^PyObject]s of the Python/C API are also reference-counted.
@@ -1502,8 +1506,8 @@ out of the raw [^PyObject*] without wrapping it in a call to borrowed. One
 such function that returns a new reference is PyRun_String which we'll
 discuss in the next section.
 
-[blurb __detail__ [*Handle is a class ['template], so why haven't we been using any template parameters?][br]
-[br]
+[blurb __note__ [*Handle is a class ['template], so why haven't we been using any template parameters?]\n
+\n
 [^handle] has a single template parameter specifying the type of the managed object. This type is [^PyObject] 99% of the time, so the parameter was defaulted to [^PyObject] for convenience. Therefore we can use the shorthand [^handle<>] instead of the longer, but equivalent, [^handle<PyObject>].
 ]
 
@@ -1667,10 +1671,10 @@ If you'd rather not have [^handle] throw a C++ exception when it is constructed,
     else
         // everything went okay, it's safe to use the result
 
-[endpage]
-[endpage] [/ Embedding]
+[endsect]
+[endsect] [/ Embedding]
 
-[beginpage Iterators]
+[section Iterators]
 
 In C++, and STL in particular, we see iterators everywhere. Python also has
 iterators, but these are two very different beasts.
@@ -1744,8 +1748,8 @@ Now, our C++ Wrapper:
         .property("pions", range(&F::p_begin, &F::p_end))
         .property("bogons", range(&F::b_begin, &F::b_end));
 
-[endpage]
-[beginpage:exception Exception Translation]
+[endsect]
+[section:exception Exception Translation]
 
 All C++ exceptions must be caught at the boundary with Python code. This
 boundary is the point where C++ meets Python. Boost.Python provides a
@@ -1765,12 +1769,12 @@ Users may provide custom translation. Here's an example:
               PodBayDoorException>(translator);
          ...
 
-[endpage]
-[beginpage:techniques General Techniques]
+[endsect]
+[section:techniques General Techniques]
 
 Here are presented some useful techniques that you can use while wrapping code with Boost.Python.
 
-[beginpage Creating Packages]
+[section Creating Packages]
 
 A Python package is a collection of modules that provide to the user a certain
 functionality. If you're not familiar on how to create packages, a good
@@ -1928,8 +1932,8 @@ from the [^filters] package:
     >>> import sounds.filters
     >>> sounds.filters.echo_noise(...)
 
-[endpage]
-[beginpage Extending Wrapped Objects in Python]
+[endsect]
+[section Extending Wrapped Objects in Python]
 
 Thanks to Python's flexibility, you can easily add new methods to a class,
 even after it was already created:
@@ -2022,8 +2026,8 @@ many overloads and/or arguments this is often a great simplification, again
 with virtually zero memory footprint and zero compile-time overhead for
 the keyword support.
 
-[endpage]
-[beginpage Reducing Compiling Time]
+[endsect]
+[section Reducing Compiling Time]
 
 If you have ever exported a lot of classes, you know that it takes quite a good
 time to compile the Boost.Python wrappers. Plus the memory consumption can
@@ -2087,7 +2091,7 @@ various files as demonstrated here.]
 ['"fatal error C1204:Compiler limit:internal structure overflow"] when compiling
 a large source file, as explained in the [@../../v2/faq.html#c1204 FAQ].]
 
-[endpage]
-[endpage] [/ General Techniques]
+[endsect]
+[endsect] [/ General Techniques]
 
 
