@@ -509,8 +509,7 @@ some __str__ and __repr__ tests:
     >>> range = Range(5, 20)
     >>> str(range)
     '(5, 20)'
-    >>> assert re.match('<Range object at [0-9a-fA-F]+>', repr(range))
-
+    >>> assert re.match('<Range object at [0-9a-fA-FxX]+>', repr(range))
 
 __hash__ and __cmp__ tests:
     # Range has both __hash__ and __cmp__, thus is hashable
