@@ -38,6 +38,12 @@ int back(list_int& x)
 
 typedef std::pair<list_int::iterator,list_int::iterator> list_range;
 
+struct list_range2 : list_range
+{
+    list_int::iterator& begin() { return this->first; }
+    list_int::iterator& end() { return this->second; }
+};
+
 list_range range(list_int& x)
 {
     return list_range(x.begin(), x.end());
@@ -86,6 +92,12 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
         // We can specify data members
         .def("__iter__"
              , range(&list_range::first, &list_range::second))
+        ;
+
+    class_<list_range2>("list_range2")
+
+        // We can specify member functions returning a non-const reference
+        .def("__iter__", range(&list_range2::begin, &list_range2::end))
         ;
 
     class_<two_lists>("two_lists")
