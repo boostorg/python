@@ -113,14 +113,22 @@ In Python, let us try to instantiate our <tt>Base</tt> class:</p>
 Why is it an error? <tt>Base</tt> is an abstract class. As such it is advisable
 to define the Python wrapper with <tt>no_init</tt> as we have done above. Doing
 so will disallow abstract base classes such as <tt>Base</tt> to be instantiated.</p>
-<a name="deriving_a_python_class"></a><h2>Deriving a Python class</h2><p>
-Now, at last, we can even derive from our base class <tt>Base</tt> in Python:</p>
-<code><pre>
+<a name="deriving_a_python_class"></a><h2>Deriving a Python class</h2>
+<p> Now, at last, we can even derive from our base class <tt>Base</tt> in Python. 
+  Before we can do that, we have to set up our <tt>class_</tt> wrapper as:</p>
+<pre>    <code><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
+        </span><span class=special>;</span></code></pre>
+<p>Otherwise, we have to suppress the Base class' <tt>no_init</tt> by adding an 
+  <tt>__init__()</tt> method to all our derived classes. <tt>no_init </tt>actually 
+  adds an <tt>__init__</tt> method that raises a Python RuntimeError exception.</p>
+<code>
+<pre>
     <span class=special>&gt;&gt;&gt; </span><span class=keyword>class </span><span class=identifier>Derived</span><span class=special>(</span><span class=identifier>Base</span><span class=special>):
     </span><span class=special>...     </span><span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
     </span><span class=special>...         </span><span class=keyword>return </span><span class=number>42
     </span><span class=special>...
-</span></pre></code>
+</span></pre>
+</code> 
 <p>
 Cool eh? A Python class deriving from a C++ class!</p>
 <p>
