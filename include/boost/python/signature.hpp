@@ -140,6 +140,36 @@ get_signature
 }
 
 ///////////////////////////////////////
+#if !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
+
+template
+<
+    typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    BOOST_PP_ENUM
+    (
+        BOOST_PP_ITERATION(),
+        BPL_IMPL_TEMPLATE_GEN,
+        BOOST_PP_EMPTY
+    )
+>
+inline boost::mpl::type_list
+<
+    RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
+>
+get_signature
+    (signature<RT(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T))>)
+{
+    return boost::mpl::type_list
+        <
+            RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+            BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
+        >();
+}
+
+#endif // !(defined(BOOST_MSVC) && (BOOST_MSVC <= 1300))
+
+///////////////////////////////////////
 template
 <
     typename RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())

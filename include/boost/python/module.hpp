@@ -22,8 +22,8 @@ namespace boost { namespace python {
 namespace detail
 {
     // Forward declaration (detail/defaults_def.hpp)
-    template <typename DerivedT>
     struct func_stubs_base;
+
 }
 
 class module : public detail::module_base
@@ -59,28 +59,44 @@ class module : public detail::module_base
 
         return *this;
     }
+
+    template <class Arg1T, class Arg2T>
+    module& def(char const* name, Arg1T arg1, Arg2T const& arg2, char const* doc = 0)
+    {
+        dispatch_def(name, arg1, arg2, doc, &arg2);
+        return *this;
+    }
+
+ private:
+
     template <class Fn, class CallPolicyOrDoc>
-    module& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
+    void
+    dispatch_def(
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc const& policy_or_doc,
+        char const* doc,
+        void const*)
     {
         typedef detail::def_helper<CallPolicyOrDoc> helper;
 
         this->setattr_doc(
             name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
             helper::get_doc(policy_or_doc, doc));
-
-        return *this;
     }
 
-    template <typename DerivedT, typename SigT>
-    module& def_generator(
+    template <typename StubsT, typename SigT>
+    void
+    dispatch_def(
         char const* name,
-        detail::func_stubs_base<DerivedT> const& stubs,
-        SigT sig, char const* doc = 0)
+        SigT sig,
+        StubsT const& stubs,
+        char const* doc,
+        detail::func_stubs_base const*)
     {
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
-        detail::define_with_defaults(name, stubs.derived(), *this, detail::get_signature(sig), doc);
-        return *this;
+        detail::define_with_defaults(name, stubs, *this, detail::get_signature(sig), doc);
     }
 };
 

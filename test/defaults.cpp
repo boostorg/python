@@ -98,14 +98,14 @@ BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar_stubs, bar, 1, 4)
 BOOST_PYTHON_MODULE_INIT(defaults_ext)
 {
     module      m("defaults_ext");
-    m.def_generator("foo", foo_stubs(), foo);
-    m.def_generator("bar", bar_stubs(), signature<object(*)(int, char, std::string, double)>());
+    m.def("foo", foo, foo_stubs());
+    m.def("bar", signature<object(*)(int, char, std::string, double)>(), bar_stubs());
 
     class_<X>   xc("X");
     m.add(xc);
 
     xc.def_init();
-    xc.def_generator("bar", X_bar_stubs(), X::bar);
+    xc.def("bar", X::bar, X_bar_stubs());
 }
 
 #include "module_tail.cpp"

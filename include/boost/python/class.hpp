@@ -63,7 +63,6 @@ namespace detail
   }
 
     // Forward declaration (detail/defaults_def.hpp)
-    template <typename DerivedT>
     struct func_stubs_base;
 }
 
@@ -113,14 +112,10 @@ class class_ : public objects::class_base
         return *this;
     }
 
-    template <class Fn, class CallPolicyOrDoc>
-    self& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
+    template <class Arg1T, class Arg2T>
+    self& def(char const* name, Arg1T arg1, Arg2T const& arg2, char const* doc = 0)
     {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
-
-        this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc), helper::get_doc(policy_or_doc, doc), &fn);
-
+        dispatch_def(name, arg1, arg2, doc, &arg2);
         return *this;
     }
 
@@ -129,18 +124,6 @@ class class_ : public objects::class_base
     {
         typedef detail::operator_<id,L,R> op_t;
         return this->def(op.name(), &op_t::template apply<T>::execute);
-    }
-
-    template <typename DerivedT, typename SigT>
-    self& def_generator(
-        char const* name,
-        detail::func_stubs_base<DerivedT> const& stubs,
-        SigT sig, char const* doc = 0)
-    {
-        //  convert sig to a type_list (see detail::get_signature in signature.hpp)
-        //  before calling detail::define_with_defaults.
-        detail::define_with_defaults(name, stubs.derived(), *this, detail::get_signature(sig), doc);
-        return *this;
     }
 
     // Define the constructor with the given Args, which should be an
@@ -242,7 +225,35 @@ class class_ : public objects::class_base
         objects::add_to_namespace(*this, name, f, doc);
     }
 
- private: // types
+    template <class Fn, class CallPolicyOrDoc>
+    void dispatch_def(
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc const& policy_or_doc,
+        char const* doc,
+        void const*)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+
+        this->def_impl(
+            name, fn, helper::get_policy(policy_or_doc), helper::get_doc(policy_or_doc, doc), &fn);
+
+    }
+
+    template <typename StubsT, typename SigT>
+    void dispatch_def(
+        char const* name,
+        SigT sig,
+        StubsT const& stubs,
+        char const* doc,
+        detail::func_stubs_base const*)
+    {
+        //  convert sig to a type_list (see detail::get_signature in signature.hpp)
+        //  before calling detail::define_with_defaults.
+        detail::define_with_defaults(name, stubs, *this, detail::get_signature(sig), doc);
+    }
+
+private: // types
     typedef objects::class_id class_id;
 
     typedef typename detail::select_bases<X1

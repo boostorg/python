@@ -26,28 +26,10 @@ namespace boost { namespace python { namespace detail {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  func_stubs_base is used as a base class for all function
-//  stubs. This technique uses the "Curiously recurring template
-//  pattern" to disambiguate function calls. For instance, the
-//  interface:
-//
-//      template <typename DerivedT>
-//      void foo(func_stubs_base<DerivedT> const&);
-//
-//  will accept only subclasses of func_stubs_base.
+//  func_stubs_base is used as a base class for all function stubs.
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <typename DerivedT>
-struct func_stubs_base {
-
-    typedef DerivedT derived_t;
-
-    DerivedT& derived()
-    { return *static_cast<DerivedT*>(this); }
-
-    DerivedT const& derived() const
-    { return *static_cast<DerivedT const*>(this); }
-};
+struct func_stubs_base {};
 
 }}} // namespace boost::python::detail
 
@@ -182,7 +164,7 @@ struct func_stubs_base {
     BPL_IMPL_GEN_FUNCTION                                                       \
         (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _V), N_ARGS, N_DFLTS, ;)              \
     struct FSTUBS_NAME                                                          \
-    : public boost::python::detail::func_stubs_base<FSTUBS_NAME> {              \
+    : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _V)   v_type;                         \
@@ -195,7 +177,7 @@ struct func_stubs_base {
     BPL_IMPL_GEN_MEM_FUNCTION                                                   \
         (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _V), N_ARGS, N_DFLTS, ;)              \
     struct FSTUBS_NAME                                                          \
-    : public boost::python::detail::func_stubs_base<FSTUBS_NAME> {              \
+    : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _V)   v_type;                         \
@@ -208,7 +190,7 @@ struct func_stubs_base {
     BPL_IMPL_GEN_FUNCTION                                                       \
         (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
     struct FSTUBS_NAME                                                          \
-    : public boost::python::detail::func_stubs_base<FSTUBS_NAME> {              \
+    : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  v_type;                         \
@@ -219,7 +201,7 @@ struct func_stubs_base {
     BPL_IMPL_GEN_MEM_FUNCTION                                                   \
         (FNAME, BOOST_PP_CAT(FSTUBS_NAME, _NV), N_ARGS, N_DFLTS, return)        \
     struct FSTUBS_NAME                                                          \
-    : public boost::python::detail::func_stubs_base<FSTUBS_NAME> {              \
+    : public boost::python::detail::func_stubs_base {                           \
                                                                                 \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  nv_type;                        \
         typedef BOOST_PP_CAT(FSTUBS_NAME, _NV)  v_type;                         \
@@ -285,7 +267,7 @@ struct func_stubs_base {
 //      };
 //
 //      struct foo_stubs
-//      :   public boost::python::detail::func_stubs_base<foo_stubs> {
+//      :   public boost::python::detail::func_stubs_base {
 //
 //          typedef foo_stubs_NV    nv_type;
 //          typedef foo_stubs_NV    v_type;
