@@ -209,7 +209,8 @@ class class_ : public objects::class_base
     self& def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3)
     {
         //  The arguments are definitely:
-        //      def(name, function, policy, doc_string) // TODO: exchange policy, doc_string position
+        //      def(name, function, policy, doc_string)
+        //      def(name, function, doc_string, policy)
 
         dispatch_def(&arg2, name, arg1, arg2, arg3);
         return *this;
@@ -334,25 +335,9 @@ class class_ : public objects::class_base
 
     inline void register_() const;
 
-    template <class Fn, class CallPolicyOrDoc>
-    void dispatch_def(
-        void const*,
-        char const* name,
-        Fn fn,
-        CallPolicyOrDoc const& policy_or_doc,
-        char const* doc = 0)
-    {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
-
-        this->def_impl(
-            name, fn, helper::get_policy(policy_or_doc),
-            helper::get_doc(policy_or_doc, doc), &fn);
-
-    }
-
     template <class StubsT, class SigT>
     void dispatch_def(
-        detail::func_stubs_base const*,
+        detail::overloads_base const*,
         char const* name,
         SigT sig,
         StubsT const& stubs)
@@ -361,6 +346,35 @@ class class_ : public objects::class_base
         //  before calling detail::define_with_defaults.
         detail::define_with_defaults(
             name, stubs, *this, detail::get_signature(sig));
+    }
+
+    template <class Fn, class CallPolicyOrDoc>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc const& policy_or_doc)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        this->def_impl(
+            name, fn, helper::get_policy(policy_or_doc),
+            helper::get_doc(policy_or_doc, 0), &fn);
+
+    }
+
+    template <class Fn, class CallPolicyOrDoc1, class CallPolicyOrDoc2>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc1 const& policy_or_doc1,
+        CallPolicyOrDoc2 const& policy_or_doc2)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc1> helper;
+
+        this->def_impl(
+            name, fn, helper::get_policy(policy_or_doc1, policy_or_doc2),
+            helper::get_doc(policy_or_doc1, policy_or_doc2), &fn);
     }
 };
 

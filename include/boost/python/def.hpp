@@ -19,25 +19,40 @@ namespace detail
 {
   void BOOST_PYTHON_DECL scope_setattr_doc(char const* name, object const& obj, char const* doc);
 
-  template <class Fn, class CallPolicyOrDoc>
-  void
-  dispatch_def(
-      void const*,
-      char const* name,
-      Fn fn,
-      CallPolicyOrDoc const& policy_or_doc,
-      char const* doc = 0)
-  {
-      typedef detail::def_helper<CallPolicyOrDoc> helper;
+    template <class Fn, class CallPolicyOrDoc>
+    void
+    dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc const& policy_or_doc)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
 
-      detail::scope_setattr_doc(
-          name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
-          helper::get_doc(policy_or_doc, doc));
-  }
+        detail::scope_setattr_doc(
+            name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
+            helper::get_doc(policy_or_doc, 0));
+    }
+
+    template <class Fn, class CallPolicyOrDoc1, class CallPolicyOrDoc2>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc1 const& policy_or_doc1,
+        CallPolicyOrDoc2 const& policy_or_doc2)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc1> helper;
+
+        detail::scope_setattr_doc(
+            name, boost::python::make_function(
+                fn, helper::get_policy(policy_or_doc1, policy_or_doc2)),
+            helper::get_doc(policy_or_doc1, policy_or_doc2));
+    }
 
     template <class StubsT, class SigT>
     void dispatch_def(
-        detail::func_stubs_base const*,
+        detail::overloads_base const*,
         char const* name,
         SigT sig,
         StubsT const& stubs)

@@ -200,13 +200,13 @@ struct define_stub_function {};
         SigT sig)
     {
         typedef typename mpl::front<SigT>::type return_type;
-        typedef typename StubsT::v_type v_type;
-        typedef typename StubsT::nv_type nv_type;
+        typedef typename StubsT::void_return_type void_return_type;
+        typedef typename StubsT::non_void_return_type non_void_return_type;
 
         typedef typename mpl::if_c<
             boost::is_same<void, return_type>::value
-            , v_type
-            , nv_type
+            , void_return_type
+            , non_void_return_type
         >::type stubs_type;
 
         BOOST_STATIC_ASSERT(
