@@ -713,12 +713,13 @@ class _VirtualWrapperGenerator(object):
                 if method.abstract:
                     s = indent2 + 'PyErr_SetString(PyExc_RuntimeError, "pure virtual function called");\n' +\
                         indent2 + 'throw_error_already_set();\n' 
-                    if method.result.FullName() != 'void':
-                        s += indent2 + 'return %s();\n' % method.result.FullName()
+                    params = ', '.join(param_names)
+                    s += indent2 + '%s%s(%s);\n' % \
+                        (return_str, method.name, params)
                     return s
-                else:
+                else:                 
                     return indent2 + '%s%s(%s);\n' % \
-                    (return_str, method.FullName(), ', '.join(param_names)) 
+                        (return_str, method.FullName(), ', '.join(param_names)) 
             else:
                 # return a call for the wrapper
                 params = ', '.join(['this'] + param_names)

@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 from declarations import Typedef
 
-__VERSION__ = '0.9.13'
+__VERSION__ = '0.9.14'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'

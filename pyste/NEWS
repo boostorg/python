@@ -2,6 +2,9 @@
 Applied a patch by Gottfried Ganssauge that adds exception specifiers to 
 wrapper functions and pointer declarations. Thanks a lot Gottfried!!
 
+Applied a patch by Prabhu Ramachandran that fixes ae problem with the 
+pure virtual method generation. Thanks again Prabhu!
+
 10 August 2003
 Support for incremental generation of the code has been added. This changes
 how --multiple works; documentation of this new feature will follow. Thanks
