@@ -5,6 +5,11 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  Rolled in const_cast from Dragon fork (Dave Abrahams)
+// 03 Mar 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
+// 03 Mar 01  bug fix: use bound_function::create() (instead of new bound_function)
 
 #include <boost/python/classes.hpp>
 #include <boost/python/detail/functions.hpp>
@@ -877,7 +882,7 @@ namespace {
               PyObject *globals = PyEval_GetGlobals();
               if (globals != NULL)
               {
-                  PyObject *module_name = PyDict_GetItemString(globals, "__name__");
+                  PyObject *module_name = PyDict_GetItemString(globals, const_cast<char*>("__name__"));
                   if (module_name != NULL)
                       name_space.set_item(module_key, module_name);
               }

@@ -7,6 +7,15 @@ r'''
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 
+//  Revision History:
+//  04 Mar 01 Changed name of extension module so it would work with DebugPython,
+//            fixed exception message checking to work with Python 2.0
+//            (Dave Abrahams)
+
+Load up the extension module
+
+    >>> from boost_python_test import *
+
 Automatic checking of the number and type of arguments. Foo's constructor takes
 a single long parameter. 
 
@@ -17,9 +26,9 @@ a single long parameter.
 
     >>> try: ext = Foo('foo')
     ... except TypeError, err:
-    ...     assert re.match(
-    ... '(illegal argument type for built-in operation)|(an integer is required)', str(err))
-    ... else: print 'no exception'
+    ...    assert_integer_expected(err)
+    ... else:
+    ...    print 'no exception'
 
     >>> ext = Foo(1)
 
@@ -64,6 +73,21 @@ We can subclass Foo.
     >>> b.call_pure()
     'not pure anymore!'
 
+None corresponds to a NULL pointer or smart pointer
+    >>> f = foo_factory(1)
+    >>> f.add_len('xxx')
+    1000
+    >>> foo_factory(0) is None
+    1
+    >>> foo_ptr_is_null(None)
+    1
+    >>> foo_ptr_is_null(f)
+    0
+    >>> foo_shared_ptr_is_null(None)
+    1
+    >>> foo_shared_ptr_is_null(f)
+    0
+    
 If no __init__ function is defined, the one from the base class takes effect, just
 like in a Python class.
 
@@ -209,7 +233,7 @@ Polymorphism also works:
 Pickling tests:
 
     >>> world.__module__
-    'test'
+    'boost_python_test'
     >>> world.__safe_for_unpickling__
     1
     >>> world.__reduce__()
@@ -238,6 +262,47 @@ Pickling tests:
     Hello from California! 24
     Hello from California! 42
     Hello from California! 0
+
+Pickle safety measures:
+    >>> r=Rational(3, 4)
+    >>> r
+    Rational(3, 4)
+    >>> try: s=pickle.dumps(r)
+    ... except RuntimeError, err: print err[0]
+    ... 
+    Incomplete pickle support (__dict_defines_state__ not set)
+    >>> class myrational(Rational):
+    ...   __dict_defines_state__ = 1 # this is a lie but good enough for testing.
+    ...             
+    >>> r=myrational(3, 4)
+    >>> r
+    Rational(3, 4)
+    >>> s=pickle.dumps(r)
+
+    >>> class myworld(world):
+    ...   def __init__(self):
+    ...     world.__init__(self, 'anywhere')
+    ...     self.x = 1
+    ... 
+    >>> w = myworld()
+    >>> w.greet()
+    'Hello from anywhere!'
+    >>> w.__dict__
+    {'x': 1}
+    >>> try: s=pickle.dumps(w)
+    ... except RuntimeError, err: print err[0]
+    ... 
+    Incomplete pickle support (__getstate_manages_dict__ not set)
+
+    >>> class myunsafeworld(myworld):
+    ...   __getstate_manages_dict__ = 1 # this is a lie but good enough for testing.
+    ... 
+    >>> w = myunsafeworld()
+    >>> w.greet()
+    'Hello from anywhere!'
+    >>> w.__dict__
+    {'x': 1}
+    >>> s=pickle.dumps(w)
 
 Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.uk>
 
@@ -656,10 +721,11 @@ Testing interaction between callbacks, base declarations, and overloading
     >>> c = CallbackTest()
     >>> c.testCallback(1)
     2
-    >>> c.testCallback('foo')
-    Traceback (innermost last):
-      File "<stdin>", line 1, in ?
-    TypeError: illegal argument type for built-in operation
+    
+    >>> try: c.testCallback('foo')
+    ... except TypeError, err: assert_integer_expected(err)
+    ... else: print 'no exception'
+
     >>> c.callback(1)
     2
     >>> c.callback('foo')
@@ -678,10 +744,11 @@ Testing interaction between callbacks, base declarations, and overloading
     -1
     >>> r.callback('foo')
     'foo 1'
-    >>> r.testCallback('foo')
-    Traceback (innermost last):
-      File "<stdin>", line 1, in ?
-    TypeError: illegal argument type for built-in operation
+    
+    >>> try: r.testCallback('foo')
+    ... except TypeError, err: assert_integer_expected(err)
+    ... else: print 'no exception'
+    
     >>> r.testCallback(1)
     -1
     >>> testCallback(r, 1)
@@ -1070,9 +1137,49 @@ test methodologies for wrapping functions that return a pointer
     3
     >>> eo.second
     1
-'''
 
-from test import *
+======== test [plain] char converters ==============
+    >>> get_plain_char()
+    'x'
+    >>> use_plain_char('a')
+    'aaa'
+    >>> use_const_plain_char('b')
+    'bbbbb'
+
+======== test std::complex converters ==============
+    >>> c = dpolar(3, 5)
+    >>> type(c)
+    <type 'complex'>
+    >>> '%.3g' % (dreal(c))
+    '0.851'
+    >>> '%.3g' % (dimag(c))
+    '-2.88'
+    >>> '%.3g' % (freal(c))
+    '0.851'
+    >>> '%.3g' % (fimag(c))
+    '-2.88'
+    >>> c = fpolar(7, 13)
+    >>> type(c)
+    <type 'complex'>
+    >>> '%.3g' % (fimag(c))
+    '2.94'
+    >>> '%.3g' % (freal(c))
+    '6.35'
+    >>> '%.3g' % (dimag(c))
+    '2.94'
+    >>> '%.3g' % (dreal(c))
+    '6.35'
+
+'''
+#'
+
+def assert_integer_expected(err):
+  """Handle a common error report which appears differently in Python 1.5.x and 2.0"""
+  assert isinstance(err, TypeError)
+  message = str(err)
+  assert (message == "illegal argument type for built-in operation"
+          or message == "an integer is required")
+
 import string
 import re
 import sys

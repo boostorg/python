@@ -5,6 +5,10 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+
+//  Revision History:
+//  04 Mar 01  Changed name of extension module so it would work with DebugPython,
+//             eliminated useless test that aggravated MSVC (David Abrahams)
 #include "comprehensive.hpp"
 #include <boost/python/class_builder.hpp>
 #include <stdio.h> // used for portability on broken compilers
@@ -238,6 +242,23 @@ boost::shared_ptr<Foo> Baz::create_foo()
     return boost::shared_ptr<Foo>(new DerivedFromFoo(0));
 }
 
+// Used to check conversion to None
+boost::shared_ptr<Foo> foo_factory(bool create)
+{
+    return boost::shared_ptr<Foo>(create ? new DerivedFromFoo(0) : 0);
+}
+
+// Used to check conversion from None
+bool foo_ptr_is_null(Foo* p)
+{
+    return p == 0;
+}
+
+bool foo_shared_ptr_is_null(boost::shared_ptr<Foo> p)
+{
+    return p.get() == 0;
+}
+
 // We can accept smart pointer parameters
 int Baz::get_foo_value(boost::shared_ptr<Foo> foo)
 {
@@ -404,7 +425,7 @@ static int testUpcast(Base* b)
 
 static std::auto_ptr<Base> derived1Factory(int i)
 {
-    return std::auto_ptr<Base>(new Derived1(i));
+    return std::auto_ptr<Base>(i < 0 ? 0 : new Derived1(i));
 }
 
 static std::auto_ptr<Base> derived2Factory(int i)
@@ -815,6 +836,32 @@ namespace bpl_test {
           w.set_secret_number(number);
   }
 
+  // Test plain char converters.
+  char get_plain_char() { return 'x'; }
+  std::string use_plain_char(char c) { return std::string(3, c); }
+
+  // This doesn't test anything but the compiler, since it has the same signature as the above.
+  // Since MSVC is broken and gets the signature wrong, we'll skip it.
+  std::string use_const_plain_char(
+#ifndef BOOST_MSVC6_OR_EARLIER
+      const 
+#endif
+      char c) { return std::string(5, c); }
+
+  // Test std::complex<double> converters.
+  std::complex<double> dpolar(double rho, double theta) {
+    return std::polar(rho, theta);
+  }
+  double dreal(const std::complex<double>& c) { return c.real(); }
+  double dimag(std::complex<double> c) { return c.imag(); }
+
+  // Test std::complex<float> converters.
+  std::complex<float> fpolar(float rho, float theta) {
+    return std::polar(rho, theta);
+  }
+  double freal(const std::complex<float>& c) { return c.real(); }
+  double fimag(std::complex<float> c) { return c.imag(); }
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -1036,6 +1083,26 @@ void init_module(boost::python::module_builder& m)
     world_class.def(world_getinitargs, "__getinitargs__");
     world_class.def(world_getstate, "__getstate__");
     world_class.def(world_setstate, "__setstate__");
+
+    // Test plain char converters.
+    m.def(get_plain_char, "get_plain_char");
+    m.def(use_plain_char, "use_plain_char");
+    m.def(use_const_plain_char, "use_const_plain_char");
+
+    // Test std::complex<double> converters.
+    m.def(dpolar, "dpolar");
+    m.def(dreal, "dreal");
+    m.def(dimag, "dimag");
+
+    // Test std::complex<float> converters.
+    m.def(fpolar, "fpolar");
+    m.def(freal, "freal");
+    m.def(fimag, "fimag");
+
+    // Test new null-pointer<->None conversions
+    m.def(foo_factory, "foo_factory");
+    m.def(foo_ptr_is_null, "foo_ptr_is_null");
+    m.def(foo_shared_ptr_is_null, "foo_shared_ptr_is_null");
 }
 
 PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary& keywords)
@@ -1057,18 +1124,18 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
 
 void init_module()
 {
-    boost::python::module_builder test("test");
-    init_module(test);
+    boost::python::module_builder boost_python_test("boost_python_test");
+    init_module(boost_python_test);
 
     // Just for giggles, add a raw metaclass.
-    test.add(new boost::python::meta_class<boost::python::instance>);
+    boost_python_test.add(new boost::python::meta_class<boost::python::instance>);
 }
 
 extern "C"
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-void inittest()
+void initboost_python_test()
 {
     try {
         bpl_test::init_module();
