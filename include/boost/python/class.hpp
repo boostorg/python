@@ -27,6 +27,7 @@
 # include <boost/python/object/pickle_support.hpp>
 # include <boost/python/make_function.hpp>
 # include <boost/python/object/add_to_namespace.hpp>
+# include <boost/python/detail/def_helper.hpp>
 
 namespace boost { namespace python { 
 
@@ -57,7 +58,7 @@ namespace detail
   template <class T, class Holder>
   static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, object const&, T* = 0)
   {
-  }
+  }  
 }
 
 //
@@ -93,7 +94,7 @@ class class_ : public objects::class_base
     // Construct with the class name.  [ Would have used a default
     // argument but gcc-2.95.2 choked on typeid(T).name() as a default
     // parameter value]
-    class_(char const* name);
+    class_(char const* name, char const* doc = 0);
 
 
     // Wrap a member function or a non-member function which can take
@@ -102,27 +103,25 @@ class class_ : public objects::class_base
     template <class F>
     self& def(char const* name, F f)
     {
-        this->def_impl(name, f, 0, &f);
+        this->def_impl(name, f, default_call_policies(), 0, &f);
         return *this;
     }
 
-    template <class Fn, class CallPolicy>
-    self& def(char const* name, Fn fn, CallPolicy policy)
+    template <class Fn, class CallPolicyOrDoc>
+    self& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
-        return this->def(name
-                  , boost::python::make_function(
-                      // This bit of nastiness casts F to a member function of T if possible. 
-                      detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
-                      , policy)
-            );
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        
+        this->def_impl(
+            name, fn, helper::get_policy(policy_or_doc), helper::get_doc(policy_or_doc, doc), &fn);
+
+        return *this;
     }
 
     template <detail::operator_id id, class L, class R>
     self& def(detail::operator_<id,L,R> const& op)
     {
         typedef detail::operator_<id,L,R> op_t;
-        // Use function::add_to_namespace to achieve overloading if
-        // appropriate.
         return this->def(op.name(), &op_t::template apply<T>::execute);
     }
     
@@ -139,15 +138,19 @@ class class_ : public objects::class_base
             );
     }
 
-    template <class Args, class CallPolicy>
-    self& def_init(Args const&, CallPolicy policy)
+    template <class Args, class CallPolicyOrDoc>
+    self& def_init(Args const&, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
-        return this->def("__init__",
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        
+        return this->def(
+            "__init__",
             python::make_constructor<Args>(
-                policy
+                helper::get_policy(policy_or_doc)
                 // Using runtime type selection works around a CWPro7 bug.
                 , objects::select_holder<T,held_type>((held_type*)0).get()
                 )
+            , helper::get_doc(policy_or_doc, doc)
             );
     }
 
@@ -201,22 +204,26 @@ class class_ : public objects::class_base
 
  private: // helper functions
 
-    template <class F>
-    inline void def_impl(char const* name, F const& f, char const* doc, ...)
+    template <class Fn, class Policies>
+    inline void def_impl(char const* name, Fn fn, Policies const& policies
+                         , char const* doc, ...)
     {
         objects::add_to_namespace(
-            *this, name, make_function(
+            *this, name,
+            make_function(
                     // This bit of nastiness casts F to a member function of T if possible. 
-                detail::member_function_cast<T,F>::stage1(f).stage2((T*)0).stage3(f))
+                detail::member_function_cast<T,Fn>::stage1(fn).stage2((T*)0).stage3(fn)
+                , policies)
             , doc);
     }
 
     template <class F>
-    inline void def_impl(char const* name, F const& f, char const* doc, object const volatile*)
+    inline void def_impl(char const* name, F f, default_call_policies const&
+                         , char const* doc, object const*)
     {
         objects::add_to_namespace(*this, name, f, doc);
     }
-    
+
  private: // types
     typedef objects::class_id class_id;
     
@@ -266,8 +273,8 @@ inline class_<T,X1,X2,X3>::class_()
 }
 
 template <class T, class X1, class X2, class X3>
-inline class_<T,X1,X2,X3>::class_(char const* name)
-    : base(name, id_vector::size, id_vector().ids)
+inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
+    : base(name, id_vector::size, id_vector().ids, doc)
 {
     // register converters
     objects::register_class_from_python<T,bases>();

@@ -279,7 +279,7 @@ namespace objects
   }
   
   class_base::class_base(
-      char const* name, std::size_t num_types, class_id const* const types)
+      char const* name, std::size_t num_types, class_id const* const types, char const* doc)
       : object(new_class(name, num_types, types))
   {
       // Insert the new class object in the registry
@@ -288,6 +288,9 @@ namespace objects
 
       // Class object is leaked, for now
       converters.class_object = (PyTypeObject*)incref(this->ptr());
+
+      if (doc)
+          this->attr("__doc__") = doc;
   }
 
   extern "C"

@@ -33,6 +33,7 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
         , std::size_t num_types         // A list of class_ids. The first is the type
         , class_id const*const types    // this is wrapping. The rest are the types of
                                         // any bases.
+        , char const* doc = 0           // Docstring, if any.
         );
 
     // Retrieve the underlying object

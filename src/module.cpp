@@ -16,12 +16,14 @@
 
 namespace boost { namespace python { namespace detail {
 
-module_base::module_base(const char* name)
+module_base::module_base(char const* name, char const* doc)
     : m_module(
         allow_null(python::borrowed(
                        scope().ptr()
                        )))
 {
+    if (doc != 0)
+        scope().attr("__doc__") = doc;
 }
 
 module_base::~module_base()

@@ -15,7 +15,7 @@ class BOOST_PYTHON_DECL module_base
 {
  public:
     // Create a module. REQUIRES: only one module is created per module.
-    module_base(const char* name);
+    module_base(char const* name, char const* doc = 0);
     ~module_base();
 
     // Add elements to the module

@@ -24,6 +24,7 @@ function::function(py_function const& implementation, unsigned min_args, unsigne
     , m_max_args(std::max(max_args,min_args))
 {
     PyObject* p = this;
+    ::PyType_Ready(&function_type);
     PyObject_INIT(p, &function_type);
 }
 
@@ -162,6 +163,7 @@ void function::add_to_namespace(
     
     if (attribute.ptr()->ob_type == &function_type)
     {
+        function* new_func = downcast<function>(attribute.ptr());
         PyObject* dict = 0;
         
         if (PyClass_Check(ns))
@@ -180,17 +182,24 @@ void function::add_to_namespace(
             allow_null(downcast<function>(::PyObject_GetItem(dict, name.ptr())))
             );
         
-        if (existing.get())
+        if (existing)
         {
             if (existing->ob_type == &function_type)
-                static_cast<function*>(attribute.ptr())->add_overload(existing);
+                new_func->add_overload(existing);
         }
-        // Binary operators need an additional overload which returns NotImplemented
         else if (is_binary_operator(name_))
         {
-            static_cast<function*>(attribute.ptr())->add_overload(
-                not_implemented_function());
+            // Binary operators need an additional overload which
+            // returns NotImplemented, so that Python will try the
+            // lxxx functions on the other operand. We add this
+            // overload already when no overloads for the operator
+            // already exist.
+            new_func->add_overload(not_implemented_function());
         }
+
+        // A function is named the first time it is added to a namespace.
+        if (new_func->name().ptr() == Py_None)
+            new_func->m_name = name;
     }
 
     // The PyObject_GetAttrString() call above left an active error
@@ -259,21 +268,38 @@ extern "C"
         return result;
     }
 
+    //
+    // Here we're using the function's tp_getset rather than its
+    // tp_members to set up __doc__ and __name__, because tp_members
+    // really depends on having a POD object type (it relies on
+    // offsets). It might make sense to reformulate function as a POD
+    // at some point, but this is much more expedient.
+    //
     static PyObject* function_get_doc(PyObject* op, void*)
     {
         function* f = downcast<function>(op);
-        return incref(f->doc().ptr());
+        return python::incref(f->doc().ptr());
     }
     
-    static int function_set_doc(PyObject* op, PyObject* doc)
+    static int function_set_doc(PyObject* op, PyObject* doc, void*)
     {
         function* f = downcast<function>(op);
         f->doc(doc ? object(python::detail::borrowed_reference(doc)) : object());
         return 0;
     }
     
+    static PyObject* function_get_name(PyObject* op, void*)
+    {
+        function* f = downcast<function>(op);
+        if (f->name().ptr() == Py_None)
+            return PyString_InternFromString("<unnamed Boost.Python function>");
+        else
+            return python::incref(f->name().ptr());
+    }
+    
     static PyGetSetDef function_getsetlist[] = {
-        {"__doc__", function_get_doc, (setter)function_set_doc},
+        {"__name__", function_get_name, 0 },
+        {"__doc__", function_get_doc, function_set_doc},
 	{NULL} /* Sentinel */
     };
 }

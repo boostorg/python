@@ -13,6 +13,7 @@
 # include <boost/python/detail/module_base.hpp>
 # include <boost/python/module_init.hpp>
 # include <boost/python/object_core.hpp>
+# include <boost/python/detail/def_helper.hpp>
 
 namespace boost { namespace python {
 
@@ -21,8 +22,8 @@ class module : public detail::module_base
  public:
     typedef detail::module_base base;
 
-    module(const char* name)
-        : base(name) {}
+    module(char const* name, char const* doc = 0)
+        : base(name, doc) {}
 
     // Add elements to the module
     template <class T>
@@ -42,17 +43,22 @@ class module : public detail::module_base
     }
     
     template <class Fn>
-    module& def(char const* name, Fn fn, char const* doc = 0)
+    module& def(char const* name, Fn fn)
     {
-        this->setattr_doc(name, boost::python::make_function(fn), doc);
+        this->setattr_doc(
+            name, boost::python::make_function(fn), 0);
+        
         return *this;
     }
-
-    
-    template <class Fn, class ResultHandler>
-    module& def(char const* name, Fn fn, ResultHandler handler, char const* doc = 0)
+    template <class Fn, class CallPolicyOrDoc>
+    module& def(char const* name, Fn fn, CallPolicyOrDoc const& policy_or_doc, char const* doc = 0)
     {
-        this->setattr_doc(name, boost::python::make_function(fn, handler), doc);
+        typedef detail::def_helper<CallPolicyOrDoc> helper;
+        
+        this->setattr_doc(
+            name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
+            helper::get_doc(policy_or_doc, doc));
+        
         return *this;
     }
 };

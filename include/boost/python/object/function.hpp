@@ -34,6 +34,8 @@ struct BOOST_PYTHON_DECL function : PyObject
     object const& doc() const;
     void doc(object const& x);
     
+    object const& name() const;
+    
  private: // helper functions
     void argument_error(PyObject* args, PyObject* keywords) const;
     void add_overload(handle<function> const&);
@@ -43,6 +45,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     unsigned m_min_args;
     unsigned m_max_args;
     handle<function> m_overloads;
+    object m_name;
     object m_doc;
 };
 
@@ -57,6 +60,11 @@ inline object const& function::doc() const
 inline void function::doc(object const& x)
 {
     this->m_doc = x;
+}
+
+inline object const& function::name() const
+{
+    return this->m_name;
 }
 
 }}} // namespace boost::python::objects
