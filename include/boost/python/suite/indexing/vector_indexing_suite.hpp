@@ -19,9 +19,9 @@ namespace boost { namespace python {
     namespace detail
     {
         template <class Container, bool NoProxy>
-        class final 
+        class final_vector_derived_policies 
             : public vector_indexing_suite<Container, 
-                NoProxy, final<Container, NoProxy> > {};
+                NoProxy, final_vector_derived_policies<Container, NoProxy> > {};
     }
 
     // The vector_indexing_suite class is a predefined indexing_suite derived 
@@ -43,7 +43,8 @@ namespace boost { namespace python {
     template <
         class Container, 
         bool NoProxy = false,
-        class DerivedPolicies = detail::final<Container, NoProxy> >
+        class DerivedPolicies 
+            = detail::final_vector_derived_policies<Container, NoProxy> >
     class vector_indexing_suite 
         : public indexing_suite<Container, DerivedPolicies, NoProxy>
     {
