@@ -13,6 +13,9 @@
 
 #  include <boost/python/object/instance.hpp>
 
+#  include <boost/python/converter/registry.hpp>
+#  include <boost/python/converter/python_type.hpp>
+
 #  include <boost/python/object/forward.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 
@@ -75,7 +78,7 @@ struct make_holder<N>
 # endif 
         
         static void execute(
-            PyObject* p
+            converter::python_class<Holder::value_type> *p
             BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, t, a))
         {
             typedef instance<Holder> instance_t;

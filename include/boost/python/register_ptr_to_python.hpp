@@ -9,6 +9,7 @@
 #include <boost/python/pointee.hpp>
 #include <boost/python/object.hpp>
 #include <boost/python/object/class_wrapper.hpp>
+#include <boost/python/converter/python_type.hpp>
 
 namespace boost { namespace python {
     
@@ -23,6 +24,7 @@ void register_ptr_to_python(BOOST_EXPLICIT_TEMPLATE_TYPE(P))
           , objects::pointer_holder<P,X>
         >
     >();
+    converter::detail::strip_type_info::insert(type_id<X>(), type_id<P>());
 }           
 
 }} // namespace boost::python

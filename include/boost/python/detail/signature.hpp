@@ -24,8 +24,14 @@ namespace boost { namespace python { namespace detail {
 
 struct signature_element
 {
-    char const* basename;
+    char const* basename() const{return tid.name();}
+    type_info tid;
     bool lvalue;
+    signature_element( type_info t, bool l)
+        : tid(t)
+        , lvalue(l)
+    {
+    }
 };
 
 template <unsigned> struct signature_arity;
@@ -70,14 +76,14 @@ struct signature_arity<N>
             static signature_element const result[N+2] = {
                 
 # define BOOST_PP_LOCAL_MACRO(i)                                                            \
-     {                                                                                      \
-         type_id<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>().name()                    \
+     signature_element(                                                                     \
+        type_id<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>()                            \
        , is_reference_to_non_const<BOOST_DEDUCED_TYPENAME mpl::at_c<Sig,i>::type>::value    \
-     },
+     ),
                 
 # define BOOST_PP_LOCAL_LIMITS (0, N)
 # include BOOST_PP_LOCAL_ITERATE()
-                {0,0}
+        signature_element(type_info(), 0)
             };
             return result;
         }

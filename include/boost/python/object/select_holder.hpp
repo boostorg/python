@@ -16,6 +16,8 @@
 # include <boost/python/object/instance.hpp>
 # include <boost/python/detail/force_instantiate.hpp>
 
+# include <boost/python/converter/python_type.hpp>
+
 # include <boost/type.hpp>
 
 # include <boost/mpl/bool.hpp>
@@ -111,7 +113,10 @@ namespace detail
 
       typedef Held held_type;
       
-      static inline void register_() {}
+      static inline void register_() 
+      {
+          converter::detail::strip_type_info::insert(python::type_id<T>(), python::type_id<Held>());
+      }
 
       static type* get() { return 0; }
   };
@@ -143,6 +148,7 @@ namespace detail
       static inline void register_()
       {
           select_pointer_holder::register_(use_back_ref());
+          converter::detail::strip_type_info::insert(python::type_id<T>(), python::type_id<Ptr>());
       }
 
       static type* get() { return 0; }

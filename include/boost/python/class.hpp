@@ -27,6 +27,9 @@
 # include <boost/python/object/add_to_namespace.hpp>
 # include <boost/python/object/class_converters.hpp>
 
+# include <boost/python/converter/python_type.hpp>
+
+
 # include <boost/python/detail/overloads_fwd.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/def_helper.hpp>
@@ -638,6 +641,7 @@ inline void class_<T,X1,X2,X3>::register_() const
         mpl::bool_<is_copyable>()
       , select_holder()
     );
+    converter::python_class<T>::register_();
 }
 
 template <class T, class X1, class X2, class X3>

@@ -39,10 +39,12 @@ struct BOOST_PYTHON_DECL function : PyObject
     void doc(object const& x);
     
     object const& name() const;
+    object pretty_signature(bool cpp_types = false, size_t n_optional_trailing_args=0)const;
     
  private: // helper functions
     void argument_error(PyObject* args, PyObject* keywords) const;
     void add_overload(handle<function> const&);
+    function const * overloads() const ;
     
  private: // data members
     py_function m_fn;
@@ -52,6 +54,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     object m_doc;
     object m_arg_names;
     unsigned m_nkeyword_values;
+    friend class function_signature_generator;
 };
 
 //
@@ -71,7 +74,7 @@ inline object const& function::name() const
 {
     return this->m_name;
 }
-  
+
 }}} // namespace boost::python::objects
 
 #endif // FUNCTION_DWA20011214_HPP
