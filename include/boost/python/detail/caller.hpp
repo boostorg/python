@@ -38,6 +38,7 @@
 #  include <boost/mpl/size.hpp>
 #  include <boost/mpl/at.hpp>
 #  include <boost/mpl/int.hpp>
+#  include <boost/mpl/next.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -96,10 +97,10 @@ template <class F, class CallPolicies, class Sig>
 struct caller;
 
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
-     typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
+    typedef BOOST_PP_IF(n,typename mpl::next< BOOST_PP_CAT(name,BOOST_PP_DEC(n)) >::type, init) name##n;
 
 #  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
-     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
+     BOOST_PYTHON_NEXT(typename mpl::next<first>::type, arg_iter,n)             \
      typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
      c_t##n c##n(get(mpl::int_<n>(), inner_args));                              \
      if (!c##n.convertible())                                                   \
