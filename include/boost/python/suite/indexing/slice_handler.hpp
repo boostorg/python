@@ -178,7 +178,7 @@ namespace boost { namespace python { namespace indexing {
 
     boost::python::list result;
 
-    slice_helper helper (sl, c);
+    slice_helper helper (Algorithms::make_slice_helper (c, sl));
 
     while (helper.next())
       {
@@ -227,7 +227,7 @@ namespace boost { namespace python { namespace indexing {
     // This could be prevented if the length of the replacement sequence
     // is known in advance (via __len__, for example) but not otherwise.
 
-    slice_helper write_helper (sl, c);
+    slice_helper write_helper (Algorithms::make_slice_helper (c, sl));
 
     // Overwrite and/or insert elements
     while (read_ptr->next())
@@ -262,7 +262,7 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::del_slice (container &c, slice sl)
   {
-    slice_helper helper (sl, c);
+    slice_helper helper (Algorithms::make_slice_helper (c, sl));
 
     if (helper.next())
       {
