@@ -3,15 +3,13 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-
 #include <boost/python/detail/config.hpp>
-#include <boost/python/module.hpp>
 #include <boost/python/detail/wrap_python.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/bind.hpp>
 #include <functional>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 holder_base::holder_base(converter::type_id_t id)
     : m_type(id)
@@ -160,4 +158,4 @@ find_holder_impl(PyObject* inst, converter::type_id_t type)
         ? match.base() : 0;
 }
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
