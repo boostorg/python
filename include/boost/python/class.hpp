@@ -280,7 +280,7 @@ class class_ : public objects::class_base
     // Define the default constructor.
     self& def_init()
     {
-        this->def_init(mpl::list<>::type());
+        this->def_init(mpl::list0<>::type());
         return *this;
     }
 

@@ -27,12 +27,11 @@
 # endif
 
 # ifndef BOOST_PYTHON_MAX_ARITY
-#  define BOOST_PYTHON_MAX_ARITY 10 // 15
+#  define BOOST_PYTHON_MAX_ARITY 15
 # endif
 
-// Temporary!
-# ifndef BOOST_MPL_LIMIT_LIST_SIZE
-#  define BOOST_MPL_LIMIT_LIST_SIZE BOOST_PYTHON_MAX_ARITY
+# ifndef BOOST_PYTHON_MAX_BASES
+#  define BOOST_PYTHON_MAX_BASES 10
 # endif 
 
 # define BOOST_PYTHON_CV_QUALIFIER(i)                          \

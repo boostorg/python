@@ -115,7 +115,11 @@ typedef int pid_t;
 
 #endif // _WIN32
 
-#include <Python.h>
+#if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION == 2 && PY_MICRO_VERSION < 2
+# include <boost/python/detail/python22_fixed.h>
+#else
+# include <Python.h>
+#endif
 
 #ifdef BOOST_PYTHON_ULONG_MAX_UNDEFINED
 # undef ULONG_MAX

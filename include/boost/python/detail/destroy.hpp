@@ -68,7 +68,13 @@ inline void destroy_referent_impl(void* p, T& (*)())
     // must come *before* T for metrowerks
     value_destroyer<
         (boost::is_array<T>::value)
-        , (boost::has_trivial_destructor<T>::value)
+        ,
+        // Aleksey, this shouldn't be needed
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
+        (boost::has_trivial_destructor<T>::value)
+# else
+        false
+# endif 
         >::execute((const volatile T*)p);
 }
 

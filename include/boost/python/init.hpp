@@ -10,7 +10,7 @@
 #ifndef INIT_JDG20020820_HPP
 #define INIT_JDG20020820_HPP
 
-#include <boost/mpl/list.hpp>
+#include <boost/python/detail/type_list.hpp>
 #include <boost/mpl/fold_backward.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/apply_if.hpp>
@@ -31,6 +31,8 @@
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/enum_params.hpp>
+#include <boost/preprocessor/enum_params.hpp>
+#include <boost/preprocessor/repeat.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT                                \
@@ -125,7 +127,7 @@ namespace detail {
 template <BOOST_PYTHON_TEMPLATE_TYPES>
 struct init //: detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 {
-    typedef mpl::list<BOOST_PYTHON_TEMPLATE_ARGS> signature_;
+    typedef detail::type_list<BOOST_PYTHON_TEMPLATE_ARGS> signature_;
     typedef typename mpl::end<signature_>::type finish;
 
     // Find the optional<> element, if any
@@ -144,7 +146,7 @@ struct init //: detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
     
     typedef typename mpl::apply_if<
         is_same<opt,finish>
-        , mpl::list<>
+        , mpl::list0<>
         , opt
     >::type optional_args;
 
@@ -159,7 +161,7 @@ struct init //: detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
     // Build a reverse image of all the args, including optionals
     typedef typename mpl::fold<
         required_args
-        , mpl::list<>
+        , mpl::list0<>
         , mpl::push_front<mpl::_1, mpl::_2>
     >::type reversed_required;
 
@@ -182,7 +184,7 @@ struct init //: detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 ///////////////////////////////////////////////////////////////////////////////
 template <BOOST_PYTHON_TEMPLATE_TYPES>
 struct optional
-    : mpl::list<BOOST_PYTHON_TEMPLATE_ARGS>
+    : detail::type_list<BOOST_PYTHON_TEMPLATE_ARGS>
 {
 };
 
@@ -193,7 +195,7 @@ namespace detail
   {
       typedef typename mpl::fold<
           ReversedArgs
-          , mpl::list<>
+          , mpl::list0<>
           , mpl::push_front<mpl::_1,mpl::_2>
           >::type args;
       

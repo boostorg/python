@@ -23,7 +23,8 @@
 #include <boost/preprocessor/empty.hpp>
 #include <boost/preprocessor/comma_if.hpp>
 #include <boost/config.hpp>
-#include <boost/python/detail/type_list_utils.hpp>
+#include <boost/mpl/at.hpp>
+#include <boost/mpl/front.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -39,23 +40,23 @@ struct func_stubs_base {};
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BPL_IMPL_TYPEDEF_GEN(z, INDEX, DATA)                                    \
-    typedef typename boost::python::detail::type_at                             \
+    typedef typename ::boost::mpl::at_c                                                    \
     <                                                                           \
-        BOOST_PP_ADD(INDEX, DATA),                                              \
+        BOOST_PP_ADD_D(1, INDEX, DATA),                                         \
         SigT                                                                    \
     >::type BOOST_PP_CAT(T, INDEX);                                             \
 
 #define BPL_IMPL_FUNC_WRAPPER_GEN(z, index, DATA)                                       \
     static RT BOOST_PP_CAT(func_, index) (                                              \
         BOOST_PYTHON_BINARY_ENUM(                                                       \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)               \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)          \
         )                                                                               \
     {                                                                                   \
         BOOST_PP_TUPLE_ELEM(3, 2, DATA)                                                 \
         BOOST_PP_TUPLE_ELEM(3, 0, DATA)                                                 \
         (                                                                               \
             BOOST_PP_ENUM_PARAMS(                                                       \
-                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index),                   \
+                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index),              \
                 arg                                                                     \
             )                                                                           \
         );                                                                              \
@@ -70,7 +71,7 @@ struct func_stubs_base {};
         template <typename SigT>                                                \
         struct gen {                                                            \
                                                                                 \
-            typedef typename boost::python::detail::type_at<0, SigT>::type RT;  \
+            typedef typename ::boost::mpl::front<SigT>::type RT;  \
                                                                                 \
             BOOST_PP_REPEAT_2ND                                                 \
             (                                                                   \
@@ -83,7 +84,7 @@ struct func_stubs_base {};
             (                                                                   \
                 BOOST_PP_INC(N_DFLTS),                                          \
                 BPL_IMPL_FUNC_WRAPPER_GEN,                                      \
-                (FNAME, BOOST_PP_SUB(N_ARGS, N_DFLTS), RETURN)                  \
+                (FNAME, BOOST_PP_SUB_D(1, N_ARGS, N_DFLTS), RETURN)             \
             )                                                                   \
         };                                                                      \
     };                                                                          \
@@ -92,14 +93,14 @@ struct func_stubs_base {};
 #define BPL_IMPL_MEM_FUNC_WRAPPER_GEN(z, index, DATA)                           \
     static RT BOOST_PP_CAT(func_, index) (                                      \
         ClassT& obj BOOST_PP_COMMA_IF(                                          \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index))               \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index))          \
         BOOST_PYTHON_BINARY_ENUM(                                               \
-            BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)       \
+            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), T, arg)  \
         )                                                                       \
     {                                                                           \
         BOOST_PP_TUPLE_ELEM(3, 2, DATA) obj.BOOST_PP_TUPLE_ELEM(3, 0, DATA)(    \
             BOOST_PP_ENUM_PARAMS(                                               \
-                BOOST_PP_ADD(BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), arg       \
+                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, DATA), index), arg  \
             )                                                                   \
         );                                                                      \
     }
@@ -113,8 +114,8 @@ struct func_stubs_base {};
         template <typename SigT>                                                        \
         struct gen {                                                                    \
                                                                                         \
-            typedef typename boost::python::detail::type_at<0, SigT>::type RT;          \
-            typedef typename boost::python::detail::type_at<1, SigT>::type ClassT;      \
+            typedef typename ::boost::mpl::front<SigT>::type RT;          \
+            typedef typename ::boost::mpl::at_c<1, SigT>::type ClassT;      \
                                                                                         \
             BOOST_PP_REPEAT_2ND                                                         \
             (                                                                           \
@@ -127,7 +128,7 @@ struct func_stubs_base {};
             (                                                                           \
                 BOOST_PP_INC(N_DFLTS),                                                  \
                 BPL_IMPL_MEM_FUNC_WRAPPER_GEN,                                          \
-                (FNAME, BOOST_PP_SUB(N_ARGS, N_DFLTS), RETURN)                          \
+                (FNAME, BOOST_PP_SUB_D(1, N_ARGS, N_DFLTS), RETURN)                     \
             )                                                                           \
         };                                                                              \
     };
@@ -224,11 +225,11 @@ struct func_stubs_base {};
 //          template <typename SigT>
 //          struct gen {
 //
-//              typedef typename mpl::at_c<0, SigT>::type RT;
-//              typedef typename mpl::at_c<1, SigT>::type T0;
-//              typedef typename mpl::at_c<2, SigT>::type T1;
-//              typedef typename mpl::at_c<3, SigT>::type T2;
-//              typedef typename mpl::at_c<4, SigT>::type T3;
+//              typedef typename ::boost::mpl::at_c<0, SigT>::type RT;
+//              typedef typename ::boost::mpl::at_c<1, SigT>::type T0;
+//              typedef typename ::boost::mpl::at_c<2, SigT>::type T1;
+//              typedef typename ::boost::mpl::at_c<3, SigT>::type T2;
+//              typedef typename ::boost::mpl::at_c<4, SigT>::type T3;
 //
 //              static RT func_0(T0 arg0)
 //              { return foo(arg0); }
@@ -265,7 +266,7 @@ struct func_stubs_base {};
         FNAME,                                                                          \
         GENERATOR_NAME,                                                                 \
         MAX_ARGS,                                                                       \
-        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                                \
+        BOOST_PP_SUB_D(1, MAX_ARGS, MIN_ARGS)                                           \
     )
 
 #define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)       \
@@ -274,7 +275,7 @@ struct func_stubs_base {};
         FNAME,                                                                                  \
         GENERATOR_NAME,                                                                         \
         MAX_ARGS,                                                                               \
-        BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                                        \
+        BOOST_PP_SUB_D(1, MAX_ARGS, MIN_ARGS)                                                   \
     )
 
 // deprecated macro names (to be removed)
