@@ -19,6 +19,10 @@
 # include <boost/mpl/bool_c.hpp>
 # include <boost/mpl/aux_/lambda_support.hpp>
 
+#  ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+#   include <boost/python/detail/is_function_ref_tester.hpp>
+#  endif 
+
 namespace boost { namespace python { namespace detail { 
 
 #  ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
@@ -42,7 +46,6 @@ struct is_reference_to_const<T const volatile&>
 };
 #   endif 
 
-#   if 0 // Corresponding code doesn't work on MSVC yet
 template <class T>
 struct is_reference_to_function
 {
@@ -72,7 +75,6 @@ struct is_reference_to_function<T const volatile&>
 {
     BOOST_STATIC_CONSTANT(bool, value = is_function<T>::value);
 };
-#   endif
 
 template <class T>
 struct is_pointer_to_function
@@ -231,15 +233,19 @@ struct is_class_help
         >::type type;
 };
 
-#   if 0 // doesn't seem to work yet
 template <class T>
-struct is_reference_to_function
+struct is_reference_to_function_aux
 {
     static T t;
     BOOST_STATIC_CONSTANT(
-        bool, value
-        = sizeof(::boost::type_traits::is_function_ptr_tester(t)) == sizeof(::boost::type_traits::yes_type));
-#   endif
+        bool, value = sizeof(is_function_ref_tester(t,0)) == sizeof(::boost::type_traits::yes_type));
+ };
+
+template <class T>
+struct is_reference_to_function
+    : mpl::if_<is_reference<T>, is_reference_to_function_aux<T>, mpl::bool_c<false> >::type
+{
+};
 
 template <class T>
 struct is_pointer_to_function

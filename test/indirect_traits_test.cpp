@@ -11,10 +11,9 @@ int main()
 {
 using namespace boost::python::detail;
 
-#if 0 // not yet supported
     assert(is_reference_to_function<int (&)()>::value);
     assert(!is_reference_to_function<int (*)()>::value);
-#endif
+    assert(!is_reference_to_function<int&>::value);
     
     assert(!is_pointer_to_function<int (&)()>::value);
     assert(is_pointer_to_function<int (*)()>::value);
