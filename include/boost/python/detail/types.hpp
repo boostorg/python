@@ -375,8 +375,12 @@ PyObject* reprable<Base>::instance_repr(PyObject* obj) const
 
 // This macro gets the length of an array as a compile-time constant, and will
 // fail to compile if the parameter is a pointer.
+#ifdef __BORLANDC__ // smart implementation doesn't work for borland; maybe someone knows a workaround?
+# define PY_ARRAY_LENGTH(a) (sizeof(a) / sizeof((a)[0]))
+#else
 # define PY_ARRAY_LENGTH(a) \
         (sizeof(::boost::python::detail::countof_validate(a, &(a))) ? sizeof(a) / sizeof((a)[0]) : 0)
+#endif
 
   template<typename T>
   inline void countof_validate(T* const, T* const*);
