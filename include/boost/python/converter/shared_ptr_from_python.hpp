@@ -8,6 +8,10 @@
 
 # include <boost/python/handle.hpp>
 # include <boost/python/converter/shared_ptr_deleter.hpp>
+# include <boost/python/converter/from_python.hpp>
+# include <boost/python/converter/rvalue_from_python_data.hpp>
+# include <boost/python/converter/registered.hpp>
+# include <boost/shared_ptr.hpp>
 
 namespace boost { namespace python { namespace converter { 
 

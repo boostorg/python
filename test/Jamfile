@@ -158,7 +158,11 @@ bpl-test crossmod_exception
 [ bpl-test docstring ]
 
 [ bpl-test vector_indexing_suite ]
-[ bpl-test map_indexing_suite ]
+
+[ extension map_indexing_suite_ext
+    : map_indexing_suite.cpp int_map_indexing_suite.cpp <template>../build/extension ]
+[ boost-python-runtest 
+    map_indexing_suite : map_indexing_suite.py <pyd>map_indexing_suite_ext ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
 # {

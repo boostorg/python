@@ -91,7 +91,7 @@ namespace detail
             , options.policies()
           );
 
-          typedef BOOST_DEDUCED_TYPENAME C_::select_holder::held_type held_t;
+          typedef BOOST_DEDUCED_TYPENAME C_::metadata::held_type held_type;
           
           // Add the default implementation which raises the exception
           c.def(
@@ -99,7 +99,7 @@ namespace detail
             , make_function(
                   detail::nullary_function_adaptor<void(*)()>(pure_virtual_called)
                 , default_call_policies()
-                , detail::error_signature<held_t>(detail::get_signature(m_pmf))
+                , detail::error_signature<held_type>(detail::get_signature(m_pmf))
               )
           );
       }

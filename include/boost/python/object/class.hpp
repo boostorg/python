@@ -58,8 +58,6 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     void make_method_static(const char *method_name);
 };
 
-BOOST_PYTHON_DECL void copy_class_object(type_info const& src, type_info const& dst);
-
 }}} // namespace boost::python::objects
 
 #endif // CLASS_DWA20011214_HPP

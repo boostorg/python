@@ -6,39 +6,32 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 
-namespace boost { namespace python {
+namespace boost { namespace python { namespace detail {
 
-object
-slice::new_slice(PyObject* start, PyObject* stop, PyObject* step)
-{
-    return object(detail::new_reference( PySlice_New(start, stop, step)));
-}
-
-slice::slice()
-	: object( boost::python::detail::new_reference( 
-		PySlice_New( NULL, NULL, NULL)))
+slice_base::slice_base(PyObject* start, PyObject* stop, PyObject* step)
+  : object(detail::new_reference( PySlice_New(start, stop, step)))
 {
 }
 
 object
-slice::start() const
+slice_base::start() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->start));
 }
 
 object
-slice::stop() const
+slice_base::stop() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->stop));
 }
 
 object
-slice::step() const
+slice_base::step() const
 {
 	return object( detail::borrowed_reference(
 		((PySliceObject*)this->ptr())->step));
 }
 
-} } // !namespace boost::python
+} } } // !namespace boost::python::detail

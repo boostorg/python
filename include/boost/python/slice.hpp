@@ -12,44 +12,54 @@
 #include <boost/python/extract.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
 
+#include <boost/iterator/iterator_traits.hpp>
+
 #include <iterator>
 #include <algorithm>
 
 namespace boost { namespace python {
 
-class BOOST_PYTHON_DECL slice : public object
+namespace detail
 {
- private:
-    // Helper function to work around bugs in MSVC 6
-    static object new_slice(PyObject*, PyObject*, PyObject*);
+  class BOOST_PYTHON_DECL slice_base : public object
+  {
+   public:
+      // Get the Python objects associated with the slice.  In principle, these 
+      // may be any arbitrary Python type, but in practice they are usually 
+      // integers.  If one or more parameter is ommited in the Python expression 
+      // that created this slice, than that parameter is None here, and compares 
+      // equal to a default-constructed boost::python::object.
+      // If a user-defined type wishes to support slicing, then support for the 
+      // special meaning associated with negative indicies is up to the user.
+      object start() const;
+      object stop() const;
+      object step() const;
+		
+   protected:
+      explicit slice_base(PyObject*, PyObject*, PyObject*);
 
+      BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(slice_base, object)
+  };
+}
+
+class slice : public detail::slice_base
+{
+    typedef detail::slice_base base;
  public:
 	// Equivalent to slice(::)
-	slice();
+	slice() : base(0,0,0) {}
 
 	// Each argument must be slice_nil, or implicitly convertable to object.
 	// They should normally be integers.
 	template<typename Integer1, typename Integer2>
 	slice( Integer1 start, Integer2 stop)
-		: object( new_slice( object(start).ptr(), object(stop).ptr(), NULL))
+		: base( object(start).ptr(), object(stop).ptr(), 0 )
 	{}
 	
 	template<typename Integer1, typename Integer2, typename Integer3>
 	slice( Integer1 start, Integer2 stop, Integer3 stride)
-		: object( 
-         new_slice( object(start).ptr(), object(stop).ptr(), object(stride).ptr()))
+		: base( object(start).ptr(), object(stop).ptr(), object(stride).ptr() )
 	{}
-		
-	// Get the Python objects associated with the slice.  In principle, these 
-	// may be any arbitrary Python type, but in practice they are usually 
-	// integers.  If one or more parameter is ommited in the Python expression 
-	// that created this slice, than that parameter is None here, and compares 
-	// equal to a default-constructed boost::python::object.
-	// If a user-defined type wishes to support slicing, then support for the 
-	// special meaning associated with negative indicies is up to the user.
-	object start() const;
-	object stop() const;
-	object step() const;
 		
 	// The following algorithm is intended to automate the process of 
 	// determining a slice range when you want to fully support negative
@@ -90,14 +100,12 @@ class BOOST_PYTHON_DECL slice : public object
 	//     the case where the user fails to catch the exception, it will simply
 	//     be translated to Python by the default exception handling mechanisms.
 
-    #ifndef BOOST_NO_MEMBER_TEMPLATES
-	
 	template<typename RandomAccessIterator>
 	struct range
 	{
 		RandomAccessIterator start;
 		RandomAccessIterator stop;
-		int step;
+		typename iterator_difference<RandomAccessIterator>::type step;
 	};
 	
 	template<typename RandomAccessIterator>
@@ -109,9 +117,10 @@ class BOOST_PYTHON_DECL slice : public object
 		// carefully crafted to ensure that these iterators never fall out of
 		// the range of the container.
 		slice::range<RandomAccessIterator> ret;
-		typename RandomAccessIterator::difference_type max_dist = 
-			std::distance( begin, end);
-		
+        
+        typedef typename iterator_difference<RandomAccessIterator>::type difference_type;
+        difference_type max_dist = boost::detail::distance(begin, end);
+
 		object slice_start = this->start();
 		object slice_stop = this->stop();
 		object slice_step = this->step();
@@ -121,7 +130,7 @@ class BOOST_PYTHON_DECL slice : public object
 			ret.step = 1;
 		}
 		else {
-			ret.step = extract<int>( slice_step);
+			ret.step = extract<long>( slice_step);
 			if (ret.step == 0) {
 				PyErr_SetString( PyExc_IndexError, "step size cannot be zero.");
 				throw_error_already_set();
@@ -138,7 +147,7 @@ class BOOST_PYTHON_DECL slice : public object
 				ret.start = begin;
 		}
 		else {
-			int i = extract<int>( slice_start);
+			difference_type i = extract<long>( slice_start);
 			if (i >= max_dist && ret.step > 0)
 					throw std::invalid_argument( "Zero-length slice");
 			if (i >= 0) {
@@ -167,7 +176,7 @@ class BOOST_PYTHON_DECL slice : public object
 			}
 		}
 		else {
-			int i = extract<int>( slice_stop);
+			difference_type i = extract<long>(slice_stop);
 			// First, branch on which direction we are going with this.
 			if (ret.step < 0) {
 				if (i+1 >= max_dist || i == -1)
@@ -188,8 +197,7 @@ class BOOST_PYTHON_DECL slice : public object
 				
 				if (i > 0) {
 					ret.stop = begin;
-                    BOOST_USING_STD_MIN();
-					std::advance( ret.stop, min BOOST_PREVENT_MACRO_SUBSTITUTION( i-1, max_dist-1));
+					std::advance( ret.stop, (std::min)( i-1, max_dist-1));
 				}
 				else { // i is negative, but not more negative than -max_dist
 					ret.stop = end;
@@ -203,8 +211,8 @@ class BOOST_PYTHON_DECL slice : public object
 		// represent the widest possible range that could be traveled
 		// (inclusive), and final_dist is the maximum distance covered by the
 		// slice.
-		typename RandomAccessIterator::difference_type final_dist = 
-			std::distance( ret.start, ret.stop);
+		typename iterator_difference<RandomAccessIterator>::type final_dist = 
+			boost::detail::distance( ret.start, ret.stop);
 		
 		// First case, if both ret.start and ret.stop are equal, then step
 		// is irrelevant and we can return here.
@@ -222,24 +230,23 @@ class BOOST_PYTHON_DECL slice : public object
 		// I don't remember all of the oolies surrounding negative modulii,
 		// so I am handling each of these cases separately.
 		if (final_dist < 0) {
-			int remainder = -final_dist % -ret.step;
+			difference_type remainder = -final_dist % -ret.step;
 			std::advance( ret.stop, remainder);
 		}
 		else {
-			int remainder = final_dist % ret.step;
+			difference_type remainder = final_dist % ret.step;
 			std::advance( ret.stop, -remainder);
 		}
 		
 		return ret;
 	}
-    #endif // !defined BOOST_NO_MEMBER_TEMPLATES
 		
  public:
 	// This declaration, in conjunction with the specialization of 
 	// object_manager_traits<> below, allows C++ functions accepting slice 
 	// arguments to be called from from Python.  These constructors should never
 	// be used in client code.
-	BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(slice, object)
+	BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(slice, detail::slice_base)
 };
 
 

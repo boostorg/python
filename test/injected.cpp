@@ -29,7 +29,7 @@ BOOST_PYTHON_MODULE(injected_ext)
     class_<X>("X", init<int>())
         .def("__init__", make_constructor(empty))
         .def("__init__", make_constructor(sum))
-        .def("__init__", make_constructor(product))
+        .def("__init__", make_constructor(product), "this is product's docstring")
         .def("value", &X::value)
         ;
 }

@@ -8,6 +8,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include "test_class.hpp"
+//#include <boost/python/str.hpp>
 #if __GNUC__ != 2
 # include <ostream>
 #else

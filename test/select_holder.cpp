@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/object/select_holder.hpp>
+#include <boost/python/object/class_metadata.hpp>
 #include <boost/python/has_back_reference.hpp>
 #include <boost/python/detail/not_specified.hpp>
 #include <boost/static_assert.hpp>
@@ -41,7 +41,13 @@ void assert_same(U* = 0, T* = 0)
 template <class T, class Held, class Holder>
 void assert_holder(T* = 0, Held* = 0, Holder* = 0)
 {
-    typedef typename boost::python::objects::select_holder<T,Held>::type h;
+    using namespace boost::python::detail;
+    using namespace boost::python::objects;
+    
+    typedef typename class_metadata<
+       T,Held,not_specified,not_specified
+           >::holder h;
+    
     assert_same<Holder>(
         (h*)0
     );
@@ -55,7 +61,7 @@ int test_main(int, char * [])
     assert_holder<Base,not_specified,value_holder<Base> >();
 
     assert_holder<BR,not_specified,value_holder_back_reference<BR,BR> >();
-    assert_holder<Base,Base,value_holder<Base> >();
+    assert_holder<Base,Base,value_holder_back_reference<Base,Base> >();
     assert_holder<BR,BR,value_holder_back_reference<BR,BR> >();
 
     assert_holder<Base,Derived

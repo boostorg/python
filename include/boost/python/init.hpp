@@ -328,17 +328,15 @@ namespace detail
       , detail::keyword_range const& keywords_
       )
   {
-      typedef typename ClassT::select_holder selector_t;
-
       cl.def(
-            "__init__",
-            detail::make_keyword_range_constructor<Signature,NArgs>(
-                policies
-                , keywords_
-                , selector_t::get()
-                )
-            , doc
-            );
+          "__init__"
+        , detail::make_keyword_range_constructor<Signature,NArgs>(
+              policies
+            , keywords_
+            , (typename ClassT::metadata::holder*)0
+          )
+        , doc
+      );
   }
 
   ///////////////////////////////////////////////////////////////////////////////

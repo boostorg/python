@@ -39,6 +39,8 @@
 #  include <boost/type_traits/add_pointer.hpp>
 # endif
 
+# include <boost/mpl/if.hpp>
+
 namespace boost { namespace python { 
 
 namespace converter
@@ -297,7 +299,14 @@ namespace api
       
       // explicit conversion from any C++ object to Python
       template <class T>
-      explicit object(T const& x)
+      explicit object(
+          T const& x
+# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+          // use some SFINAE to un-confuse MSVC about its
+          // copy-initialization ambiguity claim.
+        , typename mpl::if_<is_proxy<T>,int&,int>::type* = 0
+# endif 
+      )
         : object_base(object_base_initializer(x))
       {
       }
