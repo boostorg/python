@@ -50,6 +50,9 @@
             <a href="#container_suite">container_suite.hpp</a>
           </dt>
           <dt>
+            <a href="#specific">Container-specific headers</a>
+          </dt>
+          <dt>
             <a href="#policies">Using policies</a>
           </dt>
           <dt>
@@ -166,18 +169,27 @@
 
     <p>
 
-      The main iterface to the library is via an object which adds a
-      number of Python functions to a class via a single
-      <code>def</code> call. The selection of what Python functions to
-      add happens transparently for instances of the standard
-      container templates <a href="#Note1">[1]</a>, so that code like
-      the following should compile and "just work".
+      The main iterface to the library is via the templated class
+      <code>container_suite</code>, an object of which adds a number
+      of Python functions to an extension class via a single
+      <code>def</code> call. Support is provided for all of the
+      standard container templates <a href="#Note1">[1]</a> via
+      container-specific header files, as shown in the following
+      example:
 
     </p>
 
 <pre>
+#include &lt;boost/python/suite/indexing/container_suite.hpp&gt;
+#include &lt;boost/python/suite/indexing/vector.hpp&gt;
+#include &lt;boost/python/class.hpp&gt;
+#include &lt;boost/python/module.hpp&gt;
+#include &lt;vector&gt;
+
+BOOST_PYTHON_MODULE(example) {
   class_&lt; std::vector&lt;int&gt; &gt; ("vector_int")
     .def (indexing::container_suite&lt; std::vector&lt;int&gt; &gt;());
+}
 </pre>
 
     <p>
@@ -187,14 +199,14 @@
       provides a hook for the <code>def</code> function to install
       multiple Python methods in one call. If the container element
       type (<code>int</code> in the example above) is a user-defined
-      type, you will have to expose this type to Python via a separate
-      <code>class_</code> instance.
+      type, you would have to expose this type to Python via a
+      separate <code>class_</code> instance.
 
     </p>
     <p>
 
       <a name="Note1">[1]</a> Automatic operation with the standard
-      containers works poperly if your compiler supports partial
+      containers works properly if your compiler supports partial
       template specializations. Otherwise, refer to the <a
       href="#workarounds">compiler workarounds</a> section.
 
@@ -239,9 +251,10 @@ namespace boost { namespace python { namespace indexing {
       <ol>
         <li>
 
-          It relies on the <code>indexing::algo_selector</code>
-          template, which uses partial template specialization, to
-          select what functionality to provide for the container.
+          It does not include any of the container-specific headers
+          (like <code>vector.hpp</code> or <code>set.hpp</code>), so
+          these must be included separately to add support each type
+          of container.
 
         </li>
         <li>
@@ -262,6 +275,24 @@ namespace boost { namespace python { namespace indexing {
 
         </li>
       </ol>
+
+    </p>
+
+    <h2><a name="specific">Container-specific headers</a></h2>
+
+    <p>
+
+      The container indexing suite includes support for many of the
+      standard C++ container templates, but note that the support code
+      for each is in a separate header file. These header files (in
+      the <i>boost/python/suite/indexing</i> subdirectory) are:
+      <code>vector.hpp</code>, <code>deque.hpp</code>,
+      <code>list.hpp</code>, <code>set.hpp</code> and
+      <code>map.hpp</code>. These correspond in the obvious way to the
+      standard headers <code>vector</code>, <code>deque</code>,
+      etc. The header files for the <code>container_proxy</code> and
+      <code>iterator_range</code> templates provide their own support
+      implicitly.
 
     </p>
 
@@ -291,8 +322,9 @@ namespace boost { namespace python { namespace indexing {
       elements actually being referenced. Various alternatives exist,
       the best of which is to store the container elements indirectly,
       using <code>boost::shared_ptr</code> or an equivalent. If this
-      is not possible, <code><a
-      href="#container_proxy">container_proxy</a></code> may provide a
+      is not possible,
+      <code><a href="#container_proxy">container_proxy</a></code>
+      may provide a
       solution, at least for vector-like containers.
 
     </p>
@@ -508,14 +540,14 @@ static void visitor_helper (PythonClass &amp;, Policy const &amp;);
       In order to include a custom <code>ValueTraits</code> class into
       the container suite, it is easiest to supply it as a
       specialization of the template
-      <code>indexing::value_traits</code> for the container's
-      element type.  The existing <code>ContainerTraits</code> classes
-      all make use of
+      <code>indexing::value_traits</code> for the container's element
+      type.  The existing <code>ContainerTraits</code> classes all
+      make use of
       <code>value_traits&lt;container::value_type&gt;</code>, and so
       will use a specialization for the value type if available. The
       default, unspecialized, version of <code>value_traits</code>
-      defines <code>equality_comparable</code> as <code>true</code>
-      and has an empty implementation of <code>visitor_helper</code>.
+      sets both of the static constants to <code>true</code> and has
+      an empty implementation of <code>visitor_helper</code>.
 
     </p>
     <p>
@@ -770,7 +802,7 @@ namespace boost { namespace python { namespace indexing {
             <code>index_style</code>
           </td>
           <td align="center">
-            <code>enum index_style_t</code>
+            <code>index_style_t</code>
           </td>
           <td>
 
@@ -1070,8 +1102,8 @@ namespace boost { namespace python { namespace indexing {
 <pre>
 #include &lt;map&gt;
 #include &lt;string&gt;
-#include &lt;boost/python/suite/indexing/iterator_traits.hpp&gt;
-// Include iterator_traits to get index_style_t
+#include &lt;boost/python/suite/indexing/suite_utils.hpp&gt;
+// Include suite_utils to get index_style_t
 
 struct simple_map_traits {
   // Traits information for std::map&lt;std::string, int&gt;
@@ -1160,8 +1192,8 @@ BOOST_PYTHON_MODULE(test_simple) {
       <ol>
         <li>
 
-          The functions should be static, with <code>container
-          &</code> as first parameter.
+          The functions should be static, with
+          <code>container &amp;</code> as first parameter.
 
         </li>
 
@@ -1328,7 +1360,9 @@ namespace boost { namespace python { namespace indexing {
             Similar to the above (in fact, it derives from
             <code>default_algorithms</code>) except that it uses
             container member functions <code>reverse</code> and
-            <code>sort</code> instead of the iterator-based versions.
+            <code>sort</code> instead of the iterator-based
+            versions. Defined in
+            <code>boost/python/suite/indexing/list.hpp</code>.
 
           </td>
         </tr>
@@ -1460,23 +1494,23 @@ struct my_algorithms
         <tr>
           <td>
 
-            <code>Algorithms::
-make_slice_helper
-(c, s)</code>
+            <code>Algorithms::</code> <code>make_slice_helper</code>
+            <code>(c, s)</code>
 
           </td>
           <td>
 
-            <code>Algorithms::
-slice_helper</code>
+            <code>Algorithms::</code> <code>slice_helper</code>
 
           </td>
           <td>
 
+            <code>c</code> is of type
+            <code>Algorithms::</code> <code>container &amp;</code> and
+            <code>s</code> is of type <code>indexing::</code>
+            <code>slice const &amp;</code>.
             Returns a newly constructed <code>slice_helper</code>
-            object by value, where <code>c</code> is of type
-            <code>Algorithms::container &</code> and <code>s</code> is
-            of type <code>indexing::slice const &</code>.
+            object by value.
 
           </td>
         </tr>
@@ -1484,8 +1518,7 @@ slice_helper</code>
         <tr>
           <td>
 
-            <code>slice_helper.
-next()</code>
+            <code>slice_helper.</code><code>next()</code>
 
           </td>
           <td>
@@ -1507,29 +1540,26 @@ next()</code>
         <tr>
           <td>
 
-            <code>slice_helper.
-current()</code>
+            <code>slice_helper.</code> <code>current()</code>
 
           </td>
           <td>
 
-            <code>Algorithms::
-reference</code>
+            <code>Algorithms::</code> <code>reference</code>
 
           </td>
           <td>
 
             Returns a reference to the current element of the
-            slice. This will only be called after a prior successful
-            call to <code>next()</code>.
+            slice. This will only be called if the last call to
+            <code>next()</code> returned true.
 
           </td>
         </tr>
         <tr>
           <td>
 
-            <code>slice_helper.
-write (v)</code>
+            <code>slice_helper.</code><code>write (v)</code>
 
           </td>
           <td>
@@ -1539,23 +1569,23 @@ write (v)</code>
           </td>
           <td>
 
-            Advances to the next element of the slice, as defined in
+            The parameter <code>v</code> is of type
+            <code>Algorthims::value_param</code>.  Advances to the
+            next element of the slice, as defined in
             <code>next</code>, and writes the given value
-            <code>v</code> at the new location in the
-            container. <code>v</code> will be convertible to
-            <code>Algorthims::value_param</code>. If the slice is
-            exhausted (i.e. <code>next</code> would return false) then
-            <code>write</code> <i>either</i> inserts the value into
-            the container at the next location (past the end of the
-            slice), <i>or</i> sets a Python exception and throws.
+            <code>v</code> at the new location in the container.If the
+            slice is exhausted (i.e. <code>next</code> would return
+            false) then <code>write</code> <i>either</i> inserts the
+            value into the container at the next location (past the
+            end of the slice), <i>or</i> sets a Python exception and
+            throws.
 
           </td>
         </tr>
         <tr>
           <td>
 
-            <code>slice_helper.
-erase_remaining()</code>
+            <code>slice_helper.</code> <code>erase_remaining()</code>
 
           </td>
           <td>
@@ -1597,8 +1627,10 @@ erase_remaining()</code>
 
       The <code>container_proxy</code> template provides an emulation
       of Python reference semantics for objects held by value in a
-      vector-like container. The primary application of this template
-      is in situations where all of the following apply:
+      vector-like container. Of course, this introduces some
+      performance penalties in terms of memory usage and run time, so
+      the primary application of this template is in situations where
+      all of the following apply:
 
       <ol>
         <li>
@@ -1615,7 +1647,7 @@ erase_remaining()</code>
         </li>
         <li>
 
-          Element insertion, deletion or assignment are common, so
+          Element insertion, deletion or assignment takes place, so
           that using <code>return_internal_reference</code> would be
           dangerous.
 
@@ -1627,20 +1659,32 @@ erase_remaining()</code>
     <p>
 
 
-      The <code>container_proxy</code> template wraps a vector-like
-      container and presents an interface that is similar to that of a
-      normal vector, but which returns <code>element_proxy</code>
-      objects instead of plain references to values stored in the
-      wrapped container. During an operation that alters the position
-      of an element within the container (e.g. <code>insert</code>)
-      the <code>container_proxy</code> code updates the relevant proxy
-      objects, so that they still refer to the original elements of
-      the container. Any operation that would delete or overwrite a
-      value in the container (e.g. <code>erase</code>) copies the
-      to-be-deleted value into its corresponding proxy object. This
-      means that a proxy's "reference" to an element is robust in the
-      face of changes to the element's position in the container, and
-      even that element's removal.
+      The <code>container_proxy</code> template wraps any vector-like
+      container and presents an interface that is similar to that of
+      <code>std::vector</code>, but which returns
+      <code>element_proxy</code> objects instead of plain references
+      to values stored in the wrapped container. During an operation
+      that alters the position of an element within the container
+      (e.g. <code>insert</code>) the <code>container_proxy</code> code
+      updates the relevant proxy objects, so that they still refer to
+      the <i>same</i> elements at their new locations. Any operation
+      that would delete or overwrite a value in the container
+      (e.g. <code>erase</code>) copies the to-be-deleted value into
+      its corresponding proxy object. This means that a proxy's
+      "reference" to an element is robust in the face of changes to
+      the element's position in the container, and even the element's
+      removal.
+
+    </p>
+    <p>
+
+      Ideally, any code that changes the positions of elements within
+      the container would use only the <code>container_proxy</code>
+      interface, to ensure that the proxies are maintained in
+      synchronization. Code that otherwise makes direct modifications
+      to the raw container must notify the
+      <code>container_proxy</code> of the changes, as detailed in the
+      following section.
 
     </p>
 
@@ -1648,37 +1692,79 @@ erase_remaining()</code>
 
     <p>
 
-      The <code>container_proxy</code> interface is designed to be
-      convenient to use from C++, and to inter-operate with the
-      <code>default_algorithms</code> template. It is important that
-      <i>any</i> code that changes element positions within the
-      container (at least while proxies for the container exist) uses
-      the <code>container_proxy</code> interface, to ensure that the
-      proxies get updated. Of course, the interface introduces some
-      performance penalties, both in terms of memory usage and run
-      time.
+      The <code>container_proxy</code> template takes three
+      parameters, only the first of which is mandatory:
 
     </p>
     <p>
 
-      The <code>Holder</code> template parameter determines how the
-      <code>container_proxy</code> stores the raw container object.
-      There are currently two types of holder implemented, the default
-      <code>identity</code> template which stores it's argument by
-      value, and the <code>deref</code> template which stores a
-      (plain) pointer to an external object. It would be possible, for
-      instance, to create a holder that uses a
-      <code>shared_pointer</code> instead.
+<pre>
+template&lt;class Container
+       , class Holder = identity&lt;Container&gt;
+       , class Generator = vector_generator&gt; class container_proxy;
+</pre>
 
     </p>
+    <p>
 
+      The <code>Container</code> argument is the raw container type
+      that the <code>container_proxy</code> will manage. It must
+      provide random-access indexing.
+
+    </p>
+    <p>
+
+      The <code>Holder</code> argument determines how the
+      <code>container_proxy</code> stores the raw container object.
+      There are currently two types of holder implemented, the default
+      <code>identity</code> template which will store the raw
+      container by value within the <code>container_proxy</code>, and
+      the <code>deref</code> template which stores a (plain) pointer
+      to an external object. It would also be possible, for instance,
+      to create a holder that uses a <code>shared_pointer</code>, or
+      one that stores a pointer but performs deep copies.
+
+    </p>
+    <p>
+
+      The <code>Generator</code> argument determines what container to
+      use for storing the proxy objects. The argument must be a
+      suitable class so that
+      <code>Generator::apply&lt;proxy_t&gt;::type</code> is a typedef
+      for the container to use for storing the proxies. The default is
+      <code>vector_generator</code>, which generates
+      <code>std::vector</code> instances.  The usefulness of allowing
+      other generators can be seen from the example
+
+      <code>container_proxy&lt;std::deque&lt;...&gt;&nbsp;&gt;</code>.
+
+      Insertion at the beginning of this <code>container_proxy</code>
+      requires an insertion at the beginning of the
+      <code>std::deque</code> raw container, which has amortized
+      constant time complexity. However, it also requires an insertion
+      at the beginning of the proxy container, which (using the
+      <code>std::vector</code> provided by
+      <code>vector_generator</code>) has linear time complexity. If
+      this is a significant issue, you can use a custom
+      <code>Generator</code> to match the performance characteristics
+      of the proxy container to those of the raw container.
+
+    </p>
+    <p>
+
+      Examples in <a
+      href="../../test/test_container_proxy.cpp">libs/python/test/test_container_proxy.cpp</a>
+      ...
+
+    </p>
 
     <h3>Synopsis: boost/python/suite/indexing/container_proxy.hpp</h3>
 
 <pre>
 namespace boost { namespace python { namespace indexing {
   template&lt;class Container
-  	 , class Holder = identity&lt;Container&gt; &gt;
+         , class Holder = identity&lt;Container&gt;
+         , class Generator = vector_generator&gt;
   class container_proxy
   {
   public:
@@ -1690,11 +1776,11 @@ namespace boost { namespace python { namespace indexing {
 
     typedef <i>implementation defined</i> value_type;
     typedef <i>implementation defined</i> const_value_type;
+    typedef <i>implementation defined</i> iterator;
+    typedef <i>implementation defined</i> const_iterator;
 
     typedef value_type        reference;       // Has reference semantics
     typedef const_value_type  const_reference; // Has reference semantics
-
-    struct iterator { <i>implementation defined</i> }
 
     container_proxy ();
     explicit container_proxy (held_type const &amp;);
@@ -1725,8 +1811,15 @@ namespace boost { namespace python { namespace indexing {
     template&lt;typename Iter&gt; void insert (iterator, Iter, Iter);
 
     void push_back (raw_value_type const &amp;);
-
     value_type pop_back ();
+
+    // These functions are not normally necessary. They notify the
+    // container_proxy of changes to the raw container made by other
+    // code (see documentation for details)
+    void detach_proxy (size_type index);
+    void detach_proxies (size_type from, size_type to);
+    void prepare_erase (size_type from, size_type to);
+    void notify_insertion (size_type from, size_type to);
   };
 } } }
 </pre>
@@ -1751,7 +1844,7 @@ namespace boost { namespace python { namespace indexing {
 </pre>
     </p>
 
-    </p>
+    <p>
       The <code>deref</code> template.
 
 <pre>
@@ -1773,6 +1866,21 @@ namespace boost { namespace python { namespace indexing {
 </pre>
     </p>
 
+    <p>
+      The <code>vector_generator</code> class.
+
+<pre>
+namespace boost { namespace python { namespace indexing {
+  struct vector_generator {
+    template&lt;typename Element&gt; struct apply {
+      typedef std::vector&lt;Element&gt; type;
+    };
+  };
+} } }
+</pre>
+    </p>
+
+
     <h3>container_proxy implementation notes</h3>
 
     <p>
@@ -1783,9 +1891,8 @@ namespace boost { namespace python { namespace indexing {
       has a pointer back to the <code>container_proxy</code> object
       and an element index within the wrapped container. This can be
       seen in the following diagram, which shows a
-      <code><nobr>container_proxy&lt; vector&lt;int&gt;
-      &gt;</nobr></code> containing the three elements 111, 222 and
-      333.
+      <code>container_proxy&lt; vector&lt;int&gt; &gt;</code>
+      containing the three elements 111, 222 and 333.
 
     <p>
 
@@ -1793,17 +1900,17 @@ namespace boost { namespace python { namespace indexing {
       <tr>
         <td>
 
-          <img src="proxy.png" height="308" width="663"
+          <img src="proxy.png" height="285" width="686"
           alt="Interrelations between container_proxy, its container
-          and its element proxies">
+          and an element proxy">
 
         </td>
       </tr>
       <tr>
         <td><font size="-1">
 
-          Diagram 2. Example of <code>container_proxy</code> with some
-          element proxies
+          Diagram 2. Example of <code>container_proxy</code> with an
+          element proxy
 
         </font></td>
       </tr>
@@ -1814,12 +1921,12 @@ namespace boost { namespace python { namespace indexing {
       In the example above, the shown <code>element_proxy</code>
       object refers (indirectly) to the container element with the
       value 222. An insertion before this element would increment the
-      element numbers in the <code>shared_proxy</code> objects so that
+      index numbers in the <code>shared_proxy</code> objects so that
       the given <code>element_proxy</code> continues to refer to the
       same value at its new location.  Similary, a deletion before the
       element would decrement the affected <code>shared_proxy</code>
-      element numbers. If the referenced element itself gets deleted
-      or overwritten, the <code>shared_proxy</code> first takes a
+      indexes. If the referenced element itself gets deleted or
+      overwritten, the <code>shared_proxy</code> first takes a
       <i>copy</i> of the original value, and is then considered to be
       <i>detached</i> from the <code>container_proxy</code>. This
       situation is shown below in diagram 3.
@@ -1975,15 +2082,19 @@ namespace boost { namespace python { namespace indexing {
     <p>
 
       The following Python sequence and mapping functions are not
-      currently implemented for any containers: <code>keys, values,
-      items, clear, copy, update, pop, __add__, __radd__, __iadd__,
-      __mul__, __rmul__ and __imul__</code>. Most of the methods
-      mentioned (except for <code>pop</code>) present no particular
-      difficulty to implement.  The problem with <code>pop</code> is
-      that it is incompatible with some return value policies (for
-      instance, <code>return_internal_reference</code>) since it must
-      return a copy of an element that has already been removed from
-      the container. This probably requires an extension to the
+      currently implemented for any containers:
+
+      <code>keys, values, items, clear, copy, update,</code>
+      <code>pop, __add__, __radd__, __iadd__, __mul__, __rmul__</code>
+      and <code>__imul__</code>.
+
+      Most of the methods mentioned (except for <code>pop</code>)
+      present no particular difficulty to implement.  The problem with
+      <code>pop</code> is that it is incompatible with some return
+      value policies (for instance,
+      <code>return_internal_reference</code>) since it must return a
+      copy of an element that has already been removed from the
+      container. This probably requires an extension to the
       <code>container_suite</code> interface, to allow the client code
       the option of specifying a different return policy for this
       method in particular.
@@ -2032,18 +2143,19 @@ namespace boost { namespace python { namespace indexing {
     <p>
 
       Thanks to Joel de Guzman and David Abrahams for input and
-      encouragement during the development of the container
-      suite. Joel wrote the original implementation of the indexing
-      support, which provided many of the ideas embodied in the new
-      implementation.
+      encouragement during the development of the container suite, and
+      to and Ralf W. Grosse-Kunstleve for his invaluable support in
+      porting to various platforms. Joel wrote the original
+      implementation of the indexing support, which provided many of
+      the ideas embodied in the new implementation.
 
     </p>
 
     <p>
 
       The container suite code and documentation are Copyright (c)
-      2003 by Raoul Gough, and licensed under the current Boost
-      license.
+      2003 by Raoul Gough, and licensed according to the <a
+      href="../../../../LICENSE_1_0.txt">Boost license</a>.
 
     </p>
 
