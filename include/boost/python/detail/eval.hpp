@@ -6,6 +6,8 @@
 #ifndef EVAL_DWA2002124_HPP
 # define EVAL_DWA2002124_HPP
 
+# include <boost/mpl/apply.hpp>
+
 namespace boost { namespace python { namespace detail { 
 
 template <class T> struct undefined;
