@@ -44,11 +44,13 @@ However, in Python attribute access is fine; it doesn't neccessarily break
 encapsulation to let users handle attributes directly, because the
 attributes can just be a different syntax for a method call. Wrapping our
 <tt>Num</tt> class using Boost.Python:</p>
-<code><pre>
+<code>
+<pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Num</span><span class=special>&gt;(</span><span class=string>&quot;Num&quot;</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>get</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>set</span><span class=special>);
-</span></pre></code>
+        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
+        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>set</span><span class=special>);
+</span></pre>
+</code>
 <p>
 And at last, in Python:</p>
 <code><pre>
