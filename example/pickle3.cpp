@@ -92,16 +92,23 @@ BOOST_PYTHON_MODULE_INIT(pickle3)
 
 namespace {
 
-  python::ref world_getstate(python::tuple const & args,
-                             python::dictionary const & keywords)
+  using BOOST_PYTHON_CONVERSION::from_python;
+  using boost::python::type;
+  using boost::python::ref;
+  using boost::python::tuple;
+  using boost::python::list;
+  using boost::python::dictionary;
+  using boost::python::getattr;
+
+  ref world_getstate(tuple const & args, dictionary const & keywords)
   {
       if(args.size() != 1 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
           throw boost::python::argument_error();
       }
-      const world& w = args[0].get<const world&>();
-      python::ref mydict = python::getattr(args[0], "__dict__");
-      python::tuple result(2);
+      const world& w = from_python(args[0].get(), type<const world&>());
+      ref mydict = getattr(args[0], "__dict__");
+      tuple result(2);
       // store the object's __dict__
       result.set_item(0, mydict);
       // store the internal state of the C++ object
@@ -109,32 +116,31 @@ namespace {
       return result.reference(); // returning the reference avoids the copying.
   }
 
-  PyObject* world_setstate(python::tuple const & args,
-                           python::dictionary const & keywords)
+  PyObject* world_setstate(tuple const & args, dictionary const & keywords)
   {
       if(args.size() != 2 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
           throw boost::python::argument_error();
       }
-      world& w = args[0].get<world&>();
-      python::ref mydict = python::getattr(args[0], "__dict__");
-      const python::tuple& state(args[1].get<python::tuple>());
+      world& w = from_python(args[0].get(), type<world&>());
+      ref mydict = getattr(args[0], "__dict__");
+      tuple state = from_python(args[1].get(), type<tuple>());
       if (state.size() != 2) {
         PyErr_SetString(PyExc_ValueError,
           "Unexpected argument in call to __setstate__.");
         throw python::error_already_set();
       }
       // restore the object's __dict__
-      python::dictionary odict(mydict.get<python::dictionary>());
-      const python::dictionary& pdict(state[0].get<python::dictionary>());
-      python::list pkeys(pdict.keys());
+      dictionary odict = from_python(mydict.get(), type<dictionary>());
+      const dictionary& pdict = from_python(state[0].get(), type<const dictionary&>());
+      list pkeys(pdict.keys());
       for (int i = 0; i < pkeys.size(); i++) {
-        python::ref k(pkeys[i]);
+        ref k(pkeys[i]);
         //odict[k] = pdict[k]; // XXX memory leak!
         odict[k] = pdict.get_item(k); // this does not leak.
       }
       // restore the internal state of the C++ object
-      int number = state[1].get<int>();
+      int number = from_python(state[1].get(), type<int>());
       if (number != 42)
         w.set_secret_number(number);
       return python::detail::none();

@@ -1,4 +1,4 @@
-#include <boost/python/x_class_builder.hpp>
+#include <boost/python/cross_module.hpp>
 namespace python = boost::python;
 
 #include "noncopyable.h"
@@ -24,8 +24,8 @@ initnoncopyable_import()
   {
     python::module_builder this_module("noncopyable_import");
 
-    python::import_class_builder<store>
-      dvect_class("noncopyable_export", "store");
+    python::import_converters<store>
+      dvect_converters("noncopyable_export", "store");
 
     // Imagine all the additional classes with member functions
     // that have store objects as input and output parameters.

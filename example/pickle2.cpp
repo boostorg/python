@@ -42,6 +42,9 @@ namespace { // Avoid cluttering the global namespace.
   };
 
   // Support for pickle.
+
+  using BOOST_PYTHON_CONVERSION::from_python;
+
   python::ref world_getinitargs(const world& w) {
       python::tuple result(1);
       result.set_item(0, w.get_country());
@@ -60,7 +63,7 @@ namespace { // Avoid cluttering the global namespace.
         "Unexpected argument in call to __setstate__.");
       throw python::error_already_set();
     }
-    int number = state[0].get<int>();
+    int number = from_python(state[0].get(), python::type<int>());
     if (number != 42)
       w.set_secret_number(number);
   }

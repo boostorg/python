@@ -1,6 +1,6 @@
 #include "ivect.h"
 #include "dvect.h"
-#include <boost/python/x_class_builder.hpp>
+#include <boost/python/cross_module.hpp>
 namespace python = boost::python;
 
 namespace {
@@ -47,9 +47,10 @@ initdvect()
   {
     python::module_builder this_module("dvect");
 
-    python::x_class_builder<vects::dvect> dvect_class(this_module, "dvect");
+    python::class_builder<vects::dvect> dvect_class(this_module, "dvect");
+    python::export_converters(dvect_class);
 
-    python::import_class_builder<vects::ivect> ivect_class("ivect", "ivect");
+    python::import_converters<vects::ivect> ivect_converters("ivect", "ivect");
 
     dvect_class.def(python::constructor<python::tuple>());
     dvect_class.def(&vects::dvect::as_tuple, "as_tuple");
