@@ -32,31 +32,31 @@ struct class_unwrapper
 template <class T>
 void* class_unwrapper<T>::can_convert(PyObject* p) const
 {
-    return objects::find_holder<T>(p);
+    return objects::find_instance<T>(p);
 }
 
 template <class T>
-T& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T&>) const
+T& class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T&>) const
 {
-    return *static_cast<objects::holder<T>*>(holder_)->target();
+    return *static_cast<T*>(found);
 }
 
 template <class T>
-T const& class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const&>) const
+T const& class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T const&>) const
 {
-    return *static_cast<objects::holder<T>*>(holder_)->target();
+    return *static_cast<T*>(found);
 }
 
 template <class T>
-T* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T*>) const
+T* class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T*>) const
 {
-    return static_cast<objects::holder<T>*>(holder_)->target();
+    return static_cast<T*>(found);
 }
 
 template <class T>
-T const* class_unwrapper<T>::convert(PyObject*, void* holder_, boost::type<T const*>) const
+T const* class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T const*>) const
 {
-    return static_cast<objects::holder<T>*>(holder_)->target();
+    return static_cast<T*>(found);
 }
 
 }}} // namespace boost::python::converter

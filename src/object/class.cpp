@@ -11,13 +11,12 @@
 
 namespace boost { namespace python { namespace objects { 
 
-holder_base::holder_base(converter::type_id_t id)
-    : m_type(id)
-    , m_next(0)
+instance_holder::instance_holder()
+    : m_next(0)
 {
 }
 
-holder_base::~holder_base()
+instance_holder::~instance_holder()
 {
 }
 
@@ -134,28 +133,28 @@ BOOST_PYTHON_DECL PyTypeObject* class_type()
     return &class_type_object;
 }
 
-void holder_base::install(PyObject* self)
+void instance_holder::install(PyObject* self)
 {
     assert(self->ob_type->ob_type == &class_metatype_object);
     m_next = ((instance*)self)->objects;
     ((instance*)self)->objects = this;
 }
 
-BOOST_PYTHON_DECL holder_base*
-find_holder_impl(PyObject* inst, converter::type_id_t type)
+BOOST_PYTHON_DECL void*
+find_instance_impl(PyObject* inst, converter::type_id_t type)
 {
     if (inst->ob_type->ob_type != &class_metatype_object)
         return 0;
+    
     instance* self = reinterpret_cast<instance*>(inst);
 
-    holder_base::iterator match = std::find_if(
-        holder_base::iterator(self->objects), holder_base::iterator(0)
-        , bind<bool>(std::equal_to<converter::type_id_t>()
-               , bind<converter::type_id_t>(mem_fn(&holder_base::type), _1)
-               , type));
-    
-    return match != holder_base::iterator(0)
-        ? match.base() : 0;
+    for (instance_holder::iterator match(self->objects), end(0); match != end; ++match)
+    {
+        void* const found = (*match).holds(type);
+        if (found)
+            return found;
+    }
+    return 0;
 }
 
 }}} // namespace boost::python::objects

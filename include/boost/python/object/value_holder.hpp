@@ -7,11 +7,12 @@
 # define VALUE_HOLDER_DWA20011215_HPP
 
 # include <boost/python/object/class.hpp>
+# include <boost/python/converter/type_id.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
 template <class Held>
-struct value_holder : holder<Held>
+struct value_holder : instance_holder
 {
     // Forward construction to the held object
     value_holder(PyObject*)
@@ -58,8 +59,7 @@ struct value_holder : holder<Held>
         : m_held(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 
  private: // required holder implementation
-    Held* target() { return &m_held; }
-    bool held_by_value() const { return true; }
+    void* holds(converter::type_id_t);
 
  private: // data members
     Held m_held;
@@ -74,6 +74,12 @@ struct value_holder_generator
         typedef value_holder<Held> type;
     };
 };
+
+template <class Held>
+void* value_holder<Held>::holds(converter::type_id_t x)
+{
+    return x == converter::type_id<Held>() ? &m_held : 0;
+}
 
 }}} // namespace boost::python::objects
 

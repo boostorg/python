@@ -17,15 +17,16 @@ namespace boost { namespace python { namespace objects {
 template <class T> struct holder;
 
 // Base class for all holders
-struct BOOST_PYTHON_DECL holder_base : noncopyable
+struct BOOST_PYTHON_DECL instance_holder : noncopyable
 {
  public:
-    holder_base(converter::type_id_t id);
-    virtual ~holder_base();
-    virtual bool held_by_value() const = 0;
+    instance_holder();
+    virtual ~instance_holder();
     
-    holder_base* next() const;
-    converter::type_id_t type() const;
+    // return the next holder in a chain
+    instance_holder* next() const;
+
+    virtual void* holds(converter::type_id_t) = 0;
 
     void install(PyObject* inst);
     
@@ -39,41 +40,30 @@ struct BOOST_PYTHON_DECL holder_base : noncopyable
     };
     
     typedef iterator_adaptor<
-        holder_base*
+        instance_holder*
         , iterator_policies
         , value_type_is<noncopyable>
-        , reference_is<holder_base&>
-        , pointer_is<holder_base*>
+        , reference_is<instance_holder&>
+        , pointer_is<instance_holder*>
         , iterator_category_is<std::input_iterator_tag> > iterator;
     
  private:
-    converter::type_id_t m_type;
-    holder_base* m_next;
-};
-
-// Abstract base class which holds a Held, somehow. Provides a uniform
-// way to get a pointer to the held object
-template <class Held>
-struct holder : holder_base
-{
-    typedef Held held_type;
-    holder();
-    virtual Held* target() = 0;
+    instance_holder* m_next;
 };
 
 // Each extension instance will be one of these
 struct instance
 {
     PyObject_HEAD
-    holder_base* objects;
+    instance_holder* objects;
 };
 
-BOOST_PYTHON_DECL holder_base* find_holder_impl(PyObject*, converter::type_id_t);
+BOOST_PYTHON_DECL void* find_instance_impl(PyObject*, converter::type_id_t);
 
 template <class T>
-holder<T>* find_holder(PyObject* p, T* = 0)
+T* find_instance(PyObject* p, T* = 0)
 {
-    return static_cast<holder<T>*>(find_holder_impl(p, converter::type_id<T>()));
+    return static_cast<T*>(find_instance_impl(p, converter::type_id<T>()));
 }
 
 BOOST_PYTHON_DECL PyTypeObject* class_metatype();
@@ -82,20 +72,9 @@ BOOST_PYTHON_DECL PyTypeObject* class_type();
 //
 // implementation
 //
-inline holder_base* holder_base::next() const
+inline instance_holder* instance_holder::next() const
 {
     return m_next;
-}
-
-inline converter::type_id_t holder_base::type() const
-{
-    return m_type;
-}
-
-template <class Held>
-holder<Held>::holder()
-    : holder_base(converter::type_id<Held>())
-{
 }
 
 }}} // namespace boost::python::objects
