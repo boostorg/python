@@ -156,15 +156,14 @@ class CppParser:
         
 
     def GetCache(self, header, interface, tail):
-        if self.cache_dir is None:
-            return None
-        
         key = (header, interface, tail)
         # try memory cache first
         if key in self.mem_cache:
             return self.mem_cache[key]
         
         # get the cache from the disk
+        if self.cache_dir is None:
+            return None 
         header = self.FindHeader(header) 
         cache_file = self.CacheFileName(interface)    
         if os.path.isfile(cache_file):
