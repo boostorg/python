@@ -22,14 +22,25 @@ namespace detail {
       static PyTypeObject type_object;
       static PyNumberMethods number_methods;
 
-      operator_dispatcher(const Ptr& o, const Ptr& s);
 #ifndef NDEBUG
       ~operator_dispatcher();
 #endif
-
+      static operator_dispatcher * create(const Ptr& o, const Ptr& s);     
+      
       Ptr m_object;
       Ptr m_self;
+
+      // data members for allocation/deallocation optimization
+      operator_dispatcher* m_free_list_link;
+      static operator_dispatcher* free_list;
+
+  private: 
+
+      // only accessible through create()
+      operator_dispatcher(const Ptr& o, const Ptr& s);
   };
+  
+  operator_dispatcher* operator_dispatcher::free_list = 0;
 
 }}
 
@@ -47,7 +58,7 @@ namespace detail {
   Tuple extension_class_coerce(Ptr l, Ptr r)
   {
       // Introduced sequence points for exception-safety.
-      Ptr first(new operator_dispatcher(l, l));
+      Ptr first(operator_dispatcher::create(l, l));
       Ptr second;
       
       if(r->ob_type == &operator_dispatcher::type_object)
@@ -56,7 +67,7 @@ namespace detail {
       }
       else
       {
-           second = Ptr(new operator_dispatcher(r, Ptr()));
+           second = Ptr(operator_dispatcher::create(r, Ptr()));
       }
       return py::Tuple(first, second);
   }
@@ -461,7 +472,8 @@ operator_dispatcher::~operator_dispatcher()
 #endif
 
 operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
-    : m_object(o), m_self(s)
+    : m_object(o), m_self(s), m_free_list_link(0)
+
 {
     ob_refcnt = 1;
     ob_type = &type_object;
@@ -470,18 +482,34 @@ operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
 #endif
 }
 
+operator_dispatcher* 
+operator_dispatcher::create(const Ptr& object, const Ptr& self)
+{
+    operator_dispatcher* const result = free_list;
+    if (result == 0)
+        return new operator_dispatcher(object, self);
+    
+    free_list = result->m_free_list_link;
+    result->m_object = object;
+    result->m_self = self;
+    Py_INCREF(result);
+    return result;
+}
+
 extern "C"
 {
 
 void operator_dispatcher_dealloc(PyObject* self) 
 { 
-    delete static_cast<operator_dispatcher*>(self);
+    operator_dispatcher* instance = static_cast<operator_dispatcher*>(self);
+    instance->m_free_list_link = operator_dispatcher::free_list;
+    operator_dispatcher::free_list = instance;
 } 
 
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
-    *r = new operator_dispatcher(Ptr(*r, Ptr::new_ref), Ptr());
+    *r = operator_dispatcher::create(Ptr(*r, Ptr::new_ref), Ptr());
     return 0;
 }
 
