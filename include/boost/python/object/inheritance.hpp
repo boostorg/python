@@ -10,6 +10,7 @@
 # include <boost/shared_ptr.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/type_traits/object_traits.hpp>
+# include <boost/type_traits/is_polymorphic.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -29,25 +30,6 @@ BOOST_PYTHON_DECL void add_cast(
 BOOST_PYTHON_DECL void* find_static_type(void* p, class_id src, class_id dst);
 
 BOOST_PYTHON_DECL void* find_dynamic_type(void* p, class_id src, class_id dst);
-
-// is_polymorphic test from John Maddock
-template <class T>
-struct is_polymorphic
-{
-   struct d1 : public T
-   {
-      d1();
-      char padding[256];
-   };
-   struct d2 : public T
-   {
-      d2();
-      virtual ~d2();
-      virtual void foo();
-      char padding[256];
-   };
-   BOOST_STATIC_CONSTANT(bool, value = (sizeof(d2) == sizeof(d1)));
-};
 
 //
 // a generator with an execute() function which, given a source type
