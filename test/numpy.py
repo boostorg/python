@@ -5,7 +5,7 @@
 # Unfortunately the doctest module works differently in Python versions
 # 2.2, 2.3, and 2.4. Newer versions evaluate all docstrings, even that
 # of objects with names starting with an underscore. To portably disable
-# tests based on the availability of Numeric and Numpy, the corresponding
+# tests based on the availability of Numeric and numarray, the corresponding
 # test functions are simply deleted below if necessary.
 
 def numeric_tests():
