@@ -157,7 +157,7 @@ int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
         PyErr_SetString(PyExc_AttributeError, s.c_str());
         throw boost::python::error_already_set();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2405
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
     return 0;
 #endif
 }
@@ -1139,12 +1139,7 @@ void init_module()
 
 BOOST_PYTHON_MODULE_INIT(boost_python_test)
 {
-    try {
-        bpl_test::init_module();
-    }
-    catch(...) {
-        boost::python::handle_exception();
-    } // Need a way to report other errors here
+    boost::python::handle_exception((void (*)())bpl_test::init_module);
 }
 
 CompareIntPairPythonClass::CompareIntPairPythonClass(boost::python::module_builder& m)
