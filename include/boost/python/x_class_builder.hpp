@@ -3,12 +3,6 @@
 
 # include <boost/python/class_builder.hpp>
 
-//QUESTIONMARK
-//  Do we really need the special PyCvtsObject?
-//  Is there a better way of creating the special PyCvtsObject?
-//  My solution adds a lot of code including several reinterpret_cast.
-//#define SPECIAL_PYCVTSOBJECT
-
 namespace boost { namespace python {
     struct import_error : error_already_set {};
     struct export_error : error_already_set {};
@@ -21,15 +15,9 @@ namespace boost { namespace python { namespace detail {
 const int EXPORT_CONVERTERS_API_MAJOR = 1;
 const int EXPORT_CONVERTERS_API_MINOR = 1;
 const std::string converters_attribute_name = "__converters__";
-#ifndef SPECIAL_PYCVTSOBJECT
 void *import_converters(const std::string& module_name,
                         const std::string& klass_name,
                         const std::string& attribute_name);
-#else
-PyObject *new_import_converters(const std::string& module_name,
-                                const std::string& klass_name,
-                                const std::string& attribute_name);
-#endif
 void check_export_converters_api(const int importing_major,
                                  const int importing_minor,
                                  const int imported_major,
@@ -222,74 +210,14 @@ template <class T>
 boost::python::export_converters_base<T>*
 import_extension_class<T>::imported_converters = 0;
 
-#ifdef SPECIAL_PYCVTSOBJECT
-
-// A special PyObject for passing pointers to export_converters_base<T>
-template <class T>
-struct PyCvtsObject {
-    PyObject_HEAD
-    export_converters_base<T>* cvts;
-};
-
-template <class T>
-void DEL_PyCvtsObject(PyCvtsObject<T>* self) { PyMem_DEL(self); }
-
-template <class T>
-PyObject *create_PyCvtsObject(export_converters_base<T>* cvts)
-{
-    static char PyCvtsObject_Type__doc__[] =
-        "Boost Python Library (BPL) converters objects to be exported from\n"
-        "one extension module to another.";
-
-    static PyTypeObject PyCvtsObject_Type = {
-        PyObject_HEAD_INIT(&PyType_Type)
-        0,                              /*ob_size*/
-        "PyCvtsObject",                 /*tp_name*/
-        sizeof(PyCvtsObject<T>),        /*tp_basicsize*/
-        0,                              /*tp_itemsize*/
-        /* methods */
-        (destructor)(static_cast<void (*)(PyCvtsObject<T>*)>
-           (DEL_PyCvtsObject)),         /*tp_dealloc*/
-        (printfunc)0,                   /*tp_print*/
-        (getattrfunc)0,                 /*tp_getattr*/
-        (setattrfunc)0,                 /*tp_setattr*/
-        (cmpfunc)0,                     /*tp_compare*/
-        (reprfunc)0,                    /*tp_repr*/
-        0,                              /*tp_as_number*/
-        0,                              /*tp_as_sequence*/
-        0,                              /*tp_as_mapping*/
-        (hashfunc)0,                    /*tp_hash*/
-        (ternaryfunc)0,                 /*tp_call*/
-        (reprfunc)0,                    /*tp_str*/
-
-        /* Space for future expansion */
-        0L,0L,0L,0L,
-        PyCvtsObject_Type__doc__        /* Documentation string */
-    };
-
-    PyCvtsObject<T>* self = PyObject_NEW(PyCvtsObject<T>, &PyCvtsObject_Type);
-    if (self == 0) throw export_error();
-    self->cvts = cvts;
-    return reinterpret_cast<PyObject*>(self);
-}
-
-#endif // SPECIAL_PYCVTSOBJECT
-
 template <class T>
 boost::python::export_converters_base<T>*
 import_extension_class<T>::get_converters() {
   if (imported_converters == 0) {
-#ifndef SPECIAL_PYCVTSOBJECT
     void *cobject
       = import_converters(m_module, m_klass, converters_attribute_name);
     imported_converters
       = static_cast<boost::python::export_converters_base<T>*>(cobject);
-#else
-    ref cvts_obj(
-      new_import_converters(m_module, m_klass, converters_attribute_name));
-    PyCvtsObject<T>* cvts = reinterpret_cast<PyCvtsObject<T>*>(cvts_obj.get());
-    imported_converters = cvts->cvts;
-#endif
     check_export_converters_api(
       EXPORT_CONVERTERS_API_MAJOR,
       EXPORT_CONVERTERS_API_MINOR,
@@ -338,14 +266,9 @@ class x_class_builder
   public:
     x_class_builder(module_builder& module, const char* name)
         : class_builder<T, U>(module, name) {
-#ifndef SPECIAL_PYCVTSOBJECT
     add(
       ref(PyCObject_FromVoidPtr(reinterpret_cast<void*>(&export_cvts), NULL)),
       const_cast<char*>(detail::converters_attribute_name.c_str()));
-#else
-    add(ref(detail::create_PyCvtsObject(&export_cvts)),
-      const_cast<char*>(detail::converters_attribute_name.c_str()));
-#endif
   }
 };
 

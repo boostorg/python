@@ -16,8 +16,6 @@ namespace {
 
 namespace boost { namespace python { namespace detail {
 
-#ifndef SPECIAL_PYCVTSOBJECT
-
 void *import_converters(const std::string& module_name,
                         const std::string& klass_name,
                         const std::string& attribute_name)
@@ -49,43 +47,6 @@ void *import_converters(const std::string& module_name,
   }
   return PyCObject_AsVoidPtr(c_obj.get());
 }
-
-#else
-
-PyObject *new_import_converters(const std::string& module_name,
-                                const std::string& klass_name,
-                                const std::string& attribute_name)
-{
-  static std::string err;
-  PyObject *module_dict
-    = get_module_dict(const_cast<char*>(module_name.c_str()));
-  PyObject *klass
-    = PyDict_GetItemString(module_dict, const_cast<char*>(klass_name.c_str()));
-  if (klass == 0) {
-    err = std::string("module ") + module_name + " has no attribute "
-          + klass_name;
-    PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-    throw python::import_error();
-  }
-  python::ref cvts_obj(PyObject_GetAttrString(klass,
-    const_cast<char*>(attribute_name.c_str())), ref::null_ok);
-  if (cvts_obj.get() == 0) {
-    err = std::string("object ") + module_name + "." + klass_name
-          + " has no attribute " + attribute_name;
-    PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-    throw python::import_error();
-  }
-  // Weak point: direct access to ob_type->tp_name
-  if (strcmp(cvts_obj->ob_type->tp_name, "PyCvtsObject") != 0) {
-    err = std::string("object ") + module_name + "." + klass_name + "."
-          + attribute_name + " is not a PyCvtsObject";
-    PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-    throw python::import_error();
-  }
-  return cvts_obj.release();
-}
-
-#endif // SPECIAL_PYCVTSOBJECT
 
 void check_export_converters_api(const int importing_major,
                                  const int importing_minor,
