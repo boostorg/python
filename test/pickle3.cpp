@@ -23,6 +23,7 @@
 #include <boost/python/dict.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/detail/api_placeholder.hpp>
+#include <boost/python/back_reference.hpp>
 
 namespace { // Avoid cluttering the global namespace.
 
@@ -64,22 +65,28 @@ namespace { // Avoid cluttering the global namespace.
 
     static
     void
-    setstate(boost::python::object w_obj, boost::python::object state)
+    setstate(boost::python::object w_obj, boost::python::tuple state)
     {
         using namespace boost::python;
         world& w = extract<world&>(w_obj)();
-        extract<tuple> state_proxy(state);
-        if (!state_proxy.check() || len(state_proxy()) != 2)
+        
+        if (len(state) != 2)
         {
-          PyErr_SetString(PyExc_ValueError,
-            "Unexpected argument in call to __setstate__.");
+          PyErr_SetObject(PyExc_ValueError,
+                          ("expected 2-item tuple in call to __setstate__; got %s"
+                           % state).ptr()
+              );
           throw_error_already_set();
         }
+        
         // restore the object's __dict__
-        w_obj.attr("__dict__").attr("update")(object(state_proxy()[0]));
+        dict d = extract<dict>(w_obj.attr("__dict__"))();
+        d.update(state[0]);
+        
         // restore the internal state of the C++ object
-        long number = extract<long>(state_proxy()[1])();
-        if (number != 42) w.set_secret_number(number);
+        long number = extract<long>(state[1]);
+        if (number != 42)
+            w.set_secret_number(number);
     }
 
     static bool getstate_manages_dict() { return true; }

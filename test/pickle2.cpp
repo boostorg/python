@@ -66,17 +66,21 @@ namespace { // Avoid cluttering the global namespace.
 
     static
     void
-    setstate(world& w, boost::python::object state)
+    setstate(world& w, boost::python::tuple state)
     {
         using namespace boost::python;
-        extract<tuple> state_proxy(state);
-        if (!state_proxy.check() || len(state_proxy()) != 1) {
-          PyErr_SetString(PyExc_ValueError,
-            "Unexpected argument in call to __setstate__.");
+        if (len(state) != 1)
+        {
+          PyErr_SetObject(PyExc_ValueError,
+                          ("expected 1-item tuple in call to __setstate__; got %s"
+                           % state).ptr()
+              );
           throw_error_already_set();
         }
-        long number = extract<long>(state_proxy()[0])();
-        if (number != 42) w.set_secret_number(number);
+        
+        long number = extract<long>(state[0]);
+        if (number != 42)
+            w.set_secret_number(number);
     }
   };
 
