@@ -109,6 +109,7 @@ class handle
     T& operator* () const;
     T* get() const;
     T* release();
+    void reset();
     
     operator bool_type() const // never throws
     {
@@ -225,6 +226,13 @@ inline T* handle<T>::release()
     T* result = m_p;
     m_p = 0;
     return result;
+}
+
+template <class T>
+inline void handle<T>::reset()
+{
+    python::xdecref(m_p);
+    m_p = 0;
 }
 
 // Because get_managed_object must return a non-null PyObject*, we
