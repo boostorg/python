@@ -6,13 +6,13 @@
 #ifndef MAKE_FUNCTION_DWA20011221_HPP
 # define MAKE_FUNCTION_DWA20011221_HPP
 
-# include <boost/mpl/size.hpp>
-# include <boost/function.hpp>
-# include <boost/bind.hpp>
 # include <boost/python/object/function.hpp>
 # include <boost/python/object/make_holder.hpp>
 # include <boost/python/detail/caller.hpp>
 # include <boost/python/detail/arg_tuple_size.hpp>
+# include <boost/mpl/size.hpp>
+# include <boost/function.hpp>
+# include <boost/bind.hpp>
 
 namespace boost { namespace python {
 
@@ -21,7 +21,7 @@ objects::function* make_function(F f)
 {
     return new objects::function(
         objects::py_function(
-            bind<PyObject*>(detail::caller(), f, _1, _2))
+            ::boost::bind<PyObject*>(detail::caller(), f, _1, _2))
         , detail::arg_tuple_size<F>::value);
 }
 
@@ -31,7 +31,7 @@ objects::function* make_constructor(T* = 0, ArgList* = 0, Generator* = 0)
     enum { nargs = mpl::size<ArgList>::value };
     return new objects::function(
         objects::py_function(
-            bind<PyObject*>(detail::caller(),
+            ::boost::bind<PyObject*>(detail::caller(),
                  objects::make_holder<nargs>
                             ::template apply<T,Generator,ArgList>::execute
                  , _1, _2))
