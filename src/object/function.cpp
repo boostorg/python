@@ -98,7 +98,10 @@ function::function(
         function_type.ob_type = &PyType_Type;
         ::PyType_Ready(&function_type);
     }
-    PyObject_INIT(p, &function_type);
+    
+    (void)(     // warning suppression for GCC
+        PyObject_INIT(p, &function_type)
+    );
 }
 
 function::~function()
