@@ -12,6 +12,7 @@
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/inheritance.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -69,16 +70,13 @@ struct register_base_of
     };
 };
 
-template <class T>
-inline void force_instantiate(T const&) {}
-
 // Brings into existence all converters associated with a class Bases
 // is expected to be an mpl sequence of base types.
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
     // cause the static registration to be instantiated.
-    force_instantiate(instance_finder<Derived>::registration);
+    python::detail::force_instantiate(instance_finder<Derived>::registration);
     
     // register all up/downcasts here
     register_dynamic_id<Derived>();

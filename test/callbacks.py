@@ -11,6 +11,13 @@
 >>> def identity(x):
 ...     return x
 
+Once we have array conversion support, this test will fail. Er,
+succeed<wink>:
+
+>>> try: apply_to_string_literal(identity)
+... except: pass # expected
+... else: print 'expected an exception!'
+
 >>> x = apply_X_X(identity, X(42))
 >>> x.value()
 42

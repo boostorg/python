@@ -91,6 +91,11 @@ char apply_char_char(PyObject* f, char c)
     return call<char>(f, c);
 }
 
+char const* apply_to_string_literal(PyObject* f)
+{
+    return call<char const*>(f, "hello, world");
+}
+
 int X::counter;
 
 BOOST_PYTHON_MODULE_INIT(callbacks_ext)
@@ -113,6 +118,7 @@ BOOST_PYTHON_MODULE_INIT(callbacks_ext)
         .def("apply_cstring_cstring", apply_cstring_cstring)
         .def("apply_cstring_pyobject", apply_cstring_pyobject)
         .def("apply_char_char", apply_char_char)
+        .def("apply_to_string_literal", apply_to_string_literal)
         
         .add(
             class_<X>("X")

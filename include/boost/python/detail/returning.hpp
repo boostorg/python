@@ -14,7 +14,7 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/config.hpp>
 # include <boost/python/detail/none.hpp>
-# include <boost/python/from_python.hpp>
+# include <boost/python/arg_from_python.hpp>
 # include <boost/mpl/apply.hpp>
 
 # include <boost/python/detail/preprocessor.hpp>
@@ -38,7 +38,7 @@ struct returning
 # endif 
 
 # define BOOST_PYTHON_ARG_CONVERTIBLE(index,ignored)                    \
-    from_python<BOOST_PP_CAT(A,index)>                                  \
+    arg_from_python<BOOST_PP_CAT(A,index)>                              \
     BOOST_PP_CAT(c,index)(PyTuple_GET_ITEM(args_, index));              \
     if (!BOOST_PP_CAT(c,index).convertible()) return 0;
 
@@ -54,7 +54,7 @@ struct returning
     {                                                                           \
         /* check that each of the arguments is convertible */                   \
         /* self argument is special */                                          \
-        from_python<A0 cv()*> c0(PyTuple_GET_ITEM(args_, 0));                   \
+        arg_from_python<A0&> c0(PyTuple_GET_ITEM(args_, 0));                    \
         if (!c0.convertible()) return 0;                                        \
                                                                                 \
         /* Unroll a loop for the rest of them */                                \
@@ -68,7 +68,7 @@ struct returning
         if (!policies->precall(args_)) return 0;                                \
                                                                                 \
         PyObject* result = cr(                                                  \
-            ((BOOST_PYTHON_GET_ARG(0,nil))->*pmf)(                              \
+            ((BOOST_PYTHON_GET_ARG(0,nil)).*pmf)(                               \
                 BOOST_PP_ENUM_SHIFTED(args,BOOST_PYTHON_GET_ARG,nil))           \
             );                                                                  \
                                                                                 \
@@ -125,7 +125,7 @@ static PyObject*call(                                                   \
 {                                                                       \
     /* check that each of the arguments is convertible */               \
     /* self argument is special */                                      \
-    from_python<A0 cv()*>c0(PyTuple_GET_ITEM(args_,0));                 \
+    arg_from_python<A0&>c0(PyTuple_GET_ITEM(args_,0));                  \
     if (!c0.convertible()) return 0;                                    \
                                                                         \
     /* Unroll a loop for the rest of them */                            \
@@ -133,7 +133,7 @@ static PyObject*call(                                                   \
                                                                         \
     if (!policies->precall(args_)) return 0;                            \
                                                                         \
-    ((c0(PyTuple_GET_ITEM(args_,0)))->*pmf)(                            \
+    ((c0(PyTuple_GET_ITEM(args_,0))).*pmf)(                             \
         BOOST_PP_ENUM_SHIFTED(args,BOOST_PYTHON_GET_ARG,nil)            \
         );                                                              \
                                                                         \

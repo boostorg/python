@@ -10,6 +10,7 @@
 # include <boost/python/object/pointer_holder.hpp>
 # include <boost/python/object/class_object.hpp>
 # include <boost/python/detail/unwind_type.hpp>
+# include <boost/python/detail/none.hpp>
 # include <boost/shared_ptr.hpp>
 # include <memory>
 

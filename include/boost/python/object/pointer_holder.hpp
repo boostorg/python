@@ -17,6 +17,7 @@
 # include <boost/python/pointee.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/preprocessor/enum_params.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -66,19 +67,19 @@ struct pointer_holder_back_reference : instance_holder
 #  include <boost/python/preprocessed/ptr_holder_back_reference.hpp>
 # endif
     
-# define BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE(nargs, ignored)   \
-    BOOST_PP_EXPR_IF(nargs, template <)                                         \
-        BOOST_PP_ENUM_PARAMS(nargs, class A)                                    \
-    BOOST_PP_EXPR_IF(nargs, >)                                                  \
-    pointer_holder_back_reference(PyObject* p                                   \
-                   BOOST_PP_COMMA_IF(nargs)                                     \
-                   BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,a)))                     \
-        : m_p(new held_type(                                                    \
-                    p BOOST_PP_COMMA_IF(nargs)                                  \
-                    BOOST_PP_ENUM(nargs, BOOST_PYTHON_UNFORWARD, nil)           \
-            ))                                                                  \
-    {                                                                           \
-        void const* x = &instance_finder<held_type>::registration; (void)x;     \
+# define BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE(nargs, ignored)           \
+    BOOST_PP_EXPR_IF(nargs, template <)                                                 \
+        BOOST_PP_ENUM_PARAMS(nargs, class A)                                            \
+    BOOST_PP_EXPR_IF(nargs, >)                                                          \
+    pointer_holder_back_reference(PyObject* p                                           \
+                   BOOST_PP_COMMA_IF(nargs)                                             \
+                   BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,a)))                             \
+        : m_p(new held_type(                                                            \
+                    p BOOST_PP_COMMA_IF(nargs)                                          \
+                    BOOST_PP_ENUM(nargs, BOOST_PYTHON_UNFORWARD, nil)                   \
+            ))                                                                          \
+    {                                                                                   \
+        python::detail::force_instantiate(instance_finder<held_type>::registration);    \
     }
 
     BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE,nil)

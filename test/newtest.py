@@ -79,12 +79,23 @@ are a complicated constructor and member function, respectively.
 >>> c2.get_n()
 0
 
+     a quick regression test for a bug where None could be converted
+     to the target of any member function. To see it, we need to
+     access the __dict__ directly, to bypass the type check supplied
+     by the Method property which wraps the method when accessed as an
+     attribute. 
+
+>>> try: A.__dict__['name'](None)
+... except TypeError: pass
+... else: print 'expected an exception!'
+
+
 >>> a = A()
 >>> b = B()
 >>> c = C()
 >>> d = D()
 
-------
+
 >>> take_a(a).name()
 'A'
 

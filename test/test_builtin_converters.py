@@ -1,5 +1,13 @@
 """
 >>> from builtin_converters import *
+
+# Synthesize idendity functions in case long long not supported
+>>> if not 'rewrap_value_long_long' in dir():
+...     def rewrap_value_long_long(x): return long(x)
+...     def rewrap_value_unsigned_long_long(x): return long(x)
+...     def rewrap_const_reference_long_long(x): return long(x)
+...     def rewrap_const_reference_unsigned_long_long(x): return long(x)
+
 >>> rewrap_value_bool(None)
 0
 >>> rewrap_value_bool(0)
@@ -30,6 +38,21 @@
 42
 >>> rewrap_value_unsigned_long(42)
 42
+>>> rewrap_value_long_long(42)
+42L
+>>> rewrap_value_unsigned_long_long(42)
+42L
+
+   show that we have range checking. 
+ 
+>>> try: rewrap_value_unsigned_short(-42)
+... except OverflowError: pass
+... else: print 'expected an OverflowError!'
+
+>>> try: rewrap_value_int(must_be_long)
+... except OverflowError: pass
+... else: print 'expected an OverflowError!'
+
 
 >>> abs(rewrap_value_float(4.2) - 4.2) < .000001
 1
@@ -86,6 +109,11 @@
 42
 >>> rewrap_const_reference_unsigned_long(42)
 42
+>>> rewrap_const_reference_long_long(42)
+42L
+>>> rewrap_const_reference_unsigned_long_long(42)
+42L
+
 
 >>> abs(rewrap_const_reference_float(4.2) - 4.2) < .000001
 1
@@ -153,6 +181,14 @@ Check that classic classes also work
 1
 
 """
+# compute a long value that's too big for an int
+# note that some day these may be integrated, so 
+big_int = 1
+while (big_int << 1) > 0:
+    big_int <<= 1
+must_be_long = long(big_int) << 1
+
+
 def run(args = None):
     import sys
     import doctest

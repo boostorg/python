@@ -23,7 +23,7 @@ namespace detail
   {
       static PyObject* get(Data Class::*pm, PyObject* args_, PyObject*, Policies const& policies)
       {
-          from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
+          arg_from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
           if (!c0.convertible()) return 0;
 
           // find the result converter
@@ -42,12 +42,12 @@ namespace detail
       static PyObject* set(Data Class::*pm, PyObject* args_, PyObject*, Policies const& policies)
       {
           // check that each of the arguments is convertible
-          from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
+          arg_from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
           if (!c0.convertible()) return 0;
 
           typedef typename add_const<Data>::type target1;
           typedef typename add_reference<target1>::type target;
-          from_python<target> c1(PyTuple_GET_ITEM(args_, 1));
+          arg_from_python<target> c1(PyTuple_GET_ITEM(args_, 1));
       
           if (!c1.convertible()) return 0;
 

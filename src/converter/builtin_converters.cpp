@@ -66,7 +66,7 @@ namespace
   };
 
   // A SlotPolicy for extracting integer types from Python objects
-  struct int_rvalue_from_python
+  struct int_rvalue_from_python_base
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
@@ -84,19 +84,95 @@ namespace
           
           return &number_methods->nb_int;
       }
-      
-      static long extract(PyObject* intermediate)
+  };
+
+  template <class T>
+  struct int_rvalue_from_python : int_rvalue_from_python_base
+  {
+      static T extract(PyObject* intermediate)
       {
-          if (PyFloat_Check(intermediate))
-          {
-              return numeric_cast<long>(PyFloat_AS_DOUBLE(intermediate));
-          }
-          else
+          return numeric_cast<T>(
+              PyFloat_Check(intermediate)
+              ? PyFloat_AS_DOUBLE(intermediate)
+              : PyInt_AS_LONG(intermediate)
+              );
+      }
+  };
+
+#ifdef BOOST_HAS_LONG_LONG
+  // A SlotPolicy for extracting long long types from Python objects
+  struct long_long_rvalue_from_python_base
+  {
+      static unaryfunc* get_slot(PyObject* obj)
+      {
+          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          if (number_methods == 0)
+              return 0;
+
+          // For floating and integer types, return the identity
+          // conversion slot to avoid creating a new object. We'll
+          // handle that in the extract function
+          if (PyInt_Check(obj))
+              return &number_methods->nb_int;
+
+          if (PyFloat_Check(obj))
+              return &number_methods->nb_float;
+
+          if (PyInstance_Check(obj) && !PyObject_HasAttrString(obj, "__long__"))
+              return 0;
+          
+          return &number_methods->nb_long;
+      }
+  };
+
+  struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
+  {
+      static long long extract(PyObject* intermediate)
+      {
+          if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
           }
+          if (PyFloat_Check(intermediate))
+          {
+              return numeric_cast<long long>(PyFloat_AS_DOUBLE(intermediate));
+          }
+          else
+          {
+              long long result = PyLong_AsLongLong(intermediate);
+              
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+
+              return result;
+          }
       }
   };
+
+  struct unsigned_long_long_rvalue_from_python : long_long_rvalue_from_python_base
+  {
+      static unsigned long long extract(PyObject* intermediate)
+      {
+          if (PyInt_Check(intermediate))
+          {
+              return numeric_cast<unsigned long long>(PyInt_AS_LONG(intermediate));
+          }
+          if (PyFloat_Check(intermediate))
+          {
+              return numeric_cast<unsigned long long>(PyFloat_AS_DOUBLE(intermediate));
+          }
+          else
+          {
+              unsigned long long result = PyLong_AsUnsignedLongLong(intermediate);
+              
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+
+              return result;
+          }
+      }
+  };
+#endif 
 
 
   // identity_unaryfunc/py_object_identity -- manufacture a unaryfunc
@@ -177,9 +253,10 @@ namespace
   };
 
 
-  // identity_unaryfunc/non_null -- manufacture a unaryfunc "slot"
-  // which just returns its argument. Used for bool conversions, since
-  // all Python objects are directly convertible to bool
+  // to_complex_unaryfunc/py_object_to_complex -- manufacture a
+  // unaryfunc "slot" which calls its argument's __complex__
+  // method. We have this because there's no type object nb_complex
+  // slot.
   extern "C" PyObject* to_complex_unaryfunc(PyObject* x)
   {
       return PyObject_CallMethod(x, "__complex__", const_cast<char*>("()"));
@@ -233,22 +310,22 @@ namespace
   };
 } 
 
-BOOST_PYTHON_DECL PyObject* do_call_to_python(char x)
+BOOST_PYTHON_DECL PyObject* do_return_to_python(char x)
 {
     return PyString_FromStringAndSize(&x, 1);
 }
   
-BOOST_PYTHON_DECL PyObject* do_call_to_python(char const* x)
+BOOST_PYTHON_DECL PyObject* do_return_to_python(char const* x)
 {
     return x ? PyString_FromString(x) : boost::python::detail::none();
 }
   
-BOOST_PYTHON_DECL PyObject* do_call_to_python(PyObject* x)
+BOOST_PYTHON_DECL PyObject* do_return_to_python(PyObject* x)
 {
     return x ? x : boost::python::detail::none();
 }
   
-BOOST_PYTHON_DECL PyObject* do_callback_to_python(PyObject* x)
+BOOST_PYTHON_DECL PyObject* do_arg_to_python(PyObject* x)
 {
     if (x == 0)
         return boost::python::detail::none();
@@ -257,7 +334,7 @@ BOOST_PYTHON_DECL PyObject* do_callback_to_python(PyObject* x)
     return x;
 }
 
-#define REGISTER_INT_CONVERTERS(U) slot_rvalue_from_python<U,int_rvalue_from_python>()
+#define REGISTER_INT_CONVERTERS(U) slot_rvalue_from_python<U,int_rvalue_from_python<U> >()
 #define REGISTER_INT_CONVERTERS2(U) REGISTER_INT_CONVERTERS(signed U); REGISTER_INT_CONVERTERS(unsigned U)  
 
 void initialize_builtin_converters()
@@ -270,7 +347,12 @@ void initialize_builtin_converters()
     REGISTER_INT_CONVERTERS2(short);
     REGISTER_INT_CONVERTERS2(int);
     REGISTER_INT_CONVERTERS2(long);
-
+    
+# ifdef BOOST_HAS_LONG_LONG
+    slot_rvalue_from_python<signed long long,long_long_rvalue_from_python>();
+    slot_rvalue_from_python<unsigned long long,unsigned_long_long_rvalue_from_python>();
+# endif
+        
     // floating types
     slot_rvalue_from_python<float,float_rvalue_from_python>();
     slot_rvalue_from_python<double,float_rvalue_from_python>();

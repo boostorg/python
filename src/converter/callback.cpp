@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/converter/callback_to_python_base.hpp>
+#include <boost/python/converter/arg_to_python_base.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/converter/find_from_python.hpp>
 #include <boost/python/reference.hpp>
@@ -33,9 +33,9 @@ namespace detail
     }
   }
   
-  callback_to_python_base::callback_to_python_base(
+  arg_to_python_base::arg_to_python_base(
       void const volatile* source, to_python_function_t converter)
-      : callback_to_python_holder(convert(source, converter))
+      : arg_to_python_holder(convert(source, converter))
   {
   }
 

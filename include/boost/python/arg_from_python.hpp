@@ -1,40 +1,39 @@
-#error obsolete 
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef FROM_PYTHON_DWA2002128_HPP
-# define FROM_PYTHON_DWA2002128_HPP
+#ifndef ARG_FROM_PYTHON_DWA2002128_HPP
+# define ARG_FROM_PYTHON_DWA2002128_HPP
 
-# include <boost/python/converter/from_python.hpp>
+# include <boost/python/converter/arg_from_python.hpp>
 
 namespace boost { namespace python { 
 
 template <class T>
-struct from_python
+struct arg_from_python
     : converter::select_arg_from_python<T>::type
 {
-    typedef typename converter::select_from_python<T>::type base;
-    from_python(PyObject*);
+    typedef typename converter::select_arg_from_python<T>::type base;
+    arg_from_python(PyObject*);
 };
 
 // specialization for PyObject*
 template <>
-struct from_python<PyObject*>
+struct arg_from_python<PyObject*>
 {
     typedef PyObject* result_type;
     
-    from_python(PyObject*) {}
+    arg_from_python(PyObject*) {}
     bool convertible() const { return true; }
     PyObject* operator()(PyObject* source) const { return source; }
 };
 
 template <>
-struct from_python<PyObject* const&>
+struct arg_from_python<PyObject* const&>
 {
     typedef PyObject* const& result_type;
-    from_python(PyObject*) {}
+    arg_from_python(PyObject*) {}
     bool convertible() const { return true; }
     PyObject*const& operator()(PyObject*const& source) const { return source; }
 };
@@ -43,11 +42,11 @@ struct from_python<PyObject* const&>
 // implementations
 //
 template <class T>
-inline from_python<T>::from_python(PyObject* source)
+inline arg_from_python<T>::arg_from_python(PyObject* source)
     : base(source)
 {
 }
 
 }} // namespace boost::python
 
-#endif // FROM_PYTHON_DWA2002128_HPP
+#endif // ARG_FROM_PYTHON_DWA2002128_HPP

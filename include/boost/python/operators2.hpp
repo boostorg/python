@@ -7,9 +7,10 @@
 # define OPERATORS2_DWA2002530_HPP
 
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/converter/callback.hpp>
+# include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/not_specified.hpp>
+# include <boost/python/back_reference.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/self.hpp>
 # include <boost/python/other.hpp>
@@ -26,7 +27,7 @@ namespace detail
   template <class T>
   PyObject* convert_result(T const& x)
   {
-      return converter::callback_to_python<T>(x).get_incref();
+      return converter::arg_to_python<T>(x).get_incref();
   }
 
   // Operator implementation template declarations. The nested apply

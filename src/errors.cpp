@@ -9,6 +9,7 @@
 #endif
 
 #include <boost/python/errors.hpp>
+#include <boost/cast.hpp>
 
 namespace boost { namespace python {
 
@@ -27,6 +28,10 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
     catch(const std::bad_alloc&)
     {
         PyErr_NoMemory();
+    }
+    catch(const bad_numeric_cast& x)
+    {
+        PyErr_SetString(PyExc_OverflowError, x.what());
     }
     catch(const std::exception& x)
     {

@@ -13,7 +13,7 @@
 # include <boost/python/object/function.hpp>
 # include <boost/python/reference.hpp>
 # include <boost/type.hpp>
-# include <boost/python/from_python.hpp>
+# include <boost/python/arg_from_python.hpp>
 # include <boost/mpl/apply.hpp>
 # include <boost/bind.hpp>
 # include <boost/bind/protect.hpp>
@@ -63,7 +63,7 @@ namespace detail
           typedef iterator_range<Policies,Iterator> range_;
           
           PyObject* py_self = PyTuple_GET_ITEM(args_, 0);
-          from_python<range_*> c0(py_self);
+          arg_from_python<range_*> c0(py_self);
           range_* self = c0(py_self);
 
           // Done iterating?
@@ -167,9 +167,9 @@ namespace detail
 
           // Extract x from the first argument
           PyObject* arg0 = PyTuple_GET_ITEM(args_, 0);
-          from_python<Target> c0(arg0);
+          arg_from_python<Target> c0(arg0);
           if (!c0.convertible()) return 0;
-          typename from_python<Target>::result_type x = c0(arg0);
+          typename arg_from_python<Target>::result_type x = c0(arg0);
 
           // Build and convert the iterator_range<>.
           return cr(

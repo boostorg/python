@@ -6,7 +6,8 @@
 #ifndef CALL_METHOD_DWA2002411_HPP
 # define CALL_METHOD_DWA2002411_HPP
 
-# include <boost/python/converter/callback.hpp>
+# include <boost/python/converter/arg_to_python.hpp>
+# include <boost/python/converter/return_from_python.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/preprocessor/comma_if.hpp>
 # include <boost/preprocessor/enum.hpp>
@@ -26,20 +27,20 @@ template <                                                                      
     class R                                                                     \
     BOOST_PP_COMMA_IF(nargs) BOOST_PP_ENUM_PARAMS(nargs, class A)               \
     >                                                                           \
-typename converter::callback_from_python<R>::result_type                        \
+typename converter::return_from_python<R>::result_type                          \
 call_method(PyObject* self, char const* name                                    \
      BOOST_PP_COMMA_IF(nargs) BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))    \
    , boost::type<R>* = 0                                                        \
     )                                                                           \
 {                                                                               \
-    converter::callback_from_python<R> converter;                               \
+    converter::return_from_python<R> converter;                                 \
     return converter(                                                           \
         PyEval_CallMethod(                                                      \
             self                                                                \
             , const_cast<char*>(name)                                           \
             , const_cast<char*>(BOOST_PYTHON_ARG_STRING(nargs))                 \
             BOOST_PP_COMMA_IF(nargs)                                            \
-            BOOST_PP_ENUM(nargs,BOOST_PYTHON_CALLBACK_TO_PYTHON_GET,nil)        \
+            BOOST_PP_ENUM(nargs,BOOST_PYTHON_ARG_TO_PYTHON_GET,nil)             \
             ));                                                                 \
 }
 
