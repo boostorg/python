@@ -8,10 +8,8 @@
 #include <boost/python/manage_new_object.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/class.hpp>
-#include <boost/mpl/type_list.hpp>
 
 using namespace boost::python;
-using boost::mpl::type_list;
 
 int a_instances = 0;
 
