@@ -57,6 +57,13 @@ try it for yourself in Python. In this section, we shall outline the steps
 necessary to achieve that. We shall use the build tool that comes bundled
 with every boost distribution: [*bjam].
 
+[blurb __detail__ [*Building without bjam][br][br]
+
+Besides bjam, there are of course other ways to get your module built.
+What's written here should not be taken as "the one and only way".
+There are of course other build tools apart from [^bjam].
+]
+
 We shall skip over the details. Our objective will be to simply create the
 hello world module and run it in Python. For a complete reference to
 building Boost.Python, check out: [@../../building.html building.html].
@@ -65,10 +72,15 @@ After this brief ['bjam] tutorial, we should have built two DLLs:
 * boost_python.dll
 * hello.pyd
 
-This assumes of course that we are running on Windows.
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
 
 The tutorial example can be found in the directory:
-[^/libs/python/example/tutorial]. There, you can find:
+[^libs/python/example/tutorial]. There, you can find:
 
 * hello.cpp
 * Jamfile
@@ -77,12 +89,15 @@ The [^hello.cpp] file is our C++ hello world example. The [^Jamfile] is a
 minimalist ['bjam] script that builds the DLLs for us.
 
 Before anything else, you should have the bjam executable in your boost
-directory. Pre-built Boost.Jam executables are available for some
+directory or somewhere in your path such that [^bjam] can be executed in
+the command line. Pre-built Boost.Jam executables are available for most
 platforms. For example, a pre-built Microsoft Windows bjam executable can
 be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip here].
-The complete list of bjam pre-built executables can be found [@../../../../../tools/build/index.html#Jam here].
+The complete list of bjam pre-built
+executables can be found [@../../../../../tools/build/index.html#Jam here].
 
 [h2 Lets Jam!]
+[$theme/jam.png]
 
 Here is our minimalist Jamfile:
 
@@ -141,8 +156,9 @@ Python modules. Example:
     set PYTHON_VERSION=2.2
 
 The above assumes that the Python installation is in [^c:/dev/tools/python]
-and that we are using Python version 2.2. Be sure not to include a third
-number, e.g. [*not]  "2.2.1", even if that's the version you have.
+and that we are using Python version 2.2. You'll have to tweak this path
+appropriately. __note__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
+even if that's the version you have.
 
 Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
 where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
@@ -185,6 +201,13 @@ If all is well, you should now have:
 
 * boost_python.dll
 * hello.pyd
+
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
 
 [^boost_python.dll] can be found somewhere in [^libs\python\build\bin]
 while [^hello.pyd] can be found somewhere in
@@ -276,7 +299,7 @@ expose instead.
 
 [^init<std::string>()] exposes the constructor taking in a
 [^std::string] (in Python, constructors are spelled
-"[^__init__(...)]").
+"[^"__init__"]").
 
 We can expose additional constructors by passing more [^init<...>]s to
 the [^def()] member function. Say for example we have another World
@@ -326,10 +349,12 @@ Then, in Python:
 Note that [^name] is exposed as [*read-only] while [^value] is exposed
 as [*read-write].
 
+[pre
     >>> x.name = 'e' # can't change name
     Traceback (most recent call last):
       File "<stdin>", line 1, in ?
     AttributeError: can't set attribute
+]
 
 [page:1 Class Properties]
 
@@ -482,14 +507,15 @@ polymorphically ['from] [*C++].]
 
 Wrapping [^Base] and the free function [^call_f]:
 
-    class_<Base, BaseWrap, noncopyable>("Base", no_init)
+    class_<Base, BaseWrap, boost::noncopyable>("Base", no_init)
         ;
     def("call_f", call_f);
 
 Notice that we parameterized the [^class_] template with [^BaseWrap] as the
 second parameter. What is [^noncopyable]? Without it, the library will try
-to instantiate a copy constructor for returning Base objects from
-functions.
+to create code for converting Base return values of wrapped functions to
+Python. To do that, it needs Base's copy constructor... which isn't
+available, since Base is an abstract class.
 
 In Python, let us try to instantiate our [^Base] class:
 
@@ -523,14 +549,14 @@ Calling [^derived.f()]:
 Will yield the expected result. Finally, calling calling the free function
 [^call_f] with [^derived] as argument:
 
-    >>> call_f(derived())
+    >>> call_f(derived)
     42
 
 Will also yield the expected result.
 
 Here's what's happening:
 
-# [^call_f(derived())] is called in Python
+# [^call_f(derived)] is called in Python
 # This corresponds to [^def("call_f", call_f);]. Boost.Python dispatches this call.
 # [^int call_f(Base& b) { return b.f(); }] accepts the call.
 # The overridden virtual function [^f] of [^BaseWrap] is called.
@@ -592,14 +618,14 @@ Calling [^call_f], passing in a [^base] object:
 
 Calling [^call_f], passing in a [^derived] object:
 
-    >>> call_f(derived())
+    >>> call_f(derived)
     42
 
 [page:1 Class Operators/Special Functions]
 
 [h2 Python Operators]
 
-C is well known for the abundance of oparators. C++ extends this to the
+C is well known for the abundance of operators. C++ extends this to the
 extremes by allowing operator overloading. Boost.Python takes advantage of
 this and makes it easy to wrap C++ operator-powered classes.
 
@@ -650,13 +676,17 @@ that correspond to these Python ['special functions]. Example:
     ostream& operator<<(ostream&,Rational);
 
     class_<Rational>()
-        .def(float_(self))  // __float__
-        .def(pow(self))     // __pow__
-        .def(abs(self))     // __abs__
-        .def(str(self))     // __str__
+        .def(float_(self))                  // __float__
+        .def(pow(self, other<Rational>))    // __pow__
+        .def(abs(self))                     // __abs__
+        .def(str(self))                     // __str__
         ;
 
 Need we say more?
+
+[blurb __detail__ What is the business of [^operator<<] [^.def(str(self))]?
+Well, the method [^str] requires the [^operator<<] to do its work (i.e.
+[^operator<<] is used by the method defined by def(str(self)).]
 
 [page Functions]
 
@@ -810,7 +840,7 @@ first argument. In short: "return an internal reference [^X&] owned by the
 
 Informs Boost.Python that the lifetime of the argument indicated by ward
 (i.e. the 2nd argument: [^Z* z]) is dependent on the lifetime of the
-argument indicated by custodian (i.e. the 1st argument: [^Z* z]).
+argument indicated by custodian (i.e. the 1st argument: [^Y& y]).
 
 It is also important to note that we have defined two policies above. Two
 or more policies can be composed by chaining. Here's the general syntax:
@@ -820,7 +850,7 @@ or more policies can be composed by chaining. Here's the general syntax:
             policy3<args...> > >
 
 Here is the list of predefined call policies. A complete reference detailing
-these can be found [@../../v2/CallPolicies.html here].
+these can be found [@../../v2/reference.html#models_of_call_policies here].
 
 * [*with_custodian_and_ward][br] Ties lifetimes of the arguments
 * [*with_custodian_and_ward_postcall][br] Ties lifetimes of the arguments and results
@@ -911,7 +941,7 @@ Notice the use of [^init<...>] and [^optional<...>] to signify the default
 [page Object Interface]
 
 Python is dynamically typed, unlike C++ which is statically typed. Python
-variables may hold an integers, a float, list, dict, tuple, str, long etc.,
+variables may hold an integer, a float, list, dict, tuple, str, long etc.,
 among other things. In the viewpoint of Boost.Python and C++, these
 Pythonic variables are just instances of class [^object]. We shall see in
 this chapter how to deal with Python objects.
@@ -932,11 +962,11 @@ Class [^object] wraps [^PyObject*]. All the intricacies of dealing with
 
 To illustrate, this Python code snippet:
 
-    def f(x, f):
+    def f(x, y):
          if (y == 'foo'):
              x[3:7] = 'bar'
          else:
-             x.items += f(3, x)
+             x.items += y(3, x)
          return x
 
     def getfunc():
@@ -944,11 +974,11 @@ To illustrate, this Python code snippet:
 
 Can be rewritten in C++ using Boost.Python facilities this way:
 
-    object f(object x, object f) {
-         if (f == "foo")
+    object f(object x, object y) {
+         if (y == "foo")
              x.slice(3,7) = "bar";
          else
-             x.attr("items") += f(3, x);
+             x.attr("items") += y(3, x);
          return x;
     }
     object getfunc() {
@@ -969,6 +999,7 @@ that of Python's:
 * tuple
 * str
 * long_
+* enum
 
 These derived [^object] types act like real Python types. For instance:
 
@@ -1007,13 +1038,18 @@ member functions.
 Demonstrates that you can write the C++ equivalent of [^"format" % x,y,z]
 in Python, which is useful since there's no easy way to do that in std C++.
 
-[blurb __alert__ Beware the common pitfall of
-forgetting that the constructors of most of Python's mutable types
-make copies, just as in Python.[br][br]
+__alert__ [*Beware] the common pitfall of forgetting that the constructors
+of most of Python's mutable types make copies, just as in Python.
 
-    [^dict d(x.attr("__dict__")); # makes a copy of x's dict[br]
-    '''d['whatever']''' = 3; # modifies a copy of x.__dict__ (not the original)[br]]
-]
+Python:
+
+    >>> d = dict(x.__dict__)     # copies x.__dict__
+    >>> d['whatever']            # modifies the copy
+
+C++:
+
+    dict d(x.attr("__dict__"));  # copies x.__dict__
+    d['whatever'] = 3;           # modifies the copy
 
 [h2 class_<T> as objects]
 
@@ -1062,10 +1098,58 @@ test for extractibility:
         Vec2& v = x(); ...
 
 __tip__ The astute reader might have noticed that the [^extract<T>]
-facility in fact solves mutable copying problem:
+facility in fact solves the mutable copying problem:
 
     dict d = extract<dict>(x.attr("__dict__"));
     d['whatever'] = 3;          # modifies x.__dict__ !
+
+
+[page:1 Enums]
+
+Boost.Python has a nifty facility to capture and wrap C++ enums. While
+Python has no [^enum] type, we'll often want to expose our C++ enums to
+Python as an [^int]. Boost.Python's enum facility makes this easy while
+taking care of the proper conversions from Python's dynamic typing to C++'s
+strong static typing (in C++, ints cannot be implicitly converted to
+enums). To illustrate, given a C++ enum:
+
+    enum choice { red, blue };
+
+the construct:
+
+    enum_<choice>("choice")
+        .value("red", red)
+        .value("blue", blue)
+        ;
+
+can be used to expose to Python. The new enum type is created in the
+current [^scope()], which is usually the current module. The snippet above
+creates a Python class derived from Python's [^int] type which is
+associated with the C++ type passed as its first parameter.
+
+[blurb __detail__ [*what is a scope?][br][br] The scope is a class that has an
+associated global Python object which controls the Python namespace in
+which new extension classes and wrapped functions will be defined as
+attributes. Details can be found [@../../v2/scope.html here].]
+
+You can access those values in Python as
+
+    >>> my_module.choice.red
+    my_module.choice.red
+
+where my_module is the module where the enum is declared. You can also
+create a new scope around a class:
+
+    scope in_X(class_<X>("X")
+                    .def( ... )
+                    .def( ... )
+                );
+
+    // Expose X::nested as X.nested
+    enum_<X::nested>("nested")
+        .value("red", red)
+        .value("blue", blue)
+        ;
 
 [page Iterators]
 
@@ -1086,7 +1170,7 @@ iterators, but these are two very different beasts.
 
 The typical Python iteration protocol: [^[*for y in x...]] is as follows:
 
-    iter iter = x.__iter__()    # get iterator
+    iter = x.__iter__()         # get iterator
     try:
         while 1:
         y = iter.next()         # get each item
