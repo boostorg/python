@@ -40,12 +40,15 @@ def HandlePolicy(function, policy):
     def IsString(type):
         'Return True if the Type instance can be considered a string'
         return type.const and type.name == 'char' and isinstance(type, PointerType)
+
+    def IsPyObject(type):
+        return type.FullName() == '_object *' # internal name of PyObject
     
     result = function.result
     # basic test if the result type demands a policy
     needs_policy = isinstance(result, (ReferenceType, PointerType))
     # if the function returns const char*, a policy is not needed
-    if IsString(result):
+    if IsString(result) or IsPyObject(result):
         needs_policy = False
     # if returns a const T&, set the default policy
     if policy is None and result.const and isinstance(result, ReferenceType):
