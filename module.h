@@ -14,20 +14,20 @@
 # include "objects.h"
 # include "functions.h"
 
-namespace py {
+namespace python {
 
-class Module
+class module_builder
 {
-    typedef PyObject * (*RawFunctionPtr)(py::Tuple const &, py::Dict const &);
+    typedef PyObject * (*raw_function_ptr)(python::tuple const &, python::dictionary const &);
     
  public:
-    // Create a module. REQUIRES: only one Module is created per module.
-    Module(const char* name);
+    // Create a module. REQUIRES: only one module_builder is created per module.
+    module_builder(const char* name);
 
     // Add elements to the module
-    void add(detail::Function* x, const char* name);
+    void add(detail::function* x, const char* name);
     void add(PyTypeObject* x, const char* name = 0);
-    void add(Ptr x, const char*name);
+    void add(ref x, const char*name);
 
     template <class Fn>
     void def_raw(Fn fn, const char* name)
@@ -41,7 +41,7 @@ class Module
         add(detail::new_wrapped_function(fn), name);
     }
 
-    static String name();
+    static string name();
     
  private:
     PyObject* m_module;

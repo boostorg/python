@@ -14,22 +14,22 @@
 #include <cstring>
 #include "module.h"
 
-namespace py {
+namespace python {
 
 namespace detail {
-  void enable_named_method(py::detail::ClassBase* type_object, const char* name);
+  void enable_named_method(python::detail::class_base* type_obj, const char* name);
 }
 
 namespace {
   // Add the name of the module currently being loaded to the name_space with the
   // key "__module__". If no module is being loaded, or if name_space already has
   // a key "__module", has no effect. This is not really a useful public
-  // interface; it's just used for Class<>::Class() below.
-  void add_current_module_name(Dict&);
+  // interface; it's just used for class_t<>::class_t() below.
+  void add_current_module_name(dictionary&);
 
   bool is_prefix(const char* s1, const char* s2);
   bool is_special_name(const char* name);
-  void enable_special_methods(py::detail::ClassBase* derived, const Tuple& bases, const Dict& name_space);
+  void enable_special_methods(python::detail::class_base* derived, const tuple& bases, const dictionary& name_space);
 
   void report_ignored_exception(PyObject* source)
   {
@@ -65,53 +65,53 @@ namespace {
       return PyObject_GetAttrString(klass, const_cast<char*>("__name__"));
   }
 
-  Ptr global_class_reduce()
+  ref global_class_reduce()
   {
-      static Ptr result(detail::new_wrapped_function(class_reduce));
+      static ref result(detail::new_wrapped_function(class_reduce));
       return result;
   }
   
 
-  Tuple instance_reduce(PyObject* instance)
+  tuple instance_reduce(PyObject* obj)
   {
-      Ptr instance_class(PyObject_GetAttrString(instance, const_cast<char*>("__class__")));
+      ref instance_class(PyObject_GetAttrString(obj, const_cast<char*>("__class__")));
 
-      Ptr getinitargs(PyObject_GetAttrString(instance, const_cast<char*>("__getinitargs__")),
-                      Ptr::null_ok);
+      ref getinitargs(PyObject_GetAttrString(obj, const_cast<char*>("__getinitargs__")),
+                      ref::null_ok);
       PyErr_Clear();
-      Ptr initargs;
+      ref initargs;
       if (getinitargs.get() != 0)
       {
-          initargs = Ptr(PyEval_CallObject(getinitargs.get(), NULL));
-          initargs = Ptr(PySequence_Tuple(initargs.get()));
+          initargs = ref(PyEval_CallObject(getinitargs.get(), NULL));
+          initargs = ref(PySequence_Tuple(initargs.get()));
       }
       else
       {
-          initargs = Ptr(PyTuple_New(0));
+          initargs = ref(PyTuple_New(0));
       }
 
-      Ptr getstate(PyObject_GetAttrString(instance, const_cast<char*>("__getstate__")),
-                   Ptr::null_ok);
+      ref getstate(PyObject_GetAttrString(obj, const_cast<char*>("__getstate__")),
+                   ref::null_ok);
       PyErr_Clear();
       if (getstate.get() != 0)
       {
-          Ptr state = Ptr(PyEval_CallObject(getstate.get(), NULL));
-          return Tuple(instance_class, initargs, state);
+          ref state = ref(PyEval_CallObject(getstate.get(), NULL));
+          return tuple(instance_class, initargs, state);
       }
 
-      Ptr state(PyObject_GetAttrString(instance, const_cast<char*>("__dict__")), Ptr::null_ok);
+      ref state(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
       PyErr_Clear();
-      if (state.get() != 0 && Dict(state).size() > 0)
+      if (state.get() != 0 && dictionary(state).size() > 0)
       {
-          return Tuple(instance_class, initargs, state);
+          return tuple(instance_class, initargs, state);
       }
 
-      return Tuple(instance_class, initargs);
+      return tuple(instance_class, initargs);
   }
 
-  Ptr global_instance_reduce()
+  ref global_instance_reduce()
   {
-      static Ptr result(detail::new_wrapped_function(instance_reduce));
+      static ref result(detail::new_wrapped_function(instance_reduce));
       return result;
   }
 }
@@ -119,17 +119,17 @@ namespace {
 
 namespace detail {
 
-  ClassBase::ClassBase(PyTypeObject* meta_class, String name, Tuple bases, const Dict& name_space)
-      : TypeObjectBase(meta_class),
+  class_base::class_base(PyTypeObject* meta_class_obj, string name, tuple bases, const dictionary& name_space)
+      : type_object_base(meta_class_obj),
         m_name(name),
         m_bases(bases),
         m_name_space(name_space)
   {
       this->tp_name = const_cast<char*>(name.c_str());
-      enable(TypeObjectBase::getattr);
-      enable(TypeObjectBase::setattr);
+      enable(type_object_base::getattr);
+      enable(type_object_base::setattr);
       add_current_module_name(m_name_space);
-      static const py::String docstr("__doc__", py::String::interned);
+      static const python::string docstr("__doc__", python::string::interned);
       if (PyDict_GetItem(m_name_space.get(), docstr.get())== 0)
       {
           PyDict_SetItem(m_name_space.get(), docstr.get(), Py_None);
@@ -137,32 +137,32 @@ namespace detail {
       enable_special_methods(this, bases, name_space);
   }
 
-  void ClassBase::add_base(Ptr base)
+  void class_base::add_base(ref base)
   {
-      Tuple new_bases(m_bases.size() + 1);
+      tuple new_bases(m_bases.size() + 1);
       for (std::size_t i = 0; i < m_bases.size(); ++i)
           new_bases.set_item(i, m_bases[i]);
       new_bases.set_item(m_bases.size(), base);
       m_bases = new_bases;
   }
 
-  PyObject* ClassBase::getattr(const char* name)
+  PyObject* class_base::getattr(const char* name)
   {
-      if (!PY_CSTD_::strcmp(name, "__dict__"))
+      if (!BOOST_CSTD_::strcmp(name, "__dict__"))
       {
           PyObject* result = m_name_space.get();
           Py_INCREF(result);
           return result;
       }
       
-      if (!PY_CSTD_::strcmp(name, "__bases__"))
+      if (!BOOST_CSTD_::strcmp(name, "__bases__"))
       {
           PyObject* result = m_bases.get();
           Py_INCREF(result);
           return result;
       }
       
-      if (!PY_CSTD_::strcmp(name, "__name__"))
+      if (!BOOST_CSTD_::strcmp(name, "__name__"))
       {
           PyObject* result = m_name.get();
           Py_INCREF(result);
@@ -170,17 +170,17 @@ namespace detail {
       }
 
       // pickle support courtesy of "Ralf W. Grosse-Kunstleve" <rwgk@cci.lbl.gov>
-      if (!PY_CSTD_::strcmp(name, "__safe_for_unpickling__"))
+      if (!BOOST_CSTD_::strcmp(name, "__safe_for_unpickling__"))
       {
           return PyInt_FromLong(1);
       }
-      if (!PY_CSTD_::strcmp(name, "__reduce__"))
+      if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
       {
-          Ptr target(as_object(this), Ptr::new_ref);
-          return new BoundFunction(target, global_class_reduce());
+          ref target(as_object(this), ref::increment_count);
+          return new bound_function(target, global_class_reduce());
       }
       
-      Ptr local_attribute = m_name_space.get_item(String(name).reference());
+      ref local_attribute = m_name_space.get_item(string(name).reference());
     
       if (local_attribute.get())
           return local_attribute.release();
@@ -203,7 +203,7 @@ namespace detail {
               // Unwind the actual underlying function from unbound Python class
               // methods in case of multiple inheritance from real Python
               // classes. Python stubbornly insists that the first argument to a
-              // method must be a true Python Instance object otherwise. Do not
+              // method must be a true Python instance object otherwise. Do not
               // unwrap bound methods; that would interfere with intended semantics.
               if (PyMethod_Check(base_attribute)
                   && reinterpret_cast<PyMethodObject*>(base_attribute)->im_self == 0)
@@ -224,27 +224,27 @@ namespace detail {
   }
 
   // Mostly copied wholesale from Python's classobject.c
-  PyObject* ClassBase::repr() const
+  PyObject* class_base::repr() const
   {
       PyObject *mod = PyDict_GetItemString(
           m_name_space.get(), const_cast<char*>("__module__"));
       unsigned long address = reinterpret_cast<unsigned long>(this);
-      String result = (mod == NULL || !PyString_Check(mod))
-                ? String("<extension class %s at %lx>") % Tuple(m_name, address)
-                : String("<extension class %s.%s at %lx>") % Tuple(Ptr(mod, Ptr::borrowed), m_name, address);
+      string result = (mod == NULL || !PyString_Check(mod))
+                ? string("<extension class %s at %lx>") % tuple(m_name, address)
+                : string("<extension class %s.%s at %lx>") % tuple(ref(mod, ref::increment_count), m_name, address);
       return result.reference().release();
   }
 
 
-  int ClassBase::setattr(const char* name, PyObject* value)
+  int class_base::setattr(const char* name, PyObject* value)
   {
       if (is_special_name(name)
-          && PY_CSTD_::strcmp(name, "__doc__") != 0
-          && PY_CSTD_::strcmp(name, "__name__") != 0)
+          && BOOST_CSTD_::strcmp(name, "__doc__") != 0
+          && BOOST_CSTD_::strcmp(name, "__name__") != 0)
       {
-          py::String message("Special attribute names other than '__doc__' and '__name__' are read-only, in particular: ");
+          python::string message("Special attribute names other than '__doc__' and '__name__' are read-only, in particular: ");
           PyErr_SetObject(PyExc_TypeError, (message + name).get());
-          throw ErrorAlreadySet();
+          throw error_already_set();
       }
       
       if (PyCallable_Check(value))
@@ -254,11 +254,11 @@ namespace detail {
           m_name_space.reference().get(), const_cast<char*>(name), value);
   }
 
-  bool ClassBase::initialize_instance(Instance* instance, PyObject* args, PyObject* keywords)
+  bool class_base::initialize_instance(instance* obj, PyObject* args, PyObject* keywords)
   {
-      // Getting the init function off the instance should result in a
+      // Getting the init function off the obj should result in a
       // bound method.
-      PyObject* const init_function = instance->getattr("__init__", false);
+      PyObject* const init_function = obj->getattr("__init__", false);
         
       if (init_function == 0)
       {
@@ -272,18 +272,18 @@ namespace detail {
       else
       {
           // Manage the reference to the bound function
-          Ptr init_function_holder(init_function);
+          ref init_function_holder(init_function);
         
-        // Declare a Ptr to manage the result of calling __init__ (which should be None).
-          Ptr init_result(
+        // Declare a ref to manage the result of calling __init__ (which should be None).
+          ref init_result(
               PyEval_CallObjectWithKeywords(init_function, args, keywords));
       }
       return true;
   }
 
-  void ClassBase::instance_dealloc(PyObject* instance) const
+  void class_base::instance_dealloc(PyObject* obj) const
   {
-      Py_INCREF(instance); // This allows a __del__ function to revive the instance
+      Py_INCREF(obj); // This allows a __del__ function to revive the obj
       
       PyObject* exc_type;
       PyObject* exc_value;
@@ -293,17 +293,17 @@ namespace detail {
       // This scope ensures that the reference held by del_function doesn't release
       // the last reference and delete the object recursively (infinitely).
       {
-          Ptr del_function;
+          ref del_function;
           try {
-              Instance* const target = py::Downcast<py::Instance>(instance);
-              del_function = Ptr(target->getattr("__del__", false), Ptr::null_ok);
+              instance* const target = python::downcast<python::instance>(obj);
+              del_function = ref(target->getattr("__del__", false), ref::null_ok);
           }
           catch(...) {
           }
 
           if (del_function.get() != 0)
           {
-              Ptr result(PyEval_CallObject(del_function.get(), (PyObject *)NULL), Ptr::null_ok);
+              ref result(PyEval_CallObject(del_function.get(), (PyObject *)NULL), ref::null_ok);
               
               if (result.get() == NULL)
                   report_ignored_exception(del_function.get());
@@ -311,25 +311,25 @@ namespace detail {
       }
       PyErr_Restore(exc_type, exc_value, exc_traceback);
       
-      if (--instance->ob_refcnt <= 0)
-          delete_instance(instance);
+      if (--obj->ob_refcnt <= 0)
+          delete_instance(obj);
   }
 
 
 }
 
-Instance::Instance(PyTypeObject* class_)
-    : py::detail::BaseObject<PyObject>(class_)
+instance::instance(PyTypeObject* class_)
+    : python::detail::base_object<PyObject>(class_)
 {
 }
 
-Instance::~Instance()
+instance::~instance()
 {
 }
 
-PyObject* Instance::getattr(const char* name, bool use_special_function)
+PyObject* instance::getattr(const char* name, bool use_special_function)
 {
-    if (!PY_CSTD_::strcmp(name, "__dict__"))
+    if (!BOOST_CSTD_::strcmp(name, "__dict__"))
     {
         if (PyEval_GetRestricted()) {
             PyErr_SetString(PyExc_RuntimeError,
@@ -340,18 +340,18 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         return m_name_space.get();
     }
     
-    if (!PY_CSTD_::strcmp(name, "__class__"))
+    if (!BOOST_CSTD_::strcmp(name, "__class__"))
     {
         Py_INCREF(this->ob_type);
         return as_object(this->ob_type);
     }
 
-    if (!PY_CSTD_::strcmp(name, "__reduce__"))
+    if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
     {
-      return new detail::BoundFunction(Ptr(this, Ptr::new_ref), global_instance_reduce());
+      return new detail::bound_function(ref(this, ref::increment_count), global_instance_reduce());
     }
     
-    Ptr local_attribute = m_name_space.get_item(String(name).reference());
+    ref local_attribute = m_name_space.get_item(string(name).reference());
     
     if (local_attribute.get())
         return local_attribute.release();
@@ -365,11 +365,11 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         return 0;
     }
 
-    Ptr class_attribute;
+    ref class_attribute;
     if (function != 0)
     {
         // This will throw if the attribute wasn't found
-        class_attribute = Ptr(function);
+        class_attribute = ref(function);
     }
     else
     {
@@ -379,7 +379,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         // First we try the special method that comes from concatenating
         // "__getattr__" and <name> and 2 trailing underscores. This is an
         // extension to regular Python class functionality.
-        const String specific_getattr_name(detail::getattr_string() + name + "__");
+        const string specific_getattr_name(detail::getattr_string() + name + "__");
         PyObject* getattr_method = PyObject_GetAttr(
             as_object(this->ob_type), specific_getattr_name.get());
 
@@ -405,7 +405,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
         }
 
         // Take ownership of the method
-        Ptr owner(getattr_method);
+        ref owner(getattr_method);
         
         // Call it to get the attribute.
         return PyEval_CallFunction(getattr_method, arg_format, this, name);
@@ -418,15 +418,15 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     }
     else
     {
-        return detail::BoundFunction::create(Ptr(this, Ptr::borrowed), class_attribute);
+        return detail::bound_function::create(ref(this, ref::increment_count), class_attribute);
     }
 }
 
-// Instance::setattr_dict
+// instance::setattr_dict
 //
 //  Implements setattr() functionality for the "__dict__" attribute
 //
-int Instance::setattr_dict(PyObject* value)
+int instance::setattr_dict(PyObject* value)
 {
     if (PyEval_GetRestricted())
     {
@@ -441,35 +441,35 @@ int Instance::setattr_dict(PyObject* value)
                         "__dict__ must be set to a dictionary");
         return -1;
     }
-    m_name_space = Dict(Ptr(value, Ptr::borrowed));
+    m_name_space = dictionary(ref(value, ref::increment_count));
     return 0;
 }
 
-// Instance::setattr -
+// instance::setattr -
 //
-//  Implements the setattr() and delattr() functionality for our own Instance
+//  Implements the setattr() and delattr() functionality for our own instance
 //  objects, using the standard Python interface: if value == 0, we are deleting
 //  the attribute, and returns 0 unless an error occurred.
-int Instance::setattr(const char* name, PyObject* value)
+int instance::setattr(const char* name, PyObject* value)
 {
-    if (PY_CSTD_::strcmp(name, "__class__") == 0)
+    if (BOOST_CSTD_::strcmp(name, "__class__") == 0)
     {
         PyErr_SetString(PyExc_TypeError, "__class__ attribute is read-only");
-        throw ErrorAlreadySet();
+        throw error_already_set();
     }
     
-    if (PY_CSTD_::strcmp(name, "__dict__") == 0)
+    if (BOOST_CSTD_::strcmp(name, "__dict__") == 0)
         return setattr_dict(value);
     
     // Try to find an appropriate "specific" setter or getter method, either
     // __setattr__<name>__(value) or __delattr__<name>__(). This is an extension
     // to regular Python class functionality.
-    const String& base_name = value ? detail::setattr_string() : detail::delattr_string();
-    const String specific_method_name(base_name + name + "__");
+    const string& base_name = value ? detail::setattr_string() : detail::delattr_string();
+    const string specific_method_name(base_name + name + "__");
     
-    Ptr special_method(
+    ref special_method(
         PyObject_GetAttr(as_object(this->ob_type), specific_method_name.get()),
-        Ptr::null_ok);
+        ref::null_ok);
 
     PyObject* result_object = 0;
     if (special_method.get() != 0)
@@ -486,7 +486,7 @@ int Instance::setattr(const char* name, PyObject* value)
         PyErr_Clear();
         special_method.reset(
             PyObject_GetAttr(as_object(this->ob_type), base_name.get()),
-            Ptr::null_ok);
+            ref::null_ok);
         
         if (special_method.get() != 0)
         {
@@ -501,7 +501,7 @@ int Instance::setattr(const char* name, PyObject* value)
     // If we found an appropriate special method, handle the return value.
     if (special_method.get() != 0)
     {
-        Ptr manage_result(result_object);
+        ref manage_result(result_object);
         return 0;
     }
     
@@ -525,239 +525,239 @@ int Instance::setattr(const char* name, PyObject* value)
     }
 }
 
-PyObject* Instance::call(PyObject* args, PyObject* keywords)
+PyObject* instance::call(PyObject* args, PyObject* keywords)
 {
     return PyEval_CallObjectWithKeywords(
-        Ptr(getattr("__call__")).get(), // take possession of the result from getattr()
+        ref(getattr("__call__")).get(), // take possession of the result from getattr()
         args, keywords);
 }
 
-PyObject* Instance::repr()
+PyObject* instance::repr()
 {
-    return Callback<PyObject*>::call_method(this, "__repr__");
+    return callback<PyObject*>::call_method(this, "__repr__");
 }
 
-int Instance::compare(PyObject* other)
+int instance::compare(PyObject* other)
 {
-    return Callback<int>::call_method(this, "__cmp__", other);
+    return callback<int>::call_method(this, "__cmp__", other);
 }
 
-PyObject* Instance::str()
+PyObject* instance::str()
 {
-    return Callback<PyObject*>::call_method(this, "__str__");
+    return callback<PyObject*>::call_method(this, "__str__");
 }
 
-long Instance::hash()
+long instance::hash()
 {
-    return Callback<long>::call_method(this, "__hash__");
+    return callback<long>::call_method(this, "__hash__");
 }
 
-int Instance::length()
+int instance::length()
 {
-    return Callback<int>::call_method(this, "__len__");
+    return callback<int>::call_method(this, "__len__");
 }
 
-PyObject* Instance::get_subscript(PyObject* key)
+PyObject* instance::get_subscript(PyObject* key)
 {
-    return Callback<PyObject*>::call_method(this, "__getitem__", key);
+    return callback<PyObject*>::call_method(this, "__getitem__", key);
 }
 
-void Instance::set_subscript(PyObject* key, PyObject* value)
-{
-    if (value == 0)
-        Callback<void>::call_method(this, "__delitem__", key);
-    else
-        Callback<void>::call_method(this, "__setitem__", key, value);
-}
-
-PyObject* Instance::get_slice(int start, int finish)
-{
-    return Callback<PyObject*>::call_method(this, "__getslice__", start, finish);
-}
-
-void Instance::set_slice(int start, int finish, PyObject* value)
+void instance::set_subscript(PyObject* key, PyObject* value)
 {
     if (value == 0)
-        Callback<void>::call_method(this, "__delslice__", start, finish);
+        callback<void>::call_method(this, "__delitem__", key);
     else
-        Callback<void>::call_method(this, "__setslice__", start, finish, value);
+        callback<void>::call_method(this, "__setitem__", key, value);
 }
 
-PyObject* Instance::add(PyObject* other)
+PyObject* instance::get_slice(int start, int finish)
 {
-    return Callback<PyObject*>::call_method(this, "__add__", other);
+    return callback<PyObject*>::call_method(this, "__getslice__", start, finish);
 }
 
-PyObject* Instance::subtract(PyObject* other)
+void instance::set_slice(int start, int finish, PyObject* value)
 {
-    return Callback<PyObject*>::call_method(this, "__sub__", other);
+    if (value == 0)
+        callback<void>::call_method(this, "__delslice__", start, finish);
+    else
+        callback<void>::call_method(this, "__setslice__", start, finish, value);
 }
 
-PyObject* Instance::multiply(PyObject* other)
+PyObject* instance::add(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__mul__", other);
+    return callback<PyObject*>::call_method(this, "__add__", other);
 }
 
-PyObject* Instance::divide(PyObject* other)
+PyObject* instance::subtract(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__div__", other);
+    return callback<PyObject*>::call_method(this, "__sub__", other);
 }
 
-PyObject* Instance::remainder(PyObject* other)
+PyObject* instance::multiply(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__mod__", other);
+    return callback<PyObject*>::call_method(this, "__mul__", other);
 }
 
-PyObject* Instance::divmod(PyObject* other)
+PyObject* instance::divide(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__divmod__", other);
+    return callback<PyObject*>::call_method(this, "__div__", other);
 }
 
-PyObject* Instance::power(PyObject* exponent, PyObject* modulus)
+PyObject* instance::remainder(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__mod__", other);
+}
+
+PyObject* instance::divmod(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__divmod__", other);
+}
+
+PyObject* instance::power(PyObject* exponent, PyObject* modulus)
 {
     if (as_object(modulus->ob_type) == Py_None)
-        return Callback<PyObject*>::call_method(this, "__pow__", exponent);
+        return callback<PyObject*>::call_method(this, "__pow__", exponent);
     else
-        return Callback<PyObject*>::call_method(this, "__pow__", exponent, modulus);
+        return callback<PyObject*>::call_method(this, "__pow__", exponent, modulus);
 }
 
-PyObject* Instance::negative()
+PyObject* instance::negative()
 {
-    return Callback<PyObject*>::call_method(this, "__neg__");
+    return callback<PyObject*>::call_method(this, "__neg__");
 }
 
-PyObject* Instance::positive()
+PyObject* instance::positive()
 {
-    return Callback<PyObject*>::call_method(this, "__pos__");
+    return callback<PyObject*>::call_method(this, "__pos__");
 }
 
-PyObject* Instance::absolute()
+PyObject* instance::absolute()
 {
-    return Callback<PyObject*>::call_method(this, "__abs__");
+    return callback<PyObject*>::call_method(this, "__abs__");
 }
 
-int Instance::nonzero()
+int instance::nonzero()
 {
-    return Callback<bool>::call_method(this, "__nonzero__");
+    return callback<bool>::call_method(this, "__nonzero__");
 }
 
-PyObject* Instance::invert()
+PyObject* instance::invert()
 {
-    return Callback<PyObject*>::call_method(this, "__invert__");
+    return callback<PyObject*>::call_method(this, "__invert__");
 }
 
-PyObject* Instance::lshift(PyObject* other)
+PyObject* instance::lshift(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__lshift__", other);
+    return callback<PyObject*>::call_method(this, "__lshift__", other);
 }
 
-PyObject* Instance::rshift(PyObject* other)
+PyObject* instance::rshift(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__rshift__", other);
+    return callback<PyObject*>::call_method(this, "__rshift__", other);
 }
 
-PyObject* Instance::do_and(PyObject* other)
+PyObject* instance::do_and(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__and__", other);
+    return callback<PyObject*>::call_method(this, "__and__", other);
 }
 
-PyObject* Instance::do_xor(PyObject* other)
+PyObject* instance::do_xor(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__xor__", other);
+    return callback<PyObject*>::call_method(this, "__xor__", other);
 }
 
-PyObject* Instance::do_or(PyObject* other)
+PyObject* instance::do_or(PyObject* other)
 {
-    return Callback<PyObject*>::call_method(this, "__or__", other);
+    return callback<PyObject*>::call_method(this, "__or__", other);
 }
 
-int Instance::coerce(PyObject** x, PyObject** y)
+int instance::coerce(PyObject** x, PyObject** y)
 {
     assert(this == *x);
     
     // Coerce must return a tuple
-    Tuple result(Callback<Tuple>::call_method(this, "__coerce__", *y));
+    tuple result(callback<tuple>::call_method(this, "__coerce__", *y));
     
     *x = result[0].release();
     *y = result[1].release();
     return 0;
 }
 
-PyObject* Instance::as_int()
+PyObject* instance::as_int()
 {
-    return Callback<PyObject*>::call_method(this, "__int__");
+    return callback<PyObject*>::call_method(this, "__int__");
 }
 
-PyObject* Instance::as_long()
+PyObject* instance::as_long()
 {
-    return Callback<PyObject*>::call_method(this, "__long__");
+    return callback<PyObject*>::call_method(this, "__long__");
 }
 
-PyObject* Instance::as_float()
+PyObject* instance::as_float()
 {
-    return Callback<PyObject*>::call_method(this, "__float__");
+    return callback<PyObject*>::call_method(this, "__float__");
 }
 
-PyObject* Instance::oct()
+PyObject* instance::oct()
 {
-    return Callback<PyObject*>::call_method(this, "__oct__");
+    return callback<PyObject*>::call_method(this, "__oct__");
 }
 
-PyObject* Instance::hex()
+PyObject* instance::hex()
 {
-    return Callback<PyObject*>::call_method(this, "__hex__");
+    return callback<PyObject*>::call_method(this, "__hex__");
 }
 
 namespace {
-  struct NamedCapability
+  struct named_capability
   {
       const char* name;
-      detail::TypeObjectBase::Capability capability;
+      detail::type_object_base::capability capability;
   };
 
-  const NamedCapability enablers[] =
+  const named_capability enablers[] =
   {
-      { "__hash__", detail::TypeObjectBase::hash },
-      { "__cmp__", detail::TypeObjectBase::compare },
-      { "__repr__", detail::TypeObjectBase::repr },
-      { "__str__", detail::TypeObjectBase::str },
-      { "__call__", detail::TypeObjectBase::call },
-      { "__getattr__", detail::TypeObjectBase::getattr },
-      { "__setattr__", detail::TypeObjectBase::setattr },
-      { "__len__", detail::TypeObjectBase::mapping_length },
-      { "__len__", detail::TypeObjectBase::sequence_length },
-      { "__getitem__", detail::TypeObjectBase::mapping_subscript },
-      { "__getitem__", detail::TypeObjectBase::sequence_item },
-      { "__setitem__", detail::TypeObjectBase::mapping_ass_subscript },
-      { "__setitem__", detail::TypeObjectBase::sequence_ass_item },
-      { "__delitem__", detail::TypeObjectBase::mapping_ass_subscript },
-      { "__delitem__", detail::TypeObjectBase::sequence_ass_item },
-      { "__getslice__", detail::TypeObjectBase::sequence_slice },
-      { "__setslice__", detail::TypeObjectBase::sequence_ass_slice },
-      { "__delslice__", detail::TypeObjectBase::sequence_ass_slice },
-      { "__add__", detail::TypeObjectBase::number_add },
-      { "__sub__", detail::TypeObjectBase::number_subtract },
-      { "__mul__", detail::TypeObjectBase::number_multiply },
-      { "__div__", detail::TypeObjectBase::number_divide },
-      { "__mod__", detail::TypeObjectBase::number_remainder },
-      { "__divmod__", detail::TypeObjectBase::number_divmod },
-      { "__pow__", detail::TypeObjectBase::number_power },
-      { "__neg__", detail::TypeObjectBase::number_negative },
-      { "__pos__", detail::TypeObjectBase::number_positive },
-      { "__abs__", detail::TypeObjectBase::number_absolute },
-      { "__nonzero__", detail::TypeObjectBase::number_nonzero },
-      { "__invert__", detail::TypeObjectBase::number_invert },
-      { "__lshift__", detail::TypeObjectBase::number_lshift },
-      { "__rshift__", detail::TypeObjectBase::number_rshift },
-      { "__and__", detail::TypeObjectBase::number_and },
-      { "__xor__", detail::TypeObjectBase::number_xor },
-      { "__or__", detail::TypeObjectBase::number_or },
-      { "__coerce__", detail::TypeObjectBase::number_coerce },
-      { "__int__", detail::TypeObjectBase::number_int },
-      { "__long__", detail::TypeObjectBase::number_long },
-      { "__float__", detail::TypeObjectBase::number_float },
-      { "__oct__", detail::TypeObjectBase::number_oct },
-      { "__hex__", detail::TypeObjectBase::number_hex }
+      { "__hash__", detail::type_object_base::hash },
+      { "__cmp__", detail::type_object_base::compare },
+      { "__repr__", detail::type_object_base::repr },
+      { "__str__", detail::type_object_base::str },
+      { "__call__", detail::type_object_base::call },
+      { "__getattr__", detail::type_object_base::getattr },
+      { "__setattr__", detail::type_object_base::setattr },
+      { "__len__", detail::type_object_base::mapping_length },
+      { "__len__", detail::type_object_base::sequence_length },
+      { "__getitem__", detail::type_object_base::mapping_subscript },
+      { "__getitem__", detail::type_object_base::sequence_item },
+      { "__setitem__", detail::type_object_base::mapping_ass_subscript },
+      { "__setitem__", detail::type_object_base::sequence_ass_item },
+      { "__delitem__", detail::type_object_base::mapping_ass_subscript },
+      { "__delitem__", detail::type_object_base::sequence_ass_item },
+      { "__getslice__", detail::type_object_base::sequence_slice },
+      { "__setslice__", detail::type_object_base::sequence_ass_slice },
+      { "__delslice__", detail::type_object_base::sequence_ass_slice },
+      { "__add__", detail::type_object_base::number_add },
+      { "__sub__", detail::type_object_base::number_subtract },
+      { "__mul__", detail::type_object_base::number_multiply },
+      { "__div__", detail::type_object_base::number_divide },
+      { "__mod__", detail::type_object_base::number_remainder },
+      { "__divmod__", detail::type_object_base::number_divmod },
+      { "__pow__", detail::type_object_base::number_power },
+      { "__neg__", detail::type_object_base::number_negative },
+      { "__pos__", detail::type_object_base::number_positive },
+      { "__abs__", detail::type_object_base::number_absolute },
+      { "__nonzero__", detail::type_object_base::number_nonzero },
+      { "__invert__", detail::type_object_base::number_invert },
+      { "__lshift__", detail::type_object_base::number_lshift },
+      { "__rshift__", detail::type_object_base::number_rshift },
+      { "__and__", detail::type_object_base::number_and },
+      { "__xor__", detail::type_object_base::number_xor },
+      { "__or__", detail::type_object_base::number_or },
+      { "__coerce__", detail::type_object_base::number_coerce },
+      { "__int__", detail::type_object_base::number_int },
+      { "__long__", detail::type_object_base::number_long },
+      { "__float__", detail::type_object_base::number_float },
+      { "__oct__", detail::type_object_base::number_oct },
+      { "__hex__", detail::type_object_base::number_hex }
   };
 
   bool is_prefix(const char* s1, const char* s2)
@@ -772,14 +772,14 @@ namespace {
     if (name[0] != '_' || name[1] != '_' || name[2] == 0 || name[3] == 0)
         return false;
 
-    std::size_t name_length = PY_CSTD_::strlen(name);
+    std::size_t name_length = BOOST_CSTD_::strlen(name);
     return name[name_length - 1] == '_' && name[name_length - 2] == '_';
   }
 }
 
 namespace detail {
   // Enable the special handler for methods of the given name, if any.
-  void enable_named_method(py::detail::ClassBase* type_object, const char* name)
+  void enable_named_method(python::detail::class_base* type_obj, const char* name)
   {
       const std::size_t num_enablers = sizeof(enablers) / sizeof(enablers[0]);
 
@@ -793,7 +793,7 @@ namespace detail {
       {
           if (is_prefix(enablers[i].name + 2, name + 2))
           {
-              type_object->enable(enablers[i].capability);
+              type_obj->enable(enablers[i].capability);
           }
       }
   }
@@ -801,7 +801,7 @@ namespace detail {
 
 namespace {
   // Enable any special methods which are enabled in the base class.
-  void enable_special_methods(py::detail::ClassBase* derived, const Tuple& bases, const Dict& name_space)
+  void enable_special_methods(python::detail::class_base* derived, const tuple& bases, const dictionary& name_space)
   {
       for (std::size_t i = 0; i < bases.size(); ++i)
       {
@@ -809,19 +809,19 @@ namespace {
 
           for (std::size_t n = 0; n < PY_ARRAY_LENGTH(enablers); ++n)
           {
-              Ptr attribute(
+              ref attribute(
                   PyObject_GetAttrString(base, const_cast<char*>(enablers[n].name)),
-                  Ptr::null_ok);
+                  ref::null_ok);
               PyErr_Clear();
               if (attribute.get() != 0 && PyCallable_Check(attribute.get()))
                   detail::add_capability(enablers[n].capability, derived);
           }
       }
 
-      List keys(name_space.keys());
+      list keys(name_space.keys());
       for (std::size_t j = 0, len = keys.size(); j < len; ++j)
       {
-          String name_obj(keys.get_item(j));
+          string name_obj(keys.get_item(j));
           const char* name = name_obj.c_str();
 
           if (!is_special_name(name))
@@ -837,16 +837,16 @@ namespace {
       }
   }
 
-  void add_current_module_name(Dict& name_space)
+  void add_current_module_name(dictionary& name_space)
   {
-      static String module_key("__module__", String::interned);
-      name_space.set_item(module_key, Module::name());
+      static string module_key("__module__", string::interned);
+      name_space.set_item(module_key, module_builder::name());
   }
 }
 
-void adjust_slice_indices(PyObject* instance, int& start, int& finish)
+void adjust_slice_indices(PyObject* obj, int& start, int& finish)
 {
-    int length = Callback<int>::call_method(instance, "__len__");
+    int length = callback<int>::call_method(obj, "__len__");
     
     // This is standard Python class behavior.
     if (start < 0)
@@ -862,23 +862,23 @@ void adjust_slice_indices(PyObject* instance, int& start, int& finish)
 }
 
 namespace detail {
-const String& setattr_string()
+const string& setattr_string()
 {
-    static String x("__setattr__", String::interned);
+    static string x("__setattr__", string::interned);
     return x;
 }
 
-const String& getattr_string()
+const string& getattr_string()
 {
-    static String x("__getattr__", String::interned);
+    static string x("__getattr__", string::interned);
     return x;
 }
 
-const String& delattr_string()
+const string& delattr_string()
 {
-    static String x("__delattr__", String::interned);
+    static string x("__delattr__", string::interned);
     return x;
 }
 }
 
-} // namespace py
+} // namespace python

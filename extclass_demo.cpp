@@ -21,7 +21,7 @@ FooCallback::FooCallback(PyObject* self, int x)
 int FooCallback::add_len(const char* x) const
 {
     // Try to call the "add_len" method on the corresponding Python object.
-    return py::Callback<int>::call_method(m_self, "add_len", x);
+    return python::callback<int>::call_method(m_self, "add_len", x);
 }
 
 // A function which Python can call in case bar is not overridden from
@@ -41,13 +41,13 @@ int FooCallback::default_add_len(const Foo* self, const char* x)
 // exception at runtime when pure() is called.
 std::string FooCallback::pure() const
 {
-    return py::Callback<std::string>::call_method(m_self, "pure");
+    return python::callback<std::string>::call_method(m_self, "pure");
 }
 
-Foo::PythonClass::PythonClass(py::Module& m)
-    : py::ClassWrapper<Foo,FooCallback>(m, "Foo")
+Foo::PythonClass::PythonClass(python::module_builder& m)
+    : python::class_builder<Foo,FooCallback>(m, "Foo")
 {
-    def(py::Constructor<int>());
+    def(python::constructor<int>());
     def(&Foo::mumble, "mumble");
     def(&Foo::set, "set");
     def(&Foo::call_pure, "call_pure");
@@ -59,19 +59,19 @@ Foo::PythonClass::PythonClass(py::Module& m)
     // Since pure() is pure virtual, we are leaving it undefined.
 }
 
-BarPythonClass::BarPythonClass(py::Module& m)
-    : py::ClassWrapper<Bar>(m, "Bar")
+BarPythonClass::BarPythonClass(python::module_builder& m)
+    : python::class_builder<Bar>(m, "Bar")
 {
-    def(py::Constructor<int, int>());
+    def(python::constructor<int, int>());
     def(&Bar::first, "first");
     def(&Bar::second, "second");
     def(&Bar::pass_baz, "pass_baz");
 }
 
-BazPythonClass::BazPythonClass(py::Module& m)
-    : py::ClassWrapper<Baz>(m, "Baz") // optional
+BazPythonClass::BazPythonClass(python::module_builder& m)
+    : python::class_builder<Baz>(m, "Baz") // optional
 {
-    def(py::Constructor<>());
+    def(python::constructor<>());
     def(&Baz::pass_bar, "pass_bar");
     def(&Baz::clone, "clone");
     def(&Baz::create_foo, "create_foo");
@@ -79,10 +79,10 @@ BazPythonClass::BazPythonClass(py::Module& m)
     def(&Baz::eat_baz, "eat_baz");
 }
 
-StringMapPythonClass::StringMapPythonClass(py::Module& m)
-    : py::ClassWrapper<StringMap >(m, "StringMap")
+StringMapPythonClass::StringMapPythonClass(python::module_builder& m)
+    : python::class_builder<StringMap >(m, "StringMap")
 {
-    def(py::Constructor<>());
+    def(python::constructor<>());
     def(&StringMap::size, "__len__");
     def(&get_item, "__getitem__");
     def(&set_item, "__setitem__");
@@ -102,13 +102,13 @@ void set_first(IntPair& p, int value)
 void del_first(const IntPair&)
 {
     PyErr_SetString(PyExc_AttributeError, "first can't be deleted!");
-    throw py::ErrorAlreadySet();
+    throw python::error_already_set();
 }
 
-IntPairPythonClass::IntPairPythonClass(py::Module& m)
-    : py::ClassWrapper<IntPair>(m, "IntPair")
+IntPairPythonClass::IntPairPythonClass(python::module_builder& m)
+    : python::class_builder<IntPair>(m, "IntPair")
 {
-    def(py::Constructor<int, int>());
+    def(python::constructor<int, int>());
     def(&getattr, "__getattr__");
     def(&setattr, "__setattr__");
     def(&delattr, "__delattr__");
@@ -126,14 +126,14 @@ void IntPairPythonClass::setattr(IntPair& x, const std::string& name, int value)
     else
     {
         PyErr_SetString(PyExc_AttributeError, name.c_str());
-        throw py::ErrorAlreadySet();
+        throw python::error_already_set();
     }
 }
 
 void IntPairPythonClass::delattr(IntPair&, const char*)
 {
     PyErr_SetString(PyExc_AttributeError, "Attributes can't be deleted!");
-    throw py::ErrorAlreadySet();
+    throw python::error_already_set();
 }
 
 int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
@@ -145,7 +145,7 @@ int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
     else
     {
         PyErr_SetString(PyExc_AttributeError, s.c_str());
-        throw py::ErrorAlreadySet();
+        throw python::error_already_set();
     }
 #if defined(__MWERKS__) && __MWERKS__ <= 0x2400
     return 0;
@@ -157,8 +157,8 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, PY_CONVERSION::to_python(key));
-        throw py::ErrorAlreadySet();
+		PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(key));
+        throw python::error_already_set();
     }
 }
 }} // namespace <anonymous>::file_local
@@ -230,7 +230,7 @@ int Foo::call_add_len(const char* s) const
 
 int Foo::add_len(const char* s) const         // sum the held value and the length of s
 {
-    return PY_CSTD_::strlen(s) + static_cast<int>(m_x);
+    return BOOST_CSTD_::strlen(s) + static_cast<int>(m_x);
 }
 
 boost::shared_ptr<Foo> Baz::create_foo()
@@ -265,11 +265,11 @@ int stringpair_compare(const StringPair& sp1, const StringPair& sp2)
     return sp1 < sp2 ? -1 : sp2 < sp1 ? 1 : 0;
 }
 
-py::String range_str(const Range& r)
+python::string range_str(const Range& r)
 {
     char buf[200];
     sprintf(buf, "(%d, %d)", r.m_start, r.m_finish);
-    return py::String(buf);
+    return python::string(buf);
 }
 
 int range_compare(const Range& r1, const Range& r2)
@@ -450,11 +450,11 @@ struct CallbackTestCallback : public CallbackTest
   
   int callback(int x) 
   { 
-    return py::Callback<int>::call_method(m_self, "callback", x); 
+    return python::callback<int>::call_method(m_self, "callback", x); 
   }
   std::string callbackString(std::string const & x) 
   { 
-    return py::Callback<std::string>::call_method(m_self, "callback", x); 
+    return python::callback<std::string>::call_method(m_self, "callback", x); 
   }
 
   static int default_callback(CallbackTest* self, int x) 
@@ -522,8 +522,8 @@ std::auto_ptr<B1> factoryCasB1() { return std::auto_ptr<B1>(new C); }
 struct B_callback : B1 {
    B_callback(PyObject* self) : m_self(self) {}
    
-   std::string overrideA1() const { return py::Callback<std::string>::call_method(m_self, "overrideA1"); }
-   std::string overrideB1() const { return py::Callback<std::string>::call_method(m_self, "overrideB1"); }
+   std::string overrideA1() const { return python::callback<std::string>::call_method(m_self, "overrideA1"); }
+   std::string overrideB1() const { return python::callback<std::string>::call_method(m_self, "overrideB1"); }
    
    static std::string default_overrideA1(B1& x) { return x.B1::overrideA1(); }
    static std::string default_overrideB1(B1& x) { return x.B1::overrideB1(); }
@@ -534,8 +534,8 @@ struct B_callback : B1 {
 struct A_callback : A1 {
    A_callback(PyObject* self) : m_self(self) {}
    
-   std::string overrideA1() const { return py::Callback<std::string>::call_method(m_self, "overrideA1"); }
-   std::string inheritA1() const { return py::Callback<std::string>::call_method(m_self, "inheritA1"); }
+   std::string overrideA1() const { return python::callback<std::string>::call_method(m_self, "overrideA1"); }
+   std::string inheritA1() const { return python::callback<std::string>::call_method(m_self, "inheritA1"); }
    
    static std::string default_overrideA1(A1& x) { return x.A1::overrideA1(); }
    static std::string default_inheritA1(A1& x) { return x.A1::inheritA1(); }
@@ -557,14 +557,14 @@ struct RawTest
     int i_;
 };
 
-PyObject* raw(py::Tuple const & args, py::Dict const & keywords);
+PyObject* raw(python::tuple const & args, python::dictionary const & keywords);
 
 int raw1(PyObject* args, PyObject* keywords)
 {
     return PyTuple_Size(args) + PyDict_Size(keywords);
 }
 
-int raw2(py::Ptr args, py::Ptr keywords)
+int raw2(python::ref args, python::ref keywords)
 {
     return PyTuple_Size(args.get()) + PyDict_Size(keywords.get());
 }
@@ -579,7 +579,7 @@ int raw2(py::Ptr args, py::Ptr keywords)
 
 typedef boost::rational<int> Ratio;
 
-py::String ratio_str(const Ratio& r)
+python::string ratio_str(const Ratio& r)
 {
     char buf[200];
     
@@ -588,19 +588,19 @@ py::String ratio_str(const Ratio& r)
     else
         sprintf(buf, "%d/%d", r.numerator(), r.denominator());
     
-    return py::String(buf);
+    return python::string(buf);
 }
 
-py::String ratio_repr(const Ratio& r)
+python::string ratio_repr(const Ratio& r)
 {
     char buf[200];
     sprintf(buf, "Rational(%d, %d)", r.numerator(), r.denominator());
-    return py::String(buf);
+    return python::string(buf);
 }
 
-py::Tuple ratio_coerce(const Ratio& r1, int r2)
+python::tuple ratio_coerce(const Ratio& r1, int r2)
 {
-    return py::Tuple(r1, Ratio(r2));
+    return python::tuple(r1, Ratio(r2));
 }
 
 // The most reliable way, across compilers, to grab the particular abs function
@@ -688,7 +688,7 @@ std::ostream & operator<<(std::ostream & o, Int const & r) { return (o << r.i_);
 /* double tests from Mark Evans(<mark.evans@clarisay.com>)  */
 /*                                                          */
 /************************************************************/
-double sizelist(py::List list) { return list.size(); }
+double sizelist(python::list list) { return list.size(); }
 void vd_push_back(std::vector<double>& vd, const double& x)
 {
     vd.push_back(x);
@@ -714,16 +714,16 @@ const Record* get_record()
     return &v;
 }
 
-template class py::ClassWrapper<Record>; // explicitly instantiate
+template class python::class_builder<Record>; // explicitly instantiate
 
 } // namespace extclass_demo
 
-PY_BEGIN_CONVERSION_NAMESPACE
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 inline PyObject* to_python(const extclass_demo::Record* p)
 {
     return to_python(*p);
 }
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 /************************************************************/
 /*                                                          */
@@ -752,14 +752,14 @@ struct EnumOwner
 
 }
 
-namespace py {
+namespace python {
   template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
   using extclass_demo::pow;
 }
 
 // This is just a way of getting the converters instantiated
 //struct EnumOwner_enum_type_Converters
-//    : py::py_enum_as_int_converters<EnumOwner::enum_type>
+//    : python::py_enum_as_int_converters<EnumOwner::enum_type>
 //{
 //};
 
@@ -786,29 +786,29 @@ namespace extclass_demo {
   };
 
   // Support for pickle.
-  py::Tuple world_getinitargs(const world& w)
+  python::tuple world_getinitargs(const world& w)
   {
-      py::Tuple result(1);
+      python::tuple result(1);
       result.set_item(0, w.get_country());
       return result;
   }
 
-  py::Tuple world_getstate(const world& w)
+  python::tuple world_getstate(const world& w)
   {
-      py::Tuple result(1);
+      python::tuple result(1);
       result.set_item(0, w.get_secret_number());
       return result;
   }
 
-  void world_setstate(world& w, py::Tuple state)
+  void world_setstate(world& w, python::tuple state)
   {
       if (state.size() != 1) {
           PyErr_SetString(PyExc_ValueError,
                           "Unexpected argument in call to __setstate__.");
-          throw py::ErrorAlreadySet();
+          throw python::error_already_set();
       }
     
-      const int number = PY_CONVERSION::from_python(state[0].get(), py::Type<int>());
+      const int number = BOOST_PYTHON_CONVERSION::from_python(state[0].get(), python::type<int>());
       if (number != 42)
           w.set_secret_number(number);
   }
@@ -819,21 +819,21 @@ namespace extclass_demo {
 /*                                                          */
 /************************************************************/
 
-void init_module(py::Module& m)
+void init_module(python::module_builder& m)
 {
     m.def(get_record, "get_record");
-    py::ClassWrapper<Record> record_class(m, "Record");
+    python::class_builder<Record> record_class(m, "Record");
     record_class.def_readonly(&Record::value, "value");
     
     m.def(sizelist, "sizelist");
     
-    py::ClassWrapper<std::vector<double> >  vector_double(m, "vector_double");
-    vector_double.def(py::Constructor<>());
+    python::class_builder<std::vector<double> >  vector_double(m, "vector_double");
+    vector_double.def(python::constructor<>());
     vector_double.def(vd_push_back, "push_back");
     
-    py::ClassWrapper<Fubar> fubar(m, "Fubar");
-    fubar.def(py::Constructor<Foo&>());
-    fubar.def(py::Constructor<int>());
+    python::class_builder<Fubar> fubar(m, "Fubar");
+    fubar.def(python::constructor<Foo&>());
+    fubar.def(python::constructor<int>());
 
     Foo::PythonClass foo(m);
     BarPythonClass bar(m);
@@ -843,8 +843,8 @@ void init_module(py::Module& m)
     m.def(make_pair, "make_pair");
     CompareIntPairPythonClass compare_int_pair(m);
 
-    py::ClassWrapper<StringPair> string_pair(m, "StringPair");
-    string_pair.def(py::Constructor<std::string, std::string>());
+    python::class_builder<StringPair> string_pair(m, "StringPair");
+    string_pair.def(python::constructor<std::string, std::string>());
     string_pair.def_readonly(&StringPair::first, "first");
     string_pair.def_read_write(&StringPair::second, "second");
     string_pair.def(&stringpair_repr, "__repr__");
@@ -853,10 +853,10 @@ void init_module(py::Module& m)
     m.def(second_string, "second_string");
 
     // This shows the wrapping of a 3rd-party numeric type.
-    py::ClassWrapper<boost::rational<int> > rational(m, "Rational");
-    rational.def(py::Constructor<int, int>());
-    rational.def(py::Constructor<int>());
-    rational.def(py::Constructor<>());
+    python::class_builder<boost::rational<int> > rational(m, "Rational");
+    rational.def(python::constructor<int, int>());
+    rational.def(python::constructor<int>());
+    rational.def(python::constructor<>());
     rational.def(StandardOps<Ratio>::add, "__add__");
     rational.def(StandardOps<Ratio>::sub, "__sub__");
     rational.def(StandardOps<Ratio>::mul, "__mul__");
@@ -867,9 +867,9 @@ void init_module(py::Module& m)
     rational.def(ratio_repr, "__repr__");
     rational.def(ratio_abs, "__abs__");
     
-    py::ClassWrapper<Range> range(m, "Range");
-    range.def(py::Constructor<int>());
-    range.def(py::Constructor<int, int>());
+    python::class_builder<Range> range(m, "Range");
+    range.def(python::constructor<int>());
+    range.def(python::constructor<int, int>());
     range.def((void (Range::*)(std::size_t))&Range::length, "__len__");
     range.def((std::size_t (Range::*)() const)&Range::length, "__len__");
     range.def(&Range::operator[], "__getitem__");
@@ -888,14 +888,14 @@ void init_module(py::Module& m)
     m.def(&test4, "overloaded");
     m.def(&test5, "overloaded");
 
-    py::ClassWrapper<OverloadTest> over(m, "OverloadTest");
-    over.def(py::Constructor<>());
-    over.def(py::Constructor<OverloadTest const &>());
-    over.def(py::Constructor<int>());
-    over.def(py::Constructor<int, int>());
-    over.def(py::Constructor<int, int, int>());
-    over.def(py::Constructor<int, int, int, int>());
-    over.def(py::Constructor<int, int, int, int, int>());
+    python::class_builder<OverloadTest> over(m, "OverloadTest");
+    over.def(python::constructor<>());
+    over.def(python::constructor<OverloadTest const &>());
+    over.def(python::constructor<int>());
+    over.def(python::constructor<int, int>());
+    over.def(python::constructor<int, int, int>());
+    over.def(python::constructor<int, int, int, int>());
+    over.def(python::constructor<int, int, int, int, int>());
     over.def(&getX, "getX");
     over.def(&OverloadTest::setX, "setX");
     over.def(&OverloadTest::x, "overloaded");
@@ -905,19 +905,19 @@ void init_module(py::Module& m)
     over.def(&OverloadTest::p4, "overloaded");
     over.def(&OverloadTest::p5, "overloaded");
     
-    py::ClassWrapper<Base> base(m, "Base");
+    python::class_builder<Base> base(m, "Base");
     base.def(&Base::x, "x");
     
-    py::ClassWrapper<Derived1> derived1(m, "Derived1");    
+    python::class_builder<Derived1> derived1(m, "Derived1");    
     // this enables conversions between Base and Derived1
     // and makes wrapped methods of Base available 
     derived1.declare_base(base);
-    derived1.def(py::Constructor<int>());
+    derived1.def(python::constructor<int>());
 
-    py::ClassWrapper<Derived2> derived2(m, "Derived2");    
+    python::class_builder<Derived2> derived2(m, "Derived2");    
     // don't enable downcast from Base to Derived2 
-    derived2.declare_base(base, py::without_downcast);
-    derived2.def(py::Constructor<int>());
+    derived2.declare_base(base, python::without_downcast);
+    derived2.def(python::constructor<int>());
     
     m.def(&testUpcast, "testUpcast");
     m.def(&derived1Factory, "derived1Factory");
@@ -925,12 +925,12 @@ void init_module(py::Module& m)
     m.def(&testDowncast1, "testDowncast1");
     m.def(&testDowncast2, "testDowncast2");
 
-    py::ClassWrapper<CallbackTestBase> callbackTestBase(m, "CallbackTestBase");
+    python::class_builder<CallbackTestBase> callbackTestBase(m, "CallbackTestBase");
     callbackTestBase.def(&CallbackTestBase::testCallback, "testCallback");
     m.def(&testCallback, "testCallback");
 
-    py::ClassWrapper<CallbackTest, CallbackTestCallback> callbackTest(m, "CallbackTest");
-    callbackTest.def(py::Constructor<>());
+    python::class_builder<CallbackTest, CallbackTestCallback> callbackTest(m, "CallbackTest");
+    callbackTest.def(python::constructor<>());
     callbackTest.def(&CallbackTest::callback, "callback", 
                    &CallbackTestCallback::default_callback);
     callbackTest.def(&CallbackTest::callbackString, "callback", 
@@ -938,28 +938,28 @@ void init_module(py::Module& m)
 
     callbackTest.declare_base(callbackTestBase);     
 
-    py::ClassWrapper<A1, A_callback> a1_class(m, "A1");
-    a1_class.def(py::Constructor<>());
+    python::class_builder<A1, A_callback> a1_class(m, "A1");
+    a1_class.def(python::constructor<>());
     a1_class.def(&A1::overrideA1, "overrideA1", &A_callback::default_overrideA1);
     a1_class.def(&A1::inheritA1, "inheritA1", &A_callback::default_inheritA1);
 
-    py::ClassWrapper<A2> a2_class(m, "A2");
-    a2_class.def(py::Constructor<>());
+    python::class_builder<A2> a2_class(m, "A2");
+    a2_class.def(python::constructor<>());
     a2_class.def(&A2::inheritA2, "inheritA2");
 
-    py::ClassWrapper<B1, B_callback> b1_class(m, "B1");
+    python::class_builder<B1, B_callback> b1_class(m, "B1");
     b1_class.declare_base(a1_class);  
     b1_class.declare_base(a2_class);  
 
-    b1_class.def(py::Constructor<>());
+    b1_class.def(python::constructor<>());
     b1_class.def(&B1::overrideA1, "overrideA1", &B_callback::default_overrideA1); 
     b1_class.def(&B1::overrideB1, "overrideB1", &B_callback::default_overrideB1); 
 
-    py::ClassWrapper<B2> b2_class(m, "B2");
+    python::class_builder<B2> b2_class(m, "B2");
     b2_class.declare_base(a1_class);  
     b2_class.declare_base(a2_class);  
 
-    b2_class.def(py::Constructor<>());
+    b2_class.def(python::constructor<>());
     b2_class.def(&B2::overrideA1, "overrideA1"); 
     b2_class.def(&B2::inheritB2, "inheritB2"); 
     
@@ -976,40 +976,40 @@ void init_module(py::Module& m)
     m.def(factoryB1asB1, "factoryB1asB1");    
     m.def(factoryCasB1, "factoryCasB1");    
     
-    py::ClassWrapper<RawTest> rawtest_class(m, "RawTest");
-    rawtest_class.def(py::Constructor<int>());
+    python::class_builder<RawTest> rawtest_class(m, "RawTest");
+    rawtest_class.def(python::constructor<int>());
     rawtest_class.def_raw(&raw, "raw");
     
     m.def_raw(&raw, "raw");
     m.def_raw(&raw1, "raw1");
     m.def_raw(&raw2, "raw2");
     
-    py::ClassWrapper<Int> int_class(m, "Int");
-    int_class.def(py::Constructor<int>());
+    python::class_builder<Int> int_class(m, "Int");
+    int_class.def(python::constructor<int>());
     int_class.def(&Int::i, "i");
 
     // wrap homogeneous operators
-    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_neg | 
-          py::op_cmp | py::op_str | py::op_divmod | py::op_pow )>());
+    int_class.def(python::operators<(python::op_add | python::op_sub | python::op_neg | 
+          python::op_cmp | python::op_str | python::op_divmod | python::op_pow )>());
     // export non-operator functions as homogeneous operators
     int_class.def(&mul, "__mul__");
     int_class.def(&powmod, "__pow__");
 
     // wrap heterogeneous operators (lhs: Int const &, rhs: int const &)
-    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_cmp | py::op_pow)>(), 
-                  py::right_operand<int const & >());
+    int_class.def(python::operators<(python::op_add | python::op_sub | python::op_cmp | python::op_pow)>(), 
+                  python::right_operand<int const & >());
     // export non-operator function as heterogeneous operator
     int_class.def(&imul, "__mul__");
 
     // wrap heterogeneous operators (lhs: int const &, rhs: Int const &)
-    int_class.def(py::operators<(py::op_add | py::op_sub | py::op_cmp)>(), 
-                  py::left_operand<int const & >());
+    int_class.def(python::operators<(python::op_add | python::op_sub | python::op_cmp)>(), 
+                  python::left_operand<int const & >());
     // export non-operator function as heterogeneous reverse-argument operator
     int_class.def(&rmul, "__rmul__");
     
 
-    py::ClassWrapper<EnumOwner> enum_owner(m, "EnumOwner");
-    enum_owner.def(py::Constructor<EnumOwner::enum_type, const EnumOwner::enum_type&>());
+    python::class_builder<EnumOwner> enum_owner(m, "EnumOwner");
+    enum_owner.def(python::constructor<EnumOwner::enum_type, const EnumOwner::enum_type&>());
     enum_owner.def(&EnumOwner::set_first, "__setattr__first__");
     enum_owner.def(&EnumOwner::set_second, "__setattr__second__");
     enum_owner.def(&EnumOwner::first, "__getattr__first__");
@@ -1021,10 +1021,10 @@ void init_module(py::Module& m)
     // pickling support
     
     // Create the Python type object for our extension class.
-    py::ClassWrapper<world> world_class(m, "world");
+    python::class_builder<world> world_class(m, "world");
 
     // Add the __init__ function.
-    world_class.def(py::Constructor<std::string>());
+    world_class.def(python::constructor<std::string>());
     // Add a regular member function.
     world_class.def(&world::greet, "greet");
     world_class.def(&world::get_secret_number, "get_secret_number");
@@ -1036,30 +1036,30 @@ void init_module(py::Module& m)
     world_class.def(world_setstate, "__setstate__");
 }
 
-PyObject* raw(py::Tuple const& args, py::Dict const& keywords)
+PyObject* raw(python::tuple const& args, python::dictionary const& keywords)
 {
     if(args.size() != 2 || keywords.size() != 2)
     {
         PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-        throw py::ArgumentError();
+        throw python::argument_error();
     }
     
-    RawTest* first = PY_CONVERSION::from_python(args[0].get(), py::Type<RawTest*>());
-    int second = PY_CONVERSION::from_python(args[1].get(), py::Type<int>());
+    RawTest* first = BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<RawTest*>());
+    int second = BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<int>());
     
-    int third = PY_CONVERSION::from_python(keywords[py::String("third")].get(), py::Type<int>());
-    int fourth = PY_CONVERSION::from_python(keywords[py::String("fourth")].get(), py::Type<int>());
+    int third = BOOST_PYTHON_CONVERSION::from_python(keywords[python::string("third")].get(), python::type<int>());
+    int fourth = BOOST_PYTHON_CONVERSION::from_python(keywords[python::string("fourth")].get(), python::type<int>());
     
-    return PY_CONVERSION::to_python(first->i_ + second + third + fourth);
+    return BOOST_PYTHON_CONVERSION::to_python(first->i_ + second + third + fourth);
 }
 
 void init_module()
 {
-    py::Module demo("demo");
+    python::module_builder demo("demo");
     init_module(demo);
 
     // Just for giggles, add a raw metaclass.
-    demo.add(new py::MetaClass<py::Instance>);
+    demo.add(new python::meta_class<python::instance>);
 }
 
 extern "C"
@@ -1072,14 +1072,14 @@ void initdemo()
         extclass_demo::init_module();
     }
     catch(...) {
-        py::handle_exception();
+        python::handle_exception();
     } // Need a way to report other errors here
 }
 
-CompareIntPairPythonClass::CompareIntPairPythonClass(py::Module& m)
-    : py::ClassWrapper<CompareIntPair>(m, "CompareIntPair")
+CompareIntPairPythonClass::CompareIntPairPythonClass(python::module_builder& m)
+    : python::class_builder<CompareIntPair>(m, "CompareIntPair")
 {
-    def(py::Constructor<>());
+    def(python::constructor<>());
     def(&CompareIntPair::operator(), "__call__");
 }
 
@@ -1096,7 +1096,7 @@ CompareIntPairPythonClass::CompareIntPairPythonClass(py::Module& m)
 # endif
 extern "C" BOOL WINAPI DllMain ( HINSTANCE hInst, DWORD wDataSeg, LPVOID lpvReserved );
 
-# ifdef PY_COMPILER_IS_MSVC
+# ifdef BOOST_MSVC
 extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS*)
 {
     throw;
@@ -1104,7 +1104,7 @@ extern "C" void structured_exception_translator(unsigned int, EXCEPTION_POINTERS
 # endif
 
 #ifndef NDEBUG
-namespace py { namespace detail { extern int total_Dispatchers; }}
+namespace python { namespace detail { extern int total_Dispatchers; }}
 #endif
 
 BOOL WINAPI DllMain(
@@ -1113,7 +1113,7 @@ BOOL WINAPI DllMain(
     LPVOID  // lpvReserved
     )
 {
-# ifdef PY_COMPILER_IS_MSVC
+# ifdef BOOST_MSVC
     _set_se_translator(structured_exception_translator);
 #endif
     (void)fdwReason; // warning suppression.

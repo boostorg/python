@@ -11,40 +11,40 @@
 
 //  Usage:
 //  class X : public
-//          py::Callable<
-//          py::Getattrable <
-//          py::Setattrable<PythonObject, X> > >
+//          python::callable<
+//          python::getattrable <
+//          python::setattrable<python_object, X> > >
 //  {
 //  public:
-//      Ptr call(args, kw);
-//      Ptr getattr(args, kw);
-//      Ptr setattr(args, kw);
+//      ref call(args, kw);
+//      ref getattr(args, kw);
+//      ref setattr(args, kw);
 //  };
 
 # include "pyconfig.h"
-# include "signatures.h" // really just for Type<>
+# include "signatures.h" // really just for type<>
 # include "cast.h"
 # include "base_object.h"
 # include <typeinfo>
 # include <vector>
 # include <cassert>
 
-namespace py {
+namespace python {
 
-class String;
+class string;
 
 namespace detail {
 
-class InstanceHolderBase;
+class instance_holder_base;
 
-class TypeObjectBase : public PythonType
+class type_object_base : public python_type
 {
  public:
-    explicit TypeObjectBase(PyTypeObject* type_type);
-    virtual ~TypeObjectBase();
+    explicit type_object_base(PyTypeObject* type_type);
+    virtual ~type_object_base();
 
  public:
-    enum Capability {
+    enum capability {
         hash, call, str, getattr, setattr, compare, repr,
 
         mapping_length, mapping_subscript, mapping_ass_subscript,
@@ -60,19 +60,19 @@ class TypeObjectBase : public PythonType
         number_hex
     };
     
-    void enable(Capability);
+    void enable(capability);
     
     //
-    // Type behaviors
+    // type behaviors
     //
  public: // Callbacks for basic type functionality.
     virtual PyObject* instance_repr(PyObject*) const;
     virtual int instance_compare(PyObject*, PyObject* other) const;
     virtual PyObject* instance_str(PyObject*) const;
     virtual long instance_hash(PyObject*) const;
-    virtual PyObject* instance_call(PyObject* instance, PyObject* args, PyObject* kw) const;
-    virtual PyObject* instance_getattr(PyObject* instance, const char* name) const;
-    virtual int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
+    virtual PyObject* instance_call(PyObject* obj, PyObject* args, PyObject* kw) const;
+    virtual PyObject* instance_getattr(PyObject* obj, const char* name) const;
+    virtual int instance_setattr(PyObject* obj, const char* name, PyObject* value) const;
 
     // Dealloc is a special case, since every type needs a nonzero tp_dealloc slot.
     virtual void instance_dealloc(PyObject*) const = 0;
@@ -83,13 +83,13 @@ class TypeObjectBase : public PythonType
     virtual int instance_mapping_ass_subscript(PyObject*, PyObject*, PyObject*) const;
 
  public: // Callbacks for sequence methods
-    virtual int instance_sequence_length(PyObject* instance) const;
-    virtual PyObject* instance_sequence_concat(PyObject* instance, PyObject* other) const;
-    virtual PyObject* instance_sequence_repeat(PyObject* instance, int n) const;
-    virtual PyObject* instance_sequence_item(PyObject* instance, int n) const;
-    virtual PyObject* instance_sequence_slice(PyObject* instance, int start, int finish) const;
-    virtual int instance_sequence_ass_item(PyObject* instance, int n, PyObject* value) const;
-    virtual int instance_sequence_ass_slice(PyObject* instance, int start, int finish, PyObject* value) const;
+    virtual int instance_sequence_length(PyObject* obj) const;
+    virtual PyObject* instance_sequence_concat(PyObject* obj, PyObject* other) const;
+    virtual PyObject* instance_sequence_repeat(PyObject* obj, int n) const;
+    virtual PyObject* instance_sequence_item(PyObject* obj, int n) const;
+    virtual PyObject* instance_sequence_slice(PyObject* obj, int start, int finish) const;
+    virtual int instance_sequence_ass_item(PyObject* obj, int n, PyObject* value) const;
+    virtual int instance_sequence_ass_slice(PyObject* obj, int start, int finish, PyObject* value) const;
     
  public: // Callbacks for number methods
     virtual PyObject* instance_number_add(PyObject*, PyObject*) const;
@@ -118,22 +118,22 @@ class TypeObjectBase : public PythonType
 };
 
 template <class T>
-class TypeObject : public TypeObjectBase
+class type_object : public type_object_base
 {
  public:
-    typedef T Instance;
+    typedef T instance;
 
-    TypeObject(PyTypeObject* type_type, const char* name)
-        : TypeObjectBase(type_type)
+    type_object(PyTypeObject* type_type, const char* name)
+        : type_object_base(type_type)
     {
         assert(name != 0);
         this->tp_name = const_cast<char*>(name);
     }
 
-    TypeObject(PyTypeObject* type_type)
-        : TypeObjectBase(type_type)
+    type_object(PyTypeObject* type_type)
+        : type_object_base(type_type)
     {
-        this->tp_name = const_cast<char*>(typeid(Instance).name());
+        this->tp_name = const_cast<char*>(typeid(instance).name());
     }
 
  private: // Overridable behaviors.
@@ -142,193 +142,193 @@ class TypeObject : public TypeObjectBase
     // you have other constraints, you'll need to override this
     virtual void dealloc(T* p) const;
     
- private: // Implementation of TypeObjectBase hooks. Do not reimplement in derived classes.
+ private: // Implementation of type_object_base hooks. Do not reimplement in derived classes.
     void instance_dealloc(PyObject*) const;
 };
 
 //
-// Type objects
+// type objects
 //
 template <class Base>
-class Callable : public Base
+class callable : public Base
 {
  public:
-    typedef Callable Properties; // Convenience for derived class construction
-    typedef typename Base::Instance Instance;
-    Callable(PyTypeObject* type_type, const char* name);
-    Callable(PyTypeObject* type_type);
+    typedef callable properties; // Convenience for derived class construction
+    typedef typename Base::instance instance;
+    callable(PyTypeObject* type_type, const char* name);
+    callable(PyTypeObject* type_type);
  private:
-    PyObject* instance_call(PyObject* instance, PyObject* args, PyObject* kw) const;
+    PyObject* instance_call(PyObject* obj, PyObject* args, PyObject* kw) const;
 };
 
 template <class Base>
-class Getattrable : public Base
+class getattrable : public Base
 {
  public:
-    typedef Getattrable Properties; // Convenience for derived class construction
-    typedef typename Base::Instance Instance;
-    Getattrable(PyTypeObject* type_type, const char* name);
-    Getattrable(PyTypeObject* type_type);
+    typedef getattrable properties; // Convenience for derived class construction
+    typedef typename Base::instance instance;
+    getattrable(PyTypeObject* type_type, const char* name);
+    getattrable(PyTypeObject* type_type);
  private:
-    PyObject* instance_getattr(PyObject* instance, const char* name) const;
+    PyObject* instance_getattr(PyObject* obj, const char* name) const;
 };
 
 template <class Base>
-class Setattrable : public Base
+class setattrable : public Base
 {
  public:
-    typedef Setattrable Properties; // Convenience for derived class construction
-    typedef typename Base::Instance Instance;
-    Setattrable(PyTypeObject* type_type, const char* name);
-    Setattrable(PyTypeObject* type_type);
+    typedef setattrable properties; // Convenience for derived class construction
+    typedef typename Base::instance instance;
+    setattrable(PyTypeObject* type_type, const char* name);
+    setattrable(PyTypeObject* type_type);
  private:
-    int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
+    int instance_setattr(PyObject* obj, const char* name, PyObject* value) const;
 };
 
 template <class Base>
-class Reprable : public Base
+class reprable : public Base
 {
  public:
-    typedef Reprable Properties; // Convenience for derived class construction
-    typedef typename Base::Instance Instance;
-    Reprable(PyTypeObject* type_type, const char* name);
-    Reprable(PyTypeObject* type_type);
+    typedef reprable properties; // Convenience for derived class construction
+    typedef typename Base::instance instance;
+    reprable(PyTypeObject* type_type, const char* name);
+    reprable(PyTypeObject* type_type);
  private:
-    PyObject* instance_repr(PyObject* instance) const;
+    PyObject* instance_repr(PyObject* obj) const;
 };
 
 //
 // Member function definitions
 //
 
-// TypeObject<>
+// type_object<>
 template <class T>
-void TypeObject<T>::instance_dealloc(PyObject* instance) const
+void type_object<T>::instance_dealloc(PyObject* obj) const
 {
-    this->dealloc(Downcast<Instance>(instance).get());
+    this->dealloc(downcast<instance>(obj).get());
 }
 
 template <class T>
-void TypeObject<T>::dealloc(T* instance) const
+void type_object<T>::dealloc(T* obj) const
 {
-    delete instance;
+    delete obj;
 }
 
-// Callable
+// callable
 template <class Base>
-Callable<Base>::Callable(PyTypeObject* type_type, const char* name)
+callable<Base>::callable(PyTypeObject* type_type, const char* name)
     : Base(type_type, name)
 {
     this->enable(call);
 }
         
 template <class Base>
-Callable<Base>::Callable(PyTypeObject* type_type)
+callable<Base>::callable(PyTypeObject* type_type)
     : Base(type_type)
 {
     this->enable(call);
 }
         
 template <class Base>
-PyObject* Callable<Base>::instance_call(PyObject* instance, PyObject* args, PyObject* kw) const
+PyObject* callable<Base>::instance_call(PyObject* obj, PyObject* args, PyObject* kw) const
 {
-    return Downcast<Instance>(instance)->call(args, kw);
+    return downcast<instance>(obj)->call(args, kw);
 }
 
-// Getattrable
+// getattrable
 template <class Base>
-Getattrable<Base>::Getattrable(PyTypeObject* type_type, const char* name)
+getattrable<Base>::getattrable(PyTypeObject* type_type, const char* name)
     : Base(type_type, name)
 {
     this->enable(getattr);
 }
         
 template <class Base>
-Getattrable<Base>::Getattrable(PyTypeObject* type_type)
+getattrable<Base>::getattrable(PyTypeObject* type_type)
     : Base(type_type)
 {
     this->enable(getattr);
 }
         
 template <class Base>
-PyObject* Getattrable<Base>::instance_getattr(PyObject* instance, const char* name) const
+PyObject* getattrable<Base>::instance_getattr(PyObject* obj, const char* name) const
 {
-    return Downcast<Instance>(instance)->getattr(name);
+    return downcast<instance>(obj)->getattr(name);
 }
 
-// Setattrable
+// setattrable
 template <class Base>
-Setattrable<Base>::Setattrable(PyTypeObject* type_type, const char* name)
+setattrable<Base>::setattrable(PyTypeObject* type_type, const char* name)
     : Base(type_type, name)
 {
     this->enable(setattr);
 }
         
 template <class Base>
-Setattrable<Base>::Setattrable(PyTypeObject* type_type)
+setattrable<Base>::setattrable(PyTypeObject* type_type)
     : Base(type_type)
 {
     this->enable(setattr);
 }
         
 template <class Base>
-int Setattrable<Base>::instance_setattr(PyObject* instance, const char* name, PyObject* value) const
+int setattrable<Base>::instance_setattr(PyObject* obj, const char* name, PyObject* value) const
 {
-    return Downcast<Instance>(instance)->setattr(name, value);
+    return downcast<instance>(obj)->setattr(name, value);
 }
 
-// Reprable
+// reprable
 template <class Base>
-Reprable<Base>::Reprable(PyTypeObject* type_type, const char* name)
+reprable<Base>::reprable(PyTypeObject* type_type, const char* name)
     : Base(type_type, name)
 {
     this->enable(repr);
 }
         
 template <class Base>
-Reprable<Base>::Reprable(PyTypeObject* type_type)
+reprable<Base>::reprable(PyTypeObject* type_type)
     : Base(type_type)
 {
     this->enable(repr);
 }
         
 template <class Base>
-PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
+PyObject* reprable<Base>::instance_repr(PyObject* obj) const
 {
-    return Downcast<Instance>(instance)->repr();
+    return downcast<instance>(obj)->repr();
 }
 
   class shared_pod_manager
   {
-      typedef std::pair<char*, std::size_t> Holder;
-      typedef std::vector<Holder> Storage;
+      typedef std::pair<char*, std::size_t> holder;
+      typedef std::vector<holder> storage;
         
    public:
-      static shared_pod_manager& instance();
+      static shared_pod_manager& obj();
       ~shared_pod_manager();
 
       template <class T>
       static void replace_if_equal(T*& t)
       {
-          t = reinterpret_cast<T*>(instance().replace_if_equal(t, sizeof(T)));
+          t = reinterpret_cast<T*>(obj().replace_if_equal(t, sizeof(T)));
       }
 
       template <class T>
       static void make_unique_copy(T*& t)
       {
-          t = reinterpret_cast<T*>(instance().make_unique_copy(t, sizeof(T)));
+          t = reinterpret_cast<T*>(obj().make_unique_copy(t, sizeof(T)));
       }
 
       template <class T>
       static void create(T*& t)
       {
-          t = reinterpret_cast<T*>(instance().create(sizeof(T)));
+          t = reinterpret_cast<T*>(obj().create(sizeof(T)));
       }
 
       template <class T>
       static void dispose(T* t)
       {
-          instance().dec_ref(t, sizeof(T));
+          obj().dec_ref(t, sizeof(T));
       }
 
    private:
@@ -338,26 +338,26 @@ PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
       void dec_ref(void* pod, std::size_t size);
       void erase_from_list(void* pod);
         
-      struct Compare;
+      struct compare;
       struct identical;
 
    private:
-      shared_pod_manager() {} // singleton
+      shared_pod_manager() {} // instance
 
 #ifdef TYPE_OBJECT_BASE_STANDALONE_TEST
    public:
 #endif
-      Storage m_storage;
+      storage m_storage;
   };
 
 
-  void add_capability(TypeObjectBase::Capability capability, 
+  void add_capability(type_object_base::capability capability, 
                       PyTypeObject* dest);
 
 // This macro gets the length of an array as a compile-time constant, and will
 // fail to compile if the parameter is a pointer.
 # define PY_ARRAY_LENGTH(a) \
-        (sizeof(::py::detail::countof_validate(a, &(a))) ? sizeof(a) / sizeof((a)[0]) : 0)
+        (sizeof(::python::detail::countof_validate(a, &(a))) ? sizeof(a) / sizeof((a)[0]) : 0)
 
   template<typename T>
   inline void countof_validate(T* const, T* const*);
@@ -365,6 +365,6 @@ PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
   template<typename T>
   inline int countof_validate(const void*, T);
 
-}} // namespace py::detail
+}} // namespace python::detail
 
 #endif // TYPES_DWA051800_H_

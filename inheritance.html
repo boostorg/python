@@ -41,7 +41,7 @@
         wrapped derived classes may be passed where values, pointers, or
         references to a base class are expected as arguments. The
         <code>declare_base</code> member function of
-        <code>ClassWrapper&lt;&gt;</code> is used to establish the relationship
+        <code>class_builder&lt;&gt;</code> is used to establish the relationship
         between base and derived classes:
 
 <blockquote>
@@ -80,13 +80,13 @@ void initmy_module()
 {
     try
     {
-       py::Module my_module("my_module");
+       python::module_builder my_module("my_module");
 
-       py::ClassWrapper&lt;Base&gt; base_class(my_module, "Base");
-       base_class.def(py::Constructor&lt;void&gt;());
+       python::class_builder&lt;Base&gt; base_class(my_module, "Base");
+       base_class.def(python::constructor&lt;void&gt;());
 
-       py::ClassWrapper&lt;Derived&gt; derived_class(my_module, "Derived");
-       derived_class.def(py::Constructor&lt;void&gt;());
+       python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived");
+       derived_class.def(python::constructor&lt;void&gt;());
        <b>// Establish the inheritance relationship between Base and Derived
        derived_class.declare_base(base_class);</b>
 
@@ -96,7 +96,7 @@ void initmy_module()
     }
     catch(...)
     {
-       py::handle_exception();    // Deal with the exception for Python
+       python::handle_exception();    // Deal with the exception for Python
     }
 }
 </pre>
@@ -126,7 +126,7 @@ expected but where type information has been lost.</i><pre>
 <p>
   If for some reason your base class has no virtual functions but you still want
   to represent the inheritance relationship between base and derived classes,
-  pass the special symbol <code>py::without_downcast</code> as the 2nd parameter
+  pass the special symbol <code>python::without_downcast</code> as the 2nd parameter
   to <code>declare_base</code>:
 
 <blockquote>
@@ -135,12 +135,12 @@ struct Base2 {};
 struct Derived2 { int f(); };
 <hr>
    ...
-   py::ClassWrapper&lt;Base&gt; base2_class(my_module, "Base2");
-   base2_class.def(py::Constructor&lt;void&gt;());
+   python::class_builder&lt;Base&gt; base2_class(my_module, "Base2");
+   base2_class.def(python::constructor&lt;void&gt;());
 
-   py::ClassWrapper&lt;Derived2&gt; derived2_class(my_module, "Derived2");
-   derived2_class.def(py::Constructor&lt;void&gt;());
-   derived_class.declare_base(base_class, <b>py::without_downcast</b>);
+   python::class_builder&lt;Derived2&gt; derived2_class(my_module, "Derived2");
+   derived2_class.def(python::constructor&lt;void&gt;());
+   derived_class.declare_base(base_class, <b>python::without_downcast</b>);
 </pre>
 </blockquote>
 

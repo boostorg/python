@@ -8,45 +8,45 @@
 #include "cast.h"
 #include "pyptr.h"
 
-namespace py {
+namespace python {
 
 // Syntactic sugar to make wrapping classes more convenient
-template <class T, class U = detail::HeldInstance<T> >
-class ClassWrapper
+template <class T, class U = detail::held_instance<T> >
+class class_builder
     : PyExtensionClassConverters<T, U> // Works around MSVC6.x/GCC2.95.2 bug described below
 {
  public:
-    ClassWrapper(Module& module, const char* name)
-        : m_class(new detail::ExtensionClass<T, U>(name))
+    class_builder(module_builder& module, const char* name)
+        : m_class(new detail::extension_class<T, U>(name))
     {
-        module.add(Ptr(as_object(m_class.get()), Ptr::new_ref), name);
+        module.add(ref(as_object(m_class.get()), ref::increment_count), name);
     }
     
-    ~ClassWrapper()
+    ~class_builder()
     {}
     
     // define constructors
-    template <class Signature>
-    void def(const Signature& signature)
+    template <class signature>
+    void def(const signature& signature)
         { m_class->def(signature); }
 
     // export heterogeneous reverse-argument operators 
     // (type of lhs: 'left', of rhs: 'right')
-    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
-    //                       py::left_operand<int const &>());
+    // usage:  foo_class.def(python::operators<(python::op_add | python::op_sub), Foo>(),
+    //                       python::left_operand<int const &>());
     template <long which, class left, class right>
     void def(operators<which, right> o1, left_operand<left> o2)
         { m_class->def(o1, o2); }
 
     // export heterogeneous operators (type of lhs: 'left', of rhs: 'right')
-    // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
-    //                       py::right_operand<int const &>());
+    // usage:  foo_class.def(python::operators<(python::op_add | python::op_sub), Foo>(),
+    //                       python::right_operand<int const &>());
     template <long which, class left, class right>
     void def(operators<which, left> o1, right_operand<right> o2)
         { m_class->def(o1, o2); }
 
     // define a function that passes Python arguments and keywords
-    // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
+    // to C++ verbatim (as a 'tuple const &' and 'dictionary const &' 
     // respectively). This is useful for manual argument passing.
     // It's also the only possibility to pass keyword arguments to C++.
     // Fn must have a signatur that is compatible to 
@@ -71,23 +71,23 @@ class ClassWrapper
         { m_class->def(fn, name, default_fn); }
 
     // Provide a function which implements x.<name>, reading from the given
-    // member (pm) of the T instance
+    // member (pm) of the T obj
     template <class MemberType>
     void def_getter(MemberType T::*pm, const char* name)
         { m_class->def_getter(pm, name); }
     
     // Provide a function which implements assignment to x.<name>, writing to
-    // the given member (pm) of the T instance
+    // the given member (pm) of the T obj
     template <class MemberType>
     void def_setter(MemberType T::*pm, const char* name)
         { m_class->def_getter(pm, name); }
     
-    // Expose the given member (pm) of the T instance as a read-only attribute
+    // Expose the given member (pm) of the T obj as a read-only attribute
     template <class MemberType>
     void def_readonly(MemberType T::*pm, const char* name)
         { m_class->def_readonly(pm, name); }
     
-    // Expose the given member (pm) of the T instance as a read/write attribute
+    // Expose the given member (pm) of the T obj as a read/write attribute
     template <class MemberType>
     void def_read_write(MemberType T::*pm, const char* name)
         { m_class->def_read_write(pm, name); }
@@ -99,7 +99,7 @@ class ClassWrapper
     // declare the given class a base class of this one and register 
     // conversion functions
     template <class S, class V>
-    void declare_base(ClassWrapper<S, V> const & base)
+    void declare_base(class_builder<S, V> const & base)
     {
         m_class->declare_base(base.get_extension_class());
     }
@@ -107,13 +107,13 @@ class ClassWrapper
     // declare the given class a base class of this one and register 
     // upcast conversion function
     template <class S, class V>
-    void declare_base(ClassWrapper<S, V> const & base, WithoutDowncast)
+    void declare_base(class_builder<S, V> const & base, without_downcast_t)
     {
         m_class->declare_base(base.get_extension_class(), without_downcast);
     }
 
     // get the embedded ExtensioClass object
-    detail::ExtensionClass<T, U> * get_extension_class() const 
+    detail::extension_class<T, U> * get_extension_class() const 
     {
         return m_class.get();
     }
@@ -122,13 +122,13 @@ class ClassWrapper
     // e.g. enums
     void add(PyObject* x, const char* name)
         { m_class->set_attribute(name, x); }
-    void add(Ptr x, const char* name)
+    void add(ref x, const char* name)
         { m_class->set_attribute(name, x); }
  private:
     // declare the given class a base class of this one and register 
     // conversion functions
     template <class S, class V>
-    void declare_base(detail::ExtensionClass<S, V> * base)
+    void declare_base(detail::extension_class<S, V> * base)
     {
         m_class->declare_base(base);
     }
@@ -136,12 +136,12 @@ class ClassWrapper
     // declare the given class a base class of this one and register 
     // upcast conversion function
     template <class S, class V>
-    void declare_base(detail::ExtensionClass<S, V> * base, WithoutDowncast)
+    void declare_base(detail::extension_class<S, V> * base, without_downcast_t)
     {
         m_class->declare_base(base, without_downcast);
     }
     
-    PyPtr<detail::ExtensionClass<T, U> > m_class;
+    reference<detail::extension_class<T, U> > m_class;
 };
 
 // The bug mentioned at the top of this file is that on certain compilers static

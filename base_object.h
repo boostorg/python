@@ -10,53 +10,53 @@
 # define BASE_OBJECT_DWA051600_H_
 
 # include "pyconfig.h"
-# include "signatures.h" // really just for Type<>
+# include "signatures.h" // really just for type<>
 # include "wrap_python.h"
 # include <cstring>
 
-namespace py { namespace detail {
+namespace python { namespace detail {
 
-// BaseObject - adds a constructor and non-virtual destructor to a
+// base_object - adds a constructor and non-virtual destructor to a
 // base Python type (e.g. PyObject, PyTypeObject).
-template <class PythonType>
-struct BaseObject : PythonType
+template <class python_type>
+struct base_object : python_type
 {
-    typedef PythonType BasePythonType;
+    typedef python_type base_python_type;
 
-    // Initializes type and reference count. All other fields of BasePythonType are 0
-    BaseObject(PyTypeObject* type_object);
+    // Initializes type and reference count. All other fields of base_python_type are 0
+    base_object(PyTypeObject* type_obj);
 
     // Decrements reference count on the type
-    ~BaseObject();
+    ~base_object();
 };
 
 // Easy typedefs for common usage
-typedef BaseObject<PyObject> PythonObject;
-typedef BaseObject<PyTypeObject> PythonType;
+typedef base_object<PyObject> python_object;
+typedef base_object<PyTypeObject> python_type;
 
 
 //
-// Class template member function implementations 
+// class_t template member function implementations 
 //
-template <class PythonType>
-BaseObject<PythonType>::BaseObject(PyTypeObject* type_object)
+template <class python_type>
+base_object<python_type>::base_object(PyTypeObject* type_obj)
 {
-    BasePythonType* bp = this;
+    base_python_type* bp = this;
 #if !defined(_MSC_VER) || defined(__STLPORT)
     std::
 #endif
-		memset(bp, 0, sizeof(BasePythonType));
+		memset(bp, 0, sizeof(base_python_type));
     ob_refcnt = 1;
-    ob_type = type_object;
-    Py_INCREF(type_object);
+    ob_type = type_obj;
+    Py_INCREF(type_obj);
 }
 
-template <class PythonType>
-inline BaseObject<PythonType>::~BaseObject()
+template <class python_type>
+inline base_object<python_type>::~base_object()
 {
     Py_DECREF(ob_type);
 }
 
-}} // namespace py::detail
+}} // namespace python::detail
 
 #endif // BASE_OBJECT_DWA051600_H_

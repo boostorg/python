@@ -72,9 +72,9 @@ def gen_function(template, n, *args, **keywords):
     ... %(        PyObject* a%n;
     ... %)        if (!PyArg_ParseTuple(args, const_cast<char*>("O%(O%)"), &self%(, &a%n%)))
     ...             return 0;
-    ...         T& target = from_python(self, Type<T&>());
+    ...         T& target = from_python(self, type<T&>());
     ...         %3to_python((target.*pmf)(%(
-    ...                 from_python(a%n, Type<A%n>())%:,%)
+    ...                 from_python(a%n, type<A%n>())%:,%)
     ...                 ));%4
     ...     }'''
     
@@ -84,7 +84,7 @@ def gen_function(template, n, *args, **keywords):
             PyObject* self;
             if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
                 return 0;
-            T& target = from_python(self, Type<T&>());
+            T& target = from_python(self, type<T&>());
             return to_python((target.*pmf)(
                     ));
         }
@@ -97,10 +97,10 @@ def gen_function(template, n, *args, **keywords):
             PyObject* a2;
             if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &self, &a1, &a2))
                 return 0;
-            T& target = from_python(self, Type<T&>());
+            T& target = from_python(self, type<T&>());
             return to_python((target.*pmf)(
-                    from_python(a1, Type<A1>()),
-                    from_python(a2, Type<A2>())
+                    from_python(a1, type<A1>()),
+                    from_python(a2, type<A2>())
                     ));
         }
         
@@ -113,11 +113,11 @@ def gen_function(template, n, *args, **keywords):
             PyObject* a3;
             if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &self, &a1, &a2, &a3))
                 return 0;
-            T& target = from_python(self, Type<T&>());
+            T& target = from_python(self, type<T&>());
             to_python((target.*pmf)(
-                    from_python(a1, Type<A1>()),
-                    from_python(a2, Type<A2>()),
-                    from_python(a3, Type<A3>())
+                    from_python(a1, type<A1>()),
+                    from_python(a2, type<A2>()),
+                    from_python(a3, type<A3>())
                     ));
             return none();
         }

@@ -61,11 +61,11 @@ wrapped <code>T</code>, you may want to provide an automatic
 thin wrappers. You can do this simply as follows:
 
 <blockquote><pre>
-PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   PyObject* to_python(const Foo* p) {
      return to_python(*p); // convert const Foo* in terms of const Foo&
   }
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 </pre></blockquote>
 
 <h4>If you can't (afford to) copy the referent, or the pointer is non-const</h4>
@@ -78,17 +78,17 @@ can not control the lifetime of the referent, so it may be destroyed by your C++
 code before the last Python reference to it disappears:
 
 <blockquote><pre>
-PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   PyObject* to_python(Foo* p)
   {
-      return py::PyExtensionClassConverters<Foo>::ptr_to_python(p);
+      return python::PyExtensionClassConverters<Foo>::ptr_to_python(p);
   }
 
   PyObject* to_python(const Foo* p)
   {
       return to_python(const_cast<Foo*>(p));
   }
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 </pre></blockquote>
 
 This will cause the Foo* to be treated as though it were an owning smart
@@ -117,9 +117,9 @@ typedef unsigned ErrorCode;
 const char* f(int* in_out_x); // original function
  ...
 #include &lt;py_cpp/objects.h&gt;
-const py::Tuple f_wrapper(int in_x) { 
+const python::tuple f_wrapper(int in_x) { 
   const char* s = f(in_x); 
-  return py::Tuple(s, in_x);
+  return python::tuple(s, in_x);
 }
   ...
 my_module.def(f_wrapper, "f");

@@ -11,10 +11,10 @@
       A Peek Under the Hood
     </h1>
     <p>
-      <code> ExtensionClass&lt;T&gt;</code> is a subclass of <code>
+      <code> extension_class&lt;T&gt;</code> is a subclass of <code>
       PyTypeObject</code>, the <code> struct</code> which Python's 'C' API uses
-      to describe a type. <a href="example1.html#world_class">An instance of
-      the <code>ExtensionClass&lt;&gt;</code></a> becomes the Python type
+      to describe a type. <a href="example1.html#world_class">An obj of
+      the <code>extension_class&lt;&gt;</code></a> becomes the Python type
       object corresponding to <code>hello::world</code>. When we <a href= 
       "example1.html#add_world_class">add it to the module</a> it goes into the
       module's dictionary to be looked up under the name "world".
@@ -26,10 +26,10 @@
       overloaded functions <code>PyObject*
       to_python(</code><em>S</em><code>)</code> and <em>
       S'</em><code>from_python(PyObject*,
-      Type&lt;</code><em>S</em><code>&gt;)</code> which convert between any C++
+      type&lt;</code><em>S</em><code>&gt;)</code> which convert between any C++
       type <em>S</em> and a <code>PyObject*</code>, the type which represents a
       reference to any Python object in its 'C' API. The <a href= 
-      "example1.html#world_class"><code>ExtensionClass&lt;T&gt;</code></a>
+      "example1.html#world_class"><code>extension_class&lt;T&gt;</code></a>
       template defines a whole raft of these conversions (for <code>T, T*,
       T&amp;, std::auto_ptr&lt;T&gt;</code>, etc.), using the same inline
       friend function technique employed by <a href= 
@@ -38,15 +38,15 @@
     <p>
       Because the <code>to_python</code> and <code>from_python</code> functions
       for a user-defined class are defined by <code>
-      ExtensionClass&lt;T&gt;</code>, it is important that an instantiation of
-      <code> ExtensionClass&lt;T&gt;</code> is visible to any code which wraps
+      extension_class&lt;T&gt;</code>, it is important that an instantiation of
+      <code> extension_class&lt;T&gt;</code> is visible to any code which wraps
       a C++ function with a <code>T, T*, const T&amp;</code>, etc. parameter or
       return value. In particular, you may want to create all of the classes at
       the top of your module's init function, then <code>def</code> the member
       functions later to avoid problems with inter-class dependencies.
     <p>
-      Previous: <a href="overriding.html">Function Overloading</a>
-      Next: <a href="building.html">Building a Module with Py_cpp</a>
+      Previous: <a href="overriding.html">function Overloading</a>
+      Next: <a href="building.html">Building a module_builder with Py_cpp</a>
       Up: <a href="py_cpp.html">Top</a>
     <p>
       &copy; Copyright David Abrahams 2000. Permission to copy, use, modify,

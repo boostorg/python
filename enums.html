@@ -17,22 +17,22 @@ you can write some simple <code>from_python()</code> and
 
 <p>If you are satisfied with a Python int as a way to represent your enum
 values, py_cpp provides a shorthand for these functions. You just need to
-instantiate <code>py::enum_as_int_converters&lt;EnumType&gt;</code> where
+instantiate <code>python::enum_as_int_converters&lt;EnumType&gt;</code> where
 <code>EnumType</code> is your enumerated type. There are two convenient ways to do this:
 
 <ol>
 <li><blockquote>
 <pre>
-// drop into namespace py and explicitly instantiate
-namespace py {
+// drop into namespace python and explicitly instantiate
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
-}
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 </pre>
 </blockquote>
 <li><blockquote><pre>
 // instantiate as base class in any namespace
 struct EnumTypeConverters
-    : py::py_enum_as_int_converters<EnumType>
+    : python::py_enum_as_int_converters<EnumType>
 {
 };
 </blockquote></pre>
@@ -40,25 +40,25 @@ struct EnumTypeConverters
 
 <p>Either of the above is equivalent to the following declarations:
 <blockquote><pre>
-PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
 
-  MyEnumType from_python(PyObject* x, py::Type&lt;MyEnumType&gt;)
+  MyEnumType from_python(PyObject* x, python::type&lt;MyEnumType&gt;)
   {
       return static_cast&lt;MyEnum&gt;(
-        from_python(x, py::Type&lt;long&gt;()));
+        from_python(x, python::type&lt;long&gt;()));
   }
 
-  MyEnumType from_python(PyObject* x, py::Type&lt;const MyEnumType&amp;&gt;)
+  MyEnumType from_python(PyObject* x, python::type&lt;const MyEnumType&amp;&gt;)
   {
       return static_cast&lt;MyEnum&gt;(
-        from_python(x, py::Type&lt;long&gt;()));
+        from_python(x, python::type&lt;long&gt;()));
   }
 
   PyObject* to_python(MyEnumType x)
   {
       return to_python(static_cast&lt;long&gt;(x));
   }
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 </pre></blockquote>
 
 <p>This technique defines the conversions of
@@ -69,8 +69,8 @@ You may also want to add a bunch of lines like this to your module
 initialization:
 
 <blockquote><pre>
-mymodule.add(py::to_python(enum_value_1), "enum_value_1");
-mymodule.add(py::to_python(enum_value_2), "enum_value_2");
+mymodule.add(python::to_python(enum_value_1), "enum_value_1");
+mymodule.add(python::to_python(enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
 
@@ -78,8 +78,8 @@ You can also add these to an extension class definition, if your enum happens to
 be local to a class and you want the analogous interface in Python:
 
 <blockquote><pre>
-my_class.add(py::to_python(enum_value_1), "enum_value_1");
-my_class.add(py::to_python(enum_value_2), "enum_value_2");
+my_class.add(python::to_python(enum_value_1), "enum_value_1");
+my_class.add(python::to_python(enum_value_2), "enum_value_2");
 ...
 </pre></blockquote>
       <p>

@@ -13,7 +13,7 @@
 # include <boost/cast.hpp>
 #endif
 
-namespace py {
+namespace python {
 
 // IMPORTANT: this function may only be called from within a catch block!
 void handle_exception()
@@ -26,7 +26,7 @@ void handle_exception()
         // Codewarrior doesn't suffer from this problem.
         throw;
     }
-    catch(const py::ErrorAlreadySet&)
+    catch(const python::error_already_set&)
     {
         // The python error reporting has already been handled.
     }
@@ -44,37 +44,37 @@ void handle_exception()
     }
 }
 
-} // namespace py
+} // namespace python
 
-PY_BEGIN_CONVERSION_NAMESPACE
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-long from_python(PyObject* p, py::Type<long>)
+long from_python(PyObject* p, python::type<long>)
 {
     // Why am I clearing the error here before trying to convert? I know there's a reason...
     long result;
     {
         result = PyInt_AsLong(p);
         if (PyErr_Occurred())
-            throw py::ArgumentError();
+            throw python::argument_error();
     }
     return result;
 }
 
-double from_python(PyObject* p, py::Type<double>)
+double from_python(PyObject* p, python::type<double>)
 {
     double result;
     {
         result = PyFloat_AsDouble(p);
         if (PyErr_Occurred())
-            throw py::ArgumentError();
+            throw python::argument_error();
     }
     return result;
 }
 
 template <class T>
-T integer_from_python(PyObject* p, py::Type<T>)
+T integer_from_python(PyObject* p, python::type<T>)
 {
-    const long long_result = from_python(p, py::Type<long>());
+    const long long_result = from_python(p, python::type<long>());
 
 #ifndef BOOST_NO_LIMITS
     try
@@ -94,7 +94,7 @@ T integer_from_python(PyObject* p, py::Type<T>)
         const char message[] = "%ld out of range for %s";
         sprintf(buffer, message, long_result, typeid(T).name());
         PyErr_SetString(PyExc_ValueError, buffer);
-        throw py::ArgumentError();
+        throw python::argument_error();
     }
 #if defined(__MWERKS__) && __MWERKS__ <= 0x2400
     return 0; // Not smart enough to know that the catch clause always rethrows
@@ -119,13 +119,13 @@ PyObject* integer_to_python(T value)
     {
         const char message[] = "value out of range for Python int";
         PyErr_SetString(PyExc_ValueError, message);
-        throw py::ErrorAlreadySet();
+        throw python::error_already_set();
     }
     
     return to_python(value_as_long);
 }
 
-int from_python(PyObject* p, py::Type<int> type)
+int from_python(PyObject* p, python::type<int> type)
 {
     return integer_from_python(p, type);
 }
@@ -135,19 +135,19 @@ PyObject* to_python(unsigned int i)
 	return integer_to_python(i);
 }
 
-unsigned int from_python(PyObject* p, py::Type<unsigned int> type)
+unsigned int from_python(PyObject* p, python::type<unsigned int> type)
 {
     return integer_from_python(p, type);
 }
 
-short from_python(PyObject* p, py::Type<short> type)
+short from_python(PyObject* p, python::type<short> type)
 {
     return integer_from_python(p, type);
 }
 
-float from_python(PyObject* p, py::Type<float>)
+float from_python(PyObject* p, python::type<float>)
 {
-    return static_cast<float>(from_python(p, py::Type<double>()));
+    return static_cast<float>(from_python(p, python::type<double>()));
 }
 
 PyObject* to_python(unsigned short i)
@@ -155,7 +155,7 @@ PyObject* to_python(unsigned short i)
 	return integer_to_python(i);
 }
 
-unsigned short from_python(PyObject* p, py::Type<unsigned short> type)
+unsigned short from_python(PyObject* p, python::type<unsigned short> type)
 {
     return integer_from_python(p, type);
 }
@@ -165,7 +165,7 @@ PyObject* to_python(unsigned char i)
 	return integer_to_python(i);
 }
 
-unsigned char from_python(PyObject* p, py::Type<unsigned char> type)
+unsigned char from_python(PyObject* p, python::type<unsigned char> type)
 {
     return integer_from_python(p, type);
 }
@@ -175,7 +175,7 @@ PyObject* to_python(signed char i)
 	return integer_to_python(i);
 }
 
-signed char from_python(PyObject* p, py::Type<signed char> type)
+signed char from_python(PyObject* p, python::type<signed char> type)
 {
     return integer_from_python(p, type);
 }
@@ -185,24 +185,24 @@ PyObject* to_python(unsigned long x)
     return integer_to_python(x);
 }
 
-unsigned long from_python(PyObject* p, py::Type<unsigned long> type)
+unsigned long from_python(PyObject* p, python::type<unsigned long> type)
 {
     return integer_from_python(p, type);
 }
 
-void from_python(PyObject* p, py::Type<void>)
+void from_python(PyObject* p, python::type<void>)
 {
     if (p != Py_None) {
         PyErr_SetString(PyExc_TypeError, "expected argument of type None");
-        throw py::ArgumentError();
+        throw python::argument_error();
     }
 }
 
-const char* from_python(PyObject* p, py::Type<const char*>)
+const char* from_python(PyObject* p, python::type<const char*>)
 {
     const char* s = PyString_AsString(p);
     if (!s)
-        throw py::ArgumentError();
+        throw python::argument_error();
     return s;
 }
 
@@ -211,20 +211,20 @@ PyObject* to_python(const std::string& s)
 	return PyString_FromString(s.c_str());
 }
 
-std::string from_python(PyObject* p, py::Type<std::string>)
+std::string from_python(PyObject* p, python::type<std::string>)
 {
-    return std::string(from_python(p, py::Type<const char*>()));
+    return std::string(from_python(p, python::type<const char*>()));
 }
 
-bool from_python(PyObject* p, py::Type<bool>)
+bool from_python(PyObject* p, python::type<bool>)
 {
-    int value = from_python(p, py::Type<int>());
+    int value = from_python(p, python::type<int>());
     if (value == 0)
         return false;
     return true;
 }
 
-#ifdef PY_MSVC6_OR_EARLIER
+#ifdef BOOST_MSVC6_OR_EARLIER
 // An optimizer bug prevents these from being inlined.
 PyObject* to_python(double d)
 {
@@ -235,7 +235,7 @@ PyObject* to_python(float f)
 {
     return PyFloat_FromDouble(f);
 }
-#endif // PY_MSVC6_OR_EARLIER
+#endif // BOOST_MSVC6_OR_EARLIER
 
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 

@@ -12,7 +12,7 @@ def gen_init_function(args):
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file was generated for %d-argument constructors by gen_init_function.py
+//  This file was generated for %d-argument constructors by gen_init_function.python
 
 #ifndef INIT_FUNCTION_DWA052000_H_
 # define INIT_FUNCTION_DWA052000_H_
@@ -22,7 +22,7 @@ def gen_init_function(args):
 # include "signatures.h"
 # include <typeinfo>
 
-namespace py {
+namespace python {
 
 namespace detail {
 
@@ -106,50 +106,50 @@ namespace detail {
       const_reference value;
   };
 
-class ExtensionInstance;
-class InstanceHolderBase;
+class extension_instance;
+class instance_holder_base;
 
-class Init;
+class init;
 """
-        + gen_functions('template <class T%(, class A%n%)> struct Init%x;\n', args)
+        + gen_functions('template <class T%(, class A%n%)> struct init%x;\n', args)
         + """
 template <class T>
-struct InitFunction
+struct init_function
 {
 """ + gen_functions("""%{
     template <%(class A%n%:, %)>
-%}    static Init* create(Signature%x%{<%(A%n%:, %)>%}) {
-        return new Init%x<T%(,
+%}    static init* create(signature%x%{<%(A%n%:, %)>%}) {
+        return new init%x<T%(,
                        detail::parameter_traits<A%n>::const_reference%)>;
     }
 """, args)+"""};
 
-class Init : public Function
+class init : public function
 {
-private: // override Function hook
+private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* tail_args, PyObject* keywords) const = 0;
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
 };
 """ + gen_functions("""
 
 template <class T%(, class A%n%)>
-struct Init%x : Init
+struct init%x : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         %(PyObject* a%n;
         %)if (!PyArg_ParseTuple(args, const_cast<char*>("%(O%)")%(, &a%n%)))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self%(,
-            py::detail::reference_parameter<A%n>(from_python(a%n, Type<A%n>()))%)
+            python::detail::reference_parameter<A%n>(from_python(a%n, type<A%n>()))%)
             );
     }
     const char* description() const
         { return typeid(void (*)(T&%(, A%n%%))).name(); }
 };""", args) + """
 
-}} // namespace py::detail
+}} // namespace python::detail
 
 #endif // INIT_FUNCTION_DWA052000_H_
 """)

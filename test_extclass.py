@@ -166,7 +166,7 @@ But objects not derived from Bar cannot:
     TypeError: extension class 'Baz' is not convertible into 'Bar'.
 
 The clone function on Baz returns a smart pointer; we wrap it into an
-ExtensionInstance and  make it look just like any other Baz instance.
+extension_instance and  make it look just like any other Baz obj.
 
     >>> baz_clone = baz.clone()
     >>> baz_clone.pass_bar(mi).first()
@@ -403,7 +403,7 @@ delete non-existent attribute:
     del m.foobar
     Traceback (innermost last):
       File "<stdin>", line 1, in ?
-    AttributeError: delete non-existing instance attribute
+    AttributeError: delete non-existing obj attribute
     
 Testing __getattr__ and __getattr__<name>:
   

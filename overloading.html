@@ -33,15 +33,15 @@ void initoverload_demo()
 {
     try
     {
-        py::Module overload_demo("overload_demo");
+        python::module_builder overload_demo("overload_demo");
         // Overloaded functions at module scope
         overload_demo.def(f1, "f");
         overload_demo.def(f2, "f");
 
-        py::ClassWrapper&lt;X&gt; x_class(overload_demo, "X");
+        python::class_builder&lt;X&gt; x_class(overload_demo, "X");
         // Overloaded constructors
-        x_class.def(py::Constructor&lt;&gt;());
-        x_class.def(py::Constructor&lt;int&gt;());
+        x_class.def(python::constructor&lt;&gt;());
+        x_class.def(python::constructor&lt;int&gt;());
 
         // Overloaded member functions
         x_class.def((int (X::*)() const)&amp;X::value, "value");

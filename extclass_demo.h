@@ -52,7 +52,7 @@ class Foo                // prohibit copying, proving that it doesn't choke
  public: // friend declarations
     // If you have private virtual functions such as add_len which you want to
     // override in Python and have default implementations, they must be
-    // accessible by the thing making the def() call on the ExtensionClass (in
+    // accessible by the thing making the def() call on the extension_class (in
     // this case, the nested PythonClass itself), and by the C++ derived class
     // which is used to cause the Python callbacks (in this case,
     // FooCallback). See the definition of FooCallback::add_len()
@@ -180,25 +180,25 @@ class FooCallback : public Foo
     std::string pure() const;
 
  private: // Required boilerplate if functions will be overridden
-    PyObject* m_self; // No, we don't want a py::Ptr here, or we'd get an ownership cycle.
+    PyObject* m_self; // No, we don't want a python::ref here, or we'd get an ownership cycle.
 };
 
 // Define the Python base class
-struct Foo::PythonClass : py::ClassWrapper<Foo, FooCallback> { PythonClass(py::Module&); };
+struct Foo::PythonClass : python::class_builder<Foo, FooCallback> { PythonClass(python::module_builder&); };
 
 // No virtual functions on Bar or Baz which are actually supposed to behave
 // virtually from C++, so we'll rely on the library to define a wrapper for
-// us. Even so, Python Class types for each type we're wrapping should be
+// us. Even so, Python class_t types for each type we're wrapping should be
 // _defined_ here in a header where they can be seen by other extension class
-// definitions, since it is the definition of the py::ClassWrapper<> that
+// definitions, since it is the definition of the python::class_builder<> that
 // causes to_python/from_python conversion functions to be generated.
-struct BarPythonClass : py::ClassWrapper<Bar> { BarPythonClass(py::Module&); };
-struct BazPythonClass : py::ClassWrapper<Baz> { BazPythonClass(py::Module&); };
+struct BarPythonClass : python::class_builder<Bar> { BarPythonClass(python::module_builder&); };
+struct BazPythonClass : python::class_builder<Baz> { BazPythonClass(python::module_builder&); };
 
 struct StringMapPythonClass
-    : py::ClassWrapper<StringMap>
+    : python::class_builder<StringMap>
 {
-    StringMapPythonClass(py::Module&);
+    StringMapPythonClass(python::module_builder&);
     
     // These static functions implement the right argument protocols for
     // implementing the Python "special member functions" for mapping on
@@ -209,9 +209,9 @@ struct StringMapPythonClass
 };
 
 struct IntPairPythonClass
-    : py::ClassWrapper<IntPair>
+    : python::class_builder<IntPair>
 {
-    IntPairPythonClass(py::Module&);
+    IntPairPythonClass(python::module_builder&);
     
     // The following could just as well be a free function; it implements the
     // getattr functionality for IntPair.
@@ -221,9 +221,9 @@ struct IntPairPythonClass
 };
 
 struct CompareIntPairPythonClass
-    : py::ClassWrapper<CompareIntPair>
+    : python::class_builder<CompareIntPair>
 {
-    CompareIntPairPythonClass(py::Module&);
+    CompareIntPairPythonClass(python::module_builder&);
 };
 
 } // namespace extclass_demo

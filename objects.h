@@ -15,48 +15,48 @@
 # include "boost/operators.hpp"
 # include <utility>
 
-namespace py {
+namespace python {
 
-class Object
+class object
 {
  public:
-    explicit Object(Ptr p);
+    explicit object(ref p);
     
     // Return a reference to the held object
-    Ptr reference() const;
+    ref reference() const;
 
     // Return a raw pointer to the held object
     PyObject* get() const;
     
  private:
-    Ptr m_p;
+    ref m_p;
 };
 
-class Tuple : public Object
+class tuple : public object
 {
  public:
-    explicit Tuple(std::size_t n = 0);
-    explicit Tuple(Ptr p);
+    explicit tuple(std::size_t n = 0);
+    explicit tuple(ref p);
 
     template <class First, class Second>
-    Tuple(const std::pair<First,Second>& x)
-        : Object(Ptr(PyTuple_New(2)))
+    tuple(const std::pair<First,Second>& x)
+        : object(ref(PyTuple_New(2)))
     {
         set_item(0, x.first);
         set_item(1, x.second);
     }
     
     template <class First, class Second>
-    Tuple(const First& first, const Second& second)
-        : Object(Ptr(PyTuple_New(2)))
+    tuple(const First& first, const Second& second)
+        : object(ref(PyTuple_New(2)))
     {
         set_item(0, first);
         set_item(1, second);
     }
     
     template <class First, class Second, class Third>
-    Tuple(const First& first, const Second& second, const Third& third)
-        : Object(Ptr(PyTuple_New(3)))
+    tuple(const First& first, const Second& second, const Third& third)
+        : object(ref(PyTuple_New(3)))
     {
         set_item(0, first);
         set_item(1, second);
@@ -64,8 +64,8 @@ class Tuple : public Object
     }
     
     template <class First, class Second, class Third, class Fourth>
-    Tuple(const First& first, const Second& second, const Third& third, const Fourth& fourth)
-        : Object(Ptr(PyTuple_New(4)))
+    tuple(const First& first, const Second& second, const Third& third, const Fourth& fourth)
+        : object(ref(PyTuple_New(4)))
     {
         set_item(0, first);
         set_item(1, second);
@@ -73,10 +73,10 @@ class Tuple : public Object
         set_item(3, fourth);
     }
     
-    static PyTypeObject* type_object();
-    static bool accepts(Ptr p);
+    static PyTypeObject* type_obj();
+    static bool accepts(ref p);
     std::size_t size() const;
-    Ptr operator[](std::size_t pos) const;
+    ref operator[](std::size_t pos) const;
 
     template <class T>
     void set_item(std::size_t pos, const T& rhs)
@@ -84,76 +84,76 @@ class Tuple : public Object
         this->set_item(pos, make_ptr(rhs));
     }
     
-    void set_item(std::size_t pos, const Ptr& rhs);
+    void set_item(std::size_t pos, const ref& rhs);
     
-    Tuple slice(int low, int high) const;
+    tuple slice(int low, int high) const;
 
-    friend Tuple operator+(const Tuple&, const Tuple&);
-    Tuple& operator+=(const Tuple& rhs);
+    friend tuple operator+(const tuple&, const tuple&);
+    tuple& operator+=(const tuple& rhs);
 };
 
-class List : public Object
+class list : public object
 {
-    struct Proxy;
-    struct SliceProxy;
+    struct proxy;
+    struct slice_proxy;
  public:
-    explicit List(Ptr p);
-    explicit List(std::size_t sz = 0);
-    static PyTypeObject* type_object();
-    static bool accepts(Ptr p);
+    explicit list(ref p);
+    explicit list(std::size_t sz = 0);
+    static PyTypeObject* type_obj();
+    static bool accepts(ref p);
     std::size_t size();
-    Ptr operator[](std::size_t pos) const;
-    Proxy operator[](std::size_t pos);
-    Ptr get_item(std::size_t pos) const;
+    ref operator[](std::size_t pos) const;
+    proxy operator[](std::size_t pos);
+    ref get_item(std::size_t pos) const;
 
     template <class T>
     void set_item(std::size_t pos, const T& x)
         { this->set_item(pos, make_ptr(x)); }
-    void set_item(std::size_t pos, const Ptr& );
+    void set_item(std::size_t pos, const ref& );
     
-//    void set_item(std::size_t pos, const Object& );
+//    void set_item(std::size_t pos, const object& );
 
     template <class T>
     void insert(std::size_t index, const T& x)
         { this->insert(index, make_ptr(x)); }
-    void insert(std::size_t index, const Ptr& item);
+    void insert(std::size_t index, const ref& item);
 
     template <class T>
     void push_back(const T& item)
         { this->push_back(make_ptr(item)); }
-    void push_back(const Ptr& item);
+    void push_back(const ref& item);
     
     template <class T>
     void append(const T& item)
         { this->append(make_ptr(item)); }
-    void append(const Ptr& item);
+    void append(const ref& item);
     
-    List slice(int low, int high) const;
-    SliceProxy slice(int low, int high);
+    list slice(int low, int high) const;
+    slice_proxy slice(int low, int high);
     void sort();
     void reverse();
-    Tuple as_tuple() const;
+    tuple as_tuple() const;
 };
 
-class String
-    : public Object, public boost::multipliable2<String, unsigned int>
+class string
+    : public object, public boost::multipliable2<string, unsigned int>
 {
  public:
     // Construct from an owned PyObject*.
     // Precondition: p must point to a python string.
-    explicit String(Ptr p);
-    explicit String(const char* s);
-    String(const char* s, std::size_t length);
-    String(const String& rhs);
+    explicit string(ref p);
+    explicit string(const char* s);
+    string(const char* s, std::size_t length);
+    string(const string& rhs);
 
-    enum Interned { interned };
-    String(const char* s, Interned);
+    enum interned_t { interned };
+    string(const char* s, interned_t);
     
     // Get the type object for Strings
-    static PyTypeObject* type_object();
+    static PyTypeObject* type_obj();
 
-    // Return true if the given object is a python String
-    static bool accepts(Ptr o);
+    // Return true if the given object is a python string
+    static bool accepts(ref o);
 
     // Return the length of the string.
     std::size_t size() const;
@@ -163,172 +163,172 @@ class String
     // The data must not be modified in any way. It must not be de-allocated. 
     const char* c_str() const;
 
-    String& operator*=(unsigned int repeat_count);
-    String& operator+=(const String& rhs);
-    friend String operator+(String x, String y);
-    String& operator+=(const char* rhs);
-    friend String operator+(String x, const char* y);
-    friend String operator+(const char* x, String y);
+    string& operator*=(unsigned int repeat_count);
+    string& operator+=(const string& rhs);
+    friend string operator+(string x, string y);
+    string& operator+=(const char* rhs);
+    friend string operator+(string x, const char* y);
+    friend string operator+(const char* x, string y);
 
     void intern();
 
-    friend String operator%(const String& format, const Tuple& args);
+    friend string operator%(const string& format, const tuple& args);
 };
 
-class Dict : public Object
+class dictionary : public object
 {
  private:
-    struct Proxy;
+    struct proxy;
     
  public:
-    explicit Dict(Ptr p);
-    Dict();
+    explicit dictionary(ref p);
+    dictionary();
     void clear();
 
-    static PyTypeObject* type_object();
-    static bool accepts(Ptr p);
+    static PyTypeObject* type_obj();
+    static bool accepts(ref p);
     
  public:
     template <class Key>
-    Proxy operator[](const Key& key)
+    proxy operator[](const Key& key)
         { return this->operator[](make_ptr(key)); }
-    Proxy operator[](Ptr key);
+    proxy operator[](ref key);
     
     template <class Key>
-    Ptr operator[](const Key& key) const
+    ref operator[](const Key& key) const
         { return this->operator[](make_ptr(key)); }
-    Ptr operator[](Ptr key) const;
+    ref operator[](ref key) const;
 
     template <class Key>
-    Ptr get_item(const Key& key) const
+    ref get_item(const Key& key) const
         { return this->get_item(make_ptr(key)); }
-    Ptr get_item(const Ptr& key) const;
+    ref get_item(const ref& key) const;
     
     template <class Key, class Default>
-    Ptr get_item(const Key& key, const Default& default_) const
+    ref get_item(const Key& key, const Default& default_) const
         { return this->get_item(make_ptr(key), make_ptr(default_)); }
-    Ptr get_item(const Ptr& key, const Ptr& default_) const;
+    ref get_item(const ref& key, const ref& default_) const;
     
     template <class Key, class Value>
     void set_item(const Key& key, const Value& value)
         { this->set_item(make_ptr(key), make_ptr(value)); }
-    void set_item(const Ptr& key, const Ptr& value);
+    void set_item(const ref& key, const ref& value);
 
     template <class Key>
     void erase(const Key& key)
         { this->erase(make_ptr(key)); }
-    void erase(Ptr key);
+    void erase(ref key);
 
-//    Proxy operator[](const Object& key);
-//    Ptr operator[](const Object& key) const;
+//    proxy operator[](const object& key);
+//    ref operator[](const object& key) const;
 
-//    Ptr get_item(const Object& key, Ptr default_ = Ptr()) const;
-//    void set_item(const Object& key, const Ptr& value);
+//    ref get_item(const object& key, ref default_ = ref()) const;
+//    void set_item(const object& key, const ref& value);
         
-//    void erase(const Object& key);
+//    void erase(const object& key);
 
-    List items() const;
-    List keys() const;
-    List values() const;
+    list items() const;
+    list keys() const;
+    list values() const;
 
     std::size_t size() const;
     // TODO: iterator support
 };
 
-struct Dict::Proxy
+struct dictionary::proxy
 {
     template <class T>
-    const Ptr& operator=(const T& rhs)
+    const ref& operator=(const T& rhs)
         { return (*this) = make_ptr(rhs); }
-    const Ptr& operator=(const Ptr& rhs);
+    const ref& operator=(const ref& rhs);
 
-    operator Ptr() const;
+    operator ref() const;
  private:
-    friend class Dict;
-    Proxy(const Ptr& dict, const Ptr& key);
+    friend class dictionary;
+    proxy(const ref& dict, const ref& key);
 
     // This is needed to work around the very strange MSVC error report that the
     // return type of the built-in operator= differs from that of the ones
     // defined above. Couldn't hurt to make these un-assignable anyway, though.
-    const Ptr& operator=(const Proxy&); // Not actually implemented
+    const ref& operator=(const proxy&); // Not actually implemented
  private:
-    Ptr m_dict;
-    Ptr m_key;
+    ref m_dict;
+    ref m_key;
 };
 
-struct List::Proxy
+struct list::proxy
 {
     template <class T>
-    const Ptr& operator=(const T& rhs)
+    const ref& operator=(const T& rhs)
         { return (*this) = make_ptr(rhs); }
-    const Ptr& operator=(const Ptr& rhs);
+    const ref& operator=(const ref& rhs);
     
-    operator Ptr() const;
+    operator ref() const;
     
  private:
-    friend class List;
-    Proxy(const Ptr& list, std::size_t index);
+    friend class list;
+    proxy(const ref& list, std::size_t index);
     
     // This is needed to work around the very strange MSVC error report that the
     // return type of the built-in operator= differs from that of the ones
     // defined above. Couldn't hurt to make these un-assignable anyway, though.
-    const Ptr& operator=(const Proxy&); // Not actually implemented
+    const ref& operator=(const proxy&); // Not actually implemented
  private:
-    List m_list;
+    list m_list;
     std::size_t m_index;
 };
 
-struct List::SliceProxy
+struct list::slice_proxy
 {
-    const List& operator=(const List& rhs);
-    operator Ptr() const;
-    operator List() const;
+    const list& operator=(const list& rhs);
+    operator ref() const;
+    operator list() const;
     std::size_t size();
-    Ptr operator[](std::size_t pos) const;
+    ref operator[](std::size_t pos) const;
  private:
-    friend class List;
-    SliceProxy(const Ptr& list, int low, int high);
+    friend class list;
+    slice_proxy(const ref& list, int low, int high);
  private:
-    Ptr m_list;
+    ref m_list;
     int m_low, m_high;
 };
 
-} // namespace py
+} // namespace python
 
-PY_BEGIN_CONVERSION_NAMESPACE
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-PyObject* to_python(const py::Tuple&);
-py::Tuple from_python(PyObject* p, py::Type<py::Tuple>);
+PyObject* to_python(const python::tuple&);
+python::tuple from_python(PyObject* p, python::type<python::tuple>);
 
-inline py::Tuple from_python(PyObject* p, py::Type<const py::Tuple&>)
+inline python::tuple from_python(PyObject* p, python::type<const python::tuple&>)
 {
-    return from_python(p, py::Type<py::Tuple>());
+    return from_python(p, python::type<python::tuple>());
 }
 
-PyObject* to_python(const py::List&);
-py::List from_python(PyObject* p, py::Type<py::List>);
+PyObject* to_python(const python::list&);
+python::list from_python(PyObject* p, python::type<python::list>);
 
-inline py::List from_python(PyObject* p, py::Type<const py::List&>)
+inline python::list from_python(PyObject* p, python::type<const python::list&>)
 {
-    return from_python(p, py::Type<py::List>());
+    return from_python(p, python::type<python::list>());
 }
 
-PyObject* to_python(const py::String&);
-py::String from_python(PyObject* p, py::Type<py::String>);
+PyObject* to_python(const python::string&);
+python::string from_python(PyObject* p, python::type<python::string>);
 
-inline py::String from_python(PyObject* p, py::Type<const py::String&>)
+inline python::string from_python(PyObject* p, python::type<const python::string&>)
 {
-    return from_python(p, py::Type<py::String>());
+    return from_python(p, python::type<python::string>());
 }
 
-PyObject* to_python(const py::Dict&);
-py::Dict from_python(PyObject* p, py::Type<py::Dict>);
+PyObject* to_python(const python::dictionary&);
+python::dictionary from_python(PyObject* p, python::type<python::dictionary>);
 
-inline py::Dict from_python(PyObject* p, py::Type<const py::Dict&>)
+inline python::dictionary from_python(PyObject* p, python::type<const python::dictionary&>)
 {
-    return from_python(p, py::Type<py::Dict>());
+    return from_python(p, python::type<python::dictionary>());
 }
 
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 #endif // OBJECTS_DWA051100_H_

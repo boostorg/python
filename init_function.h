@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file was generated for %d-argument constructors by gen_init_function.py
+//  This file was generated for %d-argument constructors by gen_init_function.python
 
 #ifndef INIT_FUNCTION_DWA052000_H_
 # define INIT_FUNCTION_DWA052000_H_
@@ -16,7 +16,7 @@
 # include "signatures.h"
 # include <typeinfo>
 
-namespace py {
+namespace python {
 
 namespace detail {
 
@@ -100,16 +100,16 @@ namespace detail {
       const_reference value;
   };
 
-class ExtensionInstance;
-class InstanceHolderBase;
+class extension_instance;
+class instance_holder_base;
 
-class Init;
-template <class T> struct Init0;
-template <class T, class A1> struct Init1;
-template <class T, class A1, class A2> struct Init2;
-template <class T, class A1, class A2, class A3> struct Init3;
-template <class T, class A1, class A2, class A3, class A4> struct Init4;
-template <class T, class A1, class A2, class A3, class A4, class A5> struct Init5;
+class init;
+template <class T> struct init0;
+template <class T, class A1> struct init1;
+template <class T, class A1, class A2> struct init2;
+template <class T, class A1, class A2, class A3> struct init3;
+template <class T, class A1, class A2, class A3, class A4> struct init4;
+template <class T, class A1, class A2, class A3, class A4, class A5> struct init5;
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6> struct Init6;
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> struct Init7;
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> struct Init8;
@@ -117,36 +117,36 @@ template <class T, class A1, class A2, class A3, class A4, class A5, class A6, c
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> struct Init10;
 
 template <class T>
-struct InitFunction
+struct init_function
 {
-    static Init* create(Signature0) {
-        return new Init0<T>;
+    static init* create(signature0) {
+        return new init0<T>;
     }
 
     template <class A1>
-    static Init* create(Signature1<A1>) {
-        return new Init1<T,
+    static init* create(signature1<A1>) {
+        return new init1<T,
                        detail::parameter_traits<A1>::const_reference>;
     }
 
     template <class A1, class A2>
-    static Init* create(Signature2<A1, A2>) {
-        return new Init2<T,
+    static init* create(signature2<A1, A2>) {
+        return new init2<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference>;
     }
 
     template <class A1, class A2, class A3>
-    static Init* create(Signature3<A1, A2, A3>) {
-        return new Init3<T,
+    static init* create(signature3<A1, A2, A3>) {
+        return new init3<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference>;
     }
 
     template <class A1, class A2, class A3, class A4>
-    static Init* create(Signature4<A1, A2, A3, A4>) {
-        return new Init4<T,
+    static init* create(signature4<A1, A2, A3, A4>) {
+        return new init4<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -154,8 +154,8 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5>
-    static Init* create(Signature5<A1, A2, A3, A4, A5>) {
-        return new Init5<T,
+    static init* create(signature5<A1, A2, A3, A4, A5>) {
+        return new init5<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -164,7 +164,7 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6>
-    static Init* create(Signature6<A1, A2, A3, A4, A5, A6>) {
+    static init* create(Signature6<A1, A2, A3, A4, A5, A6>) {
         return new Init6<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -175,7 +175,7 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    static Init* create(Signature7<A1, A2, A3, A4, A5, A6, A7>) {
+    static init* create(Signature7<A1, A2, A3, A4, A5, A6, A7>) {
         return new Init7<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -187,7 +187,7 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    static Init* create(Signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
+    static init* create(Signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
         return new Init8<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -200,7 +200,7 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    static Init* create(Signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
+    static init* create(Signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
         return new Init9<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -214,7 +214,7 @@ struct InitFunction
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    static Init* create(Signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
+    static init* create(Signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
         return new Init10<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
@@ -229,22 +229,22 @@ struct InitFunction
     }
 };
 
-class Init : public Function
+class init : public function
 {
-private: // override Function hook
+private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;
 private:
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* tail_args, PyObject* keywords) const = 0;
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* tail_args, PyObject* keywords) const = 0;
 };
 
 
 template <class T>
-struct Init0 : Init
+struct init0 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         if (!PyArg_ParseTuple(args, const_cast<char*>("")))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self
             );
     }
@@ -253,15 +253,15 @@ struct Init0 : Init
 };
 
 template <class T, class A1>
-struct Init1 : Init
+struct init1 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &a1))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>()))
             );
     }
     const char* description() const
@@ -269,17 +269,17 @@ struct Init1 : Init
 };
 
 template <class T, class A1, class A2>
-struct Init2 : Init
+struct init2 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OO"), &a1, &a2))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>()))
             );
     }
     const char* description() const
@@ -287,19 +287,19 @@ struct Init2 : Init
 };
 
 template <class T, class A1, class A2, class A3>
-struct Init3 : Init
+struct init3 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
         PyObject* a3;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &a1, &a2, &a3))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>()))
             );
     }
     const char* description() const
@@ -307,21 +307,21 @@ struct Init3 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4>
-struct Init4 : Init
+struct init4 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
         PyObject* a3;
         PyObject* a4;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &a1, &a2, &a3, &a4))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>()))
             );
     }
     const char* description() const
@@ -329,9 +329,9 @@ struct Init4 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5>
-struct Init5 : Init
+struct init5 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -339,13 +339,13 @@ struct Init5 : Init
         PyObject* a4;
         PyObject* a5;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOO"), &a1, &a2, &a3, &a4, &a5))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>()))
             );
     }
     const char* description() const
@@ -353,9 +353,9 @@ struct Init5 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
-struct Init6 : Init
+struct Init6 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -364,14 +364,14 @@ struct Init6 : Init
         PyObject* a5;
         PyObject* a6;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>())),
-            py::detail::reference_parameter<A6>(from_python(a6, Type<A6>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
+            python::detail::reference_parameter<A6>(from_python(a6, type<A6>()))
             );
     }
     const char* description() const
@@ -379,9 +379,9 @@ struct Init6 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-struct Init7 : Init
+struct Init7 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -391,15 +391,15 @@ struct Init7 : Init
         PyObject* a6;
         PyObject* a7;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>())),
-            py::detail::reference_parameter<A6>(from_python(a6, Type<A6>())),
-            py::detail::reference_parameter<A7>(from_python(a7, Type<A7>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
+            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
+            python::detail::reference_parameter<A7>(from_python(a7, type<A7>()))
             );
     }
     const char* description() const
@@ -407,9 +407,9 @@ struct Init7 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-struct Init8 : Init
+struct Init8 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -420,16 +420,16 @@ struct Init8 : Init
         PyObject* a7;
         PyObject* a8;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>())),
-            py::detail::reference_parameter<A6>(from_python(a6, Type<A6>())),
-            py::detail::reference_parameter<A7>(from_python(a7, Type<A7>())),
-            py::detail::reference_parameter<A8>(from_python(a8, Type<A8>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
+            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
+            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
+            python::detail::reference_parameter<A8>(from_python(a8, type<A8>()))
             );
     }
     const char* description() const
@@ -437,9 +437,9 @@ struct Init8 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-struct Init9 : Init
+struct Init9 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -451,17 +451,17 @@ struct Init9 : Init
         PyObject* a8;
         PyObject* a9;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>())),
-            py::detail::reference_parameter<A6>(from_python(a6, Type<A6>())),
-            py::detail::reference_parameter<A7>(from_python(a7, Type<A7>())),
-            py::detail::reference_parameter<A8>(from_python(a8, Type<A8>())),
-            py::detail::reference_parameter<A9>(from_python(a9, Type<A9>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
+            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
+            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
+            python::detail::reference_parameter<A8>(from_python(a8, type<A8>())),
+            python::detail::reference_parameter<A9>(from_python(a9, type<A9>()))
             );
     }
     const char* description() const
@@ -469,9 +469,9 @@ struct Init9 : Init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-struct Init10 : Init
+struct Init10 : init
 {
-    virtual InstanceHolderBase* create_holder(ExtensionInstance* self, PyObject* args, PyObject* /*keywords*/) const
+    virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
         PyObject* a1;
         PyObject* a2;
@@ -484,24 +484,24 @@ struct Init10 : Init
         PyObject* a9;
         PyObject* a10;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
-            throw ArgumentError();
+            throw argument_error();
         return new T(self,
-            py::detail::reference_parameter<A1>(from_python(a1, Type<A1>())),
-            py::detail::reference_parameter<A2>(from_python(a2, Type<A2>())),
-            py::detail::reference_parameter<A3>(from_python(a3, Type<A3>())),
-            py::detail::reference_parameter<A4>(from_python(a4, Type<A4>())),
-            py::detail::reference_parameter<A5>(from_python(a5, Type<A5>())),
-            py::detail::reference_parameter<A6>(from_python(a6, Type<A6>())),
-            py::detail::reference_parameter<A7>(from_python(a7, Type<A7>())),
-            py::detail::reference_parameter<A8>(from_python(a8, Type<A8>())),
-            py::detail::reference_parameter<A9>(from_python(a9, Type<A9>())),
-            py::detail::reference_parameter<A10>(from_python(a10, Type<A10>()))
+            python::detail::reference_parameter<A1>(from_python(a1, type<A1>())),
+            python::detail::reference_parameter<A2>(from_python(a2, type<A2>())),
+            python::detail::reference_parameter<A3>(from_python(a3, type<A3>())),
+            python::detail::reference_parameter<A4>(from_python(a4, type<A4>())),
+            python::detail::reference_parameter<A5>(from_python(a5, type<A5>())),
+            python::detail::reference_parameter<A6>(from_python(a6, type<A6>())),
+            python::detail::reference_parameter<A7>(from_python(a7, type<A7>())),
+            python::detail::reference_parameter<A8>(from_python(a8, type<A8>())),
+            python::detail::reference_parameter<A9>(from_python(a9, type<A9>())),
+            python::detail::reference_parameter<A10>(from_python(a10, type<A10>()))
             );
     }
     const char* description() const
         { return typeid(void (*)(T&, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10)).name(); }
 };
 
-}} // namespace py::detail
+}} // namespace python::detail
 
 #endif // INIT_FUNCTION_DWA052000_H_

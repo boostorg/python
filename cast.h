@@ -12,12 +12,12 @@
 # include "wrap_python.h"
 # include <boost/operators.hpp>
 
-namespace py {
+namespace python {
 
 namespace detail {
   // The default way of converting a PyObject* or PyTypeObject* to a T*
   template <class T>
-  struct DowncastTraits
+  struct downcast_traits
   {
       template <class U>
       static T* cast(U* p) { return static_cast<T*>(p); }
@@ -51,22 +51,22 @@ inline PyObject* as_object(PyTypeObject* p) { return reinterpret_cast<PyObject*>
 // If I didn't have to support stupid MSVC6 we could just use a simple template function:
 // template <class T> T* downcast(PyObject*).
 template <class T>
-struct Downcast : boost::dereferenceable<Downcast<T>, T*>
+struct downcast : boost::dereferenceable<downcast<T>, T*>
 {
-    Downcast(PyObject* p)
-        : m_p(detail::DowncastTraits<T>::cast(detail::as_base_object((T*)0, p)))
+    downcast(PyObject* p)
+        : m_p(detail::downcast_traits<T>::cast(detail::as_base_object((T*)0, p)))
         {}
     
-    Downcast(const PyObject* p)
-        : m_p(detail::DowncastTraits<T>::cast(detail::as_base_object((const T*)0, p)))
+    downcast(const PyObject* p)
+        : m_p(detail::downcast_traits<T>::cast(detail::as_base_object((const T*)0, p)))
         {}
     
-    Downcast(PyTypeObject* p)
-        : m_p(detail::DowncastTraits<T>::cast(p))
+    downcast(PyTypeObject* p)
+        : m_p(detail::downcast_traits<T>::cast(p))
         {}
     
-    Downcast(const PyTypeObject* p)
-        : m_p(detail::DowncastTraits<T>::cast(p))
+    downcast(const PyTypeObject* p)
+        : m_p(detail::downcast_traits<T>::cast(p))
         {}
     
     operator T*() const { return m_p; }
@@ -76,6 +76,6 @@ struct Downcast : boost::dereferenceable<Downcast<T>, T*>
     T* m_p;
 };
 
-} // namespace py
+} // namespace python
 
 #endif // CAST_DWA052500_H_

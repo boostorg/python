@@ -4,7 +4,7 @@
 
 # Provided as-is; use at your own risk; no warranty; no promises; enjoy!
 
-"""Module doctest -- a framework for running examples in docstrings.
+"""module_builder doctest -- a framework for running examples in docstrings.
 
 NORMAL USAGE
 
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 Then running the module as a script will cause the examples in the
 docstrings to get executed and verified:
 
-python M.py
+python M.python
 
 This won't display anything unless an example fails, in which case
 the failing example(s) and the cause(s) of the failure(s) are printed
@@ -29,7 +29,7 @@ and the final line of output is "Test failed.".
 
 Run it with the -v switch instead:
 
-python M.py -v
+python M.python -v
 
 and a detailed report of all examples tried is printed to stdout, along
 with assorted summaries at the end.
@@ -55,7 +55,7 @@ WHICH DOCSTRINGS ARE EXAMINED?
 
 + If M.__test__ exists and "is true", it must be a dict, and
   each entry maps a (string) name to a function object, class object, or
-  string.  Function and class object docstrings found from M.__test__
+  string.  function and class object docstrings found from M.__test__
   are searched even if the name is private, and strings are searched
   directly as if they were docstrings.  In output, a key K in M.__test__
   appears with name
@@ -74,7 +74,7 @@ by passing your own "isprivate" function to testmod.
 If you want to test docstrings in objects with private names too, stuff
 them into an M.__test__ dict, or see ADVANCED USAGE below (e.g., pass your
 own isprivate function to Tester's constructor, or call the rundoc method
-of a Tester instance).
+of a Tester obj).
 
 Warning:  imports can cause trouble; e.g., if you do
 
@@ -112,7 +112,7 @@ of M.__dict__ merged with the globals from other imported modules.
 WHAT IF I WANT TO TEST A WHOLE PACKAGE?
 
 Piece o' cake, provided the modules do their testing from docstrings.
-Here's the test.py I use for the world's most elaborate Rational/
+Here's the test.python I use for the world's most elaborate Rational/
 floating-base-conversion pkg (which I'll distribute some day):
 
 from Rational import Cvt
@@ -172,9 +172,9 @@ ADVANCED USAGE
 doctest.testmod() captures the testing policy I find most useful most
 often.  You may want other policies.
 
-testmod() actually creates a local instance of class doctest.Tester,
+testmod() actually creates a local obj of class doctest.Tester,
 runs appropriate methods of that class, and merges the results into
-global Tester instance doctest.master.
+global Tester obj doctest.master.
 
 You can create your own instances of doctest.Tester, and so build your
 own policies, or even run methods of doctest.master directly.  See
@@ -326,7 +326,7 @@ Test passed.
 #        function
 #    by default a name now considered to be private iff it begins with
 #        an underscore but doesn't both begin & end with two of 'em; so
-#        e.g. Class.__init__ etc are searched now -- as they always
+#        e.g. class_t.__init__ etc are searched now -- as they always
 #        should have been
 # 0,9,3    18-Mar-1999
 #    added .flush stub to _SpoofOut (JPython buglet diagnosed by
@@ -472,7 +472,7 @@ def _tag_out(printer, *tag_msg_pairs):
             printer("\n")
 
 # Run list of examples, in context globs.  "out" can be used to display
-# stuff to "the real" stdout, and fakeout is an instance of _SpoofOut
+# stuff to "the real" stdout, and fakeout is an obj of _SpoofOut
 # that captures the examples' std output.  Return (#failures, #tries).
 
 def _run_examples_inner(out, fakeout, examples, globs, verbose, name):
@@ -592,7 +592,7 @@ def is_private(prefix, base):
     return base[:1] == "_" and not base[:2] == "__" == base[-2:]
 
 class Tester:
-    """Class Tester -- runs docstring examples and accumulates stats.
+    """class_t Tester -- runs docstring examples and accumulates stats.
 
 In normal use, function doctest.testmod() hides all this from you,
 so use that if you can.  Create your own instances of Tester to do
@@ -619,7 +619,7 @@ Methods:
         (#failures, #tries).
 
     merge(other)
-        Merge in the test results from Tester instance "other".
+        Merge in the test results from Tester obj "other".
 
 >>> from doctest import Tester
 >>> t = Tester(globs={'x': 42}, verbose=0)
@@ -900,7 +900,7 @@ see its docs for details.
 
     def merge(self, other):
         """
-        other -> merge in test results from the other Tester instance.
+        other -> merge in test results from the other Tester obj.
 
         If self and other both have a test result for something
         with the same name, the (#failures, #tests) results are
@@ -1007,9 +1007,9 @@ def testmod(m=None, name=None, globs=None, verbose=None, isprivate=None,
     else prints nothing at the end.  In verbose mode, the summary is
     detailed, else very brief (in fact, empty if all tests passed).
 
-    Advanced tomfoolery:  testmod runs methods of a local instance of
+    Advanced tomfoolery:  testmod runs methods of a local obj of
     class doctest.Tester, then merges the results into (or creates)
-    global Tester instance doctest.master.  Methods of doctest.master
+    global Tester obj doctest.master.  Methods of doctest.master
     can be called directly too, if you want to do something  unusual.
     Passing report=0 to testmod is especially useful then, to delay
     displaying a summary.  Invoke doctest.master.summarize(verbose)

@@ -16,33 +16,33 @@ def gen_singleton(args):
 
 # include "pyconfig.h"
 
-namespace py { namespace detail {
+namespace python { namespace detail {
 
-struct Empty {};
-template <class Derived, class Base = Empty>
-struct Singleton : Base
+struct empty {};
+template <class Derived, class Base = empty>
+struct singleton : Base
 {
-    typedef Singleton SingletonBase; // Convenience type for derived class constructors
+    typedef singleton singleton_base; // Convenience type for derived class constructors
     
-    static Derived* singleton();
+    static Derived* instance();
 
     // Pass-through constructors
 """
         + gen_functions("""%{
     template <%(class A%n%:, %)>
-%}    Singleton(%(const A%n& a%n%:, %)) : Base(%(a%n%:, %)) {}
+%}    singleton(%(const A%n& a%n%:, %)) : Base(%(a%n%:, %)) {}
 """, args)
         + """
 };
 
 template <class Derived, class Base>
-Derived* Singleton<Derived,Base>::singleton()
+Derived* singleton<Derived,Base>::instance()
 {
     static Derived x;
     return &x;
 }
 
-}} // namespace py::detail
+}} // namespace python::detail
 
 #endif
 """)

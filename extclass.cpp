@@ -10,19 +10,19 @@
 #include <cstring>
 #include <boost/utility.hpp>
 
-namespace py {
+namespace python {
 namespace detail {
 
   struct operator_dispatcher
       : public PyObject
   {
-      static PyTypeObject type_object;
+      static PyTypeObject type_obj;
       static PyNumberMethods number_methods;
 
-      static operator_dispatcher* create(const Ptr& o, const Ptr& s);     
+      static operator_dispatcher* create(const ref& o, const ref& s);     
       
-      Ptr m_object;
-      Ptr m_self;
+      ref m_object;
+      ref m_self;
 
       // data members for allocation/deallocation optimization
       operator_dispatcher* m_free_list_link;
@@ -30,55 +30,55 @@ namespace detail {
 
   private: 
       // only accessible through create()
-      operator_dispatcher(const Ptr& o, const Ptr& s);
+      operator_dispatcher(const ref& o, const ref& s);
   };
   
   operator_dispatcher* operator_dispatcher::free_list = 0;
 
 }}
 
-PY_BEGIN_CONVERSION_NAMESPACE
+BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-inline PyObject* to_python(py::detail::operator_dispatcher* n) { return n; }
+inline PyObject* to_python(python::detail::operator_dispatcher* n) { return n; }
 
-PY_END_CONVERSION_NAMESPACE
+BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 
-namespace py{ 
+namespace python{ 
 
 namespace detail {
 
-  Tuple extension_class_coerce(Ptr l, Ptr r)
+  tuple extension_class_coerce(ref l, ref r)
   {
       // Introduced sequence points for exception-safety.
-      Ptr first(operator_dispatcher::create(l, l));
-      Ptr second;
+      ref first(operator_dispatcher::create(l, l));
+      ref second;
       
-      if(r->ob_type == &operator_dispatcher::type_object)
+      if(r->ob_type == &operator_dispatcher::type_obj)
       {
            second = r;
       }
       else
       {
-           second = Ptr(operator_dispatcher::create(r, Ptr()));
+           second = ref(operator_dispatcher::create(r, ref()));
       }
-      return py::Tuple(first, second);
+      return python::tuple(first, second);
   }
 
   enum { unwrap_exception_code = -1000 };
 
   int unwrap_args(PyObject* left, PyObject* right, PyObject*& self, PyObject*& other)
   {
-      if (left->ob_type != &operator_dispatcher::type_object ||
-          right->ob_type != &operator_dispatcher::type_object)
+      if (left->ob_type != &operator_dispatcher::type_obj ||
+          right->ob_type != &operator_dispatcher::type_obj)
       {
           PyErr_SetString(PyExc_RuntimeError, "operator_dispatcher::unwrap_args(): expecting operator_dispatcher arguments only!");
           return unwrap_exception_code;
       }
 
-      typedef PyPtr<operator_dispatcher> DPtr;
-      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::new_ref);
-      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::new_ref);
+      typedef reference<operator_dispatcher> DPtr;
+      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::increment_count);
+      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::increment_count);
       
       if (lwrapper->m_self.get() != 0)
       {
@@ -97,18 +97,18 @@ namespace detail {
   int unwrap_pow_args(PyObject* left, PyObject* right, PyObject* m,
                                   PyObject*& self, PyObject*& first, PyObject*& second)
   {
-      if (left->ob_type != &operator_dispatcher::type_object ||
-          right->ob_type != &operator_dispatcher::type_object ||
-          m->ob_type != &operator_dispatcher::type_object)
+      if (left->ob_type != &operator_dispatcher::type_obj ||
+          right->ob_type != &operator_dispatcher::type_obj ||
+          m->ob_type != &operator_dispatcher::type_obj)
       {
           PyErr_SetString(PyExc_RuntimeError, "operator_dispatcher::unwrap_pow_args(): expecting operator_dispatcher arguments only!");
           return unwrap_exception_code;
       }
       
-      typedef PyPtr<operator_dispatcher> DPtr;
-      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::new_ref);
-      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::new_ref);
-      DPtr mwrapper(static_cast<operator_dispatcher*>(m), DPtr::new_ref);
+      typedef reference<operator_dispatcher> DPtr;
+      DPtr lwrapper(static_cast<operator_dispatcher*>(left), DPtr::increment_count);
+      DPtr rwrapper(static_cast<operator_dispatcher*>(right), DPtr::increment_count);
+      DPtr mwrapper(static_cast<operator_dispatcher*>(m), DPtr::increment_count);
       
       if (lwrapper->m_self.get() != 0)
       {
@@ -133,41 +133,41 @@ namespace detail {
       }
   }
 
-ExtensionInstance* get_extension_instance(PyObject* p)
+extension_instance* get_extension_instance(PyObject* p)
 {
-    // The object's type will just be some Class<ExtensionInstance> object,
-    // but if its meta-type is right, then it is an ExtensionInstance.
+    // The object's type will just be some class_t<extension_instance> object,
+    // but if its meta-type is right, then it is an extension_instance.
     if (p->ob_type->ob_type != extension_meta_class())
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw py::ArgumentError();
+        throw python::argument_error();
     }
-    return static_cast<ExtensionInstance*>(p);
+    return static_cast<extension_instance*>(p);
 }
 
 void
-ExtensionInstance::add_implementation(std::auto_ptr<InstanceHolderBase> holder)
+extension_instance::add_implementation(std::auto_ptr<instance_holder_base> holder)
 {
-    for (WrappedObjects::const_iterator p = m_wrapped_objects.begin();
+    for (held_objects::const_iterator p = m_wrapped_objects.begin();
          p != m_wrapped_objects.end(); ++p)
     {
         if (typeid(*holder) == typeid(**p))
         {
             PyErr_SetString(PyExc_RuntimeError, "Base class already initialized");
-            throw ErrorAlreadySet();
+            throw error_already_set();
         }
     }
     m_wrapped_objects.push_back(holder.release());
 }
 
-ExtensionInstance::ExtensionInstance(PyTypeObject* class_)
-    : Instance(class_)
+extension_instance::extension_instance(PyTypeObject* class_)
+    : instance(class_)
 {
 }
 
-ExtensionInstance::~ExtensionInstance()
+extension_instance::~extension_instance()
 {
-    for (WrappedObjects::const_iterator p = m_wrapped_objects.begin(),
+    for (held_objects::const_iterator p = m_wrapped_objects.begin(),
              finish = m_wrapped_objects.end();
          p != finish; ++p)
     {
@@ -175,19 +175,19 @@ ExtensionInstance::~ExtensionInstance()
     }
 }
     
-MetaClass<ExtensionInstance>* extension_meta_class()
+meta_class<extension_instance>* extension_meta_class()
 {
-    static MetaClass<ExtensionInstance> result;
+    static meta_class<extension_instance> result;
     return &result;
 }
 
-typedef Class<ExtensionInstance> ExtClass;
+typedef class_t<extension_instance> extension_class_t;
 
-bool is_subclass(const ExtClass* derived,
+bool is_subclass(const extension_class_t* derived,
                  const PyObject* possible_base)
 {
 
-    Tuple bases = derived->bases();
+    tuple bases = derived->bases();
     
     for (std::size_t i = 0, size = bases.size(); i < size; ++i)
     {
@@ -198,7 +198,7 @@ bool is_subclass(const ExtClass* derived,
         
         if (base->ob_type == extension_meta_class())
         {
-            const ExtClass* base_class = Downcast<const ExtClass>(base);
+            const extension_class_t* base_class = downcast<const extension_class_t>(base);
             if (is_subclass(base_class, possible_base))
                 return true;
         }
@@ -206,16 +206,16 @@ bool is_subclass(const ExtClass* derived,
     return false;
 }
 
-// Return true iff instance is an instance of target_class
-bool is_instance(ExtensionInstance* instance,
-                 Class<ExtensionInstance>* target_class)
+// Return true iff obj is an obj of target_class
+bool is_instance(extension_instance* obj,
+                 class_t<extension_instance>* target_class)
 {
-    if (instance->ob_type == target_class)
+    if (obj->ob_type == target_class)
         return true;
     else
     {
         return is_subclass(
-            Downcast<Class<ExtensionInstance> >(instance->ob_type).get(),
+            downcast<class_t<extension_instance> >(obj->ob_type).get(),
             as_object(target_class));
     }
 }
@@ -223,9 +223,9 @@ bool is_instance(ExtensionInstance* instance,
 void two_string_error(PyObject* exception_object, const char* format, const char* s1, const char* s2)
 {
     char buffer[256];
-    std::size_t format_length = PY_CSTD_::strlen(format);
-    std::size_t length1 = PY_CSTD_::strlen(s1);
-    std::size_t length2 = PY_CSTD_::strlen(s2);
+    std::size_t format_length = BOOST_CSTD_::strlen(format);
+    std::size_t length1 = BOOST_CSTD_::strlen(s1);
+    std::size_t length2 = BOOST_CSTD_::strlen(s2);
 
     std::size_t additional_length = length1 + length2;
     if (additional_length + format_length > format_length - 1)
@@ -239,29 +239,29 @@ void two_string_error(PyObject* exception_object, const char* format, const char
                 
     PyErr_SetString(exception_object, buffer);
     if (exception_object == PyExc_TypeError)
-        throw ArgumentError();
+        throw argument_error();
     else
-        throw ErrorAlreadySet();
+        throw error_already_set();
 }
 
-// This is called when an attempt has been made to convert the given instance to
-// a C++ type for which it doesn't have any instance data. In that case, either
-// the instance was not derived from the target_class, or the appropriate
-// __init__ function wasn't called to initialize the instance data of the target class.
+// This is called when an attempt has been made to convert the given obj to
+// a C++ type for which it doesn't have any obj data. In that case, either
+// the obj was not derived from the target_class, or the appropriate
+// __init__ function wasn't called to initialize the obj data of the target class.
 void report_missing_instance_data(
-    ExtensionInstance* instance,                // The object being converted
-    Class<ExtensionInstance>* target_class,     // the extension class of the C++ type
+    extension_instance* obj,                // The object being converted
+    class_t<extension_instance>* target_class,     // the extension class of the C++ type
     const std::type_info& target_typeid,        // The typeid of the C++ type
     bool target_is_ptr)
 {
     char buffer[256];
-    if (is_instance(instance, target_class))
+    if (is_instance(obj, target_class))
     {
         if (target_is_ptr)
         {
             two_string_error(PyExc_RuntimeError,
                              "Object of extension class '%.*s' does not wrap <%.*s>.",
-                             instance->ob_type->tp_name, target_typeid.name());
+                             obj->ob_type->tp_name, target_typeid.name());
         }
         else
         {
@@ -280,24 +280,24 @@ void report_missing_instance_data(
     else    
     {
         two_string_error(PyExc_TypeError, "extension class '%.*s' is not convertible into '%.*s'.",
-                         instance->ob_type->tp_name, target_class->tp_name);
+                         obj->ob_type->tp_name, target_class->tp_name);
     }
 }
 
 void report_missing_instance_data(
-    ExtensionInstance* instance,                // The object being converted
-    Class<ExtensionInstance>* target_class,     // the extension class of the C++ type
+    extension_instance* obj,                // The object being converted
+    class_t<extension_instance>* target_class,     // the extension class of the C++ type
     const std::type_info& target_typeid)        // The typeid of the C++ type
 {
-    report_missing_instance_data(instance, target_class, target_typeid, false);
+    report_missing_instance_data(obj, target_class, target_typeid, false);
 }
 
 void report_missing_ptr_data(
-    ExtensionInstance* instance,                // The object being converted
-    Class<ExtensionInstance>* target_class,     // the extension class of the C++ type
+    extension_instance* obj,                // The object being converted
+    class_t<extension_instance>* target_class,     // the extension class of the C++ type
     const std::type_info& target_typeid)        // The typeid of the C++ type
 {
-    report_missing_instance_data(instance, target_class, target_typeid, true);
+    report_missing_instance_data(obj, target_class, target_typeid, true);
 }
 
 void report_missing_class_object(const std::type_info& info)
@@ -306,7 +306,7 @@ void report_missing_class_object(const std::type_info& info)
     const char message[] = "Cannot convert <%.*s> to python; its Python class was never created or has been deleted.";
     sprintf(buffer, message, sizeof(buffer) - sizeof(message) - 1, info.name());
     PyErr_SetString(PyExc_RuntimeError, buffer);
-    throw ErrorAlreadySet();
+    throw error_already_set();
 }
 
 void report_released_smart_pointer(const std::type_info& info)
@@ -315,28 +315,28 @@ void report_released_smart_pointer(const std::type_info& info)
     const char message[] = "Converting from python, pointer or smart pointer to <%.*s> is NULL.";
     sprintf(buffer, message, sizeof(buffer) - sizeof(message) - 1, info.name());
     PyErr_SetString(PyExc_RuntimeError, buffer);
-    throw ArgumentError();
+    throw argument_error();
 }
 
-ReadOnlySetattrFunction::ReadOnlySetattrFunction(const char* name)
+read_only_setattr_function::read_only_setattr_function(const char* name)
     : m_name(name)
 {
 }
 
-PyObject* ReadOnlySetattrFunction::do_call(PyObject* /*args*/, PyObject* /*keywords*/) const
+PyObject* read_only_setattr_function::do_call(PyObject* /*args*/, PyObject* /*keywords*/) const
 {
     PyErr_SetObject(PyExc_AttributeError, ("'" + m_name + "' attribute is read-only").get());
     return 0;
 }
 
-const char* ReadOnlySetattrFunction::description() const
+const char* read_only_setattr_function::description() const
 {
     return "uncallable";
 }
 
-ExtensionClassBase::ExtensionClassBase(const char* name)
-    : Class<ExtensionInstance>(
-        extension_meta_class(), String(name), Tuple(), Dict())
+extension_class_base::extension_class_base(const char* name)
+    : class_t<extension_instance>(
+        extension_meta_class(), string(name), tuple(), dictionary())
 {
 }
 
@@ -356,10 +356,10 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
 //  conversion functions will return a NULL pointer.
 
 //  The function extract_object_from_holder() attempts to actually extract the pointer 
-//  to the contained object from an InstanceHolderBase (a wrapper class). A conversion
+//  to the contained object from an instance_holder_base (a wrapper class). A conversion
 //  of the held object to 'T *' is allowed when the conversion 
-//  'dynamic_cast<InstanceHolder<T> *>(an_instance_holder_base)' succeeds.
-void* ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) const
+//  'dynamic_cast<instance_holder<T> *>(an_instance_holder_base)' succeeds.
+void* extension_class_base::try_class_conversions(instance_holder_base* object) const
 {
     void* result = try_derived_class_conversions(object);
     if (result) 
@@ -371,7 +371,7 @@ void* ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) cons
         return 0;
 }
 
-void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object) const
+void* extension_class_base::try_base_class_conversions(instance_holder_base* object) const
 {
     for (std::size_t i = 0; i < base_classes().size(); ++i)
     {
@@ -388,7 +388,7 @@ void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object)
     return 0;
 }
 
-void* ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase* object) const
+void* extension_class_base::try_derived_class_conversions(instance_holder_base* object) const
 {
     for (std::size_t i = 0; i < derived_classes().size(); ++i)
     {
@@ -403,60 +403,60 @@ void* ExtensionClassBase::try_derived_class_conversions(InstanceHolderBase* obje
     return 0;
 }
 
-void ExtensionClassBase::add_method(Function* method, const char* name)
+void extension_class_base::add_method(function* method, const char* name)
 {
-    add_method(PyPtr<Function>(method), name);
+    add_method(reference<function>(method), name);
 }
     
-void ExtensionClassBase::add_method(PyPtr<Function> method, const char* name)
+void extension_class_base::add_method(reference<function> method, const char* name)
 {
     // Add the attribute to the computed target
-    Function::add_to_namespace(method, name, this->dict().get());
+    function::add_to_namespace(method, name, this->dict().get());
 
     // If it is a special member function it should be enabled both here and there.
     detail::enable_named_method(this, name);
 }
 
-void ExtensionClassBase::add_constructor_object(Function* init_function)
+void extension_class_base::add_constructor_object(function* init_fn)
 {
-    add_method(init_function, "__init__");
+    add_method(init_fn, "__init__");
 }
 
-void ExtensionClassBase::add_setter_method(Function* setter_, const char* name)
+void extension_class_base::add_setter_method(function* setter_, const char* name)
 {
-    PyPtr<Function> setter(setter_);
+    reference<function> setter(setter_);
     add_method(setter, (detail::setattr_string() + name + "__").c_str());
 }
 
-void ExtensionClassBase::add_getter_method(Function* getter_, const char* name)
+void extension_class_base::add_getter_method(function* getter_, const char* name)
 {
-    PyPtr<Function> getter(getter_);
+    reference<function> getter(getter_);
     add_method(getter, (detail::getattr_string() + name + "__").c_str());
 }
 
-void ExtensionClassBase::set_attribute(const char* name, PyObject* x_)
+void extension_class_base::set_attribute(const char* name, PyObject* x_)
 {
-    Ptr x(x_);
+    ref x(x_);
     set_attribute(name, x);
 }
 
-void ExtensionClassBase::set_attribute(const char* name, Ptr x)
+void extension_class_base::set_attribute(const char* name, ref x)
 {
-    dict().set_item(String(name), x);
+    dict().set_item(string(name), x);
     if (PyCallable_Check(x.get()))
         detail::enable_named_method(this, name);
 }
 
-operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
+operator_dispatcher::operator_dispatcher(const ref& o, const ref& s)
     : m_object(o), m_self(s), m_free_list_link(0)
 
 {
     ob_refcnt = 1;
-    ob_type = &type_object;
+    ob_type = &type_obj;
 }
 
 operator_dispatcher* 
-operator_dispatcher::create(const Ptr& object, const Ptr& self)
+operator_dispatcher::create(const ref& object, const ref& self)
 {
     operator_dispatcher* const result = free_list;
     if (result == 0)
@@ -474,11 +474,11 @@ extern "C"
 
 void operator_dispatcher_dealloc(PyObject* self) 
 { 
-    operator_dispatcher* instance = static_cast<operator_dispatcher*>(self);
-    instance->m_free_list_link = operator_dispatcher::free_list;
-    operator_dispatcher::free_list = instance;
-    instance->m_object.reset();
-    instance->m_self.reset();
+    operator_dispatcher* obj = static_cast<operator_dispatcher*>(self);
+    obj->m_free_list_link = operator_dispatcher::free_list;
+    operator_dispatcher::free_list = obj;
+    obj->m_object.reset();
+    obj->m_self.reset();
 } 
 
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
@@ -486,7 +486,7 @@ int operator_dispatcher_coerce(PyObject** l, PyObject** r)
     Py_INCREF(*l);
     try
     {
-        *r = operator_dispatcher::create(Ptr(*r, Ptr::new_ref), Ptr());
+        *r = operator_dispatcher::create(ref(*r, ref::increment_count), ref());
     }
     catch(...)
     {
@@ -608,7 +608,7 @@ int operator_dispatcher_call_cmp(PyObject* left, PyObject* right)
     {
         try
         {
-            return PY_CONVERSION::from_python(result, Type<int>());
+            return BOOST_PYTHON_CONVERSION::from_python(result, type<int>());
         }
         catch(...)
         {
@@ -621,7 +621,7 @@ int operator_dispatcher_call_cmp(PyObject* left, PyObject* right)
 
 } // extern "C"
     
-PyTypeObject operator_dispatcher::type_object = 
+PyTypeObject operator_dispatcher::type_obj = 
 { 
     PyObject_HEAD_INIT(&PyType_Type) 
     0, 
@@ -680,4 +680,4 @@ PyNumberMethods operator_dispatcher::number_methods =
 
 } // namespace detail
 
-} // namespace py
+} // namespace python

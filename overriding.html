@@ -46,7 +46,7 @@ class world
 
   <li><a name="derived_3">An</a> implementation of each virtual function you may wish to override in
   Python which uses
-  <code>py::Callback&lt<i>return-type</i>&gt;::call_method()</code> to call the
+  <code>python::callback&lt<i>return-type</i>&gt;::call_method()</code> to call the
   Python override.
 
   <li><a name="derived_4">For</a> each non-pure virtual function meant to be overridable from Python, a
@@ -65,7 +65,7 @@ struct world_callback : world
           m_self(self) {}
 
     const char* get() const // <a href="#derived_3">3</a>
-        { return py::Callback&lt;const char*&gt;::call_method(m_self, "get"); }
+        { return python::callback&lt;const char*&gt;::call_method(m_self, "get"); }
 
     static const char* <a name= "default_implementation">default_get</a>(const hello::world& self) const // <a href="#derived_4">4</a>
         { return self.world::get(); }
@@ -76,14 +76,14 @@ struct world_callback : world
 
 <p>
   Finally, we add <code>world_callback</code> to the <code>
-  ClassWrapper&lt;&gt;</code> declaration in our module initialization
+  class_builder&lt;&gt;</code> declaration in our module initialization
   function, and when we define the function, we must tell py_cpp about the default
   implementation:
 
 <blockquote><pre>
 // Create the <a name=
 "world_class">Python type object</a> for our extension class
-py::ClassWrapper&lt;hello::world<strong>,world_callback&gt;</strong> world_class(hello, "world");
+python::class_builder&lt;hello::world<strong>,world_callback&gt;</strong> world_class(hello, "world");
 // Add a virtual member function
 world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>);
 </pre></blockquote>
@@ -116,7 +116,7 @@ world_class.def(&amp;world::get, "get", &amp;<b>world_callback::default_get</b>)
       to deal with than a virtual function with a default implementation. First
       of all, you obviously don't need to <a href="#default_implementation">
       supply a default implementation</a>. Secondly, you don't need to call
-      <code>def()</code> on the <code>ExtensionClass&lt;&gt;</code> instance
+      <code>def()</code> on the <code>extension_class&lt;&gt;</code> instance
       for the virtual function. In fact, you wouldn't <em>want</em> to: if the
       corresponding attribute on the Python class stays undefined, you'll get
       an <code>AttributeError</code> in Python when you try to call the
@@ -128,7 +128,7 @@ struct baz {
 };
 
 struct baz_callback {
-    int pure(int x) { py::Callback&lt;int&gt;::call_method(m_self, "pure", x); }
+    int pure(int x) { python::callback&lt;int&gt;::call_method(m_self, "pure", x); }
 };
 
 extern "C"
@@ -139,13 +139,13 @@ initfoobar()
 {
     try
     {
-       py::Module foobar("foobar");
-       py::ClassWrapper&lt;baz,baz_callback&gt; baz_class("baz");
+       python::module_builder foobar("foobar");
+       python::class_builder&lt;baz,baz_callback&gt; baz_class("baz");
        baz_class.def(&amp;baz::pure, "pure");
     }
     catch(...)
     {
-       py::handle_exception();    // Deal with the exception for Python
+       python::handle_exception();    // Deal with the exception for Python
     }
 }
 </pre>

@@ -8,7 +8,7 @@
 # include <strstream>
 #endif
 
-namespace py {
+namespace python {
 
 namespace detail {
   struct auto_operand {};
@@ -39,7 +39,7 @@ enum operator_id
     op_cmp = 0x100000 
 };
 
-template <long which, class operand = py::detail::auto_operand>
+template <long which, class operand = python::detail::auto_operand>
 struct operators {};
 
 template <class T>
@@ -53,7 +53,7 @@ namespace detail
   template <class Specified>
   struct operand_select
   {
-      template <class WrappedType>
+      template <class wrapped_type>
       struct wrapped
       {
           typedef Specified type;
@@ -63,20 +63,20 @@ namespace detail
   template <>
   struct operand_select<auto_operand>
   {
-      template <class WrappedType>
+      template <class wrapped_type>
       struct wrapped
       {
-          typedef const WrappedType& type;
+          typedef const wrapped_type& type;
       };
   };
 
   template <long> struct define_operator;
 
-  // Base class which grants access to ExtensionClassBase::add_method() to its derived classes
+  // Base class which grants access to extension_class_base::add_method() to its derived classes
   struct add_operator_base
   {
    protected:
-      static inline void add_method(ExtensionClassBase* target, Function* method, const char* name)
+      static inline void add_method(extension_class_base* target, function* method, const char* name)
           { target->add_method(method, name); }
   };
 
@@ -89,7 +89,7 @@ namespace detail
 //  Usage:
 //      choose_op<(which & op_add)>::template args<left_t,right_t>::add(ext_class);
 // 
-// (see ExtensionClass<>::def_operators() for more examples).
+// (see extension_class<>::def_operators() for more examples).
 //
   template <long op_selector>
   struct choose_op
@@ -97,7 +97,7 @@ namespace detail
       template <class Left, class Right = Left>
       struct args : add_operator_base
       {
-          static inline void add(ExtensionClassBase* target)
+          static inline void add(extension_class_base* target)
           {
               typedef define_operator<op_selector> def_op;
               add_method(target,
@@ -115,7 +115,7 @@ namespace detail
       template <class Left, class Right = Left>
       struct args
       {
-          static inline void add(ExtensionClassBase*)
+          static inline void add(extension_class_base*)
           {
           }
 
@@ -128,7 +128,7 @@ namespace detail
       template <class Operand>
       struct args : add_operator_base
       {
-          static inline void add(ExtensionClassBase* target)
+          static inline void add(extension_class_base* target)
           {
               typedef define_operator<op_selector> def_op;
               add_method(target,
@@ -146,7 +146,7 @@ namespace detail
       template <class Operand>
       struct args
       {
-          static inline void add(ExtensionClassBase*)
+          static inline void add(extension_class_base*)
           {
           }
 
@@ -159,7 +159,7 @@ namespace detail
       template <class Left, class Right = Left>
       struct args : add_operator_base
       {
-          static inline void add(ExtensionClassBase* target)
+          static inline void add(extension_class_base* target)
           {
               typedef define_operator<op_selector> def_op;
               add_method(target,
@@ -177,7 +177,7 @@ namespace detail
       template <class Left, class Right = Left>
       struct args
       {
-          static inline void add(ExtensionClassBase*)
+          static inline void add(extension_class_base*)
           {
           }
 
@@ -189,15 +189,15 @@ namespace detail
   struct define_operator<op_##id>                                                       \
   {                                                                                     \
       template <class Left, class Right = Left>                                         \
-      struct operator_function : Function                                               \
+      struct operator_function : function                                               \
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              Tuple args(Ptr(arguments, Ptr::new_ref));                                 \
+              tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                         \
-              return PY_CONVERSION::to_python(                                          \
-                  PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) oper      \
-                  PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()));        \
+              return BOOST_PYTHON_CONVERSION::to_python(                                          \
+                  BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()) oper      \
+                  BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()));        \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -205,15 +205,15 @@ namespace detail
       };                                                                                \
                                                                                         \
       template <class Right, class Left>                                                \
-      struct roperator_function : Function                                              \
+      struct roperator_function : function                                              \
       {                                                                                 \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
           {                                                                             \
-              Tuple args(Ptr(arguments, Ptr::new_ref));                                 \
+              tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                         \
-              return PY_CONVERSION::to_python(                                          \
-                  PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) oper      \
-                  PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()));        \
+              return BOOST_PYTHON_CONVERSION::to_python(                                          \
+                  BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()) oper      \
+                  BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()));        \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -230,14 +230,14 @@ namespace detail
   struct define_operator<op_##id>                                                               \
   {                                                                                             \
       template <class operand>                                                                  \
-      struct operator_function : Function                                                       \
+      struct operator_function : function                                                       \
       {                                                                                         \
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
           {                                                                                     \
-              Tuple args(Ptr(arguments, Ptr::new_ref));                                         \
+              tuple args(ref(arguments, ref::increment_count));                                         \
                                                                                                 \
-              return PY_CONVERSION::to_python(                                                  \
-                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));        \
+              return BOOST_PYTHON_CONVERSION::to_python(                                                  \
+                  oper(BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<operand>())));        \
           }                                                                                     \
                                                                                                 \
           const char* description() const                                                       \
@@ -273,21 +273,21 @@ namespace detail
   struct define_operator<op_pow>
   {
       template <class Left, class Right = Left>
-      struct operator_function : Function
+      struct operator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
 
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "expected 2 arguments, got 3");
-                  throw ArgumentError();
+                  throw argument_error();
               }
 
-              return PY_CONVERSION::to_python(
-                  pow(PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()),
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()))); 
+              return BOOST_PYTHON_CONVERSION::to_python(
+                  pow(BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()),
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()))); 
           }
 
           const char* description() const
@@ -296,21 +296,21 @@ namespace detail
       };
 
       template <class Right, class Left>
-      struct roperator_function : Function
+      struct roperator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
 
               if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
-                  throw ArgumentError();
+                  throw argument_error();
               }
 
-              return PY_CONVERSION::to_python(
-                  pow(PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()),
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()))); 
+              return BOOST_PYTHON_CONVERSION::to_python(
+                  pow(BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()),
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()))); 
           }
 
           const char* description() const
@@ -326,21 +326,21 @@ namespace detail
   struct define_operator<op_divmod>
   {
       template <class Left, class Right = Left>
-      struct operator_function : Function
+      struct operator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) /
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()))); 
+                BOOST_PYTHON_CONVERSION::to_python(
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()) /
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
-                PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) %
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>())));
+                BOOST_PYTHON_CONVERSION::to_python(
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()) %
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>())));
 
               return res; 
           }
@@ -351,21 +351,21 @@ namespace detail
       };
 
       template <class Right, class Left>
-      struct roperator_function : Function
+      struct roperator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) /
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()))); 
+                BOOST_PYTHON_CONVERSION::to_python(
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()) /
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
-                PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) %
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>())));
+                BOOST_PYTHON_CONVERSION::to_python(
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()) %
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>())));
 
               return res; 
           }
@@ -383,18 +383,18 @@ namespace detail
   struct define_operator<op_cmp>
   {
       template <class Left, class Right = Left>
-      struct operator_function : Function
+      struct operator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
 
-              return PY_CONVERSION::to_python(
-                  (PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) <
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>())) ?
+              return BOOST_PYTHON_CONVERSION::to_python(
+                  (BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>()) <
+                   BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>())) ?
                        - 1 :
-                       (PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()) <
-                       PY_CONVERSION::from_python(args[0].get(), py::Type<Left>())) ?
+                       (BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Right>()) <
+                       BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Left>())) ?
                            1 :
                            0) ; 
           }
@@ -405,18 +405,18 @@ namespace detail
       };
 
       template <class Right, class Left>
-      struct roperator_function : Function
+      struct roperator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
 
-              return PY_CONVERSION::to_python(
-                  (PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) <
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>())) ?
+              return BOOST_PYTHON_CONVERSION::to_python(
+                  (BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>()) <
+                   BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>())) ?
                        - 1 :
-                       (PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()) <
-                       PY_CONVERSION::from_python(args[1].get(), py::Type<Left>())) ?
+                       (BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<Right>()) <
+                       BOOST_PYTHON_CONVERSION::from_python(args[1].get(), python::type<Left>())) ?
                            1 :
                            0) ; 
           }
@@ -434,24 +434,24 @@ namespace detail
   struct define_operator<op_str>
   {
       template <class operand>
-      struct operator_function : Function
+      struct operator_function : function
       {
           PyObject* do_call(PyObject* arguments, PyObject*) const
           { 
-              Tuple args(Ptr(arguments, Ptr::new_ref));
+              tuple args(ref(arguments, ref::increment_count));
 
 #if !defined(__GNUC__) || defined(__SGI_STL_PORT)
               std::ostringstream s;
-              s << PY_CONVERSION::from_python(args[0].get(), py::Type<operand>());
+              s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<operand>());
 #else
               std::ostrstream s;
-              s << PY_CONVERSION::from_python(args[0].get(), py::Type<operand>()) << char();
+              s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), python::type<operand>()) << char();
 #endif
 
 #if !defined(__GNUC__) || defined(__SGI_STL_PORT)
-              return PY_CONVERSION::to_python(s.str()); 
+              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
 #else
-              return PY_CONVERSION::to_python(const_cast<char const *>(s.str())); 
+              return BOOST_PYTHON_CONVERSION::to_python(const_cast<char const *>(s.str())); 
 #endif
           }
 
@@ -466,6 +466,6 @@ namespace detail
 
 } // namespace detail
 
-} // namespace py
+} // namespace python
 
 #endif /* OPERATORS_UK112000_H_ */

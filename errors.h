@@ -9,10 +9,10 @@
 #ifndef ERRORS_DWA052500_H_
 # define ERRORS_DWA052500_H_
 
-namespace py {
+namespace python {
 
-struct ErrorAlreadySet {};
-struct ArgumentError : ErrorAlreadySet {};
+struct error_already_set {};
+struct argument_error : error_already_set {};
 
 // Handles exceptions caught just before returning to Python code.
 void handle_exception();
@@ -21,10 +21,10 @@ template <class T>
 T* expect_non_null(T* x)
 {
     if (x == 0)
-        throw ErrorAlreadySet();
+        throw error_already_set();
     return x;
 }
 
-} // namespace py
+} // namespace python
 
 #endif // ERRORS_DWA052500_H_

@@ -18,7 +18,7 @@ header = '''//  (C) Copyright David Abrahams 2000. Permission to copy, use, modi
 //  producing this work.
 //
 //  This file generated for %d-argument member functions and %d-argument free
-//  functions by gen_caller.py
+//  functions by gen_caller.python
 '''
 
 body_sections = (
@@ -32,11 +32,11 @@ body_sections = (
 # include "signatures.h"
 # include "none.h"
 
-namespace py {
+namespace python {
 
 // Calling C++ from Python
 template <class R>
-struct Caller
+struct caller
 {
 ''',
 '''
@@ -46,7 +46,7 @@ struct Caller
 '''};
                            
 template <>
-struct Caller<void>
+struct caller<void>
 {
 ''',
 '''
@@ -69,8 +69,8 @@ member_function = '''    template <class T%(, class A%n%)>
 %(        PyObject* a%n;
 %)        if (!PyArg_ParseTuple(args, const_cast<char*>("O%(O%)"), &self%(, &a%n%)))
             return 0;
-        T& target = from_python(self, Type<T&>());
-        %3(target.*pmf)(%(from_python(a%n, Type<A%n>())%:,
+        T& target = from_python(self, type<T&>());
+        %3(target.*pmf)(%(from_python(a%n, type<A%n>())%:,
                         %))%4
     }
 
@@ -81,7 +81,7 @@ free_function = '''%{    template <%(class A%n%:, %)>
 %(        PyObject* a%n;
 %)        if (!PyArg_ParseTuple(args, const_cast<char*>("%(O%)")%(, &a%n%)))
             return 0;
-        %2f(%(from_python(a%n, Type<A%n>())%:,
+        %2f(%(from_python(a%n, type<A%n>())%:,
                         %))%3
     }
 

@@ -11,7 +11,7 @@ def gen_callback(args):
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file was generated for %d-argument python callbacks by gen_callback.py
+//  This file was generated for %d-argument python callbacks by gen_callback.python
 
 #ifndef CALLBACK_DWA_052100_H_
 # define CALLBACK_DWA_052100_H_
@@ -19,41 +19,41 @@ def gen_callback(args):
 # include "pyconfig.h"
 # include "py.h"
 
-namespace py {
+namespace python {
 
 namespace detail {
   template <class T>
-  inline void callback_adjust_refcount(PyObject*, Type<T>) {}
+  inline void callback_adjust_refcount(PyObject*, type<T>) {}
   
-  inline void callback_adjust_refcount(PyObject* p, Type<PyObject*>)
+  inline void callback_adjust_refcount(PyObject* p, type<PyObject*>)
       { Py_INCREF(p); }
 }
 
 // Calling Python from C++
 template <class R>
-struct Callback
+struct callback
 {""" % args
 
     + gen_functions('''
 %{    template <%(class A%n%:, %)>
 %}    static R call_method(PyObject* self, const char* name%(, const A%n& a%n%))
     {%(
-        Ptr p%n(to_python(a%n));%)
-        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+        ref p%n(to_python(a%n));%)
+        ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(%(O%))")%(,
                                      p%n.get()%)));
-        detail::callback_adjust_refcount(result.get(), Type<R>());
-        return from_python(result.get(), Type<R>());
+        detail::callback_adjust_refcount(result.get(), type<R>());
+        return from_python(result.get(), type<R>());
     }
 
 %{    template <%(class A%n%:, %)>
 %}    static R call(PyObject* self%(, const A%n& a%n%))
     {%(
-        Ptr p%n(to_python(a%n));%)
-        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
+        ref p%n(to_python(a%n));%)
+        ref result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
                                        p%n.get()%)));
-        detail::callback_adjust_refcount(result.get(), Type<R>());
-        return from_python(result.get(), Type<R>());
+        detail::callback_adjust_refcount(result.get(), type<R>());
+        return from_python(result.get(), type<R>());
     }
 ''', args)
         + 
@@ -63,15 +63,15 @@ struct Callback
 // void g();
 // void f() { return g(); }
 template <>
-struct Callback<void>
+struct callback<void>
 {
 """
         + gen_functions('''
 %{    template <%(class A%n%:, %)>
 %}    static void call_method(PyObject* self, const char* name%(, const A%n& a%n%))
     {%(
-        Ptr p%n(to_python(a%n));%)
-        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+        ref p%n(to_python(a%n));%)
+        ref result(PyEval_CallMethod(self, const_cast<char*>(name),
                                      const_cast<char*>("(%(O%))")%(,
                                      p%n.get()%)));
     }
@@ -79,8 +79,8 @@ struct Callback<void>
 %{    template <%(class A%n%:, %)>
 %}    static void call(PyObject* self%(, const A%n& a%n%))
     {%(
-        Ptr p%n(to_python(a%n));%)
-        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
+        ref p%n(to_python(a%n));%)
+        ref result(PyEval_CallFunction(self, const_cast<char*>("(%(O%))")%(,
                                        p%n.get()%)));
     }
 ''', args)
@@ -90,25 +90,25 @@ struct Callback<void>
 // Make it a compile-time error to try to return a const char* from a virtual
 // function. The standard conversion
 //
-//      from_python(PyObject* string, py::Type<const char*>)
+//      from_python(PyObject* string, python::type<const char*>)
 //
 // returns a pointer to the character array which is internal to string. The
 // problem with trying to do this in a standard callback function is that the
 // Python string would likely be destroyed upon return from the calling function
-// (py::Callback<const char*>::call[_method]) when its reference count is
+// (python::callback<const char*>::call[_method]) when its reference count is
 // decremented. If you absolutely need to do this and you're sure it's safe (it
 // usually isn't), you can use
 //
-//      py::String result(py::Callback<py::String>::call[_method](...args...));
+//      python::string result(python::callback<python::string>::call[_method](...args...));
 //      ...result.c_str()... // access the char* array
 template <>
-struct Callback<const char*>
+struct callback<const char*>
 {
     // Try hard to generate a readable error message
     typedef struct unsafe_since_python_string_may_be_destroyed {} call, call_method;
 };
 
-} // namespace py
+} // namespace python
 
 #endif // CALLBACK_DWA_052100_H_
 """)
