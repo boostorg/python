@@ -9,6 +9,7 @@
 #ifndef METHOD_DWA122899_H_
 # define METHOD_DWA122899_H_
 
+# include "pyconfig.h"
 # include "wrap_python.h"
 # include "none.h"
 # include "signatures.h"
@@ -165,6 +166,7 @@ PyObject* to_python(boost::shared_ptr<T> p)
 // inline implementations
 //
 
+#ifndef PY_MSVC6_OR_EARLIER
 inline PyObject* to_python(double d)
 {
     return PyFloat_FromDouble(d);
@@ -174,6 +176,7 @@ inline PyObject* to_python(float f)
 {
     return PyFloat_FromDouble(f);
 }
+#endif // PY_MSVC6_OR_EARLIER
 
 inline PyObject* to_python(long l)
 {
