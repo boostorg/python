@@ -51,16 +51,17 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+run test_container_proxy.cpp : : : $(PYTHON_PROPERTIES) ;
+bpl-test test_vector_proxy : test_vector_proxy.py test_vector_ext.cpp ;
+bpl-test test_vector_ref   : test_vector_ref.py   test_vector_ext.cpp ;
+bpl-test test_vector_plain : test_vector_plain.py test_vector_ext.cpp ;
+bpl-test test_deque_proxy  : test_deque_proxy.py  test_deque_ext.cpp  ;
+bpl-test test_deque_ref    : test_deque_ref.py    test_deque_ext.cpp  ;
+bpl-test test_deque_plain  : test_deque_plain.py  test_deque_ext.cpp  ;
 bpl-test test_indexing_const ;
 bpl-test test_vector_shared ;
 bpl-test test_array        : test_array.py        test_array_ext.cpp  ;
 bpl-test test_array_ref    : test_array_ref.py    test_array_ext.cpp  ;
-bpl-test test_vector_plain : test_vector_plain.py test_vector_ext.cpp ;
-bpl-test test_vector_ref   : test_vector_ref.py   test_vector_ext.cpp ;
-bpl-test test_vector_proxy : test_vector_proxy.py test_vector_ext.cpp ;
-bpl-test test_deque_plain  : test_deque_plain.py  test_deque_ext.cpp  ;
-bpl-test test_deque_ref    : test_deque_ref.py    test_deque_ext.cpp  ;
-bpl-test test_deque_proxy  : test_deque_proxy.py  test_deque_ext.cpp  ;
 bpl-test test_list_plain   : test_list_plain.py   test_list_ext.cpp   ;
 bpl-test test_map_plain    : test_map_plain.py    testnonlinear.cpp   ;
 bpl-test test_set_plain    : test_set_plain.py    testnonlinear.cpp   ;
