@@ -206,6 +206,39 @@ Polymorphism also works:
     >>> baz.get_foo_value(polymorphic_foo)
     1000
 
+Pickling tests:
+
+    >>> world.__module__
+    'demo'
+    >>> world.__safe_for_unpickling__
+    1
+    >>> world.__reduce__()
+    'world'
+    >>> reduced = world('Hello').__reduce__()
+    >>> reduced[0] == world
+    1
+    >>> reduced[1:]
+    (('Hello',), (0,))
+    >>> import StringIO
+    >>> import cPickle
+    >>> pickle = cPickle
+    >>> for number in (24, 42):
+    ...     wd = world('California')
+    ...     wd.set_secret_number(number)
+    ...     # Dump it out and read it back in.
+    ...     f = StringIO.StringIO()
+    ...     pickle.dump(wd, f)
+    ...     f = StringIO.StringIO(f.getvalue())
+    ...     wl = pickle.load(f)
+    ...     #
+    ...     print wd.greet(), wd.get_secret_number()
+    ...     print wl.greet(), wl.get_secret_number()
+    ...
+    Hello from California! 24
+    Hello from California! 24
+    Hello from California! 42
+    Hello from California! 0
+
 Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.uk>
 
     >>> class DerivedFromFoo(Foo):

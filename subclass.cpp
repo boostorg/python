@@ -12,6 +12,7 @@
 #include <cstddef>
 #include "callback.h"
 #include <cstring>
+#include "module.h"
 
 namespace py {
 
@@ -55,6 +56,64 @@ namespace {
       Py_XDECREF(v);
       Py_XDECREF(tb);
   }
+
+  //
+  // pickle support courtesy of "Ralf W. Grosse-Kunstleve" <rwgk@cci.lbl.gov>
+  //
+  PyObject* class_reduce(PyObject* klass)
+  {
+      return PyObject_GetAttrString(klass, "__name__");
+  }
+
+  Ptr global_class_reduce()
+  {
+      static Ptr result(py::new_wrapped_function(class_reduce));
+      return result;
+  }
+  
+
+  Tuple instance_reduce(PyObject* instance)
+  {
+      Ptr instance_class(PyObject_GetAttrString(instance, "__class__"));
+
+      Ptr getinitargs(PyObject_GetAttrString(instance, "__getinitargs__"),
+                      Ptr::null_ok);
+      PyErr_Clear();
+      Ptr initargs;
+      if (getinitargs.get() != 0)
+      {
+          initargs = Ptr(PyEval_CallObject(getinitargs.get(), NULL));
+          initargs = Ptr(PySequence_Tuple(initargs.get()));
+      }
+      else
+      {
+          initargs = Ptr(PyTuple_New(0));
+      }
+
+      Ptr getstate(PyObject_GetAttrString(instance, "__getstate__"),
+                   Ptr::null_ok);
+      PyErr_Clear();
+      if (getstate.get() != 0)
+      {
+          Ptr state = Ptr(PyEval_CallObject(getstate.get(), NULL));
+          return Tuple(instance_class, initargs, state);
+      }
+
+      Ptr state(PyObject_GetAttrString(instance, "__dict__"), Ptr::null_ok);
+      PyErr_Clear();
+      if (state.get() != 0)
+      {
+          return Tuple(instance_class, initargs, state);
+      }
+
+      return Tuple(instance_class, initargs);
+  }
+
+  Ptr global_instance_reduce()
+  {
+      static Ptr result(py::new_wrapped_function(instance_reduce));
+      return result;
+  }
 }
 
 
@@ -87,7 +146,7 @@ namespace detail {
       m_bases = new_bases;
   }
 
-  PyObject* ClassBase::getattr(const char* name) const
+  PyObject* ClassBase::getattr(const char* name)
   {
       if (!PY_CSTD_::strcmp(name, "__dict__"))
       {
@@ -108,6 +167,17 @@ namespace detail {
           PyObject* result = m_name.get();
           Py_INCREF(result);
           return result;
+      }
+
+      // pickle support courtesy of "Ralf W. Grosse-Kunstleve" <rwgk@cci.lbl.gov>
+      if (!PY_CSTD_::strcmp(name, "__safe_for_unpickling__"))
+      {
+          return PyInt_FromLong(1);
+      }
+      if (!PY_CSTD_::strcmp(name, "__reduce__"))
+      {
+          Ptr target(as_object(this), Ptr::new_ref);
+          return new BoundFunction(target, global_class_reduce());
       }
       
       Ptr local_attribute = m_name_space.get_item(String(name).reference());
@@ -274,6 +344,11 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     {
         Py_INCREF(this->ob_type);
         return as_object(this->ob_type);
+    }
+
+    if (!PY_CSTD_::strcmp(name, "__reduce__"))
+    {
+      return new BoundFunction(Ptr(this, Ptr::new_ref), global_instance_reduce());
     }
     
     Ptr local_attribute = m_name_space.get_item(String(name).reference());
@@ -767,21 +842,7 @@ namespace {
   void add_current_module_name(Dict& name_space)
   {
       static String module_key("__module__", String::interned);
-      static String name_key("__name__", String::interned);
-    
-      Ptr existing_value = name_space.get_item(module_key);
-      if (existing_value.get() == 0)
-      {
-          PyObject* globals = PyEval_GetGlobals();
-          if (globals != 0) // Why don't we throw in this case? Who knows? This is
-          {                 // what Python does for class objects!
-              PyObject* module_name = PyDict_GetItem(globals, name_key.get());
-              if (module_name != 0)
-              {
-                  name_space[module_key] = Ptr(module_name, Ptr::borrowed);
-              }
-          }
-      }
+      name_space.set_item(module_key, Module::name());
   }
 }
 

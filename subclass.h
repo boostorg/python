@@ -92,7 +92,7 @@ namespace detail {
       Dict& dict();
       
       // Standard Python functions.
-      PyObject* getattr(const char* name) const;
+      PyObject* getattr(const char* name);
       int setattr(const char* name, PyObject* value);
       PyObject* repr() const;
       void add_base(Ptr base);

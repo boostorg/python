@@ -1,3 +1,15 @@
+2000-11-17 15:04
+    Added pickling support + tests thanks to "Ralf W. Grosse-Kunstleve"
+    <rwgk@cci.lbl.gov>
+
+    Added a specialization of Callback<const char*> to prevent unsafe usage.
+
+    Fixed Ullrich's operator_dispatcher refcount bug
+
+    Removed const char* return values from virtual functions in tests; that
+    usage was unsafe.
+
+
 2000-11-15 12:01
     Fixed Ullrich's refcount bug
 
