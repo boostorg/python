@@ -26,50 +26,24 @@ struct arg_from_python<PyObject*>
 {
     typedef PyObject* result_type;
     
-    arg_from_python(PyObject*) {}
+    arg_from_python(PyObject* p) : m_source(p) {}
     bool convertible() const { return true; }
-    PyObject* operator()(PyObject* source) const { return source; }
+    PyObject* operator()() const { return m_source; }
+ private:
+    PyObject* m_source;
 };
 
 template <>
 struct arg_from_python<PyObject* const&>
 {
     typedef PyObject* const& result_type;
-    arg_from_python(PyObject*) {}
+    
+    arg_from_python(PyObject* p) : m_source(p) {}
     bool convertible() const { return true; }
-    PyObject*const& operator()(PyObject*const& source) const { return source; }
+    PyObject*const& operator()() const { return m_source; }
+ private:
+    PyObject* m_source;
 };
-
-namespace detail
-{
-  //
-  // Meta-iterators for use with caller<>
-  //
-  
-  // temporary hack
-  template <class T> struct nullary : T
-  {
-      nullary(PyObject* x) : T(x), m_p(x) {}
-      typename T::result_type operator()() { return this->T::operator()(m_p); }
-      PyObject* m_p;
-  };
-
-  // An MPL metafunction class which returns arg_from_python<ArgType>
-  struct gen_arg_from_python
-  {
-      template <class ArgType> struct apply
-      {
-          typedef nullary<arg_from_python<ArgType> > type;
-      };
-  };
-
-  // An MPL iterator over an endless sequence of gen_arg_from_python
-  struct args_from_python
-  {
-      typedef gen_arg_from_python type;
-      typedef args_from_python next;
-  };
-}
 
 //
 // implementations

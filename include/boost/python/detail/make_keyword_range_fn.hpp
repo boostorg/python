@@ -30,7 +30,7 @@ object make_keyword_range_function(
   , keyword_range const& kw)
 {
     return detail::make_function_aux(
-        f, policies, args_from_python(), detail::get_signature(f), kw, mpl::int_<0>());
+        f, policies, detail::get_signature(f), kw, mpl::int_<0>());
 }
 
 template <class F, class Policies, class Signature>
@@ -41,7 +41,7 @@ object make_keyword_range_function(
   , Signature const& sig)
 {
     return detail::make_function_aux(
-        f, policies, args_from_python(), sig, kw, mpl::int_<0>());
+        f, policies, sig, kw, mpl::int_<0>());
 }
 // }
 

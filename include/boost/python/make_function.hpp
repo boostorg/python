@@ -26,17 +26,16 @@ namespace detail
   // These helper functions for make_function (below) do the raw work
   // of constructing a Python object from some invokable entity. See
   // <boost/python/detail/caller.hpp> for more information about how
-  // the ConverterGenerators and Sig arguments are used.
-  template <class F, class CallPolicies, class ConverterGenerators, class Sig>
+  // the Sig arguments is used.
+  template <class F, class CallPolicies, class Sig>
   object make_function_aux(
       F f                               // An object that can be invoked by detail::invoke()
       , CallPolicies const& p           // CallPolicies to use in the invocation
-      , ConverterGenerators const&      // An MPL iterator over a sequence of arg_from_python generators
       , Sig const&                      // An MPL sequence of argument types expected by F
       )
   {
       return objects::function_object(
-          detail::caller<F,ConverterGenerators,CallPolicies,Sig>(f, p)
+          detail::caller<F,CallPolicies,Sig>(f, p)
       );
   }
 
@@ -44,11 +43,10 @@ namespace detail
   // is used only for a compile-time assertion to make sure the user
   // doesn't pass more keywords than the function can accept. To
   // disable all checking, pass mpl::int_<0> for NumKeywords.
-  template <class F, class CallPolicies, class ConverterGenerators, class Sig, class NumKeywords>
+  template <class F, class CallPolicies, class Sig, class NumKeywords>
   object make_function_aux(
       F f
       , CallPolicies const& p
-      , ConverterGenerators const&
       , Sig const&
       , detail::keyword_range const& kw // a [begin,end) pair of iterators over keyword names
       , NumKeywords                     // An MPL integral type wrapper: the size of kw
@@ -61,7 +59,7 @@ namespace detail
           >::too_many_keywords assertion;
     
       return objects::function_object(
-          detail::caller<F,ConverterGenerators,CallPolicies,Sig>(f, p)
+          detail::caller<F,CallPolicies,Sig>(f, p)
         , kw);
   }
 
@@ -75,7 +73,6 @@ namespace detail
       return detail::make_function_aux(
           f
         , policies
-        , detail::args_from_python()
         , detail::get_signature(f)
         , kw.range()
         , mpl::int_<Keywords::size>()
@@ -88,7 +85,6 @@ namespace detail
       return detail::make_function_aux(
           f
         , policies
-        , detail::args_from_python()
         , sig
       );
   }
@@ -103,14 +99,14 @@ template <class F>
 object make_function(F f)
 {
     return detail::make_function_aux(
-        f,default_call_policies(),detail::args_from_python(), detail::get_signature(f));
+        f,default_call_policies(), detail::get_signature(f));
 }
 
 template <class F, class CallPolicies>
 object make_function(F f, CallPolicies const& policies)
 {
     return detail::make_function_aux(
-        f,policies,detail::args_from_python(), detail::get_signature(f));
+        f, policies, detail::get_signature(f));
 }
 
 template <class F, class CallPolicies, class KeywordsOrSignature>
@@ -142,7 +138,6 @@ object make_function(
     return detail::make_function_aux(
           f
         , policies
-        , detail::args_from_python()
         , sig
         , kw.range()
         , mpl::int_<Keywords::size>()

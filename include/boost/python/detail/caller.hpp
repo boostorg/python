@@ -17,18 +17,20 @@
 #  include <boost/mpl/at.hpp>
 #  include <boost/type_traits/is_same.hpp>
 
-#  include <boost/python/detail/preprocessor.hpp>
-#  include <boost/preprocessor/iterate.hpp>
-#  include <boost/preprocessor/iteration/local.hpp>
-#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
-#  include <boost/preprocessor/repetition/repeat.hpp>
-#  include <boost/preprocessor/cat.hpp>
-#  include <boost/preprocessor/dec.hpp>
-#  include <boost/preprocessor/if.hpp>
-
 #  include <boost/python/type_id.hpp>
 #  include <boost/python/detail/invoke.hpp>
 #  include <boost/python/detail/signature.hpp>
+#  include <boost/python/detail/preprocessor.hpp>
+
+#  include <boost/python/arg_from_python.hpp>
+
+#  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/cat.hpp>
+#  include <boost/preprocessor/dec.hpp>
+#  include <boost/preprocessor/if.hpp>
+#  include <boost/preprocessor/iteration/local.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
+#  include <boost/preprocessor/repetition/repeat.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -36,14 +38,6 @@ namespace boost { namespace python { namespace detail {
 // a dispatch tag to invoke(...), selecting the appropriate
 // implementation
 typedef int void_result_to_python;
-
-// A metafunction taking an iterator FunctionIter to a metafunction
-// class and an iterator ArgIter to an argument, which applies the
-// result of dereferencing FunctionIter to the result of dereferencing
-// ArgIter
-template <class FunctionIter, class ArgIter>
-struct apply_iter1
-    : mpl::apply1<typename FunctionIter::type, typename ArgIter::type> {};
 
 // Given a model of CallPolicies and a C++ result type, this
 // metafunction selects the appropriate converter to use for
@@ -61,18 +55,17 @@ struct select_result_converter
 
 template <unsigned> struct caller_arity;
 
-template <class F, class ConverterGenerators, class CallPolicies, class Sig>
+template <class F, class CallPolicies, class Sig>
 struct caller;
 
 #  define BOOST_PYTHON_NEXT(init,name,n)                                                        \
      typedef BOOST_PP_IF(n,typename BOOST_PP_CAT(name,BOOST_PP_DEC(n)) ::next, init) name##n;
 
-#  define BOOST_PYTHON_ARG_CONVERTER(n)                                 \
-     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                \
-     BOOST_PYTHON_NEXT(ConverterGenerators, conv_iter,n)                \
-     typedef typename apply_iter1<conv_iter##n,arg_iter##n>::type c_t##n; \
-     c_t##n c##n(PyTuple_GET_ITEM(args_, n));                           \
-     if (!c##n.convertible())                                           \
+#  define BOOST_PYTHON_ARG_CONVERTER(n)                                         \
+     BOOST_PYTHON_NEXT(typename first::next, arg_iter,n)                        \
+     typedef arg_from_python<BOOST_DEDUCED_TYPENAME arg_iter##n::type> c_t##n;  \
+     c_t##n c##n(PyTuple_GET_ITEM(args_, n));                                   \
+     if (!c##n.convertible())                                                   \
           return 0;
 
 #  define BOOST_PP_ITERATION_PARAMS_1                                            \
@@ -84,11 +77,11 @@ struct caller;
 
 // A metafunction returning the base class used for caller<class F,
 // class ConverterGenerators, class CallPolicies, class Sig>.
-template <class F, class ConverterGenerators, class CallPolicies, class Sig>
+template <class F, class CallPolicies, class Sig>
 struct caller_base_select
 {
     enum { arity = mpl::size<Sig>::value - 1 };
-    typedef typename caller_arity<arity>::template impl<F,ConverterGenerators,CallPolicies,Sig> type;
+    typedef typename caller_arity<arity>::template impl<F,CallPolicies,Sig> type;
 };
 
 // A function object type which wraps C++ objects as Python callable
@@ -101,11 +94,6 @@ struct caller_base_select
 //      actually be any data for which an appropriate invoke_tag() can
 //      be generated. invoke(...) takes care of the actual invocation syntax.
 //
-//   ConverterGenerators -
-//      An MPL iterator type over a sequence of metafunction classes
-//      that can be applied to element 1...N of Sig to produce
-//      argument from_python converters for the arguments
-//
 //   CallPolicies -
 //      The precall, postcall, and what kind of resultconverter to
 //      generate for mpl::front<Sig>::type
@@ -114,12 +102,12 @@ struct caller_base_select
 //      The `intended signature' of the function. An MPL sequence
 //      beginning with a result type and continuing with a list of
 //      argument types.
-template <class F, class ConverterGenerators, class CallPolicies, class Sig>
+template <class F, class CallPolicies, class Sig>
 struct caller
-    : caller_base_select<F,ConverterGenerators,CallPolicies,Sig>::type
+    : caller_base_select<F,CallPolicies,Sig>::type
 {
     typedef typename caller_base_select<
-        F,ConverterGenerators,CallPolicies,Sig
+        F,CallPolicies,Sig
         >::type base;
 
     typedef PyObject* result_type;
@@ -139,7 +127,7 @@ struct caller
 template <>
 struct caller_arity<N>
 {
-    template <class F, class ConverterGenerators, class Policies, class Sig>
+    template <class F, class Policies, class Sig>
     struct impl
     {
         impl(F f, Policies p) : m_data(f,p) {}

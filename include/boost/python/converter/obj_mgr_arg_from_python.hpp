@@ -27,7 +27,7 @@ struct object_manager_value_arg_from_python
     
     object_manager_value_arg_from_python(PyObject*);
     bool convertible() const;
-    T operator()(PyObject*) const;
+    T operator()() const;
  private:
     PyObject* m_source;
 };
@@ -48,7 +48,7 @@ struct object_manager_ref_arg_from_python
     
     object_manager_ref_arg_from_python(PyObject*);
     bool convertible() const;
-    Ref operator()(PyObject*) const;
+    Ref operator()() const;
     ~object_manager_ref_arg_from_python();
  private:
     typename python::detail::referent_storage<Ref>::type m_result;
@@ -71,9 +71,9 @@ inline bool object_manager_value_arg_from_python<T>::convertible() const
 }
 
 template <class T>
-inline T object_manager_value_arg_from_python<T>::operator()(PyObject* x) const
+inline T object_manager_value_arg_from_python<T>::operator()() const
 {
-    return T(python::detail::borrowed_reference(x));
+    return T(python::detail::borrowed_reference(m_source));
 }
 
 template <class Ref>
@@ -111,7 +111,7 @@ inline bool object_manager_ref_arg_from_python<Ref>::convertible() const
 }
 
 template <class Ref>
-inline Ref object_manager_ref_arg_from_python<Ref>::operator()(PyObject*) const
+inline Ref object_manager_ref_arg_from_python<Ref>::operator()() const
 {
     return python::detail::void_ptr_to_reference(
         this->m_result.bytes, (Ref(*)())0);

@@ -69,7 +69,7 @@ namespace detail
         
           if (!policies.precall(args_)) return 0;
 
-          PyObject* result = cr( (c0(PyTuple_GET_ITEM(args_, 0)))->*pm );
+          PyObject* result = cr( (c0())->*pm );
         
           return policies.postcall(args_, result);
       }
@@ -88,7 +88,7 @@ namespace detail
 
           if (!policies.precall(args_)) return 0;
 
-          (c0(PyTuple_GET_ITEM(args_, 0))).*pm = c1(PyTuple_GET_ITEM(args_, 1));
+          (c0()).*pm = c1();
         
           return policies.postcall(args_, detail::none());
       }
@@ -128,7 +128,7 @@ namespace detail
 
           if (!policies.precall(args_)) return 0;
 
-          *p = c0(PyTuple_GET_ITEM(args_, 0));
+          *p = c0();
         
           return policies.postcall(args_, detail::none());
       }

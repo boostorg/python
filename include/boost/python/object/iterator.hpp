@@ -60,7 +60,7 @@ namespace detail
           
           PyObject* py_self = PyTuple_GET_ITEM(args_, 0);
           arg_from_python<range_*> c0(py_self);
-          range_* self = c0(py_self);
+          range_* self = c0();
 
           // Done iterating?
           if (self->m_start == self->m_finish)
@@ -165,7 +165,7 @@ namespace detail
           PyObject* arg0 = PyTuple_GET_ITEM(args_, 0);
           arg_from_python<Target> c0(arg0);
           if (!c0.convertible()) return 0;
-          typename arg_from_python<Target>::result_type x = c0(arg0);
+          typename arg_from_python<Target>::result_type x = c0();
 
           // Build and convert the iterator_range<>.
           return cr(

@@ -8,7 +8,6 @@
 
 # include <boost/python/def_visitor.hpp>
 # include <boost/python/default_call_policies.hpp>
-# include <boost/python/arg_from_python.hpp>
 # include <boost/mpl/push_front.hpp>
 # include <boost/mpl/pop_front.hpp>
 

@@ -44,7 +44,7 @@ struct pointer_cref_arg_from_python
     typedef T result_type;
     
     pointer_cref_arg_from_python(PyObject*);
-    T operator()(PyObject*) const;
+    T operator()() const;
     bool convertible() const;
     
  private: // storage for a U*
@@ -74,7 +74,7 @@ struct pointer_arg_from_python : arg_lvalue_from_python_base
     typedef T result_type;
     
     pointer_arg_from_python(PyObject*);
-    T operator()(PyObject*) const;
+    T operator()() const;
 };
 
 // Used when T == U& and (T != V const& or T == W volatile&)
@@ -84,7 +84,7 @@ struct reference_arg_from_python : arg_lvalue_from_python_base
     typedef T result_type;
     
     reference_arg_from_python(PyObject*);
-    T operator()(PyObject*) const;
+    T operator()() const;
 };
 
 // ===================
@@ -114,10 +114,11 @@ struct arg_rvalue_from_python
 # if BOOST_MSVC < 1301 || _MSC_FULL_VER > 13102196
     typename arg_rvalue_from_python<T>::
 # endif 
-    result_type operator()(PyObject*);
+    result_type operator()();
     
  private:
     rvalue_from_python_data<result_type> m_data;
+    PyObject* m_source;
 };
 
 
@@ -132,9 +133,10 @@ struct back_reference_arg_from_python
     typedef T result_type;
     
     back_reference_arg_from_python(PyObject*);
-    T operator()(PyObject*);
+    T operator()();
  private:
     typedef boost::python::arg_from_python<typename T::type> base;
+    PyObject* m_source;
 };
 
 
@@ -259,9 +261,9 @@ inline bool pointer_cref_arg_from_python<T>::convertible() const
     return python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0) != 0;
 }
 template <class T>
-inline T pointer_cref_arg_from_python<T>::operator()(PyObject* p) const
+inline T pointer_cref_arg_from_python<T>::operator()() const
 {
-    return (p == Py_None)  // None ==> 0
+    return (*(void**)m_result.bytes == Py_None)  // None ==> 0
         ? detail::null_ptr_reference((T(*)())0)
         // Otherwise, return a U*const& to the m_result storage.
         : python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0);
@@ -277,9 +279,9 @@ inline pointer_arg_from_python<T>::pointer_arg_from_python(PyObject* p)
 }
 
 template <class T>
-inline T pointer_arg_from_python<T>::operator()(PyObject* p) const
+inline T pointer_arg_from_python<T>::operator()() const
 {
-    return (p == Py_None) ? 0 : T(result());
+    return (result() == Py_None) ? 0 : T(result());
 }
 
 // reference_arg_from_python
@@ -291,7 +293,7 @@ inline reference_arg_from_python<T>::reference_arg_from_python(PyObject* p)
 }
 
 template <class T>
-inline T reference_arg_from_python<T>::operator()(PyObject*) const
+inline T reference_arg_from_python<T>::operator()() const
 {
     return python::detail::void_ptr_to_reference(result(), (T(*)())0);
 }
@@ -302,6 +304,7 @@ inline T reference_arg_from_python<T>::operator()(PyObject*) const
 template <class T>
 inline arg_rvalue_from_python<T>::arg_rvalue_from_python(PyObject* obj)
     : m_data(converter::rvalue_from_python_stage1(obj, registered<T>::converters))
+    , m_source(obj)
 {
 }
 
@@ -313,10 +316,10 @@ inline bool arg_rvalue_from_python<T>::convertible() const
 
 template <class T>
 inline typename arg_rvalue_from_python<T>::result_type
-arg_rvalue_from_python<T>::operator()(PyObject* p)
+arg_rvalue_from_python<T>::operator()()
 {
     if (m_data.stage1.construct != 0)
-        m_data.stage1.construct(p, &m_data.stage1);
+        m_data.stage1.construct(m_source, &m_data.stage1);
     
     return python::detail::void_ptr_to_reference(m_data.stage1.convertible, (result_type(*)())0);
 }
@@ -325,15 +328,15 @@ arg_rvalue_from_python<T>::operator()(PyObject* p)
 //
 template <class T>
 back_reference_arg_from_python<T>::back_reference_arg_from_python(PyObject* x)
-    : base(x)
+  : base(x), m_source(x)
 {
 }
 
 template <class T>
 inline T
-back_reference_arg_from_python<T>::operator()(PyObject* x)
+back_reference_arg_from_python<T>::operator()()
 {
-    return T(x, base::operator()(x));
+    return T(m_source, base::operator()());
 }
 
 }}} // namespace boost::python::converter

@@ -33,8 +33,10 @@ template <unsigned> struct signature_arity;
         (3, (0, BOOST_PYTHON_MAX_ARITY + 1, <boost/python/detail/signature.hpp>))
 #  include BOOST_PP_ITERATE()
 
-// A metafunction returning the base class used for signature<class F,
-// class ConverterGenerators, class CallPolicies, class Sig>.
+// A metafunction returning the base class used for
+//
+//   signature<class F, class CallPolicies, class Sig>.
+//
 template <class Sig>
 struct signature_base_select
 {

@@ -10,7 +10,6 @@
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/object/py_function.hpp>
 # include <boost/python/signature.hpp>
-# include <boost/python/arg_from_python.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -26,7 +25,7 @@ inline handle<> function_handle(F const& f, Signature)
 
     return objects::function_handle_impl(
         python::detail::caller<
-            F,python::detail::args_from_python,default_call_policies,Signature
+            F,default_call_policies,Signature
         >(
             f, default_call_policies()
          )
