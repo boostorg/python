@@ -1,7 +1,7 @@
 r'''
     >>> import shared
-    >>> import m2
     >>> import m1
+    >>> import m2
     >>> ls = shared.Shared()
     >>> ls.name()
     'Shared'

@@ -11,9 +11,15 @@ char const * test(Shared const & m)
 
 extern "C" void initshared()
 {
-    py::module_builder shared("shared");
-    py::class_builder<Shared> shared_class(shared, "Shared");
-    shared_class.def(py::constructor<>());
-    shared_class.def(&Shared::name, "name");
-    shared.def(&test, "test");
+    try {
+        py::module_builder shared("shared");
+        py::class_builder<Shared> shared_class(shared, "Shared");
+        shared_class.def(py::constructor<>());
+        shared_class.def(&Shared::name, "name");
+        shared.def(&test, "test");
+    }
+    catch(...)
+    {
+        py::handle_exception();
+    }
 }

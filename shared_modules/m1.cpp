@@ -17,12 +17,25 @@ char const * test(Shared const & m)
 
 extern "C" void initm1()
 {
-    py::module_builder m1("m1");
-    
+    try {
+        py::module_builder m1("m1");
 
-    py::class_builder<M1> m1_class(m1, "M1");
-    m1_class.def(py::constructor<>());
-    m1_class.declare_base(py::type<Shared>());
-    
-    m1.def(&test, "test");
+
+        py::class_builder<M1> m1_class(m1, "M1");
+        m1_class.def(py::constructor<>());
+        
+        try {
+            m1_class.declare_base(py::type<Shared>());
+        }
+        catch(std::runtime_error & )
+        {
+            throw std::runtime_error("You must load module `shared' before module `m1'");
+        }
+
+        m1.def(&test, "test");
+    }
+    catch(...)
+    {
+        py::handle_exception();
+    }
 }
