@@ -2,15 +2,6 @@ from gen_function import *
 import string
 
 def gen_extclass(args):
-    held_instance = """%{
-    template <%(class A%n%:, %)>%}
-    HeldInstance(PyObject* p%(, A%n% a%n%)) : T(%(a%n%:, %)), m_self(p) {}"""
-
-    instance_value_holder = """%{
-    template <%(class A%n%:, %)>%}
-    InstanceValueHolder(ExtensionInstance* p%(, A%n a%n%)) :
-        m_held(p%(, a%n%)) {}"""
-    
     return (
 """//  (C) Copyright David Abrahams 2000. Permission to copy, use, modify, sell and
 //  distribute this software is granted provided this copyright notice appears
@@ -103,9 +94,7 @@ class ExtensionClassBase : public Class<ExtensionInstance>
 
  protected:
     void add_method(PyPtr<Function> method, const char* name);
-    void add_default_method(PyPtr<Function> method, const char* name);
     void add_method(Function* method, const char* name);
-    void add_default_method(Function* method, const char* name);
     
     void add_constructor_object(Function*);
     void add_setter_method(Function*, const char* name);
@@ -153,18 +142,18 @@ class PyExtensionClassConverters
     // not copyable? Apparently there is no problem with g++ or MSVC unless this
     // is actually used. With a conforming compiler we will have a problem.
     friend PyObject* to_python(const T& x)
-        {
-            py::PyPtr<py::ExtensionInstance> result(create_instance(false));
-            result->add_implementation(
-                std::auto_ptr<py::InstanceHolderBase>(
-                    new py::InstanceValueHolder<T,U>(result.get(), x)));
-            return result.release();
-        }
+    {
+        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        result->add_implementation(
+            std::auto_ptr<py::InstanceHolderBase>(
+                new py::InstanceValueHolder<T,U>(result.get(), x)));
+        return result.release();
+    }
 #else
     friend py::Type<U> py_holder_type(const T&)
         { return py::Type<U>(); }
 #endif
-    
+
     // Convert to T*
     friend T* from_python(PyObject* obj, py::Type<T*>)
     {
@@ -208,27 +197,23 @@ class PyExtensionClassConverters
 
     template <class PtrType>
     static PyObject* ptr_to_python(PtrType x)
-        {
-            py::PyPtr<py::ExtensionInstance> result(create_instance(true));
-            result->add_implementation(
-                std::auto_ptr<py::InstanceHolderBase>(
-                    new py::InstancePtrHolder<PtrType,T>(x)));
-            return result.release();
-        }
+    {
+        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        result->add_implementation(
+            std::auto_ptr<py::InstanceHolderBase>(
+                new py::InstancePtrHolder<PtrType,T>(x)));
+        return result.release();
+    }
 
-    static py::PyPtr<py::ExtensionInstance> create_instance(bool seek_base)
-        {
-            if (py::ClassRegistry<T>::class_object() == 0)
-                py::report_missing_class_object(typeid(T));
+    static py::PyPtr<py::ExtensionInstance> create_instance()
+    {
+        PyTypeObject* class_object = py::ClassRegistry<T>::class_object();
+        if (class_object == 0)
+            py::report_missing_class_object(typeid(T));
             
-            py::Class<py::ExtensionInstance>* class_
-                = seek_base && py::ClassRegistry<T>::class_object()->bases().size() > 0
-                ? py::Downcast<py::Class<py::ExtensionInstance> >(
-                    py::ClassRegistry<T>::class_object()->bases()[0].get()).get()
-                : py::ClassRegistry<T>::class_object();
-            
-            return py::PyPtr<py::ExtensionInstance>(new py::ExtensionInstance(class_));
-        }
+        return py::PyPtr<py::ExtensionInstance>(
+            new py::ExtensionInstance(class_object));
+    }
 
     // Convert to const T*
     friend const T* from_python(PyObject* p, py::Type<const T*>)
@@ -283,7 +268,7 @@ template <class T>
 PyObject* to_python(const T& x)
 {
     py::PyPtr<py::ExtensionInstance> result(
-        PyExtensionClassConverters<T>::create_instance(false));
+        PyExtensionClassConverters<T>::create_instance());
     result->add_implementation(
         std::auto_ptr<py::InstanceHolderBase>(
             py_copy_to_new_value_holder(result.get(), x, py_holder_type(x))));
@@ -388,8 +373,7 @@ class ExtensionClass
     template <class Fn, class DefaultFn>
     void def(Fn fn, const char* name, DefaultFn default_fn)
     {
-        this->add_default_method(new_wrapped_function(default_fn), name);
-        this->add_method(new_wrapped_function(fn), name);
+        this->add_method(py::detail::new_virtual_function(Type<T>(), fn, default_fn), name);
     }
 
     // Provide a function which implements x.<name>, reading from the given
@@ -481,25 +465,37 @@ class HeldInstance : public T
     // There are no member functions: we want to avoid inadvertently overriding
     // any virtual functions in T.
 public:"""
-        + gen_functions(held_instance, args)
+        + gen_functions("""%{
+    template <%(class A%n%:, %)>%}
+    HeldInstance(PyObject*%(, A%n% a%n%)) : T(%(a%n%:, %)) {}""", args)
         + """
-protected:
-    PyObject* m_self; // Not really needed; doesn't really hurt.
 };
 
+// Abstract base class for all instance holders. Base for template class
+// InstanceHolder<>, below.
 class InstanceHolderBase
 {
 public:
     virtual ~InstanceHolderBase() {}
+    virtual bool held_by_value() = 0;
 };
 
+// Abstract base class which holds a Held, somehow. Provides a uniform way to
+// get a pointer to the held object
 template <class Held>
 class InstanceHolder : public InstanceHolderBase
 {
 public:
     virtual Held *target() = 0;
 };
-    
+
+// Concrete class which holds a Held by way of a wrapper class Wrapper. If Held
+// can be constructed with arguments (A1...An), Wrapper must have a
+// corresponding constructor for arguments (PyObject*, A1...An). Wrapper is
+// neccessary to implement virtual function callbacks (there must be a
+// back-pointer to the actual Python object so that we can call any
+// overrides). HeldInstance (above) is used as a default Wrapper class when
+// there are no virtual functions.
 template <class Held, class Wrapper>
 class InstanceValueHolder : public InstanceHolder<Held>
 {
@@ -507,13 +503,22 @@ public:
     Held* target() { return &m_held; }
     Wrapper* value_target() { return &m_held; }
 """
-        + gen_functions(instance_value_holder, args)
+        + gen_functions("""%{
+    template <%(class A%n%:, %)>%}
+    InstanceValueHolder(ExtensionInstance* p%(, A%n a%n%)) :
+        m_held(p%(, a%n%)) {}""", args)
         + """
-private:
+
+ public: // implementation of InstanceHolderBase required interface
+    bool held_by_value() { return true; }
+
+ private:
     Wrapper m_held;
 };
-""" +
-"""
+
+// Concrete class which holds a HeldType by way of a (possibly smart) pointer
+// PtrType. By default, these are only generated for PtrType ==
+// std::auto_ptr<HeldType> and PtrType == boost::shared_ptr<HeldType>.
 template <class PtrType, class HeldType>
 class InstancePtrHolder : public InstanceHolder<HeldType>
 {
@@ -522,6 +527,9 @@ class InstancePtrHolder : public InstanceHolder<HeldType>
     PtrType& ptr() { return m_ptr; }
 
     InstancePtrHolder(PtrType ptr) : m_ptr(ptr) {}
+    
+ public: // implementation of InstanceHolderBase required interface
+    bool held_by_value() { return false; }
  private:
     PtrType m_ptr;
 };
