@@ -283,34 +283,6 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     BOOST_STATIC_CONSTANT(int, n_arguments = mpl::size<reversed_args>::value);
 };
 
-#    if 1
-template <> // specialization for zero args
-class init<> : public init_base<init<> >
-{
-    typedef init_base<init<> > base;
- public:
-    typedef init<> self_t;
-
-    init(char const* doc_ = 0)
-        : base(doc_)
-    {
-    }
-    
-    template <class CallPoliciesT>
-    init_with_call_policies<CallPoliciesT, self_t>
-    operator[](CallPoliciesT const& policies) const
-    {
-        return init_with_call_policies<CallPoliciesT, self_t>(
-            policies, this->doc_string(), this->keywords());
-    }
-
-    BOOST_STATIC_CONSTANT(int, n_defaults = 0);
-    BOOST_STATIC_CONSTANT(int, n_arguments = 0);
-
-    typedef detail::type_list<> reversed_args;
-};
-#    endif
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  optional
