@@ -179,7 +179,7 @@ class python_extension_class_converters
     // pop up. Now, if T hasn't been wrapped as an extension class, the user
     // will see an error message about the lack of an eligible
     // py_extension_class_converters() function.
-    friend python_extension_class_converters py_extension_class_converters(boost::python::type<T>)
+    friend python_extension_class_converters py_extension_class_converters(boost::python::type<T>, bool sig = false)
     { 
         return python_extension_class_converters();
     }
@@ -227,7 +227,7 @@ class python_extension_class_converters
     }
 
     // Convert to T*
-    friend T* from_python(PyObject* obj, boost::python::type<T*>)
+    friend T* from_python(PyObject* obj, boost::python::type<T*>, bool sig = false)
     {
         if (obj == Py_None)
             return 0;
@@ -295,51 +295,51 @@ class python_extension_class_converters
     }
 
     // Convert to const T*
-    friend const T* from_python(PyObject* p, boost::python::type<const T*>)
+    friend const T* from_python(PyObject* p, boost::python::type<const T*>, bool sig = false)
         { return from_python(p, boost::python::type<T*>()); }
 
     // Convert to const T* const&
-    friend const T* from_python(PyObject* p, boost::python::type<const T*const&>)
+    friend const T* from_python(PyObject* p, boost::python::type<const T*const&>, bool sig = false)
          { return from_python(p, boost::python::type<const T*>()); }
   
     // Convert to T* const&
-    friend T* from_python(PyObject* p, boost::python::type<T* const&>)
+    friend T* from_python(PyObject* p, boost::python::type<T* const&>, bool sig = false)
          { return from_python(p, boost::python::type<T*>()); }
  
     // Convert to T&
-    friend T& from_python(PyObject* p, boost::python::type<T&>)
+    friend T& from_python(PyObject* p, boost::python::type<T&>, bool sig = false)
         { return *boost::python::detail::check_non_null(non_null_from_python(p, boost::python::type<T*>())); }
 
     // Convert to const T&
-    friend const T& from_python(PyObject* p, boost::python::type<const T&>)
+    friend const T& from_python(PyObject* p, boost::python::type<const T&>, bool sig = false)
         { return from_python(p, boost::python::type<T&>()); }
 
     // Convert to T
-    friend const T& from_python(PyObject* p, boost::python::type<T>)
+    friend const T& from_python(PyObject* p, boost::python::type<T>, bool sig = false)
         { return from_python(p, boost::python::type<T&>()); }
 
-    friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T>&>)
+    friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T>&>, bool sig = false)
         { return smart_ptr_reference(p, boost::python::type<std::auto_ptr<T> >()); }
     
-    friend std::auto_ptr<T> from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >)
+    friend std::auto_ptr<T> from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >, bool sig = false)
         { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
     
-    friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>)
+    friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>, bool sig = false)
         { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
 
-    friend PyObject* to_python(std::auto_ptr<T> x)
+    friend PyObject* to_python(std::auto_ptr<T> x, bool sig = false)
         { return smart_ptr_to_python(x); }
 
-    friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&>)
+    friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&>, bool sig = false)
         { return smart_ptr_reference(p, boost::python::type<boost::shared_ptr<T> >()); }
     
-    friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >)
+    friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >, bool sig = false)
         { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
     
-    friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>)
+    friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>, bool sig = false)
         { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
 
-    friend PyObject* to_python(boost::shared_ptr<T> x)
+    friend PyObject* to_python(boost::shared_ptr<T> x, bool sig = false)
         { return smart_ptr_to_python(x); }
 };
 
