@@ -31,8 +31,8 @@
 # Could this be fixed with compiler options?
 # -fhuge-objects looks interesting, but requires recompiling the C++ library.
 #                (what exactly does that mean?)
-# -fvtable-thunks eliminates the compiler warning,
-# but "import boost_python_test" still causes a crash.
+# -fvtable-thunks eliminates the compiler warning, but
+#                 "import boost_python_test" still causes a crash.
 
 BOOST_UNIX= /net/cci/rwgk/boost
 BOOST_WIN= "L:\boost"
@@ -63,6 +63,7 @@ $(BPL_SRC)/init_function.cpp \
 $(BPL_SRC)/module_builder.cpp \
 $(BPL_SRC)/objects.cpp \
 $(BPL_SRC)/types.cpp \
+$(BPL_SRC)/x_class_builder.cpp \
 $(BPL_TST)/comprehensive.cpp \
 $(BPL_TST)/comprehensive.hpp \
 $(BPL_TST)/comprehensive.py \
@@ -73,13 +74,22 @@ $(BPL_EXA)/getting_started2.cpp \
 $(BPL_EXA)/getting_started3.cpp \
 $(BPL_EXA)/getting_started4.cpp \
 $(BPL_EXA)/getting_started5.cpp \
-$(BPL_EXA)/passing_char.cpp \
 $(BPL_EXA)/test_abstract.py \
 $(BPL_EXA)/test_getting_started1.py \
 $(BPL_EXA)/test_getting_started2.py \
 $(BPL_EXA)/test_getting_started3.py \
 $(BPL_EXA)/test_getting_started4.py \
-$(BPL_EXA)/test_getting_started5.py
+$(BPL_EXA)/test_getting_started5.py \
+$(BPL_EXA)/noncopyable.h \
+$(BPL_EXA)/noncopyable_export.cpp \
+$(BPL_EXA)/noncopyable_import.cpp \
+$(BPL_EXA)/tst_noncopyable.py \
+$(BPL_EXA)/ivect.h \
+$(BPL_EXA)/ivect.cpp \
+$(BPL_EXA)/dvect.h \
+$(BPL_EXA)/dvect.cpp \
+$(BPL_EXA)/tst_ivect.py \
+$(BPL_EXA)/tst_dvect.py
 
 DEFS= \
 boost_python_test \
@@ -88,17 +98,25 @@ getting_started1 \
 getting_started2 \
 getting_started3 \
 getting_started4 \
-getting_started5
+getting_started5 \
+noncopyable_export \
+noncopyable_import \
+ivect \
+dvect
 
 OBJ = classes.o conversions.o extension_class.o functions.o \
       init_function.o module_builder.o \
-      objects.o types.o
+      objects.o types.o x_class_builder.o
 
 .SUFFIXES: .o .cpp
 
-all: libboost_python.a boost_python_test.pyd abstract.pyd \
+all: libboost_python.a \
+     boost_python_test.pyd \
+     abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
-     getting_started4.pyd getting_started5.pyd
+     getting_started4.pyd getting_started5.pyd \
+     noncopyable_export.pyd noncopyable_import.pyd \
+     ivect.pyd dvect.pyd
 
 softlinks: defs
 	@ for pn in $(SOFTLINKS); \
@@ -185,17 +203,46 @@ getting_started5.pyd: $(OBJ) getting_started5.o
           --def getting_started5.def \
           $(OBJ) getting_started5.o $(PYLIB)
 
+noncopyable_export.pyd: $(OBJ) noncopyable_export.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname noncopyable_export.pyd \
+          --def noncopyable_export.def \
+          $(OBJ) noncopyable_export.o $(PYLIB)
+
+noncopyable_import.pyd: $(OBJ) noncopyable_import.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname noncopyable_import.pyd \
+          --def noncopyable_import.def \
+          $(OBJ) noncopyable_import.o $(PYLIB)
+
+ivect.pyd: $(OBJ) ivect.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname ivect.pyd \
+          --def ivect.def \
+          $(OBJ) ivect.o $(PYLIB)
+
+dvect.pyd: $(OBJ) dvect.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname dvect.pyd \
+          --def dvect.def \
+          $(OBJ) dvect.o $(PYLIB)
+
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
 
 test:
-	$(PYEXE) comprehensive.py
+#	$(PYEXE) comprehensive.py
 	$(PYEXE) test_abstract.py
 	$(PYEXE) test_getting_started1.py
 	$(PYEXE) test_getting_started2.py
 	$(PYEXE) test_getting_started3.py
 	$(PYEXE) test_getting_started4.py
 	$(PYEXE) test_getting_started5.py
+
+tst:
+	$(PYEXE) tst_noncopyable.py
+	$(PYEXE) tst_ivect.py
+	$(PYEXE) tst_dvect.py
 
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input
@@ -206,5 +253,9 @@ clean:
 	rm -f getting_started3.o getting_started3.pyd
 	rm -f getting_started4.o getting_started4.pyd
 	rm -f getting_started5.o getting_started5.pyd
+	rm -f noncopyable_export.o noncopyable_export.pyd
+	rm -f noncopyable_import.o noncopyable_import.pyd
+	rm -f ivect.o ivect.pyd
+	rm -f dvect.o dvect.pyd
 	rm -f so_locations *.pyc
 	rm -rf cxx_repository

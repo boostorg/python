@@ -53,6 +53,7 @@ $(BPL_SRC)/init_function.cpp \
 $(BPL_SRC)/module_builder.cpp \
 $(BPL_SRC)/objects.cpp \
 $(BPL_SRC)/types.cpp \
+$(BPL_SRC)/x_class_builder.cpp \
 $(BPL_TST)/comprehensive.cpp \
 $(BPL_TST)/comprehensive.hpp \
 $(BPL_TST)/comprehensive.py \
@@ -68,20 +69,38 @@ $(BPL_EXA)/test_getting_started1.py \
 $(BPL_EXA)/test_getting_started2.py \
 $(BPL_EXA)/test_getting_started3.py \
 $(BPL_EXA)/test_getting_started4.py \
-$(BPL_EXA)/test_getting_started5.py
+$(BPL_EXA)/test_getting_started5.py \
+$(BPL_EXA)/noncopyable.h \
+$(BPL_EXA)/noncopyable_export.cpp \
+$(BPL_EXA)/noncopyable_import.cpp \
+$(BPL_EXA)/tst_noncopyable.py \
+$(BPL_EXA)/ivect.h \
+$(BPL_EXA)/ivect.cpp \
+$(BPL_EXA)/dvect.h \
+$(BPL_EXA)/dvect.cpp \
+$(BPL_EXA)/tst_ivect.py \
+$(BPL_EXA)/tst_dvect.py
 
 OBJ = classes.o conversions.o extension_class.o functions.o \
       init_function.o module_builder.o \
-      objects.o types.o
-DEPOBJ= $(OBJ) comprehensive.o abstract.o \
+      objects.o types.o x_class_builder.o
+DEPOBJ= $(OBJ) \
+        comprehensive.o \
+        abstract.o \
         getting_started1.o getting_started2.o getting_started3.o \
-        getting_started4.o getting_started5.o
+        getting_started4.o getting_started5.o \
+        noncopyable_export.o noncopyable_import.o \
+        ivect.o dvect.o
 
 .SUFFIXES: .o .cpp
 
-all: libboost_python.a boost_python_test.so abstract.so \
+all: libboost_python.a \
+     boost_python_test.so \
+     abstract.so \
      getting_started1.so getting_started2.so getting_started3.so \
-     getting_started4.so getting_started5.so
+     getting_started4.so getting_started5.so \
+     noncopyable_export.so noncopyable_import.so \
+     ivect.so dvect.so
 
 softlinks:
 	@ for pn in $(SOFTLINKS); \
@@ -136,6 +155,20 @@ getting_started4.so: $(OBJ) getting_started4.o
 getting_started5.so: $(OBJ) getting_started5.o
 	$(LD) $(LDOPTS) $(OBJ) getting_started5.o -o getting_started5.so
 
+noncopyable_export.so: $(OBJ) noncopyable_export.o
+	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) \
+          noncopyable_export.o -o noncopyable_export.so
+
+noncopyable_import.so: $(OBJ) noncopyable_import.o
+	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) \
+          noncopyable_import.o -o noncopyable_import.so
+
+ivect.so: $(OBJ) ivect.o
+	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) ivect.o -o ivect.so
+
+dvect.so: $(OBJ) dvect.o
+	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) dvect.o -o dvect.so
+
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
 
@@ -148,6 +181,11 @@ test:
 	$(PYEXE) test_getting_started4.py
 	$(PYEXE) test_getting_started5.py
 
+tst:
+	$(PYEXE) tst_noncopyable.py
+	$(PYEXE) tst_ivect.py
+	$(PYEXE) tst_dvect.py
+
 clean:
 	rm -f $(OBJ) libboost_python.a libboost_python.a.input
 	rm -f comprehensive.o boost_python_test.so
@@ -157,6 +195,10 @@ clean:
 	rm -f getting_started3.o getting_started3.so
 	rm -f getting_started4.o getting_started4.so
 	rm -f getting_started5.o getting_started5.so
+	rm -f noncopyable_export.o noncopyable_export.so
+	rm -f noncopyable_import.o noncopyable_import.so
+	rm -f ivect.o ivect.so
+	rm -f dvect.o dvect.so
 	rm -f so_locations *.pyc
 	rm -rf cxx_repository
 
