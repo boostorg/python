@@ -6,6 +6,7 @@ types
 
 FILE* conversions: http://aspn.activestate.com/ASPN/Mail/Message/1411366
 
+Finish shared_ptr support: http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023
 
 Medium Priority:
 ----------------

@@ -23,6 +23,9 @@ struct enum_ : public objects::enum_base
     // Add a new enumeration value with the given name and value.
     inline enum_<T>& value(char const* name, T);
 
+    // Add all of the defined enumeration values to the current scope with the
+    // same names used here.
+    inline enum_<T>& export_values();
  private:
     static PyObject* to_python(void const* x);
     static void* convertible_from_python(PyObject* obj);
@@ -83,6 +86,13 @@ template <class T>
 inline enum_<T>& enum_<T>::value(char const* name, T x)
 {
     this->add_value(name, static_cast<long>(x));
+    return *this;
+}
+
+template <class T>
+inline enum_<T>& enum_<T>::export_values()
+{
+    this->enum_base::export_values();
     return *this;
 }
 

@@ -12,6 +12,8 @@
 #include <boost/python/dict.hpp>
 #include <boost/python/str.hpp>
 #include <boost/python/extract.hpp>
+#include <boost/python/object_protocol.hpp>
+#include <boost/python/detail/api_placeholder.hpp>
 #include <structmember.h>
 #include <cstdio>
 
@@ -193,6 +195,18 @@ void enum_base::add_value(char const* name_, long value)
     Py_XDECREF(p->name);
     p->name = incref(name.ptr());
 }
+
+void enum_base::export_values()
+{
+    dict d = extract<dict>(this->attr("values"))();
+    list values = d.values();
+    scope current;
+    
+    for (unsigned i = 0, max = len(values); i < max; ++i)
+    {
+        api::setattr(current, object(values[i].attr("name")), values[i]);
+    }
+ }
 
 PyObject* enum_base::to_python(PyTypeObject* type_, long x)
 {

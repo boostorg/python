@@ -19,6 +19,7 @@ BOOST_PYTHON_MODULE(enum_ext)
         .value("red", red)
         .value("green", green)
         .value("blue", blue)
+        .export_values()
         ;
     
     def("identity", identity_);

@@ -25,6 +25,7 @@ struct BOOST_PYTHON_DECL enum_base : python::api::object
         , type_info);
 
     void add_value(char const* name, long value);
+    void export_values();
     
     static PyObject* to_python(PyTypeObject* type, long x);
 };

@@ -22,6 +22,17 @@ enum_ext.color(3)
 >>> identity(color(4))
 enum_ext.color.blue
 
+  --- check export to scope ---
+
+>>> identity(red)
+enum_ext.color.red
+
+>>> identity(green)
+enum_ext.color.green
+
+>>> identity(blue)
+enum_ext.color.blue
+
 >>> try: identity(1)
 ... except TypeError: pass
 ... else: print 'expected a TypeError'
