@@ -45,11 +45,50 @@ namespace detail
       {
           PyErr_SetString(
               PyExc_TypeError
-              , const_cast<char*>("no from_python (by-value) converters found for type"));
+              , const_cast<char*>("no from_python rvalue or lvalue converters found for type"));
           throw error_already_set();
       }
   }
 
+  BOOST_PYTHON_DECL void throw_if_not_registered(lvalue_from_python_registration*const& x)
+  {
+      if (!x)
+      {
+          PyErr_SetString(
+              PyExc_TypeError
+              , const_cast<char*>("no from_python lvalue converters found for type"));
+          throw error_already_set();
+      }
+  }
+
+  BOOST_PYTHON_DECL void* callback_convert_reference(
+      PyObject* source
+      , lvalue_from_python_registration*const& converters)
+  {
+      ref holder(source);
+      void* result = find(source, converters);
+      if (!result)
+      {
+          PyErr_SetString(
+              PyExc_TypeError
+              , const_cast<char*>("no registered from_python lvalue converter was able to convert object"));
+          throw error_already_set();
+      }
+      return result;
+  }
+  
+  BOOST_PYTHON_DECL void* callback_convert_pointer(
+      PyObject* source
+      , lvalue_from_python_registration*const& converters)
+  {
+      if (source == Py_None)
+      {
+          Py_DECREF(source);
+          return 0;
+      }
+      return callback_convert_reference(source, converters);
+  }
+  
   BOOST_PYTHON_DECL void throw_no_class_registered()
   {
       PyErr_SetString(
@@ -68,7 +107,7 @@ namespace detail
       {
           PyErr_SetString(
               PyExc_TypeError
-              , const_cast<char*>("no registered from_python (by-value) converter was able to convert type"));
+              , const_cast<char*>("no registered from_python lvalue or rvalue converter was able to convert object"));
           throw error_already_set();
       }
       if (data.construct != 0)
