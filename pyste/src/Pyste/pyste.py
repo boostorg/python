@@ -362,7 +362,7 @@ def UsePsyco():
 
 def main():
     start = time.clock()
-    #UsePsyco()
+    UsePsyco()
     status = Begin()
     print '%0.2f seconds' % (time.clock()-start)
     sys.exit(status) 
