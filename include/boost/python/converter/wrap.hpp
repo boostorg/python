@@ -16,6 +16,7 @@
 namespace boost { namespace python { namespace converter { 
 
 struct BOOST_PYTHON_DECL wrapper_base;
+extern BOOST_PYTHON_DECL body& identity_wrapper;
 
 template <class T> struct wrapper;
 
@@ -66,13 +67,33 @@ struct wrap_ : wrap_more_<T>
     ~wrap_();
 };
 
+
+// Specialization for PyObject*
+template <>
+struct wrap_more_<PyObject*> : wrap_base
+{
+ protected:
+    typedef PyObject* source_t;
+    
+ public: // member functions
+    wrap_more_(handle& prev)
+        : wrap_base(&identity_wrapper, prev) {}
+
+    PyObject* operator()(source_t x) const { return x; }
+
+ protected: // constructor for wrap_<T>, below
+    wrap_more_()
+        : wrap_base(&identity_wrapper) {}
+ private:
+    friend class wrapper<PyObject*>;
+};
+
 //
 // implementations
 //
-
 inline wrap_base::wrap_base(body* body, handle& prev)
-    : handle(body, prev),
-      m_target(0)
+    : handle(body, prev)
+      , m_target(0)
 {
 }
 
@@ -119,7 +140,7 @@ template <class T>
 PyObject* wrap_more_<T>::operator()(source_t x) const
 {
     return static_cast<wrapper<T>*>(
-        get_body())->do_conversion(*this, source_holder<T>(x));
+        this->get_body())->do_conversion(*this, source_holder<T>(x));
 }
 
 template <class T>

@@ -27,6 +27,8 @@ struct BOOST_PYTHON_DECL wrapper_base : body
     virtual PyObject* do_conversion(wrap_base const&, source_holder_base const&) const = 0;
 };
 
+extern BOOST_PYTHON_DECL body& identity_wrapper;
+
 template <class T>
 struct wrapper : wrapper_base
 {
