@@ -6,7 +6,7 @@
 #ifndef SCOPE_DWA2002724_HPP
 # define SCOPE_DWA2002724_HPP
 
-# include <boost/python/object_core.hpp>
+# include <boost/python/object.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/utility.hpp>
 
