@@ -560,8 +560,18 @@ class ClassExporter(Exporter):
     def ExportSmartPointer(self):
         smart_ptr = self.info.smart_ptr
         if smart_ptr:
-            self.Add('template', smart_ptr % self.class_.FullName())
-
+            class_name = self.class_.FullName()
+            smart_ptr = smart_ptr % class_name
+            #self.Add('template', smart_ptr)
+            
+            self.Add('scope', '// Temporary code for smart pointers')
+            self.Add('scope', namespaces.python + 'objects::class_value_wrapper< ')
+            self.Add('scope', '  %s, objects::make_ptr_instance< ' % smart_ptr)
+            self.Add('scope', '    %s, objects::pointer_holder< ' % class_name)
+            self.Add('scope', '      %s, %s >' % (smart_ptr, class_name))
+            self.Add('scope', '  >')
+            self.Add('scope', '>();')
+            
 
     def ExportOpaquePointerPolicies(self):
         # check all methods for 'return_opaque_pointer' policies

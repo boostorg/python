@@ -24,6 +24,21 @@ private:
 
 inline std::auto_ptr<D> NewD() { return std::auto_ptr<D>( new D() ); }
 
+
+// test an abstract class
+struct A
+{
+    virtual int f() = 0;
+};
+
+struct B: A
+{
+    virtual int f(){ return 1; }
+};
+
+inline boost::shared_ptr<A> NewA() { return boost::shared_ptr<A>(new B()); }
+inline int GetA(boost::shared_ptr<A> a) { return a->f(); }
+
 }
 
 #endif

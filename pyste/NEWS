@@ -1,3 +1,6 @@
+16 Apr 2003
+Added a more generic (but ugly) code to declare the smart pointer converters.
+
 07 Apr 2003
 - Removed the warnings about forward declarations: it was not accurate enough.
   Another strategy must be thought of.
