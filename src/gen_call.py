@@ -36,7 +36,7 @@ def gen_call(member_function_args, free_function_args = None):
     return (header % (member_function_args, free_function_args)
             + gen_functions(
 '''template <class R%(, class A%n%)>
-PyObject* call(R (*f)(%(A%n%:, %)), PyObject* args, PyObject* keywords)
+inline PyObject* call(R (*f)(%(A%n%:, %)), PyObject* args, PyObject* keywords)
 {
     return detail::returning<R>::call(f, args, keywords);
 }
@@ -49,7 +49,7 @@ PyObject* call(R (*f)(%(A%n%:, %)), PyObject* args, PyObject* keywords)
                    , map(lambda cv:
                          gen_functions(
 '''template <class R, class A0%(, class A%+%)>
-PyObject* call(R (A0::*f)(%(A%+%:, %))%1, PyObject* args, PyObject* keywords)
+inline PyObject* call(R (A0::*f)(%(A%+%:, %))%1, PyObject* args, PyObject* keywords)
 {
     return detail::returning<R>::call(f, args, keywords);
 }

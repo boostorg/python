@@ -20,16 +20,14 @@
 >>> unwrap_int(5)
 5
 
-Can't get a reference to a built-in integer object
+Can't get a non-const reference to a built-in integer object
 >>> try:
 ...     unwrap_int_ref(7)
 ... except: pass
 ... else: print 'no exception'
 
->>> try:
-...     unwrap_int_const_ref(9)
-... except: pass
-... else: print 'no exception'
+>>> unwrap_int_const_ref(9)
+9
 
 >>> wrap_int(n)
 42
@@ -63,16 +61,11 @@ Create an extension class which wraps "complicated" (init1 and get_n)
 are a complicated constructor and member function, respectively.
 
 >>> C = xclass('C', (xinst,), {'__init__': init1, 'get_n': get_n})
->>> c = C(s, 99)
->>> c.get_n()
+>>> c1 = C(s, 99)
+>>> c1.get_n()
 99
-
-Create another extension class which wraps "complicated" (init2 is a
-different constructor -- no overloading yet).
-
->>> D = xclass('D', (xinst,), {'__init__': init2, 'get_n': get_n})
->>> d = D(s)
->>> d.get_n()
+>>> c2 = C(s)
+>>> c2.get_n()
 0
 
 """

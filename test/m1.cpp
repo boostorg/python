@@ -4,15 +4,13 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-// Seems to be neccessary to suppress an ICE with MSVC
-#include <boost/mpl/comparison/less.hpp>
-
 #include "simple_type.hpp"
 #include "complicated.hpp"
 #include <boost/python/converter/wrapper.hpp>
 #include <boost/python/converter/unwrapper.hpp>
 #include <boost/python/detail/config.hpp>
 #include <boost/python/convert.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/object/value_holder.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/converter/class.hpp>
@@ -53,17 +51,10 @@ PyTypeObject NoddyType = {
 };
 
 // Create a Noddy containing 42
-extern "C" PyObject*
-new_noddy(PyObject* self, PyObject* args)
+PyObject* new_noddy()
 {
-    NoddyObject* noddy;
-
-    if (!PyArg_ParseTuple(args,":new_noddy")) 
-        return NULL;
-
-    noddy = PyObject_New(NoddyObject, &NoddyType);
+    NoddyObject* noddy = PyObject_New(NoddyObject, &NoddyType);
     noddy->x = 42;
-    
     return (PyObject*)noddy;
 }
 
@@ -92,26 +83,12 @@ PyTypeObject SimpleType = {
 };
 
 // Create a Simple containing "hello, world"
-extern "C" PyObject*
-new_simple(PyObject* self, PyObject* args)
+PyObject* new_simple()
 {
-    SimpleObject* simple;
-
-    if (!PyArg_ParseTuple(args,":new_simple")) 
-        return NULL;
-
-    simple = PyObject_New(SimpleObject, &SimpleType);
+    SimpleObject* simple = PyObject_New(SimpleObject, &SimpleType);
     simple->x.s = "hello, world";
-    
     return (PyObject*)simple;
 }
-
-// Initial method table for the module
-static PyMethodDef methods[] = {
-    { "new_noddy", new_noddy, METH_VARARGS },
-    { "new_simple", new_simple, METH_VARARGS },
-    {0, 0, 0, 0}
-};
 
 //
 // Declare some wrappers/unwrappers to test the low-level conversion
@@ -252,7 +229,7 @@ simple const& g(simple const& x)
 
 BOOST_PYTHON_MODULE_INIT(m1)
 {
-    PyObject* m1 = Py_InitModule(const_cast<char*>("m1"), methods);
+    boost::python::module m1("m1");
 
     // Create the converters; they are self-registering/unregistering.
     static int_wrapper wrap_int;
@@ -262,63 +239,45 @@ BOOST_PYTHON_MODULE_INIT(m1)
     static noddy_int_ref_unwrapper unwrap_int3;
     static simple_ref_unwrapper unwrap_simple;
     static simple_const_ref_unwrapper unwrap_simple_const_ref;
-#ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-    // These compilers will need additional converters
     static simple_ref_wrapper wrap_simple_ref;
-#endif
 
     // This unwrapper extracts pointers and references to the "complicated" class.
     static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
     
-    PyObject* d = PyModule_GetDict(m1);
-    if (d == NULL)
-        return;
-
     // Insert the extension metaclass object
-    if (PyDict_SetItemString(
-            d, "xclass", (PyObject *)boost::python::object::class_metatype()) < 0)
-        return;
-
+    m1.add(boost::python::objects::class_metatype(), "xclass");
+    
     // Insert the base class for all extension classes
-    if (PyDict_SetItemString(
-            d, "xinst", (PyObject *)boost::python::object::class_type()) < 0)
-        return;
+    m1.add(boost::python::objects::class_type(), "xinst");
 
+    m1.def(new_noddy, "new_noddy");
+    m1.def(new_simple, "new_simple");
+    
     // Expose f()
-    if (PyDict_SetItemString(
-            d, "f", boost::python::make_function(f)) < 0)
-        return;
+    m1.def(f, "f");
 
     // Expose g()
-    if (PyDict_SetItemString(
-            d, "g", boost::python::make_function(g)) < 0)
-        return;
+    m1.def(g, "g");
 
     // Expose complicated's get_n() member function. See newtest.py
     // for how it's used to build an extension class.
-    if (PyDict_SetItemString(
-            d, "get_n", boost::python::make_function(&complicated::get_n)) < 0)
-        return;
+    m1.def(&complicated::get_n, "get_n");
 
     // Expose complicated::complicated(simple const&, int) as init1
-    if (PyDict_SetItemString(
-            d, "init1"
-            , boost::python::make_constructor<
-                complicated
-                , boost::mpl::type_list<simple const&,int>
-                , boost::python::object::value_holder_generator>()
-            ) < 0)
-        return;
-
-    // Expose complicated::complicated(simple const&) as init2
-    if (PyDict_SetItemString(
-            d, "init2"
-            , boost::python::make_constructor<
-                complicated
-                , boost::mpl::type_list<simple const&>
-                , boost::python::object::value_holder_generator>()
-            ) < 0)
-        return;
+    boost::python::objects::function* init = boost::python::make_constructor<
+        complicated
+        , boost::mpl::type_list<simple const&,int>
+        , boost::python::objects::value_holder_generator>();
+    
+    boost::python::ref manager(init);
+    
+    init->add_overload(
+        boost::python::make_constructor<
+        complicated
+        , boost::mpl::type_list<simple const&>
+        , boost::python::objects::value_holder_generator>());
+    
+    m1.add(manager, "init1");
 }
 
 #include "module_tail.cpp"
