@@ -76,10 +76,13 @@
     python::class_builder&lt;Foo&gt; foo_class(my_module, "Foo");
     foo_class.def(&amp;to_string, "__str__");
 </pre>
-      Note that py_cpp also supports <em>automatic wrapping</em> in case of
-      __str__ and __cmp__. This is explained in the <a href="#numeric">next
+
+      Note that py_cpp also supports <em>automatic wrapping</em> of
+      "__str__" and "__cmp__". This is explained in the <a href="#numeric">next
       section</a> and the <a href="#numeric_table">table of numeric
       operators</a>. 
+      
+      
       <h2>
         <a name="numeric">Numeric Operators</a>
       </h2>
@@ -87,7 +90,7 @@
       manual wrapping (as is done with <a href="#general">general
       operators</a>) and automatic wrapping. Lets start with the second
       possibility. Suppose, C++ defines a class <code>Int</code> (which might
-      represent an infinite-precision integer) which support addition, so that
+      represent an infinite-precision integer) which supports addition, so that
       we can write (in C++): 
 <pre>
     Int a, b, c;
@@ -456,7 +459,8 @@
              <code>left &lt;= right</code><br>
              <code>left &gt; right</code><br>
              <code>left &gt;= right</code><br>
-             <code>left == right</code>
+             <code>left == right</code><br>
+             <code>left != right</code>
           <td>
             <code>python::op_cmp</code>
           <td>
@@ -558,6 +562,8 @@
             usually defined automatically, otherwise <a href="#coercion">
             special treatment</a> required
       </table>
+      
+      
       <h2>
         <a name="sequence_and_mapping">Sequence and Mapping Operators</a>
       </h2>
@@ -584,7 +590,7 @@
         is out-of-range in order to enable the  "<code>for i in S:</code>" 
         idiom.
       <p>
-        Here is an example. Suppose you, we want to wrap a <code>
+        Here is an example. Suppose, we want to wrap a <code>
         std::map&lt;std::size_t,std::string&gt;</code>. This is done as follows
         as follows:
       <blockquote>
