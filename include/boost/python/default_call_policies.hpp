@@ -17,7 +17,7 @@ template <class T> struct to_python_value;
 namespace detail
 {
 // for "readable" error messages
-  template <class T> struct specify_a_result_policy_to_wrap_functions_returning
+  template <class T> struct specify_a_return_value_policy_to_wrap_functions_returning
 # if defined(__GNUC__) && __GNUC__ >= 3 || defined(__EDG__)
   {}
 # endif 
@@ -52,7 +52,7 @@ struct default_result_converter
         
         typedef typename mpl::if_c<
             is_illegal
-            , detail::specify_a_result_policy_to_wrap_functions_returning<R>
+            , detail::specify_a_return_value_policy_to_wrap_functions_returning<R>
             , boost::python::to_python_value<
                 typename add_reference<typename add_const<R>::type>::type
                 >
