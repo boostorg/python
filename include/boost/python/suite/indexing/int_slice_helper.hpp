@@ -49,17 +49,17 @@ namespace boost { namespace python { namespace indexing {
     void insert (value_param val);
 
   private:
-    slice_type mSlice;
-    container *mPtr;
-    index_type mPos;
+    slice_type m_slice;
+    container *m_ptr;
+    index_type m_pos;
   };
 
   template<typename Algorithms, typename SliceType>
   int_slice_helper<Algorithms, SliceType>
   ::int_slice_helper (container &c, slice_type const &sl)
-    : mSlice (sl)
-    , mPtr (&c)
-    , mPos (-1)
+    : m_slice (sl)
+    , m_ptr (&c)
+    , m_pos (-1)
   {
   }
 
@@ -69,18 +69,18 @@ namespace boost { namespace python { namespace indexing {
   {
     bool result = false; // Assume the worst
 
-    if (mPos == -1)
+    if (m_pos == -1)
       {
         // First time call - get to start of the slice (if any)
-        mPos = mSlice.start();
-        result = mSlice.in_range (mPos);
+        m_pos = m_slice.start();
+        result = m_slice.in_range (m_pos);
       }
 
-    else if (mSlice.in_range (mPos))
+    else if (m_slice.in_range (m_pos))
       {
         // Subsequent calls - advance by the slice's stride
-        mPos += mSlice.step();
-        result = mSlice.in_range (mPos);
+        m_pos += m_slice.step();
+        result = m_slice.in_range (m_pos);
       }
 
     return result;
@@ -90,7 +90,7 @@ namespace boost { namespace python { namespace indexing {
   typename int_slice_helper<Algorithms, SliceType>::reference
   int_slice_helper<Algorithms, SliceType>::current () const
   {
-    return algorithms::get (*mPtr, mPos);
+    return algorithms::get (*m_ptr, m_pos);
   }
 
   template<typename Algorithms, typename SliceType>
@@ -110,7 +110,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
   void int_slice_helper<Algorithms, SliceType>::assign (value_param val) const
   {
-    algorithms::assign (*mPtr, mPos, val);
+    algorithms::assign (*m_ptr, m_pos, val);
   }
 
   namespace detail {
@@ -141,7 +141,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
   void int_slice_helper<Algorithms, SliceType>::insert (value_param val)
   {
-    if (mSlice.step() != 1)
+    if (m_slice.step() != 1)
       {
         PyErr_SetString (PyExc_ValueError
                          , "attempt to insert via extended slice");
@@ -152,9 +152,9 @@ namespace boost { namespace python { namespace indexing {
     else
       {
         detail::maybe_insert<container_traits::has_insert>
-          ::template apply<Algorithms> (*mPtr, mPos, val);
+          ::template apply<Algorithms> (*m_ptr, m_pos, val);
 
-        ++mPos;  // Advance for any subsequent inserts
+        ++m_pos;  // Advance for any subsequent inserts
       }
   }
 
@@ -186,7 +186,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
   void int_slice_helper<Algorithms, SliceType>::erase_remaining () const
   {
-    if (mSlice.step() != 1)
+    if (m_slice.step() != 1)
       {
         PyErr_SetString (PyExc_ValueError
                          , "attempt to delete via extended slice");
@@ -197,7 +197,7 @@ namespace boost { namespace python { namespace indexing {
     else
       {
         detail::maybe_erase<container_traits::has_erase>
-          ::template apply<Algorithms> (*mPtr, mPos, mSlice.stop());
+          ::template apply<Algorithms> (*m_ptr, m_pos, m_slice.stop());
       }
   }
 } } }

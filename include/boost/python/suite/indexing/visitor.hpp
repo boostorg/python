@@ -34,14 +34,14 @@ namespace boost { namespace python { namespace indexing {
       // except precall, which must be provided by the template
       // argument.
 
-      precall_only () : mPrecall () { }
-      explicit precall_only (PrecallPolicy const &copy) : mPrecall (copy) { }
+      precall_only () : m_precall () { }
+      explicit precall_only (PrecallPolicy const &copy) : m_precall (copy) { }
 
-      bool precall (PyObject *args) { return mPrecall.precall (args); }
-      bool precall (PyObject *args) const { return mPrecall.precall (args); }
+      bool precall (PyObject *args) { return m_precall.precall (args); }
+      bool precall (PyObject *args) const { return m_precall.precall (args); }
 
     private:
-      PrecallPolicy mPrecall;
+      PrecallPolicy m_precall;
     };
   }
 
@@ -453,19 +453,19 @@ namespace boost { namespace python { namespace indexing {
   class visitor
     : public boost::python::def_visitor< visitor< Algorithms, Policy > >
   {
-    Policy mPolicy;
+    Policy m_policy;
 
   public:
     typedef Algorithms algorithms;
     typedef typename algorithms::container_traits traits;
     typedef typename traits::value_traits_ value_traits_;
 
-    explicit visitor (Policy const &policy = Policy()) : mPolicy (policy) { }
+    explicit visitor (Policy const &policy = Policy()) : m_policy (policy) { }
 
     template <class PythonClass>
     void visit (PythonClass &pyClass) const
     {
-      detail::precall_only<Policy> precallPolicy (mPolicy);
+      detail::precall_only<Policy> precallPolicy (m_policy);
 
       // Note - this will add __len__ for anything that can determine
       // its size, even if that might be inefficient (e.g. have linear
@@ -476,17 +476,17 @@ namespace boost { namespace python { namespace indexing {
         ::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_getitem<traits::index_style>
-        ::apply (pyClass, algorithms(), mPolicy);
+        ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_setitem<traits::index_style>
-        ::apply (pyClass, algorithms(), mPolicy);
+        ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_delitem<traits::has_erase, traits::index_style>
-        ::apply (pyClass, algorithms(), mPolicy);
+        ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_iter<((traits::index_style != index_style_linear)
                       && traits::has_copyable_iter)>
-        ::apply (pyClass, algorithms(), mPolicy);
+        ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_sort<traits::is_reorderable
                      , value_traits_::lessthan_comparable>
@@ -512,7 +512,7 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_count<traits::has_find, traits::index_style>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      Algorithms::visitor_helper (pyClass, mPolicy);
+      Algorithms::visitor_helper (pyClass, m_policy);
     }
   };
 } } }

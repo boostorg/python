@@ -148,37 +148,37 @@ namespace boost { namespace python { namespace indexing {
 
   private:
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
-    typedef std::map<size_type, pointer_impl> MapType;
-    typedef typename MapType::iterator MapIterator;
-    typedef typename MapType::value_type MapEntry;
+    typedef std::map<size_type, pointer_impl> map_type;
+    typedef typename map_type::iterator map_iterator;
+    typedef typename map_type::value_type map_value;
 
   private:
     Container &raw_container();
 
-    static void detach_if_shared (MapEntry const &);
+    static void detach_if_shared (map_value const &);
 
-    void adjustIndexes (MapIterator, MapIterator, difference_type offset);
-    void adjustIndexesReverse (MapIterator, MapIterator, difference_type offs);
-    void adjustIndex (MapIterator, difference_type offset);
+    void adjust_indexes_front (map_iterator, map_iterator, difference_type);
+    void adjust_indexes_back (map_iterator, map_iterator, difference_type);
+    void adjust_index (map_iterator, difference_type offset);
 
   private:
-    held_type myHeldObj;
-    MapType myMap;
+    held_type m_held_obj;
+    map_type m_map;
   };
 
   template<class Container, class Holder>
   container_proxy<Container, Holder>
   ::container_proxy ()
-    : myHeldObj ()
-    , myMap ()
+    : m_held_obj ()
+    , m_map ()
   {
   }
 
   template<class Container, class Holder>
   container_proxy<Container, Holder>
-  ::container_proxy (held_type const &heldType)
-    : myHeldObj (heldType)
-    , myMap ()
+  ::container_proxy (held_type const &held)
+    : m_held_obj (held)
+    , m_map ()
   {
   }
 
@@ -186,8 +186,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename Iter>
   container_proxy<Container, Holder>
   ::container_proxy (Iter start, Iter finish)
-    : myHeldObj (Holder::create())
-    , myMap ()
+    : m_held_obj (Holder::create())
+    , m_map ()
   {
     insert (begin(), start, finish);
   }
@@ -195,8 +195,8 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   container_proxy<Container, Holder>
   ::container_proxy (container_proxy const &copy)
-    : myHeldObj (Holder::copy (copy.myHeldObj))
-    , myMap ()                      // Do *not* duplicate map
+    : m_held_obj (Holder::copy (copy.m_held_obj))
+    , m_map ()                      // Do *not* duplicate map
   {
   }
 
@@ -206,9 +206,9 @@ namespace boost { namespace python { namespace indexing {
   ::operator= (container_proxy const &copy)
   {
     // All of our contained values are about to be dis-owned
-    std::for_each (myMap.begin(), myMap.end(), detach_if_shared);
-    myMap.clear();
-    Holder::assign (myHeldObj, copy.myHeldObj);
+    std::for_each (m_map.begin(), m_map.end(), detach_if_shared);
+    m_map.clear();
+    Holder::assign (m_held_obj, copy.m_held_obj);
     return *this;
   }
 
@@ -217,8 +217,8 @@ namespace boost { namespace python { namespace indexing {
   ::~container_proxy ()
   {
     // All of our contained values are about to be dis-owned
-    std::for_each (myMap.begin(), myMap.end(), detach_if_shared);
-    Holder::pre_destruction (myHeldObj);
+    std::for_each (m_map.begin(), m_map.end(), detach_if_shared);
+    Holder::pre_destruction (m_held_obj);
   }
 
   template<class Container, class Holder>
@@ -226,7 +226,7 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::raw_container ()
   {
-    return Holder::get (myHeldObj);
+    return Holder::get (m_held_obj);
   }
 
   template<class Container, class Holder>
@@ -234,7 +234,7 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::raw_container () const
   {
-    return Holder::get (myHeldObj);
+    return Holder::get (m_held_obj);
   }
 
   template<class Container, class Holder>
@@ -242,7 +242,7 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::at (size_type index)
   {
-    pointer_impl &entry = myMap[index];
+    pointer_impl &entry = m_map[index];
 
     if (!entry.get())
       {
@@ -292,36 +292,36 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::swap_elements (size_type index1, size_type index2)
   {
-    MapIterator iter1 = myMap.find (index1);
-    MapIterator iter2 = myMap.find (index2);
+    map_iterator iter1 = m_map.find (index1);
+    map_iterator iter2 = m_map.find (index2);
 
     difference_type distance
       = static_cast<difference_type>(index2)
       - static_cast<difference_type>(index1);
 
-    if ((iter1 == myMap.end()) && (iter2 == myMap.end()))
+    if ((iter1 == m_map.end()) && (iter2 == m_map.end()))
       {
         // No proxies exist for these indexes.
       }
 
-    else if ((iter1 != myMap.end()) && (iter2 == myMap.end()))
+    else if ((iter1 != m_map.end()) && (iter2 == m_map.end()))
       {
         // Proxy for the first index only
-        MapIterator temp (iter1);
-        adjustIndexes (iter1, ++temp, distance); // Exactly one element
+        map_iterator temp (iter1);
+        adjust_indexes_front (iter1, ++temp, distance); // Exactly one element
       }
 
-    else if ((iter1 == myMap.end()) && (iter2 != myMap.end()))
+    else if ((iter1 == m_map.end()) && (iter2 != m_map.end()))
       {
         // Proxy for the second index only
-        MapIterator temp (iter2);
-        adjustIndexes (iter2, ++temp, -distance);
+        map_iterator temp (iter2);
+        adjust_indexes_front (iter2, ++temp, -distance);
       }
 
     else
       {
         // Proxies for both indexes
-        std::swap (iter1->second->myIndex, iter2->second->myIndex);
+        std::swap (iter1->second->m_index, iter2->second->m_index);
         std::swap (iter1->second, iter2->second);
       }
 
@@ -345,15 +345,15 @@ namespace boost { namespace python { namespace indexing {
     assert (to.ptr == this);
 
     difference_type deleting = to.index - from.index;
-    MapIterator erase_begin = myMap.lower_bound (from.index);
-    MapIterator erase_end = myMap.lower_bound (to.index);
+    map_iterator erase_begin = m_map.lower_bound (from.index);
+    map_iterator erase_end = m_map.lower_bound (to.index);
 
     // Detach any proxies for the soon-to-be-erased elements
     std::for_each (erase_begin, erase_end, detach_if_shared);
-    myMap.erase (erase_begin, erase_end);  // Note: erase_end remains valid
+    m_map.erase (erase_begin, erase_end);  // Note: erase_end remains valid
 
     // Adjust the indexes of any following proxies
-    adjustIndexes (erase_end, myMap.end(), -deleting);
+    adjust_indexes_front (erase_end, m_map.end(), -deleting);
 
     // Erase the elements from the real container
     raw_iterator result
@@ -372,9 +372,9 @@ namespace boost { namespace python { namespace indexing {
 
     // Adjust indexes from iter.index onwards, since insert goes
     // before this element
-    adjustIndexesReverse (myMap.lower_bound (iter.index)
-			  , myMap.end()
-			  , 1);
+    adjust_indexes_back (m_map.lower_bound (iter.index)
+                         , m_map.end()
+                         , 1);
 
     // Insert the element into the real container
     raw_iterator result
@@ -406,9 +406,9 @@ namespace boost { namespace python { namespace indexing {
 
     // Adjust indexes from iter.index onwanrds (insert goes before
     // this element)
-    adjustIndexesReverse (myMap.lower_bound (iter.index)
-			  , myMap.end()
-			  , std::distance (from, to));
+    adjust_indexes_back (m_map.lower_bound (iter.index)
+                         , m_map.end()
+                         , std::distance (from, to));
 
     // Insert the element into the real container
     raw_container().insert (raw_container().begin() + iter.index, from, to);
@@ -431,7 +431,7 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::detach_if_shared (MapEntry const &ent)
+  ::detach_if_shared (map_value const &ent)
   {
     if (!ent.second.unique())
       {
@@ -446,24 +446,24 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder>
   ::detach_proxy (size_type index)
   {
-    MapIterator iter = myMap.find (index);
+    map_iterator iter = m_map.find (index);
 
-    if (iter != myMap.end())
+    if (iter != m_map.end())
       {
         detach_if_shared (*iter);
-        myMap.erase (iter);
+        m_map.erase (iter);
       }
   }
 
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::detach_proxies (size_type fromIndex, size_type toIndex)
+  ::detach_proxies (size_type from_index, size_type to_index)
   {
-    MapIterator from = myMap.lower_bound (fromIndex);
-    MapIterator to = myMap.lower_bound (toIndex);
+    map_iterator from = m_map.lower_bound (from_index);
+    map_iterator to = m_map.lower_bound (to_index);
     std::for_each (from, to, detach_if_shared);
-    myMap.erase (from, to);
+    m_map.erase (from, to);
   }
 
   template<class Container, class Holder>
@@ -479,27 +479,27 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjustIndex (MapIterator iter, difference_type offset)
+  ::adjust_index (map_iterator iter, difference_type offset)
   {
     pointer_impl ptr (iter->second);  // Copy the shared pointer
-    myMap.erase (iter);               // Remove the map copy of it
+    m_map.erase (iter);               // Remove the map copy of it
 
     if (!ptr.unique())
       {
 	// Reinsert only if there are other pointers "out there"
 	// referring to the shared proxy
 
-	ptr->myIndex += offset;
-	myMap.insert (typename MapType::value_type (ptr->myIndex, ptr));
+	ptr->m_index += offset;
+	m_map.insert (typename map_type::value_type (ptr->m_index, ptr));
       }
   }
 
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjustIndexes (MapIterator low_bound
-                   , MapIterator high_bound
-                   , difference_type offset)
+  ::adjust_indexes_front (map_iterator low_bound
+                          , map_iterator high_bound
+                          , difference_type offset)
   {
     // Adjust indexes in the given range of proxies by the given offset.
     // The adjustment is done by erasing and re-inserting the entries
@@ -513,20 +513,20 @@ namespace boost { namespace python { namespace indexing {
 
     while (low_bound != high_bound)
       {
-        MapIterator target (low_bound);
+        map_iterator target (low_bound);
 
 	++low_bound;  // Find next node before erasing the current target
 
-	adjustIndex (target, offset);
+	adjust_index (target, offset);
       }
   }
 
   template <class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjustIndexesReverse (MapIterator low_bound
-			  , MapIterator high_bound
-			  , difference_type offset)
+  ::adjust_indexes_back (map_iterator low_bound
+                         , map_iterator high_bound
+                         , difference_type offset)
   {
     if (low_bound != high_bound)
       {
@@ -536,17 +536,17 @@ namespace boost { namespace python { namespace indexing {
 	  {
 	    if (high_bound == low_bound)
 	      {
-		adjustIndex (high_bound, offset);  // Last one to adjust
+		adjust_index (high_bound, offset);  // Last one to adjust
 		break;
 	      }
 
 	    else
 	      {
-		MapIterator target (high_bound);
+		map_iterator target (high_bound);
 
 		--high_bound;   // Find previous node before doing erase
 
-		adjustIndex (target, offset);   // Do erase
+		adjust_index (target, offset);   // Do erase
 	      }
 	  }
       }

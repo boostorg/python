@@ -40,8 +40,8 @@ namespace boost { namespace python { namespace indexing {
     reference operator*() const;
     pointer operator->() const { return &(**this); }
 
-    ContainerProxy *owner() const { return myOwnerPtr; }
-    size_t index() const { return myIndex; }
+    ContainerProxy *owner() const { return m_owner_ptr; }
+    size_t index() const { return m_index; }
 
     shared_proxy_impl (value_type const &copy);
     // Creates value-only (detached) proxy
@@ -53,9 +53,9 @@ namespace boost { namespace python { namespace indexing {
     void detach ();
 
   private:
-    ContainerProxy *myOwnerPtr;             // When attached
-    size_t myIndex;                         // When attached
-    std::auto_ptr<value_type> myElementPtr; // When detached
+    ContainerProxy *m_owner_ptr;             // When attached
+    size_t m_index;                          // When attached
+    std::auto_ptr<value_type> m_element_ptr; // When detached
 
   private:
     // Not implemented
@@ -64,19 +64,19 @@ namespace boost { namespace python { namespace indexing {
   };
 
   template<class ContainerProxy>
-  shared_proxy_impl<ContainerProxy>::shared_proxy_impl (ContainerProxy *ownerPtr
+  shared_proxy_impl<ContainerProxy>::shared_proxy_impl (ContainerProxy *owner
                                                         , size_t index)
-    : myOwnerPtr (ownerPtr)
-    , myIndex (index)
-    , myElementPtr ()
+    : m_owner_ptr (owner)
+    , m_index (index)
+    , m_element_ptr ()
   {
   }
 
   template<class ContainerProxy>
   shared_proxy_impl<ContainerProxy>::shared_proxy_impl (value_type const &val)
-    : myOwnerPtr (0)
-    , myIndex (static_cast<size_t>(-1))
-    , myElementPtr (new value_type (val))
+    : m_owner_ptr (0)
+    , m_index (static_cast<size_t>(-1))
+    , m_element_ptr (new value_type (val))
   {
   }
 
@@ -84,17 +84,17 @@ namespace boost { namespace python { namespace indexing {
   typename shared_proxy_impl<ContainerProxy>::reference
   shared_proxy_impl<ContainerProxy>::operator* () const
   {
-    return myOwnerPtr
-      ? myOwnerPtr->raw_container().at (myIndex)
-      : *myElementPtr;
+    return m_owner_ptr
+      ? m_owner_ptr->raw_container().at (m_index)
+      : *m_element_ptr;
   }
 
   template<class ContainerProxy>
   void shared_proxy_impl<ContainerProxy>::detach ()
   {
-    myElementPtr.reset (new value_type (**this));
-    myOwnerPtr = 0;
-    myIndex = static_cast<size_t>(-1);
+    m_element_ptr.reset (new value_type (**this));
+    m_owner_ptr = 0;
+    m_index = static_cast<size_t>(-1);
   }
 } } }
 

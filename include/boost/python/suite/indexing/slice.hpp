@@ -41,24 +41,24 @@ namespace boost { namespace python { namespace indexing {
 
     typedef int index_type;
 
-    integer_slice (slice const &, index_type sequenceLength);
+    integer_slice (slice const &, index_type length);
     // integer_slice must know how big the container is so it can
     // adjust for negative indexes, etc...
 
-    index_type start() const { return mStart; }
-    index_type step() const  { return mStep; }
-    index_type stop() const  { return mStop; }
+    index_type start() const { return m_start; }
+    index_type step() const  { return m_step; }
+    index_type stop() const  { return m_stop; }
 
-    index_type size() const { return (mStop - mStart) / mStep; }
+    index_type size() const { return (m_stop - m_start) / m_step; }
 
     bool in_range (index_type index);
 
   private:
-    slice mSlice;
-    index_type mStart;
-    index_type mStep;
-    index_type mStop;
-    index_type mDirection;
+    slice m_slice;
+    index_type m_start;
+    index_type m_step;
+    index_type m_stop;
+    index_type m_direction;
   };
 } } }
 

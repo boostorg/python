@@ -32,26 +32,26 @@ boost::python::indexing::slice::slice (slice const &copy)
 /////////////////////////////////////////////////////////////////////////////
 
 boost::python::indexing::integer_slice
-::integer_slice (slice const &sl, index_type sequenceLength)
-  : mSlice (sl)
+::integer_slice (slice const &sl, index_type length)
+  : m_slice (sl)
   // Leave index members uninitialized
 {
-  PySlice_GetIndices (reinterpret_cast<PySliceObject *> (mSlice.ptr())
-                      , sequenceLength
-                      , &mStart
-                      , &mStop
-                      , &mStep);
+  PySlice_GetIndices (reinterpret_cast<PySliceObject *> (m_slice.ptr())
+                      , length
+                      , &m_start
+                      , &m_stop
+                      , &m_step);
 
-  if (mStep == 0)
+  if (m_step == 0)
     {
       // Can happen with Python prior to 2.3
       PyErr_SetString (PyExc_ValueError, "slice step cannot be zero");
       boost::python::throw_error_already_set ();
     }
 
-  mStart = std::max (0, std::min (sequenceLength, mStart));
-  mStop = std::max (0, std::min (sequenceLength, mStop));
-  mDirection = (mStep > 0) ? 1 : -1;
+  m_start = std::max (0, std::min (length, m_start));
+  m_stop = std::max (0, std::min (length, m_stop));
+  m_direction = (m_step > 0) ? 1 : -1;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,5 +60,5 @@ boost::python::indexing::integer_slice
 
 bool boost::python::indexing::integer_slice::in_range (index_type index)
 {
-  return ((mStop - index) * mDirection) > 0;
+  return ((m_stop - index) * m_direction) > 0;
 }

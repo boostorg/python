@@ -46,9 +46,9 @@ namespace boost { namespace python { namespace indexing {
     virtual boost::python::object current() const;
 
   private:
-    boost::python::object mGetitemMethod;
-    int mIndex;
-    boost::python::object mCurrent;
+    boost::python::object m_getitem_method;
+    int m_index;
+    boost::python::object m_current;
   };
 
   struct BOOST_PYTHON_DECL python_iter_iterator : public python_iterator
@@ -59,8 +59,8 @@ namespace boost { namespace python { namespace indexing {
     virtual boost::python::object current() const;
 
   private:
-    boost::python::object mNextMethod;
-    boost::python::object mCurrent;
+    boost::python::object m_next_method;
+    boost::python::object m_current;
   };
 } } }
 

@@ -63,9 +63,9 @@ boost::python::indexing::python_iterator::~python_iterator ()
 
 boost::python::indexing::python_getitem_iterator
 ::python_getitem_iterator (boost::python::object obj)
-  : mGetitemMethod (obj.attr ("__getitem__"))
-  , mIndex (0)
-  , mCurrent()
+  : m_getitem_method (obj.attr ("__getitem__"))
+  , m_index (0)
+  , m_current()
 {
 }
 
@@ -79,8 +79,8 @@ bool boost::python::indexing::python_getitem_iterator::next ()
 
   try
     {
-      mCurrent = mGetitemMethod (mIndex);
-      ++mIndex;
+      m_current = m_getitem_method (m_index);
+      ++m_index;
     }
 
   catch (boost::python::error_already_set const &)
@@ -89,7 +89,7 @@ bool boost::python::indexing::python_getitem_iterator::next ()
         {
           // Eat this exception
           PyErr_Clear ();
-          mCurrent = boost::python::object ();
+          m_current = boost::python::object ();
           result = false;
         }
 
@@ -110,7 +110,7 @@ bool boost::python::indexing::python_getitem_iterator::next ()
 boost::python::object
 boost::python::indexing::python_getitem_iterator::current () const
 {
-  return mCurrent;
+  return m_current;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -119,8 +119,8 @@ boost::python::indexing::python_getitem_iterator::current () const
 
 boost::python::indexing::python_iter_iterator
 ::python_iter_iterator (boost::python::object obj)
-  : mNextMethod (obj.attr ("__iter__")().attr ("next"))
-  , mCurrent()
+  : m_next_method (obj.attr ("__iter__")().attr ("next"))
+  , m_current()
 {
 }
 
@@ -134,7 +134,7 @@ bool boost::python::indexing::python_iter_iterator::next ()
 
   try
     {
-      mCurrent = mNextMethod ();
+      m_current = m_next_method ();
     }
 
   catch (boost::python::error_already_set const &)
@@ -143,7 +143,7 @@ bool boost::python::indexing::python_iter_iterator::next ()
         {
           // Eat this exception
           PyErr_Clear ();
-          mCurrent = boost::python::object ();
+          m_current = boost::python::object ();
           result = false;
         }
 
@@ -164,5 +164,5 @@ bool boost::python::indexing::python_iter_iterator::next ()
 boost::python::object
 boost::python::indexing::python_iter_iterator::current () const
 {
-  return mCurrent;
+  return m_current;
 }

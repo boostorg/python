@@ -65,7 +65,7 @@ namespace boost { namespace python { namespace indexing {
       PyObject* postcall (PyObject *args, PyObject *result);
 
     private:
-      Policy mBase;
+      Policy m_base;
     };
   };
 
@@ -76,7 +76,7 @@ namespace boost { namespace python { namespace indexing {
   template<class Algorithms, class Policy>
   slice_handler<Algorithms, Policy>
   ::postcall_override::postcall_override (Policy const &p)
-    : mBase (p)
+    : m_base (p)
   {
   }
 
@@ -89,7 +89,7 @@ namespace boost { namespace python { namespace indexing {
   slice_handler<Algorithms, Policy>
   ::postcall_override::precall (PyObject *args)
   {
-    return mBase.precall (args);
+    return m_base.precall (args);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,7 @@ namespace boost { namespace python { namespace indexing {
 
     for (int count = 0; count < size; ++count)
       {
-        mBase.postcall (args, PyList_GetItem (result, count));
+        m_base.postcall (args, PyList_GetItem (result, count));
       }
 
     return result;

@@ -62,23 +62,23 @@ namespace boost { namespace python { namespace indexing {
     reference at (size_type) const;
 
   private:
-    iterator myBegin;
-    iterator myEnd;
+    iterator m_begin;
+    iterator m_end;
   };
 
   template<typename Iterator>
   iterator_pair<Iterator>::iterator_pair (iterator_param begin
                                           , iterator_param end)
-    : myBegin (begin)
-    , myEnd (end)
+    : m_begin (begin)
+    , m_end (end)
   {
   }
 
   template<typename Iterator>
   iterator_pair<Iterator>
   ::iterator_pair (std::pair<iterator, iterator> const &pair)
-    : myBegin (pair.first)
-    , myEnd (pair.second)
+    : m_begin (pair.first)
+    , m_end (pair.second)
   {
   }
 
@@ -86,14 +86,14 @@ namespace boost { namespace python { namespace indexing {
   typename iterator_pair<Iterator>::iterator
   iterator_pair<Iterator>::begin() const
   {
-    return myBegin;
+    return m_begin;
   }
 
   template<typename Iterator>
   typename iterator_pair<Iterator>::iterator
   iterator_pair<Iterator>::end() const
   {
-    return myEnd;
+    return m_end;
   }
 
   template<typename Iterator>

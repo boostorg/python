@@ -41,7 +41,7 @@ namespace boost { namespace python { namespace indexing {
     typedef typename container_proxy::raw_value_type raw_value_type;
     typedef typename container_proxy::size_type size_type;
 
-    proxy_pointer mPtr;
+    proxy_pointer m_ptr;
 
   public:
     typedef typename proxy_type::value_type value_type;
@@ -52,18 +52,18 @@ namespace boost { namespace python { namespace indexing {
 
     typedef value_type element_type;      // Alias for register_ptr_to_python
 
-    element_proxy () : mPtr () { }
-    explicit element_proxy (proxy_type *ptr) : mPtr (ptr) { }
-    element_proxy (proxy_pointer const &ptr) : mPtr (ptr) { }
+    element_proxy () : m_ptr () { }
+    explicit element_proxy (proxy_type *ptr) : m_ptr (ptr) { }
+    element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
 
     explicit element_proxy (raw_value_type const &val)
-      : mPtr (new proxy_type(val))
+      : m_ptr (new proxy_type(val))
     {
       // Create new standalone value (i.e. detached)
     }
 
-    reference operator* () const { return mPtr->operator*(); }
-    pointer operator-> () const { return (*mPtr).operator->(); }
+    reference operator* () const { return m_ptr->operator*(); }
+    pointer operator-> () const { return (*m_ptr).operator->(); }
     pointer get () const { return operator->(); }  // Alias for pointer_holder
 
     // Implicit conversion to raw_value_type
@@ -81,7 +81,7 @@ namespace boost { namespace python { namespace indexing {
 
     element_proxy &operator= (value_type const &copy)
     {
-      proxy_type &proxy (*mPtr);
+      proxy_type &proxy (*m_ptr);
       container_proxy *container = proxy.owner();
       size_type index = proxy.index();
 
@@ -91,7 +91,7 @@ namespace boost { namespace python { namespace indexing {
           // Proxy was attached before, but is now detached. Make sure
           // we now refer to the new element, instead of the detached
           // copy of the old element
-          mPtr = container->at (index).mPtr;
+          m_ptr = container->at (index).m_ptr;
 
           // Note: in the special case that this we and the container
           // proxy itself have the only references to the
@@ -116,7 +116,7 @@ namespace boost { namespace python { namespace indexing {
       return (*this) = *copy;
     }
 
-    size_t use_count() const { return mPtr.use_count(); } // For debugging
+    size_t use_count() const { return m_ptr.use_count(); } // For debugging
   };
 
   template<typename ContainerProxy>
@@ -127,7 +127,7 @@ namespace boost { namespace python { namespace indexing {
     typedef boost::shared_ptr<proxy_type> proxy_pointer;
     typedef typename container_proxy::raw_value_type raw_value_type;
 
-    proxy_pointer mPtr;
+    proxy_pointer m_ptr;
 
   public:
     typedef typename proxy_type::value_type const value_type;
@@ -136,28 +136,28 @@ namespace boost { namespace python { namespace indexing {
     typedef typename proxy_type::iterator_category iterator_category;
     typedef typename proxy_type::difference_type difference_type;
 
-    const_element_proxy () : mPtr () { }
-    explicit const_element_proxy (proxy_type *ptr) : mPtr (ptr) { }
-    const_element_proxy (proxy_pointer const &ptr) : mPtr (ptr) { }
+    const_element_proxy () : m_ptr () { }
+    explicit const_element_proxy (proxy_type *ptr) : m_ptr (ptr) { }
+    const_element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
 
     const_element_proxy (element_proxy<container_proxy> const &copy)
-      : mPtr (copy.mPtr)
+      : m_ptr (copy.m_ptr)
     {
     }
 
     explicit const_element_proxy (raw_value_type const &val)
-      : mPtr (new proxy_type(val))
+      : m_ptr (new proxy_type(val))
     {
       // Create new standalone value (i.e. detached)
     }
 
-    reference operator* () const { return mPtr->operator*(); }
-    pointer operator-> () const { return mPtr->operator->(); }
+    reference operator* () const { return m_ptr->operator*(); }
+    pointer operator-> () const { return m_ptr->operator->(); }
 
     // Implicit conversion to raw_value_type
     operator reference () const { return operator*(); }
 
-    size_t use_count() const { return mPtr.use_count(); } // For debugging
+    size_t use_count() const { return m_ptr.use_count(); } // For debugging
   };
 } } }
 
