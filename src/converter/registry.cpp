@@ -50,8 +50,11 @@ namespace // <unnamed>
   entry* get(type_info type)
   {
 #  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      registry_t::iterator p = entries().find(entry(type));
+      
       std::cout << "looking up " << type
-                << (entries().find(entry(type)) == entries().end() ? ": not found\n" : ": found\n");
+                << (p == entries().end() || p->target_type != type
+                    ? "...NOT found\n" : "...found\n");
 #  endif 
       return const_cast<entry*>(
           &*entries().insert(entry(type)).first
@@ -127,14 +130,20 @@ namespace registry
       *found = registration;
   }
 
-  PyTypeObject*& class_object(type_info key)
-  {
-      return get(key)->class_object;
-  }
-
   registration const& lookup(type_info key)
   {
       return *get(key);
+  }
+
+  registration const* query(type_info type)
+  {
+      registry_t::iterator p = entries().find(entry(type));
+#  ifdef BOOST_PYTHON_TRACE_REGISTRY
+      std::cout << "querying " << type
+                << (p == entries().end() || p->target_type != type
+                    ? "...NOT found\n" : "...found\n");
+#  endif 
+      return (p == entries().end() || p->target_type != type) ? 0 : &*p;
   }
 } // namespace registry
 

@@ -204,37 +204,22 @@ namespace objects
 
   namespace
   {
-    struct class_registry
+    // Find a registered class object corresponding to id. Return a
+    // null handle if no such class is registered.
+    inline type_handle query_class(class_id id)
     {
-     public:
-        type_handle get(class_id id) const;
-        type_handle query(class_id id) const;
-        void set(class_id, type_handle class_object);
-     private:
-        typedef python::detail::map_entry<class_id,type_handle> entry;
-        std::vector<entry> m_impl;
-    };
-
-    class_registry& registry()
-    {
-        static class_registry x;
-        return x;
+        converter::registration const* p = converter::registry::query(id);
+        return type_handle(
+            python::borrowed(
+                python::allow_null(p ? p->class_object : 0))
+            );
     }
 
-    inline type_handle class_registry::query(class_id id) const
+    // Find a registered class corresponding to id. If not found,
+    // throw an appropriate exception.
+    type_handle get_class(class_id id)
     {
-        std::vector<entry>::const_iterator start = m_impl.begin();
-        std::vector<entry>::const_iterator finish = m_impl.end();
-
-        std::vector<entry>::const_iterator p
-            = boost::detail::lower_bound(start, finish, id);
-
-        return (p == finish || p->key != id) ? type_handle() : p->value;
-    }
-  
-    inline type_handle class_registry::get(class_id id) const
-    {
-        type_handle result(this->query(id));
+        type_handle result(query_class(id));
 
         if (result.get() == 0)
         {
@@ -245,48 +230,54 @@ namespace objects
         }
         return result;
     }
-
-    inline void class_registry::set(class_id id, type_handle object)
-    {
-        std::vector<entry>::iterator start = m_impl.begin();
-        std::vector<entry>::iterator finish = m_impl.end();
-        m_impl.insert(
-            boost::detail::lower_bound(start, finish, id)
-            , entry(id, object));
-        converter::registry::class_object(id) = (PyTypeObject*)object.get();
-    }
   }
 
+  // class_base constructor
+  //
+  // name -      the name of the new Python class
+  //
+  // num_types - one more than the number of declared bases
+  //
+  // types -     array of python::type_info, the first item
+  //             corresponding to the class being created, and the
+  //             rest corresponding to its declared bases.
+  //
   class_base::class_base(
       char const* name, std::size_t num_types, class_id const* const types)
   {
-      class_registry& r = registry();
       assert(num_types >= 1);
       
-      handle<> bases(
-          PyTuple_New(std::max(num_types - 1, static_cast<std::size_t>(1)))
-          );
-      
-      if (num_types > 1)
+      // Build a tuple of the base Python type objects. If no bases
+      // were declared, we'll use our class_type() as the single base
+      // class.
+      std::size_t const num_bases = std::max(num_types - 1, static_cast<std::size_t>(1));
+      handle<> bases(PyTuple_New(num_bases));
+
+      for (std::size_t i = 1; i <= num_bases; ++i)
       {
-          for (std::size_t i = 1; i < num_types; ++i)
-              PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(r.get(types[i]).release()));
+          type_handle c = (i >= num_types) ? class_type() : get_class(types[i]);
+          // PyTuple_SET_ITEM steals this reference
+          PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(c.release()));
       }
-      else
-      {
-          PyTuple_SET_ITEM(bases.get(), 0, upcast<PyObject>(class_type().release()));
-      }
-    
+
+      // Build the (name, bases, dict) tuple for creating the new class
       handle<> args(PyTuple_New(3));
       PyTuple_SET_ITEM(args.get(), 0, incref(python::object(name).ptr()));
       PyTuple_SET_ITEM(args.get(), 1, bases.release());
       handle<> d(PyDict_New());
       PyTuple_SET_ITEM(args.get(), 2, d.release());
 
+      // Call the class metatype to create a new class
       PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
       assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
       m_object = type_handle((PyTypeObject*)c);
-      r.set(types[0], m_object);
+
+      // Insert the new class object in the registry
+      converter::registration& converters = const_cast<converter::registration&>(
+          converter::registry::lookup(types[0]));
+
+      // Class object is leaked, for now
+      converters.class_object = (PyTypeObject*)incref(m_object.get());
   }
 
   extern "C"
@@ -315,7 +306,7 @@ namespace objects
 
   BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
   {
-      return registry().query(id);
+      return objects::query_class(id);
   }
 } // namespace objects
 

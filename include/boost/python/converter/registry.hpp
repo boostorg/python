@@ -20,7 +20,11 @@ struct registration;
 // This namespace acts as a sort of singleton
 namespace registry
 {
+  // Get the registration corresponding to the type, creating it if neccessary
   BOOST_PYTHON_DECL registration const& lookup(type_info);
+
+  // Return a pointer to the corresponding registration, if one exists
+  BOOST_PYTHON_DECL registration const* query(type_info);
   
   BOOST_PYTHON_DECL void insert(to_python_function_t, type_info);
 
@@ -41,8 +45,6 @@ namespace registry
       , constructor_function
       , type_info
       );
-  
-  BOOST_PYTHON_DECL PyTypeObject*& class_object(type_info key);
 }
 
 }}} // namespace boost::python::converter
