@@ -828,19 +828,28 @@ struct number
    : boost::<a href=
 "../../../utility/operators.htm#grpd_oprs">integer_arithmetic</a>&lt;number&gt;
 {
-   number(long x_) : x(x_) {}
-   operator long() const { return x; }
+    explicit number(long x_) : x(x_) {}
+    operator long() const { return x; }
 
-   number&amp; operator+=(number const&amp; rhs)
-      { x += rhs; }
-   number&amp; operator-=(number const&amp; rhs)
-      { x -= rhs; }
-   number&amp; operator*=(number const&amp; rhs)
-      { x *= rhs; }
-   number&amp; operator/=(number const&amp; rhs)
-      { x /= rhs; }
-   number&amp; operator%=(number const&amp; rhs)
-      { x %= rhs; }
+    template &lt;class T&gt;
+    number&amp; operator+=(T const&amp; rhs)
+    { x += rhs; return *this; }
+
+    template &lt;class T&gt;
+    number&amp; operator-=(T const&amp; rhs)
+    { x -= rhs; return *this; }
+    
+    template &lt;class T&gt;
+    number&amp; operator*=(T const&amp; rhs)
+    { x *= rhs; return *this; }
+    
+    template &lt;class T&gt;
+    number&amp; operator/=(T const&amp; rhs)
+    { x /= rhs; return *this; }
+    
+    template &lt;class T&gt;
+    number&amp; operator%=(T const&amp; rhs)
+    { x %= rhs; return *this; }
 
    long x;
 };
@@ -848,7 +857,7 @@ struct number
 using namespace boost::python;
 BOOST_PYTHON_MODULE(demo)
 {
-   class_&lt;number&gt;("number")
+   class_&lt;number&gt;("number", init&lt;long&gt;())
       // interoperate with self
       .def(self += self)
       .def(self + self)
