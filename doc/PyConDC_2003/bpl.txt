@@ -751,10 +751,10 @@ seamless interoperability between C++ and Python. Importantly, this is
 achieved without introducing a third syntax: the Python/C++ interface
 definitions are written in pure C++. This avoids any problems with
 parsing the C++ code to be interfaced to Python, yet the interface
-definitions are concise and maintainable. Freed from much of the
-intricacies of crossing a language boundary, software designers can
-take full advantage of two rich and complimentary language
-environments.
+definitions are concise and maintainable. Freed from most of the
+development-time penalties of crossing a language boundary, software
+designers can take full advantage of two rich and complimentary
+language environments.
 
 .. I'm not ready to give up on all of this quite yet
 
