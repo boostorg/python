@@ -37,6 +37,12 @@ enum_ext.color.blue
 ... except TypeError: pass
 ... else: print 'expected a TypeError'
 
+>>> c = colorized()
+>>> c.x
+enum_ext.color.red
+>>> c.x = green
+>>> c.x
+enum_ext.color.green
 '''
 
 def run(args = None):

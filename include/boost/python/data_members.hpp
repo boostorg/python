@@ -6,18 +6,25 @@
 #ifndef DATA_MEMBERS_DWA2002328_HPP
 # define DATA_MEMBERS_DWA2002328_HPP
 
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/type_traits/transform_traits.hpp>
-# include <boost/type_traits/add_const.hpp>
-# include <boost/type_traits/add_reference.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/return_by_value.hpp>
 # include <boost/python/return_internal_reference.hpp>
-# include <boost/python/object/function_object.hpp>
 # include <boost/python/arg_from_python.hpp>
+
+# include <boost/python/object/function_object.hpp>
+
 # include <boost/python/converter/builtin_converters.hpp>
+
+# include <boost/python/detail/indirect_traits.hpp>
+# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/wrap_python.hpp>
+
+# include <boost/type_traits/transform_traits.hpp>
+# include <boost/type_traits/add_const.hpp>
+# include <boost/type_traits/add_reference.hpp>
+
 # include <boost/mpl/if.hpp>
+
 # include <boost/bind.hpp>
 
 namespace boost { namespace python { 
@@ -71,16 +78,21 @@ namespace detail
   // and get the right result.
   template <class T>
   struct default_getter_policy
-      : mpl::if_c<
-        to_python_value<
-          typename add_reference<
-              typename add_const<T>::type
-          >::type
-        >::uses_registry
+  {
+      typedef typename add_reference<
+          typename add_const<T>::type
+      >::type t_cref;
+
+      BOOST_STATIC_CONSTANT(
+          bool, by_ref = to_python_value<t_cref>::uses_registry
+                        && is_reference_to_class<t_cref>::value);
+
+      typedef typename mpl::if_c<
+        by_ref
         , return_internal_reference<>
         , return_value_policy<return_by_value>
-    >
-  {};
+      >::type type;
+  };
 }
 
 template <class C, class D>

@@ -6,12 +6,18 @@
 #include <boost/python/enum.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/module.hpp>
+#include <boost/python/class.hpp>
 
 using namespace boost::python;
 
 enum color { red = 1, green = 2, blue = 4 };
 
 color identity_(color x) { return x; }
+
+struct colorized {
+    colorized() : x(red) {}
+    color x;
+};
 
 BOOST_PYTHON_MODULE(enum_ext)
 {
@@ -23,6 +29,10 @@ BOOST_PYTHON_MODULE(enum_ext)
         ;
     
     def("identity", identity_);
+
+    class_<colorized>("colorized")
+        .def_readwrite("x", &colorized::x)
+        ;
 }
 
 #include "module_tail.cpp"
