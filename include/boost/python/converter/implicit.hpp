@@ -37,7 +37,12 @@ struct implicit
             registration->construct(obj, &intermediate_data.stage1);
           
         void* storage = ((rvalue_base_data<Target>*)data)->storage.bytes;
+#   if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13012108 // vc7.01 alpha workaround
         new (storage) Target(*static_cast<Source*>(intermediate_data.stage1.convertible));
+#   else
+        Target x(*static_cast<Source*>(intermediate_data.stage1.convertible));
+        new (storage) Target(x);
+#   endif 
 
         // record successful construction
         data->convertible = storage;
