@@ -11,6 +11,7 @@
 # include <boost/type_traits/array_traits.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/mpl/bool.hpp>
+# include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -26,7 +27,7 @@ struct is_string_literal<char const[n]> : mpl::true_
 {
 };
 
-#   if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590040) \
+#   if BOOST_WORKAROUND(__DECCXX_VER, BOOST_TESTED_AT(60590040)) \
   || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730)
 // This compiler mistakenly gets the type of string literals as char*
 // instead of char[NN].
