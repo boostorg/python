@@ -24,6 +24,7 @@
 
 #include <boost/type_traits.hpp>
 #include <boost/python/errors.hpp>
+#include <boost/python/suite/indexing/int_slice_helper.hpp>
 #include <algorithm>
 #include <stdexcept>
 #include <limits>
@@ -33,6 +34,7 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits>
   struct default_algorithms
   {
+    typedef default_algorithms<ContainerTraits> self_type;
     typedef ContainerTraits container_traits;
 
     // Import typedefs from the container_traits for convenience
@@ -62,6 +64,9 @@ namespace boost { namespace python { namespace indexing {
 
     static iterator  begin      (container &c) { return c.begin(); }
     static iterator  end        (container &c) { return c.end(); }
+
+    // Reasonable default for slice handling
+    typedef int_slice_helper<self_type> slice_helper;
 
     template<typename PythonClass, typename Policy>
     static void visitor_helper (PythonClass &, Policy const &);
