@@ -31,6 +31,9 @@ where options are:
     --file-list             A file with one pyste file per line. Use as a 
                             substitute for passing the files in the command
                             line.
+    --gccxml-path=<path>    Path to gccxml executable (default: gccxml)
+    --no-default-include    Do not use INCLUDE environment variable for include
+                            files to pass along gccxml.
     -h, --help              Print this help and exit
     -v, --version           Print version information                         
 """
@@ -51,7 +54,7 @@ from CppParser import CppParser, CppParserError
 import time
 import declarations
 
-__version__ = '0.9.29'
+__version__ = '0.9.30'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -104,13 +107,15 @@ def ParseArguments():
             sys.argv[1:], 
             'R:I:D:vh', 
             ['module=', 'multiple', 'out=', 'no-using', 'pyste-ns=', 'debug', 'cache-dir=', 
-             'only-create-cache', 'version', 'generate-main', 'file-list=',  'help'])
+             'only-create-cache', 'version', 'generate-main', 'file-list=',  'help',
+             'gccxml-path=', 'no-default-include'])
     except getopt.GetoptError, e:
         print
         print 'ERROR:', e
         Usage()
     
-    includes = GetDefaultIncludes()
+    default_includes = GetDefaultIncludes()
+    includes = []
     defines = []
     module = None
     out = None
@@ -118,6 +123,7 @@ def ParseArguments():
     cache_dir = None
     create_cache = False
     generate_main = False
+    gccxml_path = 'gccxml'
     
     for opt, value in options:
         if opt == '-I':
@@ -152,10 +158,15 @@ def ParseArguments():
             sys.exit(2)
         elif opt == '--generate-main':
             generate_main = True
+        elif opt == '--gccxml-path':
+            gccxml_path = value
+        elif opt == '--no-default-include':
+            default_includes = [] 
         else:
             print 'Unknown option:', opt
             Usage()
 
+    includes[0:0] = default_includes
     if not files:
         Usage() 
     if not module:
@@ -180,7 +191,8 @@ def ParseArguments():
         sys.exit(3)
 
     ProcessIncludes(includes)
-    return includes, defines, module, out, files, multiple, cache_dir, create_cache, generate_main
+    return includes, defines, module, out, files, multiple, cache_dir, create_cache, \
+        generate_main, gccxml_path
 
 
 def PCHInclude(*headers):
@@ -227,17 +239,18 @@ def CreateContext():
     context['Wrapper'] = exporterutils.FunctionWrapper
     context['declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration-outside')
     context['module_code'] = lambda code: infos.CodeInfo(code, 'module')
+    context['class_code'] = infos.class_code
     return context                                        
 
     
 def Begin():
     # parse arguments
-    includes, defines, module, out, interfaces, multiple, cache_dir, create_cache, generate_main = ParseArguments()
+    includes, defines, module, out, interfaces, multiple, cache_dir, create_cache, generate_main, gccxml_path = ParseArguments()
     # run pyste scripts
     for interface in interfaces:
         ExecuteInterface(interface)
     # create the parser
-    parser = CppParser(includes, defines, cache_dir, declarations.version)
+    parser = CppParser(includes, defines, cache_dir, declarations.version, gccxml_path)
     try:
         if not create_cache:
             if not generate_main:

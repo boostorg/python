@@ -1,3 +1,11 @@
+18 July 2004
+- Applied a patch by Paul Bridger that solves some problems for wrapper 
+methods.
+- Applied a patch by Baptiste Lepilleur that allows the user to inject
+code inside the class definition.
+- Applied another patch by Baptiste Lepilleur that inserts two new command-line
+options that helps with writing makefiles.
+
 27 May 2004
 Applied patch by Paul Bridger that solves a problem on windows regarding 
 spaces on paths. Thanks Paul!

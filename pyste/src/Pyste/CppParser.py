@@ -25,13 +25,14 @@ class CppParserError(Exception): pass
 class CppParser:
     'Parses a header file and returns a list of declarations'
     
-    def __init__(self, includes=None, defines=None, cache_dir=None, version=None):
+    def __init__(self, includes=None, defines=None, cache_dir=None, version=None, gccxml_path = 'gccxml'): 
         'includes and defines ar the directives given to gcc'
         if includes is None:
             includes = []
         if defines is None:
             defines = []
         self.includes = includes
+        self.gccxml_path = gccxml_path 
         self.defines = defines
         self.version = version
         #if cache_dir is None:
@@ -111,10 +112,10 @@ class CppParser:
             includes = self._IncludeParams(filename)
             defines = self._DefineParams()
             # call gccxml
-            cmd = 'gccxml %s %s "%s" -fxml=%s'
+            cmd = '%s %s %s "%s" -fxml=%s' 
             filename = self.Unixfy(filename)
             xmlfile = self.Unixfy(xmlfile)
-            status = os.system(cmd % (includes, defines, filename, xmlfile))
+            status = os.system(cmd % (self.gccxml_path, includes, defines, filename, xmlfile))
             if status != 0 or not os.path.isfile(xmlfile):
                 raise CppParserError, 'Error executing gccxml'
             # parse the resulting xml

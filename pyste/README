@@ -10,7 +10,7 @@ generate C++ code.
 The documentation can be found in the file index.html accompaning this README.
 
 Enjoy!
-Bruno da Silva de Oliveira (nicodemus@globalite.com.br)
+Bruno da Silva de Oliveira (nicodemus@esss.com.br)
 
 Thanks
 ======
@@ -26,6 +26,6 @@ Bugs
 ====
 
 Pyste is a young tool, so please help it to get better! Send bug reports to
-nicodemus@globalite.com.br, accompaining the stack trace in case of exceptions.
+nicodemus@esss.com.br, accompaining the stack trace in case of exceptions.
 If possible, run pyste with --debug, and send the resulting xmls too (pyste
 will output a xml file with the same of each header it parsed).

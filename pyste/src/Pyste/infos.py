@@ -243,6 +243,14 @@ def add_method(info, name, rename=None):
     else:
         added.append((name, rename))
 
+
+def class_code(info, code):
+    added = info._Attribute('__code__')
+    if added is None:
+        info._Attribute('__code__', [code])
+    else:
+        added.append(code)
+ 
 def final(info):
     info._Attribute('no_override', True)
 

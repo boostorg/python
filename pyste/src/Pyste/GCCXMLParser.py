@@ -278,8 +278,6 @@ class GCCXMLParser(object):
         for member in member_list.split():
             decl = self.GetDecl(member)
             if type(decl) in Class.ValidMemberTypes():
-                if type(decl) is str:
-                    print decl
                 members.append(decl) 
         return members
 
@@ -309,8 +307,6 @@ class GCCXMLParser(object):
             class_.bases = class_.hierarchy[0]
         members = self.GetMembers(element.get('members'))
         for member in members:
-            if type(member) is str:
-                print member
             class_.AddMember(member)
 
 
@@ -407,7 +403,12 @@ class GCCXMLParser(object):
         classname = self.GetDecl(element.get('context')).FullName()
         location = self.GetLocation(element.get('location'))
         params = self.GetArguments(element)
-        ctor = Constructor(name, classname, params, visib)
+        artificial = element.get('artificial', False)
+        if not artificial:
+            ctor = Constructor(name, classname, params, visib)
+        else:
+            # we don't want artificial constructors
+            ctor = Unknown('__Unknown_Element_%s' % id)
         ctor.location = location
         self.Update(id, ctor)
 
