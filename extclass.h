@@ -149,7 +149,7 @@ class PyExtensionClassConverters
     }
 
     // This is a member function because in a conforming implementation, friend
-    // funcitons defined inline in the class body are all instantiated as soon
+    // functions defined inline in the class body are all instantiated as soon
     // as the enclosing class is instantiated. If T is not copyable, that causes
     // a compiler error. Instead, we access this function through the global
     // template 
@@ -233,7 +233,15 @@ class PyExtensionClassConverters
     friend const T* from_python(PyObject* p, py::Type<const T*>)
         { return from_python(p, py::Type<T*>()); }
 
-    // Convert to T&
+    // Convert to const T* const&
+    friend const T* from_python(PyObject* p, py::Type<const T *const&>)
+        { return from_python(p, py::Type<const T*>()); }
+ 
+    // Convert to T* const&
+    friend T* from_python(PyObject* p, py::Type<T* const&>)
+        { return from_python(p, py::Type<T*>()); }
+
+   // Convert to T&
     friend T& from_python(PyObject* p, py::Type<T&>)
         { return *py::check_non_null(from_python(p, py::Type<T*>())); }
 
