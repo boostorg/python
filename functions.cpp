@@ -152,7 +152,7 @@ BoundFunction::call(PyObject* args, PyObject* keywords) const
     return PyEval_CallObjectWithKeywords(m_unbound_function.get(), all_arguments.get(), keywords);
 }
 
-PyObject* BoundFunction::getattr(const char* name)
+PyObject* BoundFunction::getattr(const char* name) const
 {
     return PyObject_GetAttrString(m_unbound_function.get(), const_cast<char*>(name));
 }
