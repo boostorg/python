@@ -661,13 +661,13 @@ similar set of intuitive interfaces can also be used to wrap C++ functions
 that correspond to these Python ['special functions]. Example:
 
     class Rational
-    { operator double() const; };
+    { public: operator double() const; };
 
     Rational pow(Rational, Rational);
     Rational abs(Rational);
     ostream& operator<<(ostream&,Rational);
 
-    class_<Rational>()
+    class_<Rational>("Rational")
         .def(float_(self))                  // __float__
         .def(pow(self, other<Rational>))    // __pow__
         .def(abs(self))                     // __abs__
