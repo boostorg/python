@@ -21,6 +21,7 @@
 
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include <stdio.h>
 
 struct int_wrapper {
@@ -61,7 +62,7 @@ int_wrapper::int_wrapper ()
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u ()\n", m_obj_number);
+      printf ("int_wrapper %u () at %p\n", m_obj_number, this);
     }
 }
 
@@ -71,9 +72,10 @@ int_wrapper::int_wrapper (int i)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u (%d)\n"
+      printf ("int_wrapper %u (%d) at %p\n"
               , m_obj_number
-              , m_int);
+              , m_int
+	      , this);
     }
 }
 
@@ -83,9 +85,11 @@ int_wrapper::int_wrapper (int_wrapper const &other)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u (int_wrapper %u)\n"
+      printf ("int_wrapper %u (int_wrapper %u at %p) at %p\n"
               , m_obj_number
-              , other.m_obj_number);
+              , other.m_obj_number
+	      , &other
+	      , this);
     }
 }
 
@@ -93,9 +97,11 @@ int_wrapper &int_wrapper::operator= (int_wrapper const &other)
 {
   if (our_trace_flag)
     {
-      printf ("int_wrapper %u = int_wrapper %u\n"
+      printf ("int_wrapper %u at %p = int_wrapper %u at %p\n"
               , m_obj_number
-              , other.m_obj_number);
+	      , this
+              , other.m_obj_number
+	      , &other);
     }
 
   m_int = other.m_int;
@@ -107,7 +113,7 @@ int_wrapper::~int_wrapper ()
 {
   if (our_trace_flag)
     {
-      printf ("~int_wrapper %u\n", m_obj_number);
+      printf ("~int_wrapper %u at %p\n", m_obj_number, this);
     }
 
   m_int = 0xbaaaaaad;
@@ -166,6 +172,21 @@ int compare (int_wrapper const &lhs, int_wrapper const &rhs)
     {
       return 0;
     }
+}
+
+namespace std {
+  void swap (int_wrapper &first, int_wrapper &second) {
+    if (int_wrapper::our_trace_flag)
+      {
+	printf ("std::swap (int_wrapper %u at %p, int_wrapper %u at %p)\n"
+		, first.m_obj_number
+		, &first
+		, second.m_obj_number
+		, &second);
+      }
+
+    swap (first.m_int, second.m_int); // Don't swap object numbers
+  }
 }
 
 #endif // int_wrapper_rmg_20030910_included
