@@ -187,7 +187,7 @@ class python_extension_class_converters
     /// Get an object which can be used to convert T to/from python. This is used
     /// as a kind of concept check by the free template function
     ///
-    ///     PyObject* to_python(boost::python::semantics, const T& x)
+    ///     PyObject* to_python(const T& x, boost::python::lookup_tag)
     ///
     /// below this class, to prevent the confusing messages that would otherwise
     /// pop up. Now, if T hasn't been wrapped as an extension class, the user
@@ -205,7 +205,7 @@ class python_extension_class_converters
     /// a compiler error. Instead, we access this function through the global
     /// template 
     ///
-    ///     PyObject* to_python(boost::python::semantics, const T& x)
+    ///     PyObject* to_python(const T& x, boost::python::lookup_tag)
     ///
     /// defined below this class. Since template functions are instantiated only
     /// on demand, errors will be avoided unless T is noncopyable and the user
@@ -346,7 +346,7 @@ class python_extension_class_converters
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>)
         { return smart_ptr_value(p, boost::python::type<std::auto_ptr<T> >()); }
 
-    friend PyObject* to_python(boost::python::semantics, std::auto_ptr<T> x)
+    friend PyObject* to_python(std::auto_ptr<T> x, boost::python::lookup_tag)
         { return smart_ptr_to_python(x); }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T>&>)
@@ -358,7 +358,7 @@ class python_extension_class_converters
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>)
         { return smart_ptr_value(p, boost::python::type<boost::shared_ptr<T> >()); }
 
-    friend PyObject* to_python(boost::python::semantics, boost::shared_ptr<T> x)
+    friend PyObject* to_python(boost::shared_ptr<T> x, boost::python::lookup_tag)
         { return smart_ptr_to_python(x); }
 };
 
@@ -367,7 +367,7 @@ class python_extension_class_converters
 // T is a wrapped class. See the first 2 functions declared in
 // python_extension_class_converters above for more info.
 template <class T>
-PyObject* to_python(boost::python::semantics, const T& x)
+PyObject* to_python(const T& x, boost::python::lookup_tag)
 {
     return py_extension_class_converters(boost::python::type<T>()).m_to_python(x);
 }

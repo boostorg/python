@@ -101,7 +101,7 @@ class python_import_extension_class_converters
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&> t, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_caTr(p, t);
     }
-    friend PyObject* to_python(boost::python::semantics, std::auto_ptr<T> x, bool sig = false) {
+    friend PyObject* to_python(std::auto_ptr<T> x, boost::python::lookup_tag, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 
@@ -114,7 +114,7 @@ class python_import_extension_class_converters
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&> t, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->from_python_csTr(p, t);
     }
-    friend PyObject* to_python(boost::python::semantics, boost::shared_ptr<T> x, bool sig = false) {
+    friend PyObject* to_python(boost::shared_ptr<T> x, boost::python::lookup_tag, bool sig = false) {
         return boost::python::detail::import_extension_class<T>::get_converters()->dispatcher_to_python(x);
     }
 };
@@ -165,7 +165,7 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
 {
     virtual PyObject* dispatcher_to_python(const T& x) {
         PyErr_SetString(PyExc_RuntimeError,
-        "to_python(boost::python::semantics, const T&) converter not exported");
+        "to_python(const T&, boost::python::lookup_tag) converter not exported");
         throw import_error();
     }
 
@@ -201,7 +201,7 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
         return from_python(p, t);
     }
     virtual PyObject* dispatcher_to_python(std::auto_ptr<T> x) {
-        return to_python(search_namespace, x);
+        return to_python(x, lookup_tag());
     }
 
     virtual boost::shared_ptr<T>& from_python_sTr(PyObject* p, type<boost::shared_ptr<T>&> t) {
@@ -214,7 +214,7 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
         return from_python(p, t);
     }
     virtual PyObject* dispatcher_to_python(boost::shared_ptr<T> x) {
-        return to_python(search_namespace, x);
+        return to_python(x, lookup_tag());
     }
 };
 

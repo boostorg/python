@@ -42,7 +42,7 @@ namespace detail {
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-inline PyObject* to_python(boost::python::semantics, boost::python::detail::operator_dispatcher* n) { return n; }
+inline PyObject* to_python(boost::python::detail::operator_dispatcher* n, boost::python::lookup_tag) { return n; }
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 

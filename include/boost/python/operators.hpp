@@ -239,9 +239,9 @@ namespace detail
           {                                                                             \
               tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return to_python(search_namespace,                                        \
+              return to_python(                                                         \
                   from_python(args[0].get(), type<Left>()) oper                         \
-                  from_python(args[1].get(), type<Right>()));                           \
+                  from_python(args[1].get(), type<Right>()), lookup_tag());             \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -255,9 +255,9 @@ namespace detail
           {                                                                             \
               tuple args(ref(arguments, ref::increment_count));                         \
                                                                                         \
-              return to_python(search_namespace,                                        \
+              return to_python(                                                         \
                   from_python(args[1].get(), type<Left>()) oper                         \
-                  from_python(args[0].get(), type<Right>()));                           \
+                  from_python(args[0].get(), type<Right>()), lookup_tag());             \
           }                                                                             \
                                                                                         \
           const char* description() const                                               \
@@ -280,8 +280,8 @@ namespace detail
           {                                                                                     \
               tuple args(ref(arguments, ref::increment_count));                                 \
                                                                                                 \
-              return to_python(search_namespace,                                                \
-                  oper(from_python(args[0].get(), type<operand>())));                           \
+              return to_python(                                                                 \
+                  oper(from_python(args[0].get(), type<operand>())), lookup_tag());             \
           }                                                                                     \
                                                                                                 \
           const char* description() const                                                       \
@@ -335,9 +335,9 @@ namespace detail
                   throw argument_error();
               }
 
-              return to_python(search_namespace,
+              return to_python(
                   pow(from_python(args[0].get(), type<Left>()),
-                   from_python(args[1].get(), type<Right>()))); 
+                   from_python(args[1].get(), type<Right>())), lookup_tag()); 
           }
 
           const char* description() const
@@ -358,9 +358,9 @@ namespace detail
                   throw argument_error();
               }
 
-              return to_python(search_namespace,
+              return to_python(
                   pow(from_python(args[1].get(), type<Left>()),
-                   from_python(args[0].get(), type<Right>()))); 
+                   from_python(args[0].get(), type<Right>())), lookup_tag()); 
           }
 
           const char* description() const
@@ -386,13 +386,11 @@ namespace detail
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                               to_python(search_namespace,
-                                         from_python(args[0].get(), type<Left>()) /
-                                         from_python(args[1].get(), type<Right>()))); 
+                               to_python(from_python(args[0].get(), type<Left>()) /
+                                         from_python(args[1].get(), type<Right>()), lookup_tag())); 
               PyTuple_SET_ITEM(res, 1,
-                               to_python(search_namespace,
-                                         from_python(args[0].get(), type<Left>()) %
-                                         from_python(args[1].get(), type<Right>())));
+                               to_python(from_python(args[0].get(), type<Left>()) %
+                                         from_python(args[1].get(), type<Right>()), lookup_tag()));
 
               return res; 
           }
@@ -411,13 +409,11 @@ namespace detail
               PyObject * res = PyTuple_New(2);
 
               PyTuple_SET_ITEM(res, 0,
-                               to_python(search_namespace,
-                                         from_python(args[1].get(), type<Left>()) /
-                                         from_python(args[0].get(), type<Right>()))); 
+                               to_python(from_python(args[1].get(), type<Left>()) /
+                                         from_python(args[0].get(), type<Right>()), lookup_tag())); 
               PyTuple_SET_ITEM(res, 1,
-                               to_python(search_namespace,
-                                         from_python(args[1].get(), type<Left>()) %
-                                         from_python(args[0].get(), type<Right>())));
+                               to_python(from_python(args[1].get(), type<Left>()) %
+                                         from_python(args[0].get(), type<Right>()), lookup_tag()));
 
               return res; 
           }
@@ -443,14 +439,14 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-              return to_python(search_namespace,
+              return to_python(
                   (from_python(args[0].get(), type<Left>()) <
                    from_python(args[1].get(), type<Right>())) ?
                        - 1 :
                        (from_python(args[1].get(), type<Right>()) <
                        from_python(args[0].get(), type<Left>())) ?
                            1 :
-                           0) ; 
+                           0, lookup_tag()) ; 
           }
 
           const char* description() const
@@ -465,14 +461,14 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-              return to_python(search_namespace,
+              return to_python(
                   (from_python(args[1].get(), type<Left>()) <
                    from_python(args[0].get(), type<Right>())) ?
                        - 1 :
                        (from_python(args[0].get(), type<Right>()) <
                        from_python(args[1].get(), type<Left>())) ?
                            1 :
-                           0) ; 
+                           0, lookup_tag()) ; 
           }
 
           const char* description() const
@@ -511,12 +507,12 @@ namespace detail
 # ifdef BOOST_PYTHON_USE_SSTREAM
               std::ostringstream s;
               s << from_python(args[0].get(), type<operand>());
-              return to_python(search_namespace, s.str()); 
+              return to_python(s.str(), lookup_tag()); 
 # else
               std::ostrstream s;
               s << from_python(args[0].get(), type<operand>()) << char();
               auto unfreezer unfreeze(s);
-              return to_python(search_namespace, const_cast<char const *>(s.str())); 
+              return to_python(const_cast<char const *>(s.str()), lookup_tag()); 
 # endif
           }
 

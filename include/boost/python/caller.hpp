@@ -30,7 +30,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)());
+        return to_python((target.*pmf)(), lookup_tag());
     }
 
     template <class T, class A1>
@@ -40,7 +40,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OO"), &self, &a1))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>())));
+        return to_python((target.*pmf)(from_python(a1, type<A1>())), lookup_tag());
     }
 
     template <class T, class A1, class A2>
@@ -51,8 +51,8 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &self, &a1, &a2))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
-                        from_python(a2, type<A2>())));
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3>
@@ -64,9 +64,9 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &self, &a1, &a2, &a3))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
-                        from_python(a3, type<A3>())));
+                        from_python(a3, type<A3>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4>
@@ -79,10 +79,10 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOO"), &self, &a1, &a2, &a3, &a4))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
-                        from_python(a4, type<A4>())));
+                        from_python(a4, type<A4>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5>
@@ -96,11 +96,11 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOO"), &self, &a1, &a2, &a3, &a4, &a5))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
-                        from_python(a5, type<A5>())));
+                        from_python(a5, type<A5>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
@@ -115,12 +115,12 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
-                        from_python(a6, type<A6>())));
+                        from_python(a6, type<A6>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
@@ -136,13 +136,13 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
-                        from_python(a7, type<A7>())));
+                        from_python(a7, type<A7>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
@@ -159,14 +159,14 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
-                        from_python(a8, type<A8>())));
+                        from_python(a8, type<A8>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
@@ -184,7 +184,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -192,7 +192,7 @@ struct caller
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
-                        from_python(a9, type<A9>())));
+                        from_python(a9, type<A9>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
@@ -211,7 +211,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -220,7 +220,7 @@ struct caller
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
                         from_python(a9, type<A9>()),
-                        from_python(a10, type<A10>())));
+                        from_python(a10, type<A10>())), lookup_tag());
     }
 
 
@@ -230,7 +230,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &self))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)());
+        return to_python((target.*pmf)(), lookup_tag());
     }
 
     template <class T, class A1>
@@ -240,7 +240,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OO"), &self, &a1))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>())));
+        return to_python((target.*pmf)(from_python(a1, type<A1>())), lookup_tag());
     }
 
     template <class T, class A1, class A2>
@@ -251,8 +251,8 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &self, &a1, &a2))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
-                        from_python(a2, type<A2>())));
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3>
@@ -264,9 +264,9 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &self, &a1, &a2, &a3))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
-                        from_python(a3, type<A3>())));
+                        from_python(a3, type<A3>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4>
@@ -279,10 +279,10 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOO"), &self, &a1, &a2, &a3, &a4))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
-                        from_python(a4, type<A4>())));
+                        from_python(a4, type<A4>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5>
@@ -296,11 +296,11 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOO"), &self, &a1, &a2, &a3, &a4, &a5))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
-                        from_python(a5, type<A5>())));
+                        from_python(a5, type<A5>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
@@ -315,12 +315,12 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
-                        from_python(a6, type<A6>())));
+                        from_python(a6, type<A6>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
@@ -336,13 +336,13 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
-                        from_python(a7, type<A7>())));
+                        from_python(a7, type<A7>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
@@ -359,14 +359,14 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
-                        from_python(a8, type<A8>())));
+                        from_python(a8, type<A8>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
@@ -384,7 +384,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -392,7 +392,7 @@ struct caller
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
-                        from_python(a9, type<A9>())));
+                        from_python(a9, type<A9>())), lookup_tag());
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
@@ -411,7 +411,7 @@ struct caller
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &self, &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
             return 0;
         T& target = from_python(self, type<T&>());
-        return to_python(search_namespace, (target.*pmf)(from_python(a1, type<A1>()),
+        return to_python((target.*pmf)(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -420,14 +420,14 @@ struct caller
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
                         from_python(a9, type<A9>()),
-                        from_python(a10, type<A10>())));
+                        from_python(a10, type<A10>())), lookup_tag());
     }
 
     // Free functions
     static PyObject* call(R (*f)(), PyObject* args, PyObject* /* keywords */ ) {
         if (!PyArg_ParseTuple(args, const_cast<char*>("")))
             return 0;
-        return to_python(search_namespace, f());
+        return to_python(f(), lookup_tag());
     }
 
     template <class A1>
@@ -435,7 +435,7 @@ struct caller
         PyObject* a1;
         if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &a1))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>())));
+        return to_python(f(from_python(a1, type<A1>())), lookup_tag());
     }
 
     template <class A1, class A2>
@@ -444,8 +444,8 @@ struct caller
         PyObject* a2;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OO"), &a1, &a2))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
-                        from_python(a2, type<A2>())));
+        return to_python(f(from_python(a1, type<A1>()),
+                        from_python(a2, type<A2>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3>
@@ -455,9 +455,9 @@ struct caller
         PyObject* a3;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOO"), &a1, &a2, &a3))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
-                        from_python(a3, type<A3>())));
+                        from_python(a3, type<A3>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4>
@@ -468,10 +468,10 @@ struct caller
         PyObject* a4;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOO"), &a1, &a2, &a3, &a4))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
-                        from_python(a4, type<A4>())));
+                        from_python(a4, type<A4>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5>
@@ -483,11 +483,11 @@ struct caller
         PyObject* a5;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOO"), &a1, &a2, &a3, &a4, &a5))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
-                        from_python(a5, type<A5>())));
+                        from_python(a5, type<A5>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6>
@@ -500,12 +500,12 @@ struct caller
         PyObject* a6;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
-                        from_python(a6, type<A6>())));
+                        from_python(a6, type<A6>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
@@ -519,13 +519,13 @@ struct caller
         PyObject* a7;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
-                        from_python(a7, type<A7>())));
+                        from_python(a7, type<A7>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
@@ -540,14 +540,14 @@ struct caller
         PyObject* a8;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
                         from_python(a5, type<A5>()),
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
-                        from_python(a8, type<A8>())));
+                        from_python(a8, type<A8>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
@@ -563,7 +563,7 @@ struct caller
         PyObject* a9;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -571,7 +571,7 @@ struct caller
                         from_python(a6, type<A6>()),
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
-                        from_python(a9, type<A9>())));
+                        from_python(a9, type<A9>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
@@ -588,7 +588,7 @@ struct caller
         PyObject* a10;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -597,7 +597,7 @@ struct caller
                         from_python(a7, type<A7>()),
                         from_python(a8, type<A8>()),
                         from_python(a9, type<A9>()),
-                        from_python(a10, type<A10>())));
+                        from_python(a10, type<A10>())), lookup_tag());
     }
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10, class A11>
@@ -615,7 +615,7 @@ struct caller
         PyObject* a11;
         if (!PyArg_ParseTuple(args, const_cast<char*>("OOOOOOOOOOO"), &a1, &a2, &a3, &a4, &a5, &a6, &a7, &a8, &a9, &a10, &a11))
             return 0;
-        return to_python(search_namespace, f(from_python(a1, type<A1>()),
+        return to_python(f(from_python(a1, type<A1>()),
                         from_python(a2, type<A2>()),
                         from_python(a3, type<A3>()),
                         from_python(a4, type<A4>()),
@@ -625,7 +625,7 @@ struct caller
                         from_python(a8, type<A8>()),
                         from_python(a9, type<A9>()),
                         from_python(a10, type<A10>()),
-                        from_python(a11, type<A11>())));
+                        from_python(a11, type<A11>())), lookup_tag());
     }
 
 };

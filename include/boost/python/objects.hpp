@@ -297,7 +297,7 @@ struct list::slice_proxy
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
-PyObject* to_python(boost::python::semantics, const boost::python::tuple&);
+PyObject* to_python(const boost::python::tuple&, boost::python::lookup_tag);
 boost::python::tuple from_python(PyObject* p, boost::python::type<boost::python::tuple>);
 
 inline boost::python::tuple from_python(PyObject* p, boost::python::type<const boost::python::tuple&>)
@@ -305,7 +305,7 @@ inline boost::python::tuple from_python(PyObject* p, boost::python::type<const b
     return from_python(p, boost::python::type<boost::python::tuple>());
 }
 
-PyObject* to_python(boost::python::semantics, const boost::python::list&);
+PyObject* to_python(const boost::python::list&, boost::python::lookup_tag);
 boost::python::list from_python(PyObject* p, boost::python::type<boost::python::list>);
 
 inline boost::python::list from_python(PyObject* p, boost::python::type<const boost::python::list&>)
@@ -313,7 +313,7 @@ inline boost::python::list from_python(PyObject* p, boost::python::type<const bo
     return from_python(p, boost::python::type<boost::python::list>());
 }
 
-PyObject* to_python(boost::python::semantics, const boost::python::string&);
+PyObject* to_python(const boost::python::string&, boost::python::lookup_tag);
 boost::python::string from_python(PyObject* p, boost::python::type<boost::python::string>);
 
 inline boost::python::string from_python(PyObject* p, boost::python::type<const boost::python::string&>)
@@ -321,7 +321,7 @@ inline boost::python::string from_python(PyObject* p, boost::python::type<const 
     return from_python(p, boost::python::type<boost::python::string>());
 }
 
-PyObject* to_python(boost::python::semantics, const boost::python::dictionary&);
+PyObject* to_python(const boost::python::dictionary&, boost::python::lookup_tag);
 boost::python::dictionary from_python(PyObject* p, boost::python::type<boost::python::dictionary>);
 
 inline boost::python::dictionary from_python(PyObject* p, boost::python::type<const boost::python::dictionary&>)

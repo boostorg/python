@@ -29,7 +29,7 @@ struct py_ptr_conversions : Base
     inline friend T from_python(PyObject* x, boost::python::type<T>)
         { return T(boost::python::downcast<Value>(x).get(), T::increment_count); }
     
-    inline friend PyObject* to_python(boost::python::semantics, T x)
+    inline friend PyObject* to_python(T x, boost::python::lookup_tag)
         { return boost::python::as_object(x.release()); }
     
 };
@@ -163,7 +163,7 @@ typedef reference<PyObject> ref;
 template <class T>
 ref make_ref(const T& x)
 {
-    return ref(to_python(search_namespace, x));
+    return ref(to_python(x, lookup_tag()));
 }
 
 }} // namespace boost::python

@@ -29,11 +29,11 @@ class class_builder
     /// Tell Boost.Python that for the purposes of pickling, the state is
     /// completely captured in the object's __dict__.
     inline void dict_defines_state() {
-      add(ref(to_python(search_namespace, 1)), "__dict_defines_state__");
+      add(ref(to_python(1, lookup_tag())), "__dict_defines_state__");
     }
     
     inline void getstate_manages_dict() {
-      add(ref(to_python(search_namespace, 1)), "__getstate_manages_dict__");
+      add(ref(to_python(1, lookup_tag())), "__getstate_manages_dict__");
     }
     
     /// define constructors

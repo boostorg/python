@@ -165,7 +165,7 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, to_python(boost::python::search_namespace, key));
+		PyErr_SetObject(PyExc_KeyError, to_python(key, boost::python::lookup_tag()));
         throw boost::python::error_already_set();
     }
 }
@@ -746,9 +746,9 @@ namespace boost { namespace python {
 }} // namespace boost::python
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
-inline PyObject* to_python(boost::python::semantics, const bpl_test::Record* p)
+inline PyObject* to_python(const bpl_test::Record* p, boost::python::lookup_tag)
 {
-    return to_python(boost::python::search_namespace, *p);
+    return to_python(*p, boost::python::lookup_tag());
 }
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
@@ -1123,7 +1123,7 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
     int third = from_python(keywords[boost::python::string("third")].get(), boost::python::type<int>());
     int fourth = from_python(keywords[boost::python::string("fourth")].get(), boost::python::type<int>());
     
-    return to_python(boost::python::search_namespace, first->i_ + second + third + fourth);
+    return to_python(first->i_ + second + third + fourth, boost::python::lookup_tag());
 }
 
 void init_module()
