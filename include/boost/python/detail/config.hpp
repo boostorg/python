@@ -76,7 +76,7 @@
 #  define BOOST_PYTHON_STATIC_LINK
 #endif
 
-#if defined(__MWERKS__)
+#if defined(__MWERKS__) || (defined(__DECCXX_VER) && __DECCXX_VER <= 60290024)
 # define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #endif
 
