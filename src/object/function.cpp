@@ -5,12 +5,16 @@
 // to its suitability for any purpose.
 
 #include <boost/python/object/function.hpp>
+#include <numeric>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 
-function::function(py_function implementation)
+function::function(py_function implementation, unsigned min_args, unsigned max_args)
     : m_fn(implementation)
+    , m_min_args(min_args)
+      , m_max_args(std::max(max_args,min_args))
+      , m_overloads(0)
 {
     PyObject* p = this;
     PyObject_INIT(p, &function_type);
@@ -18,22 +22,65 @@ function::function(py_function implementation)
 
 function::~function()
 {
+    PyObject* overloads = m_overloads;
+    Py_XDECREF(overloads);
 }
     
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
-    return m_fn(args, keywords);
+    int nargs = PyTuple_GET_SIZE(args);
+    function const* f = this;
+    do
+    {
+        // Check for a plausible number of arguments
+        if (nargs >= f->m_min_args && nargs <= f->m_max_args)
+        {
+            // Call the function
+            PyObject* result = f->m_fn(args, keywords);
+            
+            // If the result is NULL but no error was set, m_fn failed
+            // the argument-matching test.
+
+            // This assumes that all other error-reporters are
+            // well-behaved and never return NULL to python without
+            // setting an error.
+            if (result != 0 || PyErr_Occurred())
+                return result;
+        }
+        f = f->m_overloads;
+    }
+    while (f);
+    // None of the overloads matched; time to generate the error message
+    argument_error(args, keywords);
+    return 0;
+}
+
+void function::argument_error(PyObject* args, PyObject* keywords) const
+{
+    // This function needs to be improved to do better error reporting.
+    PyErr_BadArgument();
+}
+
+void function::add_overload(function* overload)
+{
+    function* parent = this;
+    
+    while (parent->m_overloads != 0)
+    {
+        parent = parent->m_overloads;
+    }
+    parent->m_overloads = overload;
 }
 
 extern "C"
 {
     // Stolen from Python's funcobject.c
     static PyObject *
-    function_descr_get(PyObject *func, PyObject *obj, PyObject *type)
+    function_descr_get(PyObject *func, PyObject *obj, PyObject *type_)
     {
         if (obj == Py_None)
             obj = NULL;
-        return PyMethod_New(func, obj, type);
+        return PyMethod_New(func, obj, type_);
     }
 
     static void
@@ -92,4 +139,4 @@ PyTypeObject function_type = {
     0                                       /* tp_new */
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
