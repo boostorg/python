@@ -153,7 +153,7 @@ int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
         PyErr_SetString(PyExc_AttributeError, s.c_str());
         throw py::ErrorAlreadySet();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x6000
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2400
     return 0;
 #endif
 }
@@ -163,7 +163,7 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, py::converters::to_python(key));
+		PyErr_SetObject(PyExc_KeyError, PY_CONVERSION::to_python(key));
         throw py::ErrorAlreadySet();
     }
 }
@@ -668,16 +668,49 @@ template class py::ExtensionClass<Record>; // explicitly instantiate
 
 } // namespace extclass_demo
 
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-namespace py {
-#endif
+PY_BEGIN_CONVERSION_NAMESPACE
 inline PyObject* to_python(const extclass_demo::Record* p)
 {
     return to_python(*p);
 }
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+PY_END_CONVERSION_NAMESPACE
+
+/************************************************************/
+/*                                                          */
+/*          Enums and non-method class attributes           */
+/*                                                          */
+/************************************************************/
+
+namespace extclass_demo {
+
+struct EnumOwner
+{
+ public:
+    enum enum_type { one = 1, two = 2, three = 3 };
+    
+    EnumOwner(enum_type a1, const enum_type& a2)
+        : m_first(a1), m_second(a2) {}
+
+    void set_first(const enum_type& x) { m_first = x; }
+    void set_second(const enum_type& x) { m_second = x; }
+    
+    enum_type first() { return m_first; }
+    enum_type second() { return m_second; }
+ private:
+    enum_type m_first, m_second;
+};
+
 }
-#endif
+
+namespace py {
+template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
+}
+
+// This is just a way of getting the converters instantiated
+//struct EnumOwner_enum_type_Converters
+//    : py::py_enum_as_int_converters<EnumOwner::enum_type>
+//{
+//};
 
 namespace extclass_demo {
 /************************************************************/
@@ -850,9 +883,19 @@ void init_module(py::Module& m)
     m.def_raw(&raw, "raw");
     m.def_raw(&raw1, "raw1");
     m.def_raw(&raw2, "raw2");
+
+    py::ClassWrapper<EnumOwner> enum_owner(m, "EnumOwner");
+    enum_owner.def(py::Constructor<EnumOwner::enum_type, const EnumOwner::enum_type&>());
+    enum_owner.def(&EnumOwner::set_first, "__setattr__first__");
+    enum_owner.def(&EnumOwner::set_second, "__setattr__second__");
+    enum_owner.def(&EnumOwner::first, "__getattr__first__");
+    enum_owner.def(&EnumOwner::second, "__getattr__second__");
+    enum_owner.add(PyInt_FromLong(EnumOwner::one), "one");
+    enum_owner.add(PyInt_FromLong(EnumOwner::two), "two");
+    enum_owner.add(PyInt_FromLong(EnumOwner::three), "three");
 }
 
-PyObject * raw(py::Tuple const & args, py::Dict const & keywords)
+PyObject* raw(py::Tuple const& args, py::Dict const& keywords)
 {
     if(args.size() != 2 || keywords.size() != 2)
     {
@@ -860,13 +903,13 @@ PyObject * raw(py::Tuple const & args, py::Dict const & keywords)
         throw py::ArgumentError();
     }
     
-    RawTest * first = from_python(args[0].get(), py::Type<RawTest *>());
-    int second = from_python(args[1].get(), py::Type<int>());
+    RawTest* first = PY_CONVERSION::from_python(args[0].get(), py::Type<RawTest *>());
+    int second = PY_CONVERSION::from_python(args[1].get(), py::Type<int>());
     
-    int third = from_python(keywords[py::String("third")].get(), py::Type<int>());
-    int fourth = from_python(keywords[py::String("fourth")].get(), py::Type<int>());
+    int third = PY_CONVERSION::from_python(keywords[py::String("third")].get(), py::Type<int>());
+    int fourth = PY_CONVERSION::from_python(keywords[py::String("fourth")].get(), py::Type<int>());
     
-    return to_python(first->i_ + second + third + fourth);
+    return PY_CONVERSION::to_python(first->i_ + second + third + fourth);
 }
 
 void init_module()
