@@ -746,10 +746,11 @@ namespace {
           }
       }
 
-      Ptr keys = name_space.keys();
-      for (std::size_t j = 0, len = PyList_GET_SIZE(keys.get()); j < len; ++j)
+      List keys(name_space.keys());
+      for (std::size_t j = 0, len = keys.size(); j < len; ++j)
       {
-          const char* name = PyString_AsString(PyList_GetItem(keys.get(), j));
+          String name_obj(keys.get_item(j));
+          const char* name = name_obj.c_str();
 
           if (!is_special_name(name))
               continue;
