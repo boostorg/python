@@ -15,6 +15,9 @@
 >>> (-y).value()
 39
 
+>>> (x + y).value()
+3
+
 >>> abs(y).value()
 39
 
