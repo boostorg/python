@@ -95,10 +95,10 @@ namespace detail {
       PyObject* getattr(const char* name) const;
       int setattr(const char* name, PyObject* value);
       PyObject* repr() const;
-      
+      void add_base(Ptr base);
+
    protected:
       bool initialize_instance(Instance* instance, PyObject* args, PyObject* keywords);
-      void add_base(Ptr base);
 
    private: // virtual functions
       // Subclasses should override this to delete the particular instance type

@@ -657,6 +657,188 @@ Regression test for a reference-counting bug thanks to Mark Evans
     0.0
     >>> sizelist([1, 2, 4])
     3.0
+
+Tests for method lookup in the context of inheritance
+Set up the tests
+
+    >>> a1 = A1()
+    >>> a2 = A2()
+    >>> b1 = B1()
+    >>> b2 = B2()
+    >>> pa1_a1 = factoryA1asA1()
+    >>> pb1_a1 = factoryB1asA1()
+    >>> pb2_a1 = factoryB2asA1()
+    >>> pc_a1 = factoryCasA1()
+    >>> pa2_a2 = factoryA2asA2()
+    >>> pb1_a2 = factoryB1asA2()
+    >>> pb1_b1 = factoryB1asB1()
+    >>> pc_b1 = factoryCasB1()
+    >>> class DA1(A1):
+    ...     def overrideA1(self):
+    ...         return 'DA1.overrideA1'
+    ...
+    >>> da1 = DA1()
+    >>> class DB1(B1):
+    ...     def overrideA1(self):
+    ...         return 'DB1.overrideA1'
+    ...     def overrideB1(self):
+    ...         return 'DB1.overrideB1'
+    ...
+    >>> db1 = DB1()
+    >>> class DB2(B2): pass
+    ...
+    >>> db2 = DB2()
+
+test overrideA1
+
+    >>> a1.overrideA1()
+    'A1::overrideA1'
+    >>> b1.overrideA1()
+    'B1::overrideA1'
+    >>> b2.overrideA1()
+    'B2::overrideA1'
+    >>> da1.overrideA1()
+    'DA1.overrideA1'
+    >>> db1.overrideA1()
+    'DB1.overrideA1'
+    >>> pa1_a1.overrideA1()
+    'A1::overrideA1'
+    >>> pb1_a1.overrideA1()
+    'B1::overrideA1'
+    >>> pb2_a1.overrideA1()
+    'B2::overrideA1'
+    >>> pb1_b1.overrideA1()
+    'B1::overrideA1'
+    >>> pc_a1.overrideA1()
+    'B1::overrideA1'
+    >>> pc_b1.overrideA1()
+    'B1::overrideA1'
+
+test call_overrideA1
+
+    >>> call_overrideA1(a1)
+    'A1::overrideA1'
+    >>> call_overrideA1(b1)
+    'B1::overrideA1'
+    >>> call_overrideA1(b2)
+    'B2::overrideA1'
+    >>> call_overrideA1(da1)
+    'DA1.overrideA1'
+    >>> call_overrideA1(db1)
+    'DB1.overrideA1'
+    >>> call_overrideA1(pa1_a1)
+    'A1::overrideA1'
+    >>> call_overrideA1(pb1_a1)
+    'B1::overrideA1'
+    >>> call_overrideA1(pb2_a1)
+    'B2::overrideA1'
+    >>> call_overrideA1(pb1_b1)
+    'B1::overrideA1'
+    >>> call_overrideA1(pc_a1)
+    'B1::overrideA1'
+    >>> call_overrideA1(pc_b1)
+    'B1::overrideA1'
+
+test inheritA1
+
+    >>> a1.inheritA1()
+    'A1::inheritA1'
+    >>> b1.inheritA1()
+    'A1::inheritA1'
+    >>> b2.inheritA1()
+    'A1::inheritA1'
+    >>> da1.inheritA1()
+    'A1::inheritA1'
+    >>> db1.inheritA1()
+    'A1::inheritA1'
+    >>> pa1_a1.inheritA1()
+    'A1::inheritA1'
+    >>> pb1_a1.inheritA1()
+    'A1::inheritA1'
+    >>> pb2_a1.inheritA1()
+    'A1::inheritA1'
+    >>> pb1_b1.inheritA1()
+    'A1::inheritA1'
+    >>> pc_a1.inheritA1()
+    'A1::inheritA1'
+    >>> pc_b1.inheritA1()
+    'A1::inheritA1'
+
+test call_inheritA1
+
+    >>> call_inheritA1(a1)
+    'A1::inheritA1'
+    >>> call_inheritA1(b1)
+    'A1::inheritA1'
+    >>> call_inheritA1(b2)
+    'A1::inheritA1'
+    >>> call_inheritA1(da1)
+    'A1::inheritA1'
+    >>> call_inheritA1(db1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pa1_a1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pb1_a1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pb2_a1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pb1_b1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pc_a1)
+    'A1::inheritA1'
+    >>> call_inheritA1(pc_b1)
+    'A1::inheritA1'
+
+test inheritA2
+
+    >>> a2.inheritA2()
+    'A2::inheritA2'
+    >>> b1.inheritA2()
+    'A2::inheritA2'
+    >>> b2.inheritA2()
+    'A2::inheritA2'
+    >>> db1.inheritA2()
+    'A2::inheritA2'
+    >>> pa2_a2.inheritA2()
+    'A2::inheritA2'
+    >>> pb1_a2.inheritA2()
+    'A2::inheritA2'
+    >>> pb1_b1.inheritA2()
+    'A2::inheritA2'
+
+test overrideB1
+
+    >>> b1.overrideB1()
+    'B1::overrideB1'
+    >>> db1.overrideB1()
+    'DB1.overrideB1'
+    >>> pb1_b1.overrideB1()
+    'B1::overrideB1'
+    >>> pc_b1.overrideB1()
+    'C::overrideB1'
+
+test call_overrideB1
+
+    >>> call_overrideB1(b1)
+    'B1::overrideB1'
+    >>> call_overrideB1(db1)
+    'DB1.overrideB1'
+    >>> call_overrideB1(pb1_a1)
+    'B1::overrideB1'
+    >>> call_overrideB1(pc_a1)
+    'C::overrideB1'
+    >>> call_overrideB1(pb1_b1)
+    'B1::overrideB1'
+    >>> call_overrideB1(pc_b1)
+    'C::overrideB1'
+
+test inheritB2
+
+    >>> b2.inheritB2()
+    'B2::inheritB2'
+    >>> db2.inheritB2()
+    'B2::inheritB2'
+
 '''
 
 from demo import *

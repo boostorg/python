@@ -480,6 +480,81 @@ int testCallback(CallbackTestBase * b, int i)
     return b->testCallback(i);
 }
 
+/************************************************************/
+/*                                                          */
+/*       test classes for interaction of method lookup      */
+/*               in the context of inheritance              */
+/*                                                          */
+/************************************************************/
+
+struct A1 {
+    virtual ~A1() {}
+    virtual const char* overrideA1() const { return "A1::overrideA1"; }
+    virtual const char* inheritA1() const { return "A1::inheritA1"; }
+};
+
+struct A2 {
+    virtual ~A2() {}
+    virtual const char* inheritA2() const { return "A2::inheritA2"; }
+};
+
+struct B1 : A1, A2 {
+    const char* overrideA1() const { return "B1::overrideA1"; }
+    virtual const char* overrideB1() const { return "B1::overrideB1"; }
+};
+
+struct B2 : A1, A2 {
+    const char* overrideA1() const { return "B2::overrideA1"; }
+    virtual const char* inheritB2() const { return "B2::inheritB2"; }
+};
+
+struct C : B1 {
+    const char* overrideB1() const { return "C::overrideB1"; }
+};
+
+const char* call_overrideA1(const A1& a) { return a.overrideA1(); }
+const char* call_overrideB1(const B1& b) { return b.overrideB1(); }
+const char* call_inheritA1(const A1& a) { return a.inheritA1(); }
+
+auto_ptr<A1> factoryA1asA1() { return auto_ptr<A1>(new A1); }
+auto_ptr<A1> factoryB1asA1() { return auto_ptr<A1>(new B1); }
+auto_ptr<A1> factoryB2asA1() { return auto_ptr<A1>(new B2); }
+auto_ptr<A1> factoryCasA1() { return auto_ptr<A1>(new C); }
+auto_ptr<A2> factoryA2asA2() { return auto_ptr<A2>(new A2); }
+auto_ptr<A2> factoryB1asA2() { return auto_ptr<A2>(new B1); }
+auto_ptr<B1> factoryB1asB1() { return auto_ptr<B1>(new B1); }
+auto_ptr<B1> factoryCasB1() { return auto_ptr<B1>(new C); }
+
+struct B_callback : B1 {
+   B_callback(PyObject* self) : m_self(self) {}
+   
+   const char* overrideA1() const { return py::Callback<const char *>::call_method(m_self, "overrideA1"); }
+   const char* overrideB1() const { return py::Callback<const char *>::call_method(m_self, "overrideB1"); }
+   
+   static const char* default_overrideA1(B1& x) { return x.B1::overrideA1(); }
+   static const char* default_overrideB1(B1& x) { return x.B1::overrideB1(); }
+   
+   PyObject* m_self;
+};
+
+struct A_callback : A1 {
+   A_callback(PyObject* self) : m_self(self) {}
+   
+   const char* overrideA1() const { return py::Callback<const char *>::call_method(m_self, "overrideA1"); }
+   const char* inheritA1() const { return py::Callback<const char *>::call_method(m_self, "inheritA1"); }
+   
+   static const char* default_overrideA1(A1& x) { return x.A1::overrideA1(); }
+   static const char* default_inheritA1(A1& x) { return x.A1::inheritA1(); }
+   
+   PyObject* m_self;
+};
+
+/************************************************************/
+/*                                                          */
+/*                           Ratio                          */
+/*                                                          */
+/************************************************************/
+
 typedef boost::rational<int> Ratio;
 
 py::String ratio_str(const Ratio& r)
@@ -653,6 +728,45 @@ void init_module(py::Module& m)
                    &CallbackTestCallback::default_callbackString);
 
     callbackTest.declare_base(callbackTestBase);     
+
+    py::ClassWrapper<A1, A_callback> a1_class(m, "A1");
+    a1_class.def(py::Constructor<>());
+    a1_class.def(&A1::overrideA1, "overrideA1", &A_callback::default_overrideA1);
+    a1_class.def(&A1::inheritA1, "inheritA1", &A_callback::default_inheritA1);
+
+    py::ClassWrapper<A2> a2_class(m, "A2");
+    a2_class.def(py::Constructor<>());
+    a2_class.def(&A2::inheritA2, "inheritA2");
+
+    py::ClassWrapper<B1, B_callback> b1_class(m, "B1");
+
+    // Creates extension class "B_base"
+    b1_class.def(py::Constructor<>());
+    b1_class.def(&B1::overrideA1, "overrideA1", &B_callback::default_overrideA1); 
+    b1_class.def(&B1::overrideB1, "overrideB1", &B_callback::default_overrideB1); 
+    b1_class.declare_base(a1_class);  
+    b1_class.declare_base(a2_class);  
+
+    py::ClassWrapper<B2> b2_class(m, "B2");
+
+    b2_class.def(py::Constructor<>());
+    b2_class.def(&B2::overrideA1, "overrideA1"); 
+    b2_class.def(&B2::inheritB2, "inheritB2"); 
+    b2_class.declare_base(a1_class);  
+    b2_class.declare_base(a2_class);  
+
+    m.def(call_overrideA1, "call_overrideA1");    
+    m.def(call_overrideB1, "call_overrideB1");    
+    m.def(call_inheritA1, "call_inheritA1");    
+
+    m.def(factoryA1asA1, "factoryA1asA1");    
+    m.def(factoryB1asA1, "factoryB1asA1");    
+    m.def(factoryB2asA1, "factoryB2asA1");    
+    m.def(factoryCasA1, "factoryCasA1");    
+    m.def(factoryA2asA2, "factoryA2asA2");    
+    m.def(factoryB1asA2, "factoryB1asA2");    
+    m.def(factoryB1asB1, "factoryB1asB1");    
+    m.def(factoryCasB1, "factoryCasB1");    
 }
 
 void init_module()
