@@ -75,35 +75,34 @@ if $(TEST_BIENSTMAN_NON_BUGS)
 
 # --- unit tests of library components ---
 unit-test indirect_traits_test
-  : indirect_traits_test.cpp : <include>$(BOOST_ROOT) ;
+  : indirect_traits_test.cpp : <sysinclude>$(BOOST_ROOT) ;
 unit-test destroy_test
-  : destroy_test.cpp : <include>$(BOOST_ROOT)  ;
+  : destroy_test.cpp : <sysinclude>$(BOOST_ROOT)  ;
 unit-test pointer_type_id_test
-  : pointer_type_id_test.cpp : <include>$(BOOST_ROOT) ;
+  : pointer_type_id_test.cpp : <sysinclude>$(BOOST_ROOT) ;
 
 unit-test member_function_cast
-  : member_function_cast.cpp : <include>$(BOOST_ROOT) ;
+  : member_function_cast.cpp : <sysinclude>$(BOOST_ROOT) ;
 
 unit-test bases
-  : bases.cpp : <include>$(BOOST_ROOT) ;
+  : bases.cpp : <sysinclude>$(BOOST_ROOT) ;
 
 unit-test if_else
-  : if_else.cpp : <include>$(BOOST_ROOT) ;
+  : if_else.cpp : <sysinclude>$(BOOST_ROOT) ;
 
 unit-test pointee
-  : pointee.cpp : <include>$(BOOST_ROOT) ;
+  : pointee.cpp : <sysinclude>$(BOOST_ROOT) ;
 
 unit-test select_holder
   : select_holder.cpp
-  : <include>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)
+  : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)
 ;
 
 unit-test select_from_python_test
   : select_from_python_test.cpp 
     ../src/converter/type_id.cpp
-    ../src/errors.cpp
 
-  : <include>$(BOOST_ROOT) 
+  : <sysinclude>$(BOOST_ROOT) 
     [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ]
     <define>BOOST_PYTHON_STATIC_LIB
     ;
