@@ -37,7 +37,7 @@ namespace detail
   template <class T>
   struct return_rvalue_from_python
   {
-      typedef call_traits<T>::param_type result_type;
+      typedef typename call_traits<T>::param_type result_type;
       return_rvalue_from_python();
       result_type operator()(PyObject*);
    private:
