@@ -301,12 +301,11 @@ namespace objects
           PyObject* d = type_->tp_dict;
           PyObject* instance_size_obj = PyObject_GetAttrString(d, "__instance_size__");
 
-          long instance_size = 0;
-          if (instance_size != 0)
-              instance_size = PyInt_AsLong(instance_size_obj);
+          long instance_size = instance_size_obj ? PyInt_AsLong(instance_size_obj) : 0;
           
           if (instance_size < 0)
               instance_size = 0;
+          
           PyErr_Clear(); // Clear any errors that may have occurred.
 
           instance<>* result = (instance<>*)type_->tp_alloc(type_, instance_size);
