@@ -238,8 +238,8 @@ static MemberType&amp; execute(InstanceType&amp; c);
 
     <h3>C++ module definition</h3>
 <pre>
-#include &lt;boost/python/reference.hpp&gt;
 #include &lt;boost/python/module.hpp&gt;
+#include &lt;boost/python/lvalue_from_pytype.hpp&gt;
 
 // definition lifted from the Python docs
 typedef struct {
@@ -247,7 +247,7 @@ typedef struct {
 } noddy_NoddyObject;
 
 using namespace boost::python;
-static reference&lt;PyObject&gt; cache;
+static handle&lt;&gt; cache;
 
 bool is_cached(noddy_NoddyObject* x)
 {
@@ -256,7 +256,7 @@ bool is_cached(noddy_NoddyObject* x)
 
 void set_cache(noddy_NoddyObject* x)
 {
-   cache.reset((PyObject*)x, ref::increment_count);
+   cache = handle&lt;&gt;(borrowed(x));
 }
 
 BOOST_PYTHON_MODULE(noddy_cache)
