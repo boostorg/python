@@ -61,9 +61,14 @@ bpl-test builtin_converters : test_builtin_converters.py test_builtin_converters
 bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
+
 bpl-test object ;
 bpl-test list ;
 bpl-test long ;
+bpl-test dict ;
+bpl-test tuple ;
+bpl-test str ;
+
 bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;

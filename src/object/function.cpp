@@ -7,7 +7,7 @@
 #include <boost/python/object/function.hpp>
 #include <numeric>
 #include <boost/python/errors.hpp>
-#include <boost/python/objects2.hpp>
+#include <boost/python/str.hpp>
 #include <algorithm>
 #include <cstring>
 
@@ -158,7 +158,7 @@ namespace
 void function::add_to_namespace(
     handle<> const& name_space, char const* name_, handle<> const& attribute)
 {
-    string const name(name_);
+    str const name(name_);
     PyObject* const ns = name_space.get();
     
     if (attribute->ob_type == &function_type)
@@ -175,7 +175,7 @@ void function::add_to_namespace(
         if (dict == 0)
             throw_error_already_set();
         
-        handle<> existing( allow_null(PyObject_GetItem(dict, name.get())) );
+        handle<> existing( allow_null(PyObject_GetItem(dict, name.ptr())) );
         
         if (existing.get())
         {
@@ -195,7 +195,7 @@ void function::add_to_namespace(
     
     // The PyObject_GetAttrString() call above left an active error
     PyErr_Clear();
-    if (PyObject_SetAttr(ns, name.get(), attribute.get()) < 0)
+    if (PyObject_SetAttr(ns, name.ptr(), attribute.get()) < 0)
         throw_error_already_set();
 }
 

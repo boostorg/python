@@ -15,6 +15,10 @@ dll bpl
   : 
   src/list.cpp
   src/long.cpp
+  src/dict.cpp
+  src/tuple.cpp
+  src/str.cpp
+
   src/aix_init_module.cpp
   src/converter/from_python.cpp
   src/converter/registry.cpp
