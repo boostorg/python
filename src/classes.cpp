@@ -840,7 +840,27 @@ namespace {
   void add_current_module_name(dictionary& name_space)
   {
       static string module_key("__module__", string::interned);
-      name_space.set_item(module_key, module_builder::name());
+
+      // If the user didn't specify a __module__ attribute already
+      if (name_space.get_item(module_key).get() == 0)
+      {
+          if (module_builder::initializing())
+          {
+              // The global __name__ is not properly set in this case
+              name_space.set_item(module_key, module_builder::name());
+          }
+          else
+          {
+              // Get the module name from the global __name__
+              PyObject *globals = PyEval_GetGlobals();
+              if (globals != NULL)
+              {
+                  PyObject *module_name = PyDict_GetItemString(globals, "__name__");
+                  if (module_name != NULL)
+                      name_space.set_item(module_key, module_name);
+              }
+          }
+      }
   }
 }
 

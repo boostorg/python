@@ -27,8 +27,8 @@ class class_builder
     
     // define constructors
     template <class signature>
-    void def(const signature& signature)
-        { m_class->def(signature); }
+    void def(const signature& s)
+        { m_class->def(s); }
 
     // export heterogeneous reverse-argument operators 
     // (type of lhs: 'left', of rhs: 'right')

@@ -707,8 +707,6 @@ class extension_instance : public instance
 // Template function implementations
 //
 
-tuple extension_class_coerce(ref l, ref r);
-
 template <class T, class U>
 extension_class<T, U>::extension_class()
     : extension_class_base(typeid(T).name())
@@ -729,7 +727,7 @@ void extension_class<T, U>::def_standard_coerce()
     ref coerce_fct = dict().get_item(string("__coerce__"));
     
     if(coerce_fct.get() == 0) // not yet defined
-        this->def(&extension_class_coerce, "__coerce__");
+        this->def(&standard_coerce, "__coerce__");
 }
 
 template <class T, class U>

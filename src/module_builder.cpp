@@ -14,10 +14,15 @@ namespace {
   ref name_holder;
 }
 
+bool module_builder::initializing()
+{
+    return name_holder.get() != 0;
+}
+
 string module_builder::name()
 {
     // If this fails, you haven't created a module_builder object
-    assert(name_holder.get() != 0);
+    assert(initializing());
     return string(name_holder);
 }
 
@@ -27,6 +32,11 @@ module_builder::module_builder(const char* name)
     // If this fails, you've created more than 1 module_builder object in your module    
     assert(name_holder.get() == 0);
     name_holder = ref(PyObject_GetAttrString(m_module, const_cast<char*>("__name__")));
+}
+
+module_builder::~module_builder()
+{
+    name_holder.reset();
 }
 
 void
