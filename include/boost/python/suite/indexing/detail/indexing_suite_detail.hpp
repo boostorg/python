@@ -570,15 +570,40 @@ namespace boost { namespace python { namespace detail {
         base_get_slice_data(
             Container& container, PySliceObject* slice, Index& from, Index& to)
         {
+            if (Py_None != slice->step) {
+                PyErr_SetString( PyExc_IndexError, "slice step size not supported.");
+                throw_error_already_set();
+            }
+
+            Index min_index = DerivedPolicies::get_min_index(container);
+            Index max_index = DerivedPolicies::get_max_index(container);
+            
+            
             if (Py_None == slice->start)
-                from = DerivedPolicies::get_min_index(container);
-            else 
-                from = DerivedPolicies::convert_index(container, slice->start);
+                from = min_index;
+            else {
+                from = extract<long>( slice->start);
+                if (from < 0) // Negative slice index
+                    from += max_index;
+                if (from < 0) // Clip lower bounds to zero
+                    from = 0;
+                if (from > max_index) // Clip upper bounds to max_index.
+                    from = max_index;
+                
+            }
 
             if (Py_None == slice->stop)
                 to = DerivedPolicies::get_max_index(container);
-            else 
-                to = DerivedPolicies::convert_index(container, slice->stop);
+            else {
+                to = extract<long>( slice->stop);
+                if (to < 0)
+                    to += max_index;
+                if (to < 0)
+                    to = 0;
+                if (to > max_index)
+                    to = max_index;
+            }
+		
         }        
    
         static void 
