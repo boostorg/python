@@ -12,9 +12,6 @@
 #include <boost/mpl/bool.hpp>
 #include <memory>
 
-#define BOOST_INCLUDE_MAIN
-#include <boost/test/test_tools.hpp>
-
 struct BR {};
 
 struct Base {};
@@ -33,7 +30,6 @@ namespace boost { namespace python
 template <class T, class U>
 void assert_same(U* = 0, T* = 0)
 {
-    BOOST_TEST((boost::is_same<T,U>::value));
     BOOST_STATIC_ASSERT((boost::is_same<T,U>::value));
     
 }
@@ -79,11 +75,3 @@ int test_main(int, char * [])
     return 0;
 }
 
-#if !defined(_WIN32) || defined(__GNUC__)
-// This definition is needed for MinGW 2.95.2 and KCC on OSF for some
-// reason, but will break other Win32 compilers.
-namespace boost { namespace python
-{
-  bool handle_exception_impl(boost::function0<void>) { return false; }
-}}
-#endif 

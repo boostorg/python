@@ -17,13 +17,15 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void>)
 
 int result;
 
-#define ASSERT_SAME(T1,T2) \
-       if (!is_same< T1, T2 >::value) { \
-             std::cout << "*********************\n"; \
-             std::cout << python::type_id< T1 >() << " != " << python::type_id< T2 >() << "\n"; \
-             std::cout << "*********************\n"; \
-             result = 1; \
-       }
+#define ASSERT_SAME(T1,T2) assert_same< T1,T2 >()
+
+template <class T, class U>
+void assert_same(U* = 0, T* = 0)
+{
+    BOOST_STATIC_ASSERT((boost::is_same<T,U>::value));
+    
+}
+
 
 int main()
 {
