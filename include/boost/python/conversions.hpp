@@ -16,6 +16,7 @@
 # include <boost/smart_ptr.hpp>
 # include <boost/python/errors.hpp>
 # include <string>
+# include <complex>
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
 
@@ -133,6 +134,32 @@ const char* from_python(PyObject*, boost::python::type<const char*>);
 PyObject* to_python(const std::string& s);
 std::string from_python(PyObject*, boost::python::type<std::string>);
 std::string from_python(PyObject*, boost::python::type<const std::string&>);
+
+template <class T>
+PyObject* to_python(const std::complex<T>& sc) {
+    Py_complex pcc;
+    pcc.real = sc.real();
+    pcc.imag = sc.imag();
+    return PyComplex_FromCComplex(pcc);
+}
+
+template <class T>
+std::complex<T> from_python(PyObject* p,
+                            boost::python::type<const std::complex<T>&>) {
+    if (! PyComplex_Check(p)) {
+      PyErr_SetString(PyExc_TypeError, "expected a complex number");
+      throw boost::python::argument_error();
+    }
+    return std::complex<T>(
+      static_cast<T>(PyComplex_RealAsDouble(p)),
+      static_cast<T>(PyComplex_ImagAsDouble(p)));
+}
+
+template <class T>
+inline std::complex<T> from_python(PyObject* p,
+                                   boost::python::type<std::complex<T> >) {
+    return from_python(p, boost::python::type<const std::complex<T>&>());
+}
 
 // For when your C++ function really wants to pass/return a PyObject*
 PyObject* to_python(PyObject*);
