@@ -172,9 +172,9 @@ struct caller_arity<N>
 
         static unsigned min_arity() { return N; }
         
-        static char const*const* type_names()
+        static signature_element const* signature()
         {
-            return signature<Sig>::type_names();
+            return detail::signature<Sig>::elements();
         }
         
      private:

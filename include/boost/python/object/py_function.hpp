@@ -24,7 +24,7 @@ struct BOOST_PYTHON_DECL py_function_impl_base
     virtual PyObject* operator()(PyObject*, PyObject*) = 0;
     virtual unsigned min_arity() const = 0;
     virtual unsigned max_arity() const;
-    virtual char const* const* type_names() const = 0;
+    virtual python::detail::signature_element const* signature() const = 0;
 };
 
 template <class Caller>
@@ -44,9 +44,9 @@ struct caller_py_function_impl : py_function_impl_base
         return m_caller.min_arity();
     }
     
-    virtual char const* const* type_names() const
+    virtual python::detail::signature_element const* signature() const
     {
-        return m_caller.type_names();
+        return m_caller.signature();
     }
 
  private:
@@ -70,9 +70,9 @@ struct signature_py_function_impl : py_function_impl_base
         return mpl::size<Sig>::value - 1;
     }
     
-    virtual char const* const* type_names() const
+    virtual python::detail::signature_element const* signature() const
     {
-        return python::detail::signature<Sig>::type_names();
+        return python::detail::signature<Sig>::elements();
     }
 
  private:
@@ -103,9 +103,9 @@ struct full_py_function_impl : py_function_impl_base
         return m_max_arity;
     }
     
-    virtual char const* const* type_names() const
+    virtual python::detail::signature_element const* signature() const
     {
-        return python::detail::signature<Sig>::type_names();
+        return python::detail::signature<Sig>::elements();
     }
 
  private:
@@ -150,6 +150,11 @@ struct py_function
         return m_impl->max_arity();
     }
 
+    python::detail::signature_element const* signature() const
+    {
+        return m_impl->signature();
+    }
+    
  private:
     mutable std::auto_ptr<py_function_impl_base> m_impl;
 };

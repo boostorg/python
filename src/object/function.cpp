@@ -13,6 +13,8 @@
 #include <boost/python/args.hpp>
 #include <boost/python/refcount.hpp>
 #include <boost/python/extract.hpp>
+#include <boost/python/tuple.hpp>
+#include <boost/python/list.hpp>
 
 #include <boost/python/detail/signature.hpp>
 #include <boost/mpl/vector/vector10.hpp>
@@ -173,8 +175,53 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 
 void function::argument_error(PyObject* args, PyObject* keywords) const
 {
-    // This function needs to be improved to do better error reporting.
-    PyErr_BadArgument();
+    static handle<> exception(
+        PyErr_NewException("Boost.Python.ArgumentError", PyExc_TypeError, 0));
+    
+    str message("Python argument types\n    (");
+    list actual;
+    for (int i = 0; i < PyTuple_Size(args); ++i)
+    {
+        char const* name = PyTuple_GetItem(args, i)->ob_type->tp_name;
+        actual.append(str(name));
+    }
+    message += str(", ").join(actual);
+    message += ")\ndid not match C++ signature:\n    ";
+
+    list signatures;
+    for (function const* f = this; f; f = f->m_overloads.get())
+    {
+        py_function const& impl = f->m_fn;
+        
+        python::detail::signature_element const* s
+            = impl.signature();
+        
+        list formal;
+        if (impl.max_arity() == 0)
+            formal.append("void");
+
+        for (unsigned n = 1; n <= impl.max_arity(); ++n)
+        {
+            if (s[n].basename == 0)
+            {
+                formal.append("...");
+                break;
+            }
+            
+            formal.append(
+                str(s[n].basename) + (s[n].lvalue ? " {lvalue}" : "")
+                );
+        }
+
+        signatures.append(
+            "(%s) -> %s" % make_tuple(str(", ").join(formal), s[0].basename)
+            );
+    }
+
+    message += str("\n    ").join(signatures);
+
+    PyErr_SetObject(exception.get(), message.ptr());
+    throw_error_already_set();
 }
 
 void function::add_overload(handle<function> const& overload_)

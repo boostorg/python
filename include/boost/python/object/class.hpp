@@ -8,7 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/utility.hpp>
-# include <boost/python/instance_holder.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/type_id.hpp>
 # include <cstddef>

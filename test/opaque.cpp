@@ -73,3 +73,5 @@ BOOST_PYTHON_MODULE(opaque_ext)
     bpl::def ("use2", &::use2);
     bpl::def ("failuse2", &::failuse2);
 }
+
+# include "module_tail.cpp"

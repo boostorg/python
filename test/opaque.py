@@ -7,18 +7,22 @@
 
 """
 >>> from opaque_ext import *
->>> #
->>> # Check for correct conversion
+
+
+    Check for correct conversion
+    
 >>> use(get())
 
-# Check that None is converted to a NULL opaque pointer
+    Check that None is converted to a NULL opaque pointer
+    
 >>> useany(get())
 1
 >>> useany(None)
 0
 
-# check that we don't lose type information by converting NULL opaque
-# pointers to None
+    Check that we don't lose type information by converting NULL
+    opaque pointers to None
+    
 >>> assert getnull() is None
 >>> useany(getnull())
 0
@@ -27,43 +31,41 @@
 Traceback (most recent call last):
         ...
 RuntimeError: success
->>> #
->>> # Check that there is no conversion from integers ...
->>> use(0)
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
->>> #
->>> # ... and from strings to opaque objects
->>> use("")
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
->>> #
->>> # Now check the same for another opaque pointer type
+
+   Check that there is no conversion from integers ...
+   
+>>> try: use(0)
+... except TypeError: pass
+... else: print 'expected a TypeError'
+
+   ... and from strings to opaque objects
+   
+>>> try: use("")
+... except TypeError: pass
+... else: print 'expected a TypeError'
+
+   Now check the same for another opaque pointer type
+   
 >>> use2(get2())
 >>> failuse2(get2())
 Traceback (most recent call last):
         ...
 RuntimeError: success
->>> use2(0)
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
->>> use2("")
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
->>> #
->>> # Check that opaque types are distinct
->>> use(get2())
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
->>> use2(get())
-Traceback (most recent call last):
-        ...
-TypeError: bad argument type for built-in operation
+>>> try: use2(0)
+... except TypeError: pass
+... else: print 'expected a TypeError'
+>>> try: use2("")
+... except TypeError: pass
+... else: print 'expected a TypeError'
+
+   Check that opaque types are distinct
+
+>>> try: use(get2())
+... except TypeError: pass
+... else: print 'expected a TypeError'
+>>> try: use2(get())
+... except TypeError: pass
+... else: print 'expected a TypeError'
 """
 def run(args = None):
     import sys
