@@ -470,15 +470,15 @@ class HeldInstance : public T
 public:
     HeldInstance(PyObject* p) : T(), m_self(p) {}
     template <class A1>
-    HeldInstance(PyObject* p, const A1& a1) : T(a1), m_self(p) {}
+    HeldInstance(PyObject* p, A1 a1) : T(a1), m_self(p) {}
     template <class A1, class A2>
-    HeldInstance(PyObject* p, const A1& a1, const A2& a2) : T(a1, a2), m_self(p) {}
+    HeldInstance(PyObject* p, A1 a1, A2 a2) : T(a1, a2), m_self(p) {}
     template <class A1, class A2, class A3>
-    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3) : T(a1, a2, a3), m_self(p) {}
+    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3) : T(a1, a2, a3), m_self(p) {}
     template <class A1, class A2, class A3, class A4>
-    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4) : T(a1, a2, a3, a4), m_self(p) {}
+    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4), m_self(p) {}
     template <class A1, class A2, class A3, class A4, class A5>
-    HeldInstance(PyObject* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) : T(a1, a2, a3, a4, a5), m_self(p) {}
+    HeldInstance(PyObject* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5), m_self(p) {}
 protected:
     PyObject* m_self; // Not really needed; doesn't really hurt.
 };
@@ -506,19 +506,19 @@ public:
     InstanceValueHolder(ExtensionInstance* p) :
         m_held(p) {}
     template <class A1>
-    InstanceValueHolder(ExtensionInstance* p, const A1& a1) :
+    InstanceValueHolder(ExtensionInstance* p, A1 a1) :
         m_held(p, a1) {}
     template <class A1, class A2>
-    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2) :
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2) :
         m_held(p, a1, a2) {}
     template <class A1, class A2, class A3>
-    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3) :
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3) :
         m_held(p, a1, a2, a3) {}
     template <class A1, class A2, class A3, class A4>
-    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4) :
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4) :
         m_held(p, a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
-    InstanceValueHolder(ExtensionInstance* p, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5) :
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) :
         m_held(p, a1, a2, a3, a4, a5) {}
 private:
     Wrapper m_held;
