@@ -83,9 +83,6 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
 BOOST_PYTHON_DECL void* rvalue_result_from_python(
     PyObject* src, rvalue_from_python_stage1_data& data)
 {
-    // Take possession of the source object.
-    handle<> holder(src);
-
     // Retrieve the registration
     // Cast in two steps for less-capable compilers
     void const* converters_ = data.convertible;

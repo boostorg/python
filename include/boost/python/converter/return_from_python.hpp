@@ -40,13 +40,7 @@ namespace detail
   template <class T>
   struct return_rvalue_from_python
   {
-      typedef typename mpl::if_<
-          mpl::logical_and<
-            has_trivial_copy<T>, mpl::bool_c<(sizeof(T) <= 2 * sizeof(double))>
-          >
-          , T
-          , T&
-      >::type result_type;
+      typedef T result_type;
 
       return_rvalue_from_python();
       result_type operator()(PyObject*);
@@ -127,6 +121,12 @@ namespace detail
   inline typename return_rvalue_from_python<T>::result_type
   return_rvalue_from_python<T>::operator()(PyObject* obj)
   {
+    // Take possession of the source object here.  If the result is in
+    // fact going to be a copy of an lvalue embedded in the object,
+    // and we take possession inside rvalue_result_from_python, it
+    // will be destroyed too early.
+    handle<> holder(obj);
+
       return *(T*)
           (rvalue_result_from_python)(obj, m_data.stage1);
   }
