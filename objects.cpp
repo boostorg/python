@@ -16,7 +16,7 @@ namespace py {
 template <class T>
 T object_from_python(PyObject* p, Type<T>)
 {
-    Ptr x(p);
+    Ptr x(p, Ptr::new_ref);
     if (!T::accepts(x))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
