@@ -56,10 +56,12 @@ BOOST_PYTHON_MODULE(test_vector_shared_ext)
 #else
   // Otherwise do it the hard way
   typedef indexing::indirect_value_traits<int_wrapper_holder> value_traits_;
-  typedef indexing::default_sequence_traits<Container1, value_traits_>
+  typedef indexing::random_access_sequence_traits<Container1, value_traits_>
     container_traits_;
   typedef indexing::default_algorithms<container_traits_> algorithms_;
-  typedef indexing::container_suite<Container1, 0, algorithms_> Suite1;
+
+  typedef indexing::container_suite<
+      Container1, indexing::all_methods, algorithms_> Suite1;
 #endif
 
   boost::python::class_<Container1>("Vector_shared")

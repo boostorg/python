@@ -17,7 +17,6 @@
 
 #include "int_wrapper.hpp"
 #include <boost/python/suite/indexing/container_suite.hpp>
-#include <boost/python/suite/indexing/iterator_range.hpp> // for begin(), end()
 #include <boost/python/suite/indexing/vector.hpp>
 #include <vector>
 #include <boost/python/class.hpp>
@@ -37,12 +36,7 @@ std::vector<int_wrapper> get_vector ()
     int_wrapper(7), int_wrapper(0) };
 
   return std::vector<int_wrapper>
-#if BOOST_WORKAROUND (BOOST_MSVC, <=1200)
     (array, array + sizeof(array) / sizeof (array[0]));
-#else
-    (boost::python::indexing::begin(array),
-     boost::python::indexing::end(array));
-#endif
 }
 
 BOOST_PYTHON_MODULE(test_indexing_const_ext)
