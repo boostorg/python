@@ -58,9 +58,6 @@
           <dd>
             <dl class="page-index">
               <dt>
-                <a href="#algo_selector">algo_selector</a>
-              </dt>
-              <dt>
                 <a href="#ValueTraits">ValueTraits</a>
               </dt>
               <dt>
@@ -68,6 +65,9 @@
               </dt>
               <dt>
                 <a href="#Algorithms">Algorithms</a>
+              </dt>
+              <dt>
+                <a href="#SliceHelper">SliceHelper</a>
               </dt>
             </dl>
           </dd>
@@ -80,7 +80,7 @@
                 <a href="#container_proxy">container_proxy</a>
               </dt>
               <dt>
-                <a href="#iterator_pair">iterator_pair</a>
+                <a href="#iterator_range">iterator_range</a>
               </dt>
             </dl>
           </dd>
@@ -102,17 +102,23 @@
 
     <h2><a name="introduction">Introduction</a></h2>
 
-    The purpose of the code described here is to allow Python code to
-    access C++ containers using the regular Python container
+    The purpose of the container indexing suite is to allow Python
+    code to access C++ containers using regular Python
     interfaces. Since each C++ container is different, it is
     non-trivial to decide what Python methods can be emulated, and how
-    to map them to C++ function calls. The library provides a
+    to map them to C++ function calls. The indexing suite provides a
     framework for representing those decisions, as well as bindings
-    for the standard C++ container templates.
+    for the standard C++ container templates. The indexing headers are
+    in the Boost subdirectory
+    <i>boost/python/suite/indexing</i> and non-template
+    implementations are in
+    <i>libs/python/src/indexing</i>. Various tests, which can also
+    serve as examples are in <i>libs/python/test</i>.
 
     <h2><a name="design_goals">Design goals</a></h2>
 
-    The primary design goals are as follows. The library should:
+    The primary design goals of the container indexing suite are as
+    follows. The suite should:
 
     <ul>
       <li>
@@ -151,7 +157,7 @@
       <li>
 
         Provide an emulation of container semantics for iterator
-        pairs.
+        ranges.
 
       </li>
     </ul>
@@ -177,39 +183,40 @@
     <p>
 
       The <code>container_suite</code> object achieves this using the
-      <code>def_visitor</code> interface, which provides a hook for
-      the <code>def</code> function to install multiple Python methods
-      in one call. If the container element type (<code>int</code> in
-      the example above) is a user-defined type, you will have to
-      expose this type to Python via a separate <code>class_</code>
-      instance.
+      <a href="def_visitor.html">def_visitor interface</a>, which
+      provides a hook for the <code>def</code> function to install
+      multiple Python methods in one call. If the container element
+      type (<code>int</code> in the example above) is a user-defined
+      type, you will have to expose this type to Python via a separate
+      <code>class_</code> instance.
 
     </p>
     <p>
 
-      <a name="Note1">[1]</a> if your compiler does not support
-      partial template specializations, you will have to explicitly
-      select the right algorithms and traits information, as described
-      in the <a href="#workarounds">compiler workarounds</a> section.
+      <a name="Note1">[1]</a> Automatic operation with the standard
+      containers works poperly if your compiler supports partial
+      template specializations. Otherwise, refer to the <a
+      href="#workarounds">compiler workarounds</a> section.
 
     </p>
 
-    <h2><a name="container_suite">container_suite.hpp</a></h2>
+    <h2><a
+    name="container_suite">boost/python/suite/indexing/container_suite.hpp</a></h2>
 
     <p>
 
-      The normal interface to the container suite is via the
-      <code>container_suite.hpp</code> header, which is summarized
-      below:
+      The top-level interface to the container suite is via the <a
+      href="../../../../boost/python/suite/indexing/container_suite.hpp"><code>container_suite.hpp</code></a>
+      header which is summarized below:
 
     </p>
-
     <p>
 <pre>
+#include &lt;boost/python/suite/indexing/algo_selector.hpp&gt;
+#include &lt;boost/python/suite/indexing/visitor.hpp&gt;
+
 #include &lt;boost/python/return_by_value.hpp&gt;
 #include &lt;boost/python/return_value_policy.hpp&gt;
-#include "algo_selector.hpp"
-#include "visitor.hpp"
 
 namespace boost { namespace python { namespace indexing {
   typedef return_value_policy&lt;return_by_value&gt; default_container_policies;
@@ -335,19 +342,21 @@ namespace boost { namespace python { namespace indexing {
 
     <p>
 
-      The <code>container_suite</code> template relies on six main
-      support templates, four of which are suitable for specialization
+      The <code>container_suite</code> template relies on seven main
+      support templates, five of which are suitable for specialization
       or replacement by client code. The following diagram shows the
       templates <a href="#Note2">[2]</a> and their dependencies, with
-      the replaceable ones highlighted in grey.
+      the replaceable ones highlighted in grey.  For full details,
+      refer to the specific section on each component &ndash; what
+      follows here is an overview.
 
     </p>
 
-    <table>
+    <table align="right">
       <tr>
         <td>
 
-          <img src="./overview.png" width="592" height="200"
+          <img src="./overview.png" width="486" height="261"
           alt="Dependencies between main templates">
 
         </td>
@@ -363,16 +372,48 @@ namespace boost { namespace python { namespace indexing {
 
     <p>
 
-      <a name="Note2">[2]</a> Actually, <code>Algorithms</code> and
-      <code>ContainerTraits</code> don't represent individual
-      templates in the diagram, but <i>groups</i> of related
-      templates. For instance, there are templates called
-      <code>list_algorithms</code> and <code>assoc_algorithms</code>,
-      among others. The <code>algo_selector</code> template selects
-      which algorithms and container traits to use on the basis of
-      partial template specializations for the known container types.
+      The <code>visitor</code> template, which implements the <a
+      href="def_visitor.html">def_visitor interface</a>, decides what
+      Python methods to provide for a container. It takes two template
+      parameters, <code>Algorithms</code> and <code>Policy</code> (the
+      <a href="CallPolicies.html">CallPolicies</a> for the Python
+      methods on the container). The <code>Algorithms</code> argument
+      must provide implementations for the Python methods that the
+      container supports, as well as a matching
+      <code>ContainerTraits</code> type. This type provides various
+      compile-time constants that <code>visitor</code> uses to decide
+      what Python features the container provides. It also provides a
+      <code>value_traits</code> typedef, which has similar
+      compile-time constants related to the values stored in the
+      container.  If the <code>visitor</code> instance decides to
+      provide Python slice support for the container, it instantiates
+      the <code>slice_handler</code> template, which also takes
+      <code>Algorithms</code> and <code>Policy</code> parameters. In
+      such cases, the <code>Algorithms</code> argument must supply a
+      <code>SliceHelper</code> type and factory function.
 
     </p>
+    <p>
+
+      The high-level <code>container_suite</code> template uses the
+      <code>algo_selector</code> template to determine what types to
+      use in the instantiation of <code>visitor</code>. The
+      <code>algo_selector</code> template has partial specializations
+      for all of the STL container templates.
+
+    </p>
+
+    <p>
+
+      <a name="Note2">[2]</a> Note that <code>Algorithms</code> and
+      <code>ContainerTraits</code> don't represent individual
+      templates in the diagram, but <i>groups</i> of related
+      templates. For instance, there are actually templates called
+      <code>list_algorithms</code> and <code>assoc_algorithms</code>,
+      among others.
+
+    </p>
+
 
     <h2><a name="ValueTraits">ValueTraits</a></h2>
 
@@ -512,7 +553,7 @@ namespace boost { namespace python { namespace indexing {
 
     </p>
 
-    <h3>value_traits.hpp header</h3>
+    <h3>Synopsis: boost/python/suite/indexing/value_traits.hpp</h3>
 
     <p>
 <pre>
@@ -729,7 +770,7 @@ namespace boost { namespace python { namespace indexing {
             <code>index_style</code>
           </td>
           <td align="center">
-            <code>enum IndexStyle</code>
+            <code>enum index_style_t</code>
           </td>
           <td>
 
@@ -1017,7 +1058,7 @@ namespace boost { namespace python { namespace indexing {
 
       The following block of code shows a simplistic implementation of
       <code>ContainerTraits</code> for the container
-      <code>std::set&lt;std::string, int&gt;</code>. The actual
+      <code>std::map&lt;std::string, int&gt;</code>. The actual
       implementation used by the suite relies on template
       metaprogramming techniques, whereas this example is designed to
       show only the essential elements of a
@@ -1030,7 +1071,7 @@ namespace boost { namespace python { namespace indexing {
 #include &lt;map&gt;
 #include &lt;string&gt;
 #include &lt;boost/python/suite/indexing/iterator_traits.hpp&gt;
-// Include iterator_traits to get IndexStyle
+// Include iterator_traits to get index_style_t
 
 struct simple_map_traits {
   // Traits information for std::map&lt;std::string, int&gt;
@@ -1057,7 +1098,7 @@ struct simple_map_traits {
   static bool const has_push_back     = false;
   static bool const is_reorderable    = false;
 
-  static boost::python::indexing::IndexStyle const index_style
+  static boost::python::indexing::index_style_t const index_style
     = boost::python::indexing::index_style_nonlinear;
 
   struct value_traits_ {
@@ -1093,11 +1134,11 @@ struct simple_map_traits {
 BOOST_PYTHON_MODULE(test_simple) {
   using namespace boost::python;
 
-  typedef std::map&lt;std::string, int&gt; Container;
-  typedef indexing::map_algorithms&lt;simple_map_traits&gt; Algorithms;
+  typedef std::map&lt;std::string, int&gt; container_t;
+  typedef indexing::map_algorithms&lt;simple_map_traits&gt; algorithms_t;
 
-  class_&lt;Container&gt; ("map")
-    .def (indexing::container_suite&lt;Container, Algorithms&gt;());
+  class_&lt;container_t&gt; ("map")
+    .def (indexing::container_suite&lt;container_t, algorithms_t&gt;());
 }
 </pre>
     </p>
@@ -1114,7 +1155,7 @@ BOOST_PYTHON_MODULE(test_simple) {
       interfaces to the functions can vary to some extent, since the
       <code>def</code> function calls used internally by the
       <code>visitor</code> deduce the function type
-      automatically. However, certain points must be confomed to:
+      automatically. However, certain points should be confomed to:
 
       <ol>
         <li>
@@ -1148,21 +1189,27 @@ BOOST_PYTHON_MODULE(test_simple) {
       basis for all current implementations of
       <code>Algorithms</code>. The typedefs that it defines are
       primarily for convenience within the implementation itself,
-      however they are also required by the <code>slice_handler</code>
-      template, if slices are supported. Note that
-      <code>default_algorithms</code> derives all of the type
-      information from the <code>container_traits</code> template
-      argument, which allows the same implementation to be used for
-      various container types.
+      however <code>container</code>, <code>reference</code> and
+      <code>slice_helper</code> are also required by the
+      <code>slice_handler</code> template, if slices are
+      supported. Note that <code>default_algorithms</code> derives all
+      of the type information from its <code>ContainerTraits</code>
+      template argument, which allows the same implementation to be
+      used for various container types.
 
     </p>
+
+    <h3>Partial boost/python/suite/indexing/algorithms.hpp</h3>
 
     <p>
 <pre>
 namespace boost { namespace python { namespace indexing {
-  template&lt;typename ContainerTraits&gt;
-  struct default_algorithms
+  template&lt;typename ContainerTraits, typename Ovr = detail::no_override&gt;
+  class default_algorithms
   {
+    typedef default_algorithms&lt;ContainerTraits, Ovr&gt; self_type;
+
+  public:
     typedef ContainerTraits container_traits;
 
     typedef typename ContainerTraits::container   container;
@@ -1173,6 +1220,8 @@ namespace boost { namespace python { namespace indexing {
     typedef typename ContainerTraits::value_param value_param;
     typedef typename ContainerTraits::index_param index_param;
     typedef typename ContainerTraits::key_param   key_param;
+
+    typedef int_slice_helper&lt;self_type, integer_slice&gt; slice_helper;
 
     static size_type size       (container &amp;);
     static iterator  find       (container &amp;, key_param);
@@ -1188,6 +1237,8 @@ namespace boost { namespace python { namespace indexing {
     static void      push_back  (container &amp;, value_param);
     static void      sort       (container &amp;);
 
+    static slice_helper make_slice_helper (container &c, slice const &);
+
     template&lt;typename PythonClass, typename Policy&gt;
     static void visitor_helper (PythonClass &amp;, Policy const &amp;);
   };
@@ -1195,21 +1246,33 @@ namespace boost { namespace python { namespace indexing {
 </pre>
     </p>
 
+    <h3>Slice support</h3>
+    <p>
+
+      For containers that support Python slices, the
+      <code>visitor</code> template will instantiate and use
+      internally the <code>slice_handler</code> template. This
+      template requires a type called <code>slice_helper</code> and a
+      factory function called <code>make_slice_helper</code> from its
+      <code>Algorithms</code> argument. More details are provided in
+      the section <a href="#SliceHelper">SliceHelper</a>.
+
+    </p>
+
     <h3>Usage notes for Algorithms</h3>
 
     <p>
 
-      The existing <code>indexing::algo_selector</code> template
-      uses partial specializations and public derivation to select an
+      The existing <code>indexing::algo_selector</code> template uses
+      partial specializations and public derivation to select an
       <code>Algorithms</code> implementation suitable for any of the
       standard container types. Exactly how it does this should be
       considered an implementation detail, and uses some tricks to
       reuse various existing <code>Algorithms</code>
-      implementations. In any case, client code can specialize (or
-      partially specialize) the <code>algo_selector</code> template
-      for new container types, as long as the specialized instances
-      conform to the requirements for <code>Algorithms</code> as
-      already given.
+      implementations. In any case, client code can specialize the
+      <code>algo_selector</code> template for new container types, as
+      long as the specialized instances conform to the requirements
+      for <code>Algorithms</code> as already given.
 
     </p>
     <p>
@@ -1317,6 +1380,215 @@ namespace boost { namespace python { namespace indexing {
           </td>
         </tr>
       </table>
+
+    </p>
+    <p>
+
+      The <code>default_algorithms</code> template attempts to place
+      as few restrictions as possible on the container type, by using
+      iterators and standard algorithms in most of its functions. It
+      accepts an optional second template parameter, which can be used
+      via the curiously recurring template idiom to replace any of its
+      functions that it relies on internally. For instance, if you've
+      created an iterator-style interface to a container that is not
+      at all STL-like (let's call it <code>weird_container</code>),
+      you might be able to re-use most of
+      <code>default_algorithms</code> by replacing its basic functions
+      like this:
+
+    </p>
+    <p>
+<pre>
+namespace indexing = boost::python::indexing;
+
+struct my_algorithms
+  : public indexing::default_algorithms &lt;
+      weird_container_traits, my_algorithms
+  &gt;
+{
+  size_t size (weird_container const &c) {
+    return ...;
+  }
+
+  my_iterator_t begin (weird_container &c) {
+    return ...;
+  }
+
+  my_iterator_t end (weird_container &c) {
+    return ...;
+  }
+};
+</pre>
+    </p>
+
+    <h2><a name="SliceHelper">SliceHelper</a></h2>
+
+    <p>
+
+      Support code for Python slices is split into two portions, the
+      <code>slice_handler</code> template, and a "slice helper" that
+      can easily be replaced by client code via a typedef and factory
+      function in the <code>Algorithms</code> argument supplied to
+      <code>container_suite</code>. The slice helper object takes care
+      of reading and writing elements from a slice in a C++ container,
+      and optionally insertion and deletion. Effectively, the slice
+      helper object maintains a pointer to the current element of the
+      slice within the container, and provides a <code>next</code>
+      function to advance to the next element of the slice. The
+      container suite uses the following interface for slices:
+
+    </p>
+    <p>
+      <table border="1">
+        <tr>
+          <th>
+
+            Expression
+
+          </th>
+          <th>
+
+            Return type
+
+          </th>
+          <th>
+
+            Notes
+
+          </th>
+        </tr>
+        <tr>
+          <td>
+
+            <code>Algorithms::
+make_slice_helper
+(c, s)</code>
+
+          </td>
+          <td>
+
+            <code>Algorithms::
+slice_helper</code>
+
+          </td>
+          <td>
+
+            Returns a newly constructed <code>slice_helper</code>
+            object by value, where <code>c</code> is of type
+            <code>Algorithms::container &</code> and <code>s</code> is
+            of type <code>indexing::slice const &</code>.
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>slice_helper.
+next()</code>
+
+          </td>
+          <td>
+
+            <code>bool</code>
+
+          </td>
+          <td>
+
+            Advances the slice helper's current element pointer to the
+            next element of the slice. Returns true if such an element
+            exists, and false otherwise. The first time this function
+            is called, it should set the current pointer to the first
+            element of the slice (if any).
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+
+            <code>slice_helper.
+current()</code>
+
+          </td>
+          <td>
+
+            <code>Algorithms::
+reference</code>
+
+          </td>
+          <td>
+
+            Returns a reference to the current element of the
+            slice. This will only be called after a prior successful
+            call to <code>next()</code>.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+            <code>slice_helper.
+write (v)</code>
+
+          </td>
+          <td>
+
+            <code>void</code>
+
+          </td>
+          <td>
+
+            Advances to the next element of the slice, as defined in
+            <code>next</code>, and writes the given value
+            <code>v</code> at the new location in the
+            container. <code>v</code> will be convertible to
+            <code>Algorthims::value_param</code>. If the slice is
+            exhausted (i.e. <code>next</code> would return false) then
+            <code>write</code> <i>either</i> inserts the value into
+            the container at the next location (past the end of the
+            slice), <i>or</i> sets a Python exception and throws.
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+
+            <code>slice_helper.
+erase_remaining()</code>
+
+          </td>
+          <td>
+
+            <code>void</code>
+
+          </td>
+          <td>
+
+            <i>Either</i> erases any remaining elements in the slice
+            not already consumed by calls to <code>next</code> or
+            <code>write</code>,
+            <i>or</i> sets a Python exception and throws.
+
+          </td>
+        </tr>
+      </table>
+    </p>
+
+    <p>
+
+      The container suite provides a generic implementation of the
+      <code>SliceHelper</code> requirements for containers that have
+      integer-like indexes. It is parameterized with a
+      <code>SliceType</code> parameter that allows the integer index
+      values to come from various different sources, the default being
+      the <code>PySlice_GetIndices</code> function. Refer to the
+      header file <a
+      href="../../../../boost/python/suite/indexing/int_slice_helper.hpp"><code>int_slice_helper.hpp</code></a>
+      and the references to it in the <a
+      href="../../../../boost/python/suite/indexing/algorithms.hpp"><code>algorithms.hpp</code></a>
+      header for details.
+
     </p>
 
     <h2><a name="container_proxy">container_proxy</a></h2>
@@ -1399,6 +1671,9 @@ namespace boost { namespace python { namespace indexing {
       <code>shared_pointer</code> instead.
 
     </p>
+
+
+    <h3>Synopsis: boost/python/suite/indexing/container_proxy.hpp</h3>
 
 <pre>
 namespace boost { namespace python { namespace indexing {
@@ -1570,34 +1845,47 @@ namespace boost { namespace python { namespace indexing {
       </tr>
     </table>
 
-    <h2><a name="iterator_pair">iterator_pair</a></h2>
+    <h2><a name="iterator_range">iterator_range</a></h2>
 
     <p>
 
-      The <code>iterator_pair</code> template provides a
+      The <code>iterator_range</code> template provides a
       container-like interface to a range defined by two iterators.
-      The interface is complete enough to allow the container suite to
-      expose an iterator-defined range as a Python sequence type, with
-      support for operations that do not require insertion or
-      deletion.  This can be used to expose a C++ array to Python, or
-      with the result of an <code>equal_range</code> function, or any
-      other source of two iterators marking out a range of values. See
-      the <code>getArray</code> function in
-      libs/python/test/testarray.cpp for an example usage.
+      The interface is complete enough to provide any Python method
+      that does not require insertion or deletion, e.g.
+      <code>len</code>, <code>index</code> and <code>sort</code>. See
+      the <code>get_array_plain</code> function in <a
+      href="../../test/test_array_ext.cpp">libs/python/test/test_array_ext.cpp</a>
+      for an example usage. If you only need iteration over the values
+      in a range, consider using the simpler <code>range</code>
+      function provided by <a
+      href="iterator.html">boost/python/iterator.hpp</a>
 
     </p>
     <p>
 
-      <code>iterator_pair</code> should work with any
+      Beware that C++ iterators are not very Python-like, since they
+      do not provide any guarantees about the lifetimes of the objects
+      they refer to. Invalidating either of the iterators stored in an
+      <code>iterator_range</code> object is dangerous, since
+      subsequently using the iterators (from Python or C++) results in
+      undefined behaviour.
+
+    </p>
+    <p>
+
+      <code>iterator_range</code> should work with any
       <code>ForwardIterator</code> type.
 
     </p>
+
+    <h3>Synopsis: boost/python/suite/indexing/iterator_range.hpp</h3>
 
     <p>
 <pre>
 namespace boost { namespace python { namespace indexing {
   template&lt;typename Iterator&gt;
-  class iterator_pair
+  class iterator_range
   {
   private:
     typedef typename boost::call_traits&lt;Iterator&gt;::param_type iterator_param;
@@ -1611,8 +1899,8 @@ namespace boost { namespace python { namespace indexing {
     typedef typename std_traits::value_type      value_type;
     typedef typename std_traits::pointer         pointer;
 
-    iterator_pair (iterator_param, iterator_param);
-    iterator_pair (std::pair&lt;iterator, iterator&gt; const &amp;);
+    iterator_range (iterator_param, iterator_param);
+    iterator_range (std::pair&lt;iterator, iterator&gt; const &amp;);
 
     iterator begin() const;
     iterator end() const;
@@ -1722,19 +2010,6 @@ namespace boost { namespace python { namespace indexing {
 
       The <code>sort</code> method (where provided) should allow an
       optional comparison function from Python.
-
-    </p>
-    <p>
-
-      The existing <code>Algorithms</code> should allow a derived
-      class to replace any of the static member functions without
-      having to reimplement all of them. For instance, it would be
-      nice to be able to replace the low-level <code>begin</code> and
-      <code>end</code> functions in <code>default_algorithms</code>
-      and have all of the other functions use the replacements
-      automatically. This would be fairly easy using static
-      polymorphism, such as the <i>Curiously Recurring Template
-      Pattern</i>.
 
     </p>
 
