@@ -53,7 +53,6 @@ class module : public module_base
     template <class T, class Bases, class HolderGenerator>
     module& add(class_<T,Bases,HolderGenerator> const& c)
     {
-        std::cout << "adding " << typeid(T).name() << " to module" << std::endl << std::flush;
         Py_INCREF(c.object());
         this->add_type(c.object());
         return *this;
