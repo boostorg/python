@@ -18,6 +18,9 @@
 // trouble for non-conforming compilers and libraries.
 #include <math.h>
 
+// vc7.1 seems to require this (incorrectly) in order to use the "not" keyword
+#include <ciso646>
+
 using namespace boost::python;
 
 struct X : test_class<>
@@ -26,6 +29,9 @@ struct X : test_class<>
     
     X(int x) : base_t(x) {}
     X const operator+(X const& r) const { return X(value() + r.value()); }
+    
+//    typedef int (X::*safe_bool)() const;
+//    operator safe_bool() const { return value() != 0 ? &X::value : 0; }
 };
 
 X operator-(X const& l, X const& r) { return X(l.value() - r.value()); }
@@ -81,6 +87,7 @@ BOOST_PYTHON_MODULE(operators_ext)
         .def(pow(self,self))
         .def(pow(self,int()))
         .def(pow(int(),self))
+        .def(not self)
         ;
 
     class_<test_class<1> >("Z", init<int>())

@@ -196,6 +196,8 @@ namespace boost { namespace python { namespace self_ns {
 "#operator_-spec">operator_</a>&lt;<i>unspecified</i>&gt; operator+(self_t);
    <a href=
 "#operator_-spec">operator_</a>&lt;<i>unspecified</i>&gt; operator~(self_t);
+   <a href=
+"#operator_-spec">operator_</a>&lt;<i>unspecified</i>&gt; operator!(self_t);
 
    // value operations
    <a href=
@@ -349,123 +351,123 @@ namespace boost { namespace python { namespace self_ns {
       </tr>
 
       <tr>
-        <td>self&nbsp;==&nbsp;r</td>
+        <td><code>self&nbsp;==&nbsp;r</code></td>
 
-        <td>__eq__</td>
+        <td><code>__eq__</code></td>
 
-        <td>x&nbsp;==&nbsp;y</td>
+        <td><code>x&nbsp;==&nbsp;y</code></td>
 
-        <td>x&nbsp;==&nbsp;y, y&nbsp;==&nbsp;x</td>
+        <td><code>x&nbsp;==&nbsp;y, y&nbsp;==&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;==&nbsp;self</td>
+        <td><code>l&nbsp;==&nbsp;self</code></td>
 
-        <td>__eq__</td>
+        <td><code>__eq__</code></td>
 
-        <td>y&nbsp;==&nbsp;x</td>
+        <td><code>y&nbsp;==&nbsp;x</code></td>
 
-        <td>y&nbsp;==&nbsp;x, x&nbsp;==&nbsp;y</td>
+        <td><code>y&nbsp;==&nbsp;x, x&nbsp;==&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;!=&nbsp;r</td>
+        <td><code>self&nbsp;!=&nbsp;r</code></td>
 
-        <td>__ne__</td>
+        <td><code>__ne__</code></td>
 
-        <td>x&nbsp;!=&nbsp;y</td>
+        <td><code>x&nbsp;!=&nbsp;y</code></td>
 
-        <td>x&nbsp;!=&nbsp;y, y&nbsp;!=&nbsp;x</td>
+        <td><code>x&nbsp;!=&nbsp;y, y&nbsp;!=&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;!=&nbsp;self</td>
+        <td><code>l&nbsp;!=&nbsp;self</code></td>
 
-        <td>__ne__</td>
+        <td><code>__ne__</code></td>
 
-        <td>y&nbsp;!=&nbsp;x</td>
+        <td><code>y&nbsp;!=&nbsp;x</code></td>
 
-        <td>y&nbsp;!=&nbsp;x, x&nbsp;!=&nbsp;y</td>
+        <td><code>y&nbsp;!=&nbsp;x, x&nbsp;!=&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&lt;&nbsp;r</td>
+        <td><code>self&nbsp;&lt;&nbsp;r</code></td>
 
-        <td>__lt__</td>
+        <td><code>__lt__</code></td>
 
-        <td>x&nbsp;&lt;&nbsp;y</td>
+        <td><code>x&nbsp;&lt;&nbsp;y</code></td>
 
-        <td>x&nbsp;&lt;&nbsp;y, y&nbsp;&gt;&nbsp;x</td>
+        <td><code>x&nbsp;&lt;&nbsp;y, y&nbsp;&gt;&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&lt;&nbsp;self</td>
+        <td><code>l&nbsp;&lt;&nbsp;self</code></td>
 
-        <td>__gt__</td>
+        <td><code>__gt__</code></td>
 
-        <td>y&nbsp;&lt;&nbsp;x</td>
+        <td><code>y&nbsp;&lt;&nbsp;x</code></td>
 
-        <td>y&nbsp;&gt;&nbsp;x, x&nbsp;&lt;&nbsp;y</td>
+        <td><code>y&nbsp;&gt;&nbsp;x, x&nbsp;&lt;&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&gt;&nbsp;r</td>
+        <td><code>self&nbsp;&gt;&nbsp;r</code></td>
 
-        <td>__gt__</td>
+        <td><code>__gt__</code></td>
 
-        <td>x&nbsp;&gt;&nbsp;y</td>
+        <td><code>x&nbsp;&gt;&nbsp;y</code></td>
 
-        <td>x&nbsp;&gt;&nbsp;y, y&nbsp;&lt;&nbsp;x</td>
+        <td><code>x&nbsp;&gt;&nbsp;y, y&nbsp;&lt;&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&gt;&nbsp;self</td>
+        <td><code>l&nbsp;&gt;&nbsp;self</code></td>
 
-        <td>__lt__</td>
+        <td><code>__lt__</code></td>
 
-        <td>y&nbsp;&gt;&nbsp;x</td>
+        <td><code>y&nbsp;&gt;&nbsp;x</code></td>
 
-        <td>y&nbsp;&lt;&nbsp;x, x&nbsp;&gt;&nbsp;y</td>
+        <td><code>y&nbsp;&lt;&nbsp;x, x&nbsp;&gt;&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&lt;=&nbsp;r</td>
+        <td><code>self&nbsp;&lt;=&nbsp;r</code></td>
 
-        <td>__le__</td>
+        <td><code>__le__</code></td>
 
-        <td>x&nbsp;&lt;=&nbsp;y</td>
+        <td><code>x&nbsp;&lt;=&nbsp;y</code></td>
 
-        <td>x&nbsp;&lt;=&nbsp;y, y&nbsp;&gt;=&nbsp;x</td>
+        <td><code>x&nbsp;&lt;=&nbsp;y, y&nbsp;&gt;=&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&lt;=&nbsp;self</td>
+        <td><code>l&nbsp;&lt;=&nbsp;self</code></td>
 
-        <td>__ge__</td>
+        <td><code>__ge__</code></td>
 
-        <td>y&nbsp;&lt;=&nbsp;x</td>
+        <td><code>y&nbsp;&lt;=&nbsp;x</code></td>
 
-        <td>y&nbsp;&gt;=&nbsp;x, x&nbsp;&lt;=&nbsp;y</td>
+        <td><code>y&nbsp;&gt;=&nbsp;x, x&nbsp;&lt;=&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&gt;=&nbsp;r</td>
+        <td><code>self&nbsp;&gt;=&nbsp;r</code></td>
 
-        <td>__ge__</td>
+        <td><code>__ge__</code></td>
 
-        <td>x&nbsp;&gt;=&nbsp;y</td>
+        <td><code>x&nbsp;&gt;=&nbsp;y</code></td>
 
-        <td>x&nbsp;&gt;=&nbsp;y, y&nbsp;&lt;=&nbsp;x</td>
+        <td><code>x&nbsp;&gt;=&nbsp;y, y&nbsp;&lt;=&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&gt;=&nbsp;self</td>
+        <td><code>l&nbsp;&gt;=&nbsp;self</code></td>
 
-        <td>__le__</td>
+        <td><code>__le__</code></td>
 
-        <td>y&nbsp;&gt;=&nbsp;x</td>
+        <td><code>y&nbsp;&gt;=&nbsp;x</code></td>
 
-        <td>y&nbsp;&lt;=&nbsp;x, x&nbsp;&gt;=&nbsp;y</td>
+        <td><code>y&nbsp;&lt;=&nbsp;x, x&nbsp;&gt;=&nbsp;y</code></td>
       </tr>
     </table>
 
@@ -487,179 +489,179 @@ namespace boost { namespace python { namespace self_ns {
       </tr>
 
       <tr>
-        <td>self&nbsp;+&nbsp;r</td>
+        <td><code>self&nbsp;+&nbsp;r</code></td>
 
-        <td>__add__</td>
+        <td><code>__add__</code></td>
 
-        <td>x&nbsp;+&nbsp;y</td>
+        <td><code>x&nbsp;+&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;+&nbsp;self</td>
+        <td><code>l&nbsp;+&nbsp;self</code></td>
 
-        <td>__radd__</td>
+        <td><code>__radd__</code></td>
 
-        <td>y&nbsp;+&nbsp;x</td>
+        <td><code>y&nbsp;+&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;-&nbsp;r</td>
+        <td><code>self&nbsp;-&nbsp;r</code></td>
 
-        <td>__sub__</td>
+        <td><code>__sub__</code></td>
 
-        <td>x&nbsp;-&nbsp;y</td>
+        <td><code>x&nbsp;-&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;-&nbsp;self</td>
+        <td><code>l&nbsp;-&nbsp;self</code></td>
 
-        <td>__rsub__</td>
+        <td><code>__rsub__</code></td>
 
-        <td>y&nbsp;-&nbsp;x</td>
+        <td><code>y&nbsp;-&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;*&nbsp;r</td>
+        <td><code>self&nbsp;*&nbsp;r</code></td>
 
-        <td>__mul__</td>
+        <td><code>__mul__</code></td>
 
-        <td>x&nbsp;*&nbsp;y</td>
+        <td><code>x&nbsp;*&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;*&nbsp;self</td>
+        <td><code>l&nbsp;*&nbsp;self</code></td>
 
-        <td>__rmul__</td>
+        <td><code>__rmul__</code></td>
 
-        <td>y&nbsp;*&nbsp;x</td>
+        <td><code>y&nbsp;*&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;/&nbsp;r</td>
+        <td><code>self&nbsp;/&nbsp;r</code></td>
 
-        <td>__div__</td>
+        <td><code>__div__</code></td>
 
-        <td>x&nbsp;/&nbsp;y</td>
+        <td><code>x&nbsp;/&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;/&nbsp;self</td>
+        <td><code>l&nbsp;/&nbsp;self</code></td>
 
-        <td>__rdiv__</td>
+        <td><code>__rdiv__</code></td>
 
-        <td>y&nbsp;/&nbsp;x</td>
+        <td><code>y&nbsp;/&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;%&nbsp;r</td>
+        <td><code>self&nbsp;%&nbsp;r</code></td>
 
-        <td>__mod__</td>
+        <td><code>__mod__</code></td>
 
-        <td>x&nbsp;%&nbsp;y</td>
+        <td><code>x&nbsp;%&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;%&nbsp;self</td>
+        <td><code>l&nbsp;%&nbsp;self</code></td>
 
-        <td>__rmod__</td>
+        <td><code>__rmod__</code></td>
 
-        <td>y&nbsp;%&nbsp;x</td>
+        <td><code>y&nbsp;%&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&gt;&gt;&nbsp;r</td>
+        <td><code>self&nbsp;&gt;&gt;&nbsp;r</code></td>
 
-        <td>__rshift__</td>
+        <td><code>__rshift__</code></td>
 
-        <td>x&nbsp;&gt;&gt;&nbsp;y</td>
+        <td><code>x&nbsp;&gt;&gt;&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&gt;&gt;&nbsp;self</td>
+        <td><code>l&nbsp;&gt;&gt;&nbsp;self</code></td>
 
-        <td>__rrshift__</td>
+        <td><code>__rrshift__</code></td>
 
-        <td>y&nbsp;&gt;&gt;&nbsp;x</td>
+        <td><code>y&nbsp;&gt;&gt;&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&lt;&lt;&nbsp;r</td>
+        <td><code>self&nbsp;&lt;&lt;&nbsp;r</code></td>
 
-        <td>__lshift__</td>
+        <td><code>__lshift__</code></td>
 
-        <td>x&nbsp;&lt;&lt;&nbsp;y</td>
+        <td><code>x&nbsp;&lt;&lt;&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&lt;&lt;&nbsp;self</td>
+        <td><code>l&nbsp;&lt;&lt;&nbsp;self</code></td>
 
-        <td>__rlshift__</td>
+        <td><code>__rlshift__</code></td>
 
-        <td>y&nbsp;&lt;&lt;&nbsp;x</td>
+        <td><code>y&nbsp;&lt;&lt;&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;&amp;&nbsp;r</td>
+        <td><code>self&nbsp;&amp;&nbsp;r</code></td>
 
-        <td>__and__</td>
+        <td><code>__and__</code></td>
 
-        <td>x&nbsp;&amp;&nbsp;y</td>
+        <td><code>x&nbsp;&amp;&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;&amp;&nbsp;self</td>
+        <td><code>l&nbsp;&amp;&nbsp;self</code></td>
 
-        <td>__rand__</td>
+        <td><code>__rand__</code></td>
 
-        <td>y&nbsp;&amp;&nbsp;x</td>
+        <td><code>y&nbsp;&amp;&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;^&nbsp;r</td>
+        <td><code>self&nbsp;^&nbsp;r</code></td>
 
-        <td>__xor__</td>
+        <td><code>__xor__</code></td>
 
-        <td>x&nbsp;^&nbsp;y</td>
+        <td><code>x&nbsp;^&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;^&nbsp;self</td>
+        <td><code>l&nbsp;^&nbsp;self</code></td>
 
-        <td>__rxor__</td>
+        <td><code>__rxor__</code></td>
 
-        <td>y&nbsp;^&nbsp;x</td>
+        <td><code>y&nbsp;^&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>self&nbsp;|&nbsp;r</td>
+        <td><code>self&nbsp;|&nbsp;r</code></td>
 
-        <td>__or__</td>
+        <td><code>__or__</code></td>
 
-        <td>x&nbsp;|&nbsp;y</td>
+        <td><code>x&nbsp;|&nbsp;y</code></td>
       </tr>
 
       <tr>
-        <td>l&nbsp;|&nbsp;self</td>
+        <td><code>l&nbsp;|&nbsp;self</code></td>
 
-        <td>__ror__</td>
+        <td><code>__ror__</code></td>
 
-        <td>y&nbsp;|&nbsp;x</td>
+        <td><code>y&nbsp;|&nbsp;x</code></td>
       </tr>
 
       <tr>
-        <td>pow(self,&nbsp;r)</td>
+        <td><code>pow(self,&nbsp;r)</code></td>
 
-        <td>__pow__</td>
+        <td><code>__pow__</code></td>
 
-        <td>pow(x,&nbsp;y)</td>
+        <td><code>pow(x,&nbsp;y)</code></td>
       </tr>
 
       <tr>
-        <td>pow(l,&nbsp;self)</td>
+        <td><code>pow(l,&nbsp;self)</code></td>
 
-        <td>__rpow__</td>
+        <td><code>__rpow__</code></td>
 
-        <td>pow(y,&nbsp;x)</td>
+        <td><code>pow(y,&nbsp;x)</code></td>
       </tr>
     </table>
 
@@ -676,27 +678,35 @@ namespace boost { namespace python { namespace self_ns {
       </tr>
 
       <tr>
-        <td>-self</td>
+        <td><code>-self</code></td>
 
-        <td>__neg__</td>
+        <td><code>__neg__</code></td>
 
-        <td>-x</td>
+        <td><code>-x</code></td>
       </tr>
 
       <tr>
-        <td>+self</td>
+        <td><code>+self</code></td>
 
-        <td>__pos__</td>
+        <td><code>__pos__</code></td>
 
-        <td>+x</td>
+        <td><code>+x</code></td>
       </tr>
 
       <tr>
-        <td>~self</td>
+        <td><code>~self</code></td>
 
-        <td>__invert__</td>
+        <td><code>__invert__</code></td>
 
-        <td>~x</td>
+        <td><code>~x</code></td>
+      </tr>
+
+      <tr>
+        <td><code>not self</code><br><i>or</i><br><code>!self</code></td>
+
+        <td><code>__nonzero__</code></td>
+
+        <td><code>!!x</code></td>
       </tr>
     </table>
 
@@ -713,44 +723,44 @@ namespace boost { namespace python { namespace self_ns {
       </tr>
 
       <tr>
-        <td>int_(self)</td>
+        <td><code>int_(self)</code></td>
 
-        <td>__int__</td>
+        <td><code>__int__</code></td>
 
-        <td>long(x)</td>
+        <td><code>long(x)</code></td>
       </tr>
 
       <tr>
-        <td>long_</td>
+        <td><code>long_</code></td>
 
-        <td>__long__</td>
+        <td><code>__long__</code></td>
 
-        <td>PyLong_FromLong(x)</td>
+        <td><code>PyLong_FromLong(x)</code></td>
       </tr>
 
       <tr>
-        <td>float_</td>
+        <td><code>float_</code></td>
 
-        <td>__float__</td>
+        <td><code>__float__</code></td>
 
-        <td>double(x)</td>
+        <td><code>double(x)</code></td>
       </tr>
 
       <tr>
-        <td>complex_</td>
+        <td><code>complex_</code></td>
 
-        <td>__complex__</td>
+        <td><code>__complex__</code></td>
 
-        <td>std::complex&lt;double&gt;(x)</td>
+        <td><code>std::complex&lt;double&gt;(x)</code></td>
       </tr>
 
       <tr>
-        <td>str</td>
+        <td><code>str</code></td>
 
-        <td>__str__</td>
+        <td><code>__str__</code></td>
 
-        <td><a href=
-        "../../../conversion/lexical_cast.htm#lexical_cast">lexical_cast</a>&lt;std::string&gt;(x)</td>
+        <td><code><a href=
+        "../../../conversion/lexical_cast.htm#lexical_cast">lexical_cast</a>&lt;std::string&gt;(x)</code></td>
       </tr>
     </table>
 

@@ -1,5 +1,13 @@
 '''
 >>> from operators_ext import *
+
+  Check __nonzero__ support
+  
+>>> assert X(2)
+>>> assert not X(0)
+
+ ----
+ 
 >>> x = X(42)
 >>> x.value()
 42
