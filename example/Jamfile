@@ -61,3 +61,21 @@ boost-python-runtest test2
     test_getting_started2.py
     # extension modules to use
     <pyd>getting_started2 ;    
+
+# ----- std_pair -------
+
+# Declare a Python extension called std_pair
+extension std_pair_ext
+: # sources
+  std_pair.cpp
+  
+  # requirements and dependencies for Boost.Python extensions
+  <template>@boost/libs/python/build/extension
+  ;
+
+# Declare a test for the extension module
+boost-python-runtest test3
+    :  # Python test driver
+    test_std_pair.py
+    # extension modules to use
+    <pyd>std_pair_ext ;
