@@ -92,7 +92,7 @@ def gen_caller(member_function_args, free_function_args = None):
         free_function_args = member_function_args + 1
 
     return_none = ''';
-        return none();'''
+        return detail::none();'''
     
     return (header % (member_function_args, free_function_args)
             + body_sections[0]

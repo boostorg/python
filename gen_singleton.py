@@ -16,7 +16,7 @@ def gen_singleton(args):
 
 # include "pyconfig.h"
 
-namespace py {
+namespace py { namespace detail {
 
 struct Empty {};
 template <class Derived, class Base = Empty>
@@ -42,7 +42,7 @@ Derived* Singleton<Derived,Base>::singleton()
     return &x;
 }
 
-}
+}} // namespace py::detail
 
 #endif
 """)

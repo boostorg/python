@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file was generated for 5-argument python callbacks by gen_callback.py
+//  This file was generated for 10-argument python callbacks by gen_callback.py
 
 #ifndef CALLBACK_DWA_052100_H_
 # define CALLBACK_DWA_052100_H_
@@ -187,6 +187,251 @@ struct Callback
         detail::callback_adjust_refcount(result.get(), Type<R>());
         return from_python(result.get(), Type<R>());
     }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get(),
+                                     p9.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get(),
+                                       p9.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static R call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr p10(to_python(a10));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get(),
+                                     p9.get(),
+                                     p10.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static R call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr p10(to_python(a10));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get(),
+                                       p9.get(),
+                                       p10.get()));
+        detail::callback_adjust_refcount(result.get(), Type<R>());
+        return from_python(result.get(), Type<R>());
+    }
 };
 
 // This specialization wouldn't be needed, but MSVC6 doesn't correctly allow the following:
@@ -331,6 +576,231 @@ struct Callback<void>
                                        p4.get(),
                                        p5.get()));
     }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get(),
+                                     p9.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get(),
+                                       p9.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static void call_method(PyObject* self, const char* name, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr p10(to_python(a10));
+        Ptr result(PyEval_CallMethod(self, const_cast<char*>(name),
+                                     const_cast<char*>("(OOOOOOOOOO)"),
+                                     p1.get(),
+                                     p2.get(),
+                                     p3.get(),
+                                     p4.get(),
+                                     p5.get(),
+                                     p6.get(),
+                                     p7.get(),
+                                     p8.get(),
+                                     p9.get(),
+                                     p10.get()));
+    }
+
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    static void call(PyObject* self, const A1& a1, const A2& a2, const A3& a3, const A4& a4, const A5& a5, const A6& a6, const A7& a7, const A8& a8, const A9& a9, const A10& a10)
+    {
+        Ptr p1(to_python(a1));
+        Ptr p2(to_python(a2));
+        Ptr p3(to_python(a3));
+        Ptr p4(to_python(a4));
+        Ptr p5(to_python(a5));
+        Ptr p6(to_python(a6));
+        Ptr p7(to_python(a7));
+        Ptr p8(to_python(a8));
+        Ptr p9(to_python(a9));
+        Ptr p10(to_python(a10));
+        Ptr result(PyEval_CallFunction(self, const_cast<char*>("(OOOOOOOOOO)"),
+                                       p1.get(),
+                                       p2.get(),
+                                       p3.get(),
+                                       p4.get(),
+                                       p5.get(),
+                                       p6.get(),
+                                       p7.get(),
+                                       p8.get(),
+                                       p9.get(),
+                                       p10.get()));
+    }
 };
 
 // Make it a compile-time error to try to return a const char* from a virtual
@@ -357,4 +827,3 @@ struct Callback<const char*>
 } // namespace py
 
 #endif // CALLBACK_DWA_052100_H_
-

@@ -17,7 +17,7 @@ if __name__ == '__main__':
     import sys
 
     if len(sys.argv) == 1:
-        args = 5
+        args = 10
     else:
         args = int(sys.argv[1])
 

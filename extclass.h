@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file automatically generated for 5-argument constructors by
+//  This file automatically generated for 10-argument constructors by
 //  gen_extclass.py
 
 #ifndef EXTENSION_CLASS_DWA052000_H_
@@ -363,8 +363,8 @@ class ExtensionClass
     ~ExtensionClass();
 
     // define constructors
-    template <class A1, class A2, class A3, class A4, class A5>
-    inline void def(Constructor<A1, A2, A3, A4, A5>)
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    inline void def(Constructor<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>)
     // The following incantation builds a Signature1, Signature2,... object. It
     // should _all_ get optimized away.
     { add_constructor(
@@ -373,8 +373,14 @@ class ExtensionClass
         prepend(Type<A3>::Id(),
         prepend(Type<A4>::Id(),
         prepend(Type<A5>::Id(),
-                Signature0()))))));
+        prepend(Type<A6>::Id(),
+        prepend(Type<A7>::Id(),
+        prepend(Type<A8>::Id(),
+        prepend(Type<A9>::Id(),
+        prepend(Type<A10>::Id(),
+                Signature0())))))))))));
     }
+
 
     // export homogeneous operators (type of both lhs and rhs is 'operator')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>());
@@ -603,7 +609,6 @@ class ExtensionClass
     {
         this->add_constructor_object(InitFunction<Holder>::create(sig));
     }
-    
 };
 
 // A simple wrapper over a T which allows us to use ExtensionClass<T> with a
@@ -625,6 +630,16 @@ public:
     HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
     HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : T(a1, a2, a3, a4, a5, a6) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : T(a1, a2, a3, a4, a5, a6, a7) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : T(a1, a2, a3, a4, a5, a6, a7, a8) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    HeldInstance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 };
 
 // Abstract base class for all instance holders. Base for template class
@@ -676,6 +691,21 @@ public:
     template <class A1, class A2, class A3, class A4, class A5>
     InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) :
         m_held(p, a1, a2, a3, a4, a5) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6>
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) :
+        m_held(p, a1, a2, a3, a4, a5, a6) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
+    InstanceValueHolder(ExtensionInstance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) :
+        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 
  public: // implementation of InstanceHolderBase required interface
     bool held_by_value() { return true; }
@@ -831,4 +861,3 @@ std::vector<DerivedClassInfo> ClassRegistry<T>::static_derived_class_info;
 }} // namespace py::detail
 
 #endif // EXTENSION_CLASS_DWA052000_H_
-

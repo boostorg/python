@@ -58,9 +58,11 @@ def gen_signatures(args):
 
 namespace py {
 
+namespace detail {
 // A stand-in for the built-in void. This one can be passed to functions and
 // (under MSVC, which has a bug, be used as a default template type parameter).
 struct Void {};
+}
 
 // An envelope in which type information can be delivered for the purposes
 // of selecting an overloaded from_python() function. This is needed to work
@@ -79,11 +81,12 @@ struct Type
 };
 
 template <>
-struct Type<Void>
+struct Type<py::detail::Void>
 {
-    typedef Void Id;
+    typedef py::detail::Void Id;
 };
 
+namespace detail {
 // These basically encapsulate a chain of types, , used to make the syntax of
 // add(Constructor<T1, ...>()) work. We need to produce a unique type for each number
 // of non-default parameters to Constructor<>.  Q: why not use a recursive
@@ -97,14 +100,17 @@ struct Type<Void>
 // This one terminates the chain. Prepending Void to the head of a Void
 // signature results in a Void signature again.
 inline Signature0 prepend(Void, Signature0) { return Signature0(); }
+
+} // namespace detail
 """
         + gen_function("""
-template <%(class A%n% = Void%:, %)>
+template <%(class A%n% = detail::Void%:, %)>
 struct Constructor
 {
 };
 """, args)
         + """
+namespace detail {
 // Return value extraction:
 
 // This is just another little envelope for carrying a typedef (see Type,
@@ -135,7 +141,7 @@ ReturnValue<R> return_value(R (T::*)(%(A%n%:, %)) const) { return ReturnValue<R>
 """, args)
 
         + """
-}
+}} // namespace py::detail
 
 #endif
 """)
