@@ -93,6 +93,9 @@ unit-test if_else
 unit-test pointee
   : pointee.cpp : <sysinclude>$(BOOST_ROOT) ;
 
+unit-test result
+  : result.cpp : <sysinclude>$(BOOST_ROOT) ;
+
 unit-test select_holder
   : select_holder.cpp
   : <sysinclude>$(BOOST_ROOT) <define>BOOST_PYTHON_STATIC_LIB $(PYTHON_PROPERTIES)
