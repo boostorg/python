@@ -195,8 +195,7 @@ class class_ : public objects::class_base
             ids[0] = converter::undecorated_type_id<T>();
     
             // Write the rest of the elements into succeeding positions.
-            class_id* p = ids + 1;
-            mpl::fold<bases, void, detail::write_type_id>::execute(&p);
+            mpl::for_each<bases>(detail::write_type_id(ids + 1));
         }
         
         BOOST_STATIC_CONSTANT(
@@ -238,25 +237,21 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
 
 namespace detail
 {
-  // This is an mpl BinaryMetaFunction object with a runtime behavior,
-  // which is to write the id of the type which is passed as its 2nd
-  // compile-time argument into the iterator pointed to by its runtime
-  // argument
+  // A function object that on each invocation writes the id of 
+  // the type 'T' into the iterator passed to it in the constructor
   struct write_type_id
   {
-      // The first argument is Ignored because mpl::for_each is still
-      // currently an accumulate (reduce) implementation.
-      template <class Ignored, class T> struct apply
-      {
-          // also an artifact of accumulate-based for_each
-          typedef void type;
+      write_type_id(converter::undecorated_type_id_t* iter)
+          : m_iter(iter)
+      {}
 
-          // Here's the runtime behavior
-          static void execute(converter::undecorated_type_id_t** p)
-          {
-              *(*p)++ = converter::undecorated_type_id<T>();
-          }
+      template <class T> void operator()(boost::mpl::identity<T>)
+      {
+          *m_iter++ = converter::undecorated_type_id<T>();
       };
+
+   private:
+      converter::undecorated_type_id_t* m_iter;
   };
 
 
