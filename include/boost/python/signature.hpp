@@ -242,7 +242,7 @@ template
 >
 inline boost::mpl::type_list
 <
-    RT, ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
+    RT, ClassT const BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
     BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)
 >
 get_signature

@@ -88,7 +88,7 @@ struct func_stubs_base {};
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \
-                BOOST_PP_INC(N_DFLTS),                                          \
+                N_ARGS,                                                         \
                 BPL_IMPL_TYPEDEF_GEN,                                           \
                 1                                                               \
             )                                                                   \
@@ -140,7 +140,7 @@ struct func_stubs_base {};
                                                                                 \
             BOOST_PP_FIX_REPEAT_2ND                                             \
             (                                                                   \
-                BOOST_PP_INC(N_DFLTS),                                          \
+                N_ARGS,                                                         \
                 BPL_IMPL_TYPEDEF_GEN,                                           \
                 2                                                               \
             )                                                                   \
