@@ -77,21 +77,21 @@ namespace detail
   template <detail::operator_id, class L, class R>
   struct operator_;
 
-  // Register a to_python converter for a class T, depending on the
-  // type of the first (tag) argument. The 2nd argument is a pointer
-  // to the type of holder that must be created. The 3rd argument is a
+  // Register to_python converters for a class T.  The first argument
+  // will be mpl::true_c unless noncopyable was specified as a
+  // class_<...> template parameter. The 2nd argument is a pointer to
+  // the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class SelectHolder>
-  static inline void register_copy_constructor(mpl::bool_c<true> const&, SelectHolder const& , T* = 0)
+  inline void register_class_to_python(mpl::true_c copyable, SelectHolder selector, T* = 0)
   {
       typedef typename SelectHolder::type holder;
       force_instantiate(objects::class_cref_wrapper<T, objects::make_instance<T,holder> >());
       SelectHolder::register_();
   }
 
-  // Tag dispatched to have no effect.
   template <class T, class SelectHolder>
-  static inline void register_copy_constructor(mpl::bool_c<false> const&, SelectHolder const&, T* = 0)
+  inline void register_class_to_python(mpl::false_c copyable, SelectHolder selector, T* = 0)
   {
       SelectHolder::register_();
   }
@@ -125,20 +125,14 @@ namespace detail
     
     template <class T, class Fn>
     struct virtual_function_default
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-        : assertion<is_polymorphic<T> >::failed
-        , assertion<is_member_function_pointer<Fn> >::failed
-# endif 
     {
         template <class Default>
         static void
         must_be_derived_class_member(Default const&)
         {
             typedef typename assertion<mpl::logical_not<is_same<Default,Fn> > >::failed test0;
-# if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
             typedef typename assertion<is_polymorphic<T> >::failed test1;
             typedef typename assertion<is_member_function_pointer<Fn> >::failed test2;
-# endif 
             not_a_derived_class_member<Default>(Fn());
         }
     };
@@ -473,7 +467,7 @@ inline void class_<T,X1,X2,X3>::register_() const
 {
     objects::register_class_from_python<T,bases>();
 
-    detail::register_copy_constructor<T>(
+    detail::register_class_to_python<T>(
         mpl::bool_c<is_copyable>()
         , holder_selector::execute((held_type*)0)
         );

@@ -11,6 +11,15 @@
 
 namespace boost { namespace python { namespace objects { 
 
+struct decref_guard
+{
+    decref_guard(PyObject* o) : obj(o) {}
+    ~decref_guard() { Py_XDECREF(obj); }
+    void cancel() { obj = 0; }
+ private:
+    PyObject* obj;
+};
+
 template <class T, class Holder>
 struct make_instance
 {
@@ -28,22 +37,20 @@ struct make_instance
           
         if (raw_result != 0)
         {
-            instance_t* result = (instance_t*)raw_result;
-            try
-            {
-                // construct the new C++ object and install the pointer
-                // in the Python object.
-                construct(result, x)->install(raw_result);
-            }
-            catch(...)
-            {
-                Py_DECREF(raw_result); // reclaim the Python object
-                throw;
-            }
+            decref_guard protect(raw_result);
+            
+            instance_t* instance = (instance_t*)raw_result;
+            
+            // construct the new C++ object and install the pointer
+            // in the Python object.
+            construct(instance, x)->install(raw_result);
               
             // Note the position of the internally-stored Holder,
             // for the sake of destruction
-            result->ob_size = offsetof(instance_t, storage);
+            instance->ob_size = offsetof(instance_t, storage);
+
+            // Release ownership of the python object
+            protect.cancel();
         }
         return raw_result;
     }

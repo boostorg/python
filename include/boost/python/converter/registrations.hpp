@@ -6,11 +6,15 @@
 #ifndef REGISTRATIONS_DWA2002223_HPP
 # define REGISTRATIONS_DWA2002223_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/type_id.hpp>
+
 # include <boost/python/converter/convertible_function.hpp>
 # include <boost/python/converter/constructor_function.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
-# include <boost/python/type_id.hpp>
+
+# include <boost/python/detail/wrap_python.hpp>
+
+# include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -54,7 +58,7 @@ struct BOOST_PYTHON_DECL registration
     // The unique to_python converter for the associated C++ type.
     to_python_function_t m_to_python;
     
-# if defined(__MWERKS__) && __MWERKS__ <= 0x3003
+# if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
  private:
     void operator=(registration); // This is not defined, and just keeps MWCW happy.
 # endif 

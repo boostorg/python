@@ -9,7 +9,6 @@
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/shared_ptr_from_python.hpp>
 
-# include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/inheritance.hpp>
 
 # include <boost/python/detail/force_instantiate.hpp>
@@ -72,8 +71,6 @@ struct register_base_of
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
-    // cause the static registration to be instantiated.
-    python::detail::force_instantiate(instance_finder<Derived>::registration);
     python::detail::force_instantiate(converter::shared_ptr_from_python<Derived>::registration);
     
     // register all up/downcasts here

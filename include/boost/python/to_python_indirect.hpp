@@ -37,7 +37,9 @@ namespace detail
       template <class T>
       static result_type execute(T* p)
       {
-          // can't use auto_ptr with Intel 5 for some reason
+          // can't use auto_ptr with Intel 5 and VC6 Dinkum library
+          // for some reason. We get link errors against the auto_ptr
+          // copy constructor.
 # if defined(__ICL) && __ICL < 600 
           typedef boost::shared_ptr<T> smart_pointer;
 # else 
