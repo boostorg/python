@@ -442,10 +442,10 @@ Breakpoint 1, 0x1e04eff0 in python22!PyOS_Readline ()
     If you are launching your extension module tests with <a href=
     "../../../../tools/build/v1/build_system.htm">Boost.Build</a> using the
     <code>boost-python-runtest</code> rule, you can ask it to launch your
-    debugger for you by adding "-sPYTHON_LAUNCH=<i>debugger</i>" to your bjam
+    debugger for you by adding "--debugger=<i>debugger</i>" to your bjam
     command-line:
 <pre>
-bjam -sTOOLS=metrowerks "-sPYTHON_LAUNCH=devenv /debugexe" test
+bjam -sTOOLS=vc7.1 "--debugger=devenv /debugexe" test
 bjam -sTOOLS=gcc -sPYTHON_LAUNCH=gdb test
 </pre>
     It can also be extremely useful to add the <code>-d+2</code> option when
@@ -873,7 +873,7 @@ BOOST_PYTHON_MODULE(custom_string)
 
     <p>Revised
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     10 November, 2003
+     28 January, 2004
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
