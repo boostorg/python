@@ -6,7 +6,7 @@
 #ifndef COPY_MUTABLE_REFERENCE_DWA2002131_HPP
 # define COPY_MUTABLE_REFERENCE_DWA2002131_HPP
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/python/to_python_value.hpp>
 
 namespace boost { namespace python { 
@@ -28,7 +28,7 @@ struct copy_mutable_reference
     template <class T>
     struct apply
     {
-        typedef typename mpl::select_type<
+        typedef typename mpl::select_if_c<
             detail::is_reference_to_non_const<T>::value
             , to_python_value<T>
             , detail::copy_mutable_reference_expects_a_reference_to_non_const_return_type<T>

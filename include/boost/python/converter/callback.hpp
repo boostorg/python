@@ -10,7 +10,7 @@
 # include <boost/python/converter/to_python_function.hpp>
 # include <boost/python/converter/pointee_to_python_function.hpp>
 # include <boost/python/converter/from_python.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/python/converter/callback_to_python_base.hpp>
 # include <boost/python/converter/callback_from_python_base.hpp>
 # include <boost/python/converter/builtin_converters.hpp>
@@ -55,10 +55,10 @@ namespace detail
       BOOST_STATIC_CONSTANT(
           bool, ref = is_reference<T>::value);
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::select_if_c<
           ptr
           , pointer_callback_from_python<T>
-          , typename mpl::select_type<
+          , typename mpl::select_if_c<
               ref
               , reference_callback_from_python<T>
               , rvalue_callback_from_python<T>
@@ -113,13 +113,13 @@ namespace detail
       typedef typename unwrap_reference<T>::type unwrapped_referent;
       typedef typename unwrap_pointer<T>::type unwrapped_ptr;
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::select_if_c<
           ptr
           , pointer_deep_callback_to_python<T>
-          , typename mpl::select_type<
+          , typename mpl::select_if_c<
               ptr_wrapper
               , pointer_shallow_callback_to_python<unwrapped_ptr>
-              , typename mpl::select_type<
+              , typename mpl::select_if_c<
                   ref_wrapper
                   , reference_callback_to_python<unwrapped_referent>
                   , value_callback_to_python<T>

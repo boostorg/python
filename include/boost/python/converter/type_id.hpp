@@ -10,7 +10,7 @@
 # include <boost/python/detail/msvc_typeinfo.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/operators.hpp>
 # include <boost/type.hpp>
 # include <typeinfo>

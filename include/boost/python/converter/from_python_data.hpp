@@ -7,7 +7,7 @@
 # define FROM_PYTHON_AUX_DATA_DWA2002128_HPP
 
 # include <boost/python/detail/char_array.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/static_assert.hpp>
@@ -54,7 +54,7 @@ namespace detail
         , void*, function_ptr, member_ptr, member_function_ptr))
 
 # define BOOST_PYTHON_CHOOSE_LOWER_SIZE(R,P,I,T) \
-        typename mpl::select_type< \
+        typename mpl::select_if_c< \
            sizeof(T) <= target, T, char>::type BOOST_PP_CAT(t,I);
            
 # define BOOST_PYTHON_CHOOSE_T(R,P,I,T) T BOOST_PP_CAT(t,I);

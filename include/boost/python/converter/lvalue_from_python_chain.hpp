@@ -51,7 +51,7 @@ namespace detail
 
       typedef typename add_reference<typename add_cv<T>::type>::type normalized;
 
-      typedef typename mpl::select_type<
+      typedef typename mpl::select_if_c<
           ptr
           , ptr_or_ptr_ref_lvalue_from_python_chain<normalized>
           , ref_lvalue_from_python_chain<normalized>

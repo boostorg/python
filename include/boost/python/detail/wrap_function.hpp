@@ -11,7 +11,7 @@
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/select_if.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
