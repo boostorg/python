@@ -740,6 +740,60 @@ manipulation of these high-level types from C++::
     d["lucky_number"] = 13;
     list l = d.keys();
 
+=================
+ Thinking hybrid
+=================
+
+For many applications runtime performance considerations are very
+important. This is particularly true for most scientific applications.
+Often the performance considerations dictate the use of a compiled
+language for the core algorithms. Traditionally the decision to use a
+particular programming language is an exclusive one. Because of the
+practical and mental difficulties of combining different languages many
+systems are written in just one language. This is quite unfortunate
+because the price payed for runtime performance is typically a
+significant overhead due to static typing. For example, our experience
+shows that developing maintainable C++ code is typically much more
+time-consuming and requires much more hard-earned working experience
+than developing useful Python code. A related observation is that many
+compiled packages are augmented by some type of rudimentary scripting
+layer. These ad hoc solutions clearly show that many times a compiled
+language alone does not get the job done. On the other hand it is also
+clear that a pure Python implementation is too slow for numerically
+intensive production code.
+
+Boost.Python enables us to *think hybrid* when developing new
+applications. For example, Python can be used for rapidly prototyping a
+new application. Python's ease of use and the large pool of standard
+libraries give us a head start on the way to a first working system. If
+necessary, the working procedure can be used to discover the
+rate-limiting algorithms. To maximize performance these can be
+reimplemented in C++, together with the Boost.Python bindings needed to
+tie them back into the existing higher-level procedure.
+
+Of course, this *top-down* approach is less attractive if it is clear
+from the start that many algorithms will eventually have to be
+implemented in a compiled language. Fortunately Boost.Python also
+enables us to pursue a *bottom-up* approach. We have used this approach
+very successfully in the development of a toolbox for scientific
+applications (scitbx) that we will describe elsewhere. The toolbox
+started out mainly as a library of C++ classes with Boost.Python
+bindings, and for a while the growth was mainly concentrated on the C++
+parts. However, as the toolbox is becoming more complete, more and more
+newly added functionality can be implemented in Python. We expect this
+trend to continue, as illustrated qualitatively in this figure:
+
+.. image:: python_cpp_mix.png
+
+This figure shows the ratio of newly added C++ and Python code over
+time as new algorithms are implemented. We expect this ratio to level
+out near 70% Python. The increasing ability to solve new problems
+mostly with the easy-to-use Python language rather than a necessarily
+more arcane statically typed language is the return on the investment
+of learning how to use Boost.Python. The ability to solve some problems
+entirely using only Python will enable a larger group of people to
+participate in the rapid development of new applications.
+
 =============
  Conclusions
 =============
