@@ -103,7 +103,14 @@ StringMapPythonClass::StringMapPythonClass(boost::python::module_builder& m)
     : boost::python::class_builder<StringMap >(m, "StringMap")
 {
     def(boost::python::constructor<>());
+#if defined(BOOST_MSVC) && BOOST_MSVC == 1300
+    // MSVC7 incorrectly makes this the target of this function
+    // pointer the same type as the class in which it is defined (some
+    // standard library class), instead of StringMap.
+    def((std::size_t (StringMap::*)()const)&StringMap::size, "__len__");
+#else 
     def(&StringMap::size, "__len__");
+#endif 
     def(&get_item, "__getitem__");
     def(&set_item, "__setitem__");
     def(&del_item, "__delitem__");
@@ -884,7 +891,7 @@ namespace bpl_test {
   // This doesn't test anything but the compiler, since it has the same signature as the above.
   // Since MSVC is broken and gets the signature wrong, we'll skip it.
   std::string use_const_plain_char(
-#ifndef BOOST_MSVC6_OR_EARLIER
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
       const 
 #endif
       char c) { return std::string(5, c); }

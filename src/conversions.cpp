@@ -206,7 +206,7 @@ BOOST_PYTHON_DECL bool from_python(PyObject* p, boost::python::type<bool>)
     return true;
 }
 
-#ifdef BOOST_MSVC6_OR_EARLIER
+#if defined(BOOST_MSVC) && BOOST_MSVC <= 1300
 // An optimizer bug prevents these from being inlined.
 BOOST_PYTHON_DECL PyObject* to_python(double d)
 {
@@ -217,7 +217,7 @@ BOOST_PYTHON_DECL PyObject* to_python(float f)
 {
     return PyFloat_FromDouble(f);
 }
-#endif // BOOST_MSVC6_OR_EARLIER
+#endif
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
 

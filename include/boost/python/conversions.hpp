@@ -160,7 +160,7 @@ unsigned char from_python(PyObject*, boost::python::type<const unsigned char&>);
 BOOST_PYTHON_DECL float from_python(PyObject*, boost::python::type<float>);
 BOOST_PYTHON_DECL double from_python(PyObject*, boost::python::type<double>);
 
-# ifndef BOOST_MSVC6_OR_EARLIER
+# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
 PyObject* to_python(float);
 PyObject* to_python(double);
 # else
@@ -260,7 +260,7 @@ PyObject* from_python(PyObject*, boost::python::type<PyObject*>);
 // #endif
 // }} // namespace boost::python
 
-#if !defined(BOOST_MSVC6_OR_EARLIER)
+#if !defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
 template <class T>
 boost::shared_ptr<T> from_python(PyObject*p, boost::python::type<boost::shared_ptr<T> >)
 {
@@ -286,7 +286,7 @@ PyObject* to_python(boost::shared_ptr<T> p)
 // inline implementations
 //
 
-#ifndef BOOST_MSVC6_OR_EARLIER
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
 inline PyObject* to_python(double d)
 {
     return PyFloat_FromDouble(d);
@@ -296,7 +296,7 @@ inline PyObject* to_python(float f)
 {
     return PyFloat_FromDouble(f);
 }
-#endif // BOOST_MSVC6_OR_EARLIER
+#endif
 
 inline PyObject* to_python(long l)
 {
