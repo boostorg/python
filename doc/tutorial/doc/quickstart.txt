@@ -1108,10 +1108,10 @@ facility in fact solves the mutable copying problem:
 
 Boost.Python has a nifty facility to capture and wrap C++ enums. While
 Python has no [^enum] type, we'll often want to expose our C++ enums to
-Python as an [^int] while taking care of the proper conversions from
-Python's dynamic typing to C++'s strong static typing (in C++, ints cannot
-be implicitly converted to enums). Boost.Python's enum facility makes this
-easy. To illustrate, given a C++ enum:
+Python as an [^int]. Boost.Python's enum facility makes this easy while
+taking care of the proper conversions from Python's dynamic typing to C++'s
+strong static typing (in C++, ints cannot be implicitly converted to
+enums). To illustrate, given a C++ enum:
 
     enum choice { red, blue };
 
@@ -1122,7 +1122,7 @@ the construct:
         .value("blue", blue)
         ;
 
-can be used to expose it to Python. The new enum type is created in the
+can be used to expose to Python. The new enum type is created in the
 current [^scope()], which is usually the current module. The snippet above
 creates a Python class derived from Python's [^int] type which is
 associated with the C++ type passed as its first parameter.
@@ -1130,15 +1130,15 @@ associated with the C++ type passed as its first parameter.
 [blurb __detail__ [*what is a scope?][br][br] The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
-attributes. Details can be found [@../../v2/scope.html here]]
+attributes. Details can be found [@../../v2/scope.html here].]
 
 You can access those values in Python as
 
     >>> my_module.choice.red
     my_module.choice.red
 
-where my_module is the module where the enum is declared. You can create a
-new scope around a class:
+where my_module is the module where the enum is declared. You can also
+create a new scope around a class:
 
     scope in_X(class_<X>("X")
                     .def( ... )
