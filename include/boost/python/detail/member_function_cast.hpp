@@ -72,7 +72,7 @@ stage1(BOOST_PYTHON_FN(S::*,1,args)cv())                                        
     return cast_helper<S,BOOST_PYTHON_FN(T::*,1,args)cv()>();                                   \
 } 
 
-BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(BOOST_PYTHON_MEMBER_FUNCTION_CAST_STAGE1); 
+BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(BOOST_PYTHON_MEMBER_FUNCTION_CAST_STAGE1)
 };
 
 
