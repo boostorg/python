@@ -507,9 +507,9 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_delitem<traits::has_erase, traits::index_style>
         ::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_iter
-        <(traits::index_style != index_style_linear)
-          && traits::has_copyable_iter>
+      bool const iter_condition = (traits::index_style != index_style_linear)
+        && traits::has_copyable_iter;
+      maybe_add_iter<iter_condition>
         ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_sort
@@ -525,12 +525,14 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_insert<traits::has_insert>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_extend
-        <traits::has_insert && traits::index_style == index_style_linear>
+      bool const extend_condition = (traits::index_style == index_style_linear)
+        && traits::has_insert;
+      maybe_add_extend<extend_condition>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_index
-        <traits::has_find && (traits::index_style == index_style_linear)>
+      bool const index_condition = (traits::index_style == index_style_linear)
+        && traits::has_find;
+      maybe_add_index<index_condition>
         ::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_count<traits::has_find, traits::index_style>
