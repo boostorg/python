@@ -7,8 +7,7 @@
 # define LONG_DWA2002627_HPP
 
 # include <boost/python/object.hpp>
-# include <boost/python/converter/pytype_arg_from_python.hpp>
-# include <boost/python/converter/pytype_result_from_python.hpp>
+# include <boost/python/converter/pytype_extract_object_manager.hpp>
 
 namespace boost { namespace python { 
 
@@ -32,81 +31,24 @@ class long_ : public object
     {
     }
  public: // implementation detail -- for internal use only
-    explicit inline long_(detail::borrowed_reference);
-    explicit inline long_(detail::new_reference);
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_)
     
  private:
-    static BOOST_PYTHON_DECL detail::new_reference call(object const&);
-    static BOOST_PYTHON_DECL detail::new_reference call(object const&, object const&);
+    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);
+    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&, object const&);
 };
 
 //
 // Converter Specializations
 //
-template <class T> struct arg_from_python;
-
-template <>
-struct arg_from_python<long_>
-    : converter::pytype_wrapper_value_arg_from_python<long_, &PyLong_Type>
-{
-    typedef converter::pytype_wrapper_value_arg_from_python<long_, &PyLong_Type> base;
-    typedef long_ result_type;
-    
-    arg_from_python(PyObject* p) : base(p) {}
-};
-
-template <>
-struct arg_from_python<long_ const&>
-    : arg_from_python<long_>
-{
-    arg_from_python(PyObject* p)
-        : arg_from_python<long_>(p) {}
-};
-
-template <>
-struct arg_from_python<long_&>
-    : converter::pytype_wrapper_ref_arg_from_python<long_, &PyLong_Type>
-{
-    typedef converter::pytype_wrapper_ref_arg_from_python<long_, &PyLong_Type> base;
-    typedef long_ result_type;
-    
-    arg_from_python(PyObject* p)
-        : base(p) {}
-};
-
 namespace converter
 {
-  template <class T> struct is_object_manager;
-
   template <>
-  struct is_object_manager<long_>
+  struct extract_object_manager<long_>
+      : pytype_extract_object_manager<&PyLong_Type,long_>
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
-
-  template <class T> struct return_from_python;
-  template <>
-  struct return_from_python<long_>
-  {
-      typedef long_ result_type;
-      
-      result_type operator()(PyObject* x) const
-      {
-          return long_((pytype_result_from_python)(&PyLong_Type, x));
-      }
   };
 }
-
-//
-// long_ implementation
-//
-inline long_::long_(detail::borrowed_reference p)
-    : object(p)
-{}
-
-inline long_::long_(detail::new_reference p)
-    : object(p)
-{}
 
 }} // namespace boost::python
 

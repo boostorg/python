@@ -7,8 +7,7 @@
 # define LIST_DWA2002627_HPP
 
 # include <boost/python/object.hpp>
-# include <boost/python/converter/pytype_arg_from_python.hpp>
-# include <boost/python/converter/pytype_result_from_python.hpp>
+# include <boost/python/converter/pytype_extract_object_manager.hpp>
 
 namespace boost { namespace python { 
 
@@ -95,80 +94,23 @@ class list : public object
     }
     
  public: // implementation detail -- for internal use only
-    inline explicit list(detail::borrowed_reference);
-    inline explicit list(detail::new_reference);
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list)
     
  private:
-    static BOOST_PYTHON_DECL detail::new_reference call(object const&);
+    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);
 };
 
 //
 // Converter Specializations
 //
-template <class T> struct arg_from_python;
-
-template <>
-struct arg_from_python<list>
-    : converter::pytype_wrapper_value_arg_from_python<list, &PyList_Type>
-{
-    typedef converter::pytype_wrapper_value_arg_from_python<list, &PyList_Type> base;
-    typedef list result_type;
-    
-    arg_from_python(PyObject* p) : base(p) {}
-};
-
-template <>
-struct arg_from_python<list const&>
-    : arg_from_python<list>
-{
-    arg_from_python(PyObject* p)
-        : arg_from_python<list>(p) {}
-};
-
-template <>
-struct arg_from_python<list&>
-    : converter::pytype_wrapper_ref_arg_from_python<list, &PyList_Type>
-{
-    typedef converter::pytype_wrapper_ref_arg_from_python<list, &PyList_Type> base;
-    typedef list result_type;
-    
-    arg_from_python(PyObject* p)
-        : base(p) {}
-};
-
 namespace converter
 {
-  template <class T> struct is_object_manager;
-
   template <>
-  struct is_object_manager<list>
+  struct extract_object_manager<list>
+      : pytype_extract_object_manager<&PyList_Type,list>
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
-
-  template <class T> struct return_from_python;
-  template <>
-  struct return_from_python<list>
-  {
-      typedef list result_type;
-      
-      result_type operator()(PyObject* x) const
-      {
-          return list((pytype_result_from_python)(&PyList_Type, x));
-      }
   };
 }
-
-//
-// list implementation
-//
-inline list::list(detail::borrowed_reference p)
-    : object(p)
-{}
-
-inline list::list(detail::new_reference p)
-    : object(p)
-{}
 
 }} // namespace boost::python
 

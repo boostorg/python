@@ -14,6 +14,7 @@
 # include <boost/python/slice_nil.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
+# include <boost/python/converter/always_extract_object_manager.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 
 # include <boost/preprocessor/iterate.hpp>
@@ -227,8 +228,18 @@ namespace api
    public: // implementation detail -- for internal use only
       explicit object(detail::borrowed_reference);
       explicit object(detail::new_reference);
+      explicit object(detail::new_non_null_reference);
   };
 
+  // Derived classes will usually want these as an implementation detail
+# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived)              \
+    inline explicit derived(python::detail::borrowed_reference p)       \
+        : object(p) {}                                                  \
+    inline explicit derived(python::detail::new_reference p)            \
+        : object(p) {}                                                  \
+    inline explicit derived(python::detail::new_non_null_reference p)   \
+        : object(p) {}
+  
   //
   // object_initializer -- get the handle to construct the object with,
   // based on whether T is a proxy or derived from object
@@ -266,53 +277,13 @@ using api::object;
 //
 // Converter Specializations
 //
-template <class T> struct arg_from_python;
-
-template <>
-struct arg_from_python<object>
-{
-    typedef object result_type;
-    
-    arg_from_python(PyObject*);
-    bool convertible() const;
-    object operator()(PyObject* x) const;
-};
-
-template <>
-struct arg_from_python<object const&>
-    : arg_from_python<object>
-{
-    arg_from_python(PyObject*);
-};
-
-template <>
-struct arg_from_python<object&>
-{
-    typedef object& result_type;
-    
-    arg_from_python(PyObject*);
-    bool convertible() const;
-    object& operator()(PyObject* x) const;
- private:
-    mutable object m_result;
-};
-
 namespace converter
 {
-  template <class T> struct is_object_manager;
-
   template <>
-  struct is_object_manager<object>
+  struct extract_object_manager<object>
+      : always_extract_object_manager
   {
-      BOOST_STATIC_CONSTANT(bool, value = true);
-  };
-
-  template <class T> struct return_from_python;
-  template <>
-  struct return_from_python<object>
-  {
-      typedef object result_type;
-      result_type operator()(PyObject* x) const;
+      static python::detail::borrowed_reference execute(PyObject* x);
   };
 }
 
@@ -345,7 +316,6 @@ inline api::object_base& api::object_base::operator=(api::object_base const& rhs
     return *this;
 }
 
-
 inline api::object_base::~object_base()
 {
     Py_DECREF(m_ptr);
@@ -360,6 +330,10 @@ inline object::object(detail::new_reference p)
     : object_base(expect_non_null((PyObject*)p))
 {}
 
+inline object::object(detail::new_non_null_reference p)
+    : object_base((PyObject*)p)
+{}
+
 inline PyObject* api::object_base::ptr() const
 {
     return m_ptr;
@@ -368,45 +342,14 @@ inline PyObject* api::object_base::ptr() const
 //
 // Converter specialization implementations
 //
-inline arg_from_python<object>::arg_from_python(PyObject*)
-{}
-
-inline bool arg_from_python<object>::convertible() const
-{
-    return true;
-}
-
-inline object arg_from_python<object>::operator()(PyObject* x) const
-{
-    return object(detail::borrowed_reference(x));
-}
-
-inline arg_from_python<object const&>::arg_from_python(PyObject*)
-    : arg_from_python<object>(0)
-{}
-
-inline arg_from_python<object&>::arg_from_python(PyObject* x)
-    : m_result(detail::borrowed_reference(x))
-{}
-
-inline bool arg_from_python<object&>::convertible() const
-{
-    return true;
-}
-
-inline object& arg_from_python<object&>::operator()(PyObject* x) const
-{
-    return m_result;
-}
-
 namespace converter
 {
-  inline object
-  return_from_python<object>::operator()(PyObject* x) const
+  inline python::detail::borrowed_reference
+  extract_object_manager<object>::execute(PyObject* x)
   {
-      return object(python::detail::new_reference(x));
+      return python::detail::borrowed_reference(python::incref(x));
   }
-
+  
   inline PyObject* get_managed_object(object const& x)
   {
       return x.ptr();

@@ -19,6 +19,7 @@
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/python/back_reference.hpp>
 # include <boost/python/detail/referent_storage.hpp>
+# include <boost/python/converter/obj_mgr_arg_from_python.hpp>
 
 namespace boost { namespace python
 {
@@ -140,6 +141,12 @@ template <class T>
 struct select_arg_from_python
 {
     BOOST_STATIC_CONSTANT(
+        bool, obj_mgr = is_object_manager<T>::value);
+    
+    BOOST_STATIC_CONSTANT(
+        bool, obj_mgr_ref = is_reference_to_object_manager<T>::value);
+    
+    BOOST_STATIC_CONSTANT(
         bool, ptr = is_pointer<T>::value);
     
     BOOST_STATIC_CONSTANT(
@@ -159,22 +166,30 @@ struct select_arg_from_python
         boost::python::is_back_reference<T>::value);
 
     typedef typename mpl::select_type<
-        ptr
-        , pointer_arg_from_python<T>
-        , typename mpl::select_type<
-             ptr_cref
-             , pointer_cref_arg_from_python<T>
-             , typename mpl::select_type<
-                   ref
-                   , reference_arg_from_python<T>
-                   , typename mpl::select_type<
-                        back_ref
-                        , back_reference_arg_from_python<T>
-                        , arg_rvalue_from_python<T>
-                    >::type
-                >::type
+        obj_mgr
+        , object_manager_value_arg_from_python<T>
+        , mpl::select_type<
+            obj_mgr_ref
+            , object_manager_ref_arg_from_python<T>
+            , mpl::select_type<
+                ptr
+                , pointer_arg_from_python<T>
+                , typename mpl::select_type<
+                    ptr_cref
+                    , pointer_cref_arg_from_python<T>
+                    , typename mpl::select_type<
+                        ref
+                        , reference_arg_from_python<T>
+                        , typename mpl::select_type<
+                            back_ref
+                            , back_reference_arg_from_python<T>
+                            , arg_rvalue_from_python<T>
+                          >::type
+                      >::type
+                  >::type
+              >::type
           >::type
-    >::type type;
+      >::type type;
 };
 
 // ==================

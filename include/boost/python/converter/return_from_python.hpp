@@ -6,6 +6,7 @@
 #ifndef RETURN_FROM_PYTHON_DWA200265_HPP
 # define RETURN_FROM_PYTHON_DWA200265_HPP
 
+# include <boost/python/converter/object_manager.hpp>
 # include <boost/python/converter/from_python.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
@@ -43,8 +44,18 @@ namespace detail
   };
   
   template <class T>
+  struct return_object_manager_from_python
+  {
+      typedef T result_type;
+      result_type operator()(PyObject*) const;
+  };
+  
+  template <class T>
   struct select_return_from_python
   {
+      BOOST_STATIC_CONSTANT(
+          bool, obj_mgr = is_object_manager<T>::value);
+
       BOOST_STATIC_CONSTANT(
           bool, ptr = is_pointer<T>::value);
     
@@ -52,14 +63,18 @@ namespace detail
           bool, ref = is_reference<T>::value);
 
       typedef typename mpl::select_type<
-          ptr
-          , return_pointer_from_python<T>
+          obj_mgr
+          , return_object_manager_from_python<T>
           , typename mpl::select_type<
-              ref
-              , return_reference_from_python<T>
-              , return_rvalue_from_python<T>
+              ptr
+              , return_pointer_from_python<T>
+              , typename mpl::select_type<
+                  ref
+                  , return_reference_from_python<T>
+                  , return_rvalue_from_python<T>
+                >::type
             >::type
-          >::type type;
+         >::type type;
   };
 }
 
@@ -118,6 +133,14 @@ namespace detail
   {
       return T(
           (pointer_result_from_python)(obj, registered_pointee<T>::converters)
+          );
+  }
+
+  template <class T>
+  inline T return_object_manager_from_python<T>::operator()(PyObject* obj) const
+  {
+      return T(
+          extract_object_manager<T>::execute(obj)
           );
   }
 }

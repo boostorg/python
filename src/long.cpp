@@ -7,16 +7,16 @@
 
 namespace boost { namespace python { 
 
-BOOST_PYTHON_DECL detail::new_reference long_::call(object const& arg)
+BOOST_PYTHON_DECL detail::new_non_null_reference long_::call(object const& arg)
 {
-    return (detail::new_reference)PyObject_CallFunction(
+    return (detail::new_non_null_reference)PyObject_CallFunction(
         (PyObject*)&PyLong_Type, "(O)", 
         arg.ptr());
 }
 
-BOOST_PYTHON_DECL detail::new_reference long_::call(object const& arg, object const& base)
+BOOST_PYTHON_DECL detail::new_non_null_reference long_::call(object const& arg, object const& base)
 {
-    return (detail::new_reference)PyObject_CallFunction(
+    return (detail::new_non_null_reference)PyObject_CallFunction(
         (PyObject*)&PyLong_Type, "(OO)", 
         arg.ptr(), base.ptr());
 }

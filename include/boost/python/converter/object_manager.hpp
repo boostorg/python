@@ -12,22 +12,55 @@
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/detail/indirect_traits.hpp>
 
-namespace boost { namespace python { namespace api {
+// Facilities for dealing with types which always manage Python
+// objects. Some examples are object, list, et. al. Different
+// to_python/from_python conversion rules apply here because in
+// contrast to other types which are typically embedded inside a
+// Python object, these are wrapped around a Python object. For most
+// object managers T, a C++ non-const T reference argument does not
+// imply the existence of a T lvalue embedded in the corresponding
+// Python argument, since mutating member functions on T actually only
+// modify the held Python object.
+//
+// Note also that handle<> does not qualify as an object manager because:
+//   a. It might not manage a Python object (it can be null)
+//   b. Mutating operations visible to users modify the handle<> itself.
 
-class object;
-
+namespace boost { namespace python { namespace api
+{
+  class object; // forward declaration
 }}}
 
 namespace boost { namespace python { namespace converter { 
 
+// Used to create object managers of type T, taking ownership of a
+// given PyObject*. Specializations X must satisfy the following,
+// where p is a non-null PyObject*:
+//
+//   X::is_specialized == true
+//
+//   T(X::execute(p)) - constructs a T object from p, or throws a
+//   TypeError exception if p doesn't have an appropriate type.
+//
+//   X::check(p), convertible to bool. True iff T(X::execute(p)) will
+//   not throw.
+template <class T>
+struct extract_object_manager
+{
+    BOOST_STATIC_CONSTANT(bool, is_specialized = false);
+};
+
+// A metafunction returning true iff its argument is an object manager.
 template <class T>
 struct is_object_manager
 {
  private:
+    // handle the cases that would otherwise require partial specialization
     BOOST_STATIC_CONSTANT(bool, hdl = is_handle<T>::value);
     BOOST_STATIC_CONSTANT(bool, borrowed = python::detail::is_borrowed_ptr<T>::value);
+    BOOST_STATIC_CONSTANT(bool, extract_specialized = extract_object_manager<T>::is_specialized);
  public:
-    BOOST_STATIC_CONSTANT(bool, value = (hdl | borrowed));
+    BOOST_STATIC_CONSTANT(bool, value = (hdl | borrowed | extract_specialized));
 };
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
