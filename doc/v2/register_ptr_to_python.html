@@ -33,7 +33,7 @@
 <hr>
 <h2><a name="introduction"></a>Introduction</h2>
 <p>
-  <code>&lt;boost/python/converter/register_ptr_to_python.hpp&gt;</code>
+  <code>&lt;boost/python/register_ptr_to_python.hpp&gt;</code>
   supplies <code>register_ptr_to_python</code>, a function template
   which registers a conversion for smart pointers to Python.  The
   resulting Python object holds a copy of the converted smart pointer,
@@ -48,8 +48,8 @@
   <code>smart_ptr&lt;X&gt;&amp;</code> (non-const reference), the embedded C++
   object must be held by <code>smart_ptr&lt;X&gt;</code>, and that when wrapped
   objects are created by calling the constructor from Python, how they are held
-  is determined by the <code>HeldType</code> parameter to class_&lt;...&gt;
-  instances.  
+  is determined by the <code>HeldType</code> parameter to
+  <code>class_&lt;...&gt;</code> instances.  
 </p>
   
 <h2><a name="functions"></a>Functions</h2>
