@@ -168,10 +168,10 @@ struct select_arg_from_python
     typedef typename mpl::select_type<
         obj_mgr
         , object_manager_value_arg_from_python<T>
-        , mpl::select_type<
+        , typename mpl::select_type<
             obj_mgr_ref
             , object_manager_ref_arg_from_python<T>
-            , mpl::select_type<
+            , typename mpl::select_type<
                 ptr
                 , pointer_arg_from_python<T>
                 , typename mpl::select_type<
