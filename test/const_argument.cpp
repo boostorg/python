@@ -9,22 +9,28 @@
  * compiler's bug.
  */
 #include <boost/python.hpp>
+#include <boost/type_traits/broken_compiler_spec.hpp>
 using namespace boost::python;
 
-bool accept_const_arg_noproto( const object) 
+BOOST_TT_BROKEN_COMPILER_SPEC( object )
+
+#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+bool accept_const_arg_noproto( const object )
+{
+    return true; 
+}
+#endif
+
+bool accept_const_arg_with_proto( object );
+bool accept_const_arg_with_proto( const object )
 {
     return true; 
 }
 
-bool accept_const_arg_with_proto( object);
-bool accept_const_arg_with_proto( const object) 
+BOOST_PYTHON_MODULE( const_argument_ext )
 {
-    return true; 
+#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+    def( "accept_const_arg_noproto", accept_const_arg_noproto );
+#endif
+    def( "accept_const_arg_with_proto", accept_const_arg_with_proto );
 }
-
-BOOST_PYTHON_MODULE( const_argument_ext)
-{
-    def( "accept_const_arg_noproto", accept_const_arg_noproto);
-    def( "accept_const_arg_with_proto", accept_const_arg_with_proto);
-}
-
