@@ -82,5 +82,3 @@ if __name__ == '__main__':
         args = int(sys.argv[1])
 
     print gen_callback(args)
-
-
