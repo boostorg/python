@@ -1,3 +1,15 @@
+2000-11-15 00:26
+
+    Made Ullrich's operators support work with MSVC
+    
+    Cleaned up operators.h such that invalid define_operator<0> is no longer needed.
+
+2000-11-13 22:29
+
+    removed obsolete ExtensionClassFromPython for good.
+
+    removed unused class ExtensionType forward declaration
+
 2000-11-12 13:08
 
     Added enum_as_int_converters for easier enum wrapping
