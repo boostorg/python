@@ -104,10 +104,11 @@ Python. To do that, it needs Base's copy constructor... which isn't
 available, since Base is an abstract class.</p>
 <p>
 In Python, let us try to instantiate our <tt>Base</tt> class:</p>
-<code><pre>
+<code>
+<pre>
     <span class=special>&gt;&gt;&gt; </span><span class=identifier>base </span><span class=special>= </span><span class=identifier>Base</span><span class=special>()
-    </span><span class=identifier>AttributeError</span><span class=special>: </span><span class=special>...
-</span></pre></code>
+    </span>RuntimeError: This class cannot be instantiated from Python</pre>
+</code> 
 <p>
 Why is it an error? <tt>Base</tt> is an abstract class. As such it is advisable
 to define the Python wrapper with <tt>no_init</tt> as we have done above. Doing
@@ -167,11 +168,12 @@ And instead is implemented to return <tt>0</tt>, as shown above.</p>
 </span></pre></code>
 <p>
 then, our Boost.Python wrapper:</p>
-<code><pre>
-    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
+<code>
+<pre>    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap, boost::non_copyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
         </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;f&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>BaseWrap</span><span class=special>::</span><span class=identifier>default_f</span><span class=special>)
         </span><span class=special>;
-</span></pre></code>
+</span></pre>
+</code>
 <p>
 Note that we are allowing <tt>Base</tt> objects to be instantiated this time,
 unlike before where we specifically defined the <tt>class_&lt;Base&gt;</tt> with
