@@ -129,9 +129,9 @@ Total implications:
 
 2: A.f invokes A::f() (virtually or otherwise)
 3: B.f invokes B::f (virtually or otherwise)
-7: B.f invokes B::f virtually. 
-6: B.f invokes B::f non-virtually. 
 4: B.f invokes B::f non-virtually. Bcb::f invokes B::f non-virtually
+6: B.f invokes B::f non-virtually. 
+7: B.f invokes B::f virtually. 
 
 5: Bcb::f invokes call_method to look up the Python method
 
@@ -139,4 +139,13 @@ Though (4) is avoidable, clearly 6 and 7 are not, and they
 conflict. The implication is that B.f must choose its behavior
 according to the type of the contained C++ object. If it is Bcb, a
 non-virtual call to B::f must occur. Otherwise, a virtual call to B::f
-must occur.
+must occur. This is essentially the same scheme we had with
+Boost.Python v1.
+
+Note: in early versions of Boost.Python v1, we solved this problem by
+introducing a new Python class in the hierarchy, so that D and E
+actually derive from a B', and B'.f invokes B::f non-virtually, while
+B.f invokes B::f virtually. However, people complained about the
+artificial class in the hierarchy, which was revealed when they tried
+to do normal kinds of Python introspection.
+
