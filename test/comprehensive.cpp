@@ -667,7 +667,7 @@ int total_Ints = 0;
 
 struct Int
 {
-    explicit Int(int i) : i_(i) {
+    explicit Int(int i) : i_(i), j_(0) {
 #ifndef NDEBUG
         ++total_Ints;
 #endif
@@ -675,12 +675,29 @@ struct Int
     
 #ifndef NDEBUG
     ~Int() { --total_Ints; }
-    Int(const Int& rhs) : i_(rhs.i_) { ++total_Ints; }
+    Int(const Int& rhs) : i_(rhs.i_), j_(rhs.j_) { ++total_Ints; }
 #endif
     
     int i() const { return i_; }
+    int j() const { return j_; }
     
     int i_;
+    int j_;
+
+    Int& operator +=(Int const& r) { ++j_; i_ += r.i_; return *this; }
+    Int& operator -=(Int const& r) { ++j_; i_ -= r.i_; return *this; }
+    Int& operator *=(Int const& r) { ++j_; i_ *= r.i_; return *this; }
+    Int& operator /=(Int const& r) { ++j_; i_ /= r.i_; return *this; }
+    Int& operator %=(Int const& r) { ++j_; i_ %= r.i_; return *this; }
+    Int& ipow (Int const& r) { ++j_; 
+                               int o=i_;
+                               for (int k=1; k<r.i_; k++) i_ *= o;
+                               return *this; }
+    Int& operator <<=(Int const& r) { ++j_; i_ <<= r.i_; return *this; }
+    Int& operator >>=(Int const& r) { ++j_; i_ >>= r.i_; return *this; }
+    Int& operator &=(Int const& r) { ++j_; i_ &= r.i_; return *this; }
+    Int& operator |=(Int const& r) { ++j_; i_ |= r.i_; return *this; }
+    Int& operator ^=(Int const& r) { ++j_; i_ ^= r.i_; return *this; }
 };
 
 Int operator+(Int const & l, Int const & r) { return Int(l.i_ + r.i_); }
@@ -868,6 +885,19 @@ namespace bpl_test {
   double freal(const std::complex<float>& c) { return c.real(); }
   double fimag(std::complex<float> c) { return c.imag(); }
 
+  // Wrappers for inplace operators.
+  Int& int_iadd(Int& self, const Int& r) { self += r; return self; }
+  Int& int_isub(Int& self, const Int& r) { self -= r; return self; }
+  Int& int_imul(Int& self, const Int& r) { self *= r; return self; }
+  Int& int_idiv(Int& self, const Int& r) { self /= r; return self; }
+  Int& int_imod(Int& self, const Int& r) { self %= r; return self; }
+  Int& int_ipow(Int& self, const Int& r) { self.ipow (r); return self; }
+  Int& int_ilshift(Int& self, const Int& r) { self <<= r; return self; }
+  Int& int_irshift(Int& self, const Int& r) { self >>= r; return self; }
+  Int& int_iand(Int& self, const Int& r) { self &= r; return self; }
+  Int& int_ior(Int& self, const Int& r) { self |= r; return self; }
+  Int& int_ixor(Int& self, const Int& r) { self ^= r; return self; }
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -1042,6 +1072,7 @@ void init_module(boost::python::module_builder& m)
     boost::python::class_builder<Int> int_class(m, "Int");
     int_class.def(boost::python::constructor<int>());
     int_class.def(&Int::i, "i");
+    int_class.def(&Int::j, "j");
 
     // wrap homogeneous operators
     int_class.def(boost::python::operators<(boost::python::op_add | boost::python::op_sub | boost::python::op_neg | 
@@ -1061,6 +1092,19 @@ void init_module(boost::python::module_builder& m)
                   boost::python::left_operand<int const & >());
     // export non-operator function as heterogeneous reverse-argument operator
     int_class.def(&rmul, "__rmul__");
+
+    // inplace operators.
+    int_class.def(&int_iadd, "__iadd__");
+    int_class.def(&int_isub, "__isub__");
+    int_class.def(&int_imul, "__imul__");
+    int_class.def(&int_idiv, "__idiv__");
+    int_class.def(&int_imod, "__imod__");
+    int_class.def(&int_ipow, "__ipow__");
+    int_class.def(&int_ilshift, "__ilshift__");
+    int_class.def(&int_irshift, "__irshift__");
+    int_class.def(&int_iand, "__iand__");
+    int_class.def(&int_ior, "__ior__");
+    int_class.def(&int_ixor, "__ixor__");
     
 
     boost::python::class_builder<EnumOwner> enum_owner(m, "EnumOwner");

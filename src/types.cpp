@@ -455,6 +455,61 @@ static PyObject* do_instance_nb_hex(PyObject* obj)
     return call(obj, &type_object_base::instance_number_hex);
 }
 
+static PyObject* do_instance_nb_inplace_add(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_add, other);
+}
+
+static PyObject* do_instance_nb_inplace_subtract(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_subtract, other);
+}
+
+static PyObject* do_instance_nb_inplace_multiply(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_multiply, other);
+}
+
+static PyObject* do_instance_nb_inplace_divide(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_divide, other);
+}
+
+static PyObject* do_instance_nb_inplace_remainder(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_remainder, other);
+}
+
+static PyObject* do_instance_nb_inplace_power(PyObject* obj, PyObject* exponent, PyObject* modulus)
+{
+    return call(obj, &type_object_base::instance_number_inplace_power, exponent, modulus);
+}
+
+static PyObject* do_instance_nb_inplace_lshift(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_lshift, other);
+}
+
+static PyObject* do_instance_nb_inplace_rshift(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_rshift, other);
+}
+
+static PyObject* do_instance_nb_inplace_and(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_and, other);
+}
+
+static PyObject* do_instance_nb_inplace_or(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_or, other);
+}
+
+static PyObject* do_instance_nb_inplace_xor(PyObject* obj, PyObject* other)
+{
+    return call(obj, &type_object_base::instance_number_inplace_xor, other);
+}
+
 } // extern "C"
 
 namespace
@@ -509,6 +564,41 @@ bool add_capability_richcompare(type_object_base::capability capability, PyTypeO
     }
     
     return false;
+}
+
+#if PYTHON_API_VERSION >= 1010
+# define ENABLE_INPLACE_CAPABILITY1 \
+        dest->tp_flags |= Py_TPFLAGS_HAVE_INPLACEOPS;
+#else
+# define ENABLE_INPLACE_CAPABILITY1
+#endif
+#define ENABLE_INPLACE_CAPABILITY(field) \
+    case type_object_base::number_##field: \
+        create_method_table_if_null(dest->tp_as_number); \
+        dest->tp_as_number->nb_##field = &do_instance_nb_##field; \
+        detail::shared_pod_manager::replace_if_equal(dest->tp_as_number); \
+        ENABLE_INPLACE_CAPABILITY1 \
+        return true
+
+bool add_capability_inplace(type_object_base::capability capability, PyTypeObject* dest)
+{
+    assert(dest != 0);
+    switch (capability)
+    {
+        ENABLE_INPLACE_CAPABILITY (inplace_add);
+        ENABLE_INPLACE_CAPABILITY (inplace_subtract);
+        ENABLE_INPLACE_CAPABILITY (inplace_multiply);
+        ENABLE_INPLACE_CAPABILITY (inplace_divide);
+        ENABLE_INPLACE_CAPABILITY (inplace_remainder);
+        ENABLE_INPLACE_CAPABILITY (inplace_power);
+        ENABLE_INPLACE_CAPABILITY (inplace_lshift);
+        ENABLE_INPLACE_CAPABILITY (inplace_rshift);
+        ENABLE_INPLACE_CAPABILITY (inplace_and);
+        ENABLE_INPLACE_CAPABILITY (inplace_or);
+        ENABLE_INPLACE_CAPABILITY (inplace_xor);
+        default:
+            return false;
+    }
 }
 
 #define ENABLE_MAPPING_CAPABILITY(field) \
@@ -625,6 +715,8 @@ namespace detail  {
     if(add_capability_general(capability, dest_))
         return;
     if(add_capability_richcompare(capability, dest_))
+        return;
+    if(add_capability_inplace(capability, dest_))
         return;
     if(add_capability_mapping(capability, dest_->tp_as_mapping))
         return;
@@ -970,7 +1062,7 @@ PyObject* type_object_base::instance_number_divmod(PyObject*, PyObject*) const
 
 PyObject* type_object_base::instance_number_power(PyObject*, PyObject*, PyObject*) const
 {
-    return unimplemented("instance_number_divmod");
+    return unimplemented("instance_number_power");
 }
 
 PyObject* type_object_base::instance_number_negative(PyObject*) const
@@ -1051,6 +1143,61 @@ PyObject* type_object_base::instance_number_oct(PyObject*) const
 PyObject* type_object_base::instance_number_hex(PyObject*) const
 {
     return unimplemented("instance_number_hex");
+}
+
+PyObject* type_object_base::instance_number_inplace_add(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_add");
+}
+
+PyObject* type_object_base::instance_number_inplace_subtract(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_subtract");
+}
+
+PyObject* type_object_base::instance_number_inplace_multiply(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_multiply");
+}
+
+PyObject* type_object_base::instance_number_inplace_divide(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_divide");
+}
+
+PyObject* type_object_base::instance_number_inplace_remainder(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_remainder");
+}
+
+PyObject* type_object_base::instance_number_inplace_power(PyObject*, PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_power");
+}
+
+PyObject* type_object_base::instance_number_inplace_lshift(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_lshift");
+}
+
+PyObject* type_object_base::instance_number_inplace_rshift(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_rshift");
+}
+
+PyObject* type_object_base::instance_number_inplace_and(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_and");
+}
+
+PyObject* type_object_base::instance_number_inplace_or(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_or");
+}
+
+PyObject* type_object_base::instance_number_inplace_xor(PyObject*, PyObject*) const
+{
+    return unimplemented("instance_number_inplace_xor");
 }
 
 PyObject* type_object_base::instance_lt(PyObject*, PyObject*) const
