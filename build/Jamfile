@@ -93,7 +93,8 @@ lib boost_python_static : ../src/$(CPP_SOURCES).cpp
     : $(BOOST_PYTHON_INCLUDES)
     <shared-linkable>true
       <define>BOOST_PYTHON_STATIC_LIB=1
-    $(PYTHON_PROPERTIES) ;
+        [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] 
+      ;
 
 dll boost_python
   # $(SUFDLL[1])

@@ -36,20 +36,25 @@
 //
 #if defined(_WIN32) || defined(__CYGWIN__)
 # if defined(__GNUC__) && defined(__CYGWIN__)
+
+#  define SIZEOF_LONG 4
+
 #  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
+
 typedef int pid_t;
+
 #   define WORD_BIT 32
 #   define hypot _hypot
 #   include <stdio.h>
+
 #   if PY_MAJOR_VERSION < 2
 #    define HAVE_CLOCK
 #    define HAVE_STRFTIME
 #    define HAVE_STRERROR
 #   endif
+
 #   define NT_THREADS
-#   if !defined(__CYGWIN__) && (__GNUC__ < 3 || __GNUC__ == 3 && __GNUC_MINOR__ == 0 && __GNUC_PATCHLEVEL__ < 3)
-#    define WITH_THREAD
-#   endif 
+
 #   ifndef NETSCAPE_PI
 #    define USE_SOCKET
 #   endif
