@@ -55,7 +55,7 @@ namespace { // Avoid cluttering the global namespace.
 
   // Function returning a vector_double object to Python.
   //
-  std::vector<double> foo(const int n)
+  std::vector<double> foo(int n)
   {
     std::vector<double> vd(n);
     std::vector<double>::iterator vditer = vd.begin();
@@ -65,7 +65,7 @@ namespace { // Avoid cluttering the global namespace.
 
   // Same as foo(), but avoid copying on return.
   //
-  std::auto_ptr<std::vector<double> > bar(const int n)
+  std::auto_ptr<std::vector<double> > bar(int n)
   {
     std::auto_ptr<std::vector<double> > vdptr(new std::vector<double>(n));
     std::vector<double>::iterator vditer = vdptr->begin();
