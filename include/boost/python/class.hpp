@@ -85,7 +85,23 @@ namespace detail
       SelectHolder::register_();
   }
 
-  template <class T> int assert_default_constructible(T const&);
+  // A helpful compile-time assertion which gives a reasonable error
+  // message if T can't be default-constructed.
+  template <class T>
+  class assert_default_constructible
+  {
+      template <class U>
+      static int specify_init_arguments_or_no_init_for_class_(U const&);
+   public:
+      assert_default_constructible()
+      {
+          force_instantiate(
+              sizeof(
+                  specify_init_arguments_or_no_init_for_class_(T())
+                  ));
+                      
+      }
+  };
 }
 
 //
@@ -366,7 +382,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name, char const* doc)
     : base(name, id_vector::size, id_vector().ids, doc)
 {
     this->register_();
-    detail::force_instantiate(sizeof(detail::assert_default_constructible(T())));
+    detail::assert_default_constructible<T>();
     this->def(init<>());
     this->set_instance_size(holder_selector::additional_size());
 }
