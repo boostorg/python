@@ -3,30 +3,27 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title> General Techniques</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.65.1">
-<link rel="home" href="../index.html" title="Chapter 1. python 1.0">
+<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="previous" href="exception.html" title=" Exception Translation">
+<link rel="prev" href="exception.html" title=" Exception Translation">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
-<td align="center"><a href="../../../index.htm">Home</a></td>
-<td align="center"><a href="../libraries.html">Libraries</a></td>
-<td align="center"><a href="../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
-<td align="center"><a href="../../../more/index.htm">More</a></td>
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="exception.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h2 class="title" style="clear: both">
-<a name="python.techniques"></a> General Techniques</h2></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="python.techniques"></a> General Techniques</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="techniques.html#python.creating_packages">Creating Packages</a></span></dt>
 <dt><span class="section"><a href="techniques.html#python.extending_wrapped_objects_in_python">Extending Wrapped Objects in Python</a></span></dt>
@@ -35,11 +32,8 @@
 <p>
 Here are presented some useful techniques that you can use while wrapping code with Boost.Python.</p>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.creating_packages"></a>Creating Packages</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.creating_packages"></a>Creating Packages</h3></div></div></div>
 <p>
 A Python package is a collection of modules that provide to the user a certain
 functionality. If you're not familiar on how to create packages, a good
@@ -108,7 +102,7 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.</p>
 <p>
 Now our package is ready. All the user has to do is put <tt class="literal">sounds</tt> into his
-<a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a> 
+<a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a>
 and fire up the interpreter:</p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
@@ -187,11 +181,8 @@ from the <tt class="literal">filters</tt> package:</p>
 &gt;&gt;&gt;</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo_noise</span><span class="special">(...)</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.extending_wrapped_objects_in_python"></a>Extending Wrapped Objects in Python</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.extending_wrapped_objects_in_python"></a>Extending Wrapped Objects in Python</h3></div></div></div>
 <p>
 Thanks to Python's flexibility, you can easily add new methods to a class,
 even after it was already created:</p>
@@ -221,7 +212,7 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 }</span></tt></pre>
 <p>
 If we are using the technique from the previous session,
-<a href="techniques.html#creating_packages" target="_top">Creating Packages</a>, we can code directly 
+<a href="techniques.html#python.creating_packages" title="Creating Packages">Creating Packages</a>, we can code directly
 into <tt class="literal">geom/<span class="underline">_init</span>_.py</tt>:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">from</span><span class="identifier"> _geom</span><span class="identifier"> import</span><span class="special"> *</span>
 
@@ -289,11 +280,8 @@ with virtually zero memory footprint and zero compile-time overhead for
 the keyword support.</p>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.reducing_compiling_time"></a>Reducing Compiling Time</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.reducing_compiling_time"></a>Reducing Compiling Time</h3></div></div></div>
 <p>
 If you have ever exported a lot of classes, you know that it takes quite a good
 time to compile the Boost.Python wrappers. Plus the memory consumption can

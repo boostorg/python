@@ -17,10 +17,10 @@
 
 [/ QuickBook Document version 0.9 ]
 
-[def __note__       [$../images/note.png]]
-[def __alert__      [$../images/alert.png]]
-[def __tip__        [$../images/tip.png]]
-[def :-)            [$../images/smiley.png]]
+[def __note__       [$images/note.png]]
+[def __alert__      [$images/alert.png]]
+[def __tip__        [$images/tip.png]]
+[def :-)            [$images/smiley.png]]
 
 [section QuickStart]
 
@@ -86,7 +86,7 @@ with every boost distribution: [*bjam].
 
 We shall skip over the details. Our objective will be to simply create the
 hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: [@../../../../building.html building.html].
+building Boost.Python, check out: [@../../../building.html building.html].
 After this brief ['bjam] tutorial, we should have built two DLLs:
 
 * boost_python.dll
@@ -111,7 +111,7 @@ minimalist ['bjam] script that builds the DLLs for us.
 Before anything else, you should have the bjam executable in your boost
 directory or somewhere in your path such that [^bjam] can be executed in
 the command line. Pre-built Boost.Jam executables are available for most
-platforms. The complete list of Bjam executables can be found 
+platforms. The complete list of Bjam executables can be found
 [@http://sourceforge.net/project/showfiles.php?group_id=7586 here].
 
 [h2 Let's Jam!]
@@ -175,7 +175,7 @@ Python modules. Example:
 
 The above assumes that the Python installation is in [^c:/dev/tools/python]
 and that we are using Python version 2.2. You'll have to tweak this path
-appropriately. 
+appropriately.
 
 [blurb __tip__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
 even if that's the version you have.]
@@ -189,7 +189,7 @@ Finally:
 
 We are again assuming that we are using Microsoft Visual C++ version 6. If
 not, then you will have to specify the appropriate tool. See
-[@../../../../../../../tools/build/index.html Building Boost Libraries] for
+[@../../../../../../tools/build/index.html Building Boost Libraries] for
 further details.
 
 It should be building now:
@@ -454,8 +454,11 @@ Now we can inform Boost.Python of the inheritance relationship between
 
 Doing so, we get some things for free:
 
-# Derived automatically inherits all of Base's Python methods (wrapped C++ member functions)
-# [*If] Base is polymorphic, [^Derived] objects which have been passed to Python via a pointer or reference to [^Base] can be passed where a pointer or reference to [^Derived] is expected.
+# Derived automatically inherits all of Base's Python methods
+  (wrapped C++ member functions)
+# [*If] Base is polymorphic, [^Derived] objects which have been passed to
+  Python via a pointer or reference to [^Base] can be passed where a pointer
+  or reference to [^Derived] is expected.
 
 Now, we shall expose the C++ free functions [^b] and [^d] and [^factory]:
 
@@ -468,155 +471,80 @@ instances of class [^Derived]. In such cases, we use
 [^return_value_policy<manage_new_object>] to instruct Python to adopt
 the pointer to [^Base] and hold the instance in a new Python [^Base]
 object until the the Python object is destroyed. We shall see more of
-Boost.Python [@functions.html#python.call_policies call policies] later.
+Boost.Python [link python.call_policies call policies] later.
 
     // Tell Python to take ownership of factory's result
     def("factory", factory,
         return_value_policy<manage_new_object>());
 
 [endsect]
+
 [section Class Virtual Functions]
 
-In this section, we shall learn how to make functions behave
-polymorphically through virtual functions. Continuing our example, let us
-add a virtual function to our [^Base] class:
+In this section, we shall learn how to make functions behave polymorphically
+through virtual functions. Continuing our example, let us add a virtual function
+to our [^Base] class:
 
     struct Base
     {
+        virtual ~Base() {}
         virtual int f() = 0;
     };
 
-Since [^f] is a pure virtual function, [^Base] is now an abstract
-class. Given an instance of our class, the free function [^call_f]
-calls some implementation of this virtual function in a concrete
-derived class:
+One of the goals of Boost.Python is to be minimally intrusive on an existing C++ 
+design. In principle, it should be possible to expose the interface for a 3rd 
+party library without changing it. It is not ideal to add anything to our class 
+`Base`. Yet, when you have a virtual function that's going to be overridden in 
+Python and called polymorphically *from C++*, we'll need to add some 
+scaffoldings to make things work properly. What we'll do is write a class 
+wrapper that derives from `Base` that will unintrusively hook into the virtual 
+functions so that a Python override may be called:
 
-    int call_f(Base& b) { return b.f(); }
-
-To allow this function to be implemented in a Python derived class, we
-need to create a class wrapper:
-
-    struct BaseWrap : Base
+    struct BaseWrap : Base, wrapper<Base>
     {
-        BaseWrap(PyObject* self_)
-            : self(self_) {}
-        int f() { return call_method<int>(self, "f"); }
-        PyObject* self;
+        int f()
+        {
+            return this->get_override("f")();
+        }
     };
 
+Notice too that in addition to inheriting from `Base`, we also multiply-
+inherited `wrapper<Base>` (See [@../../../v2//wrapper.html Wrapper]). The
+`wrapper` template makes the job of wrapping classes that are meant to
+overridden in Python, easier.
 
-    struct BaseWrap : Base
-    {
-        BaseWrap(PyObject* self_)
-            : self(self_) {}
-        BaseWrap(PyObject* self_, Base const& copy)
-            : Base(copy), self(self_) {}
-        int f() { return call_method<int>(self, "f"); }
-        int default_f() { return Base::f(); } // <<=== ***ADDED***
-        PyObject* self;
-    };
+[blurb __alert__ MSVC6/7 Workaround\n\n 
+If you are using Microsoft Visual C++ 6 or 7, you have to write `f` as:\n\n
+`return call<int>(this->get_override("f").ptr());`.]
+
+BaseWrap's overridden virtual member function `f` in effect calls the
+corresponding method of the Python object through `get_override`.
+
+Finally, exposing `Base`:
+
+    class_<BaseWrap, boost::noncopyable>("Base")
+        .def("f", pure_virtual(&Base::f))
+        ;
+
+`pure_virtual` signals Boost.Python that the function `f` is a pure virtual 
+function.
 
 [blurb __note__ [*member function and methods]\n\n Python, like
 many object oriented languages uses the term [*methods].  Methods
 correspond roughly to C++'s [*member functions]]
 
-Our class wrapper [^BaseWrap] is derived from [^Base]. Its overridden
-virtual member function [^f] in effect calls the corresponding method
-of the Python object [^self], which is a pointer back to the Python
-[^Base] object holding our [^BaseWrap] instance.
-
-[blurb __note__ [*Why do we need BaseWrap?]\n\n]
-
-['You may ask], "Why do we need the [^BaseWrap] derived class? This could
-have been designed so that everything gets done right inside of
-Base."\n\n
-
-One of the goals of Boost.Python is to be minimally intrusive on an
-existing C++ design. In principle, it should be possible to expose the
-interface for a 3rd party library without changing it. To unintrusively
-hook into the virtual functions so that a Python override may be called, we
-must use a derived class.\n\n
-
-Note however that you don't need to do this to get methods overridden
-in Python to behave virtually when called ['from] [*Python]. The only
-time you need to do the [^BaseWrap] dance is when you have a virtual
-function that's going to be overridden in Python and called
-polymorphically ['from] [*C++].]
-
-Wrapping [^Base] and the free function [^call_f]:
-
-    class_<Base, BaseWrap, boost::noncopyable>("Base", no_init)
-        ;
-    def("call_f", call_f);
-
-Notice that we parameterized the [^class_] template with [^BaseWrap] as the
-second parameter. What is [^noncopyable]? Without it, the library will try
-to create code for converting Base return values of wrapped functions to
-Python. To do that, it needs Base's copy constructor... which isn't
-available, since Base is an abstract class.
-
-In Python, let us try to instantiate our [^Base] class:
-
-    >>> base = Base()
-    RuntimeError: This class cannot be instantiated from Python
-
-Why is it an error? [^Base] is an abstract class. As such it is advisable
-to define the Python wrapper with [^no_init] as we have done above. Doing
-so will disallow abstract base classes such as [^Base] to be instantiated.
-
 [endsect]
-[section Deriving a Python Class]
 
-Continuing, we can derive from our base class Base in Python and override
-the virtual function in Python. Before we can do that, we have to set up
-our [^class_] wrapper as:
-
-    class_<Base, BaseWrap, boost::noncopyable>("Base")
-        ;
-
-Otherwise, we have to suppress the Base class' [^no_init] by adding an
-[^__init__()] method to all our derived classes. [^no_init] actually adds
-an [^__init__] method that raises a Python RuntimeError exception.
-
-    >>> class Derived(Base):
-    ...     def f(self):
-    ...         return 42
-    ...
-
-Cool eh? A Python class deriving from a C++ class!
-
-Let's now make an instance of our Python class [^Derived]:
-
-    >>> derived = Derived()
-
-Calling [^derived.f()]:
-
-    >>> derived.f()
-    42
-
-Will yield the expected result. Finally, calling calling the free function
-[^call_f] with [^derived] as argument:
-
-    >>> call_f(derived)
-    42
-
-Will also yield the expected result.
-
-Here's what's happening:
-
-# [^call_f(derived)] is called in Python
-# This corresponds to [^def("call_f", call_f);]. Boost.Python dispatches this call.
-# [^int call_f(Base& b) { return b.f(); }] accepts the call.
-# The overridden virtual function [^f] of [^BaseWrap] is called.
-# [^call_method<int>(self, "f");] dispatches the call back to Python.
-# [^def f(self): return 42] is finally called.
-
-[endsect]
 [section Virtual Functions with Default Implementations]
 
-Recall that in the [@exposing.html#class_virtual_functions previous section], we
-wrapped a class with a pure virtual function that we then implemented in
-C++ or Python classes derived from it. Our base class:
+We've seen in the previous section how classes with pure virtual functions are 
+wrapped using Boost.Python's [@../../../v2//wrapper.html class wrapper]
+facilities. If we wish to wrap [*non]-pure-virtual functions instead, the 
+mechanism is a bit different.
+
+Recall that in the [link python.class_virtual_functions previous section], we 
+wrapped a class with a pure virtual function that we then implemented in C++, or 
+Python classes derived from it. Our base class:
 
     struct Base
     {
@@ -628,33 +556,42 @@ not declared as pure virtual:
 
     struct Base
     {
+        virtual ~Base() {}
         virtual int f() { return 0; }
     };
 
-and instead had a default implementation that returns [^0], as shown above,
-we need to add a forwarding function that calls the [^Base] default virtual
-function [^f] implementation:
-
-    struct BaseWrap : Base
+We wrap it this way:
+    
+    struct BaseWrap : Base, wrapper<Base>
     {
-        BaseWrap(PyObject* self_)
-            : self(self_) {}
-        int f() { return call_method<int>(self, "f"); }
-        int default_f() { return Base::f(); } // <<=== ***ADDED***
-        PyObject* self;
+        int f()
+        {
+            if (override f = this->get_override("f"))
+                return f(); // *note*
+            return Base::f();
+        }
+
+        int default_f() { return this->Base::f(); }
     };
+    
+Notice how we implemented `BaseWrap::f`. Now, we have to check if there is an 
+override for `f`. If none, then we call `Base::f()`.
 
-Then, Boost.Python needs to keep track of 1) the dispatch function [^f] and
-2) the forwarding function to its default implementation [^default_f].
-There's a special [^def] function for this purpose. Here's how it is
-applied to our example above:
+[blurb __alert__ MSVC6/7 Workaround\n\n 
+If you are using Microsoft Visual C++ 6 or 7, you have to rewrite the line
+with the `*note*` as:\n\n
+`return call<char const*>(f.ptr());`.]
 
-    class_<Base, BaseWrap, BaseWrap, boost::noncopyable>("Base")
+Finally, exposing:
+    
+    class_<BaseWrap, boost::noncopyable>("Base")
         .def("f", &Base::f, &BaseWrap::default_f)
+        ;
 
-Note that we are allowing [^Base] objects to be instantiated this time,
-unlike before where we specifically defined the [^class_<Base>] with
-[^no_init].
+Take note that we expose both `&Base::f` and `&BaseWrap::default_f`. 
+Boost.Python needs to keep track of 1) the dispatch function [^f] and 2) the 
+forwarding function to its default implementation [^default_f]. There's a 
+special [^def] function for this purpose.
 
 In Python, the results would be as expected:
 
@@ -673,16 +610,6 @@ Calling [^base.f()]:
 Calling [^derived.f()]:
 
     >>> derived.f()
-    42
-
-Calling [^call_f], passing in a [^base] object:
-
-    >>> call_f(base)
-    0
-
-Calling [^call_f], passing in a [^derived] object:
-
-    >>> call_f(derived)
     42
 
 [endsect]
@@ -918,7 +845,7 @@ or more policies can be composed by chaining. Here's the general syntax:
             policy3<args...> > >
 
 Here is the list of predefined call policies. A complete reference detailing
-these can be found [@../../../../v2/reference.html#models_of_call_policies here].
+these can be found [@../../../v2/reference.html#models_of_call_policies here].
 
 * [*with_custodian_and_ward]\n Ties lifetimes of the arguments
 * [*with_custodian_and_ward_postcall]\n Ties lifetimes of the arguments and results
@@ -1000,7 +927,7 @@ to retrieve the default arguments:
     def("f", f);                            // defaults lost!
 
 Because of this, when wrapping C++ code, we had to resort to manual
-wrapping as outlined in the [@functions.html#overloading previous section], or
+wrapping as outlined in the [link python.overloading previous section], or
 writing thin wrappers:
 
     // write "thin wrappers"
@@ -1073,7 +1000,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 
     .def("wack_em", &george::wack_em, george_overloads());
 
-See the [@../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
+See the [@../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
 for details.
 
 [h2 init and optional]
@@ -1140,12 +1067,12 @@ Notice though that we have a situation now where we have a minimum of zero
 It is important to emphasize however that [*the overloaded functions must
 have a common sequence of initial arguments]. Otherwise, our scheme above
 will not work. If this is not the case, we have to wrap our functions
-[@functions.html#overloading manually].
+[link python.overloading manually].
 
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] and
 its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Following up on our example
-presented in the section [@functions.html#overloading on overloading], since the
+presented in the section [link python.overloading on overloading], since the
 first 4 overload functins have a common sequence of initial arguments, we
 can use [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the
 first three of the [^def]s and manually wrap just the last. Here's
@@ -1179,7 +1106,7 @@ bidirectional mapping between C++ and Python while maintaining the Python
 feel. Boost.Python C++ [^object]s are as close as possible to Python. This
 should minimize the learning curve significantly.
 
-[$../images/python.png]
+[$images/python.png]
 
 [section Basic Interface]
 
@@ -1361,7 +1288,7 @@ associated with the C++ type passed as its first parameter.
 [blurb __note__ [*what is a scope?]\n\n The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
-attributes. Details can be found [@../../../../v2/scope.html here].]
+attributes. Details can be found [@../../../v2/scope.html here].]
 
 You can access those values in Python as
 
@@ -1422,8 +1349,8 @@ Boost.Python's static link library comes in two variants. Both are located
 in Boost's [^/libs/python/build/bin-stage] subdirectory. On Windows, the
 variants are called [^boost_python.lib] (for release builds) and
 [^boost_python_debug.lib] (for debugging). If you can't find the libraries,
-you probably haven't built Boost.Python yet. See [@../../../../building.html
-Building and Testing] on how to do this.
+you probably haven't built Boost.Python yet. See
+[@../../../building.html Building and Testing] on how to do this.
 
 Python's static link library can be found in the [^/libs] subdirectory of
 your Python directory. On Windows it is called pythonXY.lib where X.Y is
@@ -1477,8 +1404,8 @@ There is a difference however. While the reference-counting is fully
 automatic in Python, the Python/C API requires you to do it
 [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is
 messy and especially hard to get right in the presence of C++ exceptions.
-Fortunately Boost.Python provides the [@../../v2/handle.html handle] and
-[@../../../../v2/object.html object] class templates to automate the process.
+Fortunately Boost.Python provides the [@../../../v2/handle.html handle] and
+[@../../../v2/object.html object] class templates to automate the process.
 
 [h2 Reference-counting handles and objects]
 
@@ -1490,7 +1417,7 @@ be 'handled' by Boost.Python.
 
 For a function returning a ['borrowed reference] we'll have to tell the
 [^handle] that the [^PyObject*] is borrowed with the aptly named
-[@../../../../v2/handle.html#borrowed-spec borrowed] function. Two functions
+[@../../../v2/handle.html#borrowed-spec borrowed] function. Two functions
 returning borrowed references are PyImport_AddModule and PyModule_GetDict.
 The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
@@ -1622,10 +1549,10 @@ perform.
 
 [h2 Exception handling]
 
-If an exception occurs in the execution of some Python code, the PyRun_String 
-function returns a null pointer. Constructing a [^handle] out of this null 
-pointer throws [@../../../../v2/errors.html#error_already_set-spec error_already_set], 
-so basically, the Python exception is automatically translated into a 
+If an exception occurs in the execution of some Python code, the PyRun_String
+function returns a null pointer. Constructing a [^handle] out of this null
+pointer throws [@../../../v2/errors.html#error_already_set-spec error_already_set],
+so basically, the Python exception is automatically translated into a
 C++ exception when using [^handle]:
 
     try
@@ -1645,13 +1572,13 @@ C++ exception when using [^handle]:
         // handle the exception in some way
     }
 
-The [^error_already_set] exception class doesn't carry any information in itself. 
-To find out more about the Python exception that occurred, you need to use the 
-[@http://www.python.org/doc/api/exceptionHandling.html exception handling functions] 
-of the Python/C API in your catch-statement. This can be as simple as calling 
-[@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to 
-print the exception's traceback to the console, or comparing the type of the 
-exception with those of the [@http://www.python.org/doc/api/standardExceptions.html 
+The [^error_already_set] exception class doesn't carry any information in itself.
+To find out more about the Python exception that occurred, you need to use the
+[@http://www.python.org/doc/api/exceptionHandling.html exception handling functions]
+of the Python/C API in your catch-statement. This can be as simple as calling
+[@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to
+print the exception's traceback to the console, or comparing the type of the
+exception with those of the [@http://www.python.org/doc/api/standardExceptions.html
 standard exceptions]:
 
     catch(error_already_set)
@@ -1667,11 +1594,11 @@ standard exceptions]:
         }
     }
 
-(To retrieve even more information from the exception you can use some of the other 
+(To retrieve even more information from the exception you can use some of the other
 exception handling functions listed [@http://www.python.org/doc/api/exceptionHandling.html here].)
 
-If you'd rather not have [^handle] throw a C++ exception when it is constructed, you 
-can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same 
+If you'd rather not have [^handle] throw a C++ exception when it is constructed, you
+can use the [@../../../v2/handle.html#allow_null-spec allow_null] function in the same
 way you'd use borrowed:
 
     handle<> result((allow_null(PyRun_String(
@@ -1859,7 +1786,7 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.
 
 Now our package is ready. All the user has to do is put [^sounds] into his
-[@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH] 
+[@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH]
 and fire up the interpreter:
 
     >>> import sounds.io
@@ -1980,7 +1907,7 @@ we have a class [^point] in C++:
     }
 
 If we are using the technique from the previous session,
-[@techniques.html#creating_packages Creating Packages], we can code directly 
+[link python.creating_packages Creating Packages], we can code directly
 into [^geom/__init__.py]:
 
     from _geom import *
@@ -2099,13 +2026,13 @@ This method is recommended too if you are developing the C++ library and
 exporting it to Python at the same time: changes in a class will only demand
 the compilation of a single cpp, instead of the entire wrapper code.
 
-[blurb __note__ If you're exporting your classes with [@../../../../../pyste/index.html Pyste],
+[blurb __note__ If you're exporting your classes with [@../../../../pyste/index.html Pyste],
 take a look at the [^--multiple] option, that generates the wrappers in
 various files as demonstrated here.]
 
 [blurb __note__ This method is useful too if you are getting the error message
 ['"fatal error C1204:Compiler limit:internal structure overflow"] when compiling
-a large source file, as explained in the [@../../../../v2/faq.html#c1204 FAQ].]
+a large source file, as explained in the [@../../../v2/faq.html#c1204 FAQ].]
 
 [endsect]
 [endsect] [/ General Techniques]

@@ -3,31 +3,28 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Functions</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.65.1">
-<link rel="home" href="../index.html" title="Chapter 1. python 1.0">
+<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="previous" href="exposing.html" title=" Exposing Classes">
+<link rel="prev" href="exposing.html" title=" Exposing Classes">
 <link rel="next" href="object.html" title=" Object Interface">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../boost.png"></td>
-<td align="center"><a href="../../../index.htm">Home</a></td>
-<td align="center"><a href="../libraries.html">Libraries</a></td>
-<td align="center"><a href="../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../more/faq.htm">FAQ</a></td>
-<td align="center"><a href="../../../more/index.htm">More</a></td>
+<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
+<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="exposing.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../images/next.png" alt="Next"></a>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h2 class="title" style="clear: both">
-<a name="python.functions"></a>Functions</h2></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="python.functions"></a>Functions</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="functions.html#python.call_policies">Call Policies</a></span></dt>
 <dt><span class="section"><a href="functions.html#python.overloading">Overloading</a></span></dt>
@@ -68,11 +65,8 @@ But before you do, you might want to fire up Python 2.2 or later and type
     Namespaces are one honking great idea -- let's do more of those!
 </tt></pre>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.call_policies"></a>Call Policies</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.call_policies"></a>Call Policies</h3></div></div></div>
 <p>
 In C++, we often deal with arguments and return types such as pointers
 and references. Such primitive types are rather, ummmm, low level and
@@ -178,7 +172,7 @@ A reference to <tt class="literal">y.x</tt> is returned
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id422411"></a>Call Policies</h2>
+<a name="id454162"></a>Call Policies</h2>
 <p>
 Call Policies may be used in situations such as the example detailed above.
 In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
@@ -253,11 +247,8 @@ Boost.Python v1 approach
 </table></div>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.overloading"></a>Overloading</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.overloading"></a>Overloading</h3></div></div></div>
 <p>
 The following illustrates a scheme for manually wrapping an overloaded
 member functions. Of course, the same technique can be applied to wrapping
@@ -301,11 +292,8 @@ With these in hand, we can proceed to define and wrap this for Python:</p>
 .</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span><span class="identifier"> fx4</span><span class="special">)</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.default_arguments"></a>Default Arguments</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.default_arguments"></a>Default Arguments</h3></div></div></div>
 <p>
 Boost.Python wraps (member) function pointers. Unfortunately, C++ function
 pointers carry no default argument info. Take a function <tt class="literal">f</tt> with default
@@ -323,7 +311,7 @@ to retrieve the default arguments:</p>
 </span></tt></pre>
 <p>
 Because of this, when wrapping C++ code, we had to resort to manual
-wrapping as outlined in the <a href="functions.html#overloading" target="_top">previous section</a>, or
+wrapping as outlined in the <a href="functions.html#python.overloading" title="Overloading">previous section</a>, or
 writing thin wrappers:</p>
 <pre class="programlisting"><tt class="literal"><span class="comment">// write "thin wrappers"
 </span><span class="keyword">int</span><span class="identifier"> f1</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> x</span><span class="special">)</span><span class="special"> {</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span><span class="special"> }</span><span class="keyword">
@@ -347,7 +335,7 @@ are overloaded with a common sequence of initial arguments
 </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id424225"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
+<a name="id455979"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
 <p>
 Boost.Python now has a way to make it easier. For instance, given a function:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">int</span><span class="identifier"> foo</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> a</span><span class="special">,</span><span class="keyword"> char</span><span class="identifier"> b</span><span class="special"> =</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> unsigned</span><span class="identifier"> c</span><span class="special"> =</span><span class="number"> 2</span><span class="special">,</span><span class="keyword"> double</span><span class="identifier"> d</span><span class="special"> =</span><span class="number"> 3</span><span class="special">)</span><span class="special">
@@ -366,7 +354,7 @@ and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt> 
 automatically add all the foo variants for us:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span><span class="identifier"> foo</span><span class="special">,</span><span class="identifier"> foo_overloads</span><span class="special">());</span></tt></pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id424504"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
+<a name="id456259"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
 <p>
 Objects here, objects there, objects here there everywhere. More frequently
 than anything else, we need to expose member functions of our classes to
@@ -398,7 +386,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
 for details.</p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id424831"></a>init and optional</h2>
+<a name="id456586"></a>init and optional</h2>
 <p>
 A similar facility is provided for class constructors, again, with
 default arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>? For example,
@@ -416,11 +404,8 @@ Notice the use of <tt class="literal">init&lt;...&gt;</tt> and <tt class="litera
 (optional arguments).</p>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.auto_overloading"></a>Auto-Overloading</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.auto_overloading"></a>Auto-Overloading</h3></div></div></div>
 <p>
 It was mentioned in passing in the previous section that
 <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt> and <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt>
@@ -456,17 +441,17 @@ Then...</p>
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.</p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id425478"></a>Manual Wrapping</h2>
+<a name="id457233"></a>Manual Wrapping</h2>
 <p>
 It is important to emphasize however that <span class="bold"><b>the overloaded functions must
 have a common sequence of initial arguments</b></span>. Otherwise, our scheme above
 will not work. If this is not the case, we have to wrap our functions
-<a href="functions.html#overloading" target="_top">manually</a>.</p>
+<a href="functions.html#python.overloading" title="Overloading">manually</a>.</p>
 <p>
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> and
 its sister, <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>. Following up on our example
-presented in the section <a href="functions.html#overloading" target="_top">on overloading</a>, since the
+presented in the section <a href="functions.html#python.overloading" title="Overloading">on overloading</a>, since the
 first 4 overload functins have a common sequence of initial arguments, we
 can use <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> to automatically wrap the
 first three of the <tt class="literal">def</tt>s and manually wrap just the last. Here's
