@@ -179,10 +179,39 @@ Open questions:
       Deduce target type of pvmf, i.e. T in R(T::*)(A1...AN).
       Find holder in first argument which holds T
       if it holds dispatch_type...
-      
+
    2. Can we make this more efficient?
      
      The current "returning" mechanism will look up a holder for T
      again. I don't know if we know how to avoid that.
 
 
+  OK, the solution involves reworking the call mechanism. This is
+  neccesary anyway in order to enable wrapping of function objects.
+
+  It can result in a reduction in the overall amount of source code,
+  because returning<> won't need to be specialized for every
+  combination of function and member function... though it will still
+  need a void specialization. We will still need a way to dispatch to
+  member functions through a regular function interface. mem_fn is
+  almost the right tool, but it only goes up to 8
+  arguments. Forwarding is tricky if you don't want to incur copies.
+  I think the trick is to use arg_from_python<T>::result_type for each
+  argument to the forwarder.
+
+  Another option would be to use separate function, function object,
+  and member function dispatchers. Once you know you have a member
+  function, you don't need cv-qualified overloads to call it.
+
+  Hmm, while we're at this, maybe we should solve the write-back
+  converter problem. Can we do it? Maybe not. Ralf doesn't want to
+  write special write-back functions here, does he? He wants the
+  converter to do the work automatically. We could add
+  cleanup/destructor registration. That would relieve the client from
+  having accessible destructors for types which are being converted by
+  rvalue. I'm not sure that this will really save any code,
+  however. It rather depends on the linker, doesn't it? I wonder if
+  this can be done in a backwards-compatible fashion by generating the
+  delete function when it's not supplied?
+
+  
