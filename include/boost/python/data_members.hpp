@@ -199,6 +199,11 @@ namespace detail
   // passed 0L.
   //
 
+#if BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
+  template <class D, class P>
+  inline object make_getter(D& d, P& p, mpl::false_, ...);
+#endif
+
   // Handle non-member pointers with policies
   template <class D, class Policies>
   inline object make_getter(D* d, Policies const& policies, mpl::false_, int)
