@@ -45,7 +45,7 @@ class type_object_base : public python_type
 
  public:
     enum capability {
-        hash, call, str, getattr, setattr, compare, repr,
+        hash, call, str, getattr, setattr, compare, repr, richcompare,
 
         mapping_length, mapping_subscript, mapping_ass_subscript,
         
@@ -115,6 +115,14 @@ class type_object_base : public python_type
     virtual PyObject* instance_number_float(PyObject*) const;
     virtual PyObject* instance_number_oct(PyObject*) const;
     virtual PyObject* instance_number_hex(PyObject*) const;
+
+ public: // Callbacks for rich comparisons
+    virtual PyObject* instance_lt(PyObject*, PyObject*) const;
+    virtual PyObject* instance_le(PyObject*, PyObject*) const;
+    virtual PyObject* instance_eq(PyObject*, PyObject*) const;
+    virtual PyObject* instance_ne(PyObject*, PyObject*) const;
+    virtual PyObject* instance_gt(PyObject*, PyObject*) const;
+    virtual PyObject* instance_ge(PyObject*, PyObject*) const;
 };
 
 template <class T>

@@ -43,7 +43,8 @@ all: boost_python.lib \
      do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
-     ivect.pyd dvect.pyd
+     ivect.pyd dvect.pyd \
+     richcmp.pyd
 
 boost_python.lib: $(OBJ)
 	$(LD) -lib /nologo /out:boost_python.lib $(OBJ)
@@ -86,6 +87,9 @@ ivect.pyd: $(OBJ) ivect.obj
 
 dvect.pyd: $(OBJ) dvect.obj
 	$(LD) $(LDOPTS) $(OBJ) dvect.obj $(PYLIB) /export:initdvect /out:"dvect.pyd"
+
+richcmp.pyd: $(OBJ) richcmp.obj
+	$(LD) $(LDOPTS) $(OBJ) richcmp.obj $(PYLIB) /export:initrichcmp /out:"richcmp.pyd"
 
 .cpp.obj:
 	$(CPP) $(CPPOPTS) /c $*.cpp

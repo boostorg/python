@@ -19,8 +19,8 @@ BOOST=$(ROOT)/boost
 
 PYEXE=/usr/local/Python-1.5.2/bin/python
 PYINC=-I/usr/local/Python-1.5.2/include/python1.5
-#PYEXE=/usr/local/Python-2.0/bin/python
-#PYINC=-I/usr/local/Python-2.0/include/python2.0
+#PYEXE=/usr/local/Python-2.1/bin/python
+#PYINC=-I/usr/local/Python-2.1/include/python2.1
 STLPORTINC=-I$(BOOST)/boost/compatibility/cpp_c_headers
 
 STDOPTS=
@@ -46,7 +46,8 @@ DEPOBJ=$(OBJ) \
        do_it_yourself_converters.o \
        pickle1.o pickle2.o pickle3.o \
        noncopyable_export.o noncopyable_import.o \
-       ivect.o dvect.o
+       ivect.o dvect.o \
+       richcmp.o
 
 .SUFFIXES: .o .cpp
 
@@ -58,7 +59,8 @@ all: libboost_python.a \
      do_it_yourself_converters.so \
      pickle1.so pickle2.so pickle3.so \
      noncopyable_export.so noncopyable_import.so \
-     ivect.so dvect.so
+     ivect.so dvect.so \
+     richcmp.so
 
 libboost_python.a: $(OBJ)
 	rm -f libboost_python.a
@@ -105,6 +107,9 @@ ivect.so: $(OBJ) ivect.o
 dvect.so: $(OBJ) dvect.o
 	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) dvect.o -o dvect.so
 
+richcmp.so: $(OBJ) richcmp.o
+	$(LD) $(LDOPTS) $(OBJ) richcmp.o -o richcmp.so
+
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp
 
@@ -135,6 +140,7 @@ clean:
 	rm -f noncopyable_import.o noncopyable_import.so
 	rm -f ivect.o ivect.so
 	rm -f dvect.o dvect.so
+	rm -f richcmp.o richcmp.so
 	rm -f so_locations *.pyc
 	rm -rf ii_files
 

@@ -62,7 +62,8 @@ all: libboost_python.a \
      do_it_yourself_converters.pyd \
      pickle1.pyd pickle2.pyd pickle3.pyd \
      noncopyable_export.pyd noncopyable_import.pyd \
-     ivect.pyd dvect.pyd
+     ivect.pyd dvect.pyd \
+     richcmp.pyd
 
 libboost_python.a: $(OBJ)
 	del libboost_python.a
@@ -148,6 +149,12 @@ dvect.pyd: $(OBJ) dvect.o
           --dllname dvect.pyd \
           --def dvect.def \
           $(OBJ) dvect.o $(PYLIB)
+
+richcmp.pyd: $(OBJ) richcmp.o
+	dllwrap $(DLLWRAPOPTS) \
+          --dllname richcmp.pyd \
+          --def richcmp.def \
+          $(OBJ) richcmp.o $(PYLIB)
 
 .cpp.o:
 	$(CPP) $(CPPOPTS) -c $*.cpp

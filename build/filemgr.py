@@ -52,6 +52,8 @@ bpl_exa + "/tst_dvect2.py",
 bpl_exa + "/tst_ivect1.py",
 bpl_exa + "/tst_ivect2.py",
 bpl_exa + "/test_cross_module.py",
+bpl_exa + "/richcmp.cpp",
+bpl_exa + "/test_richcmp.py",
 )
 
 defs = (
@@ -68,6 +70,7 @@ defs = (
 "noncopyable_import",
 "ivect",
 "dvect",
+"richcmp",
 )
 
 if (__name__ == "__main__"):

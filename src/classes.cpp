@@ -736,6 +736,36 @@ PyObject* instance::hex()
     return callback<PyObject*>::call_method(this, "__hex__");
 }
 
+PyObject* instance::lt(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__lt__", other);
+}
+
+PyObject* instance::le(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__le__", other);
+}
+
+PyObject* instance::eq(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__eq__", other);
+}
+
+PyObject* instance::ne(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__ne__", other);
+}
+
+PyObject* instance::gt(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__gt__", other);
+}
+
+PyObject* instance::ge(PyObject* other)
+{
+    return callback<PyObject*>::call_method(this, "__ge__", other);
+}
+
 namespace {
   struct named_capability
   {
@@ -747,6 +777,12 @@ namespace {
   {
       { "__hash__", detail::type_object_base::hash },
       { "__cmp__", detail::type_object_base::compare },
+      { "__gt__", detail::type_object_base::richcompare },
+      { "__ge__", detail::type_object_base::richcompare },
+      { "__lt__", detail::type_object_base::richcompare },
+      { "__le__", detail::type_object_base::richcompare },
+      { "__eq__", detail::type_object_base::richcompare },
+      { "__ne__", detail::type_object_base::richcompare },
       { "__repr__", detail::type_object_base::repr },
       { "__str__", detail::type_object_base::str },
       { "__call__", detail::type_object_base::call },
