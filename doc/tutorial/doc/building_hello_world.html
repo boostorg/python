@@ -36,22 +36,26 @@ building Boost.Python, check out: <a href="../../building.html">
 building.html</a>.
 After this brief <i>bjam</i> tutorial, we should have built two DLLs:</p>
 <ul><li>boost_python.dll</li><li>hello.pyd</li></ul><p>
-This assumes of course that we are running on Windows.</p>
+if you are on Windows, and</p>
+<ul><li>libboost_python.so</li><li>hello.so</li></ul><p>
+if you are on Unix.</p>
 <p>
 The tutorial example can be found in the directory:
-<tt>/libs/python/example/tutorial</tt>. There, you can find:</p>
+<tt>libs/python/example/tutorial</tt>. There, you can find:</p>
 <ul><li>hello.cpp</li><li>Jamfile</li></ul><p>
 The <tt>hello.cpp</tt> file is our C++ hello world example. The <tt>Jamfile</tt> is a
 minimalist <i>bjam</i> script that builds the DLLs for us.</p>
 <p>
 Before anything else, you should have the bjam executable in your boost
-directory. Pre-built Boost.Jam executables are available for some
+directory. Pre-built Boost.Jam executables are available for most
 platforms. For example, a pre-built Microsoft Windows bjam executable can
 be downloaded <a href="http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip">
 here</a>.
 The complete list of bjam pre-built executables can be found <a href="../../../../../tools/build/index.html#Jam">
 here</a>.</p>
 <a name="lets_jam_"></a><h2>Lets Jam!</h2><p>
+<img src="theme/jam.png"></img></p>
+<p>
 Here is our minimalist Jamfile:</p>
 <code><pre>
     subproject libs/python/example/tutorial ;
@@ -99,8 +103,9 @@ Python modules. Example:</p>
 </span></pre></code>
 <p>
 The above assumes that the Python installation is in <tt>c:/dev/tools/python</tt>
-and that we are using Python version 2.2. Be sure not to include a third
-number, e.g. <b>not</b>  &quot;2.2.1&quot;, even if that's the version you have.</p>
+and that we are using Python version 2.2. You'll have to tweak this path
+appropriately. <img src="theme/note.gif"></img> Be sure not to include a third number, e.g. <b>not</b>  &quot;2.2.1&quot;,
+even if that's the version you have.</p>
 <p>
 Now we are ready... Be sure to <tt>cd</tt> to <tt>libs/python/example/tutorial</tt>
 where the tutorial <tt>&quot;hello.cpp&quot;</tt> and the <tt>&quot;Jamfile&quot;</tt> is situated.</p>
@@ -139,6 +144,10 @@ And so on... Finally:</p>
 </pre></code><p>
 If all is well, you should now have:</p>
 <ul><li>boost_python.dll</li><li>hello.pyd</li></ul><p>
+if you are on Windows, and</p>
+<ul><li>libboost_python.so</li><li>hello.so</li></ul><p>
+if you are on Unix.</p>
+<p>
 <tt>boost_python.dll</tt> can be found somewhere in <tt>libs\python\build\bin</tt>
 while <tt>hello.pyd</tt> can be found somewhere in
 <tt>libs\python\example\tutorial\bin</tt>. After a successful build, you can just

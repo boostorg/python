@@ -92,15 +92,16 @@ polymorphically <i>from</i> <b>C++</b>.    </td>
 <p>
 Wrapping <tt>Base</tt> and the free function <tt>call_f</tt>:</p>
 <code><pre>
-    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>, </span><span class=identifier>no_init</span><span class=special>)
+    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>, </span><span class=identifier>no_init</span><span class=special>)
         </span><span class=special>;
     </span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;call_f&quot;</span><span class=special>, </span><span class=identifier>call_f</span><span class=special>);
 </span></pre></code>
 <p>
 Notice that we parameterized the <tt>class_</tt> template with <tt>BaseWrap</tt> as the
 second parameter. What is <tt>noncopyable</tt>? Without it, the library will try
-to instantiate a copy constructor for returning Base objects from
-functions.</p>
+to create code for converting Base return values of wrapped functions to
+Python. To do that, it needs Base's copy constructor... which isn't
+available, since Base is an abstract class.</p>
 <p>
 In Python, let us try to instantiate our <tt>Base</tt> class:</p>
 <code><pre>

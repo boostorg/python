@@ -65,10 +65,15 @@ After this brief ['bjam] tutorial, we should have built two DLLs:
 * boost_python.dll
 * hello.pyd
 
-This assumes of course that we are running on Windows.
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
 
 The tutorial example can be found in the directory:
-[^/libs/python/example/tutorial]. There, you can find:
+[^libs/python/example/tutorial]. There, you can find:
 
 * hello.cpp
 * Jamfile
@@ -77,12 +82,13 @@ The [^hello.cpp] file is our C++ hello world example. The [^Jamfile] is a
 minimalist ['bjam] script that builds the DLLs for us.
 
 Before anything else, you should have the bjam executable in your boost
-directory. Pre-built Boost.Jam executables are available for some
+directory. Pre-built Boost.Jam executables are available for most
 platforms. For example, a pre-built Microsoft Windows bjam executable can
 be downloaded [@http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip here].
 The complete list of bjam pre-built executables can be found [@../../../../../tools/build/index.html#Jam here].
 
 [h2 Lets Jam!]
+[$theme/jam.png]
 
 Here is our minimalist Jamfile:
 
@@ -141,8 +147,9 @@ Python modules. Example:
     set PYTHON_VERSION=2.2
 
 The above assumes that the Python installation is in [^c:/dev/tools/python]
-and that we are using Python version 2.2. Be sure not to include a third
-number, e.g. [*not]  "2.2.1", even if that's the version you have.
+and that we are using Python version 2.2. You'll have to tweak this path
+appropriately. __note__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
+even if that's the version you have.
 
 Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
 where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
@@ -185,6 +192,13 @@ If all is well, you should now have:
 
 * boost_python.dll
 * hello.pyd
+
+if you are on Windows, and
+
+* libboost_python.so
+* hello.so
+
+if you are on Unix.
 
 [^boost_python.dll] can be found somewhere in [^libs\python\build\bin]
 while [^hello.pyd] can be found somewhere in
@@ -276,7 +290,7 @@ expose instead.
 
 [^init<std::string>()] exposes the constructor taking in a
 [^std::string] (in Python, constructors are spelled
-"[^__init__(...)]").
+"[^"__init__"]").
 
 We can expose additional constructors by passing more [^init<...>]s to
 the [^def()] member function. Say for example we have another World
@@ -326,10 +340,12 @@ Then, in Python:
 Note that [^name] is exposed as [*read-only] while [^value] is exposed
 as [*read-write].
 
+[pre
     >>> x.name = 'e' # can't change name
     Traceback (most recent call last):
       File "<stdin>", line 1, in ?
     AttributeError: can't set attribute
+]
 
 [page:1 Class Properties]
 
@@ -482,14 +498,15 @@ polymorphically ['from] [*C++].]
 
 Wrapping [^Base] and the free function [^call_f]:
 
-    class_<Base, BaseWrap, noncopyable>("Base", no_init)
+    class_<Base, BaseWrap, boost::noncopyable>("Base", no_init)
         ;
     def("call_f", call_f);
 
 Notice that we parameterized the [^class_] template with [^BaseWrap] as the
 second parameter. What is [^noncopyable]? Without it, the library will try
-to instantiate a copy constructor for returning Base objects from
-functions.
+to create code for converting Base return values of wrapped functions to
+Python. To do that, it needs Base's copy constructor... which isn't
+available, since Base is an abstract class.
 
 In Python, let us try to instantiate our [^Base] class:
 
@@ -820,7 +837,7 @@ or more policies can be composed by chaining. Here's the general syntax:
             policy3<args...> > >
 
 Here is the list of predefined call policies. A complete reference detailing
-these can be found [@../../v2/CallPolicies.html here].
+these can be found [@../../v2/reference.html#models_of_call_policies here].
 
 * [*with_custodian_and_ward][br] Ties lifetimes of the arguments
 * [*with_custodian_and_ward_postcall][br] Ties lifetimes of the arguments and results
@@ -1007,13 +1024,18 @@ member functions.
 Demonstrates that you can write the C++ equivalent of [^"format" % x,y,z]
 in Python, which is useful since there's no easy way to do that in std C++.
 
-[blurb __alert__ Beware the common pitfall of
-forgetting that the constructors of most of Python's mutable types
-make copies, just as in Python.[br][br]
+__alert__ [*Beware] the common pitfall of forgetting that the constructors
+of most of Python's mutable types make copies, just as in Python.
 
-    [^dict d(x.attr("__dict__")); # makes a copy of x's dict[br]
-    '''d['whatever']''' = 3; # modifies a copy of x.__dict__ (not the original)[br]]
-]
+Python:
+
+    >>> d = dict(x.__dict__)     # copies x.__dict__
+    >>> d['whatever']            # modifies the copy
+
+C++:
+
+    dict d(x.attr("__dict__"));  # copies x.__dict__
+    d['whatever'] = 3;           # modifies the copy
 
 [h2 class_<T> as objects]
 

@@ -70,18 +70,21 @@ member functions.</p>
 <p>
 Demonstrates that you can write the C++ equivalent of <tt>&quot;format&quot; % x,y,z</tt>
 in Python, which is useful since there's no easy way to do that in std C++.</p>
-<table width="80%" border="0" align="center">
-  <tr>
-    <td class="note_box">
-<img src="theme/alert.gif"></img> Beware the common pitfall of
-forgetting that the constructors of most of Python's mutable types
-make copies, just as in Python.<br><br>
-
-    <tt>dict d(x.attr(&quot;__dict__&quot;)); # makes a copy of x's dict<br>
-    d['whatever'] = 3; # modifies a copy of x.__dict__ (not the original)<br></tt>
-    </td>
-  </tr>
-</table>
+<p>
+<img src="theme/alert.gif"></img> <b>Beware</b> the common pitfall of forgetting that the constructors
+of most of Python's mutable types make copies, just as in Python.</p>
+<p>
+Python:</p>
+<code><pre>
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>d </span><span class=special>= </span><span class=identifier>dict</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__</span><span class=special>)     </span>#<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>]            </span>#<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
+</span></pre></code>
+<p>
+C++:</p>
+<code><pre>
+    <span class=identifier>dict </span><span class=identifier>d</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>));  </span>#<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
+    </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>] </span><span class=special>= </span><span class=number>3</span><span class=special>;           </span>#<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
+</span></pre></code>
 <a name="class__lt_t_gt__as_objects"></a><h2>class_&lt;T&gt; as objects</h2><p>
 Due to the dynamic nature of Boost.Python objects, any <tt>class_&lt;T&gt;</tt> may
 also be one of these types! The following code snippet wraps the class
