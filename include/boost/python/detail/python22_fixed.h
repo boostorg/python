@@ -1,4 +1,14 @@
-// Copy of Python 2.2/2.2.1 Python.h .
+// This file is a modified version of Python 2.2/2.2.1 Python.h. As
+// such it is:
+//
+//    Copyright (c) 2001, 2002 Python Software Foundation; All Rights
+//    Reserved
+//
+// Changes from the original:
+//  1. #includes <unistd.h> for Python 2.2.1
+//  2. Provides missing extern "C" wrapper for  "iterobject.h" and  "descrobject.h".
+//
+
 // Changes marked with "Boost.Python modification"
 #ifndef Py_PYTHON_H
 #define Py_PYTHON_H
