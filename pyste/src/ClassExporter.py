@@ -243,16 +243,12 @@ class ClassExporter(Exporter):
                 continue
             name = self.info[var.name].rename or var.name
             fullname = var.FullName() 
-            if var.static:
-                code = '%s->attr("%s") = %s;' % (self.ScopeName(), name, fullname)
-                self.Add('scope', code)            
+            if var.type.const:
+                def_ = '.def_readonly'
             else:
-                if var.type.const:
-                    def_ = '.def_readonly'
-                else:
-                    def_ = '.def_readwrite'
-                code = '%s("%s", &%s)' % (def_, name, fullname)
-                self.Add('inside', code)
+                def_ = '.def_readwrite'
+            code = '%s("%s", &%s)' % (def_, name, fullname)
+            self.Add('inside', code)
 
     
     def ExportMethods(self):
