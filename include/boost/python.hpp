@@ -52,6 +52,7 @@
 # include <boost/python/ptr.hpp>
 # include <boost/python/reference_existing_object.hpp>
 # include <boost/python/register_ptr_to_python.hpp>
+# include <boost/python/return_arg.hpp>
 # include <boost/python/return_internal_reference.hpp>
 # include <boost/python/return_opaque_pointer.hpp>
 # include <boost/python/return_value_policy.hpp>
