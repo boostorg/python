@@ -119,6 +119,39 @@ And, yes, we can multiply inherit from these classes.
     >>> mi.mumble()
     'mumble'
 
+We can even mulitply inherit from built-in Python classes, even if they are
+first in the list of bases
+
+    >>> class RealPythonClass:
+    ...     def real_python_method(self):
+    ...         print 'RealPythonClass.real_python_method()'
+    ...     def other_first(self, other):
+    ...         return other.first()
+    
+    >>> class MISubclass2(RealPythonClass, Bar):
+    ...    def new_method(self):
+    ...        print 'MISubclass2.new_method()'
+    ...    bound_function = RealPythonClass().other_first
+    ...
+    >>> mi2 = MISubclass2(7, 8)
+    >>> mi2.first() # we can call inherited member functions from Bar
+    7
+    >>> mi2.real_python_method() # we can call inherited member functions from RealPythonClass
+    RealPythonClass.real_python_method()
+    
+    >>> mi2.new_method() # we can call methods on the common derived class
+    MISubclass2.new_method()
+
+  We can call unbound methods from the base class accessed through the derived class
+    >>> MISubclass2.real_python_method(mi2)
+    RealPythonClass.real_python_method()
+
+  We have not interfered with ordinary python bound methods
+    >>> MISubclass2.bound_function(mi2)
+    7
+    >>> mi2.bound_function()
+    7
+    
 Any object whose class is derived from Bar can be passed to a function expecting
 a Bar parameter:
 
@@ -173,8 +206,54 @@ Polymorphism also works:
     >>> baz.get_foo_value(polymorphic_foo)
     1000
 
+Special member attributes. Tests courtesy of Barry Scott <barry@scottb.demon.co.uk>
+
+    >>> class DerivedFromFoo(Foo):
+    ...     def __init__(self):
+    ...         Foo.__init__( self, 1 )
+    ...     def fred(self):
+    ...         'Docs for DerivedFromFoo.fred'
+    ...         print 'Barry.fred'
+    ...     def __del__(self):
+    ...         print 'Deleting DerivedFromFoo'
+
+    >>> class Base:
+    ...     i_am_base = 'yes'
+    ...     def fred(self):
+    ...         'Docs for Base.fred'
+    ...         pass
+
+
+    >>> class DerivedFromBase(Base):
+    ...     i_am_derived_from_base = 'yes'
+    ...     def fred(self):
+    ...         'Docs for DerivedFromBase.fred'
+    ...         pass
+
+    >>> df = DerivedFromFoo()
+    >>> dir(df)
+    []
+    >>> dir(DerivedFromFoo)
+    ['__del__', '__doc__', '__init__', '__module__', 'fred']
+    >>> df.__dict__
+    {}
+
+    >>> df.fred.__doc__
+    'Docs for DerivedFromFoo.fred'
+    >>> db = DerivedFromBase()
+    >>> dir(db)
+    []
+    >>> dir(DerivedFromBase)
+    ['__doc__', '__module__', 'fred', 'i_am_derived_from_base']
+    >>> db.__dict__
+    {}
+    >>> db.fred.__doc__
+    'Docs for DerivedFromBase.fred'
+
 Special member functions in action
-  
+    >>> del df
+    Deleting DerivedFromFoo
+    
     >>> m = StringMap()
 
 __getitem__(<unknown key>)
@@ -219,7 +298,10 @@ Check for sequence/mapping confusion:
       File "<stdin>", line 1, in ?
     KeyError: 0
 
-Overloading tests:
+Check for the ability to pass a non-const reference as a constructor parameter
+    >>> x = Fubar(Foo(1))
+    
+Some simple overloading tests:
     >>> r = Range(3)
     >>> print str(r)
     (3, 3)
