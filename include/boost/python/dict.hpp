@@ -8,15 +8,15 @@
 
 namespace boost { namespace python {
 
-class BOOST_PYTHON_DECL dict : public object
+class dict : public object
 {
     public:
     // dict() -> new empty dictionary.
     // dict(mapping) -> new dictionary initialized from a mapping object's
     //     (key, value) pairs.
     // dict(seq) -> new dictionary initialized as if via:
-    dict();   // new dict
-    explicit dict(object_cref data);
+    BOOST_PYTHON_DECL dict();   // new dict
+    explicit BOOST_PYTHON_DECL dict(object_cref data);
 
     template <class T>
     explicit dict(T const& data)
@@ -25,13 +25,13 @@ class BOOST_PYTHON_DECL dict : public object
     }
 
     // D.clear() -> None.  Remove all items from D.
-    void clear();
+    BOOST_PYTHON_DECL void clear();
 
     // D.copy() -> a shallow copy of D
-    dict copy();
+    BOOST_PYTHON_DECL dict copy();
 
     // D.get(k[,d]) -> D[k] if D.has_key(k), else d.  d defaults to None.
-    object get(object_cref k) const;
+    BOOST_PYTHON_DECL object get(object_cref k) const;
     
     template<class T>
     object get(T const& k) const 
@@ -39,7 +39,7 @@ class BOOST_PYTHON_DECL dict : public object
         return this->get(object(k));
     }
     
-    object get(object_cref k, object_cref d) const;
+    BOOST_PYTHON_DECL object get(object_cref k, object_cref d) const;
 
     template<class T1, class T2>
     object get(T1 const& k, T2 const& d) const 
@@ -48,7 +48,7 @@ class BOOST_PYTHON_DECL dict : public object
     }
 
     // D.has_key(k) -> 1 if D has a key k, else 0
-    bool has_key(object_cref k) const;
+    BOOST_PYTHON_DECL bool has_key(object_cref k) const;
 
     template<class T>
     bool has_key(T const& k) const
@@ -57,26 +57,26 @@ class BOOST_PYTHON_DECL dict : public object
     }
 
     // D.items() -> list of D's (key, value) pairs, as 2-tuples
-    list items() const;
+    BOOST_PYTHON_DECL list items() const;
  
     // D.iteritems() -> an iterator over the (key, value) items of D
-    object iteritems() const;
+    BOOST_PYTHON_DECL object iteritems() const;
 
     // D.iterkeys() -> an iterator over the keys of D
-    object iterkeys() const;
+    BOOST_PYTHON_DECL object iterkeys() const;
 
     // D.itervalues() -> an iterator over the values of D
-    object itervalues() const;
+    BOOST_PYTHON_DECL object itervalues() const;
  
     // D.keys() -> list of D's keys
-    list keys() const;
+    BOOST_PYTHON_DECL list keys() const;
  
     // D.popitem() -> (k, v), remove and return some (key, value) pair as a
     // 2-tuple; but raise KeyError if D is empty
-    tuple popitem();
+    BOOST_PYTHON_DECL tuple popitem();
 
     // D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if not D.has_key(k)
-    object setdefault(object_cref k);
+    BOOST_PYTHON_DECL object setdefault(object_cref k);
 
     template<class T>
     object setdefault(T const& k)
@@ -84,7 +84,7 @@ class BOOST_PYTHON_DECL dict : public object
         return this->setdefault(object(k));
     }
 
-    object setdefault(object_cref k, object_cref d);
+    BOOST_PYTHON_DECL object setdefault(object_cref k, object_cref d);
 
     template<class T1, class T2>
     object setdefault(T1 const& k, T2 const& d)
@@ -93,7 +93,7 @@ class BOOST_PYTHON_DECL dict : public object
     }
 
     // D.update(E) -> None.  Update D from E: for k in E.keys(): D[k] = E[k]
-    void update(object_cref E);
+    BOOST_PYTHON_DECL void update(object_cref E);
 
     template<class T>
     void update(T const& E)
@@ -102,13 +102,13 @@ class BOOST_PYTHON_DECL dict : public object
     }
 
     // D.values() -> list of D's values
-    list values() const;
+    BOOST_PYTHON_DECL list values() const;
 
  public: // implementation detail -- for internal use only
     BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dict)
     
  private:
-    static detail::new_reference call(object const&);
+    static BOOST_PYTHON_DECL detail::new_reference call(object const&);
 };
 
 

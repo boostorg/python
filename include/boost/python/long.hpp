@@ -11,11 +11,11 @@
 
 namespace boost { namespace python { 
 
-class BOOST_PYTHON_DECL long_ : public object
+class long_ : public object
 {
  public:
-    long_(); // new long_
-    explicit long_(object_cref rhs);
+    BOOST_PYTHON_DECL long_(); // new long_
+    explicit BOOST_PYTHON_DECL long_(object_cref rhs);
 
     template <class T>
     explicit long_(T const& rhs)
@@ -23,7 +23,7 @@ class BOOST_PYTHON_DECL long_ : public object
     {
     }
 
-    explicit long_(object_cref rhs, object_cref base);
+    explicit BOOST_PYTHON_DECL long_(object_cref rhs, object_cref base);
 
     template <class T, class U>
     explicit long_(T const& rhs, U const& base)
@@ -34,8 +34,8 @@ class BOOST_PYTHON_DECL long_ : public object
     BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(long_)
     
  private:
-    static detail::new_non_null_reference call(object const&);
-    static detail::new_non_null_reference call(object const&, object const&);
+    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);
+    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&, object const&);
 };
 
 //
