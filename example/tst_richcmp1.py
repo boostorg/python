@@ -1,6 +1,6 @@
 import richcmp1
-d1 = richcmp1.vector_of_double((0, 1, 3, 3, 6, 7))
-d2 = richcmp1.vector_of_double((1, 2, 3, 4, 5, 6))
+d1 = richcmp1.dvect((0, 1, 3, 3, 6, 7))
+d2 = richcmp1.dvect((1, 2, 3, 4, 5, 6))
 print d1.as_tuple()
 print d2.as_tuple()
 print (d1 < d2).as_tuple()

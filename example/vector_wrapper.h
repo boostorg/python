@@ -1,11 +1,11 @@
 // Based on wrapVector.hh by Mike Owen and Jeff Johnson.
 // http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/spheral/src/src/BPLWraps/CXXWraps/
- 
+
 #ifndef BOOST_PYTHON_EXAMPLE_VECTOR_WRAPPER_H
 #define BOOST_PYTHON_EXAMPLE_VECTOR_WRAPPER_H
- 
+
 #include <boost/python/class_builder.hpp>
- 
+
 namespace example {
 
   // A wrapper is used to define additional constructors. This wrapper
@@ -18,10 +18,10 @@ namespace example {
     vector_wrapper(PyObject*,
                   const std::vector<T>& vec):
       std::vector<T>(vec) {}
- 
+
     vector_wrapper(PyObject* self):
       std::vector<T>() {}
- 
+
     vector_wrapper(PyObject* self,
                    std::size_t n):
       std::vector<T>(n) {}
@@ -46,18 +46,18 @@ namespace example {
   struct vector_access
   {
     static
-    const T
+    T
     getitem(const std::vector<T>& vec,
-            const std::size_t key)
+            std::size_t key)
     {
       if (key >= vec.size()) raise_vector_IndexError();
       return vec[key];
     }
 
     static
-    void 
+    void
     setitem(std::vector<T>& vec,
-            const std::size_t key,
+            std::size_t key,
             const T &value)
     {
       if (key >= vec.size()) raise_vector_IndexError();
@@ -65,9 +65,9 @@ namespace example {
     }
 
     static
-    void 
+    void
     delitem(std::vector<T>& vec,
-            const std::size_t key)
+            std::size_t key)
     {
       if (key >= vec.size()) raise_vector_IndexError();
       vec.erase(vec.begin() + key);
@@ -75,7 +75,7 @@ namespace example {
 
     // Convert vector<T> to a regular Python tuple.
     static
-    boost::python::tuple 
+    boost::python::tuple
     as_tuple(const std::vector<T>& vec)
     {
       // Create a python type of size vec.size().
@@ -87,7 +87,7 @@ namespace example {
       return t;
     }
   };
- 
+
   // This function will build a vector<T> and add it to the given
   // module with the given name.
   template <typename T>
@@ -113,5 +113,5 @@ namespace example {
     return py_vector;
   }
 }
- 
+
 #endif // BOOST_PYTHON_EXAMPLE_VECTOR_WRAPPER_H
