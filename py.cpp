@@ -8,6 +8,7 @@
 
 #include "py.h"
 #include <typeinfo>
+#include <exception>
 #ifndef BOOST_NO_LIMITS
 # include <boost/cast.hpp>
 #endif
