@@ -57,4 +57,10 @@
 #  define BOOST_CSTD_ std
 # endif
 
+#ifdef _WIN32
+# define BOOST_PYTHON_MODULE_INIT(name) extern "C" __declspec(dllexport) void init##name()
+#else
+# define BOOST_PYTHON_MODULE_INIT(name) extern "C" void init##name()
+#endif
+
 #endif // CONFIG_DWA052200_H_
