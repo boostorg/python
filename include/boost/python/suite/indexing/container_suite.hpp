@@ -60,6 +60,7 @@ namespace indexing {
 		       , Algorithms const &
 		       , Policy const &policy)
     {
+      pyClass.def ("__getitem__", &Algorithms::get, policy);
       pyClass.def ("__getitem__"
 		   , slice_handler<Algorithms, Policy>::make_getitem (policy));
     }
