@@ -4,5 +4,4 @@
 *.obj
 *.arg
 *.dll
-*.cpp
 .sconsign

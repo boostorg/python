@@ -1,5 +1,5 @@
 import unittest
-from smart_ptr import *
+from _smart_ptr import *
 
 class BasicExampleTest(unittest.TestCase):
 

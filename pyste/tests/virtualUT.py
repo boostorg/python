@@ -1,5 +1,5 @@
 import unittest
-from virtual import *
+from _virtual import *
 
 class VirtualTest(unittest.TestCase):
 

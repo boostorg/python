@@ -1,5 +1,5 @@
 import unittest
-from operators import *
+from _operators import *
 
 class OperatorTest(unittest.TestCase):
 

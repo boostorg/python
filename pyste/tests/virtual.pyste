@@ -1,0 +1,2 @@
+Class('virtual_::C', 'virtual.h')
+Function('virtual_::call_f', 'virtual.h')

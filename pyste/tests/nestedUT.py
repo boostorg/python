@@ -1,5 +1,5 @@
 import unittest
-from nested import *
+from _nested import *
 
 class NestedTest(unittest.TestCase):
 

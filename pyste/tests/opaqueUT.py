@@ -1,5 +1,5 @@
 import unittest
-from opaque import *
+from _opaque import *
 
 class OpaqueTest(unittest.TestCase):
 

@@ -1,5 +1,5 @@
 import unittest
-from enums import *
+from _enums import *
 
 class EnumsTest(unittest.TestCase):
 

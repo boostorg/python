@@ -1,5 +1,5 @@
 import unittest
-from wrappertest import *
+from _wrappertest import *
 
 class WrapperTest(unittest.TestCase):
 

@@ -1,0 +1,8 @@
+# Doesn't work:
+A = Template('A', 'inherit.h')
+A_int = A('int')
+
+Class('B', 'inherit.h')
+
+# Does work:
+#AllFromHeader('inherit.h')

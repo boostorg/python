@@ -1,5 +1,5 @@
 import unittest
-from inherit import *
+from _inherit import *
 
 class InheritExampleTest(unittest.TestCase):
 

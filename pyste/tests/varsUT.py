@@ -1,5 +1,5 @@
 import unittest
-import vars
+import _vars
 
 
 class VarsTest(unittest.TestCase):
@@ -9,9 +9,9 @@ class VarsTest(unittest.TestCase):
             self.assertEqual(c.r, r)            
             self.assertEqual(c.g, g)            
             self.assertEqual(c.b, b)            
-        testColor(vars.black, 0, 0, 0)
-        testColor(vars.red, 255, 0, 0)
-        testColor(vars.green, 0, 255, 0)
-        testColor(vars.blue, 0, 0, 255)
+        testColor(_vars.black, 0, 0, 0)
+        testColor(_vars.red, 255, 0, 0)
+        testColor(_vars.green, 0, 255, 0)
+        testColor(_vars.blue, 0, 0, 255)
 
 
