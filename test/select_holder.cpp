@@ -68,10 +68,8 @@ int test_main(int, char * [])
     return 0;
 }
 
-#if defined(__GNUC__) && __GNUC__ <= 3
-// This definition is needed for MinGW 2.95.2 for some reason
+// This definition is needed for MinGW 2.95.2 and KCC on OSF for some reason
 namespace boost { namespace python
 {
   bool handle_exception_impl(boost::function0<void>) { return false; }
 }}
-#endif 
