@@ -36,15 +36,15 @@ template <class R>
 struct returning
 {
     // Specializations for function pointers
-#  define BOOST_PP_ITERATION_PARAMS_1                                           \
-        4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>,     \
-            BOOST_PYTHON_FUNCTION_POINTER | BOOST_PYTHON_RETURNING_NON_VOID)
+#  define BOOST_PP_ITERATION_PARAMS_1                                            \
+        (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>,     \
+            BOOST_PYTHON_FUNCTION_POINTER | BOOST_PYTHON_RETURNING_NON_VOID))
 #  include BOOST_PP_ITERATE()
 
     // Specializations for member function pointers
-#  define BOOST_PP_ITERATION_PARAMS_1                                           \
-        4, (0, 3, <boost/python/detail/returning.hpp>,                          \
-            BOOST_PYTHON_POINTER_TO_MEMBER | BOOST_PYTHON_RETURNING_NON_VOID)
+#  define BOOST_PP_ITERATION_PARAMS_1                                            \
+        (4, (0, 3, <boost/python/detail/returning.hpp>,                          \
+            BOOST_PYTHON_POINTER_TO_MEMBER | BOOST_PYTHON_RETURNING_NON_VOID))
 #  include BOOST_PP_ITERATE()
 };
 
@@ -53,15 +53,15 @@ struct returning<void>
 {
     typedef void R;
     // Specializations for function pointers
-#  define BOOST_PP_ITERATION_PARAMS_1                                           \
-        4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>,     \
-            BOOST_PYTHON_FUNCTION_POINTER | BOOST_PYTHON_RETURNING_VOID)
+#  define BOOST_PP_ITERATION_PARAMS_1                                            \
+        (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>,     \
+            BOOST_PYTHON_FUNCTION_POINTER | BOOST_PYTHON_RETURNING_VOID))
 #  include BOOST_PP_ITERATE()
 
     // Specializations for member function pointers
-#  define BOOST_PP_ITERATION_PARAMS_1                                           \
-        4, (0, 3, <boost/python/detail/returning.hpp>,                          \
-            BOOST_PYTHON_POINTER_TO_MEMBER | BOOST_PYTHON_RETURNING_VOID)
+#  define BOOST_PP_ITERATION_PARAMS_1                                            \
+        (4, (0, 3, <boost/python/detail/returning.hpp>,                          \
+            BOOST_PYTHON_POINTER_TO_MEMBER | BOOST_PYTHON_RETURNING_VOID))
 #  include BOOST_PP_ITERATE()
 };
 
@@ -133,8 +133,8 @@ struct returning<void>
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_POINTER_TO_MEMBER
 
     // Outer iteration over cv-qualifications
-# define BOOST_PP_ITERATION_PARAMS_2                                    \
-    3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>)
+# define BOOST_PP_ITERATION_PARAMS_2                                      \
+    (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/returning.hpp>))
 # include BOOST_PP_ITERATE()
 
 #elif BOOST_PP_ITERATION_DEPTH() == 2 && BOOST_PP_RELATIVE_FLAGS(1) & BOOST_PYTHON_POINTER_TO_MEMBER

@@ -38,7 +38,7 @@ struct pointer_holder : instance_holder
 
     // Forward construction to the held object
 
-#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 1)
+#  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 1))
 #  include BOOST_PP_ITERATE()
 
  private: // required holder implementation
@@ -58,7 +58,7 @@ struct pointer_holder_back_reference : instance_holder
     pointer_holder_back_reference(Pointer);
 
     // Forward construction to the held object
-#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 2)
+#  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 2))
 #  include BOOST_PP_ITERATE()
 
  private: // required holder implementation

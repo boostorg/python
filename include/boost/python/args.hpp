@@ -46,10 +46,10 @@ namespace boost { namespace mpl {
 template <class T> struct size;
 template <long N, class Seq> struct at;
 
-#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/args.hpp>, 1)
+#  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/args.hpp>, 1))
 #  include BOOST_PP_ITERATE()
 
-#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY - 1, <boost/python/args.hpp>, 2)
+#  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY - 1, <boost/python/args.hpp>, 2))
 #  include BOOST_PP_ITERATE()
 
 

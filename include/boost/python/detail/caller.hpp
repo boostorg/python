@@ -39,12 +39,12 @@ struct caller
 
     // function pointers
 #  define BOOST_PP_ITERATION_PARAMS_1 \
-    4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/caller.hpp>, BOOST_PYTHON_FUNCTION_POINTER)
+    (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/caller.hpp>, BOOST_PYTHON_FUNCTION_POINTER))
 #  include BOOST_PP_ITERATE()
 
     // pointers-to-members
 #  define BOOST_PP_ITERATION_PARAMS_1 \
-    4, (0, 3, <boost/python/detail/caller.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER)
+    (4, (0, 3, <boost/python/detail/caller.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER))
 #  include BOOST_PP_ITERATE()
 
 };
@@ -78,7 +78,7 @@ PyObject* operator()(
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_POINTER_TO_MEMBER
 // outer over cv-qualifiers
 
-# define BOOST_PP_ITERATION_PARAMS_2 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/caller.hpp>)
+# define BOOST_PP_ITERATION_PARAMS_2 (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/caller.hpp>))
 # include BOOST_PP_ITERATE()
 
 #elif BOOST_PP_ITERATION_DEPTH() == 2

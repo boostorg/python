@@ -61,7 +61,7 @@ struct member_function_cast_impl
 #  endif
 
 // Member functions
-#  define BOOST_PP_ITERATION_PARAMS_1 3, (0, 3, <boost/python/detail/member_function_cast.hpp>)
+#  define BOOST_PP_ITERATION_PARAMS_1 (3, (0, 3, <boost/python/detail/member_function_cast.hpp>))
 #  include BOOST_PP_ITERATE()
 };
 
@@ -86,7 +86,7 @@ struct member_function_cast
 #elif BOOST_PP_ITERATION_DEPTH() == 1
 // outer over cv-qualifiers
 
-# define BOOST_PP_ITERATION_PARAMS_2 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/member_function_cast.hpp>)
+# define BOOST_PP_ITERATION_PARAMS_2 (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/member_function_cast.hpp>))
 # include BOOST_PP_ITERATE()
 
 #elif BOOST_PP_ITERATION_DEPTH() == 2

@@ -102,7 +102,7 @@ namespace api
       //
       object operator()() const;
 
-# define BOOST_PP_ITERATION_PARAMS_1 3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/object_call.hpp>)
+# define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/object_call.hpp>))
 # include BOOST_PP_ITERATE()
 
       // truth value testing

@@ -41,12 +41,12 @@ template <class F> struct arg_tuple_size;
 
 // Specializations for function pointers
 # define BOOST_PP_ITERATION_PARAMS_1 \
-     4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/arg_tuple_size.hpp>, BOOST_PYTHON_FUNCTION_POINTER)
+     (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/arg_tuple_size.hpp>, BOOST_PYTHON_FUNCTION_POINTER))
 # include BOOST_PP_ITERATE()
 
 // Specializations for member function pointers
 # define BOOST_PP_ITERATION_PARAMS_1 \
-    4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/arg_tuple_size.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER)
+    (4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/arg_tuple_size.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER))
 # include BOOST_PP_ITERATE()
 
 # if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -94,7 +94,7 @@ char_array<N> arg_tuple_size_helper(
 // Outer iteration over cv-qualifications
 
 # define BOOST_PP_ITERATION_PARAMS_2 \
-    3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/arg_tuple_size.hpp>)
+    (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/arg_tuple_size.hpp>))
 # include BOOST_PP_ITERATE()
 
 #elif BOOST_PP_ITERATION_DEPTH() == 2 && BOOST_PP_RELATIVE_FLAGS(1) == BOOST_PYTHON_POINTER_TO_MEMBER
