@@ -1,7 +1,0 @@
-# Copyright David Abrahams 2003. See accompanying LICENSE for terms
-# and conditions of use.
-
-# Edit this path to point at the root directory of your Boost
-# installation.  Absolute paths work, too.
-path-global BOOST_ROOT : ../../.. ;
-project boost : $(BOOST_ROOT) ;
