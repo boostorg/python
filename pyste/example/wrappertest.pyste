@@ -1,0 +1,15 @@
+Include('wrappertest_wrappers.h')
+
+f = Function('Range', 'wrappertest.h')
+set_wrapper(f, 'RangeWrapper')
+
+mul = Wrapper('MulWrapper',
+'''
+list MulWrapper(C& c, int value){    
+    return VectorToList(c.Mul(value));
+} 
+'''
+)
+
+C = Class('C', 'wrappertest.h')
+set_wrapper(C.Mul, mul)

@@ -1,0 +1,12 @@
+Include('iostream')
+test = Wrapper('sum', 
+'''
+const C sum(const C&, const C&)
+{
+    std::cout << "sum!" << std::endl;
+    return C();
+}
+'''
+)
+C = Class('C', 'operator.h')
+set_wrapper(C.operator['+'], test)

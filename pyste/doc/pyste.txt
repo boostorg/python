@@ -113,8 +113,8 @@ already be set. You only have to set the paths to other libraries that your code
 needs, like Boost, for example.
 
 Plus, Pyste automatically uses the contents of the environment variable
-[^INCLUDE] if it exists. Windows users should run the [^Vcvars32.bat] file,
-normally located at:
+[^INCLUDE] if it exists. Visual C++ users should run the [^Vcvars32.bat] file,
+which for Visual C++ 6 is normally located at:
 
     C:\Program Files\Microsoft Visual Studio\VC98\bin\Vcvars32.bat
 

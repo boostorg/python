@@ -16,8 +16,9 @@ Thanks
 ======
 
 - David Abrahams, creator of Boost.Python, for tips on the syntax of the interface
-file and support.
-- Marcelo Camelo, for design tips and support.
+  file and support.
+- Marcelo Camelo, for design tips, support and inspiration for this project.
+  Also, the name was his idea. 8)
 - Brad King, creator of the excellent GCCXML (http://www.gccxml.org)
 - Fredrik Lundh, creator of the elementtree library (http://effbot.org)
 
