@@ -368,11 +368,61 @@ Current language:  auto; currently c++
     solid and "just works" without requiring any special tricks from the
     user.</p>
 
-    <p>Unfortunately for Cygwin and MinGW users, as of this writing gdb on
-    Windows has a very hard time dealing with shared libraries, which could
-    make Greg's approach next to useless for you. My best advice for you is
-    to use Metrowerks C++ for compiler conformance and Microsoft Visual
-    Studio as a debugger when you need one.</p>
+    <p>Raoul Gough has provided the following for gdb on Windows:</p>
+
+    <blockquote>
+
+      <p>gdb support for Windows DLLs has improved lately, so it is
+      now possible to debug Python extensions using a few
+      tricks. Firstly, you will need an up-to-date gdb with support
+      for minimal symbol extraction from a DLL. Any gdb from version 6
+      onwards, or Cygwin gdb-20030214-1 and onwards should do. A
+      suitable release will have a section in the gdb.info file under
+      Configuration &ndash; Native &ndash; Cygwin Native &ndash;
+      Non-debug DLL symbols. Refer to that info section for more
+      details of the procedures outlined here.</p>
+
+      <p>Secondly, it seems necessary to set a breakpoint in the
+      Python interpreter, rather than using ^C to break execution. A
+      good place to set this breakpoint is PyOS_Readline, which will
+      stop execution immediately before reading each interactive
+      Python command. You have to let Python start once under the
+      debugger, so that it loads its own DLL, before you can set the
+      breakpoint:</p>
+
+<p>
+<pre>
+$ gdb python
+GNU gdb 2003-09-02-cvs (cygwin-special)
+[...]
+
+(gdb) run
+Starting program: /cygdrive/c/Python22/python.exe
+Python 2.2.2 (#37, Oct 14 2002, 17:02:34) [MSC 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+&gt;&gt;&gt; ^Z
+
+
+Program exited normally.
+(gdb) break *&amp;PyOS_Readline
+Breakpoint 1 at 0x1e04eff0
+(gdb) run
+Starting program: /cygdrive/c/Python22/python.exe
+Python 2.2.2 (#37, Oct 14 2002, 17:02:34) [MSC 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+
+Breakpoint 1, 0x1e04eff0 in python22!PyOS_Readline ()
+   from /cygdrive/c/WINNT/system32/python22.dll
+(gdb) cont
+Continuing.
+&gt;&gt;&gt; from my_ext import *
+
+Breakpoint 1, 0x1e04eff0 in python22!PyOS_Readline ()
+   from /cygdrive/c/WINNT/system32/python22.dll
+(gdb) # my_ext now loaded (with any debugging symbols it contains)
+</pre>
+</p>
+    </blockquote>
 
     <h3>Debugging extensions through Boost.Build</h3>
     If you are launching your extension module tests with <a href=
