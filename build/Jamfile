@@ -63,7 +63,7 @@ include <module@>python.jam ;
 
 # This nasty hack works with versions of Python 1.5.2 -> 2.2 to avoid
 # building any Python stuff if there's no installation.
-SEARCH on <find-python-install>__init__.py = $(PYTHON_LIB_PATH)/test $(SUBDIR) ;
+SEARCH on <find-python-install>__init__.py = $(PYTHON_STDLIB_PATH)/test $(SUBDIR) ;
 include <find-python-install>__init__.py ;
 if ! $(gNO_PYTHON_INSTALL)
 {
