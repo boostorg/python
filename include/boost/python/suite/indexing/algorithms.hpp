@@ -27,9 +27,9 @@
 #include <boost/python/suite/indexing/int_slice_helper.hpp>
 #include <boost/python/suite/indexing/slice.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/limits.hpp>
 #include <algorithm>
 #include <stdexcept>
-#include <limits>
 #include <string>
 
 namespace boost { namespace python { namespace indexing {
