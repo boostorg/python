@@ -1128,18 +1128,13 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
     return BOOST_PYTHON_CONVERSION::to_python(first->i_ + second + third + fourth);
 }
 
-void init_module()
+BOOST_PYTHON_MODULE_INIT(boost_python_test)
 {
     boost::python::module_builder boost_python_test("boost_python_test");
     init_module(boost_python_test);
 
     // Just for giggles, add a raw metaclass.
     boost_python_test.add(new boost::python::meta_class<boost::python::instance>);
-}
-
-BOOST_PYTHON_MODULE_INIT(boost_python_test)
-{
-    boost::python::handle_exception((void (*)())bpl_test::init_module);
 }
 
 CompareIntPairPythonClass::CompareIntPairPythonClass(boost::python::module_builder& m)

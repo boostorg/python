@@ -31,8 +31,6 @@ extern "C" void (*old_translator)(unsigned int, EXCEPTION_POINTERS*)
 
 BOOST_PYTHON_MODULE_INIT(noncopyable_import)
 {
-  try
-  {
     python::module_builder this_module("noncopyable_import");
 
     python::import_converters<store>
@@ -44,9 +42,4 @@ BOOST_PYTHON_MODULE_INIT(noncopyable_import)
     // However, to keep this example simple, we only define a
     // module-level function.
     this_module.def(add_stores, "add_stores");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

@@ -85,8 +85,6 @@ namespace { // Avoid cluttering the global namespace.
 
 BOOST_PYTHON_MODULE_INIT(simple_vector)
 {
-  try
-  {
     python::module_builder this_module("simple_vector");
 
     python::class_builder<std::vector<double>, vector_double_wrapper>
@@ -103,9 +101,4 @@ BOOST_PYTHON_MODULE_INIT(simple_vector)
 
     this_module.def(foo, "foo");
     this_module.def(bar, "bar");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

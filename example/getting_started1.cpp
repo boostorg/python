@@ -16,17 +16,10 @@ namespace python = boost::python;
 // extension module. This is where we build the module contents.
 BOOST_PYTHON_MODULE_INIT(getting_started1)
 {
-  try
-  {
     // Create an object representing this extension module.
     python::module_builder this_module("getting_started1");
 
     // Add regular functions to the module.
     this_module.def(greet, "greet");
     this_module.def(square, "square");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

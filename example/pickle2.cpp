@@ -73,8 +73,6 @@ namespace { // Avoid cluttering the global namespace.
 
 BOOST_PYTHON_MODULE_INIT(pickle2)
 {
-  try
-  {
     // Create an object representing this extension module.
     python::module_builder this_module("pickle2");
 
@@ -92,9 +90,4 @@ BOOST_PYTHON_MODULE_INIT(pickle2)
     world_class.def(world_getinitargs, "__getinitargs__");
     world_class.def(world_getstate, "__getstate__");
     world_class.def(world_setstate, "__setstate__");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

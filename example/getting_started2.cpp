@@ -26,8 +26,6 @@ namespace python = boost::python;
 
 BOOST_PYTHON_MODULE_INIT(getting_started2)
 {
-  try
-  {
     // Create an object representing this extension module.
     python::module_builder this_module("getting_started2");
 
@@ -44,9 +42,4 @@ BOOST_PYTHON_MODULE_INIT(getting_started2)
 
     // Even better, invite() can also be made a member of hello_class!!!
     hello_class.def(invite, "invite");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

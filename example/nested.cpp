@@ -32,13 +32,6 @@ namespace {
 
 BOOST_PYTHON_MODULE_INIT(nested)
 {
-  try
-  {
     boost::python::module_builder this_module("nested");
     this_module.def(show_nested_tuples, "show_nested_tuples");
-  }
-  catch(...)
-  {
-    boost::python::handle_exception();
-  }
 }

@@ -107,8 +107,6 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 BOOST_PYTHON_MODULE_INIT(do_it_yourself_convts)
 {
-  try
-  {
     // Create an object representing this extension module.
     python::module_builder this_module("do_it_yourself_convts");
 
@@ -120,9 +118,4 @@ BOOST_PYTHON_MODULE_INIT(do_it_yourself_convts)
     // Add the member functions.
     ixset_class.def(&IndexingSet::add, "add");
     ixset_class.def(&IndexingSet::get, "get");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

@@ -136,7 +136,7 @@ lib libboost_python_d : ../src/$(CPP_SOURCES).cpp
 # Declare a boost python module. Return a list of the DLL files generated.
 rule boost-python
 {
-    local debug ;
+    local debug = "" ;
     if ( <define>BOOST_DEBUG_PYTHON in $(3) ) || ( debug-python in $(BUILD) )
     {
         debug = _d ;
@@ -203,7 +203,9 @@ rule python-test-target # test-target : sources :
 {
     python-runtest-aux $(<) : $(>) ;
     Clean clean : $(<) ; # remove the test-target as part of any clean operation
-    type-DEPENDS test : $(<) ;
+    local debug = [ SUBST $(<:B) (_d)$ $1 ] ;
+    debug ?= "" ;
+    type-DEPENDS test$(debug) : $(<) ;
     MakeLocate $(<) : $(LOCATE_TARGET) ;
 }
 actions python-test-target bind PYTHON
@@ -249,6 +251,7 @@ rule python-runtest-aux # target : sources
         $(gLOCATE($(>[1])))                     # location of python test file
         $(gRUN_PATH($(<)))                      # location of module dependencies
         [ join-path $(TOP) libs python test ]   # location of doctest
+        $(>:D)                                  # directory of python driver file(s)
         $(PYTHONPATH)                           # base PYTHONPATH from environment
         : $(SPLITPATH) ] ;                      # platform path separator
 

@@ -18,8 +18,6 @@ extern "C" void (*old_translator)(unsigned int, EXCEPTION_POINTERS*)
 
 BOOST_PYTHON_MODULE_INIT(noncopyable_export)
 {
-  try
-  {
     python::module_builder this_module("noncopyable_export");
 
     python::class_builder<store> store_class(this_module, "store");
@@ -27,9 +25,4 @@ BOOST_PYTHON_MODULE_INIT(noncopyable_export)
 
     store_class.def(python::constructor<int>());
     store_class.def(&store::recall, "recall");
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }

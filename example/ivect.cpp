@@ -32,8 +32,6 @@ extern "C" void (*old_translator)(unsigned int, EXCEPTION_POINTERS*)
 
 BOOST_PYTHON_MODULE_INIT(ivect)
 {
-  try
-  {
     python::module_builder this_module("ivect");
 
     python::class_builder<vects::ivect> ivect_class(this_module, "ivect");
@@ -47,10 +45,5 @@ BOOST_PYTHON_MODULE_INIT(ivect)
 
 # include "dvect_defs.cpp"
 # include "ivect_defs.cpp"
-  }
-  catch(...)
-  {
-    python::handle_exception(); // Deal with the exception for Python
-  }
 }
 

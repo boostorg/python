@@ -168,11 +168,8 @@ namespace {
 
 BOOST_PYTHON_MODULE_INIT(richcmp3)
 {
-  try {
     boost::python::module_builder this_module("richcmp3");
     // The actual work is done in a separate function in order
     // to suppress a bogus VC60 warning.
     init_module(this_module);
-  }
-  catch (...) { boost::python::handle_exception(); }
 }
