@@ -363,6 +363,7 @@ static int getX(OverloadTest * u)
     return u->x();
 }
 
+
 /************************************************************/
 /*                                                          */
 /*    classes to test base declarations and conversions     */

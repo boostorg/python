@@ -397,7 +397,7 @@ class ExtensionClass
     {
         BaseClassInfo baseInfo(base, &ConversionFunction<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
-        add_base(Ptr(as_object(base)));
+        add_base(Ptr(as_object(base), Ptr::new_ref));
         
         SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
         ClassRegistry<S>::register_sub_class(subInfo);
@@ -410,7 +410,7 @@ class ExtensionClass
     {
         BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
-        add_base(Ptr(as_object(base)));
+        add_base(Ptr(as_object(base), Ptr::new_ref));
         
         SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
         ClassRegistry<S>::register_sub_class(subInfo);
