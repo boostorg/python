@@ -345,7 +345,7 @@ class_&amp; def(Init init_expr);
       generated constructs an object of <code>HeldType</code> according to
       the semantics described <a href="#HeldType">above</a>, using a copy of
       <code>init_expr</code>'s <a href="CallPolicies.html">call policies</a>.
-      If the longest valid prefix of <code>Init</code> contains <em>N</em>
+      If the longest <a href="init.html#init-expressions">valid prefix</a> of <code>Init</code> contains <em>N</em>
       types and <code>init_expr</code> holds <em>M</em> keywords, an initial
       sequence of the keywords are used for all but the first
       <em>N</em>&nbsp;-&nbsp;<em>M</em> arguments of each overload.</dt>
@@ -378,17 +378,21 @@ class_&amp; def(char const* name, Fn fn, A1 const&amp; a1, A2 const&amp; a2, A3 
         <ul>
           <li>
             If <code>a1</code> is the result of an <a href=
-            "OverloadDispatch.html"><em>overload-dispatch-expression</em></a>,
-            only the second is allowed and fn must be a pointer to function
-            or pointer to member function whose signature is compatible with
-            A1. 
+            "overloads.html#overload-dispatch-expression"><em>overload-dispatch-expression</em></a>,
+            only the second form is allowed and fn must be a pointer
+            to function or pointer to member function whose <a
+            href="definitions.html#arity">arity</a> is the same as A1's <a href=
+            "overloads.html#overload-dispatch-expression"><em>maximum arity</em></a>.
 
             <dl>
-              <dt><b>Effects:</b> For each <a href=
-              "OverloadDispatch.html#valid-prefix">valid prefix</a>
-              <em>P</em> of <code>A1</code>, adds a
-              <code><em>name</em>(</code>...<code>)</code> function overload
-              to the extension class. Each overload generated invokes
+              <dt><b>Effects:</b> For each prefix <em>P</em> of
+              <code>Fn</code>'s sequence of argument types, beginning
+            with the one whose length is <code>A1</code>'s <a href=
+            "overloads.html#overload-dispatch-expression"><em>minimum
+            arity</em></a>, adds a
+              <code><em>name</em>(</code>...<code>)</code> method
+              overload to the extension class. Each overload generated
+              invokes
               <code>a1</code>'s call-expression with <em>P</em>, using a copy
               of <code>a1</code>'s <a href="CallPolicies.html">call
               policies</a>. If the longest valid prefix of <code>A1</code>
