@@ -4,6 +4,9 @@
 
 //#define print(expr) printf("%s ==> %s\n", #expr, expr)
 
+// not all the compilers can handle an incomplete class type here.
+struct X {};
+
 int main()
 {
 using namespace boost::python::detail;
@@ -51,6 +54,27 @@ using namespace boost::python::detail;
     assert(!is_reference_to_volatile<int const volatile>::value);
     assert(!is_reference_to_volatile<int>::value);
     assert(!is_reference_to_volatile<int*>::value);
+
+    assert(!is_reference_to_class<int>::value);
+    assert(!is_reference_to_class<int&>::value);
+    assert(!is_reference_to_class<int*>::value);
+    
+    assert(!is_reference_to_class<X>::value);
+    assert(is_reference_to_class<X&>::value);
+    assert(is_reference_to_class<X const&>::value);
+    assert(is_reference_to_class<X volatile&>::value);
+    assert(is_reference_to_class<X const volatile&>::value);
+    
+    assert(!is_pointer_to_class<int>::value);
+    assert(!is_pointer_to_class<int*>::value);
+    assert(!is_pointer_to_class<int&>::value);
+    
+    assert(!is_pointer_to_class<X>::value);
+    assert(!is_pointer_to_class<X&>::value);
+    assert(is_pointer_to_class<X*>::value);
+    assert(is_pointer_to_class<X const*>::value);
+    assert(is_pointer_to_class<X volatile*>::value);
+    assert(is_pointer_to_class<X const volatile*>::value);
     
     return 0;
 }

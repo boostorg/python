@@ -8,6 +8,7 @@
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/function_traits.hpp>
+# include <boost/type_traits/object_traits.hpp>
 # include <boost/mpl/select_type.hpp>
 
 namespace boost { namespace python { namespace detail { 
@@ -158,6 +159,39 @@ struct is_reference_to_pointer<T* const volatile&>
 {
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
+
+template <class T>
+struct is_reference_to_class
+{
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = (boost::type_traits::ice_and<
+           is_reference<T>::value
+           , is_class<
+                typename remove_cv<
+                    typename remove_reference<T>::type
+                >::type
+             >::value
+         >::value)
+        );
+};
+
+template <class T>
+struct is_pointer_to_class
+{
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = (boost::type_traits::ice_and<
+           is_pointer<T>::value
+           , is_class<
+                typename remove_cv<
+                    typename remove_pointer<T>::type
+                >::type
+             >::value
+         >::value)
+        );
+};
+
 #  else
 
 typedef char (&inner_yes_type)[3];
@@ -189,6 +223,16 @@ struct is_pointer_help
 {
     typedef typename mpl::select_type<
         is_pointer<V>::value
+        , inner_yes_type
+        , inner_no_type
+        >::type type;
+};
+
+template <typename V>
+struct is_class_help
+{
+    typedef typename mpl::select_type<
+        is_class<V>::value
         , inner_yes_type
         , inner_no_type
         >::type type;
@@ -265,6 +309,36 @@ struct is_reference_to_pointer
         bool, value
         = (is_reference<T>::value
            && sizeof(reference_to_pointer_helper(t)) == sizeof(inner_yes_type))
+        );
+};
+
+template <typename V>
+typename is_class_help<V>::type reference_to_class_helper(V const volatile&);
+outer_no_type reference_to_class_helper(...);
+
+template <class T>
+struct is_reference_to_class
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = (is_reference<T>::value
+           && sizeof(reference_to_class_helper(t)) == sizeof(inner_yes_type))
+        );
+};
+
+template <typename V>
+typename is_class_help<V>::type pointer_to_class_helper(V const volatile*);
+outer_no_type pointer_to_class_helper(...);
+
+template <class T>
+struct is_pointer_to_class
+{
+    static T t;
+    BOOST_STATIC_CONSTANT(
+        bool, value
+        = (is_pointer<T>::value
+           && sizeof(pointer_to_class_helper(t)) == sizeof(inner_yes_type))
         );
 };
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION 
