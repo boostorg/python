@@ -108,6 +108,15 @@ void exercise(list x, object y, object print)
     print("reverse sorted:");
     x.sort(handle<>(make_function(notcmp)));
     print(x);
+
+    list w;
+    w.append(5);
+    w.append(6);
+    w += "hi";
+    assert(w[0] == 5);
+    assert(w[1] == 6);
+    assert(w[2] == 'h');
+    assert(w[3] == 'i');
 }
 
 BOOST_PYTHON_MODULE_INIT(list_ext)
