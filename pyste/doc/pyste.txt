@@ -188,7 +188,14 @@ with the function [^exclude]:
     exclude(World.greet)
     exclude(World.msg)
 
-Easy, huh? [$theme/smiley.gif]
+To access the operators of a class, access the member [^operator] like this
+(supposing that [^C] is a class being exported):
+
+    exclude(C.operator['+'])
+    exclude(C.operator['*'])
+    exclude(C.operator['<<'])
+
+The string inside the brackets is the same as the name of the operator in C++.[br]
 
 [page:1 Policies]
 
