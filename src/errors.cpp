@@ -10,14 +10,21 @@
 
 #include <boost/python/errors.hpp>
 #include <boost/cast.hpp>
+#ifdef BOOST_PYTHON_V2
+# include <boost/python/detail/exception_handler.hpp>
+#endif
 
 namespace boost { namespace python {
 
 // IMPORTANT: this function may only be called from within a catch block!
-BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
+BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> const& f)
 {
     try
     {
+#ifdef BOOST_PYTHON_V2
+        if (detail::exception_handler::chain)
+            return detail::exception_handler::chain->handle(f);
+#endif 
         f();
         return false;
     }
@@ -68,6 +75,42 @@ namespace detail {
 // needed by void_adaptor (see void_adaptor.hpp)
 BOOST_PYTHON_DECL PyObject arbitrary_object = { 0 };
 
+#ifdef BOOST_PYTHON_V2
+bool exception_handler::operator()(function0<void> const& f) const
+{
+    if (m_next)
+    {
+        return m_next->handle(f);
+    }
+    else
+    {
+        f();
+        return false;
+    }
+}
+
+exception_handler::exception_handler(handler_function const& impl)
+    : m_impl(impl)
+    , m_next(0)
+{
+    if (chain != 0)
+        tail->m_next = this;
+    else
+        chain = this;
+    tail = this;
+}
+
+exception_handler* exception_handler::chain;
+exception_handler* exception_handler::tail;
+
+BOOST_PYTHON_DECL void register_exception_handler(handler_function const& f)
+{
+    // the constructor links the new object into a handler chain, so
+    // this object isn't actaully leaked (until, of course, the
+    // interpreter exits).
+    new exception_handler(f);
+}
+#endif 
 
 } // namespace boost::python::detail
 
