@@ -33,7 +33,7 @@ namespace detail
   class method_result
   {
    private:
-      friend class override;
+      friend class boost::python::override;
       explicit method_result(PyObject* x)
         : m_obj(x)
       {}

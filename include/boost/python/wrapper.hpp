@@ -15,12 +15,13 @@ template <class T>
 class wrapper : public detail::wrapper_base
 {
 #   if defined(BOOST_PYTHON_NO_SFINAE)
+ public:
     typedef T _wrapper_wrapped_type_;
 #   endif 
  protected:
     override get_override(char const* name) const
     {
-        return this->wrapper_base::get_override(
+        return this->detail::wrapper_base::get_override(
             name, converter::registered<T>::converters.get_class_object());
     }
 };
