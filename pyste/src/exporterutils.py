@@ -82,7 +82,9 @@ def WarnForwardDeclarations(function):
         if type.incomplete:
             msg = '---> Error: %s is forward declared. Please include the ' \
                 'appropriate header with its definition' % type.name
-            if msg not in _printed_warnings:
+            # disable this for now... it was reporting too many false 
+            # forward declarations to be useful
+            if 0 and msg not in _printed_warnings:
                 print msg
                 print 
                 _printed_warnings[msg] = 1

@@ -2,6 +2,7 @@ from Exporter import Exporter
 from policies import *
 from declarations import *
 from settings import *
+import utils
 import exporterutils
 
 
@@ -22,10 +23,6 @@ class FunctionExporter(Exporter):
             exporterutils.WarnForwardDeclarations(decl)
             self.ExportDeclaration(decl, len(decls) == 1, codeunit)
         self.GenerateOverloads(decls, codeunit)            
-
-
-    def Name(self):
-        return self.info.name
 
 
     def ExportDeclaration(self, decl, unique, codeunit):
@@ -78,5 +75,9 @@ class FunctionExporter(Exporter):
             return ''
 
 
-    def ID(self):
+    def Order(self):
         return self.info.name
+
+
+    def Unit(self):
+        return utils.makeid(self.info.include)

@@ -64,7 +64,11 @@ class HeaderExporter(Exporter):
         exporters.exporters.append(exporter)
 
     
-    def ID(self):
+    def Unit(self):
+        return self.info.include
+
+
+    def Order(self):
         return self.info.include
 
         

@@ -47,8 +47,8 @@ class ClassExporter(Exporter):
         return makeid(self.class_.FullName()) + '_scope'
 
 
-    def Name(self):
-        return self.class_.FullName()
+    def Unit(self):
+        return makeid(self.class_.name)
 
 
     def SetDeclarations(self, declarations):
@@ -76,7 +76,7 @@ class ClassExporter(Exporter):
         return bases
 
     
-    def ID(self):
+    def Order(self):
         '''Return the TOTAL number of bases that this class has, including the
         bases' bases.  Do this because base classes must be instantialized
         before the derived classes in the module definition.  

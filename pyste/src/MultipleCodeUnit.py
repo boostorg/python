@@ -10,7 +10,7 @@ from SmartFile import SmartFile
 class MultipleCodeUnit(object):
     '''
     Represents a bunch of cpp files, where each cpp file represents a header
-    to be exported by pyste. Another header, named _main.cpp is created too.
+    to be exported by pyste. Another cpp, named <module>.cpp is created too.
     '''
 
     def __init__(self, modulename, outdir):
@@ -23,6 +23,7 @@ class MultipleCodeUnit(object):
     
     def _FunctionName(self, code_unit_name):
         return '_Export_%s' % utils.makeid(code_unit_name)
+    
 
     def _FileName(self, code_unit_name):
         filename = os.path.basename(code_unit_name)
@@ -84,7 +85,7 @@ class MultipleCodeUnit(object):
                     codeunit.Merge(__all__)
                 codeunit.Save()
         # generate the main cpp
-        filename = os.path.join(self.outdir, '_main.cpp')
+        filename = os.path.join(self.outdir, self.modulename + '.cpp')
         fout = SmartFile(filename, 'w')
         fout.write(utils.left_equals('Include'))
         fout.write('#include <boost/python.hpp>\n\n')

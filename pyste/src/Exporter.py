@@ -12,6 +12,10 @@ class Exporter:
         self.info = info
         self.parser_tail = parser_tail
     
+
+    def Name(self):
+        return self.info.name
+
         
     def Parse(self, parser):
         self.parser = parser
@@ -40,11 +44,8 @@ class Exporter:
         pass
     
                     
-    def Name(self):
-        '''Returns the name of this Exporter. The name will be added to the
-        list of names exported, which may have a use for other exporters.
-        '''
-        return None
+    def Unit(self):
+        raise NotImplementedError
 
     
     def GetDeclarations(self, fullname):
@@ -60,9 +61,9 @@ class Exporter:
         return decls[0]
 
 
-    def ID(self):
+    def Order(self):
         '''Returns a string that uniquely identifies this instance. All
-        exporters will be sorted by ID before being exported.
+        exporters will be sorted by Order before being exported.
         '''
         raise NotImplementedError
 

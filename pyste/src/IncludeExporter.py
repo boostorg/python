@@ -17,7 +17,7 @@ class IncludeExporter(Exporter):
     def Parse(self, parser):
         pass
 
-    def ID(self):
+    def Order(self):
         return self.info.include
 
     def Unit(self):

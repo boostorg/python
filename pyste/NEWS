@@ -1,3 +1,7 @@
+07 Apr 2003
+Removed the warnings about forward declarations: it was not accurate enough.
+Another strategy must be thought of.
+
 06 Apr 2003
 Support for the improved static data members support of Boost.Python.
 

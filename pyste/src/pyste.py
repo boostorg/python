@@ -34,7 +34,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.7.0'
+__VERSION__ = '0.7.1'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -161,8 +161,8 @@ def Main():
             print '***', e, ': exitting'
             return 2
     print 
-    # sort the exporters by its ids
-    exports = [(x.ID(), x) for x in exporters.exporters]
+    # sort the exporters by its order
+    exports = [(x.Order(), x) for x in exporters.exporters]
     exports.sort()
     exports = [x for _, x in exports]
     # now generate the wrapper code
