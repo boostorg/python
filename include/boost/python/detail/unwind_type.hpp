@@ -133,13 +133,13 @@ template <class Generator, class U>
 inline typename Generator::result_type
 unwind_type(type<U>*p = 0, Generator* = 0)
 {
-    BOOST_STATIC_CONSTANT(int, indirection
-                          = (is_pointer<U>::value ? pointer_ : 0)
-                          + (is_reference_to_pointer<U>::value
-                             ? reference_to_pointer_
-                             : is_reference<U>::value
-                             ? reference_
-                             : 0));
+    int const indirection
+        = (is_pointer<U>::value ? pointer_ : 0)
+        + (is_reference_to_pointer<U>::value
+           ? reference_to_pointer_
+           : is_reference<U>::value
+           ? reference_
+           : 0);
         
     return unwind_helper2<indirection>::execute((U(*)())0,(Generator*)0);
 }
