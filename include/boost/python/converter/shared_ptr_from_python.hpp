@@ -22,10 +22,10 @@ struct shared_ptr_from_python
  private:
     static void* convertible(PyObject* p)
     {
-        return p == Py_None
-            ? p
-            : converter::get_lvalue_from_python(p, registered<T>::converters)
-            ;
+        if (p == Py_None)
+            return p;
+        
+        return converter::get_lvalue_from_python(p, registered<T>::converters);
     }
     
     static void construct(PyObject* source, rvalue_from_python_stage1_data* data)
