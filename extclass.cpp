@@ -15,17 +15,11 @@ namespace detail {
 
   struct operator_dispatcher
       : public PyObject
-#ifndef NDEBUG
-        , boost::noncopyable
-#endif
   {
       static PyTypeObject type_object;
       static PyNumberMethods number_methods;
 
-#ifndef NDEBUG
-      ~operator_dispatcher();
-#endif
-      static operator_dispatcher * create(const Ptr& o, const Ptr& s);     
+      static operator_dispatcher* create(const Ptr& o, const Ptr& s);     
       
       Ptr m_object;
       Ptr m_self;
@@ -35,7 +29,6 @@ namespace detail {
       static operator_dispatcher* free_list;
 
   private: 
-
       // only accessible through create()
       operator_dispatcher(const Ptr& o, const Ptr& s);
   };
@@ -463,23 +456,12 @@ void ExtensionClassBase::set_attribute(const char* name, Ptr x)
 namespace detail
 {
 
-#ifndef NDEBUG
-int total_Dispatchers = 0;
-operator_dispatcher::~operator_dispatcher() 
-{ 
-    --total_Dispatchers; 
-}
-#endif
-
 operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
     : m_object(o), m_self(s), m_free_list_link(0)
 
 {
     ob_refcnt = 1;
     ob_type = &type_object;
-#ifndef NDEBUG
-    ++total_Dispatchers;
-#endif
 }
 
 operator_dispatcher* 
@@ -504,6 +486,8 @@ void operator_dispatcher_dealloc(PyObject* self)
     operator_dispatcher* instance = static_cast<operator_dispatcher*>(self);
     instance->m_free_list_link = operator_dispatcher::free_list;
     operator_dispatcher::free_list = instance;
+    instance->m_object.reset();
+    instance->m_self.reset();
 } 
 
 int operator_dispatcher_coerce(PyObject** l, PyObject** r)
