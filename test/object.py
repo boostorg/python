@@ -2,7 +2,7 @@
 >>> from object_ext import *
 
 >>> type(ref_to_noncopyable())
-object_ext.NotCopyable
+<class 'object_ext.NotCopyable'>
 
 >>> def print1(x):
 ...     print x
