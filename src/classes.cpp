@@ -5,6 +5,11 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  Rolled in const_cast from Dragon fork (Dave Abrahams)
+// 03 Mar 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
+// 03 Mar 01  bug fix: use bound_function::create() (instead of new bound_function)
 
 #include <boost/python/classes.hpp>
 #include <boost/python/detail/functions.hpp>
@@ -67,8 +72,7 @@ namespace {
 
   ref global_class_reduce()
   {
-      static ref result(detail::new_wrapped_function(class_reduce));
-      return result;
+      return ref(detail::new_wrapped_function(class_reduce));
   }
   
 
@@ -93,17 +97,41 @@ namespace {
       ref getstate(PyObject_GetAttrString(obj, const_cast<char*>("__getstate__")),
                    ref::null_ok);
       PyErr_Clear();
+
+      ref dict(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
+      PyErr_Clear();
+
       if (getstate.get() != 0)
       {
+          if (dict.get() != 0 && dictionary(dict).size() > 0)
+          {
+              ref getstate_manages_dict(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__getstate_manages_dict__")), ref::null_ok);
+              PyErr_Clear();
+              if (getstate_manages_dict.get() == 0)
+              {
+                  PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__getstate_manages_dict__ not set)");
+                  throw error_already_set();
+              }
+          }
+
           ref state = ref(PyEval_CallObject(getstate.get(), NULL));
           return tuple(instance_class, initargs, state);
       }
 
-      ref state(PyObject_GetAttrString(obj, const_cast<char*>("__dict__")), ref::null_ok);
-      PyErr_Clear();
-      if (state.get() != 0 && dictionary(state).size() > 0)
+      if (getinitargs.get() == 0)
       {
-          return tuple(instance_class, initargs, state);
+          ref dict_defines_state(PyObject_GetAttrString(instance_class.get(), const_cast<char*>("__dict_defines_state__")), ref::null_ok);
+          PyErr_Clear();
+          if (dict_defines_state.get() == 0)
+          {
+              PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__dict_defines_state__ not set)");
+              throw error_already_set();
+          }
+      }
+
+      if (dict.get() != 0 && dictionary(dict).size() > 0)
+      {
+          return tuple(instance_class, initargs, dict);
       }
 
       return tuple(instance_class, initargs);
@@ -111,8 +139,7 @@ namespace {
 
   ref global_instance_reduce()
   {
-      static ref result(detail::new_wrapped_function(instance_reduce));
-      return result;
+      return ref(detail::new_wrapped_function(instance_reduce));
   }
 }
 
@@ -177,7 +204,7 @@ namespace detail {
       if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
       {
           ref target(as_object(this), ref::increment_count);
-          return new bound_function(target, global_class_reduce());
+          return bound_function::create(target, global_class_reduce());
       }
       
       ref local_attribute = m_name_space.get_item(string(name).reference());
@@ -348,7 +375,7 @@ PyObject* instance::getattr(const char* name, bool use_special_function)
 
     if (!BOOST_CSTD_::strcmp(name, "__reduce__"))
     {
-      return new detail::bound_function(ref(this, ref::increment_count), global_instance_reduce());
+      return detail::bound_function::create(ref(this, ref::increment_count), global_instance_reduce());
     }
     
     ref local_attribute = m_name_space.get_item(string(name).reference());
@@ -840,7 +867,27 @@ namespace {
   void add_current_module_name(dictionary& name_space)
   {
       static string module_key("__module__", string::interned);
-      name_space.set_item(module_key, module_builder::name());
+
+      // If the user didn't specify a __module__ attribute already
+      if (name_space.get_item(module_key).get() == 0)
+      {
+          if (module_builder::initializing())
+          {
+              // The global __name__ is not properly set in this case
+              name_space.set_item(module_key, module_builder::name());
+          }
+          else
+          {
+              // Get the module name from the global __name__
+              PyObject *globals = PyEval_GetGlobals();
+              if (globals != NULL)
+              {
+                  PyObject *module_name = PyDict_GetItemString(globals, const_cast<char*>("__name__"));
+                  if (module_name != NULL)
+                      name_space.set_item(module_key, module_name);
+              }
+          }
+      }
   }
 }
 

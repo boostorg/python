@@ -5,6 +5,11 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 04 Mar 01  Fixed std::complex<> stuff to work with MSVC (David Abrahams)
+// 03 Mar 01  added: converters for [plain] char and std::complex
+//            (Ralf W. Grosse-Kunstleve)
 
 #ifndef METHOD_DWA122899_H_
 # define METHOD_DWA122899_H_
@@ -16,6 +21,17 @@
 # include <boost/smart_ptr.hpp>
 # include <boost/python/errors.hpp>
 # include <string>
+
+# ifdef BOOST_MSVC6_OR_EARLIER
+#  pragma warning(push)
+#  pragma warning(disable:4275) // disable a bogus warning caused by <complex>
+# endif
+
+# include <complex>
+
+# ifdef BOOST_MSVC6_OR_EARLIER
+#  pragma warning(pop)
+# endif
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
 
@@ -70,6 +86,30 @@ inline void xdecref(T* p)
 	xdecref_impl(reinterpret_cast<PyObject*>(p_base));
 }
 
+namespace detail {
+
+  void expect_complex(PyObject*);
+
+  template <class T>
+  std::complex<T> complex_from_python(PyObject* p, boost::python::type<T>)
+  {
+      expect_complex(p);
+
+      return std::complex<T>(
+        static_cast<T>(PyComplex_RealAsDouble(p)),
+        static_cast<T>(PyComplex_ImagAsDouble(p)));
+  }
+
+  template <class T>
+  PyObject* complex_to_python(const std::complex<T>& sc) {
+      Py_complex pcc;
+      pcc.real = sc.real();
+      pcc.imag = sc.imag();
+      return PyComplex_FromCComplex(pcc);
+  }
+
+}
+
 }} // namespace boost::python
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
@@ -100,6 +140,10 @@ PyObject* to_python(unsigned short);
 unsigned short from_python(PyObject*, boost::python::type<unsigned short>);
 unsigned short from_python(PyObject*, boost::python::type<const unsigned short&>);
 
+PyObject* to_python(char);
+char from_python(PyObject*, boost::python::type<char>);
+char from_python(PyObject*, boost::python::type<const char&>);
+
 PyObject* to_python(signed char);
 signed char from_python(PyObject*, boost::python::type<signed char>);
 signed char from_python(PyObject*, boost::python::type<const signed char&>);
@@ -129,6 +173,36 @@ const char* from_python(PyObject*, boost::python::type<const char*>);
 PyObject* to_python(const std::string& s);
 std::string from_python(PyObject*, boost::python::type<std::string>);
 std::string from_python(PyObject*, boost::python::type<const std::string&>);
+
+inline PyObject* to_python(const std::complex<float>& x)
+{
+    return boost::python::detail::complex_to_python<float>(x);
+}
+
+inline PyObject* to_python(const std::complex<double>& x)
+{
+    return boost::python::detail::complex_to_python<double>(x);
+}
+
+inline std::complex<double> from_python(PyObject* p,
+                                   boost::python::type<std::complex<double> >) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<double>());
+}
+
+inline std::complex<double> from_python(PyObject* p,
+                                   boost::python::type<const std::complex<double>&>) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<double>());
+}
+
+inline std::complex<float> from_python(PyObject* p,
+                                   boost::python::type<std::complex<float> >) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<float>());
+}
+
+inline std::complex<float> from_python(PyObject* p,
+                                   boost::python::type<const std::complex<float>&>) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<float>());
+}
 
 // For when your C++ function really wants to pass/return a PyObject*
 PyObject* to_python(PyObject*);
@@ -302,6 +376,11 @@ inline unsigned int from_python(PyObject* p, boost::python::type<const unsigned 
 inline unsigned short from_python(PyObject* p, boost::python::type<const unsigned short&>)
 {
     return from_python(p, boost::python::type<unsigned short>());
+}
+
+inline char from_python(PyObject* p, boost::python::type<const char&>)
+{
+    return from_python(p, boost::python::type<char>());
 }
 
 inline signed char from_python(PyObject* p, boost::python::type<const signed char&>)

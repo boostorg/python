@@ -5,6 +5,9 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// Mar 01 01  Use PyObject_INIT() instead of trying to hand-initialize (David Abrahams)
 
 #include <boost/python/detail/functions.hpp>
 #include <boost/python/detail/types.hpp>
@@ -97,19 +100,6 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     return 0;
 }
 
-bound_function* bound_function::create(const ref& target, const ref& fn)
-{
-    bound_function* const result = free_list;
-    if (result == 0)
-        return new bound_function(target, fn);
-    
-    free_list = result->m_free_list_link;
-    result->m_target = target;
-    result->m_unbound_function = fn;
-    Py_INCREF(result);
-    return result;
-}
-
 // The instance class whose obj represents the type of bound_function
 // objects in Python. bound_functions must be GetAttrable so the __doc__
 // attribute of built-in Python functions can be accessed when bound.
@@ -122,6 +112,21 @@ struct bound_function::type_object :
 private: // type_object<bound_function> hook override
     void dealloc(bound_function*) const;
 };
+
+bound_function* bound_function::create(const ref& target, const ref& fn)
+{
+    bound_function* const result = free_list;
+    if (result == 0)
+        return new bound_function(target, fn);
+    
+    free_list = result->m_free_list_link;
+    result->m_target = target;
+    result->m_unbound_function = fn;
+
+    PyObject* self = result;
+    PyObject_INIT(self, type_object::instance());
+    return result;
+}
 
 bound_function::bound_function(const ref& target, const ref& fn)
     : python_object(type_object::instance()),
