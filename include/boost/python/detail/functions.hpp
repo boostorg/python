@@ -59,13 +59,13 @@ class function : public python_object
 template <class R, class F>
 struct wrapped_function_pointer : function
 {
-	typedef F ptr_fun; // pointer-to--function or pointer-to-member-function
-	
-	wrapped_function_pointer(ptr_fun pf)
+    typedef F ptr_fun; // pointer-to--function or pointer-to-member-function
+    
+    wrapped_function_pointer(ptr_fun pf)
         : m_pf(pf) {}
 
  private:
-	PyObject* do_call(PyObject* args, PyObject* keywords) const
+    PyObject* do_call(PyObject* args, PyObject* keywords) const
         {
             // This is where the boundary between the uniform Python function
             // interface and the statically-checked C++ function interface is
@@ -77,7 +77,7 @@ struct wrapped_function_pointer : function
         { return typeid(F).name(); }
     
  private:
-	const ptr_fun m_pf;
+    const ptr_fun m_pf;
 };
 
 // raw_arguments_function
@@ -87,13 +87,13 @@ struct wrapped_function_pointer : function
 template <class Ret, class Args, class Keywords>
 struct raw_arguments_function : function
 {
-	typedef Ret (*ptr_fun)(Args, Keywords); 
-	
-	raw_arguments_function(ptr_fun pf)
+    typedef Ret (*ptr_fun)(Args, Keywords); 
+    
+    raw_arguments_function(ptr_fun pf)
         : m_pf(pf) {}
 
  private:
-	PyObject* do_call(PyObject* args, PyObject* keywords) const
+    PyObject* do_call(PyObject* args, PyObject* keywords) const
     { 
         ref dict(keywords ? 
                  ref(keywords, ref::increment_count) :
@@ -108,7 +108,7 @@ struct raw_arguments_function : function
         { return typeid(ptr_fun).name(); }
     
  private:
-	const ptr_fun m_pf;
+    const ptr_fun m_pf;
 };
 
 // virtual_function<> --
@@ -127,19 +127,19 @@ template <class T, class R, class V, class D>
 class virtual_function : public function
 {
  public:
-	virtual_function(V virtual_function_ptr, D default_implementation)
+    virtual_function(V virtual_function_ptr, D default_implementation)
         : m_virtual_function_ptr(virtual_function_ptr),
           m_default_implementation(default_implementation)
         {}
 
  private:
-	PyObject* do_call(PyObject* args, PyObject* keywords) const;
+    PyObject* do_call(PyObject* args, PyObject* keywords) const;
     
     const char* description() const
         { return typeid(V).name(); }
     
  private:
-	const V m_virtual_function_ptr;
+    const V m_virtual_function_ptr;
     const D m_default_implementation;
 };
 
@@ -160,7 +160,7 @@ template <class F>
 inline function* new_wrapped_function(F pmf)
 {
     // Deduce the return type and pass it off to the helper function above
-	return new_wrapped_function_aux(return_value(pmf), pmf);
+    return new_wrapped_function_aux(return_value(pmf), pmf);
 }
 
 template <class R, class Args, class keywords>
@@ -220,7 +220,7 @@ class bound_function : public python_object
  private: // data members for allocation/deallocation optimization
     bound_function* m_free_list_link;
 
-	static bound_function* free_list;
+    static bound_function* free_list;
 };
 
 // Special functions designed to access data members of a wrapped C++ object.

@@ -48,7 +48,7 @@ base_object<PythonType>::base_object(PyTypeObject* type_obj)
 #if !defined(_MSC_VER) || defined(__STLPORT)
     std::
 #endif
-		memset(bp, 0, sizeof(base_python_type));
+        memset(bp, 0, sizeof(base_python_type));
     Py_INCREF(type_obj);
     PyObject_INIT(bp, type_obj);
 }

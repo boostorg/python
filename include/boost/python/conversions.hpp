@@ -74,17 +74,17 @@ inline void xdecref_impl(PyObject* p) { Py_XDECREF(p); }
 template <class T>
 inline void decref(T* p)
 {
-	char* const raw_p = reinterpret_cast<char*>(p);
-	char* const p_base = raw_p - offsetof(PyObject, ob_refcnt);
-	decref_impl(reinterpret_cast<PyObject*>(p_base));
+    char* const raw_p = reinterpret_cast<char*>(p);
+    char* const p_base = raw_p - offsetof(PyObject, ob_refcnt);
+    decref_impl(reinterpret_cast<PyObject*>(p_base));
 }
 
 template <class T>
 inline void xdecref(T* p)
 {
-	char* const raw_p = reinterpret_cast<char*>(p);
-	char* const p_base = raw_p - offsetof(PyObject, ob_refcnt);
-	xdecref_impl(reinterpret_cast<PyObject*>(p_base));
+    char* const raw_p = reinterpret_cast<char*>(p);
+    char* const p_base = raw_p - offsetof(PyObject, ob_refcnt);
+    xdecref_impl(reinterpret_cast<PyObject*>(p_base));
 }
 
 namespace detail {
@@ -294,22 +294,22 @@ inline PyObject* to_python(float f)
 
 inline PyObject* to_python(long l)
 {
-	return PyInt_FromLong(l);
+    return PyInt_FromLong(l);
 }
 
 inline PyObject* to_python(int x)
 {
-	return PyInt_FromLong(x);
+    return PyInt_FromLong(x);
 }
 
 inline PyObject* to_python(short x)
 {
-	return PyInt_FromLong(x);
+    return PyInt_FromLong(x);
 }
 
 inline PyObject* to_python(bool b)
 {
-	return PyInt_FromLong(b);
+    return PyInt_FromLong(b);
 }
 
 inline PyObject* to_python(void)
@@ -319,7 +319,7 @@ inline PyObject* to_python(void)
 
 inline PyObject* to_python(const char* s)
 {
-	return PyString_FromString(s);
+    return PyString_FromString(s);
 }
 
 inline std::string from_python(PyObject* p, boost::python::type<const std::string&>)

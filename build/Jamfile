@@ -132,6 +132,7 @@ rule boost-python
                 # standard requirements
                 $(BOOST_PYTHON_INCLUDES)
                 <msvc><*><library-path>$(PYTHON_LIB_PATH)
+                <metrowerks><*><library-file>$(PYTHON_LIB_PATH)/python22.lib
                 <gcc><*><library-file>$(PYTHON_LIBS)
                 $(PYTHON_PROPERTIES)
                 

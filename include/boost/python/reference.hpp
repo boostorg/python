@@ -42,31 +42,31 @@ BOOST_PYTHON_IMPORT_CONVERSION(py_ptr_conversions);
 
 template <class T>
 class reference
-	: public py_ptr_conversions<reference<T>, T>
+    : public py_ptr_conversions<reference<T>, T>
 {
 public:
     typedef T value_type;
     
-	reference(const reference& rhs)
-		: m_p(rhs.m_p)
-	{
-		Py_XINCREF(object());
-	}
+    reference(const reference& rhs)
+        : m_p(rhs.m_p)
+    {
+        Py_XINCREF(object());
+    }
 
 #if !defined(BOOST_MSVC6_OR_EARLIER)
-	template <class T2>
-	reference(const reference<T2>& rhs)
-		: m_p(rhs.object())
-	{
-		Py_XINCREF(object());
-	}
+    template <class T2>
+    reference(const reference<T2>& rhs)
+        : m_p(rhs.object())
+    {
+        Py_XINCREF(object());
+    }
 #endif
 
-	reference() : m_p(0) {}
+    reference() : m_p(0) {}
     
     // These are two ways of spelling the same thing, that we need to increment
     // the reference count on the pointer when we're initialized.
-	enum increment_count_t { increment_count };
+    enum increment_count_t { increment_count };
 
     enum allow_null { null_ok };
     
@@ -77,7 +77,7 @@ public:
     template <class T2>
     reference(T2* x, increment_count_t)
         : m_p(expect_non_null(x)) { Py_INCREF(object()); }
-	
+    
     template <class T2>
     reference(T2* x, allow_null)
         : m_p(x) {}
@@ -85,49 +85,49 @@ public:
     template <class T2>
     reference(T2* x, allow_null, increment_count_t)
         : m_p(x) { Py_XINCREF(object()); }
-	
+    
     template <class T2>
     reference(T2* x, increment_count_t, allow_null)
         : m_p(x) { Py_XINCREF(object()); }
-	
+    
 #if !defined(BOOST_MSVC6_OR_EARLIER)
-	template <class T2>
-	reference& operator=(const reference<T2>& rhs)
-	{
-		Py_XDECREF(object());
-		m_p = rhs.m_p;
-		Py_XINCREF(object());
-		return *this;
-	}
+    template <class T2>
+    reference& operator=(const reference<T2>& rhs)
+    {
+        Py_XDECREF(object());
+        m_p = rhs.m_p;
+        Py_XINCREF(object());
+        return *this;
+    }
 #endif
 
-	reference& operator=(const reference& rhs)
-	{
-		Py_XINCREF(static_cast<PyObject*>(rhs.m_p));
-		Py_XDECREF(object());
-		m_p = rhs.m_p;
-		return *this;
-	}
+    reference& operator=(const reference& rhs)
+    {
+        Py_XINCREF(static_cast<PyObject*>(rhs.m_p));
+        Py_XDECREF(object());
+        m_p = rhs.m_p;
+        return *this;
+    }
     
-	~reference()
-	{
-		Py_XDECREF(m_p);
-	}
-	
-	T& operator*() const { return *m_p; }
+    ~reference()
+    {
+        Py_XDECREF(m_p);
+    }
+    
+    T& operator*() const { return *m_p; }
     
     // MSVC doesn't like boost::dereferencable unless T has a default
     // constructor, so operator-> must be defined by hand :(
     T* operator->() const { return &**this; } 
     
-	T* get() const { return m_p; }
+    T* get() const { return m_p; }
 
-	T* release()
-	{
-		T* p = m_p;
-		m_p = 0;
-		return p;
-	}
+    T* release()
+    {
+        T* p = m_p;
+        m_p = 0;
+        return p;
+    }
 
     void reset()
         { Py_XDECREF(m_p); m_p = 0; }
@@ -139,7 +139,7 @@ public:
     template <class T2>
     void reset(T2* x, increment_count_t)
         { Py_XDECREF(m_p); m_p = expect_non_null(x); Py_INCREF(object()); }
-	
+    
     template <class T2>
     void reset(T2* x, allow_null)
         { Py_XDECREF(m_p); m_p = x;}
@@ -147,11 +147,11 @@ public:
     template <class T2>
     void reset(T2* x, allow_null, increment_count_t)
         { Py_XDECREF(m_p); m_p = x; Py_XINCREF(object()); }
-	
+    
     template <class T2>
     void reset(T2* x, increment_count_t, allow_null)
         { Py_XDECREF(m_p); m_p = x; Py_XINCREF(object()); }
-	
+    
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
 private:
     template<typename Y> friend class shared_ptr;
@@ -160,7 +160,7 @@ private:
     inline PyObject* object() const
         { return as_object(m_p); }
 
-	T* m_p;
+    T* m_p;
 };
 
 typedef reference<PyObject> ref;
