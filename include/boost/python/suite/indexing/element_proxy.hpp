@@ -1,4 +1,3 @@
-// -*- mode:c++ -*-
 //
 // Header file element_proxy.hpp
 //
@@ -22,12 +21,8 @@
 #define BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP
 
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
-#include <boost/python/suite/indexing/value_traits.hpp>
-
 #include <boost/shared_ptr.hpp>
 #include <boost/get_pointer.hpp>
-
-// More headers are included near the bottom of this file
 
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
@@ -170,31 +165,5 @@ namespace boost
     return &(*proxy);
   }
 }
-
-// Including more headers here is a little weird, but it make sure
-// that our overload of get_pointer is in scope during both
-// name-lookup phases (if the compiler implements two-phase name
-// lookup). get_pointer is used unqualified within some templates used
-// by register_ptr_to_python.
-
-#include <boost/python/implicit.hpp>
-#include <boost/python/register_ptr_to_python.hpp>
-
-namespace boost { namespace python { namespace indexing {
-  template<typename ContainerProxy>
-  struct value_traits<element_proxy<ContainerProxy> >
-    : public value_traits<typename ContainerProxy::raw_value_type>
-  {
-    template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &, Policy const &)
-    {
-      typedef element_proxy<ContainerProxy> element_proxy_;
-      typedef typename ContainerProxy::raw_value_type raw_value_type;
-
-      boost::python::register_ptr_to_python<element_proxy_>();
-      boost::python::implicitly_convertible<raw_value_type, element_proxy_>();
-    }
-  };
-} } }
 
 #endif // BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP
