@@ -26,7 +26,12 @@ namespace detail
   template <class T> class dummy;
 }
 
-# undef BOOST_PYTHON_TYPE_ID_NAME
+// for this compiler at least, cross-shared-library type_info
+// comparisons don't work, so use typeid(x).name() instead. It's not
+// yet clear what the best default strategy is.
+# if defined(__GNUC__) && __GNUC__ >= 3
+#  define BOOST_PYTHON_TYPE_ID_NAME
+# endif 
 
 # if 1
 struct type_id_t : totally_ordered<type_id_t>
