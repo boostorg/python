@@ -7,7 +7,9 @@
 //  producing this work.
 //
 // Revision History:
-// Mar 03 01  added: converters for [plain] char and std::complex (Ralf W. Grosse-Kunstleve)
+// 04 Mar 01  Fixed std::complex<> stuff to work with MSVC (David Abrahams)
+// 03 Mar 01  added: converters for [plain] char and std::complex
+//            (Ralf W. Grosse-Kunstleve)
 
 #ifndef METHOD_DWA122899_H_
 # define METHOD_DWA122899_H_
@@ -19,7 +21,17 @@
 # include <boost/smart_ptr.hpp>
 # include <boost/python/errors.hpp>
 # include <string>
+
+# ifdef BOOST_MSVC6_OR_EARLIER
+#  pragma warning(push)
+#  pragma warning(disable:4275) // disable a bogus warning caused by <complex>
+# endif
+
 # include <complex>
+
+# ifdef BOOST_MSVC6_OR_EARLIER
+#  pragma warning(pop)
+# endif
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
 
@@ -72,6 +84,30 @@ inline void xdecref(T* p)
 	char* const raw_p = reinterpret_cast<char*>(p);
 	char* const p_base = raw_p - offsetof(PyObject, ob_refcnt);
 	xdecref_impl(reinterpret_cast<PyObject*>(p_base));
+}
+
+namespace detail {
+
+  void expect_complex(PyObject*);
+
+  template <class T>
+  std::complex<T> complex_from_python(PyObject* p, boost::python::type<T>)
+  {
+      expect_complex(p);
+
+      return std::complex<T>(
+        static_cast<T>(PyComplex_RealAsDouble(p)),
+        static_cast<T>(PyComplex_ImagAsDouble(p)));
+  }
+
+  template <class T>
+  PyObject* complex_to_python(const std::complex<T>& sc) {
+      Py_complex pcc;
+      pcc.real = sc.real();
+      pcc.imag = sc.imag();
+      return PyComplex_FromCComplex(pcc);
+  }
+
 }
 
 }} // namespace boost::python
@@ -138,30 +174,34 @@ PyObject* to_python(const std::string& s);
 std::string from_python(PyObject*, boost::python::type<std::string>);
 std::string from_python(PyObject*, boost::python::type<const std::string&>);
 
-template <class T>
-PyObject* to_python(const std::complex<T>& sc) {
-    Py_complex pcc;
-    pcc.real = sc.real();
-    pcc.imag = sc.imag();
-    return PyComplex_FromCComplex(pcc);
+inline PyObject* to_python(const std::complex<float>& x)
+{
+    return boost::python::detail::complex_to_python<float>(x);
 }
 
-template <class T>
-std::complex<T> from_python(PyObject* p,
-                            boost::python::type<const std::complex<T>&>) {
-    if (! PyComplex_Check(p)) {
-      PyErr_SetString(PyExc_TypeError, "expected a complex number");
-      throw boost::python::argument_error();
-    }
-    return std::complex<T>(
-      static_cast<T>(PyComplex_RealAsDouble(p)),
-      static_cast<T>(PyComplex_ImagAsDouble(p)));
+inline PyObject* to_python(const std::complex<double>& x)
+{
+    return boost::python::detail::complex_to_python<double>(x);
 }
 
-template <class T>
-inline std::complex<T> from_python(PyObject* p,
-                                   boost::python::type<std::complex<T> >) {
-    return from_python(p, boost::python::type<const std::complex<T>&>());
+inline std::complex<double> from_python(PyObject* p,
+                                   boost::python::type<std::complex<double> >) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<double>());
+}
+
+inline std::complex<double> from_python(PyObject* p,
+                                   boost::python::type<const std::complex<double>&>) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<double>());
+}
+
+inline std::complex<float> from_python(PyObject* p,
+                                   boost::python::type<std::complex<float> >) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<float>());
+}
+
+inline std::complex<float> from_python(PyObject* p,
+                                   boost::python::type<const std::complex<float>&>) {
+    return boost::python::detail::complex_from_python(p, boost::python::type<float>());
 }
 
 // For when your C++ function really wants to pass/return a PyObject*
