@@ -85,13 +85,14 @@ class SingleCodeUnit:
                 fout.write(declaration_outside + '\n\n')
             if declaration:
                 pyste_namespace = namespaces.pyste[:-2]            
-                fout.write('namespace %s {\n\n\n' % pyste_namespace)
+                fout.write('namespace %s {\n\n' % pyste_namespace)
                 fout.write(declaration) 
-                fout.write('\n\n}// namespace %s\n' % pyste_namespace)
+                fout.write('\n}// namespace %s\n' % pyste_namespace)
                 fout.write(space)
         # module
         fout.write(left_equals('Module'))
         fout.write(self.module_definition + '\n')
         fout.write('{\n')
         fout.write(self.code['module']) 
-        fout.write('}\n')
+        fout.write('}\n\n')
+        fout.close()

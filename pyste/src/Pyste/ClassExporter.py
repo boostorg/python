@@ -48,25 +48,23 @@ class ClassExporter(Exporter):
         return makeid(self.class_.FullName()) + '_scope'
 
 
-    def Unit(self):
-        return makeid(self.class_.name)
-
-
     def Name(self):
-        return self.class_.FullName()
+        return self.info.name
 
 
     def SetDeclarations(self, declarations):
         Exporter.SetDeclarations(self, declarations)
-        decl = self.GetDeclaration(self.info.name)
-        if isinstance(decl, Typedef):
-            self.class_ = self.GetDeclaration(decl.type.name)
-            if not self.info.rename:
-                self.info.rename = decl.name
+        if self.declarations:
+            decl = self.GetDeclaration(self.info.name)
+            if isinstance(decl, Typedef):
+                self.class_ = self.GetDeclaration(decl.type.name)
+                if not self.info.rename:
+                    self.info.rename = decl.name
+            else:
+                self.class_ = decl
+            self.class_ = copy.deepcopy(self.class_)
         else:
-            self.class_ = decl
-        self.class_ = copy.deepcopy(self.class_)
-        
+            self.class_ = None
         
         
     def ClassBases(self):
@@ -82,7 +80,8 @@ class ClassExporter(Exporter):
         bases' bases.  Do this because base classes must be instantialized
         before the derived classes in the module definition.  
         '''
-        return '%s_%s' % (len(self.ClassBases()), self.class_.FullName())
+        num_bases = len(self.ClassBases())
+        return num_bases, self.class_.FullName()
         
     
     def Export(self, codeunit, exported_names):
@@ -101,7 +100,7 @@ class ClassExporter(Exporter):
             self.ExportSmartPointer()
             self.ExportOpaquePointerPolicies()
             self.Write(codeunit)
-            exported_names[self.class_.FullName()] = 1
+            exported_names[self.Name()] = 1
 
 
     def InheritMethods(self, exported_names):
@@ -131,7 +130,7 @@ class ClassExporter(Exporter):
                 break
         def IsValid(member):
             return isinstance(member, valid_members) and member.visibility == Scope.public
-        self.public_members = [x for x in self.class_ if IsValid(x)]   
+        self.public_members = [x for x in self.class_ if IsValid(x)] 
 
 
     def Write(self, codeunit):
@@ -196,14 +195,9 @@ class ClassExporter(Exporter):
 
         
     def ExportBasics(self):
-        '''Export the name of the class and its class_ statement.
-        Also export the held_type if specified.'''
+        '''Export the name of the class and its class_ statement.'''
         class_name = self.class_.FullName()
         self.Add('template', class_name)
-        held_type = self.info.held_type
-        if held_type:
-            held_type = held_type % class_name
-            self.Add('template', held_type) 
         name = self.info.rename or self.class_.name
         self.Add('constructor', '"%s"' % name)
         
@@ -211,14 +205,14 @@ class ClassExporter(Exporter):
     def ExportBases(self, exported_names):
         'Expose the bases of the class into the template section'        
         hierarchy = self.class_.hierarchy
+        exported = []
         for level in hierarchy:
-            exported = []
             for base in level:
                 if base.visibility == Scope.public and base.name in exported_names:
                     exported.append(base.name)
-            if exported:
-                code = namespaces.python + 'bases< %s > ' %  (', '.join(exported))
-                self.Add('template', code)         
+        if exported:
+            code = namespaces.python + 'bases< %s > ' %  (', '.join(exported))
+            self.Add('template', code)         
 
 
     def ExportConstructors(self):
@@ -408,13 +402,19 @@ class ClassExporter(Exporter):
                 has_virtual_methods = True
                 break
 
+        holder = self.info.holder
         if has_virtual_methods:
             generator = _VirtualWrapperGenerator(self.class_, self.ClassBases(), self.info)
-            self.Add('template', generator.FullName())
+            if holder:
+                self.Add('template', holder(generator.FullName()))
+            else:
+                self.Add('template', generator.FullName())
             for definition in generator.GenerateDefinitions():
                 self.Add('inside', definition)
             self.Add('declaration', generator.GenerateVirtualWrapper(self.INDENT))
-            
+        else:
+            if holder:
+                self.Add('template', holder(self.class_.FullName()))
 
     # operators natively supported by boost
     BOOST_SUPPORTED_OPERATORS = '+ - * / % ^ & ! ~ | < > == != <= >= << >> && || += -='\
@@ -610,7 +610,7 @@ class ClassExporter(Exporter):
         if smart_ptr:
             class_name = self.class_.FullName()
             smart_ptr = smart_ptr % class_name
-            self.Add('scope', '%s::register_ptr_to_python< %s >();' % (namespaces.python, smart_ptr))
+            self.Add('scope', '%sregister_ptr_to_python< %s >();' % (namespaces.python, smart_ptr))
             
 
     def ExportOpaquePointerPolicies(self):

@@ -28,8 +28,8 @@ class VarExporter(Exporter):
 
 
     def Order(self):
+        return 0, self.info.name
+
+
+    def Name(self):
         return self.info.name
-
-
-    def Unit(self):
-        return utils.makeid(self.info.include) 

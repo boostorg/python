@@ -22,8 +22,9 @@ class MultipleCodeUnit(object):
         self.all = SingleCodeUnit(None, None)
 
     
-    def _FunctionName(self, export_name):
-        return 'Export_%s' % utils.makeid(export_name)
+    def _FunctionName(self, interface_file):
+        name = os.path.splitext(interface_file)[0]
+        return 'Export_%s' % utils.makeid(name)
     
 
     def _FileName(self, interface_file):
@@ -40,13 +41,13 @@ class MultipleCodeUnit(object):
             self._current = self.all
         else:
             filename = self._FileName(interface_file)
-            function = self._FunctionName(export_name)  
+            function = self._FunctionName(interface_file)
             try:
-                codeunit = self.codeunits[(filename, function)]
+                codeunit = self.codeunits[filename]
             except KeyError:
                 codeunit = SingleCodeUnit(None, filename)
                 codeunit.module_definition = 'void %s()' % function
-                self.codeunits[(filename, function)] = codeunit
+                self.codeunits[filename] = codeunit
                 if function not in self.functions:
                     self.functions.append(function)
             self._current = codeunit
@@ -84,7 +85,7 @@ class MultipleCodeUnit(object):
         # unit in the list of code units is used as the main unit
         # which dumps all the include, declaration and
         # declaration-outside sections at the top of the file.
-        for (filename, _), codeunit in self.codeunits.items(): 
+        for filename, codeunit in self.codeunits.items(): 
             if filename not in codeunits:
                 # this codeunit is the main codeunit.
                 codeunits[filename] = [codeunit]
@@ -103,20 +104,24 @@ class MultipleCodeUnit(object):
                 codeunit.Save(append)
                 if not append:
                     append = True
+                    
+
+    def GenerateMain(self, interfaces):                    
         # generate the main cpp
         filename = os.path.join(self.outdir, '_main.cpp')
         fout = SmartFile(filename, 'w')
         fout.write(utils.left_equals('Include'))
-        fout.write('#include <boost/python.hpp>\n\n')
+        fout.write('#include <boost/python/module.hpp>\n\n')
         fout.write(utils.left_equals('Exports'))
-        for function in self.functions:
+        functions = [self._FunctionName(x) for x in interfaces]
+        for function in functions:
             fout.write('void %s();\n' % function)
         fout.write('\n')
         fout.write(utils.left_equals('Module'))
         fout.write('BOOST_PYTHON_MODULE(%s)\n' % self.modulename)
         fout.write('{\n')
         indent = ' ' * 4
-        for function in self.functions:
+        for function in functions:
             fout.write(indent)
             fout.write('%s();\n' % function)
         fout.write('}\n')

@@ -1,28 +1,31 @@
-'''
+"""
 Pyste version %s
 
 Usage:
     pyste [options] interface-files
 
 where options are:
-    --module=<name>     the name of the module that will be generated.
-                        Defaults to the first interface filename, without
-                        the extension.
-    -I <path>           add an include path    
-    -D <symbol>         define symbol    
-    --multiple          create various cpps, instead of only one 
-                        (useful during development)                        
-    --out               specify output filename (default: <module>.cpp)
-                        in --multiple mode, this will be a directory
-    --no-using          do not declare "using namespace boost";
-                        use explicit declarations instead
-    --pyste-ns=<name>   set the namespace where new types will be declared;
-                        default is the empty namespace
-    --debug             writes the xml for each file parsed in the current
-                        directory
-    -h, --help          print this help and exit
-    -v, --version       print version information                         
-'''
+    --module=<name>         The name of the module that will be generated;
+                            defaults to the first interface filename, without
+                            the extension.
+    -I <path>               Add an include path    
+    -D <symbol>             Define symbol    
+    --multiple              Create various cpps, instead of only one 
+                            (useful during development)                        
+    --out=<name>            Specify output filename (default: <module>.cpp)
+                            in --multiple mode, this will be a directory
+    --no-using              Do not declare "using namespace boost";
+                            use explicit declarations instead
+    --pyste-ns=<name>       Set the namespace where new types will be declared;
+                            default is the empty namespace
+    --debug                 Writes the xml for each file parsed in the current
+                            directory
+    --cache-dir=<dir>       Directory for cache files (speeds up future runs)
+    --only-create-cache     Recreates all caches (doesn't generate code).
+    --generate-main         Generates the _main.cpp file (in multiple mode)
+    -h, --help              Print this help and exit
+    -v, --version           Print version information                         
+"""
 
 import sys
 import os
@@ -70,16 +73,22 @@ def ParseArguments():
         options, files = getopt.getopt(
             sys.argv[1:], 
             'R:I:D:vh', 
-            ['module=', 'multiple', 'out=', 'no-using', 'pyste-ns=', 'debug', 'version', 'help'])
+            ['module=', 'multiple', 'out=', 'no-using', 'pyste-ns=', 'debug', 'cache-dir=', 
+             'only-create-cache', 'version', 'generate-main',  'help'])
     except getopt.GetoptError, e:
         print
         print 'ERROR:', e
         Usage()
+    
     includes = GetDefaultIncludes()
     defines = []
     module = None
     out = None
     multiple = False
+    cache_dir = None
+    create_cache = False
+    generate_main = False
+    
     for opt, value in options:
         if opt == '-I':
             includes.append(value)
@@ -100,11 +109,17 @@ def ParseArguments():
             settings.DEBUG = True
         elif opt == '--multiple':
             multiple = True
+        elif opt == '--cache-dir':
+            cache_dir = value
+        elif opt == '--only-create-cache':
+            create_cache = True
         elif opt in ['-h', '--help']:
             Usage()
         elif opt in ['-v', '--version']:
             print 'Pyste version %s' % __VERSION__
             sys.exit(2)
+        elif opt == '--generate-main':
+            generate_main = True
         else:
             print 'Unknown option:', opt
             Usage()
@@ -122,12 +137,23 @@ def ParseArguments():
         if d not in sys.path:
             sys.path.append(d) 
 
-    return includes, defines, module, out, files, multiple
+    if create_cache and not cache_dir:
+        print 'Error: Use --cache-dir to indicate where to create the cache files!'
+        Usage()
+        sys.exit(3)
+
+    if generate_main and not multiple:
+        print 'Error: --generate-main only valid in multiple mode.'
+        Usage()
+        sys.exit(3)
+
+    return includes, defines, module, out, files, multiple, cache_dir, create_cache, generate_main
 
     
 def CreateContext():
     'create the context where a interface file will be executed'
     context = {}
+    context['Import'] = ExecuteInterface
     # infos
     context['Function'] = infos.FunctionInfo
     context['Class'] = infos.ClassInfo
@@ -143,8 +169,7 @@ def CreateContext():
     context['set_wrapper'] = infos.set_wrapper
     context['use_shared_ptr'] = infos.use_shared_ptr
     context['use_auto_ptr'] = infos.use_auto_ptr
-    context['hold_with_shared_ptr'] = infos.hold_with_shared_ptr
-    context['hold_with_auto_ptr'] = infos.hold_with_auto_ptr 
+    context['holder'] = infos.holder
     context['add_method'] = infos.add_method
     context['final'] = infos.final
     # policies
@@ -162,70 +187,146 @@ def CreateContext():
 
     
 def Begin():
-    includes, defines, module, out, interfaces, multiple = ParseArguments()
-    # execute the interface files
+    # parse arguments
+    includes, defines, module, out, interfaces, multiple, cache_dir, create_cache, generate_main = ParseArguments()
+    # run pyste scripts
     for interface in interfaces:
-        exporters.current_interface = interface
-        context = CreateContext()
-        execfile(interface, context)        
+        ExecuteInterface(interface)
     # create the parser
-    parser = CppParser(includes, defines) 
+    parser = CppParser(includes, defines, cache_dir)
+    try:
+        if not create_cache:
+            if not generate_main:
+                return GenerateCode(parser, module, out, interfaces, multiple)
+            else:
+                return GenerateMain(module, out, OrderInterfaces(interfaces))
+        else:
+            return CreateCaches(parser)
+    finally:
+        parser.Close()
+
+
+def CreateCaches(parser):
+    # There is one cache file per interface so we organize the headers
+    # by interfaces.  For each interface collect the tails from the
+    # exporters sharing the same header.
+    tails = JoinTails(exporters.exporters)
+
+    # now for each interface file take each header, and using the tail
+    # get the declarations and cache them.
+    for interface, header in tails:        
+        tail = tails[(interface, header)]
+        declarations = parser.ParseWithGCCXML(header, tail)
+        cachefile = parser.CreateCache(header, interface, tail, declarations)
+        print 'Cached', cachefile
+    
+    return 0
+        
+
+_imported_count = {}  # interface => count
+
+def ExecuteInterface(interface):
+    old_interface = exporters.current_interface
+    if not os.path.exists(interface):
+        if old_interface and os.path.exists(old_interface):
+            d = os.path.dirname(old_interface)
+            interface = os.path.join(d, interface)
+    if not os.path.exists(interface):
+        raise IOError, "Cannot find interface file %s."%interface
+    
+    _imported_count[interface] = _imported_count.get(interface, 0) + 1
+    exporters.current_interface = interface
+    context = CreateContext()
+    execfile(interface, context)
+    exporters.current_interface = old_interface
+
+    
+def JoinTails(exports):
+    '''Returns a dict of {(interface, header): tail}, where tail is the
+    joining of all tails of all exports for the header.  
+    '''
+    tails = {}
+    for export in exports:
+        interface = export.interface_file
+        header = export.Header()
+        tail = export.Tail() or ''
+        if (interface, header) in tails:
+            all_tails = tails[(interface,header)]
+            all_tails += '\n' + tail
+            tails[(interface, header)] = all_tails
+        else:
+            tails[(interface, header)] = tail         
+
+    return tails
+
+
+
+def OrderInterfaces(interfaces):
+    interfaces_order = [(_imported_count[x], x) for x in interfaces]
+    interfaces_order.sort()
+    interfaces_order.reverse()
+    return [x for _, x in interfaces_order]
+
+
+
+def GenerateMain(module, out, interfaces):
+    codeunit = MultipleCodeUnit.MultipleCodeUnit(module, out)
+    codeunit.GenerateMain(interfaces)
+    return 0
+    
+
+def GenerateCode(parser, module, out, interfaces, multiple):    
     # prepare to generate the wrapper code
     if multiple:
         codeunit = MultipleCodeUnit.MultipleCodeUnit(module, out)
     else:
         codeunit = SingleCodeUnit.SingleCodeUnit(module, out) 
-    # group exporters by header files    
-    groups = {}
-    for export in exporters.exporters:
-        header = export.Header()
-        if header in groups:
-            groups[header].append(export)
-        else:
-            groups[header] = [export] 
     # stop referencing the exporters here
+    exports = exporters.exporters
     exporters.exporters = None 
-    # export all the exporters in each group, releasing memory as doing so
-    while len(groups) > 0:
-        # get the first group
-        header = groups.keys()[0]
-        exports = groups[header]
-        del groups[header]
-        # gather all tails into one
-        all_tails = []
-        for export in exports:
-            if export.Tail():
-                all_tails.append(export.Tail())
-        all_tails = '\n'.join(all_tails)
-        # parse header (if there's one)
+    exported_names = dict([(x.Name(), None) for x in exports])
+
+    # order the exports
+    interfaces_order = OrderInterfaces(interfaces)
+    order = {}
+    for export in exports:
+        if export.interface_file in order:
+            order[export.interface_file].append(export)
+        else:
+            order[export.interface_file] = [export]
+    exports = []
+    for interface in interfaces_order:
+        exports.extend(order[interface])
+    del order
+    del interfaces_order
+
+    # now generate the code in the correct order 
+    #print exported_names
+    tails = JoinTails(exports)
+    for i in xrange(len(exports)):
+        export = exports[i]
+        interface = export.interface_file
+        header = export.Header()
         if header:
-            try:
-                declarations, parsed_header = parser.parse(header, all_tails)
-            except CppParserError, e:            
-                print>>sys.stderr, '\n\n***', e, ': exitting'
-                return 2
+            tail = tails[(interface, header)]
+            declarations, parsed_header = parser.Parse(header, interface, tail)
         else:
             declarations = []
             parsed_header = None
-        # first set the declarations and parsed_header for all the exporters
-        for export in exports:
-            export.SetDeclarations(declarations)
-            export.SetParsedHeader(parsed_header)
-        # sort the exporters by their order
-        exports = [(x.Order(), x) for x in exports]
-        exports.sort()
-        exports = [x for _, x in exports]
-        # maintain a dict of exported_names for this group
-        exported_names = {}
-        for export in exports:
-            if multiple:
-                codeunit.SetCurrent(export.interface_file, export.Unit())
-            export.GenerateCode(codeunit, exported_names)
+        export.SetDeclarations(declarations)
+        export.SetParsedHeader(parsed_header)
+        if multiple:
+            codeunit.SetCurrent(export.interface_file, export.Name())
+        export.GenerateCode(codeunit, exported_names)
         # force collect of cyclic references
+        exports[i] = None
+        del declarations
+        del export
         gc.collect()
     # finally save the code unit
-    codeunit.Save()                
-    print 'Module %s generated' % module
+    codeunit.Save()
+    if not multiple:
+        print 'Module %s generated' % module
     return 0
 
 

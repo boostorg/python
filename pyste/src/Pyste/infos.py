@@ -58,7 +58,8 @@ class FunctionInfo(DeclarationInfo):
         self._Attribute('exclude', False)
         # create a FunctionExporter
         exporter = FunctionExporter(InfoWrapper(self), tail)
-        exporters.exporters.append(exporter)
+        if exporter not in exporters.exporters:
+            exporters.exporters.append(exporter)
         exporter.interface_file = exporters.current_interface
 
 
@@ -74,7 +75,8 @@ class ClassInfo(DeclarationInfo):
         self._Attribute('exclude', False)
         # create a ClassExporter
         exporter = ClassExporter(InfoWrapper(self), tail)
-        exporters.exporters.append(exporter) 
+        if exporter not in exporters.exporters: 
+            exporters.exporters.append(exporter) 
         exporter.interface_file = exporters.current_interface 
         
 
@@ -87,7 +89,8 @@ class IncludeInfo(DeclarationInfo):
         DeclarationInfo.__init__(self)
         self._Attribute('include', include)
         exporter = IncludeExporter(InfoWrapper(self))
-        exporters.exporters.append(exporter)        
+        if exporter not in exporters.exporters: 
+            exporters.exporters.append(exporter)        
         exporter.interface_file = exporters.current_interface 
 
 
@@ -137,7 +140,8 @@ class EnumInfo(DeclarationInfo):
         self._Attribute('include', include)
         self._Attribute('exclude', False)
         exporter = EnumExporter(InfoWrapper(self))
-        exporters.exporters.append(exporter)
+        if exporter not in exporters.exporters: 
+            exporters.exporters.append(exporter)
         exporter.interface_file = exporters.current_interface 
 
 
@@ -150,7 +154,8 @@ class HeaderInfo(DeclarationInfo):
         DeclarationInfo.__init__(self)
         self._Attribute('include', include)
         exporter = HeaderExporter(InfoWrapper(self))
-        exporters.exporters.append(exporter)
+        if exporter not in exporters.exporters: 
+            exporters.exporters.append(exporter)
         exporter.interface_file = exporters.current_interface 
 
 
@@ -164,7 +169,8 @@ class VarInfo(DeclarationInfo):
         self._Attribute('name', name)
         self._Attribute('include', include)
         exporter = VarExporter(InfoWrapper(self))
-        exporters.exporters.append(exporter)
+        if exporter not in exporters.exporters: 
+            exporters.exporters.append(exporter)
         exporter.interface_file = exporters.current_interface 
         
                                  
@@ -215,11 +221,10 @@ def use_shared_ptr(info):
 def use_auto_ptr(info):
     info._Attribute('smart_ptr', 'std::auto_ptr< %s >')
         
-def hold_with_shared_ptr(info):
-    info._Attribute('held_type', 'boost::shared_ptr< %s >')
-
-def hold_with_auto_ptr(info):
-    info._Attribute('held_type', 'std::auto_ptr< %s >') 
+def holder(info, function):
+    msg = "Expected a callable that accepts one string argument."
+    assert callable(function), msg
+    info._Attribute('holder', function)
 
 def add_method(info, name, rename=None):
     added = info._Attribute('__added__')

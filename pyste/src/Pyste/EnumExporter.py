@@ -14,7 +14,10 @@ class EnumExporter(Exporter):
 
     def SetDeclarations(self, declarations):
         Exporter.SetDeclarations(self, declarations)
-        self.enum = self.GetDeclaration(self.info.name)
+        if self.declarations:
+            self.enum = self.GetDeclaration(self.info.name)
+        else:
+            self.enum = None
 
 
     def Export(self, codeunit, exported_names):
@@ -34,12 +37,8 @@ class EnumExporter(Exporter):
                 code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
             code += indent + ';\n\n'
             codeunit.Write('module', code)
-            exported_names[self.enum.FullName()] = 1
+            exported_names[self.Name()] = 1
 
 
-    def Unit(self):
-        return utils.makeid(self.info.include)
-
-
-    def Order(self):
+    def Name(self):
         return self.info.name

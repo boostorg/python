@@ -12,10 +12,11 @@ class Exporter(object):
         self.info = info
         self.parser_tail = parser_tail
         self.interface_file = None
+        self.declarations = []
     
 
     def Name(self):
-        return self.info.name
+        raise NotImplementedError(self.__class__.__name__)
 
 
     def Tail(self):
@@ -73,12 +74,15 @@ class Exporter(object):
         '''Returns a string that uniquely identifies this instance. All
         exporters will be sorted by Order before being exported.
         '''
-        raise NotImplementedError
-
-
-    def Unit(self):
-        return self.info.include
+        return 0, self.info.name
 
 
     def Header(self):
         return self.info.include
+
+
+    def __eq__(self, other):
+        return self.Name() == other.Name()
+
+    def __ne__(self, other):
+        return self.Name() != other.Name()

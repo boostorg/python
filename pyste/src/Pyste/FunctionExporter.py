@@ -24,7 +24,7 @@ class FunctionExporter(Exporter):
                 self.ExportDeclaration(decl, len(decls) == 1, codeunit)
                 self.ExportOpaquePointer(decl, codeunit)
             self.GenerateOverloads(decls, codeunit)  
-            exported_names[decl.FullName()] = 1
+            exported_names[self.Name()] = 1
 
 
     def ExportDeclaration(self, decl, unique, codeunit):
@@ -82,9 +82,6 @@ class FunctionExporter(Exporter):
             if macro:
                 codeunit.Write('declaration-outside', macro)
 
-    def Order(self):
+
+    def Name(self):
         return self.info.name
-
-
-    def Unit(self):
-        return utils.makeid(self.info.include)

@@ -66,17 +66,11 @@ class HeaderExporter(Exporter):
             exporter.SetDeclarations(self.declarations)
             exporter.SetParsedHeader(self.parser_header)
             if isinstance(codeunit, MultipleCodeUnit.MultipleCodeUnit):
-                codeunit.SetCurrent(self.interface_file, exporter.Unit())
+                codeunit.SetCurrent(self.interface_file, exporter.Name())
             else:
-                codeunit.SetCurrent(exporter.Unit())
+                codeunit.SetCurrent(exporter.Name())
             exporter.GenerateCode(codeunit, exported_names)
 
-    
-    def Unit(self):
-        return None # doesn't write anything by itself
 
-
-    def Order(self):
+    def Name(self):
         return self.info.include
-
-        
