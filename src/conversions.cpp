@@ -7,6 +7,7 @@
 //  producing this work.
 //
 // Revision History:
+// 11 Mar 01  std::string *MAY* include nulls (Alex Martelli)
 // 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
 // 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
@@ -149,7 +150,7 @@ int from_python(PyObject* p, boost::python::type<int> type)
 
 PyObject* to_python(unsigned int i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned int from_python(PyObject* p, boost::python::type<unsigned int> type)
@@ -169,7 +170,7 @@ float from_python(PyObject* p, boost::python::type<float>)
 
 PyObject* to_python(unsigned short i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type)
@@ -197,7 +198,7 @@ char from_python(PyObject* p, boost::python::type<char>)
 
 PyObject* to_python(unsigned char i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
@@ -207,7 +208,7 @@ unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
 
 PyObject* to_python(signed char i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 signed char from_python(PyObject* p, boost::python::type<signed char> type)
@@ -243,12 +244,15 @@ const char* from_python(PyObject* p, boost::python::type<const char*>)
 
 PyObject* to_python(const std::string& s)
 {
-	return PyString_FromString(s.c_str());
+    return PyString_FromStringAndSize(s.data(), s.size());
 }
 
 std::string from_python(PyObject* p, boost::python::type<std::string>)
 {
-    return std::string(from_python(p, boost::python::type<const char*>()));
+    char* buffer = 0;
+    int length = 0;
+    int rc = PyString_AsStringAndSize(p, &buffer, &length);
+    return std::string(buffer, length);
 }
 
 bool from_python(PyObject* p, boost::python::type<bool>)
