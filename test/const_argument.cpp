@@ -14,23 +14,17 @@ using namespace boost::python;
 
 BOOST_TT_BROKEN_COMPILER_SPEC( object )
 
-#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
-bool accept_const_arg_noproto( const object )
-{
-    return true; 
-}
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+bool accept_const_arg( object );
 #endif
 
-bool accept_const_arg_with_proto( object );
-bool accept_const_arg_with_proto( const object )
+bool accept_const_arg( const object )
 {
     return true; 
 }
+
 
 BOOST_PYTHON_MODULE( const_argument_ext )
 {
-#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
-    def( "accept_const_arg_noproto", accept_const_arg_noproto );
-#endif
-    def( "accept_const_arg_with_proto", accept_const_arg_with_proto );
+    def( "accept_const_arg", accept_const_arg );
 }

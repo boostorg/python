@@ -3,9 +3,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 """
 >>> from const_argument_ext import *
->>> accept_const_arg_noproto(1)
-1
->>> accept_const_arg_with_proto(1)
+>>> accept_const_arg(1)
 1
 """
 
