@@ -13,10 +13,16 @@
 # include <cstddef>
 
 # ifdef BOOST_NO_OPERATORS_IN_NAMESPACE
-#  define PY_NO_INLINE_FRIENDS_IN_NAMESPACE 1 // A more accurate name
-#  define PY_INLINE_FRIEND
+   // A gcc bug forces some symbols into the global namespace
+#  define PY_BEGIN_CONVERSION_NAMESPACE
+#  define PY_END_CONVERSION_NAMESPACE
+#  define PY_CONVERSION
+#  define PY_IMPORT_CONVERSION(x) using ::x
 # else
-#  define PY_INLINE_FRIEND ::py
+#  define PY_BEGIN_CONVERSION_NAMESPACE namespace py {
+#  define PY_END_CONVERSION_NAMESPACE }
+#  define PY_CONVERSION py
+#  define PY_IMPORT_CONVERSION(x) void never_defined() // so we can follow the macro with a ';'
 # endif
 
 # if defined(BOOST_MSVC)
