@@ -75,6 +75,8 @@ namespace api
   //
   BOOST_PYTHON_IS_XXX_DEF(proxy, boost::python::api::proxy, 1)
 
+  template <class T> struct object_initializer;
+  
   class object;
   typedef PyObject* (object::*bool_type)() const;
   
