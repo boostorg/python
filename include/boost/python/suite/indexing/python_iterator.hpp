@@ -17,8 +17,8 @@
 // $Id$
 //
 
-#ifndef python_iterator_rmg_20030910_included
-#define python_iterator_rmg_20030910_included
+#ifndef BOOST_PYTHON_INDEXING_PYTHON_ITERATOR_HPP
+#define BOOST_PYTHON_INDEXING_PYTHON_ITERATOR_HPP
 
 #include <boost/python/object.hpp>
 #include <memory>
@@ -64,4 +64,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // python_iterator_rmg_20030910_included
+#endif // BOOST_PYTHON_INDEXING_PYTHON_ITERATOR_HPP

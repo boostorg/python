@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef int_slice_helper_rmg_20031013_included
-#define int_slice_helper_rmg_20031013_included
+#ifndef BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP
+#define BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP
 
 #include <boost/python/errors.hpp>
 
@@ -202,4 +202,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // int_slice_helper_rmg_20031013_included
+#endif // BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP

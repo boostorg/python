@@ -21,8 +21,8 @@
 // $Id$
 //
 
-#ifndef shared_proxy_impl_rmg_20030829_included
-#define shared_proxy_impl_rmg_20030829_included
+#ifndef BOOST_PYTHON_INDEXING_SHARED_PROXY_IMPL_HPP
+#define BOOST_PYTHON_INDEXING_SHARED_PROXY_IMPL_HPP
 
 #include <memory>
 
@@ -98,4 +98,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // shared_proxy_impl_rmg_20030829_included
+#endif // BOOST_PYTHON_INDEXING_SHARED_PROXY_IMPL_HPP

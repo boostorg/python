@@ -18,8 +18,8 @@
 // $Id$
 //
 
-#ifndef element_proxy_rmg_20030915_included
-#define element_proxy_rmg_20030915_included
+#ifndef BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP
+#define BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP
 
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
 #include <boost/python/suite/indexing/value_traits.hpp>
@@ -197,4 +197,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // element_proxy_rmg_20030915_included
+#endif // BOOST_PYTHON_INDEXING_ELEMENT_PROXY_HPP

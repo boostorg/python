@@ -19,8 +19,8 @@
 // $Id$
 //
 
-#ifndef algo_selector_rmg_20030911_included
-#define algo_selector_rmg_20030911_included
+#ifndef BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
+#define BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
 
 #include <boost/python/suite/indexing/container_proxy.hpp>
 // Include this early to ensure the declaration of the get_pointer
@@ -195,4 +195,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // algo_selector_rmg_20030911_included
+#endif // BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP

@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef slice_handler_rmg_20030909_included
-#define slice_handler_rmg_20030909_included
+#ifndef BOOST_PYTHON_INDEXING_SLICE_HANDLER_HPP
+#define BOOST_PYTHON_INDEXING_SLICE_HANDLER_HPP
 
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
@@ -297,4 +297,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // slice_handler_rmg_20030909_included
+#endif // BOOST_PYTHON_INDEXING_SLICE_HANDLER_HPP

@@ -19,8 +19,8 @@
 // $Id$
 //
 
-#ifndef container_traits_rmg_20030823_included
-#define container_traits_rmg_20030823_included
+#ifndef BOOST_PYTHON_INDEXING_CONTAINER_TRAITS_HPP
+#define BOOST_PYTHON_INDEXING_CONTAINER_TRAITS_HPP
 
 #include <boost/python/suite/indexing/suite_utils.hpp>
 #include <boost/python/suite/indexing/iterator_traits.hpp>
@@ -201,4 +201,4 @@ boost::python::indexing::base_container_traits<Container>
   value_traits_::visitor_helper (pyClass, policy);
 }
 
-#endif // container_suite_rmg_20030823_included
+#endif // BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP

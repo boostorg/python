@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef slice_rmg_20030910_included
-#define slice_rmg_20030910_included
+#ifndef BOOST_PYTHON_INDEXING_SLICE_HPP
+#define BOOST_PYTHON_INDEXING_SLICE_HPP
 
 #include <boost/python/object.hpp>
 #include <boost/python/errors.hpp>
@@ -85,4 +85,4 @@ namespace boost { namespace python { namespace converter {
   };
 }}}
 
-#endif // slice_rmg_20030910_included
+#endif // BOOST_PYTHON_INDEXING_SLICE_HPP

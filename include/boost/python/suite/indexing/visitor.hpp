@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef visitor_rmg_20030823_included
-#define visitor_rmg_20030823_included
+#ifndef BOOST_PYTHON_INDEXING_VISITOR_HPP
+#define BOOST_PYTHON_INDEXING_VISITOR_HPP
 
 #include <boost/python/suite/indexing/slice_handler.hpp>
 
@@ -517,4 +517,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // visitor_rmg_20030823_included
+#endif // BOOST_PYTHON_INDEXING_VISITOR_HPP

@@ -18,8 +18,8 @@
 // $Id$
 //
 
-#ifndef iterator_pair_rmg_20030909_included
-#define iterator_pair_rmg_20030909_included
+#ifndef BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
+#define BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP
 
 #include <iterator>
 #include <stdexcept>
@@ -139,4 +139,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // iterator_pair_rmg_20030909_included
+#endif // BOOST_PYTHON_INDEXING_ITERATOR_PAIR_HPP

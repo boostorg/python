@@ -17,8 +17,8 @@
 // $Id$
 //
 
-#ifndef algorithms_rmg_20030823_included
-#define algorithms_rmg_20030823_included
+#ifndef BOOST_PYTHON_INDEXING_ALGORITHMS_HPP
+#define BOOST_PYTHON_INDEXING_ALGORITHMS_HPP
 
 #include <boost/python/suite/indexing/suite_utils.hpp>
 
@@ -678,4 +678,4 @@ namespace boost { namespace python { namespace indexing {
   }
 } } }
 
-#endif // algorithms_rmg_20030823_included
+#endif // BOOST_PYTHON_INDEXING_ALGORITHMS_HPP

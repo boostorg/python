@@ -16,8 +16,8 @@
 // $Id$
 //
 
-#ifndef container_suite_rmg_20030823_included
-#define container_suite_rmg_20030823_included
+#ifndef BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
+#define BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP
 
 #include <boost/python/suite/indexing/algo_selector.hpp>
 #include <boost/python/suite/indexing/visitor.hpp>
@@ -43,4 +43,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // container_suite_rmg_20030823_included
+#endif // BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP

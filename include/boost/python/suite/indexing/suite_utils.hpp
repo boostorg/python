@@ -17,8 +17,8 @@
 // $Id$
 //
 
-#ifndef suite_utils_rmg_20030823_included
-#define suite_utils_rmg_20030823_included
+#ifndef BOOST_PYTHON_INDEXING_SUITE_UTILS_HPP
+#define BOOST_PYTHON_INDEXING_SUITE_UTILS_HPP
 
 #include <boost/type_traits.hpp>
 
@@ -72,4 +72,4 @@ namespace boost { namespace python { namespace indexing {
 #endif
 } } }
 
-#endif // suite_utils_rmg_20030823_included
+#endif // BOOST_PYTHON_INDEXING_SUITE_UTILS_HPP

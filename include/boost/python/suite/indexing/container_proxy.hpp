@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef container_proxy_rmg_20030826_included
-#define container_proxy_rmg_20030826_included
+#ifndef BOOST_PYTHON_INDEXING_CONTAINER_PROXY_HPP
+#define BOOST_PYTHON_INDEXING_CONTAINER_PROXY_HPP
 
 #include <boost/python/suite/indexing/proxy_iterator.hpp>
 #include <boost/python/suite/indexing/shared_proxy_impl.hpp>
@@ -554,4 +554,4 @@ namespace boost { namespace python { namespace indexing {
 
 } } }
 
-#endif // container_proxy_rmg_20030826_included
+#endif // BOOST_PYTHON_INDEXING_CONTAINER_PROXY_HPP

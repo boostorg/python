@@ -15,8 +15,8 @@
 // $Id$
 //
 
-#ifndef proxy_iterator_rmg_20031008_included
-#define proxy_iterator_rmg_20031008_included
+#ifndef BOOST_PYTHON_INDEXING_PROXY_ITERATOR_HPP
+#define BOOST_PYTHON_INDEXING_PROXY_ITERATOR_HPP
 
 #include <iterator>
 
@@ -118,4 +118,4 @@ namespace std {
   }
 }
 
-#endif // proxy_iterator_rmg_20031008_included
+#endif // BOOST_PYTHON_INDEXING_PROXY_ITERATOR_HPP

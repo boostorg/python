@@ -18,8 +18,8 @@
 // $Id$
 //
 
-#ifndef value_traits_rmg_20030912_included
-#define value_traits_rmg_20030912_included
+#ifndef BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
+#define BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
 
 namespace boost { namespace python { namespace indexing {
   template<typename T>
@@ -38,4 +38,4 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
-#endif // value_traits_rmg_20030912_included
+#endif // BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
