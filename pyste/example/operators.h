@@ -1,5 +1,6 @@
 #include <iostream>
 
+namespace operators {
 
 struct C
 {
@@ -16,14 +17,15 @@ struct C
     {
         return value;    
     } 
+    
     double operator()()
     {
-        return x;
+        return C::x;
     }
 
     double operator()(double other)
     {
-        return x + other;
+        return C::x + other;
     }
     
 
@@ -38,10 +40,4 @@ const C operator*(const C& lhs, const C& rhs)
     return c;
 }
 
-std::ostream& operator <<( std::ostream& s, const C& c)
-{
-    std::cout << "here";
-    s << "C instance: ";
-    return s;
-} 
-
+}

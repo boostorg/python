@@ -1,2 +1,2 @@
-Class('C', 'basic.h')
-Function('call_f', 'basic.h')
+Class('basic::C', 'basic.h')
+Function('basic::call_f', 'basic.h')

@@ -1,1 +1,1 @@
-Class('Root', 'nested.h')
+Class('nested::Root', 'nested.h')

@@ -1,4 +1,5 @@
-
+namespace templates {
+    
 template <class X, class Y>
 struct Point
 {
@@ -6,3 +7,4 @@ struct Point
     Y y;
 };
   
+}

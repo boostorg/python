@@ -20,7 +20,7 @@ list VectorToList(const std::vector<T> & v)
 }
 
 list RangeWrapper(int count){
-    return VectorToList(Range(count));
+    return VectorToList(wrappertest::Range(count));
 }
 
 #endif

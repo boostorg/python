@@ -1,23 +1,26 @@
-#include <iostream>
 #include <map>
 #include <string>
 
+namespace header_test {
+    
 enum choice { red, blue };
 
-void print_choice(choice c)
+std::string choice_str(choice c)
 {
     std::map<choice, std::string> choice_map;
     choice_map[red] = "red";
     choice_map[blue] = "blue";
-    std::cout << "You chose: " << choice_map[c] << std::endl;
+    return choice_map[c];
 }
 
 struct C
 {
     choice c;
 
-    void print_()
+    std::string get()
     {
-        print_choice(c);
+        return choice_str(c);
     }
 };
+
+}

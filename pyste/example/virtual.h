@@ -1,4 +1,5 @@
-
+namespace virtual_ {
+    
 struct C
 {
 public:
@@ -21,3 +22,4 @@ private:
 
 int call_f(C& c) { return c.f(); }
 
+}
