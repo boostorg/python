@@ -3,13 +3,10 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/detail/module_base.hpp>
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/find_instance.hpp>
 #include <boost/python/detail/map_entry.hpp>
-#include <boost/python/detail/module_info.hpp>
-#include <boost/python/class.hpp>
 #include <boost/python/object.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
@@ -249,12 +246,6 @@ namespace objects
       char const* name, std::size_t num_types, class_id const* const types)
   {
       assert(num_types >= 1);
-
-      // is this class already registered?
-      m_object = query_class(types[0]);
-      if(m_object.get()) {
-          return;
-      }
       
       // Build a tuple of the base Python type objects. If no bases
       // were declared, we'll use our class_type() as the single base
@@ -269,15 +260,9 @@ namespace objects
           PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(c.release()));
       }
 
-      // we now need just the base name
-      std::string base_name(name);
-      std::string::size_type dot_pos = base_name.rfind('.');
-      if(dot_pos != std::string::npos)
-          base_name = base_name.substr(dot_pos + 1);
-
       // Build the (name, bases, dict) tuple for creating the new class
       handle<> args(PyTuple_New(3));
-      PyTuple_SET_ITEM(args.get(), 0, incref(python::object(base_name.c_str()).ptr()));
+      PyTuple_SET_ITEM(args.get(), 0, incref(python::object(name).ptr()));
       PyTuple_SET_ITEM(args.get(), 1, bases.release());
       handle<> d(PyDict_New());
       PyTuple_SET_ITEM(args.get(), 2, d.release());
@@ -319,107 +304,9 @@ namespace objects
           throw_error_already_set();
   }
 
-  namespace {
-      class empty_class {};
-
-      void transfer_attributes(object const& src, object const& dst)
-      {
-          object attrs((python::detail::new_reference)PyObject_Dir(src.ptr()));
-          if(PyList_Check(attrs.ptr())) {
-              int sz = PyList_Size(attrs.ptr());
-              for(int i = 0; i < sz; i++) {
-                  PyObject *attr_name = PyList_GET_ITEM(attrs.ptr(), i);
-                  object attr((python::detail::new_reference)PyObject_GetAttr(src.ptr(), attr_name));
-                  // only transfer boost classes
-                  if(attr.ptr()->ob_type == &class_metatype_object)
-                      PyObject_SetAttr(dst.ptr(), attr_name, attr.ptr());
-              }
-          }
-      }
-      
-
-      object getattr_or_none(object const &obj, const char *name)
-      {
-          if(PyObject_HasAttrString(obj.ptr(), const_cast<char*>(name)))
-              return obj.attr(name);
-          else
-              return object();
-      }
-
-  }
-
-  // get a class context for nested classes
-  handle<> class_base::get_class_context_object(const char* name, type_handle const& class_obj)
-  {
-      // initialise various iterators, etc.
-      std::string s_name(name), b_name;
-      std::string::size_type p_pos(0);
-      python::object current_object(python::detail::module_base::get_prior_module());
-      for(;;) {
-          // find the next class name in the 'dotted' name
-          std::string::size_type dot_pos = s_name.find('.', p_pos);
-          // have we completed up to the current class ?
-          // p_pos is the absolute position, but the length is needed
-          if(dot_pos != std::string::npos)
-              dot_pos -= p_pos;
-          // the current class name being processed, iterating from left to right
-          b_name = s_name.substr(p_pos, dot_pos);
-          if(dot_pos == std::string::npos) {
-              // this is the last class in the chain, is it here already
-              python::object existing_object(getattr_or_none(current_object, b_name.c_str()));
-              if(existing_object) {
-                  // yes
-                  if(PyObject_TypeCheck(existing_object.ptr(), &PyType_Type)) {
-                      PyTypeObject *pType = (PyTypeObject *) existing_object.ptr();
-                      // is it one of ours?
-                      if(pType->ob_type == &class_metatype_object) {
-                          // then lets see if its our empty_class
-                          type_handle r = query_class(python::type_id<empty_class>());
-                          // is it registered as the empty_class?
-                          if(r.get() == pType) {
-                              // yes, then we can transfer attributes
-                              transfer_attributes(python::object(handle<>(r)), python::object(handle<>(class_obj)));
-                          } else {
-                              // the user must have created it already.
-                              //   so we don't need to add it
-                              return handle<>();
-                          }
-                      }
-                  }
-              }
-              break;
-          }
-          // try to find an existing parent of the nested class
-          current_object = getattr_or_none(current_object, b_name.c_str());
-          if(!current_object) {
-              // If we can't find it then insert a temporary class as a marker
-              std::string full_name(s_name.substr(0, dot_pos));
-              current_object = python::object(handle<>(boost::python::class_<empty_class>(full_name.c_str()).object()));
-          }
-          // we now have a new current object to iterate
-          // note that we could attach the nested class to something other 
-          //   than a parent class here as we are not testing the type,
-          //      does this really matter?
-          // advance over the dot
-          p_pos += dot_pos + 1;
-      }
-      // return the actual sub-module that was either found or created
-      return handle<>(python::borrowed(current_object.ptr()));
-  }
-
-  class_base::class_base()
-  {
-  }
-
-  class_base const& class_base::empty_class_base()
-  {
-      static class_base ecb;
-      return ecb;
-  }
-
   BOOST_PYTHON_DECL type_handle registered_class_object(class_id id)
   {
-      return query_class(id);
+      return objects::query_class(id);
   }
 } // namespace objects
 

@@ -39,12 +39,7 @@ struct BOOST_PYTHON_DECL class_base : private noncopyable
     void add_property(char const* name, handle<> const& fget);
     void add_property(char const* name, handle<> const& fget, handle<> const& fset);
     void setattr(char const* name, handle<> const&);
-    static handle<> get_class_context_object(const char* name, type_handle const& class_obj);
- protected:
-    static class_base const& empty_class_base();
  private:
-    // construct an empty base class
-    class_base();
     type_handle m_object;
 };
 

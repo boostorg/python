@@ -13,7 +13,6 @@
 # include <boost/python/class_fwd.hpp>
 # include <boost/python/detail/module_base.hpp>
 # include <boost/python/detail/module_init.hpp>
-# include <boost/python/detail/module_info.hpp>
 
 namespace boost { namespace python {
 
@@ -22,7 +21,7 @@ class module : public detail::module_base
  public:
     typedef detail::module_base base;
 
-     module(const char* name = "")
+    module(const char* name)
         : base(name) {}
 
     // Add elements to the module
@@ -34,8 +33,7 @@ class module : public detail::module_base
     template <class T1, class T2 , class T3, class T4>
     module& add(class_<T1,T2,T3,T4> const& c)
     {
-        // redundant
-        // this->add_class(c.object());
+        this->add_class(c.object());
         return *this;
     }
     
@@ -53,14 +51,6 @@ class module : public detail::module_base
         this->setattr(name, boost::python::make_function(fn, handler));
         return *this;
     }
-
-    static module get_prior_module()
-    {
-        return module(module_base::get_prior_module());
-    }
-
- private:
-    module(handle<> const& m) : base(m) {}
 };
 
 //
@@ -88,19 +78,6 @@ inline module& module::add(PyTypeObject* x)
 {
     this->base::add(handle<>(borrowed(x)));
     return *this;
-}
-
-template <class Fn>
-inline void def(char const* name, Fn fn)
-{
-    module::get_prior_module().def(name, fn);
-}
-
-
-template <class Fn, class ResultHandler>
-inline void def(char const* name, Fn fn, ResultHandler handler)
-{
-    module::get_prior_module().def(name, fn, handler);
 }
 
 }} // namespace boost::python

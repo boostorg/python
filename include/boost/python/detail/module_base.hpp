@@ -10,8 +10,6 @@
 
 namespace boost { namespace python { namespace detail { 
 
-class module_info;
-
 class BOOST_PYTHON_DECL module_base
 {
  public:
@@ -23,22 +21,14 @@ class BOOST_PYTHON_DECL module_base
     void setattr(const char* name, PyObject*);
     void setattr(const char* name, handle<> const&);
     void add(type_handle const&); // just use the type's name
-    static module_info* get_module_info();
-    static void set_module_info(module_info& mi);
-    static handle<> get_prior_module();
-    static void set_prior_module(handle<> const& m);
-    static void add(type_handle const& class_obj, handle<> const& context);
     
     // Return a reference to the Python module object being built
     inline handle<> object() const;
 
  protected:
-    module_base(handle<> const &m) : m_module(m) {}
     void add_class(type_handle const& class_obj);
-    void add_class(type_handle const& class_obj, handle<> const& context);
 
  private:
-    static module_info*& get_module_info_ref();
     handle<> m_module;
     static PyMethodDef initial_methods[1];
 };
@@ -49,12 +39,6 @@ class BOOST_PYTHON_DECL module_base
 inline handle<> module_base::object() const
 {
     return m_module;
-}
-
-inline void module_base::add(type_handle const& class_obj, handle<> const& context)
-{
-    module_base mb(get_prior_module());
-    mb.add_class(class_obj, context);
 }
 
 }}} // namespace boost::python::detail
