@@ -46,7 +46,7 @@
 // The STLport puts all of the standard 'C' library names in std (as far as the
 // user is concerned), but without it you need a fix if you're using MSVC or
 // Intel C++
-# if defined(BOOST_MSVC_STD_ITERATOR)
+# if defined(BOOST_NO_STDC_NAMESPACE)
 #  define BOOST_CSTD_
 # else
 #  define BOOST_CSTD_ std
