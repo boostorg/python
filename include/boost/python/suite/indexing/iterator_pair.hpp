@@ -43,10 +43,15 @@ namespace boost { namespace python { namespace indexing {
     typedef typename std_traits::value_type      value_type;
     typedef typename std_traits::pointer         pointer;
 
-    // Can't provide: const_iterator, allocator_type, reverse_iterator
-    // or const_reverse_iterator. Could probably provide (but don't)
-    // const_reference and const_pointer. These would be the same
-    // as reference and pointer if Iterator is itself a const_iterator.
+    typedef iterator                             const_iterator;
+    // Can't tell what the const version of our iterator should
+    // be. The client code will have to instantiate iterator_pair
+    // directly with a const_iterator if that's what it wants.
+
+    // Also can't provide: allocator_type, reverse_iterator or
+    // const_reverse_iterator. Could probably provide (but don't)
+    // const_reference and const_pointer. These would be the same as
+    // reference and pointer if Iterator is itself a const_iterator.
 
   public:
     iterator_pair (iterator_param, iterator_param);
