@@ -8,6 +8,7 @@
 
 # include <boost/type.hpp>
 
+# include <boost/python/call.hpp>
 # include <boost/python/handle_fwd.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/python/slice_nil.hpp>
