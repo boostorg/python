@@ -85,19 +85,11 @@ namespace detail
       BaseArgs base;
   };
 
-# if 0
-  template <class N, class BaseArgs, class Offset>
-  inline PyObject* get(N, offset_args<BaseArgs,Offset> const& args_)
+  template <int N, class BaseArgs, class Offset>
+  inline PyObject* get(mpl::int_<N>, offset_args<BaseArgs,Offset> const& args_)
   {
-      return get(mpl::int_<(N::value+Offset::value)>(), args_.base);
+      return get(mpl::int_<(N+Offset::value)>(), args_.base);
   }
-# else
-  template <unsigned N, class BaseArgs, class Offset>
-  inline PyObject* get(offset_args<BaseArgs,Offset> const& args_ BOOST_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(unsigned,N))
-  {
-      return get<(N + Offset::value)>(args_.base);
-  }
-# endif
   
   template <class BaseArgs, class Offset>
   inline unsigned arity(offset_args<BaseArgs,Offset> const& args_)

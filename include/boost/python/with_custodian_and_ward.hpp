@@ -59,13 +59,9 @@ struct with_custodian_and_ward : BasePolicy_
             return false;
         }
 
-# if 0 // argpkg
         PyObject* patient = detail::get(mpl::int_<(ward-1)>(), args_);
         PyObject* nurse = detail::get(mpl::int_<(custodian-1)>(), args_);
-# else
-        PyObject* patient = detail::get<(ward-1)>(args_);
-        PyObject* nurse = detail::get<(custodian-1)>(args_);
-# endif 
+
         PyObject* life_support = python::objects::make_nurse_and_patient(nurse, patient);
         if (life_support == 0)
             return false;
@@ -97,13 +93,9 @@ struct with_custodian_and_ward_postcall : BasePolicy_
             return 0;
         }
         
-# if 0 // argpkg
         PyObject* patient = ward > 0 ? detail::get(mpl::int_<(ward-1)>(),args_) : result;
         PyObject* nurse = custodian > 0 ? detail::get(mpl::int_<(custodian-1)>(),args_) : result;
-# else 
-        PyObject* patient = detail::get_prev<ward>::execute(args_, result);
-        PyObject* nurse = detail::get_prev<custodian>::execute(args_, result);
-# endif 
+
         if (nurse == 0) return 0;
     
         result = BasePolicy_::postcall(args_, result);
