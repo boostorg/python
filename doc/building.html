@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta name="generator" content=
-    "HTML Tidy for Windows (vers 1st August 2002), see www.w3.org">
+    "HTML Tidy for Cygwin (vers 1st April 2002), see www.w3.org">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <link rel="stylesheet" type="text/css" href="boost.css">
 
@@ -38,6 +38,9 @@
       <dd>
         <dl class="index">
           <dt><a href="#configuration">Configuration</a></dt>
+
+          <dt><a href="#cygwin_configuration">Configuration for Cygwin GCC
+          from a Windows prompt</a></dt>
 
           <dt><a href="#results">Results</a></dt>
 
@@ -85,7 +88,7 @@
     installation (if you have already built boost from the top level this may
     have no effect, since the work is already done).</p>
 
-    <h3><a name="configuration">Configuration</a></h3>
+    <h3><a name="configuration">Basic Configuration</a></h3>
     You may need to configure the following variables to point Boost.Build at
     your Python installation: 
 
@@ -128,7 +131,8 @@
 
         <td>path to Python <code>#include</code> directories</td>
 
-        <td>Autoconfigured from <code>PYTHON_ROOT</code></td>
+        <td>Autoconfigured from <code>PYTHON_ROOT</code>. Try the default
+        before attempting to set it yourself.</td>
       </tr>
 
       <tr>
@@ -136,37 +140,50 @@
 
         <td>path to Python library object.</td>
 
-        <td>Autoconfigured from <code>PYTHON_ROOT</code></td>
+        <td>Autoconfigured from <code>PYTHON_ROOT</code>. Try the default
+        before attempting to set it yourself.</td>
+      </tr>
+    </table>
+
+    <h3><a name="cygwin_configuration">Configuration for Cygwin GCC from a
+    Windows prompt</a></h3>
+    The following settings may be useful when building with <a href=
+    "http://www.cygwin.com">Cygwin</a> GCC (not MinGW) from a Windows command
+    shell using a Windows build of <code>bjam</code>. <b>If
+    "<code>bjam&nbsp;-v</code>" does not report "<code>OS=NT</code>", these
+    settings do not apply to you</b>; you should use the <a href=
+    "#configuration">normal configuration</a> variables instead. They are
+    only useful when building and testing with multiple toolsets on Windows
+    using a single build command, since Cygwin GCC requires a different build
+    of Python. 
+
+    <table border="1" summary=
+    "Cygwin GCC under NT build configuration variables">
+      <tr>
+        <th>Variable Name</th>
+
+        <th>Semantics</th>
+
+        <th>Default</th>
       </tr>
 
       <tr>
         <td><code>CYGWIN_PYTHON_[DEBUG_]VERSION</code></td>
 
-        <td>The version of python being used under Cygwin. </td>
+        <td>The version of python being used under Cygwin.</td>
 
-        <td>$(PYTHON_VERSION)
-
-        </td>
-
-        <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC. This and the following
-        settings are useful when building with multiple toolsets on
-        Windows, since Cygwin GCC requires a different build of
-        Python.</td> </tr>
+        <td>$(PYTHON_VERSION)</td>
+      </tr>
 
       <tr>
         <td><code>CYGWIN_PYTHON_[DEBUG_]ROOT</code></td>
 
-        <td>unix-style path containing the <code>include/</code>
-        directory containing
-        <code>python$(CYGWIN_PYTHON_[DEBUG_]VERSION)/python.h</code>. </td>
+        <td>unix-style path containing the <code>include/</code> directory
+        containing
+        <code>python$(CYGWIN_PYTHON_[DEBUG_]VERSION)/python.h</code>.</td>
 
-        <td>$(PYTHON_ROOT)
-
-        </td>
-
-        <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+        <td>$(PYTHON_ROOT)</td>
+      </tr>
 
       <tr>
         <td><code>CYGWIN_PYTHON_[DEBUG_]LIB_PATH</code></td>
@@ -175,9 +192,7 @@
         <code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll.a</code></td>
 
         <td>Autoconfigured from <code>CYGWIN_PYTHON_ROOT</code></td>
-
-        <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
+      </tr>
 
       <tr>
         <td><code>CYGWIN_PYTHON_[DEBUG_]DLL_PATH</code></td>
@@ -186,10 +201,6 @@
         (<code>libpython$(CYGWIN_PYTHON_[DEBUG_]VERSION).dll</code>)</td>
 
         <td><code>/bin</code></td>
-
-        <td>Use only when building with <a href=
-        "http://www.cygwin.com">Cygwin</a> GCC.</td> </tr>
-
       </tr>
     </table>
 
@@ -206,10 +217,10 @@
     "http://www.python.org/download/download_source.html">Unix installation
     process</a> to build Python from source.</p>
 
-    <p>The special build configuration variables listed above as "Cygwin
-    only" make it possible to use a regular Win32 build of bjam to build and
-    test Boost.Python and Boost.Python extensions using Cygwin GCC and
-    targeting a Cygwin build of Python.</p>
+    <p>The special build configuration variables listed <a href=
+    "#cygwin_configuration">above</a> make it possible to use a regular Win32
+    build of bjam to build and test Boost.Python and Boost.Python extensions
+    using Cygwin GCC and targeting a Cygwin build of Python.</p>
 
     <h3><a name="results">Results</a></h3>
 
