@@ -6,9 +6,6 @@
 #ifndef REFERENT_STORAGE_DWA200278_HPP
 # define REFERENT_STORAGE_DWA200278_HPP
 # include <boost/mpl/select_type.hpp>
-# include <boost/preprocessor/list/for_each_i.hpp>
-# include <boost/preprocessor/tuple/to_list.hpp>
-# include <boost/preprocessor/cat.hpp>
 # include <cstddef>
 
 namespace boost { namespace python { namespace detail {
@@ -42,12 +39,35 @@ union aligned_storage
 
 # undef BOOST_PYTHON_ALIGNER
 
+  // Compute the size of T's referent. We wouldn't need this at all,
+  // but sizeof() is broken in CodeWarriors <= 8.0
+  template <class T> struct referent_size;
+  
+# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+  
+  template <class T>
+  struct referent_size<T&>
+  {
+      BOOST_STATIC_CONSTANT(
+          std::size_t, value = sizeof(T));
+  };
+
+# else
+
+  template <class T> struct referent_size
+  {
+      static T f();
+      BOOST_STATIC_CONSTANT(std::size_t, value = sizeof(f()));
+  };
+  
+# endif
+
 // A metafunction returning a POD type which can store U, where T ==
 // U&. If T is not a reference type, returns a POD which can store T.
 template <class T>
 struct referent_storage
 {
-    typedef aligned_storage<sizeof(T)> type;
+    typedef aligned_storage<referent_size<T>::value> type;
 };
 
 }}} // namespace boost::python::detail
