@@ -7,6 +7,7 @@
 //  producing this work.
 //
 // Revision History:
+// 12 Mar 01  Python 1.5.2 fixes (Ralf W. Grosse-Kunstleve)
 // 11 Mar 01  std::string *MAY* include nulls (Alex Martelli)
 // 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
 // 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
@@ -249,10 +250,7 @@ PyObject* to_python(const std::string& s)
 
 std::string from_python(PyObject* p, boost::python::type<std::string>)
 {
-    char* buffer = 0;
-    int length = 0;
-    int rc = PyString_AsStringAndSize(p, &buffer, &length);
-    return std::string(buffer, length);
+    return std::string(PyString_AsString(p), PyString_Size(p));
 }
 
 bool from_python(PyObject* p, boost::python::type<bool>)
