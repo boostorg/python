@@ -22,6 +22,7 @@
 //
 
 #include "container_proxy.hpp"
+#include "IntWrapper.hpp"
 
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
@@ -33,110 +34,6 @@
 
 #include <string>
 #include <vector>
-
-namespace {
-  bool gIntWrapperTrace = true;
-}
-
-struct IntWrapper {
-  static unsigned ourObjectCounter;
-  int mObjNumber;
-  int mI;
-
-  IntWrapper ()
-    : mObjNumber (ourObjectCounter++)
-    , mI (0)
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u ()\n", mObjNumber);
-      }
-  }
-
-  explicit IntWrapper (int i)
-    : mObjNumber (ourObjectCounter++)
-    , mI (i)
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u (%d)\n"
-		, mObjNumber
-		, mI);
-      }
-  }
-
-  IntWrapper (IntWrapper const &other)
-    : mObjNumber (ourObjectCounter++)
-    , mI (other.mI)
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u (IntWrapper %u)\n"
-		, mObjNumber
-		, other.mObjNumber);
-      }
-  }
-
-  IntWrapper &operator= (IntWrapper const &other)
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u = IntWrapper %u\n"
-		, mObjNumber
-		, other.mObjNumber);
-      }
-
-    mI = other.mI;
-
-    return *this;
-  }
-
-  ~IntWrapper ()
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("~IntWrapper %u\n", mObjNumber);
-      }
-  }
-
-  void increment()
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u::increment\n", mObjNumber);
-      }
-
-    ++mI;
-  }
-
-  operator boost::shared_ptr<IntWrapper> () const
-  {
-    if (gIntWrapperTrace)
-      {
-	printf ("IntWrapper %u shared_ptr conversion\n", mObjNumber);
-      }
-
-    return boost::shared_ptr<IntWrapper> (new IntWrapper (*this));
-  }
-};
-
-unsigned IntWrapper::ourObjectCounter = 0;
-
-bool operator== (IntWrapper const &lhs, IntWrapper const &rhs)
-{
-  return lhs.mI == rhs.mI;
-}
-
-bool operator< (IntWrapper const &lhs, IntWrapper const &rhs)
-{
-  return lhs.mI < rhs.mI;
-}
-
-std::ostream &operator<< (std::ostream &strm, IntWrapper const &iw)
-{
-  strm << iw.mI;
-  return strm;
-}
 
 template<typename ContainerProxy>
 std::string proxy_repr (typename ContainerProxy::value_type const &proxy)
@@ -160,11 +57,6 @@ void pointer_increment (boost::shared_ptr<IntWrapper> const &ptr)
   (*ptr).increment();
 }
 
-void setTrace (int onoff)
-{
-  gIntWrapperTrace = onoff;
-}
-
 IntWrapper *get_pointer (container_proxy<std::vector<IntWrapper> >::value_type const &proxy)
 {
   return &(*proxy);
@@ -172,7 +64,7 @@ IntWrapper *get_pointer (container_proxy<std::vector<IntWrapper> >::value_type c
 
 BOOST_PYTHON_MODULE (indexing)
 {
-  boost::python::def ("trace", &setTrace);
+  boost::python::def ("trace", &IntWrapper::setTrace);
 
   typedef std::vector<IntWrapper> Container;
   typedef container_proxy<Container> ProxyContainer;
