@@ -28,50 +28,40 @@
 
 <h2><a name="introduction"></a>Introduction</h2>
 
-<p>Instances of a dereferenceable type can be used like a pointer to access an lvalue.
+<p>Instances of a Dereferenceable type can be used like a pointer to access an lvalue.
 
 <h2><a name="concept-requirements"></a>Concept Requirements</h2>
 <h3><a name="Dereferenceable-concept"></a>Dereferenceable Concept</h3>
 
-<p>In the table below, <code><b>x</b></code> denotes an object whose
-type is a model of Dereferenceable.
+<p>In the table below, <code><b>T</b></code> is a model of
+Dereferenceable, and <code><b>x</b></code> denotes an object of
+type <code>T</code>.  In addition, all pointers are Dereferenceable.
 
 <table summary="Dereferenceable expressions" border="1" cellpadding="5">
 
   <tr> 
     <td><b>Expression</b></td>
-    <td><b>Requirements</b></td>
-  </tr>
-
-  <tr> 
-    <td valign="top"><code>*x</code></td>
-    <td>An lvalue
-  </tr>
-</table>
-
-If <code><b>x</b></code> is not a pointer type, it also must satsify the following expression:
-
-<table summary="Dereferenceable expressions" border="1" cellpadding="5">
-
-  <tr> 
-    <td><b>Expression</b></td>
+    <td><b>Result</b></td>
     <td><b>Operational Semantics</b></td>
   </tr>
 
   <tr> 
-    <td valign="top"><code>get_pointer( x )</code></td>
+    <td><code>get_pointer(x)</code></td>
+    <td>convertible to <code><a href="pointee.html#pointee-spec">pointee</a>&lt;T&gt;::type*</code>
     <td><code>&amp;*x</code>, or a null pointer
   </tr>
+<tr>
+
 </table>
 
 <hr>
 <p>Revised 
   <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  29 November, 2002
+  18 December, 2003
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
 </p>
     <p><i>&copy; Copyright <a href="../../../../people/dave_abrahams.htm">Dave
-    Abrahams</a> 2002. All Rights Reserved.</i>
+    Abrahams</a> 2002-2003. All Rights Reserved.</i>
 
 <p>Permission to copy, use, modify, sell
  and distribute this software is granted provided this copyright notice appears

@@ -58,10 +58,9 @@
 void register_ptr_to_python() 
 </pre>
 <dl class="function-semantics"> 
-  <dt><b>Requires:</b> <code>P</code> is the type of the smart pointer,
-  for example <code>smart_ptr&lt;X&gt;</code>.
+  <dt><b>Requires:</b> <code>P</code> is <a href="Dereferenceable.html#Dereferenceable-concept">Dereferenceable</a>.
   </dt>
-  <dt><b>Effects:</b> Allows conversions to-python of <code>smart_ptr&lt;X&gt;</code>
+  <dt><b>Effects:</b> Allows conversions to-python of <code>P</code>
   instances.
   </dt>
 </dl>
