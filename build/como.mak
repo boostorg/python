@@ -1,10 +1,12 @@
 # Revision History:
+# 17 Apr 01  include cross-module support, compile getting_started1 (R.W. Grosse-Kunstleve) UNTESTED!
 # 06 Mar 01  Fixed typo in use of "PYTHON_LIB" (Dave Abrahams)
 # 04 Mar 01  Changed library name to libboost_python.a (David Abrahams)
 
 LIBSRC = \
     classes.cpp \
     conversions.cpp \
+    cross_module.cpp \
     extension_class.cpp \
     functions.cpp \
     init_function.cpp \
@@ -34,11 +36,12 @@ endif
             | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
                 [ -s $@ ] || rm -f $@
 
-example1: example1.o libboost_python.a
-	como-dyn-link -o ../example/hellomodule.$(MODULE_EXTENSION) $(PYTHON_LIB) example1.o -L. -lboost_python
-	python ../example/test_example1.py
+getting_started1: getting_started1.o libboost_python.a
+	como-dyn-link -o ../example/getting_started1.$(MODULE_EXTENSION) $(PYTHON_LIB) getting_started1.o -L. -lboost_python
+	ln -s ../test/doctest.py ../example
+	python ../example/test_getting_started1.py
 
-example1.o: ../example/example1.cpp
+getting_started1.o: ../example/getting_started1.cpp
 	como --pic $(INC) -o $*.o -c $<
 
 clean:
