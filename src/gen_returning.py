@@ -1,4 +1,4 @@
-#  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
+#  (C) Copyright David Abrahams 2001,2002. Permission to copy, use, modify, sell and
 #  distribute this software is granted provided this copyright notice appears
 #  in all copies. This software is provided "as is" without express or implied
 #  warranty, and with no claim as to its suitability for any purpose.
@@ -8,8 +8,8 @@
 from gen_function import *
 import string
 
-header = '''//  (C) Copyright David Abrahams 2001. Permission to copy, use, modify, sell and
-//  distribute this software is granted provided this copyright notice appears
+header = '''//  (C) Copyright David Abrahams 2001,2002. Permission to copy, use, modify, sell
+//  and distribute this software is granted provided this copyright notice appears
 //  in all copies. This software is provided "as is" without express or implied
 //  warranty, and with no claim as to its suitability for any purpose.
 //
@@ -24,11 +24,10 @@ body_sections = (
 #ifndef RETURNING_DWA20011201_HPP
 # define RETURNING_DWA20011201_HPP
 
-//# include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/config.hpp>
-# include <boost/python/convert.hpp>
 # include <boost/python/detail/none.hpp>
+# include <boost/python/from_python.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -62,32 +61,49 @@ struct returning<void>
 
 #'
 
-member_function = '''    template <class A0%(, class A%+%)>
-    static PyObject* call(R (A0::*pmf)(%(A%+%:, %))%1, PyObject* args, PyObject* /* keywords */ )
+member_function = '''    template <class P, class A0%(, class A%+%)>
+    static PyObject* call(R (A0::*pmf)(%(A%+%:, %))%1, PyObject* args_, PyObject*, P const& policies)
     {
         // check that each of the arguments is convertible
-        unwrap<A0%1&> c0(PyTuple_GET_ITEM(args, 0));
-%(        unwrap_more<A%+> c%+(PyTuple_GET_ITEM(args, %+), c%n);
+        from_python<A0%1*> c0(PyTuple_GET_ITEM(args_, 0));
+        if (!c0.convertible()) return 0;
+%(        from_python<A%+> c%+(PyTuple_GET_ITEM(args_, %+));
+        if (!c%+.convertible()) return 0;
 %)
 %[r%:        // find the result converter
-        wrap_more<R> r(c%n);
-%]        if (!c0) return 0;
-        %[r%:return r( %]((*c0).*pmf)(%(*c%+%:, %))%[r%: )%];%[v%:
-        return detail::none();%]
+        typedef typename P::result_converter result_converter;
+        typename eval<result_converter,R>::type cr;
+        if (!cr.convertible()) return 0;
+        
+%]        if (!policies.precall(args_)) return 0;
+
+        %[r%:PyObject* result = cr( %]((c0(PyTuple_GET_ITEM(args_, 0)))->*pmf)(
+                %(c%+(PyTuple_GET_ITEM(args_, %+))%:
+                , %))%[r%: )%];
+        
+        return policies.postcall(args_, %[r%:result%]%[v%:detail::none()%]);
     }
 ''' 
         
-free_function = '''%{    template <%(class A%n%:, %)>
-%}    static PyObject* call(R (*pf)(%(A%n%:, %)), PyObject*%{ args%}, PyObject* /* keywords */ )
+free_function = '''    template <class P%(, class A%n%%)>
+    static PyObject* call(R (*pf)(%(A%n%:, %)), PyObject* args_, PyObject*, P const& policies)
     {%{
         // check that each of the arguments is convertible
-%}%(        unwrap%{_more%}<A%n> c%n(PyTuple_GET_ITEM(args, %n)%{, c%-%});
-%)%[r%:
-        // find the result converter
-        wrap%{_more%}<R> c%n%{(c%-)%};%]%[not-void-and-0-arg%:
-        if (!c0) return 0;%]
-        %[r%:return c%n( %](*pf)(%(*c%n%:, %))%[r%: )%];%[v%:
-        return detail::none();%]
+%}%(        from_python<A%n> c%n(PyTuple_GET_ITEM(args_, %n));
+        if (!c%n.convertible()) return 0;
+%)
+%[r%:        // find the result converter
+        typedef typename P::result_converter result_converter;
+        typename eval<result_converter,R>::type cr;
+        if (!cr.convertible()) return 0;
+        
+%]%[not-void-and-0-arg%:        if (!policies.precall(args_)) return 0;
+        
+%]        %[r%:PyObject* result = cr( %](*pf)(
+                %(c%n(PyTuple_GET_ITEM(args_, %n))%:
+                , %))%[r%: )%];
+                
+        return policies.postcall(args_, %[r%:result%]%[v%:detail::none()%]);
     }
 ''' 
 
