@@ -91,10 +91,13 @@ namespace boost { namespace python { namespace indexing {
       typedef value_type reference;  // Already has reference semantics
 
       iterator (container_proxy *p, size_type i) : ptr (p), index (i) { }
-
-      iterator (container_proxy *p, raw_iterator iter)
+ 
+      iterator (container_proxy *p, raw_iterator iter, int dummy)
         : ptr (p), index (iter - p->raw_container().begin())
       {
+	// The dummy parameter seems to be necessary in order to
+	// disambiguate the two constructor overloads on the "Compaq
+	// C++ V6.5-031 for Compaq Tru64 UNIX V5.1 (Rev. 732)" compiler
       }
 
       reference operator*() const { return ptr->at(index); }
@@ -136,6 +139,8 @@ namespace boost { namespace python { namespace indexing {
       container_proxy *ptr;
       size_type index;
     };
+
+    friend struct iterator;
 
   public:
     // Constructors
@@ -262,6 +267,7 @@ namespace boost { namespace python { namespace indexing {
     std::for_each (myMap.begin(), myMap.end(), detach_if_shared);
     myMap.clear();
     Holder::assign (myHeldObj, copy.myHeldObj);
+    return *this;
   }
 
   template<class Container, class Holder>
@@ -371,7 +377,7 @@ namespace boost { namespace python { namespace indexing {
       = raw_container().erase (raw_container().begin() + from.index
                                , raw_container().begin() + to.index);
 
-    return iterator (this, result);
+    return iterator (this, result, 0);
   }
 
   template<class Container, class Holder>
@@ -390,7 +396,7 @@ namespace boost { namespace python { namespace indexing {
     raw_iterator result
       = raw_container().insert (raw_container().begin() + iter.index, copy);
 
-    return iterator (this, result);
+    return iterator (this, result, 0);
   }
 
   template<class Container, class Holder>

@@ -21,6 +21,7 @@
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/extract.hpp>
+#include <boost/python/make_function.hpp>
 #include <boost/mpl/apply.hpp>
 #include <algorithm>
 

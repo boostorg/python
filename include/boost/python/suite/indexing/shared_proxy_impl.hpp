@@ -75,7 +75,7 @@ namespace boost { namespace python { namespace indexing {
   template<class ContainerProxy>
   shared_proxy_impl<ContainerProxy>::shared_proxy_impl (value_type const &val)
     : myOwnerPtr (0)
-    , myIndex (-1)
+    , myIndex (static_cast<size_t>(-1))
     , myElementPtr (new value_type (val))
   {
   }

@@ -70,7 +70,8 @@ namespace boost { namespace python { namespace indexing {
   struct bidirectional_iterator_traits
     : public forward_iterator_traits<Iterator>
   {
-    BOOST_STATIC_CONSTANT (bool,   is_reorderable = has_mutable_ref);
+    typedef bidirectional_iterator_traits<Iterator> self_type;
+    BOOST_STATIC_CONSTANT (bool,   is_reorderable = self_type::has_mutable_ref);
   };
 
   template<typename Iterator>
@@ -134,7 +135,7 @@ namespace boost { namespace python { namespace indexing {
                              = sizeof(sizer(iterator_category())));
 
     public:
-      typedef typename traits_by_size<size>::traits<Iterator>::type type;
+      typedef typename traits_by_size<size>::template traits<Iterator>::type type;
     };
   }
 

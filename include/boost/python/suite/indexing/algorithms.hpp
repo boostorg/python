@@ -106,6 +106,7 @@ namespace boost { namespace python { namespace indexing {
   {
   private:
     typedef default_algorithms<ContainerTraits> Parent;
+    typedef assoc_algorithms<ContainerTraits> self_type;
 
   public:
     typedef typename Parent::iterator iterator;
@@ -137,6 +138,7 @@ namespace boost { namespace python { namespace indexing {
   {
   private:
     typedef assoc_algorithms<ContainerTraits> Parent;
+    typedef set_algorithms<ContainerTraits> self_type;
 
   public:
     typedef typename Parent::container container;
@@ -156,6 +158,7 @@ namespace boost { namespace python { namespace indexing {
   {
   private:
     typedef assoc_algorithms<ContainerTraits> Parent;
+    typedef map_algorithms<ContainerTraits> self_type;
 
   public:
     typedef typename Parent::container container;
@@ -449,7 +452,7 @@ namespace boost { namespace python { namespace indexing {
   typename map_algorithms<ContainerTraits>::reference
   map_algorithms<ContainerTraits>::get (container &c, index_param ix)
   {
-    return find_or_throw (c, ix)->second;
+    return self_type::find_or_throw (c, ix)->second;
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -525,8 +528,8 @@ namespace boost { namespace python { namespace indexing {
                                            , value_param val)
   {
     typedef std::pair
-      <typename container_traits::index_type
-      , typename container_traits::value_type>
+      <typename self_type::container_traits::index_type
+      , typename self_type::container_traits::value_type>
       pair_type;
 
     // Can't use std::make_pair, because param types may be references
@@ -560,7 +563,7 @@ namespace boost { namespace python { namespace indexing {
   assoc_algorithms<ContainerTraits>::contains (container &c
                                                , key_param key)
   {
-    return find (c, key) != end(c);
+    return self_type::find (c, key) != self_type::end(c);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -573,9 +576,9 @@ namespace boost { namespace python { namespace indexing {
   assoc_algorithms<ContainerTraits>::find_or_throw (container &c
                                                     , index_param ix)
   {
-    iterator iter = find (c, ix);
+    iterator iter = self_type::find (c, ix);
 
-    if (iter == end(c))
+    if (iter == self_type::end(c))
       {
         PyErr_SetString (PyExc_ValueError
                          , "associative container: key not found");

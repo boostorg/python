@@ -101,8 +101,9 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct default_container_traits : public base_container_traits<Container>
   {
-    BOOST_STATIC_CONSTANT (bool,   has_insert         = is_mutable);
-    BOOST_STATIC_CONSTANT (bool,   has_erase          = is_mutable);
+    typedef default_container_traits<Container> self_type;
+    BOOST_STATIC_CONSTANT (bool,   has_insert         = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool,   has_erase          = self_type::is_mutable);
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -112,8 +113,9 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct default_sequence_traits : public default_container_traits<Container>
   {
-    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = is_mutable);
-    BOOST_STATIC_CONSTANT (bool,   has_push_back      = is_mutable);
+    typedef default_sequence_traits<Container> self_type;
+    BOOST_STATIC_CONSTANT (bool,   has_pop_back       = self_type::is_mutable);
+    BOOST_STATIC_CONSTANT (bool,   has_push_back      = self_type::is_mutable);
   };
 
   /////////////////////////////////////////////////////////////////////////

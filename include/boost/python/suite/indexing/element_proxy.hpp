@@ -26,8 +26,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/get_pointer.hpp>
-#include <boost/python/implicit.hpp>
-#include <boost/python/register_ptr_to_python.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
@@ -170,6 +168,14 @@ namespace boost
     return &(*proxy);
   }
 }
+
+// Including more headers here is a little weird, but it seems to fix a problem with
+// the "Compaq C++ V6.5-031 for Compaq Tru64 UNIX V5.1 (Rev. 732)" compiler, which
+// doesn't otherwise find our get_pointer overload during the instantiation of
+// register_ptr_to_python
+
+#include <boost/python/implicit.hpp>
+#include <boost/python/register_ptr_to_python.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
