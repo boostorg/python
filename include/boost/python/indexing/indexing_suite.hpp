@@ -147,7 +147,7 @@ namespace boost { namespace python {
             if (PyObject* shared = 
                 container_element_t::get_links().find(container.get(), idx))
             {
-                return extract<object>(shared);
+                return extract<object>(shared)();
             }
             else
             {
@@ -315,7 +315,7 @@ namespace boost { namespace python {
                     std::vector<Element> temp;
                     for (int i = 0; i < l.attr("__len__")(); i++)
                     {
-                        object elem = l[i];
+                        object elem(l[i]);
                         extract<Element const&> x(elem);
                         //  try if elem is an exact Element type
                         if (x.check())
