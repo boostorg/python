@@ -15,7 +15,7 @@ namespace { // Avoid cluttering the global namespace.
     vector_double_wrapper(PyObject* self)
       : std::vector<double>() {}
 
-    vector_double_wrapper(PyObject* self, const int n)
+    vector_double_wrapper(PyObject* self, int n)
       : std::vector<double>(n) {}
 
     vector_double_wrapper(PyObject* self, python::tuple tuple)
@@ -28,17 +28,16 @@ namespace { // Avoid cluttering the global namespace.
     }
   };
 
-  double getitem(const std::vector<double>& vd, const std::size_t key) {
+  double getitem(const std::vector<double>& vd, std::size_t key) {
     return vd[key];
   }
 
-  void setitem(std::vector<double>& vd, const std::size_t key,
-               const double &d) {
+  void setitem(std::vector<double>& vd, std::size_t key, double d) {
     std::vector<double>::iterator vditer = vd.begin();
     vditer[key] = d;
   }
 
-  void delitem(std::vector<double>& vd, const std::size_t key) {
+  void delitem(std::vector<double>& vd, std::size_t key) {
     std::vector<double>::iterator vditer = vd.begin();
     vd.erase(&vditer[key]);
   }

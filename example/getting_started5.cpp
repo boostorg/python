@@ -60,7 +60,7 @@ namespace { // Avoid cluttering the global namespace.
       std::vector<MillerIndex> VMIx;
     public:
       void add(const MillerIndex& MIx) { VMIx.push_back(MIx); }
-      MillerIndex get(const std::size_t i) const { return VMIx[i]; }
+      MillerIndex get(std::size_t i) const { return VMIx[i]; }
   };
 }
 
