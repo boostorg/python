@@ -4,6 +4,9 @@
 # copies. This software is provided "as is" without express or
 # implied warranty, and with no claim as to its suitability for any
 # purpose.
+
+print "running..."
+
 import crossmod_exception_a
 import crossmod_exception_b
 
@@ -16,5 +19,4 @@ try:
 except IndexError:
   pass
 
-
-
+print "Done."
