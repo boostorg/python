@@ -160,9 +160,9 @@ def _run(args = None):
         print 'testing numarray module explicitly'
         numpy_ext.set_module_and_type('numarray', 'NDArray')
         failures += doctest.testmod(sys.modules.get(__name__))[0]
+        del __test__
 
     # see that we can go back to the default
-    del __test__
     print 'testing default module again'
     numpy_ext.set_module_and_type('', '')
     failures += doctest.testmod(sys.modules.get(__name__))[0]
