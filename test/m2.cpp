@@ -4,6 +4,13 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
+// This module exercises the converters exposed in m1 at a low level
+// by exposing raw Python extension functions that use wrap<> and
+// unwrap<> objects.
+
+// Seems to be neccessary to suppress an ICE with MSVC
+#include <boost/mpl/comparison/less.hpp>
+
 #include <boost/python/convert.hpp>
 #include <boost/python/module.hpp>
 #include "simple_type.hpp"
@@ -11,7 +18,10 @@
 using boost::python::wrap;
 using boost::python::unwrap;
 
-extern "C" {
+extern "C"
+{
+    // Get a simple (by value) from the argument, and return the
+    // string it holds.
     PyObject*
     unwrap_simple(PyObject* self, PyObject* args)
     {
@@ -28,6 +38,8 @@ extern "C" {
         return PyString_FromString(x.s);
     };
 
+    // Likewise, but demands that its possible to get a non-const
+    // reference to the simple.
     PyObject*
     unwrap_simple_ref(PyObject* self, PyObject* args)
     {
@@ -44,6 +56,7 @@ extern "C" {
         return PyString_FromString(x.s);
     };
 
+    // Likewise, with a const reference to the simple object.
     PyObject*
     unwrap_simple_const_ref(PyObject* self, PyObject* args)
     {
@@ -60,6 +73,8 @@ extern "C" {
         return PyString_FromString(x.s);
     };
 
+    // Get an int (by value) from the argument, and convert it to a
+    // Python Int.
     PyObject*
     unwrap_int(PyObject* self, PyObject* args)
     {
@@ -76,6 +91,7 @@ extern "C" {
         return PyInt_FromLong(x);
     };
 
+    // Get a non-const reference to an int from the argument
     PyObject*
     unwrap_int_ref(PyObject* self, PyObject* args)
     {
@@ -92,6 +108,7 @@ extern "C" {
         return PyInt_FromLong(x);
     };
 
+    // Get a const reference to an  int from the argument.
     PyObject*
     unwrap_int_const_ref(PyObject* self, PyObject* args)
     {
@@ -110,8 +127,12 @@ extern "C" {
 
     // -------------------
 }
+
+// MSVC6 bug workaround
 template <class T> struct xxxx;
 
+// rewrap<T> extracts a T from the argument, then converts the T back
+// to a PyObject* and returns it.
 template <class T>
 PyObject*
 rewrap(PyObject* self, PyObject* args, xxxx<T>* = 0)
@@ -134,6 +155,10 @@ rewrap(PyObject* self, PyObject* args, xxxx<T>* = 0)
 
 extern "C"
 {
+    //
+    // Use rewrap<T> to test simple, simple&, simple const&, int,
+    // int&, int const&
+    //
     PyObject*
     wrap_simple(PyObject* self, PyObject* args)
     {

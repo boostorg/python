@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 
 // Seems to be neccessary to suppress an ICE with MSVC
-#include "boost/mpl/comparison/less.hpp"
+#include <boost/mpl/comparison/less.hpp>
 
 #include "simple_type.hpp"
 #include "complicated.hpp"
@@ -21,12 +21,14 @@
 #include <boost/mpl/type_list.hpp>
 #include <string.h>
 
+// Declare some straightforward extension types
 extern "C" void
 dealloc(PyObject* self)
 {
     PyObject_Del(self);
 }
 
+// Noddy is a type we got from one of the Python sample files
 struct NoddyObject : PyObject
 {
     int x;
@@ -50,6 +52,22 @@ PyTypeObject NoddyType = {
     0,          /*tp_hash */
 };
 
+// Create a Noddy containing 42
+extern "C" PyObject*
+new_noddy(PyObject* self, PyObject* args)
+{
+    NoddyObject* noddy;
+
+    if (!PyArg_ParseTuple(args,":new_noddy")) 
+        return NULL;
+
+    noddy = PyObject_New(NoddyObject, &NoddyType);
+    noddy->x = 42;
+    
+    return (PyObject*)noddy;
+}
+
+// Simple is a wrapper around a struct simple, which just contains a char*
 struct SimpleObject : PyObject
 {
     simple x;
@@ -73,20 +91,7 @@ PyTypeObject SimpleType = {
     0,          /*tp_hash */
 };
 
-extern "C" PyObject*
-new_noddy(PyObject* self, PyObject* args)
-{
-    NoddyObject* noddy;
-
-    if (!PyArg_ParseTuple(args,":new_noddy")) 
-        return NULL;
-
-    noddy = PyObject_New(NoddyObject, &NoddyType);
-    noddy->x = 42;
-    
-    return (PyObject*)noddy;
-}
-
+// Create a Simple containing "hello, world"
 extern "C" PyObject*
 new_simple(PyObject* self, PyObject* args)
 {
@@ -101,12 +106,21 @@ new_simple(PyObject* self, PyObject* args)
     return (PyObject*)simple;
 }
 
+// Initial method table for the module
 static PyMethodDef methods[] = {
     { "new_noddy", new_noddy, METH_VARARGS },
     { "new_simple", new_simple, METH_VARARGS },
     {0, 0, 0, 0}
 };
 
+//
+// Declare some wrappers/unwrappers to test the low-level conversion
+// mechanism. See boost/python/converter/source.hpp,target.hpp for a
+// description of how the type parameters to wrapper<> and unwrapper<>
+// are selected.
+//
+
+// Wrap an int by converting it to a Python Int
 struct int_wrapper
     : boost::python::converter::wrapper<int const&>
 {
@@ -116,6 +130,7 @@ struct int_wrapper
     }
 };
 
+// Wrap a simple by converting it to a Simple
 struct simple_wrapper
     : boost::python::converter::wrapper<simple const&>
 {
@@ -127,6 +142,10 @@ struct simple_wrapper
     }
 };
 
+// wrap a mutable reference to a simple by converting it to a
+// Simple. Normally we wouldn't do it this way, since modifications to
+// the result clearly don't change the original object, but here we're
+// just proving that the mechanism works.
 struct simple_ref_wrapper
     : boost::python::converter::wrapper<simple&>
 {
@@ -138,6 +157,9 @@ struct simple_ref_wrapper
     }
 };
 
+// extract an int from a Python Int by converting it to an int. Since
+// int is a scalar type, we convert by-value. Since Python Ints are
+// immutable, there's no non-const reference converter.
 struct native_int_unwrapper
     : boost::python::converter::unwrapper<int>
 {
@@ -152,6 +174,7 @@ struct native_int_unwrapper
     }
 };
 
+// Extract an int from a Noddy
 struct noddy_int_unwrapper
     : boost::python::converter::unwrapper<int>
 {
@@ -166,6 +189,7 @@ struct noddy_int_unwrapper
     }
 };
 
+// Extract a mutable reference to an int from a Noddy.
 struct noddy_int_ref_unwrapper
     : boost::python::converter::unwrapper<int&>
 {
@@ -180,6 +204,7 @@ struct noddy_int_ref_unwrapper
     }
 };
 
+// Extract a mutable reference to a simple from a Simple
 struct simple_ref_unwrapper
     : boost::python::converter::unwrapper<simple&>
 {
@@ -194,6 +219,7 @@ struct simple_ref_unwrapper
     }
 };
 
+// Extract a const reference to a simple from a Simple
 struct simple_const_ref_unwrapper
     : boost::python::converter::unwrapper<simple const&>
 {
@@ -208,11 +234,17 @@ struct simple_const_ref_unwrapper
     }
 };
 
+//
+// Some C++ functions to expose to Python
+//
+
+// Returns the length of s's held string
 int f(simple const& s)
 {
     return strlen(s.s);
 }
 
+// A trivial passthru function for simple objects
 simple const& g(simple const& x)
 {
     return x;
@@ -222,6 +254,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
 {
     PyObject* m1 = Py_InitModule(const_cast<char*>("m1"), methods);
 
+    // Create the converters; they are self-registering/unregistering.
     static int_wrapper wrap_int;
     static simple_wrapper wrap_simple;
     static native_int_unwrapper unwrap_int1;
@@ -233,32 +266,41 @@ BOOST_PYTHON_MODULE_INIT(m1)
     // These compilers will need additional converters
     static simple_ref_wrapper wrap_simple_ref;
 #endif
+
+    // This unwrapper extracts pointers and references to the "complicated" class.
     static boost::python::converter::class_unwrapper<complicated> unwrap_complicated;
     
     PyObject* d = PyModule_GetDict(m1);
     if (d == NULL)
         return;
 
+    // Insert the extension metaclass object
     if (PyDict_SetItemString(
             d, "xclass", (PyObject *)boost::python::object::class_metatype()) < 0)
         return;
 
+    // Insert the base class for all extension classes
     if (PyDict_SetItemString(
             d, "xinst", (PyObject *)boost::python::object::class_type()) < 0)
         return;
 
+    // Expose f()
     if (PyDict_SetItemString(
             d, "f", boost::python::make_function(f)) < 0)
         return;
 
+    // Expose g()
     if (PyDict_SetItemString(
             d, "g", boost::python::make_function(g)) < 0)
         return;
 
+    // Expose complicated's get_n() member function. See newtest.py
+    // for how it's used to build an extension class.
     if (PyDict_SetItemString(
             d, "get_n", boost::python::make_function(&complicated::get_n)) < 0)
         return;
 
+    // Expose complicated::complicated(simple const&, int) as init1
     if (PyDict_SetItemString(
             d, "init1"
             , boost::python::make_constructor<
@@ -268,6 +310,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
             ) < 0)
         return;
 
+    // Expose complicated::complicated(simple const&) as init2
     if (PyDict_SetItemString(
             d, "init2"
             , boost::python::make_constructor<
