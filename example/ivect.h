@@ -9,7 +9,7 @@ namespace vects {
   struct ivect : public std::vector<int>
   {
     ivect() : std::vector<int>() {}
-    ivect(size_t n) : std::vector<int>(n) {}
+    ivect(std::size_t n) : std::vector<int>(n) {}
     ivect(boost::python::tuple tuple) : std::vector<int>(tuple.size())
     {
       std::vector<int>::iterator v_it = begin();
