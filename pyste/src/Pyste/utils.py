@@ -20,6 +20,8 @@ _valid_chars = dict(zip(_valid_chars, _valid_chars))
 
 def makeid(name):
     'Returns the name as a valid identifier'
+    if type(name) != str:
+        print type(name), name
     newname = []
     for char in name:
         if char not in _valid_chars:

@@ -104,7 +104,7 @@ def main(multiple, module=None):
         os.system('python %sUT.py' % modules[0])
     else:
         run_tests()
-    cleanup() 
+    #cleanup() 
 
     
 def get_modules():
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     else:
         module = None
     try:
-        #main('--multiple', module)
-        main('', module)
+        main('--multiple', module)
+        #main('', module)
     except RuntimeError, e:
         print e        
