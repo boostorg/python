@@ -285,20 +285,13 @@ e
 #####################################################################
 >>> v[:] = ['a','b','c','d','e'] # reset again
 
->>> 'a' in v
-1
->>> 'b' in v
-1
->>> 'c' in v
-1
->>> 'd' in v
-1
->>> 'e' in v
-1
->>> 'X' in v
-0
->>> 12345 in v
-0
+>>> assert 'a' in v
+>>> assert 'b' in v
+>>> assert 'c' in v
+>>> assert 'd' in v
+>>> assert 'e' in v
+>>> assert not 'X' in v
+>>> assert not 12345 in v
 
 #####################################################################
 # Show that iteration allows mutable access to the elements
