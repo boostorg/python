@@ -747,13 +747,14 @@ class _VirtualWrapperGenerator(object):
         This method creates the instance variable self.virtual_methods.
         '''        
         def IsVirtual(m):
-            return m.virtual and m.visibility != Scope.private        
+            return isinstance(m, Method) and m.virtual and m.visibility != Scope.private        
                                       
-        all_members = self.class_.members[:]
+        all_methods = [x for x in self.class_.members if IsVirtual(x)]
         for base in self.bases:
-            for base_member in base.members:
-                base_member.class_ = self.class_.FullName()
-                all_members.append(base_member)
+            base_methods = [x.Copy() for x in self.bases.members if IsVirtual(x)]
+            for base_method in base_methods:
+                base_method.class_ = self.class_.FullName()
+                all_methods.append(base_method)
         
         # extract the virtual methods, avoiding duplications. The duplication
         # must take in account the full signature without the class name, so 
@@ -771,10 +772,9 @@ class _VirtualWrapperGenerator(object):
             params = ', '.join([x.FullName() for x in method.parameters]) 
             return '%s %s(%s) %s' % (result, method.name, params, const) 
         
-        all_members = [x for x in all_members if type(x) == Method]
         self.virtual_methods = []
         already_added = {}
-        for member in all_members:
+        for member in all_methods:
             sig = MethodSig(member)
             if IsVirtual(member) and not sig in already_added:
                 self.virtual_methods.append(member)

@@ -186,7 +186,11 @@ class Function(Declaration):
         return len(self.parameters)
 
     maxArgs = property(_MaxArgs)
+
     
+    def Copy(self):
+        return self.__class__(
+            self.name, self.namespace, self.result, self.params[:])       
    
    
 class Operator(Function):
@@ -197,7 +201,6 @@ class Operator(Function):
         if not namespace.endswith('::'):
             namespace += '::'
         return namespace + 'operator' + self.name 
-
 
 
 class Method(Function):
@@ -233,6 +236,19 @@ class Method(Function):
                 const = 'const'            
             return '(%s (%s::*)(%s) %s)&%s' %\
                 (result, self.class_, params, const, self.FullName()) 
+
+
+    def Copy(self):
+        return self.__class__(
+            self.name, 
+            self.class_, 
+            self.result, 
+            self.params[:], 
+            self.visib, 
+            self.virtual, 
+            self.abstract, 
+            self.static, 
+            self.const)
 
     
 class Constructor(Method):

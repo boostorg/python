@@ -25,7 +25,7 @@ class HeaderExporter(Exporter):
         def IsInternalName(name):
             '''Returns true if the given name looks like a internal compiler
             structure'''
-            return name.startswith('__')
+            return name.startswith('_')
         
         Exporter.SetDeclarations(self, declarations)
         header = os.path.normpath(self.parser_header)
