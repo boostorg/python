@@ -26,10 +26,51 @@ namespace boost { namespace python { namespace objects {
 
 namespace detail
 {
+  // A helpful compile-time assertion which gives a reasonable error
+  // message if T can't be default-constructed.
+  template <class T, class Held>
+  class assert_default_constructible
+  {
+      static int specify_init_arguments_or_no_init_for_class_(T const&);
+   public:
+      assert_default_constructible()
+      {
+          force_instantiate(
+              sizeof(
+                  specify_init_arguments_or_no_init_for_class_(T())
+                  ));
+                      
+      }
+  };
+
+  template <class T>
+  static int specify_init_arguments_or_no_init_for_class_(T const&);
+  
+  template <class T, class U>
+  void check_default_constructible(T*, U*, mpl::bool_c<true>)
+  {
+      python::detail::force_instantiate(
+          sizeof(specify_init_arguments_or_no_init_for_class_<T>(U((::PyObject*)0)))
+          );
+  }
+  
+  template <class T>
+  void check_default_constructible(T*, T*, mpl::bool_c<false>)
+  {
+      python::detail::force_instantiate(
+          sizeof(specify_init_arguments_or_no_init_for_class_<T>(T()))
+          );
+  }
+  
   template <class T, class Held>
   struct select_value_holder
   {
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,Held>::value) | has_back_reference<T>::value);
+
+      static void assert_default_constructible()
+      {
+          detail::check_default_constructible((T*)0,(Held*)0,mpl::bool_c<selector>());
+      }
   
       typedef typename mpl::if_c<
           selector
@@ -61,6 +102,11 @@ namespace detail
       typedef typename python::pointee<Ptr>::type pointee;
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
       
+      static void assert_default_constructible()
+      {
+          detail::check_default_constructible((T*)0,(pointee*)0,mpl::bool_c<selector>());
+      }
+  
       typedef typename mpl::if_c<
           selector
           , pointer_holder_back_reference<Ptr,T>
