@@ -1,5 +1,13 @@
 """
-This is test module for properies.
+This is test module for properties.
+
+>>> r = properties.ret_type()
+>>> r.i = 22.5
+>>> r.i
+22.5
+>>> c = properties.crash_me()
+>>> c.i.i
+42.5
 
 >>> X = properties.X
 

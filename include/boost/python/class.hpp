@@ -127,7 +127,6 @@ namespace detail
       register_wrapper_class_impl((Held*)0, (T*)0,  0);
   }
   
-# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
   template <class T>
   struct is_data_member_pointer
       : mpl::and_<
@@ -135,15 +134,17 @@ namespace detail
           , mpl::not_<is_member_function_pointer<T> >
         >
   {};
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER , detail::is_data_member_pointer<D>()
+  
+# ifdef BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D) , detail::is_data_member_pointer<D>()
 #  define BOOST_PYTHON_YES_DATA_MEMBER , mpl::true_
 #  define BOOST_PYTHON_NO_DATA_MEMBER , mpl::false_
 # elif defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING)
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER , 0
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D) , 0
 #  define BOOST_PYTHON_YES_DATA_MEMBER , int
 #  define BOOST_PYTHON_NO_DATA_MEMBER , ...
 # else 
-#  define BOOST_PYTHON_DATA_MEMBER_HELPER
+#  define BOOST_PYTHON_DATA_MEMBER_HELPER(D)
 #  define BOOST_PYTHON_YES_DATA_MEMBER
 #  define BOOST_PYTHON_NO_DATA_MEMBER
 # endif
@@ -337,39 +338,39 @@ class class_ : public objects::class_base
     template <class D>
     self& def_readonly(char const* name, D const& d)
     {
-        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
+        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER(D));
     }
 
     template <class D>
     self& def_readwrite(char const* name, D const& d)
     {
-        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
+        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER(D));
     }
     
     template <class D>
     self& def_readonly(char const* name, D& d)
     {
-        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
+        return this->def_readonly_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER(D));
     }
 
     template <class D>
     self& def_readwrite(char const* name, D& d)
     {
-        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER);
+        return this->def_readwrite_impl(name, d BOOST_PYTHON_DATA_MEMBER_HELPER(D));
     }
 
     // Property creation
     template <class Get>
     self& add_property(char const* name, Get fget)
     {
-        base::add_property(name, make_fn(fget));
+        base::add_property(name, this->make_getter(fget));
         return *this;
     }
 
     template <class Get, class Set>
     self& add_property(char const* name, Get fget, Set fset)
     {
-        base::add_property(name, make_fn(fget), make_fn(fset));
+        base::add_property(name, this->make_getter(fget), this->make_setter(fset));
         return *this;
     }
         
@@ -415,25 +416,55 @@ class class_ : public objects::class_base
     }
  private: // helper functions
 
-
     // Builds a method for this class around the given [member]
     // function pointer or object, appropriately adjusting the type of
     // the first signature argument so that if f is a member of a
     // (possibly not wrapped) base class of T, an lvalue argument of
     // type T will be required.
     //
-    // @group make_fn {
+    // @group PropertyHelpers {
     template <class F>
-    object make_fn(F const& f)
+    object make_getter(F f)
     {
-        return make_function(f, default_call_policies(), detail::get_signature(f, (T*)0));
+        typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
+        
+        return this->make_fn_impl(
+            f, is_obj_or_proxy(), (char*)0, detail::is_data_member_pointer<F>()
+        );
+    }
+    
+    template <class F>
+    object make_setter(F f)
+    {
+        typedef typename api::is_object_operators<F>::type is_obj_or_proxy;
+        
+        return this->make_fn_impl(
+            f, is_obj_or_proxy(), (int*)0, detail::is_data_member_pointer<F>()
+        );
+    }
+    
+    template <class F>
+    object make_fn_impl(F const& f, mpl::false_, void*, mpl::false_)
+    {
+        return python::make_function(f, default_call_policies(), detail::get_signature(f, (T*)0));
     }
 
-    object
-# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-    const&
-# endif 
-    make_fn(object const& x)
+    template <class D, class B>
+    object make_fn_impl(D B::*pm_, mpl::false_, char*, mpl::true_)
+    {
+        D T::*pm = pm_;
+        return python::make_getter(pm);
+    }
+
+    template <class D, class B>
+    object make_fn_impl(D B::*pm_, mpl::false_, int*, mpl::true_)
+    {
+        D T::*pm = pm_;
+        return python::make_setter(pm);
+    }
+
+    template <class F>
+    object make_fn_impl(F const& x, mpl::true_, void*, mpl::false_)
     {
         return x;
     }
@@ -443,30 +474,28 @@ class class_ : public objects::class_base
     self& def_readonly_impl(
         char const* name, D B::*pm_ BOOST_PYTHON_YES_DATA_MEMBER)
     {
-        D T::*pm = pm_;
-        return this->add_property(name, make_getter(pm));
+        return this->add_property(name, pm_);
     }
 
     template <class D, class B>
     self& def_readwrite_impl(
         char const* name, D B::*pm_ BOOST_PYTHON_YES_DATA_MEMBER)
     {
-        D T::*pm = pm_;
-        return this->add_property(name, make_getter(pm), make_setter(pm));
+        return this->add_property(name, pm_, pm_);
     }
 
     template <class D>
     self& def_readonly_impl(
         char const* name, D& d BOOST_PYTHON_NO_DATA_MEMBER)
     {
-        return this->add_static_property(name, make_getter(d));
+        return this->add_static_property(name, python::make_getter(d));
     }
 
     template <class D>
     self& def_readwrite_impl(
         char const* name, D& d  BOOST_PYTHON_NO_DATA_MEMBER)
     {
-        return this->add_static_property(name, make_getter(d), make_setter(d));
+        return this->add_static_property(name, python::make_getter(d), python::make_setter(d));
     }
 
     inline void register_() const;
