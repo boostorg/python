@@ -143,7 +143,9 @@ Singleton&amp; get_it()
 using namespace boost::python;
 BOOST_PYTHON_MODULE(singleton)
 {
-    def("get_it", get_it, reference_existing_object());
+    def("get_it", get_it,
+        return_value_policy&lt;reference_existing_object&gt;());
+
     class_&lt;Singleton&gt;("Singleton")
        .def("exchange", &amp;Singleton::exchange)
        ;
