@@ -89,7 +89,7 @@ int X::counter;
 
 BOOST_PYTHON_MODULE_INIT(virtual_functions_ext)
 {
-    class_<concrete, concrete_callback>("concrete", args<int>())
+    class_<concrete, concrete_callback>("concrete", init<int>())
         .def("value", &concrete::value)
         .def("set", &concrete::set)
         .def("call_f", &concrete::call_f)
@@ -97,14 +97,14 @@ BOOST_PYTHON_MODULE_INIT(virtual_functions_ext)
         ;
         
     class_<abstract, boost::noncopyable, boost::shared_ptr<abstract_callback>
-        >("abstract", args<int>())
+        >("abstract", init<int>())
             
         .def("value", &abstract::value)
         .def("call_f", &abstract::call_f)
         .def("set", &abstract::set)
         ;
         
-    class_<Y>("Y", args<int>())
+    class_<Y>("Y", init<int>())
         .def("value", &Y::value)
         .def("set", &Y::set)
         ;
