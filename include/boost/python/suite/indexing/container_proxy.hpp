@@ -84,6 +84,7 @@ namespace boost { namespace python { namespace indexing {
     typedef const_value_type               const_reference; // Ref. semantics
 
     typedef proxy_iterator<self_type> iterator;
+    typedef proxy_iterator<self_type> const_iterator; // ??
 
   public:
     // Constructors
