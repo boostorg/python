@@ -11,6 +11,7 @@
 # include <boost/scoped_ptr.hpp>
 # include <boost/get_pointer.hpp>
 # include <boost/detail/binary_search.hpp>
+# include <boost/cast.hpp>
 # include <vector>
 # include <map>
 #include <iostream>
@@ -569,7 +570,7 @@ namespace boost { namespace python { namespace detail {
 
         static void
         base_get_slice_data(
-            Container& container, PySliceObject* slice, Index& from, Index& to)
+            Container& container, PySliceObject* slice, Index& from_, Index& to_)
         {
             if (Py_None != slice->step) {
                 PyErr_SetString( PyExc_IndexError, "slice step size not supported.");
@@ -579,34 +580,33 @@ namespace boost { namespace python { namespace detail {
             Index min_index = DerivedPolicies::get_min_index(container);
             Index max_index = DerivedPolicies::get_max_index(container);
             
-            
             if (Py_None == slice->start) {
-                from = min_index;
+                from_ = min_index;
             }
             else {
-                from = extract<long>( slice->start);
+                long from = extract<long>( slice->start);
                 if (from < 0) // Negative slice index
                     from += max_index;
                 if (from < 0) // Clip lower bounds to zero
                     from = 0;
                 if (from > max_index) // Clip upper bounds to max_index.
                     from = max_index;
-                
+                from_ = boost::numeric_cast<Index>(from);
             }
 
             if (Py_None == slice->stop) {
-                to = DerivedPolicies::get_max_index(container);
+                to_ = max_index;
             }
             else {
-                to = extract<long>( slice->stop);
+                long to = extract<long>( slice->stop);
                 if (to < 0)
                     to += max_index;
                 if (to < 0)
                     to = 0;
                 if (to > max_index)
                     to = max_index;
+                to_ = boost::numeric_cast<Index>(to);
             }
-        
         }        
    
         static void 
