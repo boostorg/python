@@ -3,17 +3,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title> Object Interface</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.65.1">
-<link rel="home" href="../index.html" title="Chapter 1. python 1.0">
+<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="previous" href="functions.html" title="Functions">
+<link rel="prev" href="functions.html" title="Functions">
 <link rel="next" href="embedding.html" title="Embedding">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../libraries.html">Libraries</a></td>
+<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -23,11 +23,8 @@
 <a accesskey="p" href="functions.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="embedding.html"><img src="../images/next.png" alt="Next"></a>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h2 class="title" style="clear: both">
-<a name="python.object"></a> Object Interface</h2></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="python.object"></a> Object Interface</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="object.html#python.basic_interface">Basic Interface</a></span></dt>
 <dt><span class="section"><a href="object.html#python.derived_object_types">Derived Object types</a></span></dt>
@@ -47,11 +44,8 @@ feel. Boost.Python C++ <tt class="literal">object</tt>s are as close as possible
 should minimize the learning curve significantly.</p>
 <p><span class="inlinemediaobject"><img src="../images/python.png"></span></p>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.basic_interface"></a>Basic Interface</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.basic_interface"></a>Basic Interface</h3></div></div></div>
 <p>
 Class <tt class="literal">object</tt> wraps <tt class="literal">PyObject*</tt>. All the intricacies of dealing with
 <tt class="literal">PyObject</tt>s such as managing reference counting are handled by the
@@ -86,11 +80,8 @@ code in C++, the look and feel should be immediately apparent to the Python
 coder.</p>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.derived_object_types"></a>Derived Object types</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.derived_object_types"></a>Derived Object types</h3></div></div></div>
 <p>
 Boost.Python comes with a set of derived <tt class="literal">object</tt> types corresponding to
 that of Python's:</p>
@@ -155,7 +146,7 @@ C++:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">dict</span><span class="identifier"> d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>  #<span class="identifier"> copies</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="identifier">
 d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span>           #<span class="identifier"> modifies</span><span class="identifier"> the</span><span class="identifier"> copy</span></tt></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id440222"></a>class_&lt;T&gt; as objects</h2>
+<a name="id459892"></a>class_&lt;T&gt; as objects</h2>
 <p>
 Due to the dynamic nature of Boost.Python objects, any <tt class="literal">class_&lt;T&gt;</tt> may
 also be one of these types! The following code snippet wraps the class
@@ -171,11 +162,8 @@ We can use this to create wrapped instances. Example:</p>
 assert</span><span class="special">(</span><span class="identifier">vec345</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"length"</span><span class="special">)</span><span class="special"> ==</span><span class="number"> 5.0</span><span class="special">);</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.extracting_c___objects"></a>Extracting C++ objects</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.extracting_c___objects"></a>Extracting C++ objects</h3></div></div></div>
 <p>
 At some point, we will need to get C++ values out of object instances. This
 can be achieved with the <tt class="literal">extract&lt;T&gt;</tt> function. Consider the following:</p>
@@ -208,11 +196,8 @@ facility in fact solves the mutable copying problem:</p>
 d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span>          #<span class="identifier"> modifies</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special"> !</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.enums"></a>Enums</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.enums"></a>Enums</h3></div></div></div>
 <p>
 Boost.Python has a nifty facility to capture and wrap C++ enums. While
 Python has no <tt class="literal">enum</tt> type, we'll often want to expose our C++ enums to

@@ -3,5 +3,6 @@ import boostbook : boostbook ;
 
 boostbook tutorial : tutorial.xml
     : <xsl:param>boost.root=../../../../../..
+      <xsl:param>boost.libraries=../../../../../libraries.htm
     ;
 

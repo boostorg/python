@@ -3,17 +3,17 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title> Exposing Classes</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.65.1">
-<link rel="home" href="../index.html" title="Chapter 1. python 1.0">
+<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="previous" href="hello.html" title=" Building Hello World">
+<link rel="prev" href="hello.html" title=" Building Hello World">
 <link rel="next" href="functions.html" title="Functions">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../libraries.html">Libraries</a></td>
+<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -23,11 +23,8 @@
 <a accesskey="p" href="hello.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="functions.html"><img src="../images/next.png" alt="Next"></a>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h2 class="title" style="clear: both">
-<a name="python.exposing"></a> Exposing Classes</h2></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="python.exposing"></a> Exposing Classes</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="exposing.html#python.constructors">Constructors</a></span></dt>
 <dt><span class="section"><a href="exposing.html#python.class_data_members">Class Data Members</a></span></dt>
@@ -71,11 +68,8 @@ may use our class <tt class="literal">World</tt> in Python. Here's a sample Pyth
 &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="char">
 'howdy'</span></tt></pre>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.constructors"></a>Constructors</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.constructors"></a>Constructors</h3></div></div></div>
 <p>
 Our previous example didn't have any explicit constructors.
 Since <tt class="literal">World</tt> is declared as a plain struct, it has an implicit default
@@ -128,11 +122,8 @@ This actually adds an <tt class="literal"><span class="underline">_init</span>_<
 Python RuntimeError exception.</p>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.class_data_members"></a>Class Data Members</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.class_data_members"></a>Class Data Members</h3></div></div></div>
 <p>
 Data members may also be exposed to Python so that they can be
 accessed as attributes of the corresponding Python class. Each data
@@ -166,11 +157,8 @@ as <span class="bold"><b>read-write</b></span>.</p>
 </tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.class_properties"></a>Class Properties</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.class_properties"></a>Class Properties</h3></div></div></div>
 <p>
 In C++, classes with public data members are usually frowned
 upon. Well designed classes that take advantage of encapsulation hide
@@ -205,11 +193,8 @@ since the <tt class="literal">rovalue</tt> setter member function is not passed 
 <pre class="programlisting"><tt class="literal"><span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.inheritance"></a>Inheritance</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.inheritance"></a>Inheritance</h3></div></div></div>
 <p>
 In the previous examples, we dealt with classes that are not polymorphic.
 This is not often the case. Much of the time, we will be wrapping
@@ -264,11 +249,8 @@ Boost.Python <a href="functions.html#python.call_policies" title="Call Policies"
     return_value_policy</span><span class="special">&lt;</span><span class="identifier">manage_new_object</span><span class="special">&gt;());</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.class_virtual_functions"></a>Class Virtual Functions</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.class_virtual_functions"></a>Class Virtual Functions</h3></div></div></div>
 <p>
 In this section, we shall learn how to make functions behave
 polymorphically through virtual functions. Continuing our example, let us
@@ -367,11 +349,8 @@ to define the Python wrapper with <tt class="literal">no_init</tt> as we have do
 so will disallow abstract base classes such as <tt class="literal">Base</tt> to be instantiated.</p>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.deriving_a_python_class"></a>Deriving a Python Class</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.deriving_a_python_class"></a>Deriving a Python Class</h3></div></div></div>
 <p>
 Continuing, we can derive from our base class Base in Python and override
 the virtual function in Python. Before we can do that, we have to set up
@@ -426,11 +405,8 @@ The overridden virtual function <tt class="literal">f</tt> of <tt class="literal
 </ol></div>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.virtual_functions_with_default_implementations"></a>Virtual Functions with Default Implementations</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.virtual_functions_with_default_implementations"></a>Virtual Functions with Default Implementations</h3></div></div></div>
 <p>
 Recall that in the <a href="exposing.html#python.class_virtual_functions" title="Class Virtual Functions">previous section</a>, we
 wrapped a class with a pure virtual function that we then implemented in
@@ -495,13 +471,10 @@ Calling <tt class="literal">call_f</tt>, passing in a <tt class="literal">derive
 42</span></tt></pre>
 </div>
 <div class="section" lang="en">
-<div class="titlepage">
-<div><div><h3 class="title">
-<a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div>
-<div></div>
-</div>
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div></div>
 <a name="class_operators_special_functions.python_operators"></a><h2>
-<a name="id433032"></a>Python Operators</h2>
+<a name="id452701"></a>Python Operators</h2>
 <p>
 C is well known for the abundance of operators. C++ extends this to the
 extremes by allowing operator overloading. Boost.Python takes advantage of
@@ -538,7 +511,7 @@ you might need to interact with in an operator expression is (cheaply)
 default-constructible. You can use <tt class="literal">other&lt;T&gt;()</tt> in place of an actual
 <tt class="literal">T</tt> instance when writing "self expressions".</p>
 <a name="class_operators_special_functions.special_methods"></a><h2>
-<a name="id433718"></a>Special Methods</h2>
+<a name="id453388"></a>Special Methods</h2>
 <p>
 Python has a few more <span class="emphasis"><em>Special Methods</em></span>. Boost.Python supports all of the
 standard special method names supported by real Python class instances. A

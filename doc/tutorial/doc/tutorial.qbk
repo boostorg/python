@@ -17,10 +17,10 @@
 
 [/ QuickBook Document version 0.9 ]
 
-[def __note__       [$../images/note.png]]
-[def __alert__      [$../images/alert.png]]
-[def __tip__        [$../images/tip.png]]
-[def :-)            [$../images/smiley.png]]
+[def __note__       [$images/note.png]]
+[def __alert__      [$images/alert.png]]
+[def __tip__        [$images/tip.png]]
+[def :-)            [$images/smiley.png]]
 
 [section QuickStart]
 

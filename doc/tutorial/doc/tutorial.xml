@@ -108,7 +108,7 @@ with every boost distribution: <emphasis role="bold">bjam</emphasis>.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Building without bjam</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Building without bjam</emphasis><para/>
 <para/>
 
     Besides bjam, there are of course other ways to get your module built.
@@ -165,7 +165,7 @@ the command line. Pre-built Boost.Jam executables are available for most
 platforms. The complete list of Bjam executables can be found 
 <ulink url="http://sourceforge.net/project/showfiles.php?group_id=7586">here</ulink>.</para>
 <anchor id="hello.let_s_jam_" /><bridgehead renderas="sect2">Let's Jam!</bridgehead><para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
+<inlinemediaobject><imageobject><imagedata fileref="images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
 <para>
 Here is our minimalist Jamfile:</para>
 <programlisting><literal>    subproject libs/python/example/tutorial ;
@@ -222,7 +222,7 @@ appropriately.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/tip.png"></imagedata></imageobject></inlinemediaobject> Be sure not to include a third number, e.g. <emphasis role="bold">not</emphasis>  &quot;2.2.1&quot;,
+<inlinemediaobject><imageobject><imagedata fileref="images/tip.png"></imagedata></imageobject></inlinemediaobject> Be sure not to include a third number, e.g. <emphasis role="bold">not</emphasis>  &quot;2.2.1&quot;,
 even if that's the version you have.</entry>
 </row>
 </tbody>
@@ -647,7 +647,7 @@ struct</phrase><phrase role="identifier"> BaseWrap</phrase><phrase role="special
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">member function and methods</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">member function and methods</emphasis><para/>
 <para/>
  Python, like
 many object oriented languages uses the term <emphasis role="bold">methods</emphasis>.  Methods
@@ -667,7 +667,7 @@ of the Python object <literal>self</literal>, which is a pointer back to the Pyt
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Why do we need BaseWrap?</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Why do we need BaseWrap?</emphasis><para/>
 <para/>
 </entry>
 </row>
@@ -966,7 +966,7 @@ Need we say more?</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> What is the business of <literal>operator&lt;&lt;</literal> <literal>.def(str(self))</literal>?
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> What is the business of <literal>operator&lt;&lt;</literal> <literal>.def(str(self))</literal>?
 Well, the method <literal>str</literal> requires the <literal>operator&lt;&lt;</literal> to do its work (i.e.
 <literal>operator&lt;&lt;</literal> is used by the method defined by def(str(self)).</entry>
 </row>
@@ -1211,7 +1211,7 @@ Boost.Python v1 approach
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/smiley.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Remember the Zen, Luke:</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/smiley.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Remember the Zen, Luke:</emphasis><para/>
 <para/>
 
 &quot;Explicit is better than implicit&quot;<para/>
@@ -1525,7 +1525,7 @@ bidirectional mapping between C++ and Python while maintaining the Python
 feel. Boost.Python C++ <literal>object</literal>s are as close as possible to Python. This
 should minimize the learning curve significantly.</para>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/python.png"></imagedata></imageobject></inlinemediaobject></para>
+<inlinemediaobject><imageobject><imagedata fileref="images/python.png"></imagedata></imageobject></inlinemediaobject></para>
 
 <section id="python.basic_interface">
 <title>Basic Interface</title>
@@ -1645,7 +1645,7 @@ member functions.</para>
 Demonstrates that you can write the C++ equivalent of <literal>&quot;format&quot; % x,y,z</literal>
 in Python, which is useful since there's no easy way to do that in std C++.</para>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/alert.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Beware</emphasis> the common pitfall of forgetting that the constructors
+<inlinemediaobject><imageobject><imagedata fileref="images/alert.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Beware</emphasis> the common pitfall of forgetting that the constructors
 of most of Python's mutable types make copies, just as in Python.</para>
 <para>
 Python:</para>
@@ -1721,7 +1721,7 @@ if</phrase><phrase role="special"> (</phrase><phrase role="identifier">x</phrase
 </literal>
 </programlisting>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/tip.png"></imagedata></imageobject></inlinemediaobject> The astute reader might have noticed that the <literal>extract&lt;T&gt;</literal>
+<inlinemediaobject><imageobject><imagedata fileref="images/tip.png"></imagedata></imageobject></inlinemediaobject> The astute reader might have noticed that the <literal>extract&lt;T&gt;</literal>
 facility in fact solves the mutable copying problem:</para>
 <programlisting>
 <literal>
@@ -1765,7 +1765,7 @@ associated with the C++ type passed as its first parameter.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">what is a scope?</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">what is a scope?</emphasis><para/>
 <para/>
  The scope is a class that has an
 associated global Python object which controls the Python namespace in
@@ -1814,7 +1814,7 @@ when embedding. Therefore you'll need to use the
 <ulink url="http://www.python.org/doc/current/api/api.html">Python/C API</ulink> to fill in
 the gaps. However, Boost.Python already makes embedding a lot easier and,
 in a future version, it may become unnecessary to touch the Python/C API at
-all. So stay tuned... <inlinemediaobject><imageobject><imagedata fileref="../images/smiley.png"></imagedata></imageobject></inlinemediaobject></para>
+all. So stay tuned... <inlinemediaobject><imageobject><imagedata fileref="images/smiley.png"></imagedata></imageobject></inlinemediaobject></para>
 <anchor id="embedding.building_embedded_programs" /><bridgehead renderas="sect2">Building embedded programs</bridgehead><para>
 To be able to use embedding in your programs, they have to be linked to
 both Boost.Python's and Python's static link library.</para>
@@ -1915,7 +1915,7 @@ discuss in the next section.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Handle is a class <emphasis>template</emphasis>, so why haven't we been using any template parameters?</emphasis><para/>
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Handle is a class <emphasis>template</emphasis>, so why haven't we been using any template parameters?</emphasis><para/>
 
 <para/>
 
@@ -1993,7 +1993,7 @@ the object's <literal>ptr</literal> member function to retrieve the <literal>PyO
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.</para>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Note</emphasis> that we wrap the return value of <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink> in a
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Note</emphasis> that we wrap the return value of <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink> in a
 (nameless) <literal>handle</literal> even though we are not interested in it. If we didn't
 do this, the the returned object would be kept alive unnecessarily. Unless
 you want to be a Dr. Frankenstein, always wrap <literal>PyObject*</literal>s in <literal>handle</literal>s.</para>
@@ -2001,7 +2001,7 @@ you want to be a Dr. Frankenstein, always wrap <literal>PyObject*</literal>s in 
 It's nice that <literal>handle</literal> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the <ulink url="object.html">previous section</ulink>: the aptly
+above, and in the <link linkend="python.object">previous section</link>: the aptly
 named <literal>object</literal> class and it's derivatives. We've already seen that they
 can be constructed from a <literal>handle</literal>. The following examples should further
 illustrate this fact:</para>
@@ -2042,7 +2042,7 @@ int</phrase><phrase role="identifier"> five_squared</phrase><phrase role="specia
 </literal>
 </programlisting>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Note</emphasis> that <literal>object</literal>'s member function to return the wrapped
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> <emphasis role="bold">Note</emphasis> that <literal>object</literal>'s member function to return the wrapped
 <literal>PyObject*</literal> is called <literal>ptr</literal> instead of <literal>get</literal>. This makes sense if you
 take into account the different functions that <literal>object</literal> and <literal>handle</literal>
 perform.</para>
@@ -2325,7 +2325,7 @@ Compiling these files will generate the following Python extensions:
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> The extension <literal>.pyd</literal> is used for python extension modules, which
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> The extension <literal>.pyd</literal> is used for python extension modules, which
 are just shared libraries.  Using the default for your system, like <literal>.so</literal> for
 Unix and <literal>.dll</literal> for Windows, works just as well.</entry>
 </row>
@@ -2477,7 +2477,7 @@ A</phrase><phrase role="identifier"> C</phrase><phrase role="identifier"> instan
 </literal>
 </programlisting>
 <para>
-Yes, Python rox. <inlinemediaobject><imageobject><imagedata fileref="../images/smiley.png"></imagedata></imageobject></inlinemediaobject></para>
+Yes, Python rox. <inlinemediaobject><imageobject><imagedata fileref="images/smiley.png"></imagedata></imageobject></inlinemediaobject></para>
 <para>
 We can do the same with classes that were wrapped with Boost.Python. Suppose
 we have a class <literal>point</literal> in C++:</para>
@@ -2643,7 +2643,7 @@ the compilation of a single cpp, instead of the entire wrapper code.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> If you're exporting your classes with <ulink url="../../../../pyste/index.html">Pyste</ulink>,
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> If you're exporting your classes with <ulink url="../../../../pyste/index.html">Pyste</ulink>,
 take a look at the <literal>--multiple</literal> option, that generates the wrappers in
 various files as demonstrated here.</entry>
 </row>
@@ -2656,7 +2656,7 @@ various files as demonstrated here.</entry>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> This method is useful too if you are getting the error message
+<inlinemediaobject><imageobject><imagedata fileref="images/note.png"></imagedata></imageobject></inlinemediaobject> This method is useful too if you are getting the error message
 <emphasis>&quot;fatal error C1204:Compiler limit:internal structure overflow&quot;</emphasis> when compiling
 a large source file, as explained in the <ulink url="../../../v2/faq.html#c1204">FAQ</ulink>.</entry>
 </row>
