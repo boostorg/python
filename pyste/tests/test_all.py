@@ -10,12 +10,12 @@ import sys
 #=============================================================================
 if sys.platform == 'win32':
     
-    includes = '-ID:/programming/libraries/boost-cvs/boost -IC:/Python/include'
+    includes = '-ID:/programming/libraries/boost-cvs/boost -ID:/Bin/Python/include'
     build_pyste_cmd = 'python ../src/Pyste/pyste.py %s ' % includes
     compile_single_cmd = 'icl /nologo /GR /GX -c %s -I. ' % includes
     link_single_cmd = 'link /nologo /DLL '\
-        '/libpath:D:/programming/libraries/boost-cvs/lib /libpath:C:/Python/libs '\
-        'boost_python.lib python22.lib /out:_%s.dll '
+        '/libpath:D:/programming/libraries/boost-cvs/lib /libpath:D:/Bin/Python/libs '\
+        'boost_python.lib python23.lib /out:_%s.dll '
     obj_ext = 'obj'
     
 #=============================================================================

@@ -111,8 +111,9 @@ class ClassExporter(Exporter):
         just export one type and automatically get all the members from the
         base classes.
         '''
-        valid_members = (Method, ClassVariable, NestedClass, ClassOperator,
-            ConverterOperator, ClassEnumeration)
+        valid_members = (Method, ClassVariable, NestedClass, ClassEnumeration)
+            # these don't work INVESTIGATE!: (ClassOperator, ConverterOperator)
+        fullnames = [x.FullName() for x in self.class_]
         for level in self.class_.hierarchy:
             level_exported = False
             for base in level:
@@ -120,17 +121,17 @@ class ClassExporter(Exporter):
                 if base.FullName() not in exported_names:
                     for member in base:
                         if type(member) in valid_members:
-                            member = copy.deepcopy(member)   
-                            #if type(member) not in (ClassVariable,:
-                            #    member.class_ = self.class_.FullName()
-                            self.class_.AddMember(member)        
+                            member_copy = copy.deepcopy(member)   
+                            member_copy.class_ = self.class_.FullName()
+                            if member_copy.FullName() not in fullnames:
+                                self.class_.AddMember(member)        
                 else:
                     level_exported = True
             if level_exported:
                 break
         def IsValid(member):
             return isinstance(member, valid_members) and member.visibility == Scope.public
-        self.public_members = [x for x in self.class_ if IsValid(x)]
+        self.public_members = [x for x in self.class_ if IsValid(x)]   
 
 
     def Write(self, codeunit):
