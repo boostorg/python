@@ -83,7 +83,7 @@ inline ResultConverter create_result_converter(
     
 template <class ArgPackage, class ResultConverter>
 inline ResultConverter create_result_converter(
-    ArgPackage const& args_
+    ArgPackage const&
   , ResultConverter*
   , ...
 )

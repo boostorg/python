@@ -562,7 +562,7 @@ class class_ : public objects::class_base
     template <class Fn, class Helper>
     inline void def_default(
         char const* name
-        , Fn fn
+        , Fn
         , Helper const& helper
         , mpl::bool_<true>)
     {
