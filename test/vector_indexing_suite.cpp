@@ -13,6 +13,7 @@ struct X // a container element
     std::string repr() const { return s; }
     void reset() { s = "reset"; }
     void foo() { s = "foo"; }
+    bool operator==(X const& x) const { return s == x.s; }
 };
 
 std::string x_value(X const& x)

@@ -52,6 +52,10 @@ namespace boost { namespace python {
     //        
     //      static size_t
     //      size(Container& container);
+    //
+    //      template <class T>
+    //      static bool
+    //      contains(Container& container, T const& val);
     //        
     //      static index_type
     //      convert_index(Container& container, PyObject* i);
@@ -90,6 +94,7 @@ namespace boost { namespace python {
         , class DerivedPolicies
         , bool NoProxy = false
         , class Element = typename Container::value_type
+        , class Key = typename Container::value_type
         , class Index = typename Container::size_type
     >
     class indexing_suite 
@@ -99,6 +104,7 @@ namespace boost { namespace python {
             , DerivedPolicies
             , NoProxy
             , Element
+            , Key
             , Index
         > >
     {
@@ -111,13 +117,18 @@ namespace boost { namespace python {
         void visit(Class& cl) const
         {
             // Hook into the class_ generic visitation .def function
-            register_ptr_to_python<container_element_t>(); 
+            register_ptr_to_python<container_element_t>();
+            
+            Container::iterator(Container::*begin_)() = &Container::begin;
+            Container::iterator(Container::*end_)() = &Container::end;
 
             cl
                 .def("__len__", base_size)
                 .def("__setitem__", &base_set_item)
                 .def("__delitem__", &base_delete_item)
                 .def("__getitem__", &base_get_item)
+                .def("__contains__", &base_contains)
+                .def("__iter__", boost::python::range(begin_, end_)) 
             ;
         }        
         
@@ -306,14 +317,14 @@ namespace boost { namespace python {
                     {
                         object elem = l[i];
                         extract<Element const&> x(elem);
-                        //  try if elem is an exact element_type
+                        //  try if elem is an exact Element type
                         if (x.check())
                         {
                             temp.push_back(x());
                         }
                         else
                         {
-                            //  try to convert elem to element_type
+                            //  try to convert elem to Element type
                             extract<Element> x(elem);
                             if (x.check())
                             {
@@ -363,6 +374,26 @@ namespace boost { namespace python {
         base_size(Container& container)
         {
             return DerivedPolicies::size(container);
+        }
+
+        static bool
+        base_contains(Container& container, PyObject* key)
+        {
+            extract<Key const&> x(key);
+            //  try if key is an exact Key type
+            if (x.check())
+            {
+                return DerivedPolicies::contains(container, x());
+            }
+            else
+            {
+                //  try to convert key to Key type
+                extract<Key> x(key);
+                if (x.check())
+                    return DerivedPolicies::contains(container, x());
+                else
+                    return false;
+            }            
         }
 
         static object 

@@ -8,6 +8,7 @@
 # define VECTOR_INDEXING_SUITE_JDG20036_HPP
 
 # include <boost/python/indexing/indexing_suite.hpp>
+# include <boost/python/iterator.hpp>
 
 namespace boost { namespace python {
             
@@ -49,6 +50,7 @@ namespace boost { namespace python {
     public:
     
         typedef typename Container::value_type element_type;
+        typedef typename Container::value_type key_type;
         typedef typename Container::size_type index_type;
         typedef typename Container::size_type size_type;
         typedef typename Container::difference_type difference_type;
@@ -104,6 +106,13 @@ namespace boost { namespace python {
         size(Container& container)
         {
             return container.size();
+        }
+        
+        static bool
+        contains(Container& container, key_type const& key)
+        {
+            return std::find(container.begin(), container.end(), key)
+                != container.end();
         }
         
         static index_type
