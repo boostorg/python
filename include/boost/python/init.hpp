@@ -269,12 +269,15 @@ namespace detail
           , mpl::push_front<>
           >::type args;
 
+      typedef typename ClassT::holder_selector holder_selector_t;
+      typedef typename ClassT::held_type held_type_t;
+
       cl.def(
             "__init__",
             python::make_constructor<args>(
                 policies
                 // Using runtime type selection works around a CWPro7 bug.
-                , ClassT::holder_selector::execute((ClassT::held_type*)0).get()
+                , holder_selector_t::execute((held_type_t*)0).get()
                 )
             , doc
             );
