@@ -64,11 +64,16 @@
 
     <h3><a name="scope-spec"></a>Class <code>scope</code></h3>
 
-    <p>The <code>scope</code> class has an associated global Python object
-    which controls the Python namespace in which new extension classes and
-    wrapped functions will be defined as attributes. Default-constructing a
-    new <code>scope</code> object binds that object to the associated Python
-    object. Constructing a is associated with , and</p>
+    <p>The <code>scope</code> class has an associated global Python
+    object which controls the Python namespace in which new extension
+    classes and wrapped functions will be defined as
+    attributes. Default-constructing a new <code>scope</code> object
+    binds it to the associated global Python object. Constructing a
+    <code>scope</code> object with an argument changes the associated
+    global Python object to the one held by the argument, until the
+    lifetime of the <code>scope</code> object ends, at which time the
+    associated global Python object reverts to what it was before the
+    <code>scope</code> object was constructed.</p>
 
     <h4><a name="scope-spec-synopsis"></a>Class <code>scope</code>
     synopsis</h4>
