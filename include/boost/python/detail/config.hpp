@@ -65,33 +65,30 @@
 #  define BOOST_PYTHON_DYNAMIC_LIB
 #endif
 
-#if defined(__MWERKS__) \
-  || (defined(__DECCXX_VER) && __DECCXX_VER <= 60590002) \
-  || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 730)
-# define BOOST_PYTHON_NO_TEMPLATE_EXPORT
-#endif
-
 #if defined(BOOST_PYTHON_DYNAMIC_LIB)
-#  if (defined(_WIN32) || defined(__CYGWIN__))
+
+#  if !defined(_WIN32) && !defined(__CYGWIN__)                  \
+    && defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5 \
+    && !defined(BOOST_PYTHON_GCC_SYMBOL_VISIBILITY)
+#    define BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
+#  endif 
+
+#  if defined(BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
+#     if defined(BOOST_PYTHON_SOURCE)
+#        define BOOST_PYTHON_DECL __attribute__ ((visibility("default")))
+#        define BOOST_PYTHON_BUILD_DLL
+#     else
+#        define BOOST_PYTHON_DECL
+#     endif
+#     define BOOST_PYTHON_DECL_FORWARD
+#     define BOOST_PYTHON_DECL_EXCEPTION __attribute__ ((visibility("default")))
+#  elif (defined(_WIN32) || defined(__CYGWIN__))
 #     if defined(BOOST_PYTHON_SOURCE)
 #        define BOOST_PYTHON_DECL __declspec(dllexport)
 #        define BOOST_PYTHON_BUILD_DLL
 #     else
 #        define BOOST_PYTHON_DECL __declspec(dllimport)
 #     endif
-#  elif (defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5)
-#     if defined(BOOST_PYTHON_SOURCE)
-#        define BOOST_PYTHON_DECL __attribute__ ((visibility("default")))
-#        define BOOST_PYTHON_BUILD_DLL
-#        define BOOST_PYTHON_NODECL_DECLARATIONS
-#     else
-#        define BOOST_PYTHON_DECL
-#     endif
-#  endif
-
-// MinGW, at least, has some problems exporting template instantiations
-#  if defined(__GNUC__) && __GNUC__ < 3 && !defined(__CYGWIN__)
-#   define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #  endif
 
 #endif
@@ -100,14 +97,12 @@
 #  define BOOST_PYTHON_DECL
 #endif
 
-#ifndef BOOST_PYTHON_EXPORT
-# define BOOST_PYTHON_EXPORT extern
-#endif 
+#ifndef BOOST_PYTHON_DECL_FORWARD
+#  define BOOST_PYTHON_DECL_FORWARD BOOST_PYTHON_DECL
+#endif
 
-#if !defined(BOOST_PYTHON_NO_TEMPLATE_EXPORT)
-# define BOOST_PYTHON_EXPORT_CLASS_TEMPLATE(instantiation) BOOST_PYTHON_EXPORT template class BOOST_PYTHON_DECL instantiation
-#else
-# define BOOST_PYTHON_EXPORT_CLASS_TEMPLATE(instantiation) struct ThIsTyPeNeVeRuSeD
+#ifndef BOOST_PYTHON_DECL_EXCEPTION
+#  define BOOST_PYTHON_DECL_EXCEPTION BOOST_PYTHON_DECL
 #endif
 
 #if (defined(__DECCXX_VER) && __DECCXX_VER <= 60590041)

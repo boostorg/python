@@ -11,12 +11,7 @@
 
 namespace boost { namespace python
 {
-#ifdef BOOST_PYTHON_NODECL_DECLARATIONS
-  // Only declaring with BOOST_PYTHON_DECL makes no sense on GCC
-  struct instance_holder;
-#else
-  struct BOOST_PYTHON_DECL instance_holder;
-#endif
+  struct BOOST_PYTHON_DECL_FORWARD instance_holder;
 }} // namespace boost::python
 
 namespace boost { namespace python { namespace objects { 

@@ -14,9 +14,9 @@
 
 namespace boost { namespace python {
 
-struct BOOST_PYTHON_DECL error_already_set
+struct BOOST_PYTHON_DECL_EXCEPTION error_already_set
 {
-    virtual ~error_already_set();
+  virtual ~error_already_set();
 };
 
 // Handles exceptions caught just before returning to Python code.
