@@ -73,10 +73,10 @@ namespace detail
   template <class T>
   struct assert_default_constructible
   {
-      static int check2(T const*);
+      static int check2(T const&);
       static int check()
       {
-          return sizeof(check2(&T()));
+          return sizeof(check2(T()));
       }
   };
 }
