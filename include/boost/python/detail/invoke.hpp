@@ -8,7 +8,7 @@
 # ifndef INVOKE_DWA20021122_HPP
 #  define INVOKE_DWA20021122_HPP
 
-#  include <boost/python/detail/wrap_python.hpp>
+#  include <boost/python/detail/prefix.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/python/detail/none.hpp>
 

@@ -6,7 +6,7 @@
 #ifndef AIX_INIT_MODULE_DWA2002529_HPP
 # define AIX_INIT_MODULE_DWA2002529_HPP
 # ifdef _AIX
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <cstdio>
 # ifdef __KCC
 #  include <iostream> // this works around a problem in KCC 4.0f

@@ -1,7 +1,7 @@
+#include <boost/python/detail/string_literal.hpp>
 //#include <stdio.h>
 #include <cassert>
 #include <boost/static_assert.hpp>
-#include <boost/python/detail/string_literal.hpp>
 
 using namespace boost::python::detail;
     

@@ -6,7 +6,7 @@
 #ifndef INSTANCE_DWA200295_HPP
 # define INSTANCE_DWA200295_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/type_traits/alignment_traits.hpp>
 # include <cstddef>
 

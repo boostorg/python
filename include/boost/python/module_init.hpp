@@ -8,9 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/config.hpp>
-
 # ifndef BOOST_PYTHON_MODULE_INIT
 
 namespace boost { namespace python { namespace detail {

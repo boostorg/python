@@ -7,7 +7,6 @@
 # define DEFAULT_CALL_POLICIES_DWA2002131_HPP
 
 # include <boost/python/detail/prefix.hpp>
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/python/to_python_value.hpp>
 # include <boost/type_traits/transform_traits.hpp>

@@ -6,8 +6,6 @@
 #ifndef REGISTRY_DWA20011127_HPP
 # define REGISTRY_DWA20011127_HPP
 # include <boost/python/type_id.hpp>
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/constructor_function.hpp>

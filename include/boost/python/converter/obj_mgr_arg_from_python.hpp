@@ -6,7 +6,7 @@
 #ifndef OBJ_MGR_ARG_FROM_PYTHON_DWA2002628_HPP
 # define OBJ_MGR_ARG_FROM_PYTHON_DWA2002628_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/referent_storage.hpp>
 # include <boost/python/detail/destroy.hpp>
 # include <boost/python/detail/construct.hpp>

@@ -4,7 +4,6 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include "test_class.hpp"
 #include <boost/python/extract.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/module.hpp>
@@ -16,6 +15,7 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <cassert>
+#include "test_class.hpp"
 
 using namespace boost::python;
 

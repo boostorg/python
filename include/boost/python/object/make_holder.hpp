@@ -9,10 +9,11 @@
 # ifndef MAKE_HOLDER_DWA20011215_HPP
 #  define MAKE_HOLDER_DWA20011215_HPP
 
+#  include <boost/python/detail/prefix.hpp>
+
 #  include <boost/python/object/instance.hpp>
 
 #  include <boost/python/object/forward.hpp>
-#  include <boost/python/detail/wrap_python.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 
 #  include <boost/mpl/next.hpp>

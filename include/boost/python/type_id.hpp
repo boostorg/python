@@ -8,8 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/config.hpp>
 # include <boost/python/detail/msvc_typeinfo.hpp>
 # include <boost/operators.hpp>
 # include <typeinfo>

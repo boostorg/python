@@ -6,8 +6,6 @@
 #ifndef PYOBJECT_TYPE_DWA2002720_HPP
 # define PYOBJECT_TYPE_DWA2002720_HPP
 
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/cast.hpp>
 
 namespace boost { namespace python { namespace converter { 

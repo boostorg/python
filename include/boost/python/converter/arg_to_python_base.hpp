@@ -5,7 +5,6 @@
 // to its suitability for any purpose.
 #ifndef ARG_TO_PYTHON_BASE_DWA200237_HPP
 # define ARG_TO_PYTHON_BASE_DWA200237_HPP
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/handle.hpp>
 
 namespace boost { namespace python { namespace converter {

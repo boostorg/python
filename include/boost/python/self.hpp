@@ -8,8 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/config.hpp>
-
 namespace boost { namespace python {
 
 #define BOOST_PYTHON_SELF_IS_CLASS

@@ -8,8 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/wrap_python.hpp>
-
 namespace boost { namespace python { 
 
 template <class T = PyObject> class handle;

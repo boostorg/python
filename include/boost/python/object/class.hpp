@@ -6,8 +6,7 @@
 #ifndef CLASS_DWA20011214_HPP
 # define CLASS_DWA20011214_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/config.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/utility.hpp>
 # include <boost/python/instance_holder.hpp>
 # include <boost/python/object_core.hpp>

@@ -18,8 +18,6 @@
 # include <boost/python/converter/builtin_converters.hpp>
 
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/not_specified.hpp>
 
 # include <boost/type_traits/transform_traits.hpp>

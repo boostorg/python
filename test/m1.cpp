@@ -5,8 +5,6 @@
 // to its suitability for any purpose.
 
 
-#include "simple_type.hpp"
-#include "complicated.hpp"
 #include <boost/python/def.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
@@ -17,6 +15,8 @@
 #include <boost/python/errors.hpp>
 #include <boost/python/manage_new_object.hpp>
 #include <string.h>
+#include "simple_type.hpp"
+#include "complicated.hpp"
 
 // Declare some straightforward extension types
 extern "C" void

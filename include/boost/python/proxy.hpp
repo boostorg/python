@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 #ifndef PROXY_DWA2002615_HPP
 # define PROXY_DWA2002615_HPP
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_operators.hpp>
 

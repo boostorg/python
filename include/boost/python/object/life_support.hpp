@@ -5,8 +5,7 @@
 // to its suitability for any purpose.
 #ifndef LIFE_SUPPORT_DWA200222_HPP
 # define LIFE_SUPPORT_DWA200222_HPP
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 
 namespace boost { namespace python { namespace objects { 
 

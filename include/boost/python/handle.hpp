@@ -8,7 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/cast.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/python/borrowed.hpp>

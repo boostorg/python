@@ -8,7 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/arg_to_python.hpp>
 # include <boost/python/detail/operator_id.hpp>
 # include <boost/python/detail/not_specified.hpp>

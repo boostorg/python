@@ -6,6 +6,7 @@
 #ifndef OBJECT_DWA2002612_HPP
 # define OBJECT_DWA2002612_HPP
 
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_attributes.hpp>
 # include <boost/python/object_items.hpp>

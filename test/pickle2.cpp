@@ -20,8 +20,6 @@
     For more information refer to boost/libs/python/doc/pickle.html.
  */
 
-#include <string>
-
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>

@@ -6,9 +6,8 @@
 #ifndef FUNCTION_DWA20011214_HPP
 # define FUNCTION_DWA20011214_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/args_fwd.hpp>
-# include <boost/python/detail/config.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/function/function2.hpp>
 # include <boost/python/object_core.hpp>

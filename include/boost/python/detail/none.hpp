@@ -9,8 +9,7 @@
 #ifndef NONE_DWA_052000_H_
 # define NONE_DWA_052000_H_
 
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 
 namespace boost { namespace python { namespace detail {
 

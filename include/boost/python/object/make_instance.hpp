@@ -6,7 +6,7 @@
 #ifndef MAKE_INSTANCE_DWA200296_HPP
 # define MAKE_INSTANCE_DWA200296_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/object/instance.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/detail/decref_guard.hpp>

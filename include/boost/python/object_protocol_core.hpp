@@ -8,7 +8,6 @@
 
 # include <boost/python/detail/prefix.hpp>
 
-# include <boost/python/detail/config.hpp>
 # include <boost/python/handle_fwd.hpp>
 
 namespace boost { namespace python { 

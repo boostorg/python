@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #ifndef TO_PYTHON_FUNCTION_TYPE_DWA200236_HPP
 # define TO_PYTHON_FUNCTION_TYPE_DWA200236_HPP
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/static_assert.hpp>
 
 namespace boost { namespace python { namespace converter { 

@@ -9,8 +9,7 @@
 #ifndef ERRORS_DWA052500_H_
 # define ERRORS_DWA052500_H_
 
-# include <boost/python/detail/config.hpp>
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/function/function0.hpp>
 
 namespace boost { namespace python {

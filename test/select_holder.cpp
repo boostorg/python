@@ -3,11 +3,11 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/same_traits.hpp>
 #include <boost/python/object/select_holder.hpp>
 #include <boost/python/has_back_reference.hpp>
 #include <boost/python/detail/not_specified.hpp>
+#include <boost/static_assert.hpp>
+#include <boost/type_traits/same_traits.hpp>
 #include <boost/function/function0.hpp>
 #include <memory>
 

@@ -7,8 +7,6 @@
 # define REFCOUNT_DWA2002615_HPP
 
 # include <boost/python/detail/prefix.hpp>
-
-# include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/cast.hpp>
 
 namespace boost { namespace python { 

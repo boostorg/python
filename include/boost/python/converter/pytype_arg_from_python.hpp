@@ -6,7 +6,7 @@
 #ifndef PYTYPE_ARG_FROM_PYTHON_DWA2002628_HPP
 # define PYTYPE_ARG_FROM_PYTHON_DWA2002628_HPP
 
-# include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/prefix.hpp>
 
 //
 // arg_from_python converters for Python type wrappers, to be used as
