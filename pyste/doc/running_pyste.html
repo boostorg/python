@@ -57,6 +57,8 @@ where options are:
                         use explicit declarations instead
     --pyste-ns=&lt;name&gt;   set the namespace where new types will be declared;
                         default is &quot;pyste&quot;
+    -h, --help          print this help and exit
+    -v, --version       print version information
                         
 </pre></code><p>
 Options explained:</p>
@@ -69,8 +71,8 @@ generated cpp, using the namespace boost::python explicitly in all declarations.
 Use only if you're having a name conflict in one of the files.</p>
 <p>
 Use <tt>--pyste-ns</tt> to change the namespace where new types are declared (for
-instance, the virtual wrappers). Use only if one of your header files declare a
-namespace named &quot;pyste&quot; and this is causing conflicts.</p>
+instance, the virtual wrappers). Use only if you are having any problems. By
+default, Pyste uses the empty namespace.</p>
 <p>
 So, the usage is simple enough:</p>
 <code><pre>&gt;python pyste.py --module=mymodule file.pyste file2.pyste ...</pre></code><p>

@@ -81,6 +81,8 @@ where options are:
                         use explicit declarations instead
     --pyste-ns=<name>   set the namespace where new types will be declared;
                         default is "pyste"
+    -h, --help          print this help and exit
+    -v, --version       print version information
 '''                        
 ]
 
@@ -94,8 +96,8 @@ generated cpp, using the namespace boost::python explicitly in all declarations.
 Use only if you're having a name conflict in one of the files.
 
 Use [^--pyste-ns] to change the namespace where new types are declared (for
-instance, the virtual wrappers). Use only if one of your header files declare a
-namespace named "pyste" and this is causing conflicts.
+instance, the virtual wrappers). Use only if you are having any problems. By
+default, Pyste uses the empty namespace.
 
 So, the usage is simple enough:
 
@@ -367,4 +369,39 @@ the members of the header object like this:
 
     rename(hello.World.greet, "Greet")
     exclude(hello.World.set, "Set")
+
+
+[page:1 Smart Pointers]
+
+Pyste for now has manual support for smart pointers. Suppose:
+
+    struct C
+    {
+        int value;
+    };
+
+    boost::shared_ptr<C> newC(int value)
+    {
+        boost::shared_ptr<C> c( new C() );
+        c->value = value;
+        return c;
+    }
+
+    void printC(boost::shared_ptr<C> c)
+    {
+        std::cout << c->value << std::endl;
+    }
+
+To make [^newC] and [^printC] work correctly, you have to tell Pyste that a
+conversor for [^boost::shared_ptr<C>] is needed.
+
+    C = Class('C', 'C.h')
+    use_shared_ptr(C)
+    Function('newC', 'C.h')
+    Function('printC', 'C.h')
+
+For [^std::auto_ptr]'s, use the function [^use_auto_ptr].
+
+This system is temporary, and in the future the conversors will automatically be
+exported if needed, without the need to tell Pyste about them explicitly.
 
