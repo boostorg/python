@@ -319,7 +319,7 @@ namespace detail {
         typedef std::vector<Holder> Storage;
         
       public:
-        static const int offset = offsetof(counted_pod, m_data);
+        enum { offset = PY_OFFSETOF(counted_pod, m_data) };
     
         static shared_pod_manager& instance();
         ~shared_pod_manager();

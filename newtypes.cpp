@@ -518,13 +518,17 @@ bool add_capability_number(TypeObjectBase::Capability capability, PyNumberMethod
 
 bool add_capability_buffer(TypeObjectBase::Capability capability, PyBufferProcs*& dest)
 {
+    (void)dest; // suppress unused argument warning
+    (void)capability; // likwise
+#if 0
     switch(capability)
     {
         // nothing defined yet
-        
         default:
             return false;
     }
+#endif
+    return false;
 }
 
 } // anonymous namespace
