@@ -91,7 +91,8 @@ namespace indexing {
 		       , Policy const &policy)
     {
       pyClass.def ("__setitem__", &Algorithms::assign, policy);
-      // *FIXME* add slicing support
+      pyClass.def ("__setitem__"
+		   , slice_handler<Algorithms, Policy>::make_setitem (policy));
     }
   };
 
