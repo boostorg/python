@@ -97,22 +97,22 @@ a conversion is available without causing an exception to be thrown.
     <h4><a name="extract-spec-synopsis"></a>Class template <code>extract</code>
     synopsis</h4>
 <pre>
-namespace boost
+namespace boost { namespace python
 {
-template &lt;class T&gt;
-struct extract
-{
-    typedef <i>unspecified</i> result_type;
-    
-    extract(PyObject*);
-    extract(object const&amp;);
+  template &lt;class T&gt;
+  struct extract
+  {
+      typedef <i>unspecified</i> result_type;
 
-    result_type operator()() const;
-    operator result_type() const;
-    
-    bool check() const;
-};
-};
+      extract(PyObject*);
+      extract(object const&amp;);
+
+      result_type operator()() const;
+      operator result_type() const;
+
+      bool check() const;
+  };
+}}
 </pre>
 
     <h4><a name="extract-spec-ctors"></a>Class <code>extract</code>

@@ -77,14 +77,14 @@
     <h4><a name="dict-spec-synopsis"></a>Class <code>dict</code>
     synopsis</h4>
 <pre>
-namespace boost
+namespace boost { namespace python
 {
    class dict : public object
    {
-      dict() ;
+      dict();
 
       template&lt; class T &gt;
-      dict(T const &amp; data) ;
+      dict(T const &amp; data);
 
       // modifiers
       void clear();
@@ -126,7 +126,7 @@ namespace boost
       object itervalues() const;
       list keys() const;
   };
-}
+}}
 </pre>
 
     <h2><a name="examples"></a>Example</h2>
