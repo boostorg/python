@@ -51,13 +51,25 @@ BOOST_PYTHON_MODULE(testnonlinear)
     ;
 
   typedef std::map<std::string, IntWrapper> Container1;
-
-  boost::python::class_<Container1>("Map")
-    .def (boost::python::indexing::container_suite<Container1>());
-
   typedef std::set<std::string> Container2;
 
-  boost::python::class_<Container2>("Set")
-    .def (boost::python::indexing::container_suite<Container2>());
+#if !BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+  typedef boost::python::indexing::container_suite<Container1> Suite1;
+  typedef boost::python::indexing::container_suite<Container2> Suite2;
+#else
+  typedef boost::python::indexing::container_suite
+          <Container1
+          , boost::python::indexing::map_algorithms
+            <boost::python::indexing::map_traits
+             <Container1> > >  Suite1;
 
+  typedef boost::python::indexing::container_suite
+          <Container2
+          , boost::python::indexing::set_algorithms
+            <boost::python::indexing::set_traits
+             <Container2> > > Suite2;
+#endif
+
+  boost::python::class_<Container1>("Map").def (Suite1());
+  boost::python::class_<Container2>("Set").def (Suite2());
 }
