@@ -33,11 +33,8 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
     if (m != 0)
     {
         // Create the current module scope
-        scope current_module(
-            (object(
-                ((borrowed_reference_t*)m)
-                ))
-            );
+        object m_obj(((borrowed_reference_t*)m));
+        scope current_module(m_obj);
         
         handle_exception(init_function);
     }

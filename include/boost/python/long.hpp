@@ -38,13 +38,13 @@ class long_ : public detail::long_base
 
     template <class T>
     explicit long_(T const& rhs)
-        : base(object(rhs))
+        : detail::long_base(object(rhs))
     {
     }
 
     template <class T, class U>
     explicit long_(T const& rhs, U const& base)
-        : base(object(rhs), object(base))
+        : detail::long_base(object(rhs), object(base))
     {
     }
     
