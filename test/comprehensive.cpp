@@ -1093,6 +1093,7 @@ void init_module(boost::python::module_builder& m)
     // export non-operator function as heterogeneous reverse-argument operator
     int_class.def(&rmul, "__rmul__");
 
+#if PYTHON_API_VERSION >= 1010
     // inplace operators.
     int_class.def(&int_iadd, "__iadd__");
     int_class.def(&int_isub, "__isub__");
@@ -1105,6 +1106,7 @@ void init_module(boost::python::module_builder& m)
     int_class.def(&int_iand, "__iand__");
     int_class.def(&int_ior, "__ior__");
     int_class.def(&int_ixor, "__ixor__");
+#endif
     
 
     boost::python::class_builder<EnumOwner> enum_owner(m, "EnumOwner");
