@@ -63,6 +63,7 @@ $(BPL_EXA)/getting_started3.cpp \
 $(BPL_EXA)/getting_started4.cpp \
 $(BPL_EXA)/getting_started5.cpp \
 $(BPL_EXA)/passing_char.cpp \
+$(BPL_EXA)/cmplx.cpp \
 $(BPL_EXA)/ivect.cpp \
 $(BPL_EXA)/ivect.h \
 $(BPL_EXA)/noncopyable_export.cpp \
@@ -75,6 +76,7 @@ $(BPL_EXA)/test_getting_started3.py \
 $(BPL_EXA)/test_getting_started4.py \
 $(BPL_EXA)/test_getting_started5.py \
 $(BPL_EXA)/tst_passing_char.py \
+$(BPL_EXA)/tst_cmplx.py \
 $(BPL_EXA)/tst_dvect.py \
 $(BPL_EXA)/tst_ivect.py \
 $(BPL_EXA)/tst_noncopyable.py
@@ -88,7 +90,7 @@ OBJ = classes.o conversions.o extension_class.o functions.o \
 all: libbpl.a test.so abstract.so \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so \
-     passing_char.so \
+     passing_char.so cmplx.so \
      noncopyable_export.so noncopyable_import.so \
      ivect.so dvect.so
 
@@ -121,7 +123,7 @@ libbpl.a: $(OBJ)
 	ar r libbpl.a $(OBJ)
 
 test.so: $(OBJ) comprehensive.o
-	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o test.so
+	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o test.so -lm
 
 abstract.so: $(OBJ) abstract.o
 	$(LD) $(LDOPTS) $(OBJ) abstract.o -o abstract.so
@@ -143,6 +145,9 @@ getting_started5.so: $(OBJ) getting_started5.o
 
 passing_char.so: $(OBJ) passing_char.o
 	$(LD) $(LDOPTS) $(OBJ) passing_char.o -o passing_char.so
+
+cmplx.so: $(OBJ) cmplx.o
+	$(LD) $(LDOPTS) $(OBJ) cmplx.o -o cmplx.so -lm
 
 noncopyable_export.so: $(OBJ) noncopyable_export.o
 	$(LD) $(LDOPTS) $(OBJ) $(HIDDEN) noncopyable_export.o -o noncopyable_export.so
@@ -180,6 +185,7 @@ clean:
 	rm -f getting_started4.o getting_started4.so
 	rm -f getting_started5.o getting_started5.so
 	rm -f passing_char.o passing_char.so
+	rm -f cmplx.o cmplx.so
 	rm -f noncopyable_export.o noncopyable_export.so
 	rm -f noncopyable_import.o noncopyable_import.so
 	rm -f ivect.o ivect.so
