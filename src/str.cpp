@@ -59,34 +59,34 @@ BOOST_PYTHON_DECL long str::count(object_cref sub, object_cref start, object_cre
     return extract<long>(this->attr("count")(sub,start,end));
 }
 
-BOOST_PYTHON_DECL str str::decode() const
+BOOST_PYTHON_DECL object str::decode() const
 {
-    return assume_str(this->attr("decode")());
+    return this->attr("decode")();
 }
 
-BOOST_PYTHON_DECL str str::decode(object_cref encoding) const
+BOOST_PYTHON_DECL object str::decode(object_cref encoding) const
 {
-    return assume_str(this->attr("decode")(encoding));
+    return this->attr("decode")(encoding);
 }
 
-BOOST_PYTHON_DECL str str::decode(object_cref encoding, object_cref errors) const
+BOOST_PYTHON_DECL object str::decode(object_cref encoding, object_cref errors) const
 {
-    return assume_str(this->attr("decode")(encoding,errors));
+    return this->attr("decode")(encoding,errors);
 }
 
-BOOST_PYTHON_DECL str str::encode() const
+BOOST_PYTHON_DECL object str::encode() const
 {
-    return assume_str(this->attr("encode")());
+    return this->attr("encode")();
 }
 
-BOOST_PYTHON_DECL str str::encode(object_cref encoding) const
+BOOST_PYTHON_DECL object str::encode(object_cref encoding) const
 {
-    return assume_str(this->attr("encode")(encoding));
+    return this->attr("encode")(encoding);
 }
 
-BOOST_PYTHON_DECL str str::encode(object_cref encoding, object_cref errors) const
+BOOST_PYTHON_DECL object str::encode(object_cref encoding, object_cref errors) const
 {
-    return assume_str(this->attr("encode")(encoding,errors));
+    return this->attr("encode")(encoding,errors);
 }
 
 BOOST_PYTHON_DECL bool str::endswith(object_cref suffix) const

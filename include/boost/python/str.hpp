@@ -40,7 +40,7 @@ class str : public object
     BOOST_PYTHON_DECL long count(object_cref sub, object_cref start) const;
     
     template<class T1, class T2>
-    str count(T1 const& sub,T2 const& start) const
+    long count(T1 const& sub,T2 const& start) const
     {
         return this->count(object(sub), object(start));
     }
@@ -48,41 +48,41 @@ class str : public object
     BOOST_PYTHON_DECL long count(object_cref sub, object_cref start, object_cref end) const;
 
     template<class T1, class T2, class T3>
-    str count(T1 const& sub,T2 const& start, T3 const& end) const
+    long count(T1 const& sub,T2 const& start, T3 const& end) const
     {
         return this->count(object(sub), object(start));
     }
 
-    BOOST_PYTHON_DECL str decode() const;
-    BOOST_PYTHON_DECL str decode(object_cref encoding) const;
+    BOOST_PYTHON_DECL object decode() const;
+    BOOST_PYTHON_DECL object decode(object_cref encoding) const;
 
     template<class T>
-    str decode(T const& encoding) const
+    object decode(T const& encoding) const
     {
         return this->decode(object(encoding));
     }
 
-    BOOST_PYTHON_DECL str decode(object_cref encoding, object_cref errors) const;
+    BOOST_PYTHON_DECL object decode(object_cref encoding, object_cref errors) const;
 
     template<class T1, class T2>
-    str decode(T1 const& encoding, T2 const& errors) const
+    object decode(T1 const& encoding, T2 const& errors) const
     {
         return this->decode(object(encoding),object(errors));
     }
 
-    BOOST_PYTHON_DECL str encode() const;
-    BOOST_PYTHON_DECL str encode(object_cref encoding) const;
+    BOOST_PYTHON_DECL object encode() const;
+    BOOST_PYTHON_DECL object encode(object_cref encoding) const;
 
     template <class T>
-    str encode(T const& encoding) const
+    object encode(T const& encoding) const
     {
         return this->encode(object(encoding));
     }
 
-    BOOST_PYTHON_DECL str encode(object_cref encoding, object_cref errors) const;
+    BOOST_PYTHON_DECL object encode(object_cref encoding, object_cref errors) const;
 
     template <class T1, class T2>
-    str encode(T1 const& encoding, T2 const& errors) const
+    object encode(T1 const& encoding, T2 const& errors) const
     {
         return this->encode(object(encoding),object(errors));
     }

@@ -29,7 +29,6 @@ dll bpl
   src/object/life_support.cpp
   src/errors.cpp
   src/module.cpp
-  src/objects2.cpp
   src/converter/builtin_converters.cpp
   src/converter/arg_to_python_base.cpp
   src/object/iterator.cpp
