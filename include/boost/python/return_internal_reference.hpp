@@ -22,7 +22,7 @@ namespace detail
   {}
 # endif
   ;
-};
+}
 
 struct internal_reference_to_python_generator
 {
