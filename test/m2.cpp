@@ -36,7 +36,7 @@ extern "C"
         simple x = *in;
     
         return PyString_FromString(x.s);
-    };
+    }
 
     // Likewise, but demands that its possible to get a non-const
     // reference to the simple.
@@ -54,7 +54,7 @@ extern "C"
         simple& x = *in;
     
         return PyString_FromString(x.s);
-    };
+    }
 
     // Likewise, with a const reference to the simple object.
     PyObject*
@@ -71,7 +71,7 @@ extern "C"
         simple const& x = *in;
     
         return PyString_FromString(x.s);
-    };
+    }
 
     // Get an int (by value) from the argument, and convert it to a
     // Python Int.
@@ -89,7 +89,7 @@ extern "C"
         int x = *in;
     
         return PyInt_FromLong(x);
-    };
+    }
 
     // Get a non-const reference to an int from the argument
     PyObject*
@@ -106,7 +106,7 @@ extern "C"
         int& x = *in;
     
         return PyInt_FromLong(x);
-    };
+    }
 
     // Get a const reference to an  int from the argument.
     PyObject*
@@ -123,7 +123,7 @@ extern "C"
         int const& x = *in;
     
         return PyInt_FromLong(x);
-    };
+    }
 
     // -------------------
 }
@@ -163,37 +163,37 @@ extern "C"
     wrap_simple(PyObject* self, PyObject* args)
     {
         return rewrap<simple>(self, args);
-    };
+    }
 
     PyObject*
     wrap_simple_ref(PyObject* self, PyObject* args)
     {
         return rewrap<simple&>(self, args);
-    };
+    }
 
     PyObject*
     wrap_simple_const_ref(PyObject* self, PyObject* args)
     {
         return rewrap<simple const&>(self, args);
-    };
+    }
 
     PyObject*
     wrap_int(PyObject* self, PyObject* args)
     {
         return rewrap<int>(self, args);
-    };
+    }
 
     PyObject*
     wrap_int_ref(PyObject* self, PyObject* args)
     {
         return rewrap<int&>(self, args);
-    };
+    }
 
     PyObject*
     wrap_int_const_ref(PyObject* self, PyObject* args)
     {
         return rewrap<int const&>(self, args);
-    };
+    }
 }
 
 PyMethodDef initial_methods[] =

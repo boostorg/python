@@ -74,7 +74,7 @@ member_function = '''    template <class A0%(, class A%+%)>
 %]        if (!c0) return 0;
         %[r%:return r( %]((*c0).*pmf)(%(*c%+%:, %))%[r%: )%];%[v%:
         return detail::none();%]
-    };
+    }
 ''' 
         
 free_function = '''%{    template <%(class A%n%:, %)>
@@ -88,7 +88,7 @@ free_function = '''%{    template <%(class A%n%:, %)>
         if (!c0) return 0;%}
         %[r%:return r( %](*pf)(%(*c%n%:, %))%[r%: )%];%[v%:
         return detail::none();%]
-    };
+    }
 ''' 
 
 def _returns_value(key, n, args, value):

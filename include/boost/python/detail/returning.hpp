@@ -33,7 +33,7 @@ struct returning
         wrap_more<R> r(c0);
         if (!c0) return 0;
         return r( ((*c0).*pmf)() );
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1), PyObject* args, PyObject* /* keywords */ )
     {
@@ -45,7 +45,7 @@ struct returning
         wrap_more<R> r(c1);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1) );
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
@@ -58,7 +58,7 @@ struct returning
         wrap_more<R> r(c2);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2) );
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
@@ -72,7 +72,7 @@ struct returning
         wrap_more<R> r(c3);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
@@ -87,7 +87,7 @@ struct returning
         wrap_more<R> r(c4);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
@@ -103,7 +103,7 @@ struct returning
         wrap_more<R> r(c5);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
-    };
+    }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() const, PyObject* args, PyObject* /* keywords */ )
@@ -115,7 +115,7 @@ struct returning
         wrap_more<R> r(c0);
         if (!c0) return 0;
         return r( ((*c0).*pmf)() );
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -127,7 +127,7 @@ struct returning
         wrap_more<R> r(c1);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1) );
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -140,7 +140,7 @@ struct returning
         wrap_more<R> r(c2);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2) );
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -154,7 +154,7 @@ struct returning
         wrap_more<R> r(c3);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -169,7 +169,7 @@ struct returning
         wrap_more<R> r(c4);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -185,7 +185,7 @@ struct returning
         wrap_more<R> r(c5);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
-    };
+    }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() volatile, PyObject* args, PyObject* /* keywords */ )
@@ -197,7 +197,7 @@ struct returning
         wrap_more<R> r(c0);
         if (!c0) return 0;
         return r( ((*c0).*pmf)() );
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -209,7 +209,7 @@ struct returning
         wrap_more<R> r(c1);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1) );
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -222,7 +222,7 @@ struct returning
         wrap_more<R> r(c2);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2) );
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -236,7 +236,7 @@ struct returning
         wrap_more<R> r(c3);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -251,7 +251,7 @@ struct returning
         wrap_more<R> r(c4);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -267,7 +267,7 @@ struct returning
         wrap_more<R> r(c5);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
-    };
+    }
 
 
 // missing const volatile type traits
@@ -282,7 +282,7 @@ struct returning
         wrap_more<R> r(c0);
         if (!c0) return 0;
         return r( ((*c0).*pmf)() );
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -294,7 +294,7 @@ struct returning
         wrap_more<R> r(c1);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1) );
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -307,7 +307,7 @@ struct returning
         wrap_more<R> r(c2);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2) );
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -321,7 +321,7 @@ struct returning
         wrap_more<R> r(c3);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -336,7 +336,7 @@ struct returning
         wrap_more<R> r(c4);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -352,7 +352,7 @@ struct returning
         wrap_more<R> r(c5);
         if (!c0) return 0;
         return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
-    };
+    }
 
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
             
@@ -361,7 +361,7 @@ struct returning
         // find the result converter
         wrap<R> r;
         return r( (*pf)() );
-    };
+    }
     template <class A0>
     static PyObject* call(R (*pf)(A0), PyObject* args, PyObject* /* keywords */ )
     {
@@ -372,7 +372,7 @@ struct returning
         wrap_more<R> r(c0);
         if (!c0) return 0;
         return r( (*pf)(*c0) );
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (*pf)(A0, A1), PyObject* args, PyObject* /* keywords */ )
     {
@@ -384,7 +384,7 @@ struct returning
         wrap_more<R> r(c1);
         if (!c0) return 0;
         return r( (*pf)(*c0, *c1) );
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (*pf)(A0, A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
@@ -397,7 +397,7 @@ struct returning
         wrap_more<R> r(c2);
         if (!c0) return 0;
         return r( (*pf)(*c0, *c1, *c2) );
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (*pf)(A0, A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
@@ -411,7 +411,7 @@ struct returning
         wrap_more<R> r(c3);
         if (!c0) return 0;
         return r( (*pf)(*c0, *c1, *c2, *c3) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
@@ -426,7 +426,7 @@ struct returning
         wrap_more<R> r(c4);
         if (!c0) return 0;
         return r( (*pf)(*c0, *c1, *c2, *c3, *c4) );
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
@@ -442,7 +442,7 @@ struct returning
         wrap_more<R> r(c5);
         if (!c0) return 0;
         return r( (*pf)(*c0, *c1, *c2, *c3, *c4, *c5) );
-    };
+    }
 };
                            
 template <>
@@ -458,7 +458,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)();
         return detail::none();
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1), PyObject* args, PyObject* /* keywords */ )
     {
@@ -469,7 +469,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
@@ -481,7 +481,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
@@ -494,7 +494,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
@@ -508,7 +508,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
@@ -523,7 +523,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
         return detail::none();
-    };
+    }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() const, PyObject* args, PyObject* /* keywords */ )
@@ -534,7 +534,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)();
         return detail::none();
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -545,7 +545,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -557,7 +557,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -570,7 +570,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -584,7 +584,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const, PyObject* args, PyObject* /* keywords */ )
     {
@@ -599,7 +599,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
         return detail::none();
-    };
+    }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() volatile, PyObject* args, PyObject* /* keywords */ )
@@ -610,7 +610,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)();
         return detail::none();
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -621,7 +621,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -633,7 +633,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -646,7 +646,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -660,7 +660,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -675,7 +675,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
         return detail::none();
-    };
+    }
 
 
 // missing const volatile type traits
@@ -689,7 +689,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)();
         return detail::none();
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -700,7 +700,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -712,7 +712,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -725,7 +725,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -739,7 +739,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
@@ -754,7 +754,7 @@ struct returning<void>
         if (!c0) return 0;
         ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
         return detail::none();
-    };
+    }
 
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
             
@@ -762,7 +762,7 @@ struct returning<void>
     {
         (*pf)();
         return detail::none();
-    };
+    }
     template <class A0>
     static PyObject* call(R (*pf)(A0), PyObject* args, PyObject* /* keywords */ )
     {
@@ -772,7 +772,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0);
         return detail::none();
-    };
+    }
     template <class A0, class A1>
     static PyObject* call(R (*pf)(A0, A1), PyObject* args, PyObject* /* keywords */ )
     {
@@ -783,7 +783,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0, *c1);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2>
     static PyObject* call(R (*pf)(A0, A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
@@ -795,7 +795,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0, *c1, *c2);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (*pf)(A0, A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
@@ -808,7 +808,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0, *c1, *c2, *c3);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
@@ -822,7 +822,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0, *c1, *c2, *c3, *c4);
         return detail::none();
-    };
+    }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
@@ -837,7 +837,7 @@ struct returning<void>
         if (!c0) return 0;
         (*pf)(*c0, *c1, *c2, *c3, *c4, *c5);
         return detail::none();
-    };
+    }
 };
 
 }}} // namespace boost::python::detail
