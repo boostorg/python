@@ -31,6 +31,7 @@
 # include <boost/python/detail/force_instantiate.hpp>
 # include <boost/python/detail/defaults_def.hpp>
 # include <boost/python/signature.hpp>
+# include <boost/python/init.hpp>
 
 namespace boost { namespace python {
 
@@ -165,6 +166,13 @@ class class_ : public objects::class_base
         return *this;
     }
 
+    template <BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class T)>
+    self& def(init<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, T)> const& i, char const* doc = 0)
+    {
+        define_init(*this, i, doc);
+        return *this;
+    }
+
     template <class Arg1T, class Arg2T>
     self& def(char const* name, Arg1T arg1, Arg2T const& arg2, char const* doc = 0)
     {
@@ -238,7 +246,7 @@ class class_ : public objects::class_base
         base::add_property(name, object(fget));
         return *this;
     }
-    
+
     template <class Get, class Set>
     self& add_property(char const* name, Get const& fget, Set const& fset)
     {

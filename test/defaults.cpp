@@ -68,6 +68,12 @@ BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
 ///////////////////////////////////////////////////////////////////////////////
 struct X {
 
+    X() {}
+
+    X(int a, char b = 'D', std::string c = "constructor", double d = 0.0)
+    : state(format % make_tuple(a, b, c, d))
+    {}
+
     object
     bar(int a, char b = 'D', std::string c = "default", double d = 0.0) const
     {
@@ -91,6 +97,14 @@ struct X {
     {
         return "list(%s); list(%s); bool(%s); " % make_tuple(a, b, c);
     }
+
+    object
+    get_state() const
+    {
+        return state;
+    }
+
+    object state;
 };
 
 BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar_stubs, bar, 1, 4)
@@ -107,6 +121,8 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
         ;
 
     class_<X>("X")
+        .def(init<int, optional<char, std::string, double> >())
+        .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
         .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())

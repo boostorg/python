@@ -44,8 +44,18 @@
 'list([0, 1, 2]); list([2, 3, 4]); bool(0); '
 >>> x.foo([0,1,2], [2,3,4], True)
 'list([0, 1, 2]); list([2, 3, 4]); bool(1); '
->>>
-
+>>> x = X(1)
+>>> x.get_state()
+'int(1); char(D); string(constructor); double(0.0); '
+>>> x = X(1, 'X')
+>>> x.get_state()
+'int(1); char(X); string(constructor); double(0.0); '
+>>> x = X(1, 'X', "Yabadabadoo")
+>>> x.get_state()
+'int(1); char(X); string(Yabadabadoo); double(0.0); '
+>>> x = X(1, 'X', "Phoenix", 3.65)
+>>> x.get_state()
+'int(1); char(X); string(Phoenix); double(3.65); '
 
 
 """

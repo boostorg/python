@@ -16,6 +16,7 @@
 #include <boost/mpl/at.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/mpl/pop_front.hpp>
+#include <boost/mpl/pop_back.hpp>
 
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
@@ -26,22 +27,22 @@
 #include <boost/preprocessor/dec.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_TEMPLATE_TYPES_WITH_DEFAULT                                    \
+#define BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT                                \
     BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT                                         \
     (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
-        typename T,                                                             \
+        class T,                                                                \
         boost::mpl::null_argument                                               \
     )                                                                           \
 
-#define BPL_IMPL_TEMPLATE_TYPES                                                 \
+#define BOOST_PYTHON_TEMPLATE_TYPES                                             \
     BOOST_PP_ENUM_PARAMS                                                        \
     (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
-        typename T                                                              \
+        class T                                                                 \
     )                                                                           \
 
-#define BPL_IMPL_TEMPLATE_ARGS                                                  \
+#define BOOST_PYTHON_TEMPLATE_ARGS                                              \
     BOOST_PP_ENUM_PARAMS                                                        \
     (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
@@ -51,12 +52,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
 
-template <BPL_IMPL_TEMPLATE_TYPES_WITH_DEFAULT>
-struct init;
+template <BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT>
+struct init; // forward declaration
 
 ///////////////////////////////////////
-template <BPL_IMPL_TEMPLATE_TYPES_WITH_DEFAULT>
-struct optional;
+template <BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT>
+struct optional; // forward declaration
 
 namespace detail {
 
@@ -67,7 +68,7 @@ namespace detail {
     //      This metaprogram checks if T is nil
     //
     ///////////////////////////////////////////////////////////////////////////
-    template <typename T>
+    template <class T>
     struct is_nil : public boost::is_same<T, boost::mpl::null_argument> {};
 
     ///////////////////////////////////////////////////////////////////////////
@@ -79,13 +80,13 @@ namespace detail {
     ///////////////////////////////////////////////////////////////////////////
     #if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-    template <typename T>
+    template <class T>
     struct is_optional {
 
     private:
 
-        template <BPL_IMPL_TEMPLATE_TYPES>
-        static boost::type_traits::yes_type f(optional<BPL_IMPL_TEMPLATE_ARGS>);
+        template <BOOST_PYTHON_TEMPLATE_TYPES>
+        static boost::type_traits::yes_type f(optional<BOOST_PYTHON_TEMPLATE_ARGS>);
         static boost::type_traits::no_type f(...);
         static T t();
 
@@ -99,14 +100,14 @@ namespace detail {
     ///////////////////////////////////////
     #else // defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-    template <typename T>
+    template <class T>
     struct is_optional {
 
         BOOST_STATIC_CONSTANT(bool, value = false);
     };
 
-    template <BPL_IMPL_TEMPLATE_TYPES>
-    struct is_optional<optional<BPL_IMPL_TEMPLATE_ARGS> > {
+    template <BOOST_PYTHON_TEMPLATE_TYPES>
+    struct is_optional<optional<BOOST_PYTHON_TEMPLATE_ARGS> > {
 
         BOOST_STATIC_CONSTANT(bool, value = true);
     };
@@ -227,10 +228,12 @@ namespace detail {
         };
     };
 
-    template <BPL_IMPL_TEMPLATE_TYPES>
-    struct check_init_params {
+    struct init_base {};
 
-        typedef boost::mpl::type_list<BPL_IMPL_TEMPLATE_ARGS> params;
+    template <BOOST_PYTHON_TEMPLATE_TYPES>
+    struct check_init_params : init_base {
+
+        typedef boost::mpl::type_list<BOOST_PYTHON_TEMPLATE_ARGS> params;
 
         BOOST_STATIC_ASSERT
         (
@@ -273,7 +276,7 @@ namespace detail {
     {
     };
 
-    template <BPL_IMPL_TEMPLATE_TYPES>
+    template <BOOST_PYTHON_TEMPLATE_TYPES>
     struct count_optional_types {
 
         BOOST_STATIC_CONSTANT(int, value =
@@ -295,7 +298,7 @@ namespace detail {
 //      last in the list.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_APPEND_TO_INIT(INDEX, D)                                       \
+#define BOOST_PYTHON_APPEND_TO_INIT(INDEX, D)                                   \
     typedef typename detail::append_to_init                                     \
     <                                                                           \
         BOOST_PP_CAT(l, INDEX),                                                 \
@@ -303,17 +306,19 @@ namespace detail {
     >::sequence BOOST_PP_CAT(l, BOOST_PP_INC(INDEX));                           \
 
 
-template <BPL_IMPL_TEMPLATE_TYPES>
-struct init : detail::check_init_params<BPL_IMPL_TEMPLATE_ARGS> {
-
+template <BOOST_PYTHON_TEMPLATE_TYPES>
+struct init : detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
+{
     typedef boost::mpl::type_list<T0> l0;
     BOOST_PP_REPEAT
-        (BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY), BPL_IMPL_APPEND_TO_INIT, 0);
+        (BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY), BOOST_PYTHON_APPEND_TO_INIT, 0);
 
     typedef BOOST_PP_CAT(l, BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY)) sequence;
 
+    BOOST_STATIC_CONSTANT(int, n_arguments = boost::mpl::size<sequence>::value);
+
     BOOST_STATIC_CONSTANT(int, n_defaults =
-        (detail::count_optional_types<BPL_IMPL_TEMPLATE_ARGS>::value)
+        (detail::count_optional_types<BOOST_PYTHON_TEMPLATE_ARGS>::value)
     );
 };
 
@@ -324,19 +329,96 @@ struct init : detail::check_init_params<BPL_IMPL_TEMPLATE_ARGS> {
 //      optional<T0...TN>::sequence returns a typelist.
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <BPL_IMPL_TEMPLATE_TYPES>
+template <BOOST_PYTHON_TEMPLATE_TYPES>
 struct optional {
 
-    typedef boost::mpl::type_list<BPL_IMPL_TEMPLATE_ARGS> sequence;
+    typedef boost::mpl::type_list<BOOST_PYTHON_TEMPLATE_ARGS> sequence;
 };
 
-#undef BPL_IMPL_TEMPLATE_TYPES_WITH_DEFAULT
-#undef BPL_IMPL_TEMPLATE_TYPES
-#undef BPL_IMPL_TEMPLATE_ARGS
-#undef BPL_IMPL_IS_OPTIONAL_VALUE
-#undef BPL_IMPL_APPEND_TO_INIT
+namespace detail {
 
-}} // namespace boost { namespace python {
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //  define_class_init_helper<N>::apply
+    //
+    //      General case
+    //
+    //      Accepts a class_ and an arguments list. Defines a constructor
+    //      for the class given the arguments and recursively calls
+    //      define_class_init_helper<N-1>::apply with one less arguments (the
+    //      rightmost argument is shaved off)
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+    template <int N>
+    struct define_class_init_helper {
+
+        template <class ClassT, class ArgsT>
+        static void apply(ClassT& cl, ArgsT const& args, char const* doc)
+        {
+            cl.def_init(args, default_call_policies(), doc);
+            boost::mpl::pop_back<ArgsT>::sequence next;
+            define_class_init_helper<N-1>::apply(cl, next, doc);
+        }
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //
+    //  define_class_init_helper<0>::apply
+    //
+    //      Terminal case
+    //
+    //      Accepts a class_ and an arguments list. Defines a constructor
+    //      for the class given the arguments.
+    //
+    ///////////////////////////////////////////////////////////////////////////////
+    template <>
+    struct define_class_init_helper<0> {
+
+        template <class ClassT, class ArgsT>
+        static void apply(ClassT& cl, ArgsT const& args, char const* doc)
+        {
+            cl.def_init(args, default_call_policies(), doc);
+        }
+    };
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  define_init
+//
+//      Accepts a class_ and an init-list. Defines a set of constructors for
+//      the class given the arguments. The init list (see init above) has
+//      n_defaults (number of default arguments and n_arguments (number of
+//      actual arguments). This function defines n_defaults + 1 constructors
+//      for the class. Each constructor after the first has one less argument
+//      to its right. Example:
+//
+//          init<int, default<char, long, double>
+//
+//      Defines:
+//
+//          __init__(int, char, long, double)
+//          __init__(int, char, long)
+//          __init__(int, char)
+//          __init__(int)
+//
+///////////////////////////////////////////////////////////////////////////////
+template <class ClassT, class InitT>
+void
+define_init(ClassT& cl, InitT const& i, char const* doc)
+{
+    enum { n_defaults_plus_1 = InitT::n_defaults + 1 };
+    typedef typename InitT::sequence args_t;
+    detail::define_class_init_helper<n_defaults_plus_1>::apply(cl, args_t(), doc);
+}
+
+}} // namespace boost::python
+
+#undef BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT
+#undef BOOST_PYTHON_TEMPLATE_TYPES
+#undef BOOST_PYTHON_TEMPLATE_ARGS
+#undef BOOST_PYTHON_IS_OPTIONAL_VALUE
+#undef BOOST_PYTHON_APPEND_TO_INIT
 
 ///////////////////////////////////////////////////////////////////////////////
 #endif // INIT_JDG20020820_HPP
