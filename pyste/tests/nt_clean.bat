@@ -12,6 +12,7 @@ rm -Rf _virtual
 rm -Rf _virtual2
 rm -Rf _wrappertest 
 rm -Rf _opaque
+rm -Rf _inherit
 
 rm -f *.cpp
 rm -f *.obj

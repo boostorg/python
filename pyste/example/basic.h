@@ -8,6 +8,7 @@ namespace basic {
     
 struct C
 {    
+    // test virtuallity
     C(): value(1), const_value(0) {}
     virtual int f(int x = 10)
     {
@@ -21,11 +22,16 @@ struct C
     const std::string& name() { return _name; }
     void set_name(const std::string& name) { _name = name; }
     std::string _name;
+
+    // test data members
     static int static_value;
     static const int const_static_value;
     
     int value;
     const int const_value;
+
+    // test static functions
+    static int mul(int x=2, int y=3) { return x*y; }
 };
 
 inline int call_f(C& c)

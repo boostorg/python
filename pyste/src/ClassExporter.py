@@ -54,6 +54,10 @@ class ClassExporter(Exporter):
         return makeid(self.class_.name)
 
 
+    def Name(self):
+        return self.class_.FullName()
+
+
     def SetDeclarations(self, declarations):
         Exporter.SetDeclarations(self, declarations)
         decl = self.GetDeclaration(self.info.name)
@@ -269,9 +273,13 @@ class ClassExporter(Exporter):
         def DeclareOverloads(m):
             'Declares the macro for the generation of the overloads'
             if not m.virtual:
-                func = m.name
-                code = 'BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(%s, %s, %i, %i)\n'
-                code = code % (OverloadName(m), func, m.minArgs, m.maxArgs)
+                if m.static:
+                    func = m.FullName()
+                    macro = 'BOOST_PYTHON_FUNCTION_OVERLOADS'
+                else:
+                    func = m.name
+                    macro = 'BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS' 
+                code = '%s(%s, %s, %i, %i)\n' % (macro, OverloadName(m), func, m.minArgs, m.maxArgs)
                 if code not in declared:
                     declared[code] = True
                     self.Add('declaration', code)

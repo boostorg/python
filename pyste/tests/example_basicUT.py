@@ -53,6 +53,14 @@ class BasicExampleTest(unittest.TestCase):
             C.const_static_value = 1
         self.assertRaises(AttributeError, set_const_static)
 
+        # test static function
+        def test_mul(result, *args):
+            self.assertEqual(C.mul(*args), result)
+            self.assertEqual(c.mul(*args), result)
+        test_mul(6)
+        test_mul(3, 1)
+        test_mul(16, 8, 2)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -209,13 +209,18 @@ class Method(Function):
 
     def PointerDeclaration(self):
         'returns a declaration of a pointer to this function'
-        result = self.result.FullName()
-        params = ', '.join([x.FullName() for x in self.parameters]) 
-        const = ''
-        if self.const:
-            const = 'const'            
-        return '(%s (%s::*)(%s) %s)&%s' %\
-            (result, self.class_, params, const, self.FullName()) 
+        if self.static:
+            # static methods are like normal functions
+            return Function.PointerDeclaration(self)
+        else:
+            # using syntax of methods
+            result = self.result.FullName()
+            params = ', '.join([x.FullName() for x in self.parameters]) 
+            const = ''
+            if self.const:
+                const = 'const'            
+            return '(%s (%s::*)(%s) %s)&%s' %\
+                (result, self.class_, params, const, self.FullName()) 
 
     
 class Constructor(Method):
