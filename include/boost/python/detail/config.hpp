@@ -79,6 +79,8 @@
 // backwards compatibility:
 #ifdef BOOST_PYTHON_STATIC_LIB
 #  define BOOST_PYTHON_STATIC_LINK
+# elif !defined(BOOST_PYTHON_DYNAMIC_LIB)
+#  define BOOST_PYTHON_DYNAMIC_LIB
 #endif
 
 #if defined(__MWERKS__) \
