@@ -12,7 +12,6 @@
 
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/list.hpp>
 #include <boost/python/tuple.hpp>
 
 #include <string>
@@ -39,9 +38,7 @@ namespace {
     getinitargs(const world& w)
     {
         using namespace boost::python;
-        list result;
-        result.append(object(w.get_country()));
-        return tuple(result);
+        return make_tuple(w.get_country());
     }
   };
 

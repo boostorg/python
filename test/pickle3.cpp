@@ -19,7 +19,6 @@
 
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/list.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/dict.hpp>
 #include <boost/python/extract.hpp>
@@ -50,9 +49,7 @@ namespace { // Avoid cluttering the global namespace.
     getinitargs(const world& w)
     {
         using namespace boost::python;
-        list result;
-        result.append(object(w.get_country()));
-        return tuple(result);
+        return make_tuple(w.get_country());
     }
 
     static
@@ -61,12 +58,8 @@ namespace { // Avoid cluttering the global namespace.
     {
         using namespace boost::python;
         world const& w = extract<world const&>(w_obj)();
-        list result;
-        // store the object's __dict__
-        result.append(w_obj.attr("__dict__"));
-        // store the internal state of the C++ object
-        result.append(object(w.get_secret_number()));
-        return tuple(result);
+
+        return make_tuple(w_obj.attr("__dict__"), w.get_secret_number());
     }
 
     static
@@ -76,7 +69,8 @@ namespace { // Avoid cluttering the global namespace.
         using namespace boost::python;
         world& w = extract<world&>(w_obj)();
         extract<tuple> state_proxy(state);
-        if (!state_proxy.check() || len(state_proxy()) != 2) {
+        if (!state_proxy.check() || len(state_proxy()) != 2)
+        {
           PyErr_SetString(PyExc_ValueError,
             "Unexpected argument in call to __setstate__.");
           throw_error_already_set();

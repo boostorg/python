@@ -24,7 +24,6 @@
 
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
-#include <boost/python/list.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/detail/api_placeholder.hpp>
@@ -54,9 +53,7 @@ namespace { // Avoid cluttering the global namespace.
     getinitargs(const world& w)
     {
         using namespace boost::python;
-        list result;
-        result.append(object(w.get_country()));
-        return tuple(result);
+        return make_tuple(w.get_country());
     }
 
     static
@@ -64,9 +61,7 @@ namespace { // Avoid cluttering the global namespace.
     getstate(const world& w)
     {
         using namespace boost::python;
-        list result;
-        result.append(object(w.get_secret_number()));
-        return tuple(result);
+        return make_tuple(w.get_secret_number());
     }
 
     static
