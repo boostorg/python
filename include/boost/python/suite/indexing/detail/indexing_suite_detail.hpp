@@ -606,7 +606,7 @@ namespace boost { namespace python { namespace detail {
                 if (to > max_index)
                     to = max_index;
             }
-		
+        
         }        
    
         static void 

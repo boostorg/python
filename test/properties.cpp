@@ -9,15 +9,15 @@ class ret_type
 {
  public:
     ret_type() : i(42.5) {}
-	double i;
+    double i;
 };
 
 class crash_me
 {
-	private:
-		ret_type i;
-	public:
-		ret_type& get_i() { return i; }
+    private:
+        ret_type i;
+    public:
+        ret_type& get_i() { return i; }
 };
 
 }
@@ -76,18 +76,18 @@ BOOST_PYTHON_MODULE(properties_ext)
         //defining class property using a global function
         .add_static_property( "instance_count_injected", &get_X_instance_count );
 
-	
-	class_< test::ret_type>( "ret_type")
-		.add_property( "i", &test::ret_type::i, &test::ret_type::i)
-		;
-	
-	class_< test::crash_me> crash_me_wrapper( "crash_me");
+    
+    class_< test::ret_type>( "ret_type")
+        .add_property( "i", &test::ret_type::i, &test::ret_type::i)
+        ;
+    
+    class_< test::crash_me> crash_me_wrapper( "crash_me");
     
     crash_me_wrapper
-		.def( "get_i", &test::crash_me::get_i , return_internal_reference<>())
-		;
-	
-	crash_me_wrapper.add_property( "i", crash_me_wrapper.attr("get_i"));
+        .def( "get_i", &test::crash_me::get_i , return_internal_reference<>())
+        ;
+    
+    crash_me_wrapper.add_property( "i", crash_me_wrapper.attr("get_i"));
 
 }
 

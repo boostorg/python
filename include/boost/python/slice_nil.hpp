@@ -14,7 +14,7 @@ namespace boost { namespace python { namespace api {
 class slice_nil : public object
 {
  public:
-	slice_nil() : object() {}
+    slice_nil() : object() {}
 };
 
 # ifndef _ // Watch out for GNU gettext users, who #define _(x)

@@ -82,7 +82,7 @@ namespace boost { namespace python {
         get_slice(Container& container, index_type from, index_type to)
         { 
             if (from > to)
-	            return object(Container());
+                return object(Container());
             return object(Container(container.begin()+from, container.begin()+to));
         }
 

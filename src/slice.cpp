@@ -16,22 +16,22 @@ slice_base::slice_base(PyObject* start, PyObject* stop, PyObject* step)
 object
 slice_base::start() const
 {
-	return object( detail::borrowed_reference(
-		((PySliceObject*)this->ptr())->start));
+    return object( detail::borrowed_reference(
+        ((PySliceObject*)this->ptr())->start));
 }
 
 object
 slice_base::stop() const
 {
-	return object( detail::borrowed_reference(
-		((PySliceObject*)this->ptr())->stop));
+    return object( detail::borrowed_reference(
+        ((PySliceObject*)this->ptr())->stop));
 }
 
 object
 slice_base::step() const
 {
-	return object( detail::borrowed_reference(
-		((PySliceObject*)this->ptr())->step));
+    return object( detail::borrowed_reference(
+        ((PySliceObject*)this->ptr())->step));
 }
 
 } } } // !namespace boost::python::detail
