@@ -158,25 +158,17 @@ BOOST_PYTHON_MODULE_INIT(defaults_ext)
         .def("barfoo", (object(*)(int, char, std::string, double))0, bar_stubs())
         ;
 
-    class_<Y>("Y", no_init)
+    class_<Y>("Y", init<>("doc of Y init")) // this should work
 	    .def("get_state", &Y::get_state)
         ;
 
     class_<X>("X")
 
-# if (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
-        .def(init<int, optional<char, std::string, double> >())
-        .def(init<std::string, bool>())
-# else
-        .def_init(args<int>())
-        .def_init(args<int, char>())
-        .def_init(args<int, char, std::string>())
-        .def_init(args<int, char, std::string, double>())
-        .def_init(args<std::string, bool>())
-# endif
+        .def(init<int, optional<char, std::string, double> >("doc of init"))
+        .def(init<std::string, bool>()[default_call_policies()]) // what's a good policy here?
         .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
-        .def("bar2", &X::bar2, X_bar_stubs2(), return_internal_reference<>())
+        .def("bar2", &X::bar2, X_bar_stubs2("doc of X::bar2")[return_internal_reference<>()])
         .def("foo", (object(X::*)(std::string, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(int, bool) const)0, X_foo_2_stubs())
         .def("foo", (object(X::*)(list, list, bool) const)0, X_foo_3_stubs())

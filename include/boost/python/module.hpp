@@ -85,13 +85,12 @@ class module : public detail::module_base
         SigT sig,
         StubsT const& stubs,
         char const* doc,
-        detail::func_stubs_base const*)
+        detail::overloads_base const*)
     {
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
         detail::define_with_defaults(
-            name, stubs, default_call_policies(),
-            *this, detail::get_signature(sig), doc);
+            name, stubs, *this, detail::get_signature(sig));
     }
 };
 

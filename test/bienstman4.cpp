@@ -30,7 +30,7 @@ BOOST_PYTHON_MODULE_INIT(bienstman4_ext)
   class_<Type1>("T1")
       ;
   
-  class_<Term>("Term", args<Type1&>())
+  class_<Term>("Term", init<Type1&>())
       ;
   
   Type1 t1;

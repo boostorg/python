@@ -25,35 +25,44 @@ namespace detail
       void const*,
       char const* name,
       Fn fn,
-      CallPolicyOrDoc const& policy_or_doc,
-      char const* doc)
+        CallPolicyOrDoc const& policy_or_doc)
   {
       typedef detail::def_helper<CallPolicyOrDoc> helper;
 
       detail::scope_setattr_doc(
           name, boost::python::make_function(fn, helper::get_policy(policy_or_doc)),
-          helper::get_doc(policy_or_doc, doc));
+            helper::get_doc(policy_or_doc, 0));
+    }
+
+    template <class Fn, class CallPolicyOrDoc1, class CallPolicyOrDoc2>
+    void dispatch_def(
+        void const*,
+        char const* name,
+        Fn fn,
+        CallPolicyOrDoc1 const& policy_or_doc1,
+        CallPolicyOrDoc2 const& policy_or_doc2)
+    {
+        typedef detail::def_helper<CallPolicyOrDoc1> helper;
+
+        detail::scope_setattr_doc(
+            name, boost::python::make_function(
+                fn, helper::get_policy(policy_or_doc1, policy_or_doc2)),
+            helper::get_doc(policy_or_doc1, policy_or_doc2));
   }
 
-    template <class StubsT, class SigT, class CallPolicyOrDoc>
+    template <class StubsT, class SigT>
     void dispatch_def(
-        detail::func_stubs_base const*,
+        detail::overloads_base const*,
         char const* name,
         SigT sig,
-        StubsT const& stubs,
-        CallPolicyOrDoc const& policy_or_doc,
-        char const* doc = 0)
+        StubsT const& stubs)
     {
-        typedef detail::def_helper<CallPolicyOrDoc> helper;
-
         //  convert sig to a type_list (see detail::get_signature in signature.hpp)
         //  before calling detail::define_with_defaults.
 
         scope current;
         detail::define_with_defaults(
-            name, stubs, helper::get_policy(policy_or_doc),
-            current, detail::get_signature(sig),
-            helper::get_doc(policy_or_doc, doc));
+            name, stubs, current, detail::get_signature(sig));
     }
 }
 
@@ -67,33 +76,33 @@ template <class Arg1T, class Arg2T>
 void def(char const* name, Arg1T arg1, Arg2T const& arg2)
 {
     //  The arguments may be:
-    //  arg1:   function    or  signature
-    //  arg2:   policy      or  docstring   or  stubs
+    //      def(name, function)
+    //      def(name, function, policy)
+    //      def(name, function, doc_string)
+    //      def(name, signature, stubs)
 
-    detail::dispatch_def(&arg2, name, arg1, arg2, (char*)0);
+    detail::dispatch_def(&arg2, name, arg1, arg2);
 }
 
 template <class Arg1T, class Arg2T, class Arg3T>
 void def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3)
 {
-    //  The arguments may be:
-    //  arg1:   function    or  signature
-    //  arg2:   policy      or  docstring   or  stubs
-    //  arg3:   policy      or  docstring
+    //  The arguments are definitely:
+    //      def(name, function, policy, doc_string) // TODO: exchange policy, doc_string position
 
     detail::dispatch_def(&arg2, name, arg1, arg2, arg3);
 }
 
-template <class Arg1T, class Arg2T, class Arg3T>
-void def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, char const* doc)
-{
-    //  The arguments are definitely:
-    //  arg1:   signature
-    //  arg2:   stubs
-    //  arg3:   policy
-
-    detail::dispatch_def(&arg2, name, arg1, arg2, arg3, doc);
-}
+//template <class Arg1T, class Arg2T, class Arg3T>
+//void def(char const* name, Arg1T arg1, Arg2T const& arg2, Arg3T const& arg3, char const* doc)
+//{
+//    //  The arguments are definitely:
+//    //  arg1:   signature
+//    //  arg2:   stubs
+//    //  arg3:   policy
+//
+//    detail::dispatch_def(&arg2, name, arg1, arg2, arg3, doc);
+//}
 
 }} // namespace boost::python
 

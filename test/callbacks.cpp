@@ -137,8 +137,8 @@ BOOST_PYTHON_MODULE_INIT(callbacks_ext)
     def("apply_to_string_literal", apply_to_string_literal);
         
     
-    class_<X>("X", args<int>())
-        .def_init(args<X const&>())
+    class_<X>("X", init<int>())
+        .def(init<X const&>())
         .def("value", &X::value)
         .def("set", &X::set)
         ;

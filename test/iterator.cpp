@@ -94,6 +94,7 @@ BOOST_PYTHON_MODULE_INIT(iterator_ext)
              , range(&list_range::first, &list_range::second))
         ;
 
+    // No runtime tests for this one yet
     class_<list_range2>("list_range2")
 
         // We can specify member functions returning a non-const reference
