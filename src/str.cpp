@@ -11,11 +11,27 @@ detail::new_reference str_base::call(object const& arg_)
 } 
 
 str_base::str_base()
-    : object(detail::new_reference(PyString_FromString("")))
+  : object(detail::new_reference(::PyString_FromString("")))
 {}
 
 str_base::str_base(const char* s)
-    : object(detail::new_reference(PyString_FromString(s)))
+  : object(detail::new_reference(::PyString_FromString(s)))
+{}
+
+str_base::str_base(char const* start, char const* finish)
+    : object(
+        detail::new_reference(
+            ::PyString_FromStringAndSize(start, finish - start)
+        )
+    )
+{}
+
+str_base::str_base(char const* start, std::size_t length) // new str
+    : object(
+        detail::new_reference(
+            ::PyString_FromStringAndSize(start, length)
+        )
+    )
 {}
 
 str_base::str_base(object_cref other)

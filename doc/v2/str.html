@@ -67,8 +67,10 @@
     <p>Exposes the <a href=
     "http://www.python.org/dev/doc/devel/lib/string-methods.html">string
     methods</a> of Python's built-in <code>str</code> type. The
-    semantics of the constructors and member functions defined below
-    can be fully understood by reading the <a href=
+    semantics of the constructors and member functions defined below,
+    except for the two-argument constructors which construct str
+    objects from a range of characters, can be fully understood by
+    reading the <a href=
     "ObjectWrapper.html#TypeWrapper-concept">TypeWrapper</a> concept
     definition. Since <code>str</code> is publicly derived from
     <code><a href="object.html#object-spec">object</a></code>, the
@@ -85,7 +87,10 @@ namespace boost { namespace python
    public:
       str(); // new str
 
-      str(const char* s); // new str
+      str(char const* s); // new str
+
+      str(char const* start, char const* finish); // new str
+      str(char const* start, std::size_t length); // new str
 
       template &lt;class T&gt;
       explicit str(T const&amp; other);
