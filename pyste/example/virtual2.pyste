@@ -1,0 +1,3 @@
+Class('virtual2::A', 'virtual2.h')
+Class('virtual2::B', 'virtual2.h')
+Function('virtual2::call', 'virtual2.h')
