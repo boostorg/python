@@ -75,8 +75,6 @@
     template &lt;class DerivedVisitor&gt;
     class def_visitor {};
 }</pre>
-
-    
 <h3><a name="my_def_visitor-spec"></a>Class <tt>my_</tt><code>def_visitor</code></h3>
 
     <p>A prototypical derived class of def_visitor. This client supplied class 
@@ -87,16 +85,16 @@
   </ul>
 
     <h4><a name="my_def_visitor-spec-synopsis"></a>Class <code>my_def_visitor </code> synopsis</h4>
-<pre>    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
-    {
-        friend class def_visitor_access;
+<pre>class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+{
+    friend class def_visitor_access;
 
-        template &lt;class classT&gt;
-        void visit(classT&amp; c) const;
+    template &lt;class classT&gt;
+    void visit(classT&amp; c) const;
 
-        template &lt;class classT, class OptionalArgs&gt;
-        void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;
-    };
+    template &lt;class classT, class OptionalArgs&gt;
+    void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;
+};
 </pre>
 
     <h4><a name="my_def_visitor-spec-observers"></a>Class <code>my_def_visitor </code>
@@ -130,31 +128,30 @@ void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) con
     <h2><a name="examples"></a>Example</h2>
 
     
-<pre>    class X {/*...*/};<br>
-    class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+<pre>class X {/*...*/};<br>
+class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
+{
+    friend class def_visitor_access;
+
+    template &lt;class classT&gt;
+    void visit(classT&amp; c) const
     {
-        friend class def_visitor_access;
-
-        template &lt;class classT&gt;
-        void visit(classT&amp; c) const
-        {
-            c
-                .def(&quot;foo&quot;, &amp;my_def_visitor::foo)
-                .def(&quot;bar&quot;, &amp;my_def_visitor::bar)
-            ;
-        }
-
-        static void foo(X&amp; self);
-        static void bar(X&amp; self);
-    };
-
-
-    BOOST_PYTHON_MODULE(my_ext)
-    { 
-        class_&lt;X&gt;(&quot;X&quot;)
-            .def(my_def_visitor())
+        c
+            .def(&quot;foo&quot;, &amp;my_def_visitor::foo)
+            .def(&quot;bar&quot;, &amp;my_def_visitor::bar)
         ;
     }
+
+    static void foo(X&amp; self);
+    static void bar(X&amp; self);
+};
+
+BOOST_PYTHON_MODULE(my_ext)
+{ 
+    class_&lt;X&gt;(&quot;X&quot;)
+        .def(my_def_visitor())
+    ;
+}
 </pre>
   <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->27 August, 2003<!--webbot bot="Timestamp" endspan i-checksum="34484" -->
