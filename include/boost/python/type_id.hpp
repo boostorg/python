@@ -13,6 +13,7 @@
 # include <typeinfo>
 # include <cstring>
 # include <boost/static_assert.hpp>
+# include <boost/detail/workaround.hpp>
 # include <boost/type_traits/same_traits.hpp>
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
@@ -67,7 +68,9 @@ template <class T>
 inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 {
     return type_info(
-#  if (!defined(BOOST_MSVC) || BOOST_MSVC > 1300) && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 700)
+#  if !defined(_MSC_VER)                                       \
+      || (!BOOST_WORKAROUND(BOOST_MSVC, <= 1300)                \
+          && !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, <= 700))
         typeid(T)
 #  else // strip the decoration which msvc and Intel mistakenly leave in
         python::detail::msvc_typeid((boost::type<T>*)0)
