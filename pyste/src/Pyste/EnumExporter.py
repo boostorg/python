@@ -17,7 +17,7 @@ class EnumExporter(Exporter):
         self.enum = self.GetDeclaration(self.info.name)
 
 
-    def Export(self, codeunit, expoted_names):
+    def Export(self, codeunit, exported_names):
         if not self.info.exclude:
             indent = self.INDENT
             in_indent = self.INDENT*2
@@ -34,6 +34,7 @@ class EnumExporter(Exporter):
                 code += in_indent + '.value("%s", %s)\n' % (rename, value_fullname)
             code += indent + ';\n\n'
             codeunit.Write('module', code)
+            exported_names[self.enum.FullName()] = 1
 
 
     def Unit(self):

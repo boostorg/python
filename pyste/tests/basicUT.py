@@ -57,9 +57,12 @@ class BasicExampleTest(unittest.TestCase):
         def test_mul(result, *args):
             self.assertEqual(C.mul(*args), result)
             self.assertEqual(c.mul(*args), result)
-        test_mul(6)
-        test_mul(3, 1)
         test_mul(16, 8, 2)
+        test_mul(6.0, 2.0, 3.0)
+        self.assertEqual(C.square(), 4)
+        self.assertEqual(c.square(), 4)
+        self.assertEqual(C.square(3), 9)
+        self.assertEqual(c.square(3), 9)
 
 
 if __name__ == '__main__':

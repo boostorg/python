@@ -4,7 +4,7 @@ from distutils.core import setup
 import sys
 
 setup (name              = "Pyste",
-       version           = "0.9.9",
+       version           = "0.9.10",
        description       = "Pyste - Python Semi-Automatic Exporter",
        maintainer        = "Bruno da Silva de Oliveira",
        maintainer_email  = "nicodemus@globalite.com.br",

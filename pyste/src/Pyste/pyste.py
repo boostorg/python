@@ -39,7 +39,7 @@ from policies import *
 from CppParser import CppParser, CppParserError
 import time
 
-__VERSION__ = '0.9.9'
+__VERSION__ = '0.9.10'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -221,7 +221,6 @@ def Begin():
             if multiple:
                 codeunit.SetCurrent(export.interface_file, export.Unit())
             export.GenerateCode(codeunit, exported_names)
-            exported_names[export.Name()] = 1
         # force collect of cyclic references
         gc.collect()
     # finally save the code unit

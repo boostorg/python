@@ -24,6 +24,7 @@ class FunctionExporter(Exporter):
                 self.ExportDeclaration(decl, len(decls) == 1, codeunit)
                 self.ExportOpaquePointer(decl, codeunit)
             self.GenerateOverloads(decls, codeunit)  
+            exported_names[decl.FullName()] = 1
 
 
     def ExportDeclaration(self, decl, unique, codeunit):

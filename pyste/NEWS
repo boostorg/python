@@ -7,6 +7,11 @@ Fixed a bug where the macro BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID was being
 called multiple times for the same type.
 Thanks to Gottfried Ganﬂauge for reporting this!
 
+Fixed bug where using AllFromHeader didn't use bases<> when exporting 
+hierarchies.
+
+Fixed the staticmethod bug.
+
 5 July 2003
 Changed how --multiple works: now it generates one cpp file for each pyste
 file, makeing easier to integrate Pyste with build systems.

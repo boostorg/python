@@ -33,7 +33,10 @@ public:
     const int const_value;
 
     // test static functions
-    static int mul(int x=2, int y=3) { return x*y; }
+    static int mul(int x, int y) { return x*y; }
+    static double mul(double x, double y) { return x*y; }
+
+    static int square(int x=2) { return x*x; }
 };
 
 inline int call_f(C& c)

@@ -97,10 +97,11 @@ class ClassExporter(Exporter):
             self.ExportMethods()
             self.ExportOperators()
             self.ExportNestedClasses(exported_names)
-            self.ExportNestedEnums()
+            self.ExportNestedEnums(exported_names)
             self.ExportSmartPointer()
             self.ExportOpaquePointerPolicies()
             self.Write(codeunit)
+            exported_names[self.class_.FullName()] = 1
 
 
     def InheritMethods(self, exported_names):
@@ -341,6 +342,8 @@ class ClassExporter(Exporter):
         methods = [x for x in self.public_members if IsExportable(x)]        
         methods.extend(self.GetAddedMethods())
         
+        staticmethods = {}
+        
         for method in methods:
             method_info = self.info[method.name]
             
@@ -375,14 +378,19 @@ class ClassExporter(Exporter):
             self.Add('inside', code)
             # static method
             if isinstance(method, Method) and method.static:
-                code = '.staticmethod("%s")' % name
-                self.Add('inside', code)
+                staticmethods[name] = 1
             # add wrapper code if this method has one
             wrapper = method_info.wrapper
             if wrapper and wrapper.code:
                 self.Add('declaration', wrapper.code)
+        
+        # export staticmethod statements
+        for name in staticmethods:
+            code = '.staticmethod("%s")' % name
+            self.Add('inside', code) 
 
 
+                
     def MakeNonVirtual(self):
         '''Make all methods that the user indicated to no_override no more virtual, delegating their
         export to the ExportMethods routine'''
@@ -583,7 +591,7 @@ class ClassExporter(Exporter):
             self.nested_codeunits.append(codeunit)
 
 
-    def ExportNestedEnums(self):
+    def ExportNestedEnums(self, exported_names):
         nested_enums = [x for x in self.public_members if isinstance(x, ClassEnumeration)]
         for enum in nested_enums:
             enum_info = self.info[enum.name]
@@ -592,7 +600,7 @@ class ClassExporter(Exporter):
             exporter = EnumExporter(enum_info)
             exporter.SetDeclarations(self.declarations)
             codeunit = SingleCodeUnit(None, None)
-            exporter.Export(codeunit, None)
+            exporter.Export(codeunit, exported_names)
             self.nested_codeunits.append(codeunit)
 
 

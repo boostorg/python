@@ -3,7 +3,7 @@ import os.path
 #==============================================================================
 # Exporter
 #==============================================================================
-class Exporter:
+class Exporter(object):
     'Base class for objects capable to generate boost.python code.'
 
     INDENT = ' ' * 4
