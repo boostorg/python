@@ -3,11 +3,11 @@
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_DECL detail::new_reference str::call(object const& arg)
+BOOST_PYTHON_DECL detail::new_reference str::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
         (PyObject*)&PyString_Type, "(O)", 
-        arg.ptr());
+        arg_.ptr());
 } 
 
 BOOST_PYTHON_DECL str::str(const char* s)

@@ -2,11 +2,11 @@
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_DECL detail::new_reference tuple::call(object const& arg)
+BOOST_PYTHON_DECL detail::new_reference tuple::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
         (PyObject*)&PyTuple_Type, "(O)", 
-        arg.ptr());
+        arg_.ptr());
 }
     
 BOOST_PYTHON_DECL tuple::tuple()

@@ -7,13 +7,13 @@
 
 namespace boost { namespace python { 
 
-BOOST_PYTHON_DECL detail::new_non_null_reference list::call(object const& arg)
+BOOST_PYTHON_DECL detail::new_non_null_reference list::call(object const& arg_)
 {
     return (detail::new_non_null_reference)
         (expect_non_null)(
             PyObject_CallFunction(
                 (PyObject*)&PyList_Type, "(O)", 
-                arg.ptr()));
+                arg_.ptr()));
 }
 
 BOOST_PYTHON_DECL list::list()
