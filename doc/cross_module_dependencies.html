@@ -77,8 +77,9 @@ way with the <tt>class_builder&lt;&gt;</tt> template.  To also enable the
 automatic conversion of <tt>std::vector&lt;double&gt;</tt> function
 arguments or return values in other Boost.Python C++ modules, the
 converters that convert a <tt>std::vector&lt;double&gt;</tt> C++ object
-to a Python object and vice versa (see last section for details) have
-to be exported. For example:
+to a Python object and vice versa (i.e. the <tt>to_python()</tt> and
+<tt>from_python()</tt> template functions) have to be exported. For
+example:
 
 <pre>
   class_builder&lt;std::vector&lt;double&gt; &gt; v_double(std_vector_module, &quot;double&quot;);
@@ -129,8 +130,8 @@ class_builder&lt;store&gt; py_store(your_module, &quot;store&quot;);
 export_converters_noncopyable(py_store);
 </pre>
 
-The corresponding <tt>import_converters()</tt> statement does not need
-any special attention:
+The corresponding <tt>import_converters&lt;&gt;</tt> statement does not
+need any special attention:
 
 <pre>
 import_converters&lt;store&gt; py_store(&quot;noncopyable_export&quot;, &quot;store&quot;);
@@ -158,8 +159,8 @@ search path (<tt>sys.path</tt>).
 
 <p>
 The situation is not always this obvious. Suppose the
-<tt>statistics</tt> module has a random function that returns a vector
-of random numbers with a given length:
+<tt>statistics</tt> module has a <tt>random()</tt> function that
+returns a vector of random numbers with a given length:
 
 <pre>
 import statistics
@@ -244,7 +245,7 @@ If a library is wrapped that consists of both header files and compiled
 components (e.g. <tt>libdvect.a</tt>, <tt>dvect.lib</tt>, etc.), both
 the Boost.Python extension module with the
 <tt>export_converters()</tt> statement and the module with the
-<tt>import_converters()</tt> statement need to be linked against
+<tt>import_converters&lt;&gt;</tt> statement need to be linked against
 the object library.  Ideally one would build a shared library (e.g.
 <tt>libdvect.so</tt>, <tt>dvect.dll</tt>, etc.). However, this
 introduces the issue of getting the search path for the dynamic loading
@@ -292,5 +293,4 @@ suitability for any purpose.
 <p>
 Updated: March 2001
 
-</address>
 </div>
