@@ -258,7 +258,7 @@ bool is_cached(noddy_NoddyObject* x)
 
 void set_cache(noddy_NoddyObject* x)
 {
-   cache = handle&lt;&gt;(borrowed(x));
+   cache = handle&lt;noddy_NoddyObject&gt;(borrowed(x));
 }
 
 BOOST_PYTHON_MODULE(noddy_cache)
