@@ -28,8 +28,25 @@
 #include <boost/type_traits.hpp>
 #include <boost/call_traits.hpp>
 #include <boost/mpl/if.hpp>
+#include <boost/type_traits/ice.hpp>
+
+#define ICE_AND(a, b) type_traits::ice_and<(a), (b)>::value
 
 namespace boost { namespace python { namespace indexing {
+#if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
+  // MSVC6 has problems with get_signature if parameter types have
+  // top-level const qualification (e.g. int const). Unfortunately,
+  // this is exactly what happens with boost::call_traits, so we
+  // substitute a really dumb version of it instead.
+
+  template<typename T> struct broken_call_traits {
+    typedef T const & param_type;
+  };
+# define BOOST_PYTHON_INDEXING_CALL_TRAITS broken_call_traits
+#else
+# define BOOST_PYTHON_INDEXING_CALL_TRAITS ::boost::call_traits
+#endif
+
   /////////////////////////////////////////////////////////////////////////
   // Lowest common denominator traits - applicable to real containers
   // and iterator pairs
@@ -38,19 +55,19 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct base_container_traits
     : public ::boost::python::indexing::iterator_traits <
-        typename mpl::if_ <
+        BOOST_DEDUCED_TYPENAME mpl::if_ <
           is_const<Container>
-          , typename Container::const_iterator
-          , typename Container::iterator
+          , BOOST_DEDUCED_TYPENAME Container::const_iterator
+          , BOOST_DEDUCED_TYPENAME Container::iterator
         >::type
       >
   {
   protected:
     typedef ::boost::python::indexing::iterator_traits <
-      typename mpl::if_ <
+      BOOST_DEDUCED_TYPENAME mpl::if_ <
         is_const<Container>
-        , typename Container::const_iterator
-        , typename Container::iterator
+        , BOOST_DEDUCED_TYPENAME Container::const_iterator
+        , BOOST_DEDUCED_TYPENAME Container::iterator
       >::type
     > base_type;
 
@@ -61,20 +78,23 @@ namespace boost { namespace python { namespace indexing {
     typedef Container container;
 
     typedef typename container::size_type  size_type;
-    typedef typename base_type::value_type value_type; // insert, etc.
-    typedef typename base_type::value_type key_type;   // find, count, ...
+    typedef typename base_type::value_type value_type; // insert
+    typedef typename base_type::value_type key_type;   // find
 
     typedef typename make_signed<size_type>::type index_type;
     // at(), operator[]. Signed to support Python -ve indexes
 
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-    typedef typename boost::call_traits<index_type>::param_type index_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <value_type>::param_type
+        value_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
+        key_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
+        index_param;
 
     typedef value_traits<typename base_type::value_type> value_traits_;
 
     BOOST_STATIC_CONSTANT (bool, has_mutable_ref
-                           = base_type::has_mutable_ref && is_mutable);
+                           = ICE_AND (base_type::has_mutable_ref, is_mutable));
 
     BOOST_STATIC_CONSTANT (bool, has_find
                            = value_traits_::equality_comparable);
@@ -87,7 +107,10 @@ namespace boost { namespace python { namespace indexing {
 
     // Forward visitor_helper to value_traits_
     template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &, Policy const &);
+    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    {
+      value_traits_::visitor_helper (pyClass, policy);
+    }
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -116,18 +139,5 @@ namespace boost { namespace python { namespace indexing {
   };
 
 } } }
-
-/////////////////////////////////////////////////////////////////////////
-// Visitor helper function (foward to value_traits_ version)
-/////////////////////////////////////////////////////////////////////////
-
-template<typename Container>
-template<typename PythonClass, typename Policy>
-void
-boost::python::indexing::base_container_traits<Container>
-::visitor_helper (PythonClass &pyClass, Policy const &policy)
-{
-  value_traits_::visitor_helper (pyClass, policy);
-}
 
 #endif // BOOST_PYTHON_INDEXING_CONTAINER_SUITE_HPP

@@ -18,6 +18,7 @@
 #ifndef BOOST_PYTHON_INDEXING_SLICE_HANDLER_HPP
 #define BOOST_PYTHON_INDEXING_SLICE_HANDLER_HPP
 
+#include <boost/python/handle.hpp>
 #include <boost/python/object.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/extract.hpp>
@@ -46,10 +47,13 @@ namespace boost { namespace python { namespace indexing {
     static void set_slice (container &, slice, boost::python::object);
     static void del_slice (container &, slice);
     static void extend (container &, boost::python::object);
+  };
 
+  namespace detail {
+    template<typename Policy>
     struct postcall_override
     {
-      // This class overrides our Policy's postcall function and
+      // This class overrides the Policy's postcall function and
       // result_conveter to handle the list returned from get_slice.
       // The Policy's result_converter is removed, since it gets
       // applied within get_slice. Our postcall override applies the
@@ -57,7 +61,7 @@ namespace boost { namespace python { namespace indexing {
       // from get_slice.
 
       typedef boost::python::default_result_converter result_converter;
-      typedef typename Policy::argument_package argument_package; // ?
+      typedef typename Policy::argument_package argument_package;
 
       postcall_override (Policy const &p);
 
@@ -67,48 +71,6 @@ namespace boost { namespace python { namespace indexing {
     private:
       Policy m_base;
     };
-  };
-
-  //////////////////////////////////////////////////////////////////////////
-  // postcall_override constructor
-  //////////////////////////////////////////////////////////////////////////
-
-  template<class Algorithms, class Policy>
-  slice_handler<Algorithms, Policy>
-  ::postcall_override::postcall_override (Policy const &p)
-    : m_base (p)
-  {
-  }
-
-  //////////////////////////////////////////////////////////////////////////
-  // precall forwarder
-  //////////////////////////////////////////////////////////////////////////
-
-  template<class Algorithms, class Policy>
-  bool
-  slice_handler<Algorithms, Policy>
-  ::postcall_override::precall (PyObject *args)
-  {
-    return m_base.precall (args);
-  }
-
-  //////////////////////////////////////////////////////////////////////////
-  // Apply base postcall to each element of the list returend by get_slice
-  //////////////////////////////////////////////////////////////////////////
-
-  template<class Algorithms, class Policy>
-  PyObject *
-  slice_handler<Algorithms, Policy>
-  ::postcall_override::postcall (PyObject *args, PyObject *result)
-  {
-    int size = PyList_Size (result);
-
-    for (int count = 0; count < size; ++count)
-      {
-        m_base.postcall (args, PyList_GetItem (result, count));
-      }
-
-    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -121,7 +83,8 @@ namespace boost { namespace python { namespace indexing {
   ::make_getitem (Policy const &policy)
   {
     return
-      boost::python::make_function (get_slice, postcall_override (policy));
+      boost::python::make_function (
+          get_slice, detail::postcall_override<Policy> (policy));
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -163,6 +126,46 @@ namespace boost { namespace python { namespace indexing {
     return boost::python::make_function (extend, policy);
   }
 
+  namespace detail {
+    ////////////////////////////////////////////////////////////////////////
+    // postcall_override constructor
+    ////////////////////////////////////////////////////////////////////////
+
+    template<class Policy>
+    postcall_override<Policy>::postcall_override (Policy const &p)
+      : m_base (p)
+    {
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // precall forwarder
+    ////////////////////////////////////////////////////////////////////////
+
+    template<class Policy>
+    bool postcall_override<Policy>::precall (PyObject *args)
+    {
+      return m_base.precall (args);
+    }
+
+    ////////////////////////////////////////////////////////////////////////
+    // Apply base postcall to each element of the list returend by get_slice
+    ////////////////////////////////////////////////////////////////////////
+
+    template<class Policy>
+    PyObject *
+    postcall_override<Policy>::postcall (PyObject *args, PyObject *result)
+    {
+      int size = PyList_Size (result);
+
+      for (int count = 0; count < size; ++count)
+        {
+          m_base.postcall (args, PyList_GetItem (result, count));
+        }
+
+      return result;
+    }
+  } // namespace detail
+
   //////////////////////////////////////////////////////////////////////////
   // Implementation for the slice version of __getitem__
   //////////////////////////////////////////////////////////////////////////
@@ -174,7 +177,9 @@ namespace boost { namespace python { namespace indexing {
   {
     typedef typename Policy::result_converter converter_type;
     typedef typename Algorithms::reference reference;
-    typename boost::mpl::apply1<converter_type, reference>::type converter;
+
+    typename boost::mpl::apply1<converter_type, reference>::type
+      converter;
 
     boost::python::list result;
 
@@ -214,11 +219,11 @@ namespace boost { namespace python { namespace indexing {
     // a reference to existing object, if possible and sensible) and the
     // second allowing implicit conversions.
 
-    typedef boost::python::extract<typename Algorithms::value_param>
-      extractor1;
+    typedef boost::python::extract <
+        BOOST_DEDUCED_TYPENAME Algorithms::value_param> extractor1;
 
-    typedef boost::python::extract<typename Algorithms::value_type>
-      extractor2;
+    typedef boost::python::extract <
+        BOOST_DEDUCED_TYPENAME Algorithms::value_type> extractor2;
 
     // Note: any error during this operation will probably leave the
     // container partially updated. This can occur (for example) if the

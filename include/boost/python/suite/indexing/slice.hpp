@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Header file slice.hpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -29,9 +27,20 @@ namespace boost { namespace python { namespace indexing {
     // so that it is possible to register a special converter for
     // PySlice_Type and overload C++ functions on slice
 
-    slice (slice const &);
-
+#if defined (BOOST_NO_MEMBER_TEMPLATES)
+    // MSVC6 doesn't seem to be able to invoke the templated
+    // constructor, so provide explicit overloads to match the
+    // (currently) known boost::python::object constructors
+    explicit slice (::boost::python::handle<> const&);
+    explicit slice (::boost::python::detail::borrowed_reference);
+    explicit slice (::boost::python::detail::new_reference);
+    explicit slice (::boost::python::detail::new_non_null_reference);
+#else
+    // Better compilers make life easier
     template<typename T> inline slice (T const &ref);
+#endif
+
+    slice (slice const &); // Copy constructor
   };
 
   struct BOOST_PYTHON_DECL integer_slice
@@ -62,6 +71,7 @@ namespace boost { namespace python { namespace indexing {
   };
 } } }
 
+#if !defined (BOOST_NO_MEMBER_TEMPLATES)
 template<typename T>
 boost::python::indexing::slice::slice (T const &ref)
   : boost::python::object (ref)
@@ -74,6 +84,7 @@ boost::python::indexing::slice::slice (T const &ref)
       boost::python::throw_error_already_set();
     }
 }
+#endif
 
 namespace boost { namespace python { namespace converter {
   // Specialized converter to handle PySlice_Type objects

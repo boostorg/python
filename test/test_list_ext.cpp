@@ -29,6 +29,8 @@ unsigned int_wrapper::our_object_counter = 0;
 
 BOOST_PYTHON_MODULE(test_list_ext)
 {
+  namespace indexing = boost::python::indexing;
+
   boost::python::implicitly_convertible <int, int_wrapper>();
 
   boost::python::def ("setTrace", &int_wrapper::setTrace);
@@ -41,6 +43,12 @@ BOOST_PYTHON_MODULE(test_list_ext)
 
   typedef std::list<int_wrapper> Container1;
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  typedef indexing::container_suite<Container1> Suite1;
+#else
+  typedef indexing::list_suite<Container1> Suite1;
+#endif
+
   boost::python::class_<Container1>("List")
-    .def (boost::python::indexing::container_suite<Container1>());
+    .def (Suite1());
 }

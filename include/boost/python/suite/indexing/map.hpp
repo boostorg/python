@@ -19,8 +19,11 @@
 #define BOOST_PYTHON_INDEXING_MAP_HPP
 
 #include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/algo_selector.hpp>
+#include <boost/python/suite/indexing/algo_selector.hpp>
+#include <boost/detail/workaround.hpp>
 #include <map>
 
 namespace boost { namespace python { namespace indexing {
@@ -31,14 +34,22 @@ namespace boost { namespace python { namespace indexing {
   template<typename Container>
   struct map_traits : public default_container_traits<Container>
   {
+# if BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
+    // MSVC6 has a nonstandard name for mapped_type in std::map
+    typedef typename Container::referent_type value_type;
+# else
     typedef typename Container::mapped_type value_type;
+# endif
     typedef value_type &                    reference;
     typedef typename Container::key_type    index_type; // operator[]
     typedef typename Container::key_type    key_type;   // find, count, ...
 
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-    typedef typename boost::call_traits<index_type>::param_type index_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <value_type>::param_type
+      value_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
+      key_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
+      index_param;
 
     BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool,   has_find       = true);
@@ -77,6 +88,7 @@ namespace boost { namespace python { namespace indexing {
     static void      insert     (container &, index_param, value_param);
   };
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
     // algo_selector support for std::map instances
@@ -112,13 +124,19 @@ namespace boost { namespace python { namespace indexing {
       typedef map_algorithms<const_traits>   const_algorithms;
     };
   }
+#endif
+
+  template<class Container, class Traits = map_traits<Container> >
+  struct map_suite : container_suite<Container, map_algorithms<Traits> >
+  {
+  };
 
   /////////////////////////////////////////////////////////////////////////
   // Index into a container (map version)
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename map_algorithms<ContainerTraits, Ovr>::reference
+  BOOST_DEDUCED_TYPENAME map_algorithms<ContainerTraits, Ovr>::reference
   map_algorithms<ContainerTraits, Ovr>::get (container &c, index_param ix)
   {
     return most_derived::find_or_throw (c, ix)->second;
@@ -147,8 +165,8 @@ namespace boost { namespace python { namespace indexing {
       container &c, index_param ix, value_param val)
   {
     typedef std::pair
-      <typename self_type::container_traits::index_type
-      , typename self_type::container_traits::value_type>
+      <BOOST_DEDUCED_TYPENAME self_type::container_traits::index_type
+      , BOOST_DEDUCED_TYPENAME self_type::container_traits::value_type>
       pair_type;
 
     // Can't use std::make_pair, because param types may be references

@@ -18,7 +18,8 @@
 #ifndef BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP
 #define BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP
 
-#include <boost/python/errors.hpp>
+# include <boost/python/errors.hpp>
+# include <boost/python/suite/indexing/workaround.hpp>
 
 namespace boost { namespace python { namespace indexing {
   template<typename Algorithms, typename SliceType>
@@ -117,6 +118,13 @@ namespace boost { namespace python { namespace indexing {
     template<bool doit> struct maybe_insert {
       template<class Algorithms>
       static void apply (
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          // Can't explicitly instantiate member function - must let
+          // the compiler deduce the argument type from a dummy
+          // parameter. Same applies throughout
+          Algorithms *,
+# endif
           typename Algorithms::container &
           , typename Algorithms::index_param
           , typename Algorithms::value_param)
@@ -132,6 +140,10 @@ namespace boost { namespace python { namespace indexing {
     template<> struct maybe_insert<true> {
       template<class Algorithms>
       static void apply (
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          Algorithms *,
+# endif
           typename Algorithms::container &c
           , typename Algorithms::index_param i
           , typename Algorithms::value_param v)
@@ -155,7 +167,14 @@ namespace boost { namespace python { namespace indexing {
     else
       {
         detail::maybe_insert<container_traits::has_insert>
-          ::template apply<Algorithms> (*m_ptr, m_pos, val);
+          ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE apply
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          (static_cast<Algorithms *>(0),
+# else
+          <Algorithms> (
+# endif
+              *m_ptr, m_pos, val);
 
         ++m_pos;  // Advance for any subsequent inserts
       }
@@ -165,6 +184,10 @@ namespace boost { namespace python { namespace indexing {
     template<bool doit> struct maybe_erase {
       template<class Algorithms>
       static void apply (
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          Algorithms *,
+# endif
           typename Algorithms::container &
           , typename Algorithms::index_param
           , typename Algorithms::index_param)
@@ -179,6 +202,10 @@ namespace boost { namespace python { namespace indexing {
     template<> struct maybe_erase<true> {
       template<class Algorithms>
       static void apply (
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          Algorithms *,
+# endif
           typename Algorithms::container &c
           , typename Algorithms::index_param from
           , typename Algorithms::index_param to)
@@ -202,9 +229,17 @@ namespace boost { namespace python { namespace indexing {
     else
       {
         detail::maybe_erase<container_traits::has_erase>
-          ::template apply<Algorithms> (*m_ptr, m_pos, m_slice.stop());
+          ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE apply
+# if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          (static_cast<Algorithms *>(0),
+# else
+          <Algorithms> (
+# endif
+              *m_ptr, m_pos, m_slice.stop());
       }
   }
+
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_INT_SLICE_HELPER_HPP

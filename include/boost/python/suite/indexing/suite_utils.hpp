@@ -45,7 +45,7 @@ namespace boost { namespace python { namespace indexing {
     typedef typename boost::remove_reference<T>::type maybe_const;
 
   public:
-    static bool const value = ! boost::is_const<maybe_const>::value;
+    BOOST_STATIC_CONSTANT (bool, value = !boost::is_const<maybe_const>::value);
   };
 
   // make_signed attempts to identify the signed version of any

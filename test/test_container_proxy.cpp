@@ -16,7 +16,9 @@
 // $Id$
 //
 
+#include <boost/type_traits/broken_compiler_spec.hpp>
 #include <boost/python/suite/indexing/container_proxy.hpp>
+#include <boost/python/suite/indexing/workaround.hpp>
 #include <boost/test/minimal.hpp>
 #include <vector>
 #include <deque>
@@ -26,6 +28,21 @@
 // Some messiness from not having a separate int_wrapper.cpp file
 bool int_wrapper::our_trace_flag = true;
 unsigned int_wrapper::our_object_counter = 0;
+
+#if !BOOST_WORKAROUND (BOOST_MSVC, <= 1300)
+// Works with element_proxy instances because of the reference
+// conversion operator
+static void increment (int_wrapper &int_wrap, int val) {
+  int_wrap.increment (val);
+}
+#else
+// The implicit conversion provided by element_proxy doesn't work
+// with MSVC[67]. Instead use the element_proxy operator->
+template<typename T>
+static void increment (T const &proxy, int val) {
+  proxy->increment (val);
+}
+#endif
 
 template<typename ProxyContainer>
 void initial_tests (ProxyContainer &proxy_container)
@@ -60,7 +77,7 @@ void initial_tests (ProxyContainer &proxy_container)
   BOOST_CHECK (proxy_container.is_valid());
 
   BOOST_CHECK (ref0.use_count() == 2);
-  ((int_wrapper &) proxy_container[0]).increment (2);
+  increment (proxy_container[0], 2);
   BOOST_CHECK (ref0 == int_wrapper (3));
   BOOST_CHECK (proxy_container[0] == int_wrapper (3));
 
@@ -97,14 +114,15 @@ void test_direct_proxy ()
 
     reference ref0 ((*proxy_auto_p)[0]);
     reference refn ((*proxy_auto_p)[proxy_auto_p->size() - 1]);
-    static_cast<int_wrapper &>(ref0).increment (5);
-    static_cast<int_wrapper &>(refn).increment (10);
+    increment (ref0, 5);
+    increment (refn, 10);
     BOOST_CHECK (ref0 == int_wrapper (5));
     BOOST_CHECK (refn == int_wrapper (10));
     BOOST_CHECK (ref0.use_count() == 2);
     BOOST_CHECK (refn.use_count() == 2);
 
-    proxy_auto_p.reset();     // Invoke container_proxy destructor
+    // Invoke container_proxy destructor
+    BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (proxy_auto_p, 0);
 
     BOOST_CHECK (ref0.use_count() == 1);  // Detached
     BOOST_CHECK (refn.use_count() == 1);  // Detached
@@ -121,8 +139,7 @@ void test_direct_proxy ()
     BOOST_CHECK (proxy_container.size() == raw_container.size());
 
     reference ref1 (proxy_container[1]);
-    static_cast<int_wrapper &>(ref1).increment (5);
-
+    increment (ref1, 5);
     proxy_container_type temp;
     temp.push_back (int_wrapper (10));
     reference ref2 (temp[0]);
@@ -163,7 +180,7 @@ void test_indirect_proxy ()
 
   reference ref2 (proxy_container[2]);
   BOOST_CHECK (ref2.use_count() == 2);   // Still attached
-  static_cast<int_wrapper &>(proxy_container[2]).increment (5);
+  increment (proxy_container[2], 5);
   BOOST_CHECK (ref2 == int_wrapper (5));
 
   // Notify proxy of insert in raw container (*after* insert)
@@ -171,7 +188,7 @@ void test_indirect_proxy ()
   proxy_container.notify_insertion (0, 1);
   BOOST_CHECK (proxy_container.is_valid());
   BOOST_CHECK (ref2.use_count() == 2);   // Still attached
-  static_cast<int_wrapper &>(proxy_container[3]).increment (5);
+  increment (proxy_container[3], 5);
   BOOST_CHECK (ref2 == int_wrapper (10));
 
   // Create reference to about-to-be-erased value
@@ -186,7 +203,7 @@ void test_indirect_proxy ()
   BOOST_CHECK (ref0.use_count() == 1);  // Ref to erased value detached
   BOOST_CHECK (ref0 == int_wrapper (7)); // Value copied before erase
   BOOST_CHECK (ref2.use_count() == 2);  // Other ref still attached
-  static_cast<int_wrapper &>(proxy_container[1]).increment (5);
+  increment (proxy_container[1], 5);
   BOOST_CHECK (ref2 == int_wrapper (15));
 
   // Notify proxy of replacement in raw container (*before* assignment)
@@ -213,6 +230,10 @@ struct deque_generator {
     typedef std::deque<Element> type;
   };
 };
+
+// Make the indirect holders work with broken compilers
+BOOST_TT_BROKEN_COMPILER_SPEC (std::vector<int_wrapper>)
+BOOST_TT_BROKEN_COMPILER_SPEC (std::deque<int_wrapper>)
 
 int test_main (int argc, char *argv[])
 {

@@ -26,6 +26,7 @@
 #include <boost/type_traits.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 #include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/algo_selector.hpp>
 
@@ -34,7 +35,9 @@ namespace boost { namespace python { namespace indexing {
   class iterator_range
   {
   private:
-    typedef typename boost::call_traits<Iterator>::param_type iterator_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <Iterator>::param_type
+        iterator_param;
+
     typedef ::boost::detail::iterator_traits<Iterator> std_traits;
 
   public:
@@ -73,11 +76,25 @@ namespace boost { namespace python { namespace indexing {
     iterator m_end;
   };
 
-  // Array support functions
-  template<typename T, std::size_t N> T *begin (T (&array)[N]);
-  template<typename T, std::size_t N> T *end   (T (&array)[N]);
+  // Array support function(s).
+  template<typename T> iterator_range<T *> make_iterator_range (T *, T*);
+
+#if !BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
   template<typename T, std::size_t N> iterator_range<T *> make_iterator_range (
       T (&array)[N]);
+
+  template<typename T, std::size_t N> T *begin (T (&array)[N]);
+  template<typename T, std::size_t N> T *end   (T (&array)[N]);
+
+# define BOOST_MAKE_ITERATOR_RANGE \
+      ::boost::python::indexing::make_iterator_range
+
+#else
+  // For compilers that can't deduce template argument array bounds
+# define BOOST_MAKE_ITERATOR_RANGE(array) \
+      ::boost::python::indexing::make_iterator_range ( \
+          (array), ((array) + sizeof(array) / sizeof((array)[0])))
+#endif
 
   template<typename Iterator>
   iterator_range<Iterator>::iterator_range (
@@ -141,6 +158,12 @@ namespace boost { namespace python { namespace indexing {
       }
   }
 
+  template<typename T> iterator_range<T *> make_iterator_range (T *p1, T* p2)
+  {
+    return iterator_range<T *> (p1, p2);
+  }
+
+#if !BOOST_WORKAROUND (BOOST_MSVC, <= 1200)
   template<typename T, std::size_t N>
   T *begin (T (&array)[N]) {
     return array;
@@ -155,7 +178,9 @@ namespace boost { namespace python { namespace indexing {
   iterator_range<T *> make_iterator_range (T (&array)[N]) {
     return iterator_range<T *>(begin (array), end (array));
   }
+#endif
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
     // algo_selector support for iterator_range instances
@@ -174,6 +199,13 @@ namespace boost { namespace python { namespace indexing {
       typedef default_algorithms<const_traits>   const_algorithms;
     };
   }
+#endif
+
+  template<class Container, class Traits = base_container_traits<Container> >
+  struct iterator_range_suite
+      : container_suite<Container, default_algorithms<Traits> >
+  {
+  };
 
 } } }
 

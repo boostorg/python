@@ -53,7 +53,8 @@ namespace boost { namespace python { namespace indexing {
   class default_algorithms
   {
     typedef default_algorithms<ContainerTraits, Ovr> self_type;
-    typedef typename detail::maybe_override<self_type, Ovr>::type most_derived;
+    typedef typename detail::maybe_override<self_type, Ovr>
+        ::type most_derived;
 
   public:
     typedef ContainerTraits container_traits;
@@ -93,9 +94,18 @@ namespace boost { namespace python { namespace indexing {
 
     // Default visitor_helper
     template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &, Policy const &);
+    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    {
+      container_traits::visitor_helper (pyClass, policy);
+    }
 
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    // MSVC6 and 7.0 seem to complain about most_derived::bounds_check
+    // for an instantiation of list_algorithms.
+  public:
+#else
   private:
+#endif
     static size_type bounds_check (
         container &, index_param, char const *msg
         , bool one_past = false
@@ -116,12 +126,13 @@ namespace boost { namespace python { namespace indexing {
   class assoc_algorithms
     : public default_algorithms
         <ContainerTraits
-        , typename detail::maybe_override
+        , BOOST_DEDUCED_TYPENAME detail::maybe_override
             <assoc_algorithms<ContainerTraits, Ovr>, Ovr>
           ::type>
   {
     typedef assoc_algorithms<ContainerTraits, Ovr> self_type;
-    typedef typename detail::maybe_override<self_type, Ovr>::type most_derived;
+    typedef typename detail::maybe_override<self_type, Ovr>
+        ::type most_derived;
     typedef default_algorithms<ContainerTraits, most_derived> Parent;
 
   public:
@@ -150,7 +161,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::size_type
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
   default_algorithms<ContainerTraits, Ovr>::size (container &c)
   {
     return c.size();
@@ -161,7 +172,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::size_type
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
   default_algorithms<ContainerTraits, Ovr>::bounds_check (
       container &c
       , index_param ix
@@ -218,7 +229,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::iterator
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::iterator
   default_algorithms<ContainerTraits, Ovr>::find (
       container &c, key_param key)
   {
@@ -230,13 +241,13 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::size_type
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
   default_algorithms<ContainerTraits, Ovr>::get_index (
       container &c, key_param key)
   {
-    iterator temp (most_derived::find (c, key));
+    iterator found (most_derived::find (c, key));
 
-    if (temp == most_derived::end(c))
+    if (found == most_derived::end(c))
       {
         PyErr_SetString (
             PyExc_ValueError, "get_index: element not found");
@@ -244,7 +255,8 @@ namespace boost { namespace python { namespace indexing {
         boost::python::throw_error_already_set ();
       }
 
-    return std::distance (most_derived::begin (c), temp);
+    iterator start (most_derived::begin (c));
+    return std::distance (start, found);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -252,7 +264,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::size_type
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::size_type
   default_algorithms<ContainerTraits, Ovr>::count (
       container &c, key_param key)
   {
@@ -276,7 +288,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::reference
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::reference
   default_algorithms<ContainerTraits, Ovr>::get (
       container &c, index_param ix)
   {
@@ -387,7 +399,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename default_algorithms<ContainerTraits, Ovr>::slice_helper
+  BOOST_DEDUCED_TYPENAME default_algorithms<ContainerTraits, Ovr>::slice_helper
   default_algorithms<ContainerTraits, Ovr>
   ::make_slice_helper (container &c, slice const &sl)
   {
@@ -395,24 +407,11 @@ namespace boost { namespace python { namespace indexing {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  // Visitor helper function (default version)
-  /////////////////////////////////////////////////////////////////////////
-
-  template<typename ContainerTraits, typename Ovr>
-  template<typename PythonClass, typename Policy>
-  void
-  default_algorithms<ContainerTraits, Ovr>
-  ::visitor_helper (PythonClass &pyClass, Policy const &policy)
-  {
-    container_traits::visitor_helper (pyClass, policy);
-  }
-
-  /////////////////////////////////////////////////////////////////////////
   // Index into a container (associative version)
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename assoc_algorithms<ContainerTraits, Ovr>::reference
+  BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::reference
   assoc_algorithms<ContainerTraits, Ovr>::get (container &c, index_param ix)
   {
     return *most_derived::find_or_throw (c, ix);
@@ -441,7 +440,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename assoc_algorithms<ContainerTraits, Ovr>::iterator
+  BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::iterator
   assoc_algorithms<ContainerTraits, Ovr>
   ::find (container &c, key_param key)
   {
@@ -466,7 +465,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename assoc_algorithms<ContainerTraits, Ovr>::iterator
+  BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::iterator
   assoc_algorithms<ContainerTraits, Ovr>::find_or_throw (
       container &c, index_param ix)
   {
@@ -488,7 +487,7 @@ namespace boost { namespace python { namespace indexing {
   /////////////////////////////////////////////////////////////////////////
 
   template<typename ContainerTraits, typename Ovr>
-  typename assoc_algorithms<ContainerTraits, Ovr>::size_type
+  BOOST_DEDUCED_TYPENAME assoc_algorithms<ContainerTraits, Ovr>::size_type
   assoc_algorithms<ContainerTraits, Ovr>::count (
       container &c, key_param key)
   {

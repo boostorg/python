@@ -30,7 +30,7 @@ boost::python::indexing::iterator_range<int *> get_array_plain()
 {
   static int array[] = { 8, 6, 4, 2, 1, 3, 5, 7, 0 };
 
-  return boost::python::indexing::make_iterator_range (array);
+  return BOOST_MAKE_ITERATOR_RANGE (array);
 }
 
 boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
@@ -40,11 +40,13 @@ boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
     , int_wrapper(1), int_wrapper(3), int_wrapper(5)
     , int_wrapper(7), int_wrapper(0) };
 
-  return boost::python::indexing::make_iterator_range (array);
+  return BOOST_MAKE_ITERATOR_RANGE (array);
 }
 
 BOOST_PYTHON_MODULE(test_array_ext)
 {
+  namespace indexing = boost::python::indexing;
+
   boost::python::implicitly_convertible <int, int_wrapper>();
 
   boost::python::def ("setTrace", &int_wrapper::setTrace);
@@ -55,15 +57,23 @@ BOOST_PYTHON_MODULE(test_array_ext)
     .def ("__cmp__", compare)
     ;
 
-  typedef boost::python::indexing::iterator_range<int *> Container1;
+  typedef indexing::iterator_range<int *> Container1;
+  typedef indexing::iterator_range<int_wrapper *> Container2;
+
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  typedef indexing::container_suite<Container1> Suite1;
+  typedef indexing::container_suite<Container2> Suite2;
+#else
+  typedef indexing::iterator_range_suite<Container1> Suite1;
+  typedef indexing::iterator_range_suite<Container2> Suite2;
+#endif
 
   boost::python::class_<Container1>
     ("Array", boost::python::init<int *, int *>())
-    .def (boost::python::indexing::container_suite<Container1>());
+    .def (Suite1());
 
   boost::python::def ("get_array_plain", get_array_plain);
 
-  typedef boost::python::indexing::iterator_range<int_wrapper *> Container2;
 
   // reference_existing_object is safe in this case, because the array
   // is static, and we never manually destroy any array elements. There
@@ -72,9 +82,9 @@ BOOST_PYTHON_MODULE(test_array_ext)
   // lifetimes of the array elements.
   boost::python::class_<Container2>
     ("Array_ref", boost::python::init<int_wrapper *, int_wrapper *>())
-    .def (boost::python::indexing::container_suite<Container2>
-          ::with_policies(boost::python::return_value_policy
-                          <boost::python::reference_existing_object>()));
+    .def (Suite2::with_policies (
+        boost::python::return_value_policy <
+            boost::python::reference_existing_object>()));
 
   boost::python::def ("get_array_wrap", get_array_wrap);
 }

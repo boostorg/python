@@ -21,13 +21,15 @@
 #ifndef BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
 #define BOOST_PYTHON_INDEXING_VALUE_TRAITS_HPP
 
+#include <boost/config.hpp>
+
 namespace boost { namespace python { namespace indexing {
   template<typename T>
   struct value_traits {
-    static bool const equality_comparable = true;
+    BOOST_STATIC_CONSTANT (bool, equality_comparable = true);
     // Meaning from C++98 standard section 20.1.1
 
-    static bool const lessthan_comparable = true;
+    BOOST_STATIC_CONSTANT (bool, lessthan_comparable = true);
 
     // static bool const has_less = true;
     // etc...

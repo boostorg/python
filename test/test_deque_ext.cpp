@@ -54,24 +54,28 @@ BOOST_PYTHON_MODULE(test_deque_ext)
     ;
 
   typedef std::deque<int> Container1;
-
-  boost::python::class_<Container1>("Deque")
-    .def (indexing::container_suite<Container1>())
-    ;
-
   typedef std::deque<int_wrapper> Container2;
+  typedef indexing::container_proxy<
+    Container2, indexing::identity<Container2>, deque_generator> Container3;
+
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  typedef indexing::container_suite<Container1> Suite1;
+  typedef indexing::container_suite<Container2> Suite2;
+  typedef indexing::container_suite<Container3> Suite3;
+#else
+  typedef indexing::deque_suite<Container1> Suite1;
+  typedef indexing::deque_suite<Container2> Suite2;
+  typedef indexing::container_proxy_suite<Container3> Suite3;
+#endif
+
+  boost::python::class_<Container1>("Deque").def (Suite1());
 
   // Returning internal references to elements of a deque is
   // dangerous - the references can be invalidated by inserts or
   // deletes!
   boost::python::class_<Container2>("Deque_ref")
-    .def (indexing::container_suite<Container2>
+    .def (Suite2
           ::with_policies (boost::python::return_internal_reference<>()));
 
-  typedef indexing::container_proxy<
-    Container2, indexing::identity<Container2>, deque_generator> Container3;
-
-  boost::python::class_<Container3>("Deque_proxy")
-    .def (indexing::container_suite<Container3>())
-    ;
+  boost::python::class_<Container3>("Deque_proxy").def (Suite3());
 }

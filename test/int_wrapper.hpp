@@ -23,6 +23,7 @@
 #include <sstream>
 #include <algorithm>
 #include <stdio.h>
+#include <boost/type_traits/broken_compiler_spec.hpp>
 
 struct int_wrapper {
   static bool our_trace_flag;
@@ -41,6 +42,8 @@ struct int_wrapper {
 
   inline static void setTrace (bool onoff);
 };
+
+BOOST_TT_BROKEN_COMPILER_SPEC (int_wrapper)
 
 inline bool operator== (int_wrapper const &lhs, int_wrapper const &rhs);
 inline bool operator!= (int_wrapper const &lhs, int_wrapper const &rhs);

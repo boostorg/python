@@ -37,12 +37,18 @@ std::vector<int_wrapper> get_vector ()
     , int_wrapper(7), int_wrapper(0) };
 
   return std::vector<int_wrapper>
+#if BOOST_WORKAROUND (BOOST_MSVC, <=1200)
+    (array, array + sizeof(array) / sizeof (array[0]));
+#else
     (boost::python::indexing::begin(array)
      , boost::python::indexing::end(array));
+#endif
 }
 
 BOOST_PYTHON_MODULE(test_indexing_const_ext)
 {
+  namespace indexing = boost::python::indexing;
+
   boost::python::implicitly_convertible <int, int_wrapper>();
 
   boost::python::def ("setTrace", &int_wrapper::setTrace);
@@ -56,8 +62,14 @@ BOOST_PYTHON_MODULE(test_indexing_const_ext)
 
   typedef std::vector<int_wrapper> Container1;
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  typedef indexing::container_suite<Container1 const> Suite1;
+#else
+  typedef indexing::vector_suite<Container1 const> Suite1;
+#endif
+
   boost::python::class_<Container1>("Vector_const")
-    .def (boost::python::indexing::container_suite<Container1 const>())
+    .def (Suite1())
     ;
 
   boost::python::def ("get_vector", get_vector);

@@ -29,7 +29,11 @@ namespace boost { namespace python { namespace indexing {
   typedef boost::python::return_value_policy<boost::python::return_by_value>
   default_container_policies;
 
-  template<class Container, class Algorithms = algo_selector<Container> >
+  template <
+      class Container
+      , class Algorithms
+          = algo_selector<Container>
+  >
   struct container_suite
     : public visitor<Algorithms, default_container_policies>
   {

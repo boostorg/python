@@ -21,9 +21,19 @@
 #ifndef BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
 #define BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP
 
+#include <boost/detail/workaround.hpp>
+
 namespace boost { namespace python { namespace indexing {
   namespace detail {
-    template<typename Container> class selector_impl;
+    template<typename Container> class selector_impl
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    {
+      // Bogus types to prevent compile errors due to ETI
+      typedef selector_impl<Container> mutable_algorithms;
+      typedef selector_impl<Container> const_algorithms;
+    }
+#endif
+    ;
 
     // selector_impl specializations should include *two* publically
     // accessible typedefs, called mutable_algorithms and
@@ -41,12 +51,14 @@ namespace boost { namespace python { namespace indexing {
   {
   };
 
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   // Partial specialization for const containers
   template<class Container>
   struct algo_selector<Container const>
     : public detail::selector_impl<Container>::const_algorithms
   {
   };
+#endif
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_ALGO_SELECTOR_HPP

@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Module slice.cpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -17,6 +15,19 @@
 
 #include <boost/python/suite/indexing/slice.hpp>
 #include <algorithm>
+
+/////////////////////////////////////////////////////////////////////////////
+// MSVC6 workarounds
+/////////////////////////////////////////////////////////////////////////////
+
+#if defined (BOOST_NO_MEMBER_TEMPLATES)
+namespace boost { namespace python { namespace indexing {
+  slice::slice (::boost::python::handle<> const &p) : object (p) { }
+  slice::slice (::boost::python::detail::borrowed_reference p) : object (p) { }
+  slice::slice (::boost::python::detail::new_reference p) : object (p) { }
+  slice::slice (::boost::python::detail::new_non_null_reference p) : object (p) { }
+} } }
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // slice copy constructor

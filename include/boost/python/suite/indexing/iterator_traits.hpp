@@ -23,6 +23,7 @@
 #define BOOST_PYTHON_INDEXING_ITERATOR_TRAITS_HPP
 
 #include <boost/python/suite/indexing/suite_utils.hpp>
+#include <boost/python/suite/indexing/workaround.hpp>
 
 #include <boost/call_traits.hpp>
 #include <boost/type_traits.hpp>
@@ -77,7 +78,14 @@ namespace boost { namespace python { namespace indexing {
   };
 
   namespace iterator_detail {
-    template<typename TraversalTag> struct traits_by_category { };
+    template<typename TraversalTag> struct traits_by_category {
+# if defined(BOOST_MPL_MSVC_60_ETI_BUG)
+      // MSVC6 needs compilable traits in the unspecialized traits_by_category
+      template<typename Iter> struct traits {
+        typedef traits<Iter> type;
+      };
+# endif
+    };
 
     template<>
     struct traits_by_category<std::input_iterator_tag> {
@@ -113,7 +121,7 @@ namespace boost { namespace python { namespace indexing {
 
     template<typename Iterator>
     class deduced_traits {
-      typedef BOOST_DEDUCED_TYPENAME BOOST_ITERATOR_CATEGORY<
+      typedef BOOST_DEDUCED_TYPENAME ::boost::BOOST_ITERATOR_CATEGORY<
           Iterator>::type category;
 
       typedef BOOST_DEDUCED_TYPENAME ::boost::detail::std_category <
@@ -121,7 +129,7 @@ namespace boost { namespace python { namespace indexing {
 
     public:
       typedef typename traits_by_category <max_category>
-        ::template traits<Iterator>::type type;
+        ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE traits<Iterator>::type type;
     };
   }
 

@@ -23,9 +23,17 @@
 #include <boost/python/implicit.hpp>
 
 namespace boost { namespace python { namespace indexing {
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   template<typename ContainerProxy>
   struct value_traits<element_proxy<ContainerProxy> >
-    : public value_traits<typename ContainerProxy::raw_value_type>
+    : public value_traits <
+          BOOST_DEDUCED_TYPENAME ContainerProxy::raw_value_type>
+#else
+  template<typename ContainerProxy>
+  struct element_proxy_traits
+    : public value_traits <
+          BOOST_DEDUCED_TYPENAME ContainerProxy::raw_value_type>
+#endif
   {
     template<typename PythonClass, typename Policy>
     static void visitor_helper (PythonClass &, Policy const &)

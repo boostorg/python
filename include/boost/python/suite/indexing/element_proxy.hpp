@@ -1,4 +1,3 @@
-//
 // Header file element_proxy.hpp
 //
 // Proxy objects for invidivual elements in a container wrapped by
@@ -28,13 +27,17 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
   class element_proxy
   {
+#if defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+  public:
+#else
     template<typename T> friend struct const_element_proxy;
+#endif
 
-    typedef ContainerProxy container_proxy;
-    typedef typename container_proxy::shared_proxy proxy_type;
+    typedef ContainerProxy container_proxy_;
+    typedef typename container_proxy_::shared_proxy proxy_type;
     typedef boost::shared_ptr<proxy_type> proxy_pointer;
-    typedef typename container_proxy::raw_value_type raw_value_type;
-    typedef typename container_proxy::size_type size_type;
+    typedef typename container_proxy_::raw_value_type raw_value_type;
+    typedef typename container_proxy_::size_type size_type;
 
     proxy_pointer m_ptr;
 
@@ -76,8 +79,8 @@ namespace boost { namespace python { namespace indexing {
 
     element_proxy &operator= (value_type const &copy)
     {
-      proxy_type &proxy (*m_ptr);
-      container_proxy *container = proxy.owner();
+      proxy_type &proxy = *m_ptr;
+      container_proxy_ *container = proxy.owner();
       size_type index = proxy.index();
 
       if (container)
@@ -117,10 +120,10 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerProxy>
   struct const_element_proxy
   {
-    typedef ContainerProxy container_proxy;
-    typedef typename container_proxy::shared_proxy proxy_type;
+    typedef ContainerProxy container_proxy_;
+    typedef typename container_proxy_::shared_proxy proxy_type;
     typedef boost::shared_ptr<proxy_type> proxy_pointer;
-    typedef typename container_proxy::raw_value_type raw_value_type;
+    typedef typename container_proxy_::raw_value_type raw_value_type;
 
     proxy_pointer m_ptr;
 
@@ -135,7 +138,7 @@ namespace boost { namespace python { namespace indexing {
     explicit const_element_proxy (proxy_type *ptr) : m_ptr (ptr) { }
     const_element_proxy (proxy_pointer const &ptr) : m_ptr (ptr) { }
 
-    const_element_proxy (element_proxy<container_proxy> const &copy)
+    const_element_proxy (element_proxy<container_proxy_> const &copy)
       : m_ptr (copy.m_ptr)
     {
     }

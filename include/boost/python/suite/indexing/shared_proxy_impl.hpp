@@ -46,13 +46,16 @@ namespace boost { namespace python { namespace indexing {
     shared_proxy_impl (value_type const &copy);
     // Creates value-only (detached) proxy
 
+#if defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+  public:
+#else
   private:
     template<class C, class A, class G> friend class container_proxy;
+#endif
 
     shared_proxy_impl (ContainerProxy *, size_t);
     void detach ();
 
-  private:
     ContainerProxy *m_owner_ptr;             // When attached
     size_t m_index;                          // When attached
     std::auto_ptr<value_type> m_element_ptr; // When detached
@@ -85,14 +88,15 @@ namespace boost { namespace python { namespace indexing {
   shared_proxy_impl<ContainerProxy>::operator* () const
   {
     return m_owner_ptr
-      ? m_owner_ptr->raw_container().BOOST_INDEXING_AT (m_index)
+      ? m_owner_ptr->raw_container().BOOST_PYTHON_INDEXING_AT (m_index)
       : *m_element_ptr;
   }
 
   template<class ContainerProxy>
   void shared_proxy_impl<ContainerProxy>::detach ()
   {
-    m_element_ptr.reset (new value_type (**this));
+    BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+        m_element_ptr, new value_type (**this));
     m_owner_ptr = 0;
     m_index = static_cast<size_t>(-1);
   }

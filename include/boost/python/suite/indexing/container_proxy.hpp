@@ -36,6 +36,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/iterator/iterator_traits.hpp>
 #include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/algo_selector.hpp>
 
@@ -82,8 +83,11 @@ namespace boost { namespace python { namespace indexing {
     typedef typename Container::iterator raw_iterator;
     typedef ::boost::detail::iterator_traits<raw_iterator> raw_iterator_traits;
 
+#if !defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
     template<class C> friend class shared_proxy_impl;
-    template<class C> friend class proxy_iterator;
+    template<class C, typename E, typename T, typename S, typename I>
+        friend class proxy_iterator;
+#endif
 
   public:
     typedef typename Holder::held_type held_type;
@@ -101,14 +105,22 @@ namespace boost { namespace python { namespace indexing {
     typedef const_element_proxy<self_type> const_value_type;
     typedef const_value_type               const_reference; // Ref. semantics
 
-    typedef proxy_iterator<self_type> iterator;
-    typedef proxy_iterator<self_type> const_iterator; // ??
+    typedef proxy_iterator <self_type, value_type, raw_iterator_traits
+        , size_type, raw_iterator> iterator;
+    typedef iterator const_iterator; // No const_iterator yet implemented
 
   public:
     // Constructors
+    template<typename Iter> container_proxy (Iter start, Iter finish)
+      // Define inline for MSVC6 compatibility
+      : m_held_obj (Holder::create())
+      , m_proxies ()
+    {
+      insert (begin(), start, finish);
+    }
+
     container_proxy ();
     explicit container_proxy (held_type const &h);
-    template<typename Iter> container_proxy (Iter, Iter);
 
     container_proxy (container_proxy const &);
     container_proxy &operator= (container_proxy const &);
@@ -133,7 +145,14 @@ namespace boost { namespace python { namespace indexing {
     iterator erase (iterator);
     iterator erase (iterator, iterator);
     iterator insert (iterator, raw_value_type const &);
-    template<typename Iter> void insert (iterator, Iter, Iter);
+
+    template<typename Iter> void insert (iterator iter, Iter from, Iter to)
+      // Define here for MSVC6 compatibility
+    {
+      // Forward insertion to the right overloaded version
+      typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
+      insert (iter, from, to, category());
+    }
 
     void push_back (raw_value_type const &copy) { insert (end(), copy); }
 
@@ -163,7 +182,7 @@ namespace boost { namespace python { namespace indexing {
   public:
     // Convenient replacement of elements (automatic proxy detachment)
     void replace (size_type index, raw_value_type const &);
-    template<typename Iter> void replace (size_type index, Iter, Iter);
+    //    template<typename Iter> void replace (size_type index, Iter, Iter);
 
     void swap_elements (size_type index1, size_type index2);
 
@@ -172,20 +191,87 @@ namespace boost { namespace python { namespace indexing {
   private:
     // Overloads for insertions with/without useful std::distance
     template<typename Iter>
-    void insert (iterator, Iter, Iter, std::forward_iterator_tag);
+    void insert (iterator iter, Iter from, Iter to, std::forward_iterator_tag)
+      // Define here for MSVC6 compatibility
+    {
+      assert (iter.ptr == this);
+      size_type count = std::distance (from, to);
+
+      // Add empty proxy pointers for the new value(s) (could throw)
+      m_proxies.insert (m_proxies.begin() + iter.index, count, pointer_impl());
+
+      try
+        {
+          // Insert the new element(s) into the real container (could throw)
+          raw_container().insert (
+              raw_container().begin() + iter.index
+              , from
+              , to);
+
+          try
+            {
+              // Create new proxies for the new elements (could throw)
+              write_proxies (iter.index, iter.index + count);
+            }
+
+          catch (...)
+            {
+              raw_container().erase (
+                  raw_container().begin() + iter.index
+                  , raw_container().begin() + iter.index + count);
+
+              throw;
+            }
+        }
+
+      catch (...)
+        {
+          m_proxies.erase (
+              m_proxies.begin() + iter.index
+              , m_proxies.begin() + iter.index + count);
+
+          throw;
+        }
+
+      // Adjust any proxies after the inserted elements (nothrow)
+      adjust_proxies (
+          m_proxies.begin() + iter.index + count
+          , m_proxies.end()
+          , static_cast<difference_type> (count));
+    }
 
     template<typename Iter>
-    void insert (iterator, Iter, Iter, std::input_iterator_tag);
+    void insert (iterator iter, Iter from, Iter to, std::input_iterator_tag)
+      // Define here for MSVC6 compatibility
+    {
+      // insert overload for iterators where we *can't* get distance()
+      // so just insert elements one at a time
+      while (from != to)
+        {
+          iter = insert (iter, *from++) + 1;
+        }
+    }
 
   private:
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
-    typedef typename Generator::template apply<pointer_impl>::type
-        pointer_container;
+#if defined (BOOST_NO_MEMBER_TEMPLATES) \
+        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+    // Ignore the Generator argument, to avoid an MSVC6 fatal error
+    // (C1001 internal compiler error).
+    typedef std::vector<pointer_impl> pointer_container;
+#else
+    typedef typename Generator::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE
+        apply<pointer_impl>::type pointer_container;
+#endif
     typedef typename pointer_container::iterator pointer_iterator;
 
-  private:
+#if defined (BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
+    // Proxies need mutable access, and can't be friends with MSVC6
+  public:
+#endif
     Container &raw_container();
 
+  private:
     void adjust_proxies (pointer_iterator, pointer_iterator, difference_type);
     void write_proxies (size_type, size_type);
     bool clear_proxy (pointer_impl &);         // detach and do not reset
@@ -214,6 +300,7 @@ namespace boost { namespace python { namespace indexing {
     write_proxies (0, size());
   }
 
+  /*
   template<class Container, class Holder, class Generator>
   template<typename Iter>
   container_proxy<Container, Holder, Generator>
@@ -223,6 +310,7 @@ namespace boost { namespace python { namespace indexing {
   {
     insert (begin(), start, finish);
   }
+  */
 
   template<class Container, class Holder, class Generator>
   container_proxy<Container, Holder, Generator>
@@ -238,6 +326,8 @@ namespace boost { namespace python { namespace indexing {
   container_proxy<Container, Holder, Generator>
   ::operator= (container_proxy const &copy)
   {
+    // *FIXME* - provide an exception safety guarantee
+
     // Copy original values into any proxies being shared by external pointers
     clear_proxies (0, size());
 
@@ -282,22 +372,22 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  typename container_proxy<Container, Holder, Generator>::reference
+  BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::reference
   container_proxy<Container, Holder, Generator>
   ::at (size_type index)
   {
-    pointer_impl const &ptr (m_proxies.BOOST_INDEXING_AT (index));
+    pointer_impl const &ptr = m_proxies.BOOST_PYTHON_INDEXING_AT (index);
     assert (ptr->owner() == this);
     assert (ptr->index() == index);
     return reference (ptr);
   }
 
   template<class Container, class Holder, class Generator>
-  typename container_proxy<Container, Holder, Generator>::const_reference
+  BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::const_reference
   container_proxy<Container, Holder, Generator>
   ::at (size_type index) const
   {
-    pointer_impl const &ptr (m_proxies.BOOST_INDEXING_AT (index));
+    pointer_impl const &ptr (m_proxies.BOOST_PYTHON_INDEXING_AT (index));
     assert (ptr->owner() == this);
     assert (ptr->index() == index);
     return const_reference (ptr);
@@ -309,10 +399,11 @@ namespace boost { namespace python { namespace indexing {
   ::replace (size_type index, raw_value_type const &copy)
   {
     detach_proxy (index);
-    raw_container().BOOST_INDEXING_AT (index) = copy;
+    raw_container().BOOST_PYTHON_INDEXING_AT (index) = copy;
     write_proxies (index, index + 1);
   }
 
+  /*
   template<class Container, class Holder, class Generator>
   template<typename Iter>
   void
@@ -324,14 +415,15 @@ namespace boost { namespace python { namespace indexing {
         replace (index++, *from++);
       }
   }
+  */
 
   template<class Container, class Holder, class Generator>
   void
   container_proxy<Container, Holder, Generator>
   ::swap_elements (size_type index1, size_type index2)
   {
-    pointer_impl &ptr1 (m_proxies[index1]);
-    pointer_impl &ptr2 (m_proxies[index2]);
+    pointer_impl &ptr1 = m_proxies[index1];
+    pointer_impl &ptr2 = m_proxies[index2];
 
     assert (ptr1->owner() == this);
     assert (ptr2->owner() == this);
@@ -363,14 +455,14 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  typename container_proxy<Container, Holder, Generator>::iterator
+  BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
   container_proxy<Container, Holder, Generator>::erase (iterator iter)
   {
     return erase (iter, iter + 1);
   }
 
   template<class Container, class Holder, class Generator>
-  typename container_proxy<Container, Holder, Generator>::iterator
+  BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
   container_proxy<Container, Holder, Generator>::erase (
       iterator from, iterator to)
   {
@@ -389,6 +481,7 @@ namespace boost { namespace python { namespace indexing {
     return iterator (this, result);
   }
 
+  /*
   template<class Container, class Holder, class Generator>
   template<typename Iter>
   void container_proxy<Container, Holder, Generator>::insert (
@@ -441,18 +534,6 @@ namespace boost { namespace python { namespace indexing {
   }
 
   template<class Container, class Holder, class Generator>
-  typename container_proxy<Container, Holder, Generator>::iterator
-  container_proxy<Container, Holder, Generator>::insert (
-      iterator iter, raw_value_type const &copy)
-  {
-    // Use the iterator-based version by treating the value as an
-    // array of size one (see section 5.7/4 of the C++98 standard)
-    insert (iter, &copy, (&copy) + 1, std::random_access_iterator_tag());
-
-    return iter;
-  }
-
-  template<class Container, class Holder, class Generator>
   template<typename Iter>
   void container_proxy<Container, Holder, Generator>::insert (
       iterator iter, Iter from, Iter to, std::input_iterator_tag)
@@ -473,6 +554,19 @@ namespace boost { namespace python { namespace indexing {
     // Forward insertion to the right overloaded version
     typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
     insert (iter, from, to, category());
+  }
+  */
+
+  template<class Container, class Holder, class Generator>
+  BOOST_DEDUCED_TYPENAME container_proxy<Container, Holder, Generator>::iterator
+  container_proxy<Container, Holder, Generator>::insert (
+      iterator iter, raw_value_type const &copy)
+  {
+    // Use the iterator-based version by treating the value as an
+    // array of size one (see section 5.7/4 of the C++98 standard)
+    insert (iter, &copy, (&copy) + 1, std::random_access_iterator_tag());
+
+    return iter;
   }
 
   template<class Container, class Holder, class Generator>
@@ -514,7 +608,7 @@ namespace boost { namespace python { namespace indexing {
   void container_proxy<Container, Holder, Generator>
   ::detach_proxy (size_type index)
   {
-    pointer_impl &ptr (m_proxies[index]);
+    pointer_impl &ptr = m_proxies[index];
 
     assert (ptr->index() == index);
 
@@ -608,7 +702,7 @@ namespace boost { namespace python { namespace indexing {
 
     while (from != to)
       {
-        pointer_impl &ptr (m_proxies[from]);
+        pointer_impl &ptr = m_proxies[from];
 
         if ((ptr.get() == 0) || (!ptr.unique()))
           {
@@ -635,7 +729,7 @@ namespace boost { namespace python { namespace indexing {
 
     for (size_type count = 0; ok && (count < size()); ++count)
       {
-        pointer_impl const &ptr (m_proxies[count]);
+        pointer_impl const &ptr = m_proxies[count];
 
         ok = ptr.get() && (ptr->owner() == this) && (ptr->index() == count)
           && !ptr->m_element_ptr.get();
@@ -654,19 +748,33 @@ namespace boost { namespace python { namespace indexing {
     typedef Container container;
     typedef typename container::raw_value_type value_type; // insert, ...
     typedef typename container::raw_value_type key_type;   // find, count, ...
-    typedef typename container::reference reference;       // return values
+    typedef typename container::reference reference;  // return values
 
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <value_type>::param_type
+        value_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
+        key_param;
 
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     typedef value_traits<reference> value_traits_;
+#else
+    typedef element_proxy_traits<Container> value_traits_;
+
+    // Forward visitor_helper to eleemnt_proxy_traits
+    template<typename PythonClass, typename Policy>
+    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    {
+      value_traits_::visitor_helper (pyClass, policy);
+    }
+#endif
     // Get value_traits for the reference type (i.e. element_proxy)
     // to get the custom visitor_helper
   };
 
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
-    // algo_selector support for std::list instances
+    // algo_selector support for container_proxy instances
     ///////////////////////////////////////////////////////////////////////
 
     template <typename RawContainer, typename Holder, typename Generator>
@@ -682,6 +790,13 @@ namespace boost { namespace python { namespace indexing {
       typedef default_algorithms<const_traits>   const_algorithms;
     };
   }
+#endif
+  template<class Container, class Traits = container_proxy_traits<Container> >
+  struct container_proxy_suite
+    : container_suite<Container, default_algorithms<Traits> >
+  {
+  };
+
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_CONTAINER_PROXY_HPP

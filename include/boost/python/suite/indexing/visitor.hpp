@@ -1,5 +1,3 @@
-// -*- mode:c++ -*-
-//
 // Header file visitor.hpp
 //
 // Copyright (c) 2003 Raoul M. Gough
@@ -23,6 +21,7 @@
 
 #include <boost/python/def_visitor.hpp>
 #include <boost/python/iterator.hpp>
+#include <boost/python/default_call_policies.hpp>
 #include <boost/type_traits/ice.hpp>
 #include <boost/bind.hpp>
 #include <functional>
@@ -228,11 +227,12 @@ namespace boost { namespace python { namespace indexing {
     static void apply (
         PythonClass &pyClass
         , Algorithms const &
-        , Policy const &policy)
+        , Policy const &)
     {
-      // *FIXME* seperate precall and postcall portions of the
+      // Should maybe separate precall and postcall portions of the
       // policy (precall when generating the range object, postcall
-      // when returing from range.next())
+      // when returing from range.next())?
+
       pyClass.def (
           "__iter__"
           , boost::python::range<Policy> (

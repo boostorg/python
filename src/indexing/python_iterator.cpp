@@ -16,6 +16,7 @@
 //
 
 #include <boost/python/suite/indexing/python_iterator.hpp>
+#include <boost/python/suite/indexing/workaround.hpp>
 
 ////////////////////////////////////////////////////////////////////////////
 // python_iterator factory
@@ -24,11 +25,13 @@
 std::auto_ptr<boost::python::indexing::python_iterator>
 boost::python::indexing::make_iterator (boost::python::object temp)
 {
-  std::auto_ptr<python_iterator> result;
+  typedef std::auto_ptr<python_iterator> ptr_type;
+  ptr_type result;
 
   try
     {
-      result.reset (new python_iter_iterator (temp));
+      BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+          result, (python_iterator *) new python_iter_iterator (temp));
     }
 
   catch (boost::python::error_already_set const &)
@@ -37,7 +40,8 @@ boost::python::indexing::make_iterator (boost::python::object temp)
 
       try
         {
-          result.reset (new python_getitem_iterator (temp));
+          BOOST_PYTHON_INDEXING_RESET_AUTO_PTR (
+              result, (python_iterator *) new python_getitem_iterator (temp));
         }
 
       catch (boost::python::error_already_set const &)

@@ -33,6 +33,8 @@ unsigned int_wrapper::our_object_counter = 0;
 
 BOOST_PYTHON_MODULE(test_vector_ext)
 {
+  namespace indexing = boost::python::indexing;
+
   boost::python::implicitly_convertible <int, int_wrapper>();
 
   boost::python::def ("setTrace", &int_wrapper::setTrace);
@@ -44,40 +46,33 @@ BOOST_PYTHON_MODULE(test_vector_ext)
     ;
 
   typedef std::vector<int> Container1;
+  typedef std::vector<int_wrapper> Container2;
+  typedef indexing::container_proxy< std::vector<int_wrapper> > Container3;
+
+#if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  typedef indexing::container_suite<Container1> Suite1;
+  typedef indexing::container_suite<Container2> Suite2;
+  typedef indexing::container_suite<Container3> Suite3;
+#else
+  typedef indexing::vector_suite<Container1> Suite1;
+  typedef indexing::vector_suite<Container2> Suite2;
+  typedef indexing::container_proxy_suite<Container3> Suite3;
+#endif
 
   boost::python::class_<Container1>("Vector")
-    .def (boost::python::indexing::container_suite<Container1>())
+    .def (Suite1())
     .def ("reserve", &Container1::reserve)
     ;
-
-  typedef std::vector<int_wrapper> Container2;
 
   // Returning internal references to elements of a vector is
   // dangerous - the references can be invalidated by inserts or
   // deletes!
   boost::python::class_<Container2>("Vector_ref")
-    .def (boost::python::indexing::container_suite<Container2>
+    .def (Suite2
           ::with_policies (boost::python::return_internal_reference<>()));
 
-  typedef boost::python::indexing::container_proxy< std::vector<int_wrapper> >
-    Container3;
-
   boost::python::class_<Container3>("Vector_proxy")
-    .def (boost::python::indexing::container_suite<Container3>())
+    .def (Suite3())
     .def ("reserve", &Container3::reserve)
     ;
-
-  /* The no-partial-specialization version for vector<int>
-
-  using namespace boost::python;
-  using namespace indexing;
-
-  class_<std::vector<int> > ("vector_int")
-    .def (visitor <
-           default_algorithms <
-            default_sequence_traits <
-             std::vector <int> > >,
-           return_value_policy <return_by_value>
-          >());
-  */
 }

@@ -19,6 +19,7 @@
 #define BOOST_PYTHON_INDEXING_SET_HPP
 
 #include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/algo_selector.hpp>
 #include <set>
@@ -35,9 +36,12 @@ namespace boost { namespace python { namespace indexing {
     typedef typename Container::key_type index_type; // operator[]
     typedef typename Container::key_type key_type;   // find, count, ...
 
-    typedef typename boost::call_traits<value_type>::param_type value_param;
-    typedef typename boost::call_traits<key_type>::param_type   key_param;
-    typedef typename boost::call_traits<index_type>::param_type index_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <value_type>::param_type
+        value_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <key_type>::param_type
+        key_param;
+    typedef typename BOOST_PYTHON_INDEXING_CALL_TRAITS <index_type>::param_type
+        index_param;
 
     BOOST_STATIC_CONSTANT (index_style_t, index_style = index_style_nonlinear);
     BOOST_STATIC_CONSTANT (bool, has_find        = true);
@@ -72,6 +76,7 @@ namespace boost { namespace python { namespace indexing {
     static void      insert     (container &, index_param);
   };
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
     // algo_selector support for std::set instances
@@ -107,6 +112,12 @@ namespace boost { namespace python { namespace indexing {
       typedef set_algorithms<const_traits>   const_algorithms;
     };
   }
+#endif
+
+  template<class Container, class Traits = set_traits<Container> >
+  struct set_suite : container_suite<Container, set_algorithms<Traits> >
+  {
+  };
 
   /////////////////////////////////////////////////////////////////////////
   // Insert an element into a set

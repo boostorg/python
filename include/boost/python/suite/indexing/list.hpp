@@ -19,6 +19,7 @@
 #define BOOST_PYTHON_INDEXING_LIST_HPP
 
 #include <boost/python/suite/indexing/container_traits.hpp>
+#include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 #include <boost/python/suite/indexing/algo_selector.hpp>
 #include <list>
@@ -49,6 +50,7 @@ namespace boost { namespace python { namespace indexing {
     //    static void      sort       (container &, PyObject *);
   };
 
+#if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
   namespace detail {
     ///////////////////////////////////////////////////////////////////////
     // algo_selector support for std::list instances
@@ -67,6 +69,12 @@ namespace boost { namespace python { namespace indexing {
       typedef list_algorithms<const_traits>   const_algorithms;
     };
   }
+#endif
+
+  template<class Container, class Traits = default_sequence_traits<Container> >
+  struct list_suite : container_suite<Container, list_algorithms<Traits> >
+  {
+  };
 
   /////////////////////////////////////////////////////////////////////////
   // Reverse the contents of a list (using member function)
