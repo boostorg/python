@@ -81,6 +81,8 @@ namespace boost { namespace python {
         static object 
         get_slice(Container& container, index_type from, index_type to)
         { 
+            if (from > to)
+	            return object(Container());
             return object(Container(container.begin()+from, container.begin()+to));
         }
 
@@ -94,8 +96,13 @@ namespace boost { namespace python {
         set_slice(Container& container, index_type from, 
             index_type to, data_type const& v)
         { 
-            container.erase(container.begin()+from, container.begin()+to);
-            container.insert(container.begin()+from, v);
+            if (from > to) {
+                return;
+            }
+            else {
+                container.erase(container.begin()+from, container.begin()+to);
+                container.insert(container.begin()+from, v);
+            }
         }
 
         template <class Iter>
@@ -103,8 +110,13 @@ namespace boost { namespace python {
         set_slice(Container& container, index_type from, 
             index_type to, Iter first, Iter last)
         { 
-            container.erase(container.begin()+from, container.begin()+to);
-            container.insert(container.begin()+from, first, last);
+            if (from > to) {
+                container.insert(container.begin()+from, first, last);
+            }
+            else {
+                container.erase(container.begin()+from, container.begin()+to);
+                container.insert(container.begin()+from, first, last);
+            }
         }
 
         static void 
@@ -116,6 +128,10 @@ namespace boost { namespace python {
         static void 
         delete_slice(Container& container, index_type from, index_type to)
         { 
+            if (from > to) {
+                // A null-op.
+                return;
+            }
             container.erase(container.begin()+from, container.begin()+to);
         }
         
