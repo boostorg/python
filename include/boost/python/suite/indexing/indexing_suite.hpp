@@ -126,10 +126,16 @@ namespace boost { namespace python {
         typedef detail::container_element<Container, Index, DerivedPolicies>
             container_element_t;
        
+#if !defined(BOOST_MSVC) || (BOOST_MSVC > 1200)
+        typedef return_internal_reference<> return_policy;
+#else
+        struct return_policy : return_internal_reference<> {};
+#endif
+
         typedef typename mpl::if_<
             no_proxy
           , iterator<Container>
-          , iterator<Container, return_internal_reference<> > >::type
+          , iterator<Container, return_policy> >::type
         def_iterator;
         
         typedef typename mpl::if_<
