@@ -31,7 +31,7 @@ namespace detail
 {
   struct make_owning_holder
   {
-      typedef objects::instance_holder* result_type;
+      typedef instance_holder* result_type;
       template <class T>
       static result_type execute(T* p)
       {
@@ -49,7 +49,7 @@ namespace detail
 
   struct make_reference_holder
   {
-      typedef objects::instance_holder* result_type;
+      typedef instance_holder* result_type;
       template <class T>
       static result_type execute(T* p)
       {
@@ -110,7 +110,7 @@ inline PyObject* to_python_indirect<T,MakeHolder>::operator()(T x) const
 
     // Build a value_holder to contain the object using the copy
     // constructor
-    objects::instance_holder* p =
+    instance_holder* p =
         detail::unwind_type<MakeHolder>(x);
 
     // Install it in the instance
