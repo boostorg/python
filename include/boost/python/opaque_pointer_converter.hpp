@@ -73,8 +73,10 @@ public:
         if (x != 0) {
             instance *o = PyObject_New (instance, &type_object);
 
-            o->x   = x;
-            result = &o->base_;
+            if (o != 0) {
+                o->x   = x;
+                result = &o->base_;
+            }
         } else {
             result = detail::none();
         }
@@ -112,20 +114,19 @@ PyTypeObject opaque_pointer_converter<Pointer>::type_object =
 }} // namespace boost::python
 # ifdef BOOST_MSVC
 // MSC works without this workaround, but needs another one ...
-# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee) \
+# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)  \
 BOOST_BROKEN_COMPILER_TYPE_TRAITS_SPECIALIZATION(Pointee)
 # else
-# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee) \
-namespace boost { namespace python {                      \
-    template<>                                            \
-    inline type_info type_id(boost::type<Pointee>*) {     \
-        return type_info (typeid (Pointee *));            \
-    }                                                     \
-    template<>                                            \
-    inline type_info type_id(                             \
-        boost::type<const volatile Pointee &>*) {         \
-        return type_info (typeid (Pointee *));            \
-    }                                                     \
+# define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)  \
+namespace boost { namespace python {                       \
+    template<>                                             \
+    inline type_info type_id<Pointee>() {                  \
+        return type_info (typeid (Pointee *));             \
+    }                                                      \
+    template<>                                             \
+    inline type_info type_id<const volatile Pointee &>() { \
+        return type_info (typeid (Pointee *));             \
+    }                                                      \
 }}
 # endif
 # endif	// OPAQUE_POINTER_CONVERTER_HPP_
