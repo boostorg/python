@@ -14,6 +14,8 @@
 
 namespace boost { namespace python {
 
+error_already_set::~error_already_set() {}
+
 // IMPORTANT: this function may only be called from within a catch block!
 BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
 {
@@ -47,29 +49,12 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
     return true;
 }
 
-void BOOST_PYTHON_DECL throw_argument_error()
-{
-    throw argument_error();
-}
-
 void BOOST_PYTHON_DECL throw_error_already_set()
 {
     throw error_already_set();
 }
 
 namespace detail {
-
-  BOOST_PYTHON_DECL void expect_complex(PyObject* p)
-  {
-      if (!PyComplex_Check(p))
-      {
-          PyErr_SetString(PyExc_TypeError, "expected a complex number");
-          boost::python::throw_argument_error();
-      }
-  }
-
-// needed by void_adaptor (see void_adaptor.hpp)
-BOOST_PYTHON_DECL PyObject arbitrary_object = { 0 };
 
 bool exception_handler::operator()(function0<void> const& f) const
 {

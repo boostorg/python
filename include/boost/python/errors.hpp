@@ -14,8 +14,10 @@
 
 namespace boost { namespace python {
 
-struct BOOST_PYTHON_DECL error_already_set {};
-struct BOOST_PYTHON_DECL argument_error : error_already_set {};
+struct BOOST_PYTHON_DECL error_already_set
+{
+    virtual ~error_already_set();
+};
 
 // Handles exceptions caught just before returning to Python code.
 // Returns true iff an exception was caught.
@@ -34,7 +36,6 @@ inline void handle_exception()
     handle_exception(detail::rethrow);
 }
 
-BOOST_PYTHON_DECL void throw_argument_error();
 BOOST_PYTHON_DECL void throw_error_already_set();
 
 template <class T>
