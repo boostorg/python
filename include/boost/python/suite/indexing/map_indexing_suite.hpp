@@ -73,7 +73,9 @@ namespace boost { namespace python {
         {
             //  Wrap the map's element (value_type)
             std::string elem_name = "map_indexing_suite_";
-            elem_name += cl.ptr()->ob_type->tp_name; // the class name
+            object class_name(cl.attr("__name__"));
+            extract<std::string> class_name_extractor(class_name);
+            elem_name += class_name_extractor();
             elem_name += "_entry";
 
             typedef typename mpl::if_<

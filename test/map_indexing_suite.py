@@ -5,6 +5,9 @@
 #####################################################################
 
 >>> from map_indexing_suite_ext import *
+>>> assert "map_indexing_suite_IntMap_entry" in dir()
+>>> assert "map_indexing_suite_TestMap_entry" in dir()
+>>> assert "map_indexing_suite_XMap_entry" in dir()
 >>> x = X('hi')
 >>> x
 hi
