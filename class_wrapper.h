@@ -11,13 +11,13 @@
 namespace py {
 
 // Syntactic sugar to make wrapping classes more convenient
-template <class T, class U = HeldInstance<T> >
+template <class T, class U = detail::HeldInstance<T> >
 class ClassWrapper
     : PyExtensionClassConverters<T, U> // Works around MSVC6.x/GCC2.95.2 bug described below
 {
  public:
     ClassWrapper(Module& module, const char* name)
-        : m_class(new ExtensionClass<T, U>(name))
+        : m_class(new detail::ExtensionClass<T, U>(name))
     {
         module.add(Ptr(as_object(m_class.get()), Ptr::new_ref), name);
     }
@@ -108,24 +108,8 @@ class ClassWrapper
         m_class->declare_base(base.get_extension_class(), without_downcast);
     }
 
-    // declare the given class a base class of this one and register 
-    // conversion functions
-    template <class S, class V>
-    void declare_base(ExtensionClass<S, V> * base)
-    {
-        m_class->declare_base(base);
-    }
-        
-    // declare the given class a base class of this one and register 
-    // upcast conversion function
-    template <class S, class V>
-    void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
-    {
-        m_class->declare_base(base, without_downcast);
-    }
-    
     // get the embedded ExtensioClass object
-    ExtensionClass<T, U> * get_extension_class() const 
+    detail::ExtensionClass<T, U> * get_extension_class() const 
     {
         return m_class.get();
     }
@@ -137,7 +121,23 @@ class ClassWrapper
     void add(Ptr x, const char* name)
         { m_class->set_attribute(name, x); }
  private:
-    PyPtr<ExtensionClass<T, U> > m_class;
+    // declare the given class a base class of this one and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(detail::ExtensionClass<S, V> * base)
+    {
+        m_class->declare_base(base);
+    }
+        
+    // declare the given class a base class of this one and register 
+    // upcast conversion function
+    template <class S, class V>
+    void declare_base(detail::ExtensionClass<S, V> * base, WithoutDowncast)
+    {
+        m_class->declare_base(base, without_downcast);
+    }
+    
+    PyPtr<detail::ExtensionClass<T, U> > m_class;
 };
 
 // The bug mentioned at the top of this file is that on certain compilers static

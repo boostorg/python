@@ -11,6 +11,64 @@
 namespace py {
 
 namespace detail {
+  struct auto_operand {};
+}
+
+enum operator_id
+{ 
+    op_add = 0x1, 
+    op_sub = 0x2, 
+    op_mul = 0x4, 
+    op_div = 0x8, 
+    op_mod = 0x10, 
+    op_divmod =0x20, 
+    op_pow = 0x40, 
+    op_lshift = 0x80, 
+    op_rshift = 0x100, 
+    op_and = 0x200, 
+    op_xor = 0x400, 
+    op_or = 0x800, 
+    op_neg = 0x1000, 
+    op_pos = 0x2000, 
+    op_abs = 0x4000, 
+    op_invert = 0x8000, 
+    op_int = 0x10000, 
+    op_long = 0x20000, 
+    op_float = 0x40000, 
+    op_str = 0x80000,
+    op_cmp = 0x100000 
+};
+
+template <long which, class operand = py::detail::auto_operand>
+struct operators {};
+
+template <class T>
+struct left_operand {};
+
+template <class T>
+struct right_operand {};
+
+namespace detail
+{
+  template <class Specified>
+  struct operand_select
+  {
+      template <class WrappedType>
+      struct wrapped
+      {
+          typedef Specified type;
+      };
+  };
+
+  template <>
+  struct operand_select<auto_operand>
+  {
+      template <class WrappedType>
+      struct wrapped
+      {
+          typedef const WrappedType& type;
+      };
+  };
 
   template <long> struct define_operator;
 

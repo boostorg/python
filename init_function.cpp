@@ -11,26 +11,26 @@
 #include "extclass.h"
 #include <utility>
 
-namespace py {
+namespace py { namespace detail {
 
-PyObject* Init::do_call(PyObject* args_, PyObject* keywords) const
-{
-    Tuple args(Ptr(args_, Ptr::borrowed));
-    if (args[0]->ob_type->ob_type != extension_meta_class())
-    {
-        PyErr_SetString(PyExc_TypeError, "argument 1 to __init__ must be an ExtensionInstance");
-        return 0;
-    }
-    
-    ExtensionInstance *self = static_cast<ExtensionInstance*>(args[0].get());
-    
-    Tuple ctor_args = args.slice(1, args.size());
-    
-    std::auto_ptr<InstanceHolderBase> result(
-        create_holder(self, ctor_args.get(), keywords));
-    
-    self->add_implementation(result);
-    return none();
-}
+  PyObject* Init::do_call(PyObject* args_, PyObject* keywords) const
+  {
+      Tuple args(Ptr(args_, Ptr::borrowed));
+      if (args[0]->ob_type->ob_type != extension_meta_class())
+      {
+          PyErr_SetString(PyExc_TypeError, "argument 1 to __init__ must be an ExtensionInstance");
+          return 0;
+      }
 
-}
+      ExtensionInstance *self = static_cast<ExtensionInstance*>(args[0].get());
+
+      Tuple ctor_args = args.slice(1, args.size());
+
+      std::auto_ptr<InstanceHolderBase> result(
+          create_holder(self, ctor_args.get(), keywords));
+
+      self->add_implementation(result);
+      return none();
+  }
+
+}} // namespace py::detail

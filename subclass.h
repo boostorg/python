@@ -20,7 +20,8 @@
 namespace py {
 
 // A simple type which acts something like a built-in Python class instance.
-class Instance : public PythonObject
+class Instance
+    : public py::detail::PythonObject
 {
  public:
     Instance(PyTypeObject* class_);
@@ -83,7 +84,7 @@ class Instance : public PythonObject
 template <class T> class MetaClass;
 
 namespace detail {
-  class ClassBase : public py::TypeObjectBase
+  class ClassBase : public TypeObjectBase
   {
    public:
       ClassBase(PyTypeObject* meta_class, String name, Tuple bases, const Dict& name_space);
@@ -185,7 +186,11 @@ class Class
 // The type of a Class<T> object.
 template <class T>
 class MetaClass
-    : public Reprable<Callable<Getattrable<Setattrable<TypeObject<Class<T> > > > > >,
+    : public py::detail::Reprable<
+                py::detail::Callable<
+                   py::detail::Getattrable<
+                      py::detail::Setattrable<
+                         py::detail::TypeObject<Class<T> > > > > >,
       boost::noncopyable
 {
  public:
@@ -195,7 +200,9 @@ class MetaClass
     PyObject* call(PyObject* args, PyObject* keywords);
     
     struct TypeObject
-        : Singleton<TypeObject, Callable<py::TypeObject<MetaClass> > >
+        : py::detail::Singleton<TypeObject,
+             py::detail::Callable<
+                py::detail::TypeObject<MetaClass> > >
     {
         TypeObject() : SingletonBase(&PyType_Type) {}
     };

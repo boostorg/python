@@ -26,11 +26,25 @@
 namespace py {
 
 // forward declarations
+template <long which, class operand> struct operators;
+template <class T> struct left_operand;
+template <class T> struct right_operand;
+
+enum WithoutDowncast { without_downcast };
+
+namespace detail {
+
+// forward declarations
 class ExtensionInstance;
 class ExtensionClassBase;
 template <class T> class InstanceHolder;
 template <class T, class U> class InstanceValueHolder;
 template <class Ptr, class T> class InstancePtrHolder;
+template <class Specified> struct operand_select;
+  template <long> struct choose_op;
+  template <long> struct choose_rop;
+  template <long> struct choose_unary_op;
+  template <long> struct define_operator;
 
 MetaClass<ExtensionInstance>* extension_meta_class();
 ExtensionInstance* get_extension_instance(PyObject* p);
@@ -49,23 +63,21 @@ T* check_non_null(T* p)
 
 template <class T> class HeldInstance;
 
-namespace detail {
-  typedef void* (*ConversionFunction)(void*);
+typedef void* (*ConversionFunction)(void*);
 
-  struct BaseClassInfo
-  {
-      BaseClassInfo(ExtensionClassBase* t, ConversionFunction f)
-          :class_object(t), convert(f)
-          {}
+struct BaseClassInfo
+{
+    BaseClassInfo(ExtensionClassBase* t, ConversionFunction f)
+        :class_object(t), convert(f)
+        {}
     
-      ExtensionClassBase* class_object;
-      ConversionFunction convert;
-  };
+    ExtensionClassBase* class_object;
+    ConversionFunction convert;
+};
 
-  typedef BaseClassInfo DerivedClassInfo;
+typedef BaseClassInfo DerivedClassInfo;
 
-  struct add_operator_base;
-}
+struct add_operator_base;
 
 class ExtensionClassBase : public Class<ExtensionInstance>
 {
@@ -84,11 +96,11 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     
  private:
     virtual void* extract_object_from_holder(InstanceHolderBase* v) const = 0;
-    virtual std::vector<py::detail::BaseClassInfo> const& base_classes() const = 0;
-    virtual std::vector<py::detail::DerivedClassInfo> const& derived_classes() const = 0;
+    virtual std::vector<BaseClassInfo> const& base_classes() const = 0;
+    virtual std::vector<DerivedClassInfo> const& derived_classes() const = 0;
 
  protected:
-    friend struct detail::add_operator_base;
+    friend struct add_operator_base;
     void add_method(PyPtr<Function> method, const char* name);
     void add_method(Function* method, const char* name);
     
@@ -109,19 +121,19 @@ class ClassRegistry
     static void unregister_class(ExtensionClassBase*);
 
     // Establish C++ inheritance relationships
-    static void register_base_class(py::detail::BaseClassInfo const&);
-    static void register_derived_class(py::detail::DerivedClassInfo const&);
+    static void register_base_class(BaseClassInfo const&);
+    static void register_derived_class(DerivedClassInfo const&);
 
     // Query the C++ inheritance relationships
-    static std::vector<py::detail::BaseClassInfo> const& base_classes();
-    static std::vector<py::detail::DerivedClassInfo> const& derived_classes();
+    static std::vector<BaseClassInfo> const& base_classes();
+    static std::vector<DerivedClassInfo> const& derived_classes();
  private:
     static ExtensionClassBase* static_class_object;
-    static std::vector<py::detail::BaseClassInfo> static_base_class_info;
-    static std::vector<py::detail::DerivedClassInfo> static_derived_class_info;
+    static std::vector<BaseClassInfo> static_base_class_info;
+    static std::vector<DerivedClassInfo> static_derived_class_info;
 };
 
-}
+}} // namespace py::detail
 
 PY_BEGIN_CONVERSION_NAMESPACE
 
@@ -129,7 +141,7 @@ PY_BEGIN_CONVERSION_NAMESPACE
 // and U. T is the class the user really intends to wrap. U is a class derived
 // from T with some virtual function overriding boilerplate, or if there are no
 // virtual functions, U = HeldInstance<T>.
-template <class T, class U = py::HeldInstance<T> >
+template <class T, class U = py::detail::HeldInstance<T> >
 class PyExtensionClassConverters
 {
  public:
@@ -160,10 +172,10 @@ class PyExtensionClassConverters
     // writes code which causes us to try to copy a T.
     PyObject* to_python(const T& x) const
     {
-        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        py::PyPtr<py::detail::ExtensionInstance> result(create_instance());
         result->add_implementation(
-            std::auto_ptr<py::InstanceHolderBase>(
-                new py::InstanceValueHolder<T,U>(result.get(), x)));
+            std::auto_ptr<py::detail::InstanceHolderBase>(
+                new py::detail::InstanceValueHolder<T,U>(result.get(), x)));
         return result.release();
     }
     
@@ -171,21 +183,21 @@ class PyExtensionClassConverters
     friend T* from_python(PyObject* obj, py::Type<T*>)
     {
         // Downcast to an ExtensionInstance, then find the actual T
-        py::ExtensionInstance* self = py::get_extension_instance(obj);
-        typedef std::vector<py::InstanceHolderBase*>::const_iterator Iterator;
+        py::detail::ExtensionInstance* self = py::detail::get_extension_instance(obj);
+        typedef std::vector<py::detail::InstanceHolderBase*>::const_iterator Iterator;
         for (Iterator p = self->wrapped_objects().begin();
              p != self->wrapped_objects().end(); ++p)
         {
-            py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(*p);
+            py::detail::InstanceHolder<T>* held = dynamic_cast<py::detail::InstanceHolder<T>*>(*p);
             if (held != 0)
                 return held->target();
 
             // see extclass.cpp for an explanation of try_class_conversions()
-            void* target = py::ClassRegistry<T>::class_object()->try_class_conversions(*p);
+            void* target = py::detail::ClassRegistry<T>::class_object()->try_class_conversions(*p);
             if(target) 
                 return static_cast<T*>(target);
         }
-        py::report_missing_instance_data(self, py::ClassRegistry<T>::class_object(), typeid(T));
+        py::detail::report_missing_instance_data(self, py::detail::ClassRegistry<T>::class_object(), typeid(T));
         throw py::ArgumentError();
     }
 
@@ -194,38 +206,38 @@ class PyExtensionClassConverters
     static PtrType& ptr_from_python(PyObject* obj, py::Type<PtrType>)
     {
         // Downcast to an ExtensionInstance, then find the actual T
-        py::ExtensionInstance* self = py::get_extension_instance(obj);
-        typedef std::vector<py::InstanceHolderBase*>::const_iterator Iterator;
+        py::detail::ExtensionInstance* self = py::detail::get_extension_instance(obj);
+        typedef std::vector<py::detail::InstanceHolderBase*>::const_iterator Iterator;
         for (Iterator p = self->wrapped_objects().begin();
              p != self->wrapped_objects().end(); ++p)
         {
-            py::InstancePtrHolder<PtrType, T>* held =
-                dynamic_cast<py::InstancePtrHolder<PtrType, T>*>(*p);
+            py::detail::InstancePtrHolder<PtrType, T>* held =
+                dynamic_cast<py::detail::InstancePtrHolder<PtrType, T>*>(*p);
             if (held != 0)
                 return held->ptr();
         }
-        py::report_missing_ptr_data(self, py::ClassRegistry<T>::class_object(), typeid(T));
+        py::detail::report_missing_ptr_data(self, py::detail::ClassRegistry<T>::class_object(), typeid(T));
         throw py::ArgumentError();
     }
 
     template <class PtrType>
     static PyObject* ptr_to_python(PtrType x)
     {
-        py::PyPtr<py::ExtensionInstance> result(create_instance());
+        py::PyPtr<py::detail::ExtensionInstance> result(create_instance());
         result->add_implementation(
-            std::auto_ptr<py::InstanceHolderBase>(
-                new py::InstancePtrHolder<PtrType,T>(x)));
+            std::auto_ptr<py::detail::InstanceHolderBase>(
+                new py::detail::InstancePtrHolder<PtrType,T>(x)));
         return result.release();
     }
 
-    static py::PyPtr<py::ExtensionInstance> create_instance()
+    static py::PyPtr<py::detail::ExtensionInstance> create_instance()
     {
-        PyTypeObject* class_object = py::ClassRegistry<T>::class_object();
+        PyTypeObject* class_object = py::detail::ClassRegistry<T>::class_object();
         if (class_object == 0)
-            py::report_missing_class_object(typeid(T));
+            py::detail::report_missing_class_object(typeid(T));
             
-        return py::PyPtr<py::ExtensionInstance>(
-            new py::ExtensionInstance(class_object));
+        return py::PyPtr<py::detail::ExtensionInstance>(
+            new py::detail::ExtensionInstance(class_object));
     }
 
     // Convert to const T*
@@ -242,7 +254,7 @@ class PyExtensionClassConverters
  
     // Convert to T&
     friend T& from_python(PyObject* p, py::Type<T&>)
-        { return *py::check_non_null(from_python(p, py::Type<T*>())); }
+        { return *py::detail::check_non_null(from_python(p, py::Type<T*>())); }
 
     // Convert to const T&
     friend const T& from_python(PyObject* p, py::Type<const T&>)
@@ -293,6 +305,8 @@ namespace py {
 
 PY_IMPORT_CONVERSION(PyExtensionClassConverters);
 
+namespace detail {
+
 template <class T> class InstanceHolder;
 
 class ReadOnlySetattrFunction : public Function
@@ -305,72 +319,6 @@ class ReadOnlySetattrFunction : public Function
     String m_name;
 };
 
-enum operator_id
-{ 
-    op_add = 0x1, 
-    op_sub = 0x2, 
-    op_mul = 0x4, 
-    op_div = 0x8, 
-    op_mod = 0x10, 
-    op_divmod =0x20, 
-    op_pow = 0x40, 
-    op_lshift = 0x80, 
-    op_rshift = 0x100, 
-    op_and = 0x200, 
-    op_xor = 0x400, 
-    op_or = 0x800, 
-    op_neg = 0x1000, 
-    op_pos = 0x2000, 
-    op_abs = 0x4000, 
-    op_invert = 0x8000, 
-    op_int = 0x10000, 
-    op_long = 0x20000, 
-    op_float = 0x40000, 
-    op_str = 0x80000,
-    op_cmp = 0x100000 
-};
-
-namespace detail
-{
-  struct auto_operand {};
-
-  template <class Specified>
-  struct operand_select
-  {
-      template <class WrappedType>
-      struct wrapped
-      {
-          typedef Specified type;
-      };
-  };
-
-  template <>
-  struct operand_select<auto_operand>
-  {
-      template <class WrappedType>
-      struct wrapped
-      {
-          typedef const WrappedType& type;
-      };
-  };
-
-  template <long> struct define_operator;
-  template <long> struct choose_op;
-  template <long> struct choose_rop;
-  template <long> struct choose_unary_op;
-}
-
-template <long which, class operand = py::detail::auto_operand>
-struct operators {};
-
-template <class T>
-struct left_operand {};
-
-template <class T>
-struct right_operand {};
-
-namespace detail
-{
   template <class From, class To>
   struct DefineConversion
   {
@@ -384,9 +332,6 @@ namespace detail
           return dynamic_cast<To*>(static_cast<From*>(v));
       }
   };
-}
-
-enum WithoutDowncast { without_downcast };
 
 // An easy way to make an extension base class which wraps T. Note that Python
 // subclasses of this class will simply be Class<ExtensionInstance> objects.
@@ -439,7 +384,7 @@ class ExtensionClass
     template <long which, class Operand>
     inline void def(operators<which,Operand>)
     {
-        typedef typename detail::operand_select<Operand>::template wrapped<T>::type true_operand;
+        typedef typename operand_select<Operand>::template wrapped<T>::type true_operand;
         def_operators(operators<which,true_operand>());
     }
 
@@ -453,7 +398,7 @@ class ExtensionClass
     template <long which, class Left, class Right>
     inline void def(operators<which,Left>, right_operand<Right> r)
     {
-        typedef typename detail::operand_select<Left>::template wrapped<T>::type true_left;
+        typedef typename operand_select<Left>::template wrapped<T>::type true_left;
         def_operators(operators<which,true_left>(), r);
     }
 
@@ -469,7 +414,7 @@ class ExtensionClass
     template <long which, class Left, class Right>
     inline void def(operators<which,Right>, left_operand<Left> l)
     {
-        typedef typename detail::operand_select<Right>::template wrapped<T>::type true_right;
+        typedef typename operand_select<Right>::template wrapped<T>::type true_right;
         def_operators(operators<which,true_right>(), l);
     }
 
@@ -482,7 +427,7 @@ class ExtensionClass
     template <class Fn>
     inline void def_raw(Fn fn, const char* name)
     {
-        this->add_method(py::detail::new_raw_arguments_function(fn), name);
+        this->add_method(new_raw_arguments_function(fn), name);
     }
 
     // define member functions. In fact this works for free functions, too -
@@ -501,7 +446,7 @@ class ExtensionClass
     template <class Fn, class DefaultFn>
     inline void def(Fn fn, const char* name, DefaultFn default_fn)
     {
-        this->add_method(py::detail::new_virtual_function(Type<T>(), fn, default_fn), name);
+        this->add_method(new_virtual_function(Type<T>(), fn, default_fn), name);
     }
 
     // Provide a function which implements x.<name>, reading from the given
@@ -543,13 +488,13 @@ class ExtensionClass
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
-        detail::BaseClassInfo baseInfo(base, 
-                            &detail::DefineConversion<S, T>::downcast_ptr);
+        BaseClassInfo baseInfo(base, 
+                            &DefineConversion<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
         add_base(Ptr(as_object(base), Ptr::new_ref));
         
-        detail::DerivedClassInfo derivedInfo(this, 
-                            &detail::DefineConversion<T, S>::upcast_ptr);
+        DerivedClassInfo derivedInfo(this, 
+                            &DefineConversion<T, S>::upcast_ptr);
         ClassRegistry<S>::register_derived_class(derivedInfo);
     }
         
@@ -560,12 +505,12 @@ class ExtensionClass
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
-        detail::BaseClassInfo baseInfo(base, 0);
+        BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
         add_base(Ptr(as_object(base), Ptr::new_ref));
         
-        detail::DerivedClassInfo derivedInfo(this, 
-                           &detail::DefineConversion<T, S>::upcast_ptr);
+        DerivedClassInfo derivedInfo(this, 
+                           &DefineConversion<T, S>::upcast_ptr);
         ClassRegistry<S>::register_derived_class(derivedInfo);
     }
     
@@ -573,8 +518,8 @@ class ExtensionClass
     typedef InstanceValueHolder<T,U> Holder;
 
  private: // ExtensionClassBase virtual function implementations
-    std::vector<detail::BaseClassInfo> const& base_classes() const;
-    std::vector<detail::DerivedClassInfo> const& derived_classes() const;
+    std::vector<BaseClassInfo> const& base_classes() const;
+    std::vector<DerivedClassInfo> const& derived_classes() const;
     void* extract_object_from_holder(InstanceHolderBase* v) const;
 
  private: // Utility functions
@@ -582,28 +527,32 @@ class ExtensionClass
     inline void def_operators(operators<which,Operand>)
     {
         register_coerce();
-        
-        detail::choose_op<(which & op_add)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_sub)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_mul)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_div)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_mod)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_divmod)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_pow)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_lshift)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_rshift)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_and)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_xor)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_or)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_neg)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_pos)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_abs)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_invert)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_int)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_long)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_float)>::template args<Operand>::add(this);
-        detail::choose_op<(which & op_cmp)>::template args<Operand>::add(this);
-        detail::choose_unary_op<(which & op_str)>::template args<Operand>::add(this);
+
+        // for some strange reason, this prevents MSVC from having an
+        // "unrecoverable block scoping error"!
+        typedef choose_op<(which & op_add)> choose_add;
+
+        choose_op<(which & op_add)>::template args<Operand>::add(this);
+        choose_op<(which & op_sub)>::template args<Operand>::add(this);
+        choose_op<(which & op_mul)>::template args<Operand>::add(this);
+        choose_op<(which & op_div)>::template args<Operand>::add(this);
+        choose_op<(which & op_mod)>::template args<Operand>::add(this);
+        choose_op<(which & op_divmod)>::template args<Operand>::add(this);
+        choose_op<(which & op_pow)>::template args<Operand>::add(this);
+        choose_op<(which & op_lshift)>::template args<Operand>::add(this);
+        choose_op<(which & op_rshift)>::template args<Operand>::add(this);
+        choose_op<(which & op_and)>::template args<Operand>::add(this);
+        choose_op<(which & op_xor)>::template args<Operand>::add(this);
+        choose_op<(which & op_or)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_neg)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_pos)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_abs)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_invert)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_int)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_long)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_float)>::template args<Operand>::add(this);
+        choose_op<(which & op_cmp)>::template args<Operand>::add(this);
+        choose_unary_op<(which & op_str)>::template args<Operand>::add(this);
     }
 
     template <long which, class Left, class Right>
@@ -611,19 +560,19 @@ class ExtensionClass
     {
         register_coerce();
         
-        detail::choose_op<(which & op_add)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_sub)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_mul)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_div)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_mod)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_divmod)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_pow)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_lshift)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_rshift)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_and)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_xor)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_or)>::template args<Left,Right>::add(this);
-        detail::choose_op<(which & op_cmp)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_add)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_sub)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_mul)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_div)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_mod)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_divmod)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_pow)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_lshift)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_rshift)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_and)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_xor)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_or)>::template args<Left,Right>::add(this);
+        choose_op<(which & op_cmp)>::template args<Left,Right>::add(this);
     }
     
     template <long which, class Left, class Right>
@@ -631,19 +580,19 @@ class ExtensionClass
     {
         register_coerce();
         
-        detail::choose_rop<(which & op_add)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_sub)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_mul)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_div)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_mod)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_divmod)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_pow)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_lshift)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_rshift)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_and)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_xor)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_or)>::template args<Left,Right>::add(this);
-        detail::choose_rop<(which & op_cmp)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_add)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_sub)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_mul)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_div)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_mod)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_divmod)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_pow)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_lshift)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_rshift)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_and)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_xor)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_or)>::template args<Left,Right>::add(this);
+        choose_rop<(which & op_cmp)>::template args<Left,Right>::add(this);
     }
     
     template <class Signature>
@@ -770,10 +719,7 @@ class ExtensionInstance : public Instance
 // Template function implementations
 //
 
-namespace detail
-{
-  Tuple extension_class_coerce(Ptr l, Ptr r);
-}
+Tuple extension_class_coerce(Ptr l, Ptr r);
 
 template <class T, class U>
 ExtensionClass<T, U>::ExtensionClass()
@@ -795,12 +741,12 @@ void ExtensionClass<T, U>::register_coerce()
     Ptr coerce_fct = dict().get_item(String("__coerce__"));
     
     if(coerce_fct.get() == 0) // not yet defined
-        this->def(&py::detail::extension_class_coerce, "__coerce__");
+        this->def(&extension_class_coerce, "__coerce__");
 }
 
 template <class T, class U>
 inline
-std::vector<detail::BaseClassInfo> const& 
+std::vector<BaseClassInfo> const& 
 ExtensionClass<T, U>::base_classes() const
 {
     return ClassRegistry<T>::base_classes();
@@ -808,7 +754,7 @@ ExtensionClass<T, U>::base_classes() const
 
 template <class T, class U>
 inline
-std::vector<detail::DerivedClassInfo> const& 
+std::vector<DerivedClassInfo> const& 
 ExtensionClass<T, U>::derived_classes() const
 {
     return ClassRegistry<T>::derived_classes();
@@ -817,7 +763,7 @@ ExtensionClass<T, U>::derived_classes() const
 template <class T, class U>
 void* ExtensionClass<T, U>::extract_object_from_holder(InstanceHolderBase* v) const
 {
-    py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(v);
+    InstanceHolder<T>* held = dynamic_cast<InstanceHolder<T>*>(v);
     if(held)
         return held->target();
     return 0;
@@ -847,25 +793,25 @@ inline void ClassRegistry<T>::unregister_class(ExtensionClassBase* p)
 }
 
 template <class T>
-void ClassRegistry<T>::register_base_class(py::detail::BaseClassInfo const& i)
+void ClassRegistry<T>::register_base_class(BaseClassInfo const& i)
 {
     static_base_class_info.push_back(i);
 }
 
 template <class T>
-void ClassRegistry<T>::register_derived_class(py::detail::DerivedClassInfo const& i)
+void ClassRegistry<T>::register_derived_class(DerivedClassInfo const& i)
 {
     static_derived_class_info.push_back(i);
 }
 
 template <class T>
-std::vector<py::detail::BaseClassInfo> const& ClassRegistry<T>::base_classes()
+std::vector<BaseClassInfo> const& ClassRegistry<T>::base_classes()
 {
     return static_base_class_info;
 }
 
 template <class T>
-std::vector<py::detail::DerivedClassInfo> const& ClassRegistry<T>::derived_classes()
+std::vector<DerivedClassInfo> const& ClassRegistry<T>::derived_classes()
 {
     return static_derived_class_info;
 }
@@ -876,11 +822,11 @@ std::vector<py::detail::DerivedClassInfo> const& ClassRegistry<T>::derived_class
 template <class T>
 ExtensionClassBase* ClassRegistry<T>::static_class_object;
 template <class T>
-std::vector<py::detail::BaseClassInfo> ClassRegistry<T>::static_base_class_info;
+std::vector<BaseClassInfo> ClassRegistry<T>::static_base_class_info;
 template <class T>
-std::vector<py::detail::DerivedClassInfo> ClassRegistry<T>::static_derived_class_info;
+std::vector<DerivedClassInfo> ClassRegistry<T>::static_derived_class_info;
 
-} // namespace py
+}} // namespace py::detail
 
 #endif // EXTENSION_CLASS_DWA052000_H_
 

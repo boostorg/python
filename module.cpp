@@ -26,14 +26,14 @@ Module::Module(const char* name)
 {
     // If this fails, you've created more than 1 Module object in your module    
     assert(name_holder.get() == 0);
-    name_holder = Ptr(PyObject_GetAttrString(m_module, "__name__"));
+    name_holder = Ptr(PyObject_GetAttrString(m_module, const_cast<char*>("__name__")));
 }
 
 void
-Module::add(Function* x, const char* name)
+Module::add(detail::Function* x, const char* name)
 {
-    PyPtr<Function> f(x); // First take possession of the object.
-    Function::add_to_namespace(f, name, PyModule_GetDict(m_module));
+    PyPtr<detail::Function> f(x); // First take possession of the object.
+    detail::Function::add_to_namespace(f, name, PyModule_GetDict(m_module));
 }
 
 void Module::add(Ptr x, const char* name)

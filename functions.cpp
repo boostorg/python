@@ -12,10 +12,10 @@
 #include "objects.h"
 #include "errors.h"
 
-namespace py {
+namespace py { namespace detail {
 
 struct Function::TypeObject :
-        Singleton<Function::TypeObject, Callable<py::TypeObject<Function> > >
+        Singleton<Function::TypeObject, Callable<py::detail::TypeObject<Function> > >
 {
     TypeObject() : SingletonBase(&PyType_Type) {}
 };
@@ -115,7 +115,7 @@ BoundFunction* BoundFunction::create(const Ptr& target, const Ptr& fn)
 // attribute of built-in Python functions can be accessed when bound.
 struct BoundFunction::TypeObject :
     Singleton<BoundFunction::TypeObject,
-              Getattrable<Callable<py::TypeObject<BoundFunction> > > >
+              Getattrable<Callable<py::detail::TypeObject<BoundFunction> > > >
 {
     TypeObject() : SingletonBase(&PyType_Type) {}
     
@@ -164,4 +164,4 @@ void BoundFunction::TypeObject::dealloc(BoundFunction* instance) const
 
 BoundFunction* BoundFunction::free_list;
 
-}
+}} // namespace py::detail

@@ -99,7 +99,6 @@ namespace detail {
    private:
       const_reference value;
   };
-}
 
 class ExtensionInstance;
 class InstanceHolderBase;
@@ -283,6 +282,6 @@ struct Init5 : Init
         { return typeid(void (*)(T&, A1, A2, A3, A4, A5)).name(); }
 };
 
-}
+}} // namespace py::detail
 
 #endif // INIT_FUNCTION_DWA052000_H_

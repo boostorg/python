@@ -25,20 +25,20 @@ class Module
     Module(const char* name);
 
     // Add elements to the module
-    void add(Function* x, const char* name);
+    void add(detail::Function* x, const char* name);
     void add(PyTypeObject* x, const char* name = 0);
     void add(Ptr x, const char*name);
 
     template <class Fn>
     void def_raw(Fn fn, const char* name)
     {
-        add(py::detail::new_raw_arguments_function(fn), name);
+        add(detail::new_raw_arguments_function(fn), name);
     }
     
     template <class Fn>
     void def(Fn fn, const char* name)
     {
-        add(new_wrapped_function(fn), name);
+        add(detail::new_wrapped_function(fn), name);
     }
 
     static String name();

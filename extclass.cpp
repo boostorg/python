@@ -132,7 +132,6 @@ namespace detail {
           return 2;
       }
   }
-} // namespace detail
 
 ExtensionInstance* get_extension_instance(PyObject* p)
 {
@@ -447,9 +446,6 @@ void ExtensionClassBase::set_attribute(const char* name, Ptr x)
     if (PyCallable_Check(x.get()))
         detail::enable_named_method(this, name);
 }
-
-namespace detail
-{
 
 operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
     : m_object(o), m_self(s), m_free_list_link(0)

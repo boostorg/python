@@ -14,33 +14,35 @@
 
 namespace py {
 
-// The default way of converting a PyObject* or PyTypeObject* to a T*
-template <class T>
-struct DowncastTraits
-{
-    template <class U>
-    static T* cast(U* p) { return static_cast<T*>(p); }
-};
+namespace detail {
+  // The default way of converting a PyObject* or PyTypeObject* to a T*
+  template <class T>
+  struct DowncastTraits
+  {
+      template <class U>
+      static T* cast(U* p) { return static_cast<T*>(p); }
+  };
 
-inline PyTypeObject* as_base_object(const PyTypeObject*, PyObject* p)
-{
-    return reinterpret_cast<PyTypeObject*>(p);
-}
+  inline PyTypeObject* as_base_object(const PyTypeObject*, PyObject* p)
+  {
+      return reinterpret_cast<PyTypeObject*>(p);
+  }
 
-inline PyObject* as_base_object(const PyObject*, PyObject* p)
-{
-    return p;
-}
+  inline PyObject* as_base_object(const PyObject*, PyObject* p)
+  {
+      return p;
+  }
 
-inline const PyTypeObject* as_base_object(const PyTypeObject*, const PyObject* p)
-{
-    return reinterpret_cast<const PyTypeObject*>(p);
-}
+  inline const PyTypeObject* as_base_object(const PyTypeObject*, const PyObject* p)
+  {
+      return reinterpret_cast<const PyTypeObject*>(p);
+  }
 
-inline const PyObject* as_base_object(const PyObject*, const PyObject* p)
-{
-    return p;
-}
+  inline const PyObject* as_base_object(const PyObject*, const PyObject* p)
+  {
+      return p;
+  }
+} // namespace detail
 
 // Convert a pointer to any type derived from PyObject or PyTypeObject to a PyObject*
 inline PyObject* as_object(PyObject* p) { return p; }
@@ -52,28 +54,28 @@ template <class T>
 struct Downcast : boost::dereferenceable<Downcast<T>, T*>
 {
     Downcast(PyObject* p)
-        : m_p(DowncastTraits<T>::cast(as_base_object((T*)0, p)))
+        : m_p(detail::DowncastTraits<T>::cast(detail::as_base_object((T*)0, p)))
         {}
     
     Downcast(const PyObject* p)
-        : m_p(DowncastTraits<T>::cast(as_base_object((const T*)0, p)))
+        : m_p(detail::DowncastTraits<T>::cast(detail::as_base_object((const T*)0, p)))
         {}
     
     Downcast(PyTypeObject* p)
-        : m_p(DowncastTraits<T>::cast(p))
+        : m_p(detail::DowncastTraits<T>::cast(p))
         {}
     
     Downcast(const PyTypeObject* p)
-        : m_p(DowncastTraits<T>::cast(p))
+        : m_p(detail::DowncastTraits<T>::cast(p))
         {}
     
     operator T*() const { return m_p; }
     T* get() const { return m_p; }
     T& operator*() const { return *m_p; }
-private:
+ private:
     T* m_p;
 };
 
-}
+} // namespace py
 
 #endif // CAST_DWA052500_H_

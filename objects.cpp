@@ -97,7 +97,7 @@ Tuple::Tuple(std::size_t n)
     : Object(Ptr(PyTuple_New(n)))
 {
     for (std::size_t i = 0; i < n; ++i)
-        PyTuple_SET_ITEM(get(), i, none());
+        PyTuple_SET_ITEM(get(), i, detail::none());
 }
     
 Tuple::Tuple(Ptr p)

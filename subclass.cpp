@@ -62,21 +62,21 @@ namespace {
   //
   PyObject* class_reduce(PyObject* klass)
   {
-      return PyObject_GetAttrString(klass, "__name__");
+      return PyObject_GetAttrString(klass, const_cast<char*>("__name__"));
   }
 
   Ptr global_class_reduce()
   {
-      static Ptr result(py::new_wrapped_function(class_reduce));
+      static Ptr result(detail::new_wrapped_function(class_reduce));
       return result;
   }
   
 
   Tuple instance_reduce(PyObject* instance)
   {
-      Ptr instance_class(PyObject_GetAttrString(instance, "__class__"));
+      Ptr instance_class(PyObject_GetAttrString(instance, const_cast<char*>("__class__")));
 
-      Ptr getinitargs(PyObject_GetAttrString(instance, "__getinitargs__"),
+      Ptr getinitargs(PyObject_GetAttrString(instance, const_cast<char*>("__getinitargs__")),
                       Ptr::null_ok);
       PyErr_Clear();
       Ptr initargs;
@@ -90,7 +90,7 @@ namespace {
           initargs = Ptr(PyTuple_New(0));
       }
 
-      Ptr getstate(PyObject_GetAttrString(instance, "__getstate__"),
+      Ptr getstate(PyObject_GetAttrString(instance, const_cast<char*>("__getstate__")),
                    Ptr::null_ok);
       PyErr_Clear();
       if (getstate.get() != 0)
@@ -99,7 +99,7 @@ namespace {
           return Tuple(instance_class, initargs, state);
       }
 
-      Ptr state(PyObject_GetAttrString(instance, "__dict__"), Ptr::null_ok);
+      Ptr state(PyObject_GetAttrString(instance, const_cast<char*>("__dict__")), Ptr::null_ok);
       PyErr_Clear();
       if (state.get() != 0 && Dict(state).size() > 0)
       {
@@ -111,7 +111,7 @@ namespace {
 
   Ptr global_instance_reduce()
   {
-      static Ptr result(py::new_wrapped_function(instance_reduce));
+      static Ptr result(detail::new_wrapped_function(instance_reduce));
       return result;
   }
 }
@@ -120,7 +120,7 @@ namespace {
 namespace detail {
 
   ClassBase::ClassBase(PyTypeObject* meta_class, String name, Tuple bases, const Dict& name_space)
-      : py::TypeObjectBase(meta_class),
+      : TypeObjectBase(meta_class),
         m_name(name),
         m_bases(bases),
         m_name_space(name_space)
@@ -319,7 +319,7 @@ namespace detail {
 }
 
 Instance::Instance(PyTypeObject* class_)
-    : PythonObject(class_)
+    : py::detail::BaseObject<PyObject>(class_)
 {
 }
 
@@ -348,7 +348,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
 
     if (!PY_CSTD_::strcmp(name, "__reduce__"))
     {
-      return new BoundFunction(Ptr(this, Ptr::new_ref), global_instance_reduce());
+      return new detail::BoundFunction(Ptr(this, Ptr::new_ref), global_instance_reduce());
     }
     
     Ptr local_attribute = m_name_space.get_item(String(name).reference());
@@ -418,7 +418,7 @@ PyObject* Instance::getattr(const char* name, bool use_special_function)
     }
     else
     {
-        return BoundFunction::create(Ptr(this, Ptr::borrowed), class_attribute);
+        return detail::BoundFunction::create(Ptr(this, Ptr::borrowed), class_attribute);
     }
 }
 
@@ -712,52 +712,52 @@ namespace {
   struct NamedCapability
   {
       const char* name;
-      TypeObjectBase::Capability capability;
+      detail::TypeObjectBase::Capability capability;
   };
 
   const NamedCapability enablers[] =
   {
-      { "__hash__", TypeObjectBase::hash },
-      { "__cmp__", TypeObjectBase::compare },
-      { "__repr__", TypeObjectBase::repr },
-      { "__str__", TypeObjectBase::str },
-      { "__call__", TypeObjectBase::call },
-      { "__getattr__", TypeObjectBase::getattr },
-      { "__setattr__", TypeObjectBase::setattr },
-      { "__len__", TypeObjectBase::mapping_length },
-      { "__len__", TypeObjectBase::sequence_length },
-      { "__getitem__", TypeObjectBase::mapping_subscript },
-      { "__getitem__", TypeObjectBase::sequence_item },
-      { "__setitem__", TypeObjectBase::mapping_ass_subscript },
-      { "__setitem__", TypeObjectBase::sequence_ass_item },
-      { "__delitem__", TypeObjectBase::mapping_ass_subscript },
-      { "__delitem__", TypeObjectBase::sequence_ass_item },
-      { "__getslice__", TypeObjectBase::sequence_slice },
-      { "__setslice__", TypeObjectBase::sequence_ass_slice },
-      { "__delslice__", TypeObjectBase::sequence_ass_slice },
-      { "__add__", TypeObjectBase::number_add },
-      { "__sub__", TypeObjectBase::number_subtract },
-      { "__mul__", TypeObjectBase::number_multiply },
-      { "__div__", TypeObjectBase::number_divide },
-      { "__mod__", TypeObjectBase::number_remainder },
-      { "__divmod__", TypeObjectBase::number_divmod },
-      { "__pow__", TypeObjectBase::number_power },
-      { "__neg__", TypeObjectBase::number_negative },
-      { "__pos__", TypeObjectBase::number_positive },
-      { "__abs__", TypeObjectBase::number_absolute },
-      { "__nonzero__", TypeObjectBase::number_nonzero },
-      { "__invert__", TypeObjectBase::number_invert },
-      { "__lshift__", TypeObjectBase::number_lshift },
-      { "__rshift__", TypeObjectBase::number_rshift },
-      { "__and__", TypeObjectBase::number_and },
-      { "__xor__", TypeObjectBase::number_xor },
-      { "__or__", TypeObjectBase::number_or },
-      { "__coerce__", TypeObjectBase::number_coerce },
-      { "__int__", TypeObjectBase::number_int },
-      { "__long__", TypeObjectBase::number_long },
-      { "__float__", TypeObjectBase::number_float },
-      { "__oct__", TypeObjectBase::number_oct },
-      { "__hex__", TypeObjectBase::number_hex }
+      { "__hash__", detail::TypeObjectBase::hash },
+      { "__cmp__", detail::TypeObjectBase::compare },
+      { "__repr__", detail::TypeObjectBase::repr },
+      { "__str__", detail::TypeObjectBase::str },
+      { "__call__", detail::TypeObjectBase::call },
+      { "__getattr__", detail::TypeObjectBase::getattr },
+      { "__setattr__", detail::TypeObjectBase::setattr },
+      { "__len__", detail::TypeObjectBase::mapping_length },
+      { "__len__", detail::TypeObjectBase::sequence_length },
+      { "__getitem__", detail::TypeObjectBase::mapping_subscript },
+      { "__getitem__", detail::TypeObjectBase::sequence_item },
+      { "__setitem__", detail::TypeObjectBase::mapping_ass_subscript },
+      { "__setitem__", detail::TypeObjectBase::sequence_ass_item },
+      { "__delitem__", detail::TypeObjectBase::mapping_ass_subscript },
+      { "__delitem__", detail::TypeObjectBase::sequence_ass_item },
+      { "__getslice__", detail::TypeObjectBase::sequence_slice },
+      { "__setslice__", detail::TypeObjectBase::sequence_ass_slice },
+      { "__delslice__", detail::TypeObjectBase::sequence_ass_slice },
+      { "__add__", detail::TypeObjectBase::number_add },
+      { "__sub__", detail::TypeObjectBase::number_subtract },
+      { "__mul__", detail::TypeObjectBase::number_multiply },
+      { "__div__", detail::TypeObjectBase::number_divide },
+      { "__mod__", detail::TypeObjectBase::number_remainder },
+      { "__divmod__", detail::TypeObjectBase::number_divmod },
+      { "__pow__", detail::TypeObjectBase::number_power },
+      { "__neg__", detail::TypeObjectBase::number_negative },
+      { "__pos__", detail::TypeObjectBase::number_positive },
+      { "__abs__", detail::TypeObjectBase::number_absolute },
+      { "__nonzero__", detail::TypeObjectBase::number_nonzero },
+      { "__invert__", detail::TypeObjectBase::number_invert },
+      { "__lshift__", detail::TypeObjectBase::number_lshift },
+      { "__rshift__", detail::TypeObjectBase::number_rshift },
+      { "__and__", detail::TypeObjectBase::number_and },
+      { "__xor__", detail::TypeObjectBase::number_xor },
+      { "__or__", detail::TypeObjectBase::number_or },
+      { "__coerce__", detail::TypeObjectBase::number_coerce },
+      { "__int__", detail::TypeObjectBase::number_int },
+      { "__long__", detail::TypeObjectBase::number_long },
+      { "__float__", detail::TypeObjectBase::number_float },
+      { "__oct__", detail::TypeObjectBase::number_oct },
+      { "__hex__", detail::TypeObjectBase::number_hex }
   };
 
   bool is_prefix(const char* s1, const char* s2)

@@ -12,11 +12,13 @@
 
 # include "pyconfig.h"
 
-namespace py {
+namespace py { 
 
+namespace detail {
 // A stand-in for the built-in void. This one can be passed to functions and
 // (under MSVC, which has a bug, be used as a default template type parameter).
 struct Void {};
+}
 
 // An envelope in which type information can be delivered for the purposes
 // of selecting an overloaded from_python() function. This is needed to work
@@ -35,11 +37,12 @@ struct Type
 };
 
 template <>
-struct Type<Void>
+struct Type<py::detail::Void>
 {
-    typedef Void Id;
+    typedef py::detail::Void Id;
 };
 
+namespace detail {
 // These basically encapsulate a chain of types, , used to make the syntax of
 // add(Constructor<T1, ...>()) work. We need to produce a unique type for each number
 // of non-default parameters to Constructor<>.  Q: why not use a recursive
@@ -89,10 +92,14 @@ inline Signature1<X> prepend(Type<X>, Signature0)
 // signature results in a Void signature again.
 inline Signature0 prepend(Void, Signature0) { return Signature0(); }
 
-template <class A1 = Void, class A2 = Void, class A3 = Void, class A4 = Void, class A5 = Void>
+} // namespace detail
+
+template <class A1 = detail::Void, class A2 = detail::Void, class A3 = detail::Void, class A4 = detail::Void, class A5 = detail::Void>
 struct Constructor
 {
 };
+
+namespace detail {
 
 // Return value extraction:
 
@@ -160,6 +167,6 @@ ReturnValue<R> return_value(R (T::*)(A1, A2, A3, A4) const) { return ReturnValue
 template <class R, class T, class A1, class A2, class A3, class A4, class A5>
 ReturnValue<R> return_value(R (T::*)(A1, A2, A3, A4, A5) const) { return ReturnValue<R>(); }
 
-}
+}} // namespace py::detail
 
 #endif

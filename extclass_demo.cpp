@@ -44,15 +44,8 @@ std::string FooCallback::pure() const
     return py::Callback<std::string>::call_method(m_self, "pure");
 }
 
-// The initializer for ExtensionClass<Foo,FooCallback> is entirely optional. It
-// only affects the way that instances of this class _print_ in Python. If you
-// need an absolutely predictable name for the type, use the
-// initializer. Otherwise, C++ will generate an implementation-dependent
-// representation of the type name, usually something like "class
-// extclass_demo::Foo". I've supplied it here in part so that I can write
-// doctests that exactly anticipate the generated error messages.
-Foo::PythonClass::PythonClass()
-    : py::ExtensionClass<Foo,FooCallback>("Foo") // optional
+Foo::PythonClass::PythonClass(py::Module& m)
+    : py::ClassWrapper<Foo,FooCallback>(m, "Foo")
 {
     def(py::Constructor<int>());
     def(&Foo::mumble, "mumble");
@@ -66,8 +59,8 @@ Foo::PythonClass::PythonClass()
     // Since pure() is pure virtual, we are leaving it undefined.
 }
 
-BarPythonClass::BarPythonClass()
-    : py::ExtensionClass<Bar>("Bar") // optional
+BarPythonClass::BarPythonClass(py::Module& m)
+    : py::ClassWrapper<Bar>(m, "Bar")
 {
     def(py::Constructor<int, int>());
     def(&Bar::first, "first");
@@ -75,10 +68,10 @@ BarPythonClass::BarPythonClass()
     def(&Bar::pass_baz, "pass_baz");
 }
 
-BazPythonClass::BazPythonClass()
-    : py::ExtensionClass<Baz>("Baz") // optional
+BazPythonClass::BazPythonClass(py::Module& m)
+    : py::ClassWrapper<Baz>(m, "Baz") // optional
 {
-    def(py::Constructor<py::Void>());
+    def(py::Constructor<>());
     def(&Baz::pass_bar, "pass_bar");
     def(&Baz::clone, "clone");
     def(&Baz::create_foo, "create_foo");
@@ -86,10 +79,10 @@ BazPythonClass::BazPythonClass()
     def(&Baz::eat_baz, "eat_baz");
 }
 
-StringMapPythonClass::StringMapPythonClass()
-    : py::ExtensionClass<StringMap >("StringMap")
+StringMapPythonClass::StringMapPythonClass(py::Module& m)
+    : py::ClassWrapper<StringMap >(m, "StringMap")
 {
-    def(py::Constructor<py::Void>());
+    def(py::Constructor<>());
     def(&StringMap::size, "__len__");
     def(&get_item, "__getitem__");
     def(&set_item, "__setitem__");
@@ -112,8 +105,8 @@ void del_first(const IntPair&)
     throw py::ErrorAlreadySet();
 }
 
-IntPairPythonClass::IntPairPythonClass()
-    : py::ExtensionClass<IntPair>("IntPair")
+IntPairPythonClass::IntPairPythonClass(py::Module& m)
+    : py::ClassWrapper<IntPair>(m, "IntPair")
 {
     def(py::Constructor<int, int>());
     def(&getattr, "__getattr__");
@@ -721,7 +714,7 @@ const Record* get_record()
     return &v;
 }
 
-template class py::ExtensionClass<Record>; // explicitly instantiate
+template class py::ClassWrapper<Record>; // explicitly instantiate
 
 } // namespace extclass_demo
 
@@ -841,14 +834,14 @@ void init_module(py::Module& m)
     py::ClassWrapper<Fubar> fubar(m, "Fubar");
     fubar.def(py::Constructor<Foo&>());
     fubar.def(py::Constructor<int>());
-    
-    m.add(new Foo::PythonClass);
-    m.add(new BarPythonClass);
-    m.add(new BazPythonClass);
-    m.add(new StringMapPythonClass);
-    m.add(new IntPairPythonClass);
+
+    Foo::PythonClass foo(m);
+    BarPythonClass bar(m);
+    BazPythonClass baz(m);
+    StringMapPythonClass string_map(m);
+    IntPairPythonClass int_pair(m);
     m.def(make_pair, "make_pair");
-    m.add(new CompareIntPairPythonClass);
+    CompareIntPairPythonClass compare_int_pair(m);
 
     py::ClassWrapper<StringPair> string_pair(m, "StringPair");
     string_pair.def(py::Constructor<std::string, std::string>());
@@ -896,7 +889,7 @@ void init_module(py::Module& m)
     m.def(&test5, "overloaded");
 
     py::ClassWrapper<OverloadTest> over(m, "OverloadTest");
-    over.def(py::Constructor<py::Void>());
+    over.def(py::Constructor<>());
     over.def(py::Constructor<OverloadTest const &>());
     over.def(py::Constructor<int>());
     over.def(py::Constructor<int, int>());
@@ -937,7 +930,7 @@ void init_module(py::Module& m)
     m.def(&testCallback, "testCallback");
 
     py::ClassWrapper<CallbackTest, CallbackTestCallback> callbackTest(m, "CallbackTest");
-    callbackTest.def(py::Constructor<py::Void>());
+    callbackTest.def(py::Constructor<>());
     callbackTest.def(&CallbackTest::callback, "callback", 
                    &CallbackTestCallback::default_callback);
     callbackTest.def(&CallbackTest::callbackString, "callback", 
@@ -1083,10 +1076,10 @@ void initdemo()
     } // Need a way to report other errors here
 }
 
-CompareIntPairPythonClass::CompareIntPairPythonClass()
-    : py::ExtensionClass<CompareIntPair>("CompareIntPair")
+CompareIntPairPythonClass::CompareIntPairPythonClass(py::Module& m)
+    : py::ClassWrapper<CompareIntPair>(m, "CompareIntPair")
 {
-    def(py::Constructor<py::Void>());
+    def(py::Constructor<>());
     def(&CompareIntPair::operator(), "__call__");
 }
 

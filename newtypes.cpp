@@ -22,131 +22,133 @@ namespace py {
 
 namespace {
 
-PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*) const)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
-}
+  using detail::TypeObjectBase;
 
-// Naming this differently allows us to use it for functions returning long on
-// compilers without partial ordering
-template <class R>
-R int_call(PyObject* instance, R (TypeObjectBase::*f)(PyObject*) const)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
-}
+  PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*) const)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return 0;
+      }
+  }
 
-// Implemented in terms of int_call, above
-int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
-{
-    return int_call(instance, f);
-}
+  // Naming this differently allows us to use it for functions returning long on
+  // compilers without partial ordering
+  template <class R>
+  R int_call(PyObject* instance, R (TypeObjectBase::*f)(PyObject*) const)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return -1;
+      }
+  }
 
-template <class A1>
-PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
-}
+  // Implemented in terms of int_call, above
+  int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
+  {
+      return int_call(instance, f);
+  }
 
-template <class A1>
-int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
-}
+  template <class A1>
+  PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return 0;
+      }
+  }
 
-template <class A1, class A2>
-PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return 0;
-    }
-}
-    
-template <class A1, class A2>
-int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
-}
-    
-template <class A1, class A2, class A3>
-int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2, A3) const, A1 a1, A2 a2, A3 a3)
-{
-    try
-    {
-        return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2, a3);
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
-}
+  template <class A1>
+  int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1) const, A1 a1)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return -1;
+      }
+  }
 
-int call_length_function(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
-{
-    try
-    {
-        const int outcome =
-            (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
-        
-        if (outcome < 0)
-        {
-            PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
-            return -1;
-        }
-        return outcome;
-    }
-    catch(...)
-    {
-        handle_exception();
-        return -1;
-    }
-}
+  template <class A1, class A2>
+  PyObject* call(PyObject* instance, PyObject* (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return 0;
+      }
+  }
+
+  template <class A1, class A2>
+  int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2) const, A1 a1, A2 a2)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return -1;
+      }
+  }
+
+  template <class A1, class A2, class A3>
+  int call(PyObject* instance, int (TypeObjectBase::*f)(PyObject*, A1, A2, A3) const, A1 a1, A2 a2, A3 a3)
+  {
+      try
+      {
+          return (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance, a1, a2, a3);
+      }
+      catch(...)
+      {
+          handle_exception();
+          return -1;
+      }
+  }
+
+  int call_length_function(PyObject* instance, int (TypeObjectBase::*f)(PyObject*) const)
+  {
+      try
+      {
+          const int outcome =
+              (static_cast<TypeObjectBase*>(instance->ob_type)->*f)(instance);
+
+          if (outcome < 0)
+          {
+              PyErr_SetString(PyExc_ValueError, "__len__() should return >= 0");
+              return -1;
+          }
+          return outcome;
+      }
+      catch(...)
+      {
+          handle_exception();
+          return -1;
+      }
+  }
 
 }  // anonymous namespace
 

@@ -12,7 +12,7 @@
 // Example code demonstrating extension class usage
 //
 
-# include "extclass.h"
+# include "class_wrapper.h"
 # include "callback.h"
 # include <boost/utility.hpp>
 # include <cstring>
@@ -184,21 +184,21 @@ class FooCallback : public Foo
 };
 
 // Define the Python base class
-struct Foo::PythonClass : py::ExtensionClass<Foo, FooCallback> { PythonClass(); };
+struct Foo::PythonClass : py::ClassWrapper<Foo, FooCallback> { PythonClass(py::Module&); };
 
 // No virtual functions on Bar or Baz which are actually supposed to behave
 // virtually from C++, so we'll rely on the library to define a wrapper for
 // us. Even so, Python Class types for each type we're wrapping should be
 // _defined_ here in a header where they can be seen by other extension class
-// definitions, since it is the definition of the py::ExtensionClass<> that
+// definitions, since it is the definition of the py::ClassWrapper<> that
 // causes to_python/from_python conversion functions to be generated.
-struct BarPythonClass : py::ExtensionClass<Bar> { BarPythonClass(); };
-struct BazPythonClass : py::ExtensionClass<Baz> { BazPythonClass(); };
+struct BarPythonClass : py::ClassWrapper<Bar> { BarPythonClass(py::Module&); };
+struct BazPythonClass : py::ClassWrapper<Baz> { BazPythonClass(py::Module&); };
 
 struct StringMapPythonClass
-    : py::ExtensionClass<StringMap>
+    : py::ClassWrapper<StringMap>
 {
-    StringMapPythonClass();
+    StringMapPythonClass(py::Module&);
     
     // These static functions implement the right argument protocols for
     // implementing the Python "special member functions" for mapping on
@@ -209,9 +209,9 @@ struct StringMapPythonClass
 };
 
 struct IntPairPythonClass
-    : py::ExtensionClass<IntPair>
+    : py::ClassWrapper<IntPair>
 {
-    IntPairPythonClass();
+    IntPairPythonClass(py::Module&);
     
     // The following could just as well be a free function; it implements the
     // getattr functionality for IntPair.
@@ -221,9 +221,9 @@ struct IntPairPythonClass
 };
 
 struct CompareIntPairPythonClass
-    : py::ExtensionClass<CompareIntPair>
+    : py::ClassWrapper<CompareIntPair>
 {
-    CompareIntPairPythonClass();
+    CompareIntPairPythonClass(py::Module&);
 };
 
 } // namespace extclass_demo

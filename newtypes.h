@@ -32,6 +32,9 @@
 namespace py {
 
 class String;
+
+namespace detail {
+
 class InstanceHolderBase;
 
 class TypeObjectBase : public PythonType
@@ -295,8 +298,6 @@ PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
     return Downcast<Instance>(instance)->repr();
 }
 
-namespace detail {
-
   class shared_pod_manager
   {
       typedef std::pair<char*, std::size_t> Holder;
@@ -353,6 +354,8 @@ namespace detail {
   void add_capability(TypeObjectBase::Capability capability, 
                       PyTypeObject* dest);
 
+// This macro gets the length of an array as a compile-time constant, and will
+// fail to compile if the parameter is a pointer.
 # define PY_ARRAY_LENGTH(a) \
         (sizeof(::py::detail::countof_validate(a, &(a))) ? sizeof(a) / sizeof((a)[0]) : 0)
 
@@ -361,8 +364,7 @@ namespace detail {
 
   template<typename T>
   inline int countof_validate(const void*, T);
-}
 
-}
+}} // namespace py::detail
 
 #endif // TYPES_DWA051800_H_

@@ -235,7 +235,7 @@ inline PyObject* to_python(bool b)
 
 inline PyObject* to_python(void)
 {
-    return py::none();
+    return py::detail::none();
 }
 
 inline PyObject* to_python(const char* s)

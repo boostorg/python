@@ -262,7 +262,7 @@ struct Caller<void>
             return 0;
         T& target = from_python(self, Type<T&>());
         (target.*pmf)();
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1>
@@ -273,7 +273,7 @@ struct Caller<void>
             return 0;
         T& target = from_python(self, Type<T&>());
         (target.*pmf)(from_python(a1, Type<A1>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2>
@@ -286,7 +286,7 @@ struct Caller<void>
         T& target = from_python(self, Type<T&>());
         (target.*pmf)(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3>
@@ -301,7 +301,7 @@ struct Caller<void>
         (target.*pmf)(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3, class A4>
@@ -318,7 +318,7 @@ struct Caller<void>
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5>
@@ -337,7 +337,7 @@ struct Caller<void>
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()),
                         from_python(a5, Type<A5>()));
-        return none();
+        return detail::none();
     }
 
 
@@ -348,7 +348,7 @@ struct Caller<void>
             return 0;
         T& target = from_python(self, Type<T&>());
         (target.*pmf)();
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1>
@@ -359,7 +359,7 @@ struct Caller<void>
             return 0;
         T& target = from_python(self, Type<T&>());
         (target.*pmf)(from_python(a1, Type<A1>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2>
@@ -372,7 +372,7 @@ struct Caller<void>
         T& target = from_python(self, Type<T&>());
         (target.*pmf)(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3>
@@ -387,7 +387,7 @@ struct Caller<void>
         (target.*pmf)(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3, class A4>
@@ -404,7 +404,7 @@ struct Caller<void>
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()));
-        return none();
+        return detail::none();
     }
 
     template <class T, class A1, class A2, class A3, class A4, class A5>
@@ -423,7 +423,7 @@ struct Caller<void>
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()),
                         from_python(a5, Type<A5>()));
-        return none();
+        return detail::none();
     }
 
 
@@ -432,7 +432,7 @@ struct Caller<void>
         if (!PyArg_ParseTuple(args, const_cast<char*>("")))
             return 0;
         f();
-        return none();
+        return detail::none();
     }
 
     template <class A1>
@@ -441,7 +441,7 @@ struct Caller<void>
         if (!PyArg_ParseTuple(args, const_cast<char*>("O"), &a1))
             return 0;
         f(from_python(a1, Type<A1>()));
-        return none();
+        return detail::none();
     }
 
     template <class A1, class A2>
@@ -452,7 +452,7 @@ struct Caller<void>
             return 0;
         f(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()));
-        return none();
+        return detail::none();
     }
 
     template <class A1, class A2, class A3>
@@ -465,7 +465,7 @@ struct Caller<void>
         f(from_python(a1, Type<A1>()),
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()));
-        return none();
+        return detail::none();
     }
 
     template <class A1, class A2, class A3, class A4>
@@ -480,7 +480,7 @@ struct Caller<void>
                         from_python(a2, Type<A2>()),
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()));
-        return none();
+        return detail::none();
     }
 
     template <class A1, class A2, class A3, class A4, class A5>
@@ -497,7 +497,7 @@ struct Caller<void>
                         from_python(a3, Type<A3>()),
                         from_python(a4, Type<A4>()),
                         from_python(a5, Type<A5>()));
-        return none();
+        return detail::none();
     }
 
 };

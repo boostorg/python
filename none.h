@@ -12,10 +12,10 @@
 # include "pyconfig.h"
 # include "wrap_python.h"
 
-namespace py {
+namespace py { namespace detail {
 
 inline PyObject* none() { Py_INCREF(Py_None); return Py_None; }
     
-}
+}} // namespace py::detail
 
 #endif // NONE_DWA_052000_H_

@@ -20,7 +20,7 @@
 # include <typeinfo>
 # include <vector>
 
-namespace py {
+namespace py { namespace detail {
 
 // forward declaration
 class ExtensionInstance;
@@ -158,41 +158,39 @@ inline Function* new_wrapped_function(F pmf)
 	return new_wrapped_function_aux(return_value(pmf), pmf);
 }
 
-namespace detail {
-    template <class R, class Args, class Keywords>
-    Function* new_raw_arguments_function(R (*pmf)(Args, Keywords))
-    {
-        return new raw_arguments_function<R, Args, Keywords>(pmf);
-    }
+template <class R, class Args, class Keywords>
+Function* new_raw_arguments_function(R (*pmf)(Args, Keywords))
+{
+    return new raw_arguments_function<R, Args, Keywords>(pmf);
+}
 
 
-  // A helper function for new_virtual_function(), below.  Implements the core
-  // functionality once the return type has already been deduced. R is expected to
-  // be Type<X>, where X is the actual return type of V.
-  template <class T, class R, class V, class D>
-  inline Function* new_virtual_function_aux(
-      Type<T>, R, V virtual_function_ptr, D default_implementation
-      )
-  {
-      // We can't just use "typename R::Type" below because MSVC (incorrectly) pukes.
-      typedef typename R::Type ReturnType;
-      return new virtual_function<T, ReturnType, V, D>(
-          virtual_function_ptr, default_implementation);
-  }
+// A helper function for new_virtual_function(), below.  Implements the core
+// functionality once the return type has already been deduced. R is expected to
+// be Type<X>, where X is the actual return type of V.
+template <class T, class R, class V, class D>
+inline Function* new_virtual_function_aux(
+    Type<T>, R, V virtual_function_ptr, D default_implementation
+    )
+{
+    // We can't just use "typename R::Type" below because MSVC (incorrectly) pukes.
+    typedef typename R::Type ReturnType;
+    return new virtual_function<T, ReturnType, V, D>(
+        virtual_function_ptr, default_implementation);
+}
 
-  // Create and return a new virtual_function object wrapping the given
-  // virtual_function_ptr and default_implementation
-  template <class T, class V, class D>
-  inline Function* new_virtual_function(
-      Type<T>, V virtual_function_ptr, D default_implementation
-      )
-  {
-      // Deduce the return type and pass it off to the helper function above
-      return new_virtual_function_aux(
-          Type<T>(), return_value(virtual_function_ptr),
-          virtual_function_ptr, default_implementation);
-  }
-} // namespace detail
+// Create and return a new virtual_function object wrapping the given
+// virtual_function_ptr and default_implementation
+template <class T, class V, class D>
+inline Function* new_virtual_function(
+    Type<T>, V virtual_function_ptr, D default_implementation
+    )
+{
+    // Deduce the return type and pass it off to the helper function above
+    return new_virtual_function_aux(
+        Type<T>(), return_value(virtual_function_ptr),
+        virtual_function_ptr, default_implementation);
+}
 
 // A function with a bundled "bound target" object. This is what is produced by
 // the expression a.b where a is an Instance or ExtensionInstance object and b
@@ -303,7 +301,6 @@ PyObject* virtual_function<T,R,V,D>::do_call(PyObject* args, PyObject* keywords)
     return Caller<R>::call(m_default_implementation, args, keywords);
 }
     
-
-}
+}} // namespace py::detail
 
 #endif // FUNCTIONS_DWA051400_H_

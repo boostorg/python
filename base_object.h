@@ -14,7 +14,7 @@
 # include "wrap_python.h"
 # include <cstring>
 
-namespace py {
+namespace py { namespace detail {
 
 // BaseObject - adds a constructor and non-virtual destructor to a
 // base Python type (e.g. PyObject, PyTypeObject).
@@ -57,6 +57,6 @@ inline BaseObject<PythonType>::~BaseObject()
     Py_DECREF(ob_type);
 }
 
-}
+}} // namespace py::detail
 
 #endif // BASE_OBJECT_DWA051600_H_
