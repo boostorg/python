@@ -15,6 +15,7 @@
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/make_instance.hpp>
 # include <boost/python/object/instance.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/type_traits/same_traits.hpp>
@@ -28,21 +29,6 @@ namespace detail
 {
   // A helpful compile-time assertion which gives a reasonable error
   // message if T can't be default-constructed.
-  template <class T, class Held>
-  class assert_default_constructible
-  {
-      static int specify_init_arguments_or_no_init_for_class_(T const&);
-   public:
-      assert_default_constructible()
-      {
-          force_instantiate(
-              sizeof(
-                  specify_init_arguments_or_no_init_for_class_(T())
-                  ));
-                      
-      }
-  };
-
   template <class T>
   static int specify_init_arguments_or_no_init_for_class_(T const&);
   
