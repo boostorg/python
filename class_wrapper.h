@@ -114,9 +114,9 @@ class ClassWrapper
     // set an arbitrary attribute. Useful for non-function class data members,
     // e.g. enums
     void add(PyObject* x, const char* name)
-        { return m_class->set_attribute(name, x); }
+        { m_class->set_attribute(name, x); }
     void add(Ptr x, const char* name)
-        { return m_class->set_attribute(name, x); }
+        { m_class->set_attribute(name, x); }
  private:
     PyPtr<ExtensionClass<T, U> > m_class;
 };
