@@ -72,7 +72,7 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
-#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
 #   include <config.h>
 #  else
 #   include <pyconfig.h>
@@ -80,7 +80,7 @@ typedef int pid_t;
 #  undef hypot // undo the evil #define left by Python.
 
 # elif defined(__BORLANDC__)
-#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION <= 2
+#  if PY_MAJOR_VERSION < 2 || PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION < 2
 #   include <config.h>
 #  else
 #   include <pyconfig.h>
@@ -88,7 +88,9 @@ typedef int pid_t;
 #  undef HAVE_HYPOT
 #  define HAVE_HYPOT 1
 # elif defined(_MSC_VER)
-#  include <limits> // prevents Python.h from defining LONGLONG_MAX, LONGLONG_MIN, and ULONGLONG_MAX
+#  ifdef __cplusplus
+#   include <limits> // prevents Python.h from defining LONGLONG_MAX, LONGLONG_MIN, and ULONGLONG_MAX
+#  endif 
 # endif
 
 #endif // _WIN32
