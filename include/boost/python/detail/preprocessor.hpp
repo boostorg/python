@@ -8,10 +8,12 @@
 
 # include <boost/config.hpp>
 # include <boost/preprocessor/tuple/to_list.hpp>
+# include <boost/preprocessor/tuple/elem.hpp>
 # include <boost/preprocessor/list/for_each.hpp>
 # include <boost/preprocessor/repeat_from_to_2nd.hpp>
 # include <boost/preprocessor/inc.hpp>
 # include <boost/preprocessor/empty.hpp>
+# include <boost/preprocessor/enum.hpp>
 # include <boost/preprocessor/expr_if.hpp>
 
 namespace boost { namespace python { namespace detail { 
@@ -82,6 +84,12 @@ namespace boost { namespace python { namespace detail {
 
 # define BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(function) \
    BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_REPEAT_PMF_CV,function,BOOST_PYTHON_ALL_CV)
+
+#define BOOST_PYTHON_NUMBER_PAIR(Index, Pair)           \
+  BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2,0,Pair),Index)     \
+  BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2,1,Pair),Index)
+
+#define BOOST_PYTHON_ENUM_PARAMS2(N, Pair) BOOST_PP_ENUM(N, BOOST_PYTHON_NUMBER_PAIR, Pair)
 
 
 }}} // namespace boost::python::detail

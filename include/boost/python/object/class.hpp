@@ -59,6 +59,8 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
  private:
     instance_holder* m_next;
 };
+// This macro is needed for implementation of derived holders
+# define BOOST_PYTHON_UNFORWARD(N,ignored) (typename unforward<A##N>::type)(a##N)
 
 // Each extension instance will be one of these
 struct instance
