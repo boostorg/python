@@ -351,13 +351,13 @@ It's occasionally useful to be able to break down the components of a
 Boost.Python class wrapper in this way, but the rest of this article
 will stick to the terse syntax.
 
-For completeness, here's the wrapped class in use:
+For completeness, here's the wrapped class in use: ::
 
->>> import hello
->>> planet = hello.World()
->>> planet.set('howdy')
->>> planet.greet()
-'howdy'
+    >>> import hello
+    >>> planet = hello.World()
+    >>> planet.set('howdy')
+    >>> planet.greet()
+    'howdy'
 
 Constructors
 ============
@@ -407,11 +407,11 @@ exposed as either ``readonly`` or ``readwrite`` attributes::
         .def_readonly("msg", &World::msg)
         ...
 
-and can be used directly in Python:
+and can be used directly in Python: ::
 
->>> planet = hello.World('howdy')
->>> planet.msg
-'howdy'
+    >>> planet = hello.World('howdy')
+    >>> planet.msg
+    'howdy'
 
 This does *not* result in adding attributes to the ``World`` instance
 ``__dict__``, which can result in substantial memory savings when
@@ -435,16 +435,16 @@ could still expose it as attribute in Python as follows::
         ...
 
 The example above mirrors the familiar usage of properties in Python
-2.2+:
+2.2+: ::
 
->>> class World(object):
-...     __init__(self, msg):
-...         self.__msg = msg
-...     def greet(self):
-...         return self.__msg
-...     def set(self, msg):
-...         self.__msg = msg
-...     msg = property(greet, set)
+    >>> class World(object):
+    ...     __init__(self, msg):
+    ...         self.__msg = msg
+    ...     def greet(self):
+    ...         return self.__msg
+    ...     def set(self, msg):
+    ...         self.__msg = msg
+    ...     msg = property(greet, set)
 
 Operator Overloading
 ====================
@@ -517,27 +517,27 @@ system, that works very much as for the Python built-in types.  There
 is one significant detail in which it differs: the built-in types
 generally establish their invariants in their ``__new__`` function, so
 that derived classes do not need to call ``__init__`` on the base
-class before invoking its methods :
+class before invoking its methods : ::
 
->>> class L(list):
-...      def __init__(self):
-...          pass
-...
->>> L().reverse()
->>> 
+    >>> class L(list):
+    ...      def __init__(self):
+    ...          pass
+    ...
+    >>> L().reverse()
+    >>> 
 
 Because C++ object construction is a one-step operation, C++ instance
 data cannot be constructed until the arguments are available, in the
-``__init__`` function:
+``__init__`` function: ::
 
->>> class D(SomeBoostPythonClass):
-...      def __init__(self):
-...          pass
-...
->>> D().some_boost_python_method()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in ?
-TypeError: bad argument type for built-in operation
+    >>> class D(SomeBoostPythonClass):
+    ...      def __init__(self):
+    ...          pass
+    ...
+    >>> D().some_boost_python_method()
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in ?
+    TypeError: bad argument type for built-in operation
 
 This happened because Boost.Python couldn't find instance data of type
 ``SomeBoostPythonClass`` within the ``D`` instance; ``D``'s ``__init__``
@@ -592,16 +592,16 @@ class' virtual functions::
             .def("f", &Base::f, &BaseWrap::f_default)
             ;
 
-Now here's some Python code which demonstrates:
+Now here's some Python code which demonstrates: ::
 
->>> class Derived(Base):
-...     def f(self, s):
-...          return len(s)
-...
->>> calls_f(Base(), 'foo')
-42
->>> calls_f(Derived(), 'forty-two')
-9
+    >>> class Derived(Base):
+    ...     def f(self, s):
+    ...          return len(s)
+    ...
+    >>> calls_f(Base(), 'foo')
+    42
+    >>> calls_f(Derived(), 'forty-two')
+    9
 
 Things to notice about the dispatcher class:
 
