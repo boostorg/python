@@ -116,7 +116,7 @@ namespace boost { namespace python { namespace indexing {
   // __setitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<IndexStyle>
+  template<bool doit, IndexStyle style>
   struct maybe_add_setitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -127,7 +127,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_setitem<index_style_nonlinear> {
+  struct maybe_add_setitem<true, index_style_nonlinear> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &pyClass
                        , Algorithms const &
@@ -142,7 +142,7 @@ namespace boost { namespace python { namespace indexing {
   //////////////////////////////////////////////////////////////////////////
 
   template<>
-  struct maybe_add_setitem<index_style_linear> {
+  struct maybe_add_setitem<true, index_style_linear> {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &pyClass
                        , Algorithms const &
@@ -158,7 +158,7 @@ namespace boost { namespace python { namespace indexing {
   // __delitem__ dummy
   //////////////////////////////////////////////////////////////////////////
 
-  template<bool doit, IndexStyle syle>
+  template<bool doit, IndexStyle style>
   struct maybe_add_delitem {
     template<class PythonClass, class Algorithms, class Policy>
     static void apply (PythonClass &, Algorithms const &, Policy const &) { }
@@ -478,7 +478,7 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_getitem<traits::index_style>
         ::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_setitem<traits::index_style>
+      maybe_add_setitem<traits::has_mutable_ref, traits::index_style>
         ::apply (pyClass, algorithms(), m_policy);
 
       maybe_add_delitem<traits::has_erase, traits::index_style>
