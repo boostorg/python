@@ -5,12 +5,16 @@ use Python generic numeric coercion in from_python() for C++ numeric types
 Rename PyPtr to Reference.
 Report Cygwin linker memory issues
 pickling support
-Make abstract classes non-instantiable (?)
+__init__ stuff
+         Make abstract classes non-instantiable (?)
+         Call default __init__ functions automatically where applicable (?)
 Support for Python LONG types in Objects.h
-Concept checking for to_python<T>() template function (Ullrich did this)
 Throw TypeError after asserting when objects from objects.cpp detect a type mismatch.
 Add callback-through-function ability to callback.h
-Generate N+1-argument free functions and N-argument member functions from gen_all.py
+Figure out how to package everything as a shared library.
+Unicode string support
+Add read-only wrapper for __dict__ attribute
+More template member functions for the elements of objects.h
 
 Testing
     Python 2.0
@@ -24,8 +28,6 @@ Optimizations
     Collect common code into a nice shared library.
         
 Documentation:
-
-    Alpha support
 
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
@@ -49,9 +51,40 @@ Documentation:
             >>> C().x
             'A.__getattr__'
 
-    Multiple inheritance
-
     Smart pointers
+            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+            namespace py {
+            #endif
+
+            template <class T>
+            struct VtkConverters
+            {
+                typedef py::PyExtensionClassConverters<T> Converters;
+
+                friend vtk_ptr<T>& from_python(PyObject* p, py::Type<vtk_ptr<T>&>)
+                    { return Converters::ptr_from_python(p, py::Type<vtk_ptr<T> >()); }
+
+                friend vtk_ptr<T>& from_python(PyObject* p, py::Type<vtk_ptr<T> >)
+                    { return Converters::ptr_from_python(p, py::Type<vtk_ptr<T> >()); }
+
+                friend const vtk_ptr<T>& from_python(PyObject* p, py::Type<const vtk_ptr<T>&>)
+                    { return Converters::ptr_from_python(p, py::Type<vtk_ptr<T> >()); }
+
+                friend PyObject* to_python(vtk_ptr<T> x)
+                    { return Converters::ptr_to_python(x); }
+            };
+
+            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+            }
+            #endif
+
+            template <class T>
+            struct VtkWrapper : py::ClassWrapper<T>, py::VtkConverters<T>
+            {
+                typedef py::ClassWrapper<T> Base;
+                VtkWrapper(Module& module, const char* name)
+                    : Base(module, name) {}
+            };
 
     exception handling
 
@@ -64,32 +97,7 @@ Documentation:
 
             dealing with non-const reference/pointer parameters
 
-        Private virtual functions with default implementations
-
         extending multiple-argument support using gen_all.py
-
-        Calling back into Python:
-          // caveat: UNTESTED!
-          #include <py_cpp/pyptr.h>
-          #include <py_cpp/callback.h>
-          #include <py_cpp/py.h>
-          #include <Python.h>
-          int main()
-          {
-             try {
-                 py::Ptr module(PyImport_ImportModule("weapons"));
-                 const int strength = 10;
-                 const char* manufacturer = "Vordon Empire";
-                 py::Ptr a_blaster(py::Callback<py::Ptr>::call_method(
-                          module.get(), "Blaster", strength, manufacturer));
-                 py::Callback<void>::call_method(a_blaster.get(), "Fire");
-                 int old_strength = py::Callback<int>::call_method(a_blaster.get(), "get_strength");
-                 py::Callback<void>::call_method(a_blaster.get(), "set_strength", 5);
-             }
-             catch(...)
-             {
-             }
-          }
 
     
     Fancy wrapping tricks
@@ -286,6 +294,18 @@ Documentation:
                 See http://people.ne.mediaone.net/abrahams/downloads/under-the-hood.html for
                 a few details.
 
+        raw C++ arrays
+            You could expose a function like this one to get the desired effect:
+
+            #include <py_cpp/objects.h>
+            void set_len(UnitCell& x, py::Tuple tuple)
+            {
+                double len[3];
+                for (std::size_t i =0; i < 3; ++i)
+                    len[i] = py::from_python(tuple[i].get(), py::Type<double>());
+                x.set_len(len);
+            }
+
         Types that are already wrapped by other libraries
 
                 It's not documented yet, but you should be able to use a raw PyObject* or a
@@ -308,46 +328,6 @@ Documentation:
 
                 then the C++ functions you're wrapping can take a some_NTL_type& parameter
                 directly.
-
-        enums
-
-            To handle this case, you need to decide how you want the enum to show up in
-            Python (since Python doesn't have enums). If you are satisfied with a Python
-            int as a way to get your enum value, you can write a simple from_python()
-            function in namespace py::
-
-            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-            namespace py {
-            #endif
-
-            mynamespace::SomeMeasure from_python(PyObject* x,
-                 py::Type<mynamespace::SomeMeasure>)
-            {
-                return static_cast<mynamespace::SomeMeasure>(
-                  from_python(x, py::Type<unsigned long>()));
-            }
-
-            #ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-            }
-            #endif
-
-            You may also want to add a bunch of lines like this to your module
-            initialization:
-             mymodule.add(PyInt_FromLong(case1), "case1");
-             mymodule.add(PyInt_FromLong(case2), "case2");
-            ...
-
-        raw C++ arrays
-            You could expose a function like this one to get the desired effect:
-
-            #include <py_cpp/objects.h>
-            void set_len(UnitCell& x, py::Tuple tuple)
-            {
-                double len[3];
-                for (std::size_t i =0; i < 3; ++i)
-                    len[i] = py::from_python(tuple[i].get(), py::Type<double>());
-                x.set_len(len);
-            }
 
         "Thin converting wrappers" for constructors
 
@@ -376,6 +356,29 @@ Documentation:
         the importance of declaration order of ClassWrappers/ExtensionInstances
 
         out parameters and non-const pointers
+
+        Calling back into Python:
+          // caveat: UNTESTED!
+          #include <py_cpp/pyptr.h>
+          #include <py_cpp/callback.h>
+          #include <py_cpp/py.h>
+          #include <Python.h>
+          int main()
+          {
+             try {
+                 py::Ptr module(PyImport_ImportModule("weapons"));
+                 const int strength = 10;
+                 const char* manufacturer = "Vordon Empire";
+                 py::Ptr a_blaster(py::Callback<py::Ptr>::call_method(
+                          module.get(), "Blaster", strength, manufacturer));
+                 py::Callback<void>::call_method(a_blaster.get(), "Fire");
+                 int old_strength = py::Callback<int>::call_method(a_blaster.get(), "get_strength");
+                 py::Callback<void>::call_method(a_blaster.get(), "set_strength", 5);
+             }
+             catch(...)
+             {
+             }
+          }
 
     Miscellaneous
         About the vc6 project and the debug build
