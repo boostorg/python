@@ -16,16 +16,18 @@ struct implicit
     static void* convertible(PyObject* obj)
     {
         // Find a converter registration which can produce a Source
-        // instance from obj
-        return const_cast<rvalue_from_python_registration*>(
-            find_chain(obj, rvalue_from_python_chain<Source>::value));
+        // instance from obj. The user has told us that Source can be
+        // converted to Target, and instantiating construct() below,
+        // ensures that at compile-time.
+        return const_cast<rvalue_from_python_chain*>(
+            converter::implicit_conversion_chain(obj, from_python<Source>::converters));
     }
       
     static void construct(PyObject* obj, rvalue_from_python_stage1_data* data)
     {
         // This is the registration we got from the convertible step
-        rvalue_from_python_registration const* registration
-            = static_cast<rvalue_from_python_registration*>(data->convertible);
+        rvalue_from_python_chain const* registration
+            = static_cast<rvalue_from_python_chain*>(data->convertible);
 
         // Call the convertible function again
         rvalue_from_python_data<Source> intermediate_data(registration->convertible(obj));

@@ -8,11 +8,12 @@
 
 # include <boost/python/converter/callback_from_python_base.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
-# include <boost/python/converter/rvalue_from_python_chain.hpp>
-# include <boost/python/converter/lvalue_from_python_chain.hpp>
+# include <boost/python/converter/from_python.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/call_traits.hpp>
 # include <boost/python/detail/void_return.hpp>
+# include <boost/python/converter/from_python.hpp>
+# include <boost/python/converter/pointee_from_python.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -22,7 +23,6 @@ namespace detail
   struct return_pointer_from_python
   {
       typedef T result_type;
-      return_pointer_from_python();
       T operator()(PyObject*) const;
   };
   
@@ -30,7 +30,6 @@ namespace detail
   struct return_reference_from_python
   {
       typedef T result_type;
-      return_reference_from_python();
       T operator()(PyObject*) const;
   };
   
@@ -93,9 +92,10 @@ namespace detail
 {
   template <class T>
   inline return_rvalue_from_python<T>::return_rvalue_from_python()
-      : m_data(rvalue_from_python_chain<T>::value)
+      : m_data(
+          const_cast<from_python_registration*>(&from_python<T>::converters)
+          )
   {
-      throw_if_not_registered(m_data.stage1);
   }
   
   template <class T>
@@ -106,29 +106,17 @@ namespace detail
   }
 
   template <class T>
-  inline return_reference_from_python<T>::return_reference_from_python()
-  {
-      detail::throw_if_not_registered(lvalue_from_python_chain<T,true>::value);
-  }
-  
-  template <class T>
   inline T return_reference_from_python<T>::operator()(PyObject* obj) const
   {
       return python::detail::void_ptr_to_reference(
-          callback_convert_reference(obj, lvalue_from_python_chain<T,true>::value)
+          callback_convert_reference(obj, from_python<T>::converters)
           , (T(*)())0);
   }
 
   template <class T>
-  inline return_pointer_from_python<T>::return_pointer_from_python()
-  {
-      detail::throw_if_not_registered(lvalue_from_python_chain<T,true>::value);
-  }
-  
-  template <class T>
   inline T return_pointer_from_python<T>::operator()(PyObject* obj) const
   {
-      return T(callback_convert_pointer(obj, lvalue_from_python_chain<T,true>::value));
+      return T(callback_convert_pointer(obj, pointee_from_python<T>::converters));
   }
 }
   

@@ -8,16 +8,14 @@
 
 namespace boost { namespace python { namespace converter { 
 
+struct rvalue_from_python_stage1_data;
+struct from_python_registration;
+
 namespace detail
 {
-
-  // Throw an exception
-  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_from_python_stage1_data const&);
   BOOST_PYTHON_DECL void* convert_rvalue(PyObject*, rvalue_from_python_stage1_data&, void* storage);
-  
-  BOOST_PYTHON_DECL void throw_if_not_registered(lvalue_from_python_registration*const&);
-  BOOST_PYTHON_DECL void* callback_convert_reference(PyObject*, lvalue_from_python_registration*const&);
-  BOOST_PYTHON_DECL void* callback_convert_pointer(PyObject*, lvalue_from_python_registration*const&);
+  BOOST_PYTHON_DECL void* callback_convert_reference(PyObject*, from_python_registration const&);
+  BOOST_PYTHON_DECL void* callback_convert_pointer(PyObject*, from_python_registration const&);
   BOOST_PYTHON_DECL void absorb_result(PyObject*);
 }
 

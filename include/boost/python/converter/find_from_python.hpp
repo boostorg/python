@@ -12,17 +12,17 @@
 
 namespace boost { namespace python { namespace converter { 
 
-struct lvalue_from_python_registration;
-struct rvalue_from_python_registration;
+struct from_python_registration;
+struct rvalue_from_python_chain;
 
-BOOST_PYTHON_DECL void* find(
-    PyObject* source, lvalue_from_python_registration const*);
+BOOST_PYTHON_DECL void* get_lvalue_from_python(
+    PyObject* source, from_python_registration const&);
 
-BOOST_PYTHON_DECL rvalue_from_python_stage1_data find(
-    PyObject* source, rvalue_from_python_registration const*);
+BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
+    PyObject* source, from_python_registration const&);
 
-BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
-    PyObject* source, rvalue_from_python_registration const*);
+BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
+    PyObject* source, from_python_registration const&);
 
 }}} // namespace boost::python::converter
 

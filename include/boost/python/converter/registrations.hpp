@@ -8,21 +8,40 @@
 
 # include <boost/python/converter/convertible_function.hpp>
 # include <boost/python/converter/constructor_function.hpp>
+# include <boost/python/type_id.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
-struct lvalue_from_python_registration
+struct lvalue_from_python_chain
 {
     convertible_function convert;
-    lvalue_from_python_registration* next;
+    lvalue_from_python_chain* next;
 };
 
-struct rvalue_from_python_registration
+struct rvalue_from_python_chain
 {
     convertible_function convertible;
     constructor_function construct;
-    rvalue_from_python_registration* next;
+    rvalue_from_python_chain* next;
 };
+
+struct from_python_registration
+{
+    explicit from_python_registration(type_info);
+    
+    const python::type_info target_type;
+    lvalue_from_python_chain* lvalue_chain;
+    rvalue_from_python_chain* rvalue_chain;
+};
+
+//
+// implementations
+//
+inline from_python_registration::from_python_registration(type_info target_type)
+    : target_type(target_type)
+      , lvalue_chain(0)
+      , rvalue_chain(0)
+{}
 
 }}} // namespace boost::python::converter
 

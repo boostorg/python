@@ -14,10 +14,12 @@
 
 namespace boost { namespace python { namespace converter { 
 
-BOOST_PYTHON_DECL rvalue_from_python_stage1_data find(
+BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source
-    , rvalue_from_python_registration const* chain)
+    , from_python_registration const& converters)
 {
+    rvalue_from_python_chain const* chain = converters.rvalue_chain;
+    
     rvalue_from_python_stage1_data data;
     data.convertible = 0;
     for (;chain != 0; chain = chain->next)
@@ -33,23 +35,54 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data find(
     return data;
 }
 
+BOOST_PYTHON_DECL void* get_lvalue_from_python(
+    PyObject* source
+    , from_python_registration const& converters)
+{
+    lvalue_from_python_chain const* chain = converters.lvalue_chain;
+    
+    for (;chain != 0; chain = chain->next)
+    {
+        void* r = chain->convert(source);
+        if (r != 0)
+            return r;
+    }
+    return 0;
+}
+
 namespace
 {
   // Prevent looping in implicit conversions. This could/should be
   // much more efficient, but will work for now.
-  typedef std::vector<rvalue_from_python_registration const*> visited_t;
+  typedef std::vector<rvalue_from_python_chain const*> visited_t;
   static visited_t visited;
+
+  inline bool visit(rvalue_from_python_chain const* chain)
+  {
+      visited_t::iterator const p = std::lower_bound(visited.begin(), visited.end(), chain);
+      if (p != visited.end() && *p == chain)
+          return false;
+      visited.insert(p, chain);
+      return true;
+  }
+
+  void unvisit(rvalue_from_python_chain const* chain)
+  {
+      visited_t::iterator const p = std::lower_bound(visited.begin(), visited.end(), chain);
+      assert(p != visited.end());
+      visited.erase(p);
+  }
 }
 
-BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
+BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
     PyObject* source
-    , rvalue_from_python_registration const* chain)
+    , from_python_registration const& converters)
 {    
-    visited_t::iterator p = std::lower_bound(visited.begin(), visited.end(), chain);
-    if (p != visited.end() && *p == chain)
+    rvalue_from_python_chain const* chain = converters.rvalue_chain;
+    
+    if (!visit(chain))
         return 0;
     
-    visited.insert(p, chain);
     try
     {
         for (;chain != 0; chain = chain->next)
@@ -60,25 +93,11 @@ BOOST_PYTHON_DECL rvalue_from_python_registration const* find_chain(
     }
     catch(...)
     {
-        visited.erase(p);
+        unvisit(chain);
         throw;
     }
-    p = std::lower_bound(visited.begin(), visited.end(), chain);
-    visited.erase(p);
+    unvisit(chain);
     return chain;
-}
-
-BOOST_PYTHON_DECL void* find(
-    PyObject* source
-    , lvalue_from_python_registration const* chain)
-{
-    for (;chain != 0; chain = chain->next)
-    {
-        void* r = chain->convert(source);
-        if (r != 0)
-            return r;
-    }
-    return 0;
 }
 
 }}} // namespace boost::python::converter

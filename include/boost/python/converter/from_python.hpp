@@ -3,8 +3,8 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef RVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
-# define RVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
+#ifndef FROM_PYTHON_DWA2002710_HPP
+# define FROM_PYTHON_DWA2002710_HPP
 # include <boost/python/type_id.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/type_traits/transform_traits.hpp>
@@ -12,29 +12,42 @@
 
 namespace boost { namespace python { namespace converter { 
 
+struct from_python_registration;
+
 namespace detail
 {
   template <class T>
-  struct rvalue_from_python_chain_impl
+  struct from_python_base
   {
-      static rvalue_from_python_registration*const& value;
+      static from_python_registration const& converters;
   };
-
-  template <class T>
-  rvalue_from_python_registration*const& rvalue_from_python_chain_impl<T>::value
-      = registry::rvalue_converters(type_id<T>());
 }
 
 template <class T>
-struct rvalue_from_python_chain
-    : detail::rvalue_from_python_chain_impl<
+struct from_python
+    : detail::from_python_base<
         typename add_reference<
-          typename add_cv<T>::type
+           typename add_cv<T>::type
         >::type
-      >
+    >
 {
 };
 
+# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+// collapses a few more types to the same static instance
+template <class T>
+struct from_python<T&> : from_python<T> {};
+# endif
+
+//
+// implementations
+//
+namespace detail
+{
+  template <class T>
+  from_python_registration const& from_python_base<T>::converters
+     = registry::from_python_converters(type_id<T>());
+}
 }}} // namespace boost::python::converter
 
-#endif // RVALUE_FROM_PYTHON_CHAIN_DWA200237_HPP
+#endif // FROM_PYTHON_DWA2002710_HPP

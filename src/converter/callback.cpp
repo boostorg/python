@@ -7,8 +7,10 @@
 #include <boost/python/converter/arg_to_python_base.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/converter/find_from_python.hpp>
+#include <boost/python/converter/registrations.hpp>
 #include <boost/python/handle.hpp>
 #include <boost/python/detail/none.hpp>
+#include <boost/python/object.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -43,46 +45,30 @@ namespace detail
   {
   }
 
-  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_from_python_stage1_data const& data)
-  {
-      if (!data.convertible)
-      {
-          PyErr_SetString(
-              PyExc_TypeError
-              , const_cast<char*>("no from_python rvalue or lvalue converters found for type"));
-          throw_error_already_set();
-      }
-  }
-
-  BOOST_PYTHON_DECL void throw_if_not_registered(lvalue_from_python_registration*const& x)
-  {
-      if (!x)
-      {
-          PyErr_SetString(
-              PyExc_TypeError
-              , const_cast<char*>("no from_python lvalue converters found for type"));
-          throw_error_already_set();
-      }
-  }
-
   BOOST_PYTHON_DECL void* callback_convert_reference(
       PyObject* source
-      , lvalue_from_python_registration*const& converters)
+      , from_python_registration const& converters)
   {
       handle<> holder(source);
       if (source->ob_refcnt <= 2)
       {
-          PyErr_SetString(
+          PyErr_SetObject(
               PyExc_ReferenceError
-              , const_cast<char*>("Attempt to return dangling internal reference"));
+              , (object("Attempt to return dangling pointer/reference to object of type ")
+                 + converters.target_type.name()).ptr()
+              );
           throw_error_already_set();
       }
-      void* result = find(source, converters);
+      void* result = get_lvalue_from_python(source, converters);
       if (!result)
       {
-          PyErr_SetString(
+          handle<> repr(PyObject_Repr(source));
+          PyErr_SetObject(
               PyExc_TypeError
-              , const_cast<char*>("no registered from_python lvalue converter was able to convert object"));
+              , (object("no registered converter was able to convert ")
+                 + repr + " to a C++ lvalue of type "
+                 + converters.target_type.name()).ptr()
+              );
           throw_error_already_set();
       }
       return result;
@@ -90,7 +76,7 @@ namespace detail
   
   BOOST_PYTHON_DECL void* callback_convert_pointer(
       PyObject* source
-      , lvalue_from_python_registration*const& converters)
+      , from_python_registration const& converters)
   {
       if (source == Py_None)
       {
@@ -112,7 +98,8 @@ namespace detail
   {
       handle<> holder(src);
       
-      data = find(src, static_cast<rvalue_from_python_registration*>(data.convertible));
+      data = rvalue_from_python_stage1(
+          src, *static_cast<from_python_registration const*>(data.convertible));
       
       if (!data.convertible)
       {
