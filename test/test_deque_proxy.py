@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- mode:python -*-
 #
-# Python module test_python_list.py
+# Python module test_deque_proxy.py
 #
 # Copyright (c) 2003 Raoul M. Gough
 #
@@ -11,26 +11,19 @@
 #
 # History
 # =======
-# 2003/10/ 1    rmg     File creation
+# 2003/10/15    rmg     File creation from test_vector_proxy.py
 #
 # $Id$
 #
 
-'''>>> v = []
->>> # Provide a mutable int-like object (same as int_wrapper)
->>> class element_type:
-...     def __init__(self, val = 0):
-...         self.val = val
-...     def increment(self, incr):
-...         self.val += incr
-...     def __repr__(self):
-...         return repr(self.val)
-...     def __cmp__(self, other):
-...         return self.val.__cmp__(other.val)
+'''>>> from test_deque_ext import *
+>>> element_type = int_wrapper
+>>> def increment(wrapper, change = 1):
+...     wrapper.increment (change)
 ...
->>> def increment(element, change = 1):
-...     element.increment (change)
-...
+>>> setTrace(False)
+>>> v = Deque_proxy()
+>>> #### NOTE: test_python_ref, test_vector_common included after this ####
 '''
 
 def run(args = None):

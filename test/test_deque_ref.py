@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- mode:python -*-
 #
-# Python module test_vector_ref.py
+# Python module test_deque_ref.py
 #
-# Test the vector container with return_internal_reference
+# Test the deque container with return_internal_reference
 # policies. This is a dangerous container - see the container suite
 # documentation on using policies for details.
 #
@@ -15,19 +15,19 @@
 #
 # History
 # =======
-# 2003/10/ 1    rmg     File creation
+# 2003/10/15    rmg     File creation from test_vector_ref.py
 #
 # $Id$
 #
 
-'''>>> from test_vector_ext import *
+'''>>> from test_deque_ext import *
 >>> element_type = int_wrapper
 >>> def increment(wrapper, change = 1):
 ...     wrapper.increment (change)
 ...
 >>> setTrace(False)
->>> v = Vector_ref()
->>> v.append (element_type(3))
+>>> v = Deque_ref()
+>>> v.append (3)
 >>> ref = v[0]
 >>> print ref, v[0]
 3 3

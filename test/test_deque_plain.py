@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- mode:python -*-
 #
-# Python module test_vector_plain.py
+# Python module test_deque_plain.py
 #
 # Copyright (c) 2003 Raoul M. Gough
 #
@@ -11,14 +11,14 @@
 #
 # History
 # =======
-# 2003/ 9/29    rmg     File creation
+# 2003/10/15    rmg     File creation from test_vector_plain.py
 #
 # $Id$
 #
 
-'''>>> from test_vector_ext import *
+'''>>> from test_deque_ext import *
 >>> element_type = int
->>> v = Vector()
+>>> v = Deque()
 >>> v[:] = (6, 7, 8, 5, 4, 8, 3, 1, 2)  # Slice replace (tuple)
 >>> print [ x for x in v ]
 [6, 7, 8, 5, 4, 8, 3, 1, 2]

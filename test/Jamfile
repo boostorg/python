@@ -51,6 +51,18 @@ rule bpl-test ( name ? : files * : requirements * )
     boost-python-runtest $(name) : $(py) <pyd>$(modules) ;
 }
 
+bpl-test test_array        : test_array.py        test_array_ext.cpp  ;
+bpl-test test_array_ref    : test_array_ref.py    test_array_ext.cpp  ;
+bpl-test test_vector_plain : test_vector_plain.py test_vector_ext.cpp ;
+bpl-test test_vector_ref   : test_vector_ref.py   test_vector_ext.cpp ;
+bpl-test test_vector_proxy : test_vector_proxy.py test_vector_ext.cpp ;
+bpl-test test_deque_plain  : test_deque_plain.py  test_deque_ext.cpp  ;
+bpl-test test_deque_ref    : test_deque_ref.py    test_deque_ext.cpp  ;
+bpl-test test_deque_proxy  : test_deque_proxy.py  test_deque_ext.cpp  ;
+bpl-test test_list_plain   : test_list_plain.py   test_list_ext.cpp   ;
+bpl-test test_map_plain    : test_map_plain.py    testnonlinear.cpp   ;
+bpl-test test_set_plain    : test_set_plain.py    testnonlinear.cpp   ;
+
 run ../test/embedding.cpp <lib>../build/boost_python
   : # program args
   : # input files
@@ -141,8 +153,8 @@ bpl-test nested ;
 
 bpl-test docstring ;
 
-bpl-test vector_indexing_suite ;
-bpl-test map_indexing_suite ;
+# bpl-test vector_indexing_suite ;
+# bpl-test map_indexing_suite ;
 
 if $(TEST_BIENSTMAN_NON_BUGS)
 {

@@ -24,16 +24,16 @@
 >>> print [ x for x in v ]           # Iterate over empty container
 []
 >>> try:
-...    print v.index (2)             # Search in empty container
+...    print v.index (element_type(2))  # Search in empty container
 ... except ValueError, e:
 ...    print "Got expected exception"
 ...
 Got expected exception
->>> print v.count (2)                # Search in empty container
+>>> print v.count (element_type(2))  # Search in empty container
 0
 >>> print len(v)                     # Length of empty container
 0
->>> v.extend ([1, 3, 5, 2, 4, 6])    # Try extend with Python list
+>>> v.extend ([ element_type(x) for x in [1, 3, 5, 2, 4, 6]]) # Extend via list
 >>> print len(v)                     # Length of non-empty container
 6
 >>> print [ x for x in v ]           # Iteration
@@ -44,23 +44,23 @@ Got expected exception
 >>> v.sort()                         # Sort
 >>> print [ x for x in v ]
 [1, 2, 3, 4, 5, 6]
->>> v[:] = [3, 4]                    # Remove dependencies on prior results
->>> v.insert (0, 2)                  # Insert at start
+>>> v[:] = [element_type(3), element_type(4)]    # Remove dep. on prior results
+>>> v.insert (0, element_type(2))    # Insert at start
 >>> print [ x for x in v ]
 [2, 3, 4]
->>> v.insert (len(v), 5)             # Insert at end
+>>> v.insert (len(v), element_type(5))  # Insert at end
 >>> print [ x for x in v ]
 [2, 3, 4, 5]
->>> v.insert (999, 6)                # Insert at end (out of bounds)
+>>> v.insert (999, element_type(6))  # Insert at end (out of bounds)
 >>> print [ x for x in v ]
 [2, 3, 4, 5, 6]
->>> v.insert (-1, 1)                 # Insert at beginning (-ve)
+>>> v.insert (-1, element_type(1))   # Insert at beginning (-ve)
 >>> print [ x for x in v ]
 [1, 2, 3, 4, 5, 6]
->>> v.append (7)                     # Append
+>>> v.append (element_type(7))       # Append
 >>> print [ x for x in v ]
 [1, 2, 3, 4, 5, 6, 7]
->>> v.extend ([3,8,9,10])            # Extend
+>>> v.extend ([element_type(x) for x in [3,8,9,10]])    # Extend
 >>> print [ x for x in v ]
 [1, 2, 3, 4, 5, 6, 7, 3, 8, 9, 10]
 >>> del v[2]                         # Single element delete
@@ -87,13 +87,14 @@ Got expected exception
 ...     print "Got expected exception"
 ...
 Got expected exception
->>> v.insert (len(v) + 1, 0)         # Insert at end via out of range
+>>> v.insert (len(v) + 1, element_type(0))  # Insert at end via out of range
 >>> print [ x for x in v ]
 [1, 2, 4, 5, 6, 9, 10, 8, 0]
->>> v.insert (-1, 7)         # Insert at beginning via negative
+>>> v.insert (-1, element_type(7))          # Insert at beginning via negative
 >>> print [ x for x in v ]
 [7, 1, 2, 4, 5, 6, 9, 10, 8, 0]
->>> v[:] = [8, 6, 4, 2, 1, 3, 5, 7, 0]   # Prepare for common array tests
+>>> # Prepare for common array tests
+>>> v[:] = [element_type(x) for x in [8, 6, 4, 2, 1, 3, 5, 7, 0]]
 '''
 
 import test_array_common

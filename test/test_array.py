@@ -16,9 +16,9 @@
 # $Id$
 #
 
-'''>>> from testlinear import *
->>> setTrace (0)
->>> v = getArray()
+'''>>> from test_array_ext import *
+>>> element_type = int
+>>> v = get_array_plain()
 '''
 
 def run(args = None):

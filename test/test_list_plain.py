@@ -16,7 +16,7 @@
 # $Id$
 #
 
-'''>>> from testlinear import *
+'''>>> from test_list_ext import *
 >>> setTrace(0)
 >>> l = List()
 >>> assert not 0 in l                    # Search in empty list
@@ -40,7 +40,7 @@
 >>> print len(l)                         # Length
 3
 >>> for x in l:
-...     x.increment()                    # Check value semantics
+...     x.increment(1)                   # Check value semantics
 ...
 >>> print [ x for x in l ]               # Container should be unchanged
 [1, 2, 3]
