@@ -147,12 +147,8 @@ namespace boost { namespace python {
             if (PyObject* shared = 
                 container_element_t::get_links().find(container.get(), idx))
             {
-//                return extract<object>(shared)();
-
-                handle<> h(shared);
-                object result(h);
-                h.release();
-                return result;
+                handle<> h(borrowed(shared));
+                return object(h);
             }
             else
             {
@@ -314,7 +310,7 @@ namespace boost { namespace python {
                 else
                 {
                     //  Otherwise, it must be a list or some container
-                    handle<> l_(v);
+                    handle<> l_(borrowed(v));
                     object l(l_);
     
                     std::vector<Element> temp;
@@ -348,7 +344,6 @@ namespace boost { namespace python {
                         temp.end()-temp.begin(), no_proxy());
                     DerivedPolicies::set_slice(container, from, to, 
                         temp.begin(), temp.end());
-                    l_.release();
                 }
             }            
         }

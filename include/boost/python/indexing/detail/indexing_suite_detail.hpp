@@ -16,9 +16,9 @@
 namespace boost { namespace python { namespace detail {
 
 #if defined(NDEBUG)
-#define CHECK_INVARIANT
+#define BOOST_PYTHON_INDEXING_CHECK_INVARIANT
 #else
-#define CHECK_INVARIANT check_invariant()
+#define BOOST_PYTHON_INDEXING_CHECK_INVARIANT check_invariant()
 #endif
     
     template <class Proxy>
@@ -76,26 +76,26 @@ namespace boost { namespace python { namespace detail {
                     break;
                 }
             }
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
 
         void
         add(PyObject* prox)
         {
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Add a proxy
             proxies.insert(
                 first_proxy(extract<Proxy&>(prox)().get_index()), prox);
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
 
         void
         erase(index_type from, index_type to)
         {
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Erase all proxies with indexes from..to 
             replace(from, to, 0);
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
 
         void
@@ -104,7 +104,7 @@ namespace boost { namespace python { namespace detail {
             index_type to, 
             typename std::vector<PyObject*>::size_type len)
         {
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Erase all proxies with indexes from..to.
             // Adjust the displaced indexes such that the
             // final effect is that we have inserted *len*
@@ -139,13 +139,13 @@ namespace boost { namespace python { namespace detail {
                         extract<Proxy&>(*right)().get_index(), from, to, len));
                 ++right;
             }
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
         }
         
         PyObject*
         find(index_type i)
         {
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // Find the proxy with *exact* index i.
             // Return 0 (null) if no proxy with the 
             // given index is found.
@@ -153,17 +153,17 @@ namespace boost { namespace python { namespace detail {
             if (iter != proxies.end()
                 && extract<Proxy&>(*iter)().get_index() == i)
             {
-                CHECK_INVARIANT;
+                BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
                 return *iter;
             }
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             return 0;
         }
 
         typename std::vector<PyObject*>::size_type 
         size() const
         {
-            CHECK_INVARIANT;
+            BOOST_PYTHON_INDEXING_CHECK_INVARIANT;
             // How many proxies are there so far?
             return proxies.size();
         } 
