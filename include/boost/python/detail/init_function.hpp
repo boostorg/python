@@ -73,7 +73,8 @@ namespace detail {
   struct parameter_traits
   {
    private:
-      typedef const_ref_selector<boost::is_reference<T>::value> selector;
+      enum { is_ref = boost::is_reference<T>::value };
+      typedef const_ref_selector<is_ref> selector;
    public:
       typedef typename selector::template const_ref<T>::type const_reference;
   };
@@ -110,11 +111,11 @@ template <class T, class A1, class A2> struct init2;
 template <class T, class A1, class A2, class A3> struct init3;
 template <class T, class A1, class A2, class A3, class A4> struct init4;
 template <class T, class A1, class A2, class A3, class A4, class A5> struct init5;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6> struct Init6;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> struct Init7;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> struct Init8;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9> struct Init9;
-template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> struct Init10;
+template <class T, class A1, class A2, class A3, class A4, class A5, class A6> struct init6;
+template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7> struct init7;
+template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8> struct init8;
+template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9> struct init9;
+template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10> struct init10;
 
 template <class T>
 struct init_function
@@ -165,7 +166,7 @@ struct init_function
 
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     static init* create(signature6<A1, A2, A3, A4, A5, A6>) {
-        return new Init6<T,
+        return new init6<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -176,7 +177,7 @@ struct init_function
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     static init* create(signature7<A1, A2, A3, A4, A5, A6, A7>) {
-        return new Init7<T,
+        return new init7<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -188,7 +189,7 @@ struct init_function
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     static init* create(signature8<A1, A2, A3, A4, A5, A6, A7, A8>) {
-        return new Init8<T,
+        return new init8<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -201,7 +202,7 @@ struct init_function
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     static init* create(signature9<A1, A2, A3, A4, A5, A6, A7, A8, A9>) {
-        return new Init9<T,
+        return new init9<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -215,7 +216,7 @@ struct init_function
 
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     static init* create(signature10<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>) {
-        return new Init10<T,
+        return new init10<T,
                        detail::parameter_traits<A1>::const_reference,
                        detail::parameter_traits<A2>::const_reference,
                        detail::parameter_traits<A3>::const_reference,
@@ -353,7 +354,7 @@ struct init5 : init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6>
-struct Init6 : init
+struct init6 : init
 {
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
@@ -379,7 +380,7 @@ struct Init6 : init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-struct Init7 : init
+struct init7 : init
 {
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
@@ -407,7 +408,7 @@ struct Init7 : init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-struct Init8 : init
+struct init8 : init
 {
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
@@ -437,7 +438,7 @@ struct Init8 : init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-struct Init9 : init
+struct init9 : init
 {
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {
@@ -469,7 +470,7 @@ struct Init9 : init
 };
 
 template <class T, class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-struct Init10 : init
+struct init10 : init
 {
     virtual instance_holder_base* create_holder(extension_instance* self, PyObject* args, PyObject* /*keywords*/) const
     {

@@ -5,6 +5,13 @@
 //
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
+//
+// Revision History:
+// 05 Apr 01  added: from_python std::string type checking (rwgk)
+// 12 Mar 01  Python 1.5.2 fixes (Ralf W. Grosse-Kunstleve)
+// 11 Mar 01  std::string *MAY* include nulls (Alex Martelli)
+// 04 Mar 01  std::complex<> fixes for MSVC (Dave Abrahams)
+// 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
 #include <boost/python/conversions.hpp>
 #include <typeinfo>
@@ -43,6 +50,19 @@ void handle_exception()
         PyErr_SetString(PyExc_RuntimeError, "unidentifiable C++ exception");
     }
 }
+
+namespace detail {
+
+  void expect_complex(PyObject* p)
+  {
+      if (!PyComplex_Check(p))
+      {
+          PyErr_SetString(PyExc_TypeError, "expected a complex number");
+          throw boost::python::argument_error();
+      }
+  }
+
+} // namespace boost::python::detail
 
 }} // namespace boost::python
 
@@ -132,7 +152,7 @@ int from_python(PyObject* p, boost::python::type<int> type)
 
 PyObject* to_python(unsigned int i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned int from_python(PyObject* p, boost::python::type<unsigned int> type)
@@ -152,7 +172,7 @@ float from_python(PyObject* p, boost::python::type<float>)
 
 PyObject* to_python(unsigned short i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type)
@@ -160,9 +180,27 @@ unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type
     return integer_from_python(p, type);
 }
 
+PyObject* to_python(char c)
+{
+    if (c == '\0') return PyString_FromString("");
+    return PyString_FromStringAndSize(&c, 1);
+}
+
+char from_python(PyObject* p, boost::python::type<char>)
+{
+    int l = -1;
+    if (PyString_Check(p)) l = PyString_Size(p);
+    if (l < 0 || l > 1) {
+        PyErr_SetString(PyExc_TypeError, "expected string of length 0 or 1");
+        throw boost::python::argument_error();
+    }
+    if (l == 0) return '\0';
+    return PyString_AsString(p)[0];
+}
+
 PyObject* to_python(unsigned char i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
@@ -172,7 +210,7 @@ unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
 
 PyObject* to_python(signed char i)
 {
-	return integer_to_python(i);
+    return integer_to_python(i);
 }
 
 signed char from_python(PyObject* p, boost::python::type<signed char> type)
@@ -208,12 +246,16 @@ const char* from_python(PyObject* p, boost::python::type<const char*>)
 
 PyObject* to_python(const std::string& s)
 {
-	return PyString_FromString(s.c_str());
+    return PyString_FromStringAndSize(s.data(), s.size());
 }
 
 std::string from_python(PyObject* p, boost::python::type<std::string>)
 {
-    return std::string(from_python(p, boost::python::type<const char*>()));
+    if (! PyString_Check(p)) {
+        PyErr_SetString(PyExc_TypeError, "expected a string");
+        throw boost::python::argument_error();
+    }
+    return std::string(PyString_AsString(p), PyString_Size(p));
 }
 
 bool from_python(PyObject* p, boost::python::type<bool>)
