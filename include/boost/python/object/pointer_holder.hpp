@@ -39,21 +39,12 @@ struct pointer_holder : instance_holder
     
     pointer_holder(Pointer);
 
-    static void register_();
-
     // Forward construction to the held object
 
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 1))
 #  include BOOST_PP_ITERATE()
 
  private: // types
-    struct construct_from_pointer
-    {
-        static pointer_holder* execute(PyObject*, Pointer x)
-        {
-            return new pointer_holder(x);
-        }
-    };
     
  private: // required holder implementation
     void* holds(type_info);
@@ -74,8 +65,6 @@ struct pointer_holder_back_reference : instance_holder
     // undoubtedly does not carry the correct back reference pointer.
     pointer_holder_back_reference(Pointer);
 
-    static void register_();
-    
     // Forward construction to the held object
 #  define BOOST_PP_ITERATION_PARAMS_1 (4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 2))
 #  include BOOST_PP_ITERATE()
@@ -96,26 +85,9 @@ inline pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
 }
 
 template <class Pointer, class Value>
-inline void pointer_holder<Pointer,Value>::register_()
-{
-    python::detail::force_instantiate(class_wrapper<Pointer,pointer_holder,construct_from_pointer>());
-    python::detail::force_instantiate(instance_finder<Pointer>::registration);
-}
-    
-
-template <class Pointer, class Value>
 inline pointer_holder_back_reference<Pointer,Value>::pointer_holder_back_reference(Pointer p)
     : m_p(p)
 {
-}
-
-template <class Pointer, class Value>
-inline void pointer_holder_back_reference<Pointer,Value>::register_()
-{
-    // not implemented at least until we solve the back reference issue mentioned above.
-    //    python::detail::force_instantiate(class_wrapper<Pointer,pointer_holder_back_reference>());
-    python::detail::force_instantiate(instance_finder<Pointer>::registration);
-    python::detail::force_instantiate(instance_finder<held_type>::registration);
 }
 
 template <class Pointer, class Value>

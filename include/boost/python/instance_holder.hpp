@@ -25,12 +25,10 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
 
     void install(PyObject* inst) throw();
 
-    // Register any converters associated with this Holder
-    static inline void register_() {}
-    
  private:
     instance_holder* m_next;
 };
+
 // This macro is needed for implementation of derived holders
 # define BOOST_PYTHON_UNFORWARD(N,ignored) (typename unforward<A##N>::type)(a##N)
 

@@ -11,9 +11,11 @@
 # include <boost/python/pointee.hpp>
 # include <boost/python/object/value_holder.hpp>
 # include <boost/python/object/pointer_holder.hpp>
+# include <boost/python/object/find_instance.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/same_traits.hpp>
+# include <boost/mpl/bool_t.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -28,9 +30,24 @@ namespace detail
           selector
           , value_holder_back_reference<T,Held>
           , value_holder<T>
-      >::type holder;
+      >::type type;
 
-      static holder* get() { return 0; }
+      static inline void register_()
+      {
+          select_value_holder::register_(mpl::bool_t<selector>());
+      }
+
+      static type* get() { return 0; }
+      
+   private:
+      static inline void register_(mpl::bool_t<true>)
+      {
+          python::detail::force_instantiate(instance_finder<Held>::registration);
+      }
+
+      static inline void register_(mpl::bool_t<false>)
+      {
+      }
   };
 
   template <class T,class Ptr>
@@ -43,9 +60,47 @@ namespace detail
           selector
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
-      >::type holder;
+      >::type type;
       
-      static holder* get() { return 0; }
+      static inline void register_()
+      {
+          select_pointer_holder::register_(mpl::bool_t<selector>());
+      }
+
+      static type* get() { return 0; }
+      
+   private:
+      static inline void register_(mpl::bool_t<true>)
+      {
+          // not implemented at least until we solve the back
+          // reference issue mentioned in pointer_holder.hpp.
+          //
+          //    python::detail::force_instantiate(
+          //          class_wrapper<Pointer,pointer_holder_back_reference<Pointer,Value> >());
+          
+          python::detail::force_instantiate(instance_finder<Ptr>::registration);
+          python::detail::force_instantiate(instance_finder<pointee>::registration);
+      }
+
+      struct construct_from_pointer
+      {
+          static type* execute(PyObject*, Ptr x)
+          {
+              return new type(x);
+          }
+      };
+      
+      static inline void register_(mpl::bool_t<false>)
+      {
+          python::detail::force_instantiate(
+              objects::class_wrapper<
+                Ptr
+                , type
+                , construct_from_pointer>());
+    
+          python::detail::force_instantiate(
+              instance_finder<Ptr>::registration);
+      }
   };
 }
 
