@@ -61,15 +61,11 @@ wrapped <code>T</code>, you may want to provide an automatic
 thin wrappers. You can do this simply as follows:
 
 <blockquote><pre>
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // work around gcc 2.95.2 bug
-namespace py {
-#endif
+PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   PyObject* to_python(const Foo* p) {
      return to_python(*p); // convert const Foo* in terms of const Foo&
   }
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-}
-#endif
+PY_END_CONVERSION_NAMESPACE
 </pre></blockquote>
 
 <h4>If you can't (afford to) copy the referent, or the pointer is non-const</h4>
@@ -82,9 +78,7 @@ can not control the lifetime of the referent, so it may be destroyed by your C++
 code before the last Python reference to it disappears:
 
 <blockquote><pre>
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // work around gcc 2.95.2 bug
-namespace py {
-#endif
+PY_BEGIN_CONVERSION_NAMESPACE // this is a gcc 2.95.2 bug workaround
   PyObject* to_python(Foo* p)
   {
       return py::PyExtensionClassConverters<Foo>::ptr_to_python(p);
@@ -94,9 +88,7 @@ namespace py {
   {
       return to_python(const_cast<Foo*>(p));
   }
-#ifndef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-}
-#endif
+PY_END_CONVERSION_NAMESPACE
 </pre></blockquote>
 
 This will cause the Foo* to be treated as though it were an owning smart
