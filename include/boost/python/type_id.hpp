@@ -31,7 +31,8 @@ namespace boost { namespace python {
 // yet clear what the best default strategy is.
 # if (defined(__GNUC__) && __GNUC__ >= 3) \
  || defined(_AIX) \
- || (   defined(__sgi) && defined(__host_mips))
+ || (   defined(__sgi) && defined(__host_mips)) \
+ || (defined(linux) && defined(__INTEL_COMPILER) && defined(__ICC))
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
 
