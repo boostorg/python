@@ -7,7 +7,6 @@
 # define CALLER_DWA20011214_HPP
 
 # include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/eval.hpp>
 # include <boost/python/detail/returning.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/type_traits/composite_traits.hpp>

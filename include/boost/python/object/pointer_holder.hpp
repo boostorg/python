@@ -9,10 +9,10 @@
 # include <boost/python/object/class.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/object/inheritance.hpp>
-# include <boost/python/detail/eval.hpp>
 # include <boost/ref.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/select_type.hpp>
+# include <boost/mpl/apply.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -306,7 +306,7 @@ namespace detail
       template <class Held>
       struct apply
       {
-          typedef typename boost::python::detail::eval<
+          typedef typename mpl::apply1<
               PointerGenerator,BackReferenceType
               >::type pointer;
               
@@ -320,7 +320,7 @@ namespace detail
       template <class Held>
       struct apply
       {
-          typedef typename boost::python::detail::eval<
+          typedef typename mpl::apply1<
               PointerGenerator,Held
               >::type pointer;
               

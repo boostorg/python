@@ -15,6 +15,7 @@
 # include <boost/config.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/from_python.hpp>
+# include <boost/mpl/apply.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -31,7 +32,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -52,7 +53,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -75,7 +76,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -101,7 +102,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -130,7 +131,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -162,7 +163,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -186,7 +187,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -207,7 +208,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -230,7 +231,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -256,7 +257,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -285,7 +286,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -317,7 +318,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -341,7 +342,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -362,7 +363,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -385,7 +386,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -411,7 +412,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -440,7 +441,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -472,7 +473,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -499,7 +500,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -520,7 +521,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -543,7 +544,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -569,7 +570,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -598,7 +599,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -630,7 +631,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -652,7 +653,7 @@ struct returning
     {
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -671,7 +672,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -692,7 +693,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -716,7 +717,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -743,7 +744,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -773,7 +774,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
@@ -806,7 +807,7 @@ struct returning
 
         // find the result converter
         typedef typename P::result_converter result_converter;
-        typename eval<result_converter,R>::type cr;
+        typename mpl::apply1<result_converter,R>::type cr;
         if (!cr.convertible()) return 0;
         
         if (!policies.precall(args_)) return 0;
