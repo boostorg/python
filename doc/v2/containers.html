@@ -171,7 +171,7 @@
 
 <pre>
   class_&lt; std::vector&lt;int&gt; &gt; ("vector_int")
-    .def (our_namespace::container_suite&lt; std::vector&lt;int&gt; &gt;());
+    .def (indexing::container_suite&lt; std::vector&lt;int&gt; &gt;());
 </pre>
 
     <p>
@@ -211,7 +211,7 @@
 #include "algo_selector.hpp"
 #include "visitor.hpp"
 
-namespace our_namespace {
+namespace boost { namespace python { namespace indexing {
   typedef return_value_policy&lt;return_by_value&gt; default_container_policies;
 
   template&lt;class Container, class Algorithms = algo_selector&lt;Container&gt; &gt;
@@ -221,7 +221,7 @@ namespace our_namespace {
     template&lt;typename Policy&gt;
     static visitor&lt;Algorithms, Policy&gt; with_policies (Policy const &amp;policy);
   };
-}
+} } }
 </pre>
     </p>
 
@@ -232,14 +232,14 @@ namespace our_namespace {
       <ol>
         <li>
 
-          It relies on the <code>our_namespace::algo_selector</code>
+          It relies on the <code>indexing::algo_selector</code>
           template, which uses partial template specialization, to
           select what functionality to provide for the container.
 
         </li>
         <li>
 
-          It derives from the <code>our_namespace::visitor</code>
+          It derives from the <code>indexing::visitor</code>
           template, using a <code>return_by_value</code> return
           policy. This is a reasonable default, and follows the
           Boost.Python idiom of passing a default-constructed object
@@ -250,7 +250,7 @@ namespace our_namespace {
 
           The <code>with_policies</code> static function template
           generates different instances of the
-          <code>our_namespace::visitor</code> template, with
+          <code>indexing::visitor</code> template, with
           client-provided policies.
 
         </li>
@@ -266,7 +266,7 @@ namespace our_namespace {
 
 <pre>
   class_&lt; std::list&lt;heavy_class&gt; &gt; ("list_heavy_class")
-    .def (our_namespace::container_suite&lt; std::list&lt;heavy_class&gt; &gt;
+    .def (indexing::container_suite&lt; std::list&lt;heavy_class&gt; &gt;
           ::with_policies (my_policies));
 </pre>
 
@@ -467,7 +467,7 @@ static void visitor_helper (PythonClass &amp;, Policy const &amp;);
       In order to include a custom <code>ValueTraits</code> class into
       the container suite, it is easiest to supply it as a
       specialization of the template
-      <code>our_namespace::value_traits</code> for the container's
+      <code>indexing::value_traits</code> for the container's
       element type.  The existing <code>ContainerTraits</code> classes
       all make use of
       <code>value_traits&lt;container::value_type&gt;</code>, and so
@@ -484,21 +484,21 @@ static void visitor_helper (PythonClass &amp;, Policy const &amp;);
       errors caused by an attempt to provide the Python
       <code>find</code> or <code>sort</code> methods. The solution is
       to write a specialized version of
-      <code>our_namespace::value_traits</code> that disables the
+      <code>indexing::value_traits</code> that disables the
       appropriate features. For example:
 
     </p>
 
     <p>
 <pre>
-namespace our_namespace {
+namespace boost { namespace python { namespace indexing {
   template<>
   struct value_traits&lt;my_type&gt; : public value_traits&lt;int&gt;
   {
     static bool const equality_comparable = false;
     static bool const lessthan_comparable = false;
   };
-}
+} } }
 </pre>
     </p>
 
@@ -516,7 +516,7 @@ namespace our_namespace {
 
     <p>
 <pre>
-namespace our_namespace {
+namespace boost { namespace python { namespace indexing {
   template&lt;typename T&gt;
   struct value_traits {
     static bool const equality_comparable = true;
@@ -526,7 +526,7 @@ namespace our_namespace {
     static void visitor_helper (PythonClass &amp;, Policy const &amp;)
     { }
   };
-}
+} } }
 </pre>
     </p>
 
@@ -994,13 +994,13 @@ static void visitor_helper (PythonClass &amp;, Policy const &amp;);
 
     <p>
 <pre>
-namespace our_namespace {
+namespace boost { namespace python { namespace indexing {
   template<>
   struct algo_selector&lt;my_container&gt;
     : public default_algorithms&lt;my_container_traits&gt;
   {
   };
-}
+} } }
 </pre>
     </p>
     <p>
@@ -1159,7 +1159,7 @@ BOOST_PYTHON_MODULE(test_simple) {
 
     <p>
 <pre>
-namespace our_namespace {
+namespace boost { namespace python { namespace indexing {
   template&lt;typename ContainerTraits&gt;
   struct default_algorithms
   {
@@ -1191,7 +1191,7 @@ namespace our_namespace {
     template&lt;typename PythonClass, typename Policy&gt;
     static void visitor_helper (PythonClass &amp;, Policy const &amp;);
   };
-}
+} } }
 </pre>
     </p>
 
@@ -1199,7 +1199,7 @@ namespace our_namespace {
 
     <p>
 
-      The existing <code>our_namespace::algo_selector</code> template
+      The existing <code>indexing::algo_selector</code> template
       uses partial specializations and public derivation to select an
       <code>Algorithms</code> implementation suitable for any of the
       standard container types. Exactly how it does this should be
@@ -1401,74 +1401,78 @@ namespace our_namespace {
     </p>
 
 <pre>
-template&lt;class Container
-	 , class Holder = identity&lt;Container&gt; &gt;
-class container_proxy
-{
-public:
-  typedef typename Container::size_type size_type;
-  typedef typename Container::difference_type difference_type;
-  typedef typename Container::value_type raw_value_type;
+namespace boost { namespace python { namespace indexing {
+  template&lt;class Container
+  	 , class Holder = identity&lt;Container&gt; &gt;
+  class container_proxy
+  {
+  public:
+    typedef typename Container::size_type size_type;
+    typedef typename Container::difference_type difference_type;
+    typedef typename Container::value_type raw_value_type;
 
-  typedef typename Holder::held_type held_type;
+    typedef typename Holder::held_type held_type;
 
-  typedef <i>implementation defined</i> value_type;
-  typedef <i>implementation defined</i> const_value_type;
+    typedef <i>implementation defined</i> value_type;
+    typedef <i>implementation defined</i> const_value_type;
 
-  typedef value_type        reference;       // Has reference semantics
-  typedef const_value_type  const_reference; // Has reference semantics
+    typedef value_type        reference;       // Has reference semantics
+    typedef const_value_type  const_reference; // Has reference semantics
 
-  struct iterator { <i>implementation defined</i> }
+    struct iterator { <i>implementation defined</i> }
 
-  container_proxy ();
-  explicit container_proxy (held_type const &amp;);
-  template&lt;typename Iter&gt; container_proxy (Iter, Iter);
+    container_proxy ();
+    explicit container_proxy (held_type const &amp;);
+    template&lt;typename Iter&gt; container_proxy (Iter, Iter);
 
-  container_proxy (container_proxy const &amp;);
-  container_proxy &amp;operator= (container_proxy const &amp;);
-  ~container_proxy ();
+    container_proxy (container_proxy const &amp;);
+    container_proxy &amp;operator= (container_proxy const &amp;);
+    ~container_proxy ();
 
-  Container const &amp;raw_container() const;   // OK to expose const reference
+    Container const &amp;raw_container() const;   // OK to expose const reference
 
-  reference       at (size_type);
-  const_reference at (size_type) const;
+    reference       at (size_type);
+    const_reference at (size_type) const;
 
-  reference       operator[] (size_type);
-  const_reference operator[] (size_type) const;
+    reference       operator[] (size_type);
+    const_reference operator[] (size_type) const;
 
-  size_type size() const;
-  size_type capacity() const;
-  void reserve(size_type);
+    size_type size() const;
+    size_type capacity() const;
+    void reserve(size_type);
 
-  iterator begin();
-  iterator end();
+    iterator begin();
+    iterator end();
 
-  iterator erase (iterator);
-  iterator erase (iterator, iterator);
-  iterator insert (iterator, raw_value_type const &amp;);
-  template&lt;typename Iter&gt; void insert (iterator, Iter, Iter);
+    iterator erase (iterator);
+    iterator erase (iterator, iterator);
+    iterator insert (iterator, raw_value_type const &amp;);
+    template&lt;typename Iter&gt; void insert (iterator, Iter, Iter);
 
-  void push_back (raw_value_type const &amp;);
+    void push_back (raw_value_type const &amp;);
 
-  value_type pop_back ();
-};
+    value_type pop_back ();
+  };
+} } }
 </pre>
 
     <p>
       The <code>identity</code> template.
 
 <pre>
-template&lt;typename T&gt; struct identity {
-  typedef T held_type;
+namespace boost { namespace python { namespace indexing {
+  template&lt;typename T&gt; struct identity {
+    typedef T held_type;
 
-  static T &amp;       get(T &amp;       obj) { return obj; }
-  static T const &amp; get(T const &amp; obj) { return obj; }
+    static T &amp;       get(T &amp;       obj) { return obj; }
+    static T const &amp; get(T const &amp; obj) { return obj; }
 
-  static T    create ()                     { return T(); }
-  static T    copy   (T const &amp;copy)        { return copy; }
-  static void assign (T &amp;to, T const &amp;from) { to = from; }
-  static void pre_destruction (T &amp;)         { }
-};
+    static T    create ()                     { return T(); }
+    static T    copy   (T const &amp;copy)        { return copy; }
+    static void assign (T &amp;to, T const &amp;from) { to = from; }
+    static void pre_destruction (T &amp;)         { }
+  };
+} } }
 </pre>
     </p>
 
@@ -1476,19 +1480,21 @@ template&lt;typename T&gt; struct identity {
       The <code>deref</code> template.
 
 <pre>
-template&lt;typename P&gt; struct deref {
-  typedef P held_type;
+namespace boost { namespace python { namespace indexing {
+  template&lt;typename P&gt; struct deref {
+    typedef P held_type;
 
-  typedef typename boost::iterator_value&lt;P&gt;::type     value;
+    typedef typename boost::iterator_value&lt;P&gt;::type     value;
 
-  static value &amp;       get (P &amp;       ptr)  { return *ptr; }
-  static value const &amp; get (P const &amp; ptr)  { return *ptr; }
+    static value &amp;       get (P &amp;       ptr)  { return *ptr; }
+    static value const &amp; get (P const &amp; ptr)  { return *ptr; }
 
-  static P    create ()                     { return P(); }
-  static P    copy   (P const &amp;copy)        { return copy; }
-  static void assign (P &amp;to, P const &amp;from) { to = from; }
-  static void pre_destruction (P &amp;)         { }
-};
+    static P    create ()                     { return P(); }
+    static P    copy   (P const &amp;copy)        { return copy; }
+    static void assign (P &amp;to, P const &amp;from) { to = from; }
+    static void pre_destruction (P &amp;)         { }
+  };
+} } }
 </pre>
     </p>
 
@@ -1651,7 +1657,8 @@ namespace boost { namespace python { namespace indexing {
       directly, as in the following example:
 
 <pre>
-  using our_namespace;
+  using namespace boost::python;
+  using namespace boost::python::indexing;
 
   class_&lt;std::vector&lt;int&gt; &gt; ("vector_int")
     .def (visitor &lt;
