@@ -53,7 +53,7 @@ def HandlePolicy(function, policy):
     # show a warning to the user, if needed
     if needs_policy and policy is None:
         global _printed_warnings
-        warning = '---> Error: Method "%s" needs a policy.' % m.FullName()
+        warning = '---> Error: Method "%s" needs a policy.' % function.FullName()
         if warning not in _printed_warnings:
             print warning
             print 
