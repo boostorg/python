@@ -7,6 +7,7 @@
 # define TYPE_FROM_PYTHON_DWA2002130_HPP
 
 # include <boost/python/converter/registry.hpp>
+# include <boost/python/detail/void_ptr.hpp>
 
 namespace boost { namespace python {
 
@@ -31,7 +32,7 @@ namespace detail
       {
           typedef typename boost::add_reference<U>::type param;
           return &Extractor::execute(
-              boost::python::converter::detail::void_ptr_to_reference(
+              boost::python::detail::void_ptr_to_reference(
                   op, (param(*)())0 )
               );
       }
