@@ -152,7 +152,7 @@ template <class Ptr>
 bool is_null(const Ptr& x)
 {
     return is_null_helper<(is_pointer<Ptr>::value)>::test(x);
-};
+}
 
 }}} // namespace boost::python::detail
 
