@@ -2,9 +2,6 @@
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 
-#if defined(BOOST_MSVC) && BOOST_MSVC <= 1200 // works around a name lookup bug
-# define C C_
-#endif 
 struct C {};
 
 struct D {};

@@ -172,10 +172,6 @@ struct B : A
     int x;
 };
 
-#if BOOST_MSVC == 1200
-# define C C_
-#endif
-
 struct C : A
 {
     C() : x(2) {}
