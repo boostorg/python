@@ -30,19 +30,9 @@
 #  include <boost/preprocessor/enum_params.hpp>
 #  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
+#  include <boost/detail/workaround.hpp>
+
 namespace boost { namespace python { namespace objects {
-
-template <class T>
-bool is_null(T const& p, ...)
-{
-    return get_pointer(p) == 0;
-}
-
-template <class T>
-bool is_null(T* p, int)
-{
-    return p == 0;
-}
 
 #  if BOOST_WORKAROUND(__GNUC__, == 2)
 #   define BOOST_PYTHON_UNFORWARD_LOCAL(z, n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)objects::do_unforward(a##n,0)
@@ -114,7 +104,7 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t)
     if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
-    if (objects::is_null(this->m_p, 0))
+    if (get_pointer(this->m_p) == 0)
         return 0;
     
     type_info src_t = python::type_id<Value>();
@@ -128,7 +118,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
     if (dst_t == python::type_id<Pointer>())
         return &this->m_p;
 
-    if (objects::is_null(this->m_p, 0))
+    if (!get_pointer(this->m_p))
         return 0;
     
     if (dst_t == python::type_id<held_type>())

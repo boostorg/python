@@ -15,14 +15,6 @@
 
 namespace boost { namespace python { namespace objects { 
 
-# if BOOST_WORKAROUND(__GNUC__, == 2)
-// A weird ADL bug prevents this being found
-template<class T> T * get_pointer(T * p)
-{
-    return p;
-}
-# endif 
-
 template <class T, class Holder>
 struct make_ptr_instance
     : make_instance_impl<T, Holder, make_ptr_instance<T,Holder> >
@@ -36,7 +28,6 @@ struct make_ptr_instance
     template <class Ptr>
     static inline PyTypeObject* get_class_object(Ptr const& x)
     {
-        using ::boost::get_pointer;
         return get_class_object_impl(get_pointer(x));
     }
 

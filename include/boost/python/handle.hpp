@@ -148,6 +148,11 @@ template<class T> inline T * get_pointer(python::handle<T> const & p)
 
 #ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
 namespace python {
+#else
+
+// We don't want get_pointer above to hide the others
+using boost::get_pointer;
+
 #endif
 
 typedef handle<PyTypeObject> type_handle;

@@ -703,11 +703,13 @@ namespace boost { namespace python { namespace detail {
         return p.get();
     }
 
-#ifdef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
-namespace python { namespace detail {
+#ifndef BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP
+    // Don't hide these other get_pointer overloads
+    using boost::python::get_pointer;
+    using boost::get_pointer;
+}} // namespace python::detail
 #endif
 
-}} // namespace python::detail
 } // namespace boost
 
 #endif // INDEXING_SUITE_DETAIL_JDG20036_HPP
