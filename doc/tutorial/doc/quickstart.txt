@@ -1521,7 +1521,7 @@ constructed from a [^handle]. The following examples should illustrate this
 fact:
 
     handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
-    main_namespace dict(handle<>(borrowed( PyModule_GetDict(main_module.get()) )));
+    dict main_namespace(handle<>(borrowed( PyModule_GetDict(main_module.get()) )));
     handle<>( PyRun_String("result = 5 ** 2", Py_file_input,
                            main_namespace.ptr(), main_namespace.ptr()) );
     int five_squared = extract<int>( main_namespace["result"] );
