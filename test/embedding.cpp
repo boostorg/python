@@ -140,8 +140,7 @@ test_tutorial2()
     object main_module(
         handle<>(borrowed(PyImport_AddModule("__main__"))));
 
-    dict main_namespace(
-        handle<>(borrowed(PyModule_GetDict(main_module.ptr()))));
+    object main_namespace = main_module.attr("__dict__");
 
     handle<>(PyRun_String(
 

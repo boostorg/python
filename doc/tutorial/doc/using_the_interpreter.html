@@ -158,8 +158,7 @@ illustrate this fact:</p>
     <span class=identifier>object </span><span class=identifier>main_module</span><span class=special>(
         </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyImport_AddModule</span><span class=special>(</span><span class=string>&quot;__main__&quot;</span><span class=special>))));
 
-    </span><span class=identifier>dict </span><span class=identifier>main_namespace</span><span class=special>(
-        </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>borrowed</span><span class=special>(</span><span class=identifier>PyModule_GetDict</span><span class=special>(</span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>ptr</span><span class=special>()))));
+    </span><span class=identifier>object </span><span class=identifier>main_namespace </span><span class=special>= </span><span class=identifier>main_module</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>);
 
     </span><span class=identifier>handle</span><span class=special>&lt;&gt;(</span><span class=identifier>PyRun_String</span><span class=special>(
 
