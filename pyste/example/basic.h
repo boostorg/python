@@ -1,3 +1,5 @@
+namespace basic {
+    
 struct C
 {    
     virtual int f(int x = 10)
@@ -19,3 +21,5 @@ int call_f(C& c, int x)
 {
     return c.f(x);
 } 
+
+}

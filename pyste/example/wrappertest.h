@@ -4,6 +4,8 @@
 
 #include <vector>
 
+namespace wrappertest {
+
 std::vector<int> Range(int count)
 {
     std::vector<int> v;
@@ -32,4 +34,6 @@ struct C
     }
 };
 
+} 
 #endif
+

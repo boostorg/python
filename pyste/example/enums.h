@@ -1,4 +1,5 @@
-namespace test {
+namespace enums {
+    
 enum color { red, blue };
 
 struct X
