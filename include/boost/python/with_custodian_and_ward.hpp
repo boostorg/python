@@ -14,6 +14,27 @@
 
 namespace boost { namespace python { 
 
+namespace detail
+{
+  template <unsigned N>
+  struct get_prev
+  {
+      template <class ArgumentPackage>
+      static PyObject* execute(ArgumentPackage const& args, PyObject*)
+      {
+          return get<(N-1)>(args);
+      }
+  };
+  template <>
+  struct get_prev<0>
+  {
+      template <class ArgumentPackage>
+      static PyObject* execute(ArgumentPackage const&, PyObject* zeroth)
+      {
+          return zeroth;
+      }
+  };
+}
 template <
     std::size_t custodian
   , std::size_t ward
@@ -80,8 +101,8 @@ struct with_custodian_and_ward_postcall : BasePolicy_
         PyObject* patient = ward > 0 ? detail::get(mpl::int_<(ward-1)>(),args_) : result;
         PyObject* nurse = custodian > 0 ? detail::get(mpl::int_<(custodian-1)>(),args_) : result;
 # else 
-        PyObject* patient = ward > 0 ? detail::get<(ward-1)>(args_) : result;
-        PyObject* nurse = custodian > 0 ? detail::get<(custodian-1)>(args_) : result;
+        PyObject* patient = detail::get_prev<ward>::execute(args_, result);
+        PyObject* nurse = detail::get_prev<custodian>::execute(args_, result);
 # endif 
         if (nurse == 0) return 0;
     
