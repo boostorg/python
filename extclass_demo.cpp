@@ -363,6 +363,68 @@ static int getX(OverloadTest * u)
     return u->x();
 }
 
+
+/************************************************************/
+/*                                                          */
+/*    classes to test base declarations snd conversions     */
+/*                                                          */
+/************************************************************/
+
+struct Dummy
+{
+    int dummy_;
+};
+
+struct Base
+{
+    virtual int x() const { return 999; };
+};
+
+// inherit Dummy so that the Base part of Concrete starts at an offset
+// otherwise, typecast tests wouldn't be very meaningful
+struct Derived1 : public Dummy, public Base
+{
+    Derived1(int x): x_(x) {}
+    virtual int x() const { return x_; }
+    
+  private:
+    int x_;
+};
+
+struct Derived2 : public Dummy, public Base
+{
+    Derived2(int x): x_(x) {}
+    virtual int x() const { return x_; }
+    
+  private:
+    int x_;
+};
+
+static int testUpcast(Base * b)
+{
+    return b->x();
+}
+
+static std::auto_ptr<Base> derived1Factory(int i)
+{
+    return std::auto_ptr<Base>(new Derived1(i));
+}
+
+static std::auto_ptr<Base> derived2Factory(int i)
+{
+    return std::auto_ptr<Base>(new Derived2(i));
+}
+
+static int testDowncast1(Derived1 * d)
+{
+    return d->x();
+}
+
+static int testDowncast2(Derived2 * d)
+{
+    return d->x();
+}
+
 /************************************************************/
 /*                                                          */
 /*                       init the module                    */
@@ -426,6 +488,25 @@ void init_module(py::Module& m)
     over.def(&OverloadTest::p4, "overloaded");
     over.def(&OverloadTest::p5, "overloaded");
     
+    py::ClassWrapper<Base> base(m, "Base");
+    base.def(&Base::x, "x");
+    
+    py::ClassWrapper<Derived1> derived1(m, "Derived1");    
+    // this enables conversions between Base and Derived1
+    // and makes wrapped methods of Base available 
+    derived1.declare_base(base);
+    derived1.def(py::Constructor<int>());
+
+    py::ClassWrapper<Derived2> derived2(m, "Derived2");    
+    // don't enable downcast from Base to Derived2 
+    derived2.declare_base(base, py::without_downcast);
+    derived2.def(py::Constructor<int>());
+    
+    m.def(&testUpcast, "testUpcast");
+    m.def(&derived1Factory, "derived1Factory");
+    m.def(&derived2Factory, "derived2Factory");
+    m.def(&testDowncast1, "testDowncast1");
+    m.def(&testDowncast2, "testDowncast2");
 }
 
 void init_module()

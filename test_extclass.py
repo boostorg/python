@@ -130,7 +130,7 @@ But objects not derived from Bar cannot:
     >>> baz.pass_bar(baz)
     Traceback (innermost last):
         ...
-    TypeError: extension class 'Baz' is not derived from 'Bar'.
+    TypeError: extension class 'Baz' is not convertible into 'Bar'.
 
 The clone function on Baz returns a smart pointer; we wrap it into an
 ExtensionInstance and  make it look just like any other Baz instance.
@@ -437,28 +437,28 @@ Testing overloaded free functions
     
 Testing overloaded constructors
 
-    >>> x = OverloadTest()
-    >>> x.getX()
+    >>> over = OverloadTest()
+    >>> over.getX()
     1000
-    >>> x = OverloadTest(1)
-    >>> x.getX()
+    >>> over = OverloadTest(1)
+    >>> over.getX()
     1
-    >>> x = OverloadTest(1,1)
-    >>> x.getX()
+    >>> over = OverloadTest(1,1)
+    >>> over.getX()
     2
-    >>> x = OverloadTest(1,1,1)
-    >>> x.getX()
+    >>> over = OverloadTest(1,1,1)
+    >>> over.getX()
     3
-    >>> x = OverloadTest(1,1,1,1)
-    >>> x.getX()
+    >>> over = OverloadTest(1,1,1,1)
+    >>> over.getX()
     4
-    >>> x = OverloadTest(1,1,1,1,1)
-    >>> x.getX()
+    >>> over = OverloadTest(1,1,1,1,1)
+    >>> over.getX()
     5
-    >>> x = OverloadTest(x)
-    >>> x.getX()
+    >>> over = OverloadTest(over)
+    >>> over.getX()
     5
-    >>> try: x = OverloadTest(1, 'foo')
+    >>> try: over = OverloadTest(1, 'foo')
     ... except TypeError, err:
     ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
     ...                     str(err))
@@ -467,25 +467,51 @@ Testing overloaded constructors
     
 Testing overloaded methods
 
-    >>> x.setX(3)
-    >>> x.overloaded()
+    >>> over.setX(3)
+    >>> over.overloaded()
     3
-    >>> x.overloaded(1)
+    >>> over.overloaded(1)
     1
-    >>> x.overloaded(1,1)
+    >>> over.overloaded(1,1)
     2
-    >>> x.overloaded(1,1,1)
+    >>> over.overloaded(1,1,1)
     3
-    >>> x.overloaded(1,1,1,1)
+    >>> over.overloaded(1,1,1,1)
     4
-    >>> x.overloaded(1,1,1,1,1)
+    >>> over.overloaded(1,1,1,1,1)
     5
-    >>> try: x.overloaded(1,'foo')
+    >>> try: over.overloaded(1,'foo')
     ... except TypeError, err:
     ...     assert re.match("No overloaded functions match \(OverloadTest, int, string\)\. Candidates are:",
     ...                     str(err))
     ... else:
     ...     print 'no exception'
+
+Testing base class conversions
+
+    >>> testUpcast(over)
+    Traceback (innermost last):
+    TypeError: extension class 'OverloadTest' is not convertible into 'Base'.
+    >>> der1 = Derived1(333)
+    >>> der1.x()
+    333
+    >>> testUpcast(der1)
+    333
+    >>> der1 = derived1Factory(1000)
+    >>> testDowncast1(der1)
+    1000
+    >>> testDowncast2(der1)
+    Traceback (innermost last):
+    TypeError: extension class 'Base' is not convertible into 'Derived2'.
+    >>> der2 = Derived2(444)
+    >>> der2.x()
+    444
+    >>> testUpcast(der2)
+    444
+    >>> der2 = derived2Factory(1111)
+    >>> testDowncast2(der1)
+    Traceback (innermost last):
+    TypeError: extension class 'Base' is not convertible into 'Derived2'.
 '''
 
 from demo import *

@@ -65,7 +65,38 @@ class ClassWrapper
     template <class MemberType>
     void def_read_write(MemberType T::*pm, const char* name)
         { m_class->def_read_write(pm, name); }
- private:
+        
+    // declare the given class a base class of this and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(ClassWrapper<S, V> const & base)
+    {
+        m_class->declare_base(base.m_class.get());
+    }
+
+    // declare the given class a base class of this and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(ClassWrapper<S, V> const & base, WithoutDowncast)
+    {
+        m_class->declare_base(base.m_class.get(), without_downcast);
+    }
+
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base)
+    {
+        m_class->declare_base(base);
+    }
+        
+    // declare the given class a base class of this and register 
+    // only upcast function
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
+    {
+        m_class->declare_base(base, without_downcast);
+    }
+    
+// private:
     PyPtr<ExtensionClass<T, U> > m_class;
 };
 

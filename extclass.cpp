@@ -157,7 +157,7 @@ void report_missing_instance_data(
     }
     else    
     {
-        two_string_error(PyExc_TypeError, "extension class '%.*s' is not derived from '%.*s'.",
+        two_string_error(PyExc_TypeError, "extension class '%.*s' is not convertible into '%.*s'.",
                          instance->ob_type->tp_name, target_class->tp_name);
     }
 }
@@ -216,6 +216,41 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
     : Class<ExtensionInstance>(
         extension_meta_class(), String(name), Tuple(), Dict())
 {
+}
+
+void * ExtensionClassBase::try_class_conversions(InstanceHolderBase * object) const
+{
+    void * result = try_sub_class_conversions(object);
+    if(result) return result;
+    result = try_super_class_conversions(object);
+    return result;
+}
+
+void * ExtensionClassBase::try_super_class_conversions(InstanceHolderBase * object) const
+{
+    void * result = 0;
+    for(int i=0; i<base_classes().size(); ++i)
+    {
+        if(base_classes()[i].second == 0) continue;
+        result = base_classes()[i].first->convert_from_holder(object);
+        if(result) return (*base_classes()[i].second)(result);
+        result = base_classes()[i].first->try_super_class_conversions(object);
+        if(result) return (*base_classes()[i].second)(result);
+    }
+    return 0;
+}
+
+void * ExtensionClassBase::try_sub_class_conversions(InstanceHolderBase * object) const
+{
+    void * result = 0;
+    for(int i=0; i<sub_classes().size(); ++i)
+    {
+        result = sub_classes()[i].first->convert_from_holder(object);
+        if(result) return (*sub_classes()[i].second)(result);
+        result = sub_classes()[i].first->try_sub_class_conversions(object);
+        if(result) return (*sub_classes()[i].second)(result);
+    }
+    return 0;
 }
 
 void ExtensionClassBase::add_method(Function* method, const char* name)

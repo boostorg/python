@@ -52,6 +52,9 @@ T* check_non_null(T* p)
 }
 
 template <class T> class HeldInstance;
+typedef void * (*ConversionFct)(void *);
+typedef std::pair<TypeObjectBase *, ConversionFct> BaseClassInfo;
+typedef std::pair<TypeObjectBase *, ConversionFct> SubClassInfo;
 
 class ExtensionClassBase : public Class<ExtensionInstance>
 {
@@ -66,18 +69,30 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void add_constructor_object(Function*);
     void add_setter_method(Function*, const char* name);
     void add_getter_method(Function*, const char* name);
+    
+    virtual void * try_class_conversions(InstanceHolderBase*) const;
+    virtual void * try_super_class_conversions(InstanceHolderBase*) const;
+    virtual void * try_sub_class_conversions(InstanceHolderBase*) const;
+    virtual std::vector<BaseClassInfo> const & base_classes() const = 0;
+    virtual std::vector<SubClassInfo> const & sub_classes() const = 0;
 };
 
 template <class T>
 class ClassRegistry
 {
- public:
+ public:    
     static Class<ExtensionInstance>* class_object()
         { return static_class_object; }
     static void register_class(py::Class<py::ExtensionInstance>*);
     static void unregister_class(py::Class<py::ExtensionInstance>*);
+    static void register_base_class(BaseClassInfo const &);
+    static void register_sub_class(SubClassInfo const &);
+    static std::vector<BaseClassInfo> const & base_classes();
+    static std::vector<SubClassInfo> const & sub_classes();
  private:
     static py::Class<py::ExtensionInstance>* static_class_object;
+    static std::vector<BaseClassInfo> static_base_class_info;
+    static std::vector<SubClassInfo> static_sub_class_info;
 };
 
 #ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // back to global namespace for this GCC bug
@@ -123,6 +138,10 @@ class PyExtensionClassConverters
             py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(*p);
             if (held != 0)
                 return held->target();
+
+            void * target = py::ClassRegistry<T>::class_object()->try_class_conversions(*p);
+            if(target) 
+                return static_cast<T *>(target);
         }
         py::report_missing_instance_data(self, py::ClassRegistry<T>::class_object(), typeid(T));
         throw py::ArgumentError();
@@ -250,6 +269,23 @@ class ReadOnlySetattrFunction : public Function
     String m_name;
 };
 
+template <class From, class To>
+struct ConversionFunction
+{
+    static void * upcast_ptr(void * v)
+    {
+        return static_cast<To *>(static_cast<From *>(v));
+    }
+
+    static void * downcast_ptr(void * v)
+    {
+        return dynamic_cast<To *>(static_cast<From *>(v));
+    }
+};
+
+enum WithoutDowncast { without_downcast };
+
+
 // An easy way to make an extension base class which wraps T. Note that Python
 // subclasses of this class will simply be Class<ExtensionInstance> objects.
 //
@@ -344,10 +380,40 @@ class ExtensionClass
         this->def_getter(pm, name);
         this->def_setter(pm, name);
     }
+        
+    // declare the given class a base class of this and register 
+    // conversion functions
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base)
+    {
+        BaseClassInfo baseInfo(base, &ConversionFunction<S, T>::downcast_ptr);
+        ClassRegistry<T>::register_base_class(baseInfo);
+        add_base(Ptr(as_object(base)));
+        
+        SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
+        ClassRegistry<S>::register_sub_class(subInfo);
+    }
+        
+    // declare the given class a base class of this and register 
+    // only upcast function
+    template <class S, class V>
+    void declare_base(ExtensionClass<S, V> * base, WithoutDowncast)
+    {
+        BaseClassInfo baseInfo(base, 0);
+        ClassRegistry<T>::register_base_class(baseInfo);
+        add_base(Ptr(as_object(base)));
+        
+        SubClassInfo subInfo(this, &ConversionFunction<T, S>::upcast_ptr);
+        ClassRegistry<S>::register_sub_class(subInfo);
+    }
     
  private:
     typedef InstanceValueHolder<T,U> Holder;
     
+    virtual std::vector<BaseClassInfo> const & base_classes() const;
+    virtual std::vector<SubClassInfo> const & sub_classes() const;
+    virtual void * convert_from_holder(InstanceHolderBase * v) const;
+
     template <class Signature>
     void add_constructor(Signature sig)
     {
@@ -465,6 +531,28 @@ ExtensionClass<T, U>::ExtensionClass(const char* name)
 }
 
 template <class T, class U>
+inline
+std::vector<BaseClassInfo> const & ExtensionClass<T, U>::base_classes() const
+{
+    return ClassRegistry<T>::base_classes();
+}
+
+template <class T, class U>
+inline
+std::vector<SubClassInfo> const & ExtensionClass<T, U>::sub_classes() const
+{
+    return ClassRegistry<T>::sub_classes();
+}
+       
+template <class T, class U>
+void * ExtensionClass<T, U>::convert_from_holder(InstanceHolderBase * v) const
+{
+    py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(v);
+    if(held) return held->target();
+    return 0;
+}
+
+template <class T, class U>
 ExtensionClass<T, U>::~ExtensionClass()
 {
     ClassRegistry<T>::unregister_class(this);
@@ -487,11 +575,39 @@ inline void ClassRegistry<T>::unregister_class(Class<ExtensionInstance>* p)
     static_class_object = 0;
 }
 
+template <class T>
+void ClassRegistry<T>::register_base_class(BaseClassInfo const & i)
+{
+    static_base_class_info.push_back(i);
+}
+
+template <class T>
+void ClassRegistry<T>::register_sub_class(SubClassInfo const & i)
+{
+    static_sub_class_info.push_back(i);
+}
+
+template <class T>
+std::vector<BaseClassInfo> const & ClassRegistry<T>::base_classes()
+{
+    return static_base_class_info;
+}
+
+template <class T>
+std::vector<SubClassInfo> const & ClassRegistry<T>::sub_classes()
+{
+    return static_sub_class_info;
+}
+
 //
 // Static data member declaration.
 //
 template <class T>
 Class<py::ExtensionInstance>* ClassRegistry<T>::static_class_object;
+template <class T>
+std::vector<BaseClassInfo> ClassRegistry<T>::static_base_class_info;
+template <class T>
+std::vector<SubClassInfo> ClassRegistry<T>::static_sub_class_info;
 
 } // namespace py
 
