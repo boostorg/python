@@ -18,11 +18,10 @@ namespace boost { namespace python {
 
 class module_builder
 {
-    typedef PyObject * (*raw_function_ptr)(boost::python::tuple const &, boost::python::dictionary const &);
-    
  public:
     // Create a module. REQUIRES: only one module_builder is created per module.
     module_builder(const char* name);
+    ~module_builder();
 
     // Add elements to the module
     void add(detail::function* x, const char* name);
@@ -41,12 +40,28 @@ class module_builder
         add(detail::new_wrapped_function(fn), name);
     }
 
-    static string name();
+    // Return true iff a module is currently being built.
+    static bool initializing();
     
+    // Return the name of the module currently being built.
+    // REQUIRES: initializing() == true
+    static string name();
+
+    // Return a pointer to the Python module object being built
+    PyObject* module() const;
+
  private:
     PyObject* m_module;
     static PyMethodDef initial_methods[1];
 };
+
+//
+// inline implementations
+//
+inline PyObject* module_builder::module() const
+{
+    return m_module;
+}
 
 }} // namespace boost::python
 

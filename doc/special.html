@@ -1,11 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0//EN"
-"http://www.w3.org/TR/REC-html40/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
     <title>
       Special Method and Operator Support
     </title>
     <div>
       <h1>
-         <img width="277" height="86" id="_x0000_i1025" align="center" src= 
+         <img width="277" height="86" id="_x0000_i1025" align="middle" src= 
         "../../../c++boost.gif" alt="c++boost.gif (8819 bytes)">Special Method and
         Operator Support
       </h1>
@@ -13,8 +12,8 @@
          Overview
       </h2>
       <p>
-         Py_cpp supports all of the standard <a href=
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
+         BPL supports all of the standard <a href=
+        "http://www.python.org/doc/current/ref/specialnames.html">
         special method names</a> supported by real Python class instances <em>
         except</em> <code>__complex__</code> (more on the reasons <a href=
         "#reasons">below</a>). In addition, it can quickly and easily expose
@@ -34,19 +33,24 @@
       Python provides a number of special operators for basic customization of a
       class. Only a brief description is provided below; more complete
       documentation can be found <a
-      href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/customization.html">here</a>.
+      href="http://www.python.org/doc/current/ref/customization.html">here</a>.
 
       <dl>
         <dt>
           <b><tt class='method'>__init__</tt></b>(<i>self</i>)
         <dd>
           Initialize the class instance. For extension classes not subclassed in
-          Python, this is provided by the
-          <code>boost::python::constructor<...>()</code> construct and should <i>not</i> be explicitly <code>def</code>ed.
+          Python, <code> __init__</code> is defined by 
+          
+          <pre>    my_class.def(boost::python::constructor<...>())</pre> 
+          
+          (see section <a href="example1.html">"A Simple Example Using BPL"</a>).<p>
         <dt>
           <b><tt class='method'>__del__</tt></b>(<i>self</i>)
         <dd>
-          Called when the extension instance is about to be destroyed.
+          Called when the extension instance is about to be destroyed. For extension classes 
+          not subclassed in Python, <code> __del__</code> is always defined automatically by 
+          means of the class' destructor.
         <dt>
           <b><tt class='method'>__repr__</tt></b>(<i>self</i>)
         <dd>
@@ -78,7 +82,7 @@
         <dt>
         <b><tt class='method'>__call__</tt></b> (<var>self</var><big>[</big><var>, args...</var><big>]</big>)
 <dd>
-Called when the instance is &ldquo;called&rdquo; as a function; if this method
+Called when the instance is ``called'' as a function; if this method
 is defined, <code><var>x</var>(arg1, arg2, ...)</code> is a shorthand for
 <code><var>x</var>.__call__(arg1, arg2, ...)</code>.
       </dl>
@@ -100,7 +104,7 @@ std::string to_string(Foo const&amp; f)
 boost::python::class_builder&lt;Foo&gt; foo_class(my_module, "Foo");
 foo_class.def(&amp;to_string, "__str__");
 </pre></blockquote>
-      Note that py_cpp also supports <em>automatic wrapping</em> of
+      Note that BPL also supports <em>automatic wrapping</em> of
       <code>__str__</code> and <code>__cmp__</code>. This is explained in the <a
       href="#numeric">next section</a> and the <a href="#numeric_table">Table of
       Automatically Wrapped Methods</a>.
@@ -110,10 +114,10 @@ foo_class.def(&amp;to_string, "__str__");
 <p>
       Numeric operators can be exposed manually, by <code>def</code>ing C++
       [member] functions that support the standard Python <a
-      href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/numeric-types.html">numeric
-      protocols</a>. This is the basic same technique used to expose
+      href="http://www.python.org/doc/current/ref/numeric-types.html">numeric
+      protocols</a>. This is the same basic technique used to expose
       <code>to_string()</code> as <code>__str__()</code> above, and is <a
-      href="#numeric_manual">covered in detail below</a>.  Py_cpp also supports
+      href="#numeric_manual">covered in detail below</a>.  BPL also supports
       <i>automatic wrapping</i> of numeric operators whenever they have already
       been defined in C++.
 
@@ -121,7 +125,7 @@ foo_class.def(&amp;to_string, "__str__");
 
 <p>
 Supose we wanted to expose a C++ class
-      <code>BigNum</code> which supports addition, so that we can write (in C++):
+      <code>BigNum</code> which supports addition. That is, in C++ we can write:
 <blockquote><pre>
 BigNum a, b, c;
 ...
@@ -143,7 +147,7 @@ bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;());
 
       Since BigNum also supports subtraction, multiplication, and division, we
       want to export those also. This can be done in a single command by
-      &ldquo;or&rdquo;ing the operator identifiers together (a complete list of these
+      ``or''ing the operator identifiers together (a complete list of these
       identifiers and the corresponding operators can be found in the <a href= 
       "#numeric_table">Table of Automatically Wrapped Methods</a>):
 <blockquote><pre>
@@ -170,7 +174,7 @@ a = i + b;
 bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;(), boost::python::right_operand&lt;int&gt;());
 bignum_class.def(boost::python::operators&lt;boost::python::op_add&gt;(), boost::python::left_operand&lt;int&gt;());
 </pre></blockquote>
-      Py_cpp uses overloading to register several variants of the same
+      BPL uses overloading to register several variants of the same
       operation (more on this in the context of <a href="#coercion">
       coercion</a>). Again, several operators can be exported at once: 
 <blockquote><pre>
@@ -181,7 +185,7 @@ bignum_class.def(boost::python::operators&lt;(boost::python::op_sub | boost::pyt
 </pre></blockquote>
       The type of the operand not mentioned is taken from the class being wrapped. In
       our example, the class object is <code>bignum_class</code>, and thus the
-      other operand's type is &ldquo;<code>BigNum const&amp;</code>&rdquo;. You can override
+      other operand's type is ``<code>BigNum const&amp;</code>''. You can override
       this default by explicitly specifying a type in the <code>
       operators</code> template: 
 <blockquote><pre>
@@ -189,15 +193,18 @@ bignum_class.def(boost::python::operators&lt;boost::python::op_add, BigNum&gt;()
 </pre></blockquote>
       <p>
         Note that automatic wrapping uses the <em>expression</em>
-        &ldquo;<code>left + right</code>&rdquo; and can be used uniformly
+        ``<code>left + right</code>'' and can be used uniformly
         regardless of whether the C++ operators are supplied as free functions
-        <blockquote><pre>
+
+ <blockquote><pre>
 BigNum operator+(BigNum, BigNum)
 </pre></blockquote>
-        or as member
-        functions <blockquote><pre>
+
+        or as member functions
+
+<blockquote><pre>
 BigNum::operator+(BigNum).
-</blockquote></pre>
+</pre></blockquote>
 
       <p>
         For the Python built-in functions <code>pow()</code> and
@@ -218,8 +225,7 @@ namespace boost { namespace python {
       <p>
         In some cases, automatic wrapping of operators may be impossible or
         undesirable. Suppose, for example, that the modulo operation for BigNums
-        is defined by a set of functions <code>mod()</code> (for automatic
-        wrapping, we would need <code>operator%()</code>):
+        is defined by a set of functions called <code>mod()</code>:
 
 <blockquote><pre>
 BigNum mod(BigNum const&amp; left, BigNum const&amp; right);
@@ -228,8 +234,9 @@ BigNum mod(int left, BigNum const&amp; right);
 </pre></blockquote>
 
      <p>
-       In order to create the Python operator "__mod__" from these functions, we
-       have to wrap them manually:
+        For automatic wrapping of the modulo function, <code>operator%()</code> would be needed.
+        Therefore, the <code>mod()</code>-functions must be wrapped manually. That is, we have 
+        to export them explicitly with the Python special name "__mod__":
 
 <blockquote><pre>
 bignum_class.def((BigNum (*)(BigNum const&amp;, BigNum const&amp;))&amp;mod, "__mod__");
@@ -237,8 +244,8 @@ bignum_class.def((BigNum (*)(BigNum const&amp;, int))&amp;mod, "__mod__");
 </pre></blockquote>
 
 <p>
-      The third form (with <code>int</code> as left operand) cannot be wrapped
-      this way. We must first create a function <code>rmod()</code> with the
+      The third form of <code>mod()</code> (with <code>int</code> as left operand) cannot 
+      be wrapped directly. We must first create a function <code>rmod()</code> with the
       operands reversed: 
 
 <blockquote><pre>
@@ -248,7 +255,7 @@ BigNum rmod(BigNum const&amp; right, int left)
 }
 </pre></blockquote>
 
-      This function must be wrapped under the name "__rmod__": 
+      This function must be wrapped under the name "__rmod__" (standing for "reverse mod"): 
 
 <blockquote><pre>
 bignum_class.def(&amp;rmod,  "__rmod__");
@@ -261,9 +268,9 @@ bignum_class.def(&amp;rmod,  "__rmod__");
       <p>
         Automatic and manual wrapping can be mixed arbitrarily. Note that you
         cannot overload the same operator for a given extension class on both
-        &ldquo;<code>int</code>&rdquo; and &ldquo;<code>float</code>&rdquo;, because Python implicitly
+        ``<code>int</code>'' and ``<code>float</code>'', because Python implicitly
         converts these types into each other. Thus, the overloaded variant
-        found first (be it &ldquo;<code>int</code>&ldquo; or &ldquo;<code>float</code>&rdquo;) will be
+        found first (be it ``<code>int</code>`` or ``<code>float</code>'') will be
         used for either of the two types.
 
 <h3><a name="coercion">Coercion</a></h3>
@@ -271,18 +278,18 @@ bignum_class.def(&amp;rmod,  "__rmod__");
 
       Plain Python can only execute operators with identical types on the left
       and right hand side. If it encounters an expression where the types of
-      the left and right operand differ, it tries to coerce these type to a
+      the left and right operand differ, it tries to coerce these types to a
       common type before invoking the actual operator. Implementing good
       coercion functions can be difficult if many type combinations must be
       supported. 
       <p>
-        Py_cpp solves this problem the same way that C++ does: with <em><a
+        BPL solves this problem the same way that C++ does: with <em><a
         href="overloading.html">overloading</a></em>. This technique drastically
         simplifies the code neccessary to support operators: you just register
-        operators for all desired type combinations, and py_cpp automatically
+        operators for all desired type combinations, and BPL automatically
         ensures that the correct function is called in each case; there is no
         need for user-defined coercion functions. To enable operator
-        overloading, py_cpp provides a standard coercion which is <em>implicitly
+        overloading, BPL provides a standard coercion which is <em>implicitly
         registered</em> whenever automatic operator wrapping is used.
       <p>
         If you wrap all operator functions manually, but still want to use
@@ -295,7 +302,7 @@ bignum_class.def_standard_coerce();
 </pre></blockquote>
 
       If you encounter a situation where you absolutely need a customized
-      coercion, you can overload the "__coerce__" operator itself. The signature
+      coercion, you can still define the "__coerce__" operator manually. The signature
       of a coercion function should look like one of the following (the first is
       the safest):
 
@@ -310,13 +317,22 @@ PyObject* custom_coerce(PyObject* left, PyObject* right);
       converted to the same type. Such a function is wrapped as usual: 
 
 <blockquote><pre>
+// this must be called before any use of automatic operator  
+// wrapping or a call to some_class.def_standard_coerce()
 some_class.def(&amp;custom_coerce, "__coerce__");
 </pre></blockquote>
 
-      Note that the later use of automatic operator wrapping on a
-      <code>class_builder</code> or a call to
-      &ldquo;<code>some_class.def_standard_coerce()</code>&rdquo; will cause any
-      custom coercion function to be replaced by the standard one.
+     Note that the standard coercion (defined by use of automatic 
+     operator wrapping on a <code>class_builder</code> or a call to
+     <code>class_builder::def_standard_coerce()</code>) will never be applied if
+     a custom coercion function has been registered. Therefore, in 
+     your coercion function you should call 
+
+<blockquote><pre>
+boost::python::standard_coerce(left, right);
+</pre></blockquote>
+
+     for all cases that you don't want to handle yourself.
 
 <h3><a name="ternary_pow">The Ternary <code>pow()</code> Operator</a></h3>
 
@@ -330,7 +346,7 @@ some_class.def(&amp;custom_coerce, "__coerce__");
       this is done as usual: 
 
 <blockquote><pre>
-BigNum power(BigNum const&amp; first, BigNum const&amp; second, BigNum const&amp; module);
+BigNum power(BigNum const&amp; first, BigNum const&amp; second, BigNum const&amp; modulus);
 typedef BigNum (ternary_function1)(const BigNum&amp;, const BigNum&amp;, const BigNum&amp;);
 ...
 bignum_class.def((ternary_function1)&amp;power,  "__pow__");
@@ -353,19 +369,19 @@ bignum_class.def((ternary_function2)&amp;power,  "__pow__");
 </pre></blockquote>
 
       In the second variant, however, <code>BigNum</code> appears only as second
-      argument, and in the last one it is the third argument. These functions
-      must be presented to py_cpp such that that the <code>BigNum</code>
+      argument, and in the last one it's the third argument. These functions
+      must be presented to BPL such that that the <code>BigNum</code>
       argument appears in first position:
 
 <blockquote><pre>
 BigNum rpower(BigNum const&amp; second, int first, int modulus)
 {
-    return power(first, second, third);
+    return power(first, second, modulus);
 }
 
-BigNum rrpower(BigNum const&amp; third, int first, int second)
+BigNum rrpower(BigNum const&amp; modulus, int first, int second)
 {
-    return power(first, second, third);
+    return power(first, second, modulus);
 }
 </pre></blockquote>
 
@@ -381,8 +397,8 @@ Note that "__rrpow__" is an extension not present in plain Python.
 
 <h2><a name="numeric_table">Table of Automatically Wrapped Methods</a></h2>
       <p>
-         Py_cpp can automatically wrap the following <a href=
-         "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/specialnames.html">
+         BPL can automatically wrap the following <a href=
+         "http://www.python.org/doc/current/ref/specialnames.html">
          special methods</a>:
 
       <p>
@@ -630,15 +646,16 @@ Note that "__rrpow__" is an extension not present in plain Python.
       to Python's iteration and access protocols. These protocols differ
       considerably from the ones found in C++. For example, Python's typical
       iteration idiom looks like
+
 <blockquote><pre>
 for i in S:
-</blockquote></pre>
+</pre></blockquote>
 
-while in C++ one writes
+      while in C++ one writes
 
 <blockquote><pre>
-for (iterator i = S.begin(), end = S.end(); i != end)
-</blockquote></pre>
+for (iterator i = S.begin(), end = S.end(); i != end; ++i)
+</pre></blockquote>
 
 <p>One could try to wrap C++ iterators in order to carry the C++ idiom into
       Python. However, this does not work very well because 
@@ -655,12 +672,12 @@ for (iterator i = S.begin(), end = S.end(); i != end)
 
       <p>
         It is a better idea to support the standard <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">Python
+        href="http://www.python.org/doc/current/ref/sequence-types.html">Python
         sequence and mapping protocols</a> for your wrapped containers. These
         operators have to be wrapped manually because there are no corresponding
         C++ operators that could be used for automatic wrapping. The Python
         documentation lists the relevant <a href=
-        "http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/sequence-types.html">
+        "http://www.python.org/doc/current/ref/sequence-types.html">
         container operators</a>. In particular, expose __getitem__, __setitem__
         and remember to raise the appropriate Python exceptions
         (<code>PyExc_IndexError</code> for sequences,
@@ -689,7 +706,7 @@ void throw_key_error_if_end(
 
 // Define some simple wrapper functions which match the Python  protocol
 // for __getitem__, __setitem__, and __delitem__.  Just as in Python, a
-// free function with a &ldquo;self&rdquo; first parameter makes a fine class method.
+// free function with a ``self'' first parameter makes a fine class method.
 
 const std::string&amp; get_item(const StringMap&amp; self, std::size_t key)
 {
@@ -755,13 +772,13 @@ KeyError: 2
 <h2><a name="getter_setter">Customized Attribute Access</a></h2>
 
       <p>
-        Just like built-in Python classes, py_cpp extension classes support <a
-        href="http://www.pythonlabs.com/pub/www.python.org/doc/current/ref/attribute-access.html">special
+        Just like built-in Python classes, BPL extension classes support <a
+        href="http://www.python.org/doc/current/ref/attribute-access.html">special
         the usual attribute access methods</a> <code>__getattr__</code>,
         <code>__setattr__</code>, and <code>__delattr__</code>.
         Because writing these functions can
         be tedious in the common case where the attributes being accessed are
-        known statically, py_cpp checks the special names
+        known statically, BPL checks the special names
 
       <ul>
         <li>
@@ -774,10 +791,10 @@ KeyError: 2
 
       to provide functional access to the attribute <em>&lt;name&gt;</em>. This
       facility can be used from C++ or entirely from Python. For example, the
-      following shows how we can implement a &ldquo;computed attribute&rdquo; in Python: 
+      following shows how we can implement a ``computed attribute'' in Python: 
       <blockquote>
 <pre>
-&gt;&gt;&gt; class Range(AnyPy_cppExtensionClass):
+&gt;&gt;&gt; class Range(AnyBPLExtensionClass):
 ...    def __init__(self, start, end):
 ...        self.start = start
 ...        self.end = end
@@ -793,7 +810,7 @@ KeyError: 2
          Direct Access to Data Members
       </h4>
       <p>
-         Py_cpp uses the special <code>
+         BPL uses the special <code>
         __xxxattr__<em>&lt;name&gt;</em>__</code> functionality described above
         to allow direct access to data members through the following special
         functions on <code>class_builder&lt;&gt;</code> and <code>
@@ -873,14 +890,14 @@ if (PyInstance_Check(r)) { ...
 </pre>
       </blockquote>
       <p>
-         Previous: <a href="inheritance.html">Inheritance</a> Next: <a href= 
-        "under-the-hood.html">A Peek Under the Hood</a> Up: <a href=
-        "index.html">Top</a>
+Next: <a href="under-the-hood.html">A Peek Under the Hood</a>
+Previous: <a href="inheritance.html">Inheritance</a> 
+Up: <a href= "index.html">Top</a>
       <p>
          &copy; Copyright David Abrahams and Ullrich K&ouml;the 2000.
         Permission to copy, use, modify, sell and distribute this document is
         granted provided this copyright notice appears in all copies. This
-        document is provided &ldquo;as is&rdquo; without express or implied
+        document is provided ``as is'' without express or implied
         warranty, and with no claim as to its suitability for any purpose.
       <p>
          Updated: Nov 26, 2000

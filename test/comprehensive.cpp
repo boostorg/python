@@ -11,7 +11,7 @@
 #include <math.h>  // for pow()
 #include <boost/rational.hpp>
 
-namespace extclass_demo {
+namespace bpl_test {
 
 FooCallback::FooCallback(PyObject* self, int x)
     : Foo(x), m_self(self)
@@ -714,12 +714,14 @@ const Record* get_record()
     return &v;
 }
 
-template class boost::python::class_builder<Record>; // explicitly instantiate
+} // namespace bpl_test
 
-} // namespace extclass_demo
+namespace boost { namespace python {
+  template class class_builder<bpl_test::Record>; // explicitly instantiate
+}} // namespace boost::python
 
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
-inline PyObject* to_python(const extclass_demo::Record* p)
+inline PyObject* to_python(const bpl_test::Record* p)
 {
     return to_python(*p);
 }
@@ -731,7 +733,7 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 /*                                                          */
 /************************************************************/
 
-namespace extclass_demo {
+namespace bpl_test {
 
 struct EnumOwner
 {
@@ -753,8 +755,8 @@ struct EnumOwner
 }
 
 namespace boost { namespace python {
-  template class enum_as_int_converters<extclass_demo::EnumOwner::enum_type>;
-  using extclass_demo::pow;
+  template class enum_as_int_converters<bpl_test::EnumOwner::enum_type>;
+  using bpl_test::pow;
 }} // namespace boost::python
 
 // This is just a way of getting the converters instantiated
@@ -763,7 +765,7 @@ namespace boost { namespace python {
 //{
 //};
 
-namespace extclass_demo {
+namespace bpl_test {
 
 /************************************************************/
 /*                                                          */
@@ -1036,7 +1038,7 @@ void init_module(boost::python::module_builder& m)
     world_class.def(world_setstate, "__setstate__");
 }
 
-PyObject* raw(boost::python::tuple const& args, boost::python::dictionary const& keywords)
+PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary& keywords)
 {
     if(args.size() != 2 || keywords.size() != 2)
     {
@@ -1055,21 +1057,21 @@ PyObject* raw(boost::python::tuple const& args, boost::python::dictionary const&
 
 void init_module()
 {
-    boost::python::module_builder demo("demo");
-    init_module(demo);
+    boost::python::module_builder test("test");
+    init_module(test);
 
     // Just for giggles, add a raw metaclass.
-    demo.add(new boost::python::meta_class<boost::python::instance>);
+    test.add(new boost::python::meta_class<boost::python::instance>);
 }
 
 extern "C"
 #ifdef _WIN32
 __declspec(dllexport)
 #endif
-void initdemo()
+void inittest()
 {
     try {
-        extclass_demo::init_module();
+        bpl_test::init_module();
     }
     catch(...) {
         boost::python::handle_exception();
@@ -1083,7 +1085,7 @@ CompareIntPairPythonClass::CompareIntPairPythonClass(boost::python::module_build
     def(&CompareIntPair::operator(), "__call__");
 }
 
-} // namespace extclass_demo
+} // namespace bpl_test
 
 
 #if defined(_WIN32)
@@ -1124,7 +1126,7 @@ BOOL WINAPI DllMain(
     switch(fdwReason)
     {
     case DLL_PROCESS_DETACH:
-        assert(extclass_demo::total_Ints == 0);
+        assert(bpl_test::total_Ints == 0);
     }
 #endif
     

@@ -1,14 +1,37 @@
+//  (C) Copyright Ullrich Koethe and David Abrahams 2000-2001. Permission to
+//  copy, use, modify, sell and distribute this software is granted provided
+//  this copyright notice appears in all copies. This software is provided "as
+//  is" without express or implied warranty, and with no claim as to its
+//  suitability for any purpose.
+//
+//  The authors gratefully acknowlege the support of Dragon Systems, Inc., in
+//  producing this work.
+//
+//  Revision History:
+//  23 Jan 2001 - Another stupid typo fix by Ralf W. Grosse-Kunstleve (David Abrahams)
+//  20 Jan 2001 - Added a fix from Ralf W. Grosse-Kunstleve (David Abrahams)
 #ifndef OPERATORS_UK112000_H_
 #define OPERATORS_UK112000_H_
 
-#include <boost/python/detail/functions.hpp>
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
-# include <sstream>
-#else
-# include <strstream>
-#endif
+# include <boost/python/reference.hpp>
+# include <boost/python/detail/functions.hpp>
+
+// When STLport is used with native streams, _STL::ostringstream().str() is not
+// _STL::string, but std::string. This confuses to_python(), so we'll use
+// strstream instead. Also, GCC 2.95.2 doesn't have sstream.
+# if defined(__SGI_STL_PORT) ? defined(__SGI_STL_OWN_IOSTREAMS) : (!defined(__GNUC__) || __GNUC__ > 2)
+#  define BOOST_PYTHON_USE_SSTREAM
+# endif
+
+#if defined(BOOST_PYTHON_USE_SSTREAM)
+#  include <sstream>
+# else
+#  include <strstream>
+# endif
 
 namespace boost { namespace python {
+
+tuple standard_coerce(ref l, ref r);
 
 namespace detail {
   
@@ -461,6 +484,16 @@ namespace detail
       static const char * rname() { return "__rcmp__"; }
   };
 
+# ifndef BOOST_PYTHON_USE_SSTREAM
+  class unfreezer {
+   public:
+      unfreezer(std::ostrstream& s) : m_stream(s) {}
+      ~unfreezer() { m_stream.freeze(false); }
+   private:
+      std::ostrstream& m_stream;
+  };
+# endif
+  
 // str(): Manual specialization needed because the string conversion does not follow
 // the standard pattern relized by the macros.
   template <>
@@ -473,19 +506,18 @@ namespace detail
           { 
               tuple args(ref(arguments, ref::increment_count));
 
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
+// When STLport is used with native streams, _STL::ostringstream().str() is not
+// _STL::string, but std::string.
+# ifdef BOOST_PYTHON_USE_SSTREAM
               std::ostringstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>());
-#else
+              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
+# else
               std::ostrstream s;
               s << BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<operand>()) << char();
-#endif
-
-#if !defined(__GNUC__) || defined(__SGI_STL_PORT)
-              return BOOST_PYTHON_CONVERSION::to_python(s.str()); 
-#else
+              auto unfreezer unfreeze(s);
               return BOOST_PYTHON_CONVERSION::to_python(const_cast<char const *>(s.str())); 
-#endif
+# endif
           }
 
           const char* description() const
@@ -501,4 +533,5 @@ namespace detail
 
 }} // namespace boost::python
 
+# undef BOOST_PYTHON_USE_SSTREAM
 #endif /* OPERATORS_UK112000_H_ */
