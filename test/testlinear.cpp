@@ -16,7 +16,7 @@
 // $Id$
 //
 
-#include "IntWrapper.hpp"
+#include "int_wrapper.hpp"
 
 #include <boost/python/suite/indexing/container_suite.hpp>
 #include <boost/python/suite/indexing/iterator_pair.hpp>
@@ -32,22 +32,23 @@
 #include <boost/python/def.hpp>
 #include <boost/python/implicit.hpp>
 
-bool IntWrapper::gIntWrapperTrace = true;
-unsigned IntWrapper::ourObjectCounter = 0;
+// More messiness from not having a separate int_wrapper.cpp file
+bool int_wrapper::our_trace_flag = true;
+unsigned int_wrapper::our_object_counter = 0;
 
-boost::python::indexing::iterator_pair<IntWrapper *> getArray()
+boost::python::indexing::iterator_pair<int_wrapper *> getArray()
 {
-  static IntWrapper array[] = {
-    IntWrapper(8), IntWrapper(6), IntWrapper(4), IntWrapper(2)
-    , IntWrapper(1), IntWrapper(3), IntWrapper(5)
-    , IntWrapper(7), IntWrapper(0) };
+  static int_wrapper array[] = {
+    int_wrapper(8), int_wrapper(6), int_wrapper(4), int_wrapper(2)
+    , int_wrapper(1), int_wrapper(3), int_wrapper(5)
+    , int_wrapper(7), int_wrapper(0) };
 
-  return boost::python::indexing::iterator_pair<IntWrapper *>
+  return boost::python::indexing::iterator_pair<int_wrapper *>
     (boost::python::indexing::begin(array)
      , boost::python::indexing::end(array));
 }
 
-std::string repr (IntWrapper const &i)
+std::string repr (int_wrapper const &i)
 {
   std::stringstream temp;
   temp << i;
@@ -56,12 +57,12 @@ std::string repr (IntWrapper const &i)
 
 BOOST_PYTHON_MODULE(testlinear)
 {
-  boost::python::implicitly_convertible <int, IntWrapper>();
+  boost::python::implicitly_convertible <int, int_wrapper>();
 
-  boost::python::def ("setTrace", &IntWrapper::setTrace);
+  boost::python::def ("setTrace", &int_wrapper::setTrace);
 
-  boost::python::class_<IntWrapper> ("IntWrapper", boost::python::init<int>())
-    .def ("increment", &IntWrapper::increment)
+  boost::python::class_<int_wrapper> ("int_wrapper", boost::python::init<int>())
+    .def ("increment", &int_wrapper::increment)
     .def ("__repr__", repr)
     .def ("__cmp__", compare)
     ;
@@ -73,20 +74,20 @@ BOOST_PYTHON_MODULE(testlinear)
     .def ("reserve", &Container1::reserve)
     ;
 
-  typedef std::list<IntWrapper> Container2;
+  typedef std::list<int_wrapper> Container2;
 
   boost::python::class_<Container2>("List")
     .def (boost::python::indexing::container_suite<Container2>());
 
-  typedef boost::python::indexing::iterator_pair<IntWrapper *> Container3;
+  typedef boost::python::indexing::iterator_pair<int_wrapper *> Container3;
 
   boost::python::class_<Container3>
-    ("Array", boost::python::init<IntWrapper *, IntWrapper *>())
+    ("Array", boost::python::init<int_wrapper *, int_wrapper *>())
     .def (boost::python::indexing::container_suite<Container3>());
 
   boost::python::def ("getArray", getArray);
 
-  typedef std::vector<IntWrapper> Container4;
+  typedef std::vector<int_wrapper> Container4;
 
   // Returning internal references to elements of a vector is
   // dangerous! The references can be invalidated by inserts or
@@ -95,7 +96,7 @@ BOOST_PYTHON_MODULE(testlinear)
     .def (boost::python::indexing::container_suite<Container4>
           ::with_policies (boost::python::return_internal_reference<>()));
 
-  typedef boost::python::indexing::container_proxy< std::vector<IntWrapper> >
+  typedef boost::python::indexing::container_proxy< std::vector<int_wrapper> >
     Container5;
 
   boost::python::class_<Container5>("Vector_proxy")

@@ -20,7 +20,7 @@
 
 '''>>> from testnonlinear import *
 >>> setTrace(0)
->>> m = Map()                            # std::map<std::string, IntWrapper>
+>>> m = Map()                            # std::map<std::string, int_wrapper>
 >>> m["hello"] = 1                       # Insert entry
 >>> print m["hello"]                     # Lookup entry
 1
