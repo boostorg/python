@@ -92,7 +92,7 @@ inline enum_<T>& enum_<T>::value(char const* name, T x)
 template <class T>
 inline enum_<T>& enum_<T>::export_values()
 {
-    this->enum_base::export_values();
+    this->base::export_values();
     return *this;
 }
 
