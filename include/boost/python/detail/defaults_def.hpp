@@ -7,6 +7,8 @@
 // to its suitability for any purpose.
 //
 ///////////////////////////////////////////////////////////////////////////////
+#if !defined(BOOST_PP_IS_ITERATING)
+
 #ifndef DEFAULTS_DEF_JDG20020811_HPP
 #define DEFAULTS_DEF_JDG20020811_HPP
 
@@ -15,6 +17,7 @@
 #include <boost/mpl/int_t.hpp>
 #include <boost/mpl/size.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/preprocessor/iterate.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
@@ -45,29 +48,11 @@ namespace detail {
 //      5. char const* name:    doc string
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BPL_IMPL_STUB_FUNC_DEF(INDEX, DATA)                                     \
-                                                                                \
-    template <typename StubsT, typename HolderT>                                \
-    inline void                                                                 \
-    define_stub_function                                                        \
-    (                                                                           \
-        char const* name,                                                       \
-        StubsT,                                                                 \
-        HolderT& holder,                                                        \
-        boost::mpl::int_t<INDEX>,                                               \
-        char const* doc                                                         \
-    )                                                                           \
-    {                                                                           \
-        holder.def(                                                             \
-            name,                                                               \
-            &StubsT::BOOST_PP_CAT(func_, INDEX),                                \
-            default_call_policies(),                                            \
-            doc);                                                               \
-    }                                                                           \
+#define BOOST_PP_ITERATION_PARAMS_1                                             \
+    (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/defaults_def.hpp>))
 
-BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
+#include BOOST_PP_ITERATE()
 
-#undef BPL_IMPL_STUB_FUNC_DEF
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  define_with_defaults_helper<N>
@@ -169,4 +154,25 @@ BOOST_PP_REPEAT(BOOST_PYTHON_MAX_ARITY, BPL_IMPL_STUB_FUNC_DEF, BOOST_PP_EMPTY)
 ///////////////////////////////////////////////////////////////////////////////
 #endif // DEFAULTS_DEF_JDG20020811_HPP
 
+#else // defined(BOOST_PP_IS_ITERATING)
+// PP vertical iteration code
 
+    template <typename StubsT, typename HolderT>
+    inline void
+    define_stub_function
+    (
+        char const* name,
+        StubsT,
+        HolderT& holder,
+        boost::mpl::int_t<BOOST_PP_ITERATION()>,
+        char const* doc
+    )
+    {
+        holder.def(
+            name,
+            &StubsT::BOOST_PP_CAT(func_, BOOST_PP_ITERATION()),
+            default_call_policies(),
+            doc);
+    }
+
+#endif // !defined(BOOST_PP_IS_ITERATING)
