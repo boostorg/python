@@ -13,7 +13,7 @@ PYEXE= "C:\Program files\Python\python.exe"
 PYINC= /I"C:\Program files\Python\include"
 PYLIB= "C:\Program files\Python\libs\python15.lib"
 
-STDOPTS= /nologo /MD /GR /GX /FD /Zm200
+STDOPTS= /nologo /MD /GR /GX /Zm200
 WARNOPTS=
 
 CPP= cl.exe
@@ -29,7 +29,7 @@ OBJ = classes.obj conversions.obj extension_class.obj functions.obj \
 
 .SUFFIXES: .obj .cpp
 
-all: libboost_python.a \
+all: boost_python.lib \
      boost_python_test.pyd \
      abstract.pyd \
      getting_started1.pyd getting_started2.pyd getting_started3.pyd \
@@ -39,7 +39,8 @@ all: libboost_python.a \
      noncopyable_export.pyd noncopyable_import.pyd \
      ivect.pyd dvect.pyd
 
-libboost_python.a: $(OBJ)
+boost_python.lib: $(OBJ)
+	$(LD) -lib /nologo /out:boost_python.lib $(OBJ)
 
 boost_python_test.pyd: $(OBJ) comprehensive.obj
 	$(LD) $(LDOPTS) $(OBJ) comprehensive.obj $(PYLIB) /export:initboost_python_test /out:"boost_python_test.pyd"
