@@ -1,3 +1,7 @@
+3 June 2003
+Appliced a patch from Giulio Eulisse that allows unnamed enumerations to be
+exported with an AllFromHeader construct. Thanks a lot Giulio!
+
 2 June 2003
 Added a new construct, add_method. See documentation.
 

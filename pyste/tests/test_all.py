@@ -158,7 +158,10 @@ def main(multiple, module=None):
             compile_multiple(module)
         else:
             compile_single(module) 
-    run_tests()
+    if len(modules) == 1:
+        os.system('python %sUT.py' % modules[0])
+    else:
+        run_tests()
     cleanup() 
 
     

@@ -12,6 +12,8 @@ class EnumsTest(unittest.TestCase):
         x = X()
         self.assertEqual(x.set(x.Choices.Good), 1)
         self.assertEqual(x.set(x.Choices.Bad), 2)
+        self.assertEqual(unnamed.x, 0)
+        self.assertEqual(unnamed.y, 1)
 
 
 if __name__ == '__main__':
