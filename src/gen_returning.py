@@ -84,29 +84,23 @@ free_function = '''%{    template <%(class A%n%:, %)>
 %}%(        unwrap%{_more%}<A%n> c%n(PyTuple_GET_ITEM(args, %n)%{, c%-%});
 %)%[r%:
         // find the result converter
-        wrap%{_more%}<R> r%{(c%-)%};%]%{
-        if (!c0) return 0;%}
-        %[r%:return r( %](*pf)(%(*c%n%:, %))%[r%: )%];%[v%:
+        wrap%{_more%}<R> c%n%{(c%-)%};%]%[not-void-and-0-arg%:
+        if (!c0) return 0;%]
+        %[r%:return c%n( %](*pf)(%(*c%n%:, %))%[r%: )%];%[v%:
         return detail::none();%]
     }
 ''' 
 
 def _returns_value(key, n, args, value):
-    if key == 'r':
+    if key != 'v':
         return value
-        # pass the value through gen_function again for recursive expansion
-#        return apply(gen_function, (value, n) + args
-#                     , {'fill': _returns_value})
     else:
-        assert key == 'v'
         return ''
 
 def _returns_void(key, n, args, value):
-    if key == 'v':
+    if key == 'v' or key == 'not-void-and-0-arg' and n != 0:
         return value
     else:
-        assert key == 'r'
-        # return the empty string, ignoring the value
         return ''
 
 _cv_qualifiers = ('', ' const', ' volatile', ' const volatile')
