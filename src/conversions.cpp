@@ -160,12 +160,12 @@ unsigned short from_python(PyObject* p, boost::python::type<unsigned short> type
     return integer_from_python(p, type);
 }
 
-PyObject* char_to_python(char c)
+PyObject* to_python(char c)
 {
   return PyString_FromStringAndSize(&c, 1);
 }
 
-char char_from_python(PyObject* p)
+char from_python(PyObject* p, boost::python::type<char>)
 {
     if (! PyString_Check(p)) {
         PyErr_SetString(PyExc_TypeError, "expected string with exactly one character");
@@ -179,24 +179,24 @@ char char_from_python(PyObject* p)
     return s[0];
 }
 
-PyObject* to_python(unsigned char c)
+PyObject* to_python(unsigned char i)
 {
-	return char_to_python(static_cast<char>(c));
+	return integer_to_python(i);
 }
 
 unsigned char from_python(PyObject* p, boost::python::type<unsigned char> type)
 {
-    return static_cast<unsigned char>(char_from_python(p));
+    return integer_from_python(p, type);
 }
 
-PyObject* to_python(signed char c)
+PyObject* to_python(signed char i)
 {
-	return char_to_python(static_cast<char>(c));
+	return integer_to_python(i);
 }
 
 signed char from_python(PyObject* p, boost::python::type<signed char> type)
 {
-    return static_cast<signed char>(char_from_python(p));
+    return integer_from_python(p, type);
 }
 
 PyObject* to_python(unsigned long x)
