@@ -14,8 +14,9 @@
 //# include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/config.hpp>
-# include <boost/python/convert.hpp>
 # include <boost/python/detail/none.hpp>
+# include <boost/python/from_python.hpp>
+# include <boost/python/to_python.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -27,246 +28,291 @@ struct returning
     static PyObject* call(R (A0::*pmf)(), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c0);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)() );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)() );
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c1);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1))) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c2);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2))) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c3);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3))) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c4);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4))) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c5);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5))) );
     }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c0);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)() );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)() );
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c1);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1))) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c2);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2))) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c3);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3))) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c4);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4))) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c5);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5))) );
     }
 
     template <class A0>
     static PyObject* call(R (A0::*pmf)() volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c0);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)() );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)() );
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c1);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1))) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c2);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2))) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c3);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3))) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c4);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4))) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c5);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5))) );
     }
 
 
@@ -276,82 +322,97 @@ struct returning
     static PyObject* call(R (A0::*pmf)() const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c0);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)() );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)() );
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c1);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1))) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c2);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2))) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c3);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3))) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c4);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4))) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> r(c5);
-        if (!c0) return 0;
-        return r( ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5) );
+        to_python<R> r;
+        return r( ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5))) );
     }
 
 #  endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
@@ -359,90 +420,104 @@ struct returning
     static PyObject* call(R (*pf)(), PyObject*, PyObject* /* keywords */ )
     {
         // find the result converter
-        wrap<R> c0;
-        if (!c0) return 0;
+        to_python<R> c0;
         return c0( (*pf)() );
     }
     template <class A0>
     static PyObject* call(R (*pf)(A0), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c1(c0);
-        if (!c0) return 0;
-        return c1( (*pf)(*c0) );
+        to_python<R> c1;
+        return c1( (*pf)(c0(PyTuple_GET_ITEM(args, 0))) );
     }
     template <class A0, class A1>
     static PyObject* call(R (*pf)(A0, A1), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c2(c1);
-        if (!c0) return 0;
-        return c2( (*pf)(*c0, *c1) );
+        to_python<R> c2;
+        return c2( (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1))) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (*pf)(A0, A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c3(c2);
-        if (!c0) return 0;
-        return c3( (*pf)(*c0, *c1, *c2) );
+        to_python<R> c3;
+        return c3( (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2))) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (*pf)(A0, A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c4(c3);
-        if (!c0) return 0;
-        return c4( (*pf)(*c0, *c1, *c2, *c3) );
+        to_python<R> c4;
+        return c4( (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3))) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c5(c4);
-        if (!c0) return 0;
-        return c5( (*pf)(*c0, *c1, *c2, *c3, *c4) );
+        to_python<R> c5;
+        return c5( (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4))) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
         // find the result converter
-        wrap_more<R> c6(c5);
-        if (!c0) return 0;
-        return c6( (*pf)(*c0, *c1, *c2, *c3, *c4, *c5) );
+        to_python<R> c6;
+        return c6( (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5))) );
     }
 };
                            
@@ -454,75 +529,90 @@ struct returning<void>
     static PyObject* call(R (A0::*pmf)(), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)();
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)();
         return detail::none();
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)));
         return detail::none();
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5)));
         return detail::none();
     }
 
@@ -530,75 +620,90 @@ struct returning<void>
     static PyObject* call(R (A0::*pmf)() const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)();
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)();
         return detail::none();
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)));
         return detail::none();
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 const&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5)));
         return detail::none();
     }
 
@@ -606,75 +711,90 @@ struct returning<void>
     static PyObject* call(R (A0::*pmf)() volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)();
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)();
         return detail::none();
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)));
         return detail::none();
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5)));
         return detail::none();
     }
 
@@ -685,75 +805,90 @@ struct returning<void>
     static PyObject* call(R (A0::*pmf)() const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)();
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)();
         return detail::none();
     }
     template <class A0, class A1>
     static PyObject* call(R (A0::*pmf)(A1) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)));
         return detail::none();
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (A0::*pmf)(A1, A2) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (A0::*pmf)(A1, A2, A3, A4, A5) const volatile, PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0 const volatile&> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
-        if (!c0) return 0;
-        ((*c0).*pmf)(*c1, *c2, *c3, *c4, *c5);
+        ((c0(PyTuple_GET_ITEM(args, 0))).*pmf)(c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5)));
         return detail::none();
     }
 
@@ -768,75 +903,90 @@ struct returning<void>
     static PyObject* call(R (*pf)(A0), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)));
         return detail::none();
     }
     template <class A0, class A1>
     static PyObject* call(R (*pf)(A0, A1), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0, *c1);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)));
         return detail::none();
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (*pf)(A0, A1, A2), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0, *c1, *c2);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (*pf)(A0, A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0, *c1, *c2, *c3);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0, *c1, *c2, *c3, *c4);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)));
         return detail::none();
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
     {
         // check that each of the arguments is convertible
-        unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
-        unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
-        unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
-        unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
-        unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
-        unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
+        from_python<A0> c0(PyTuple_GET_ITEM(args, 0));
+        if (!c0.convertible()) return 0;
+        from_python<A1> c1(PyTuple_GET_ITEM(args, 1));
+        if (!c1.convertible()) return 0;
+        from_python<A2> c2(PyTuple_GET_ITEM(args, 2));
+        if (!c2.convertible()) return 0;
+        from_python<A3> c3(PyTuple_GET_ITEM(args, 3));
+        if (!c3.convertible()) return 0;
+        from_python<A4> c4(PyTuple_GET_ITEM(args, 4));
+        if (!c4.convertible()) return 0;
+        from_python<A5> c5(PyTuple_GET_ITEM(args, 5));
+        if (!c5.convertible()) return 0;
 
-        if (!c0) return 0;
-        (*pf)(*c0, *c1, *c2, *c3, *c4, *c5);
+        (*pf)(c0(PyTuple_GET_ITEM(args, 0)), c1(PyTuple_GET_ITEM(args, 1)), c2(PyTuple_GET_ITEM(args, 2)), c3(PyTuple_GET_ITEM(args, 3)), c4(PyTuple_GET_ITEM(args, 4)), c5(PyTuple_GET_ITEM(args, 5)));
         return detail::none();
     }
 };

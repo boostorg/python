@@ -24,7 +24,7 @@ struct class_converters
     class_converters(ref const& python_class);
 
  private: // data members
-    converter::class_unwrapper<Derived> m_unwrapper;
+    converter::class_from_python_converter<Derived> m_unwrapper;
     class_wrapper<Derived> m_wrapper;
 };
 

@@ -1,3 +1,4 @@
+#error obsolete 
 // Copyright David Abrahams 2001. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
@@ -27,9 +28,10 @@ struct BOOST_PYTHON_DECL unwrap_base : handle
     inline unwrap_base(PyObject* source, std::pair<unwrapper_base*,void*>);
     inline PyObject* source() const;
     
+    inline void*& data();
+    
  protected:
     inline PyObject*& source();
-    inline void* data() const;
         
  private: // data members
     PyObject* m_source;
@@ -117,7 +119,7 @@ inline unwrap_base::unwrap_base(PyObject* source, std::pair<unwrapper_base*,void
 {
 }
 
-inline void* unwrap_base::data() const
+inline void*& unwrap_base::data()
 {
     return m_data;
 }

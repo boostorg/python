@@ -8,31 +8,31 @@
 
 # include <boost/python/object/class.hpp>
 # include <boost/python/object/value_holder.hpp>
-# include <boost/python/converter/wrapper.hpp>
 # include <boost/python/reference.hpp>
+# include <boost/python/converter/to_python.hpp>
 # include <memory>
 
 namespace boost { namespace python { namespace objects { 
 
 template <class T>
 struct class_wrapper
-    : converter::wrapper<T const&>
+    : converter::to_python_converter<T const&>
 {
     class_wrapper(ref const& type_)
-        : m_class_object(type_)
+        : converter::to_python_converter<T const&>(convert)
+        , m_class_object_keeper(type_)
     {
-# ifndef NDEBUG
         assert(type_->ob_type == (PyTypeObject*)class_metatype().get());
-# endif // NDEBUG 
+        m_class_object = (PyTypeObject*)type_.get();
     }
     
-    PyObject* convert(T const& x) const
+    static PyObject* convert(T const& x)
     {
         // Don't call the type to do the construction, since that
         // would require the registration of an __init__ copy
         // constructor. Instead, just construct the object in place.
         PyObject* raw_result = (PyObject*)PyObject_New(
-            instance, (PyTypeObject*)m_class_object.get());
+            instance, m_class_object);
         
         if (raw_result == 0)
             return 0;
@@ -53,9 +53,12 @@ struct class_wrapper
     }
     
  private:
-    ref m_class_object;
+    ref m_class_object_keeper;
+    static PyTypeObject* m_class_object;
 };
 
+template <class T>
+PyTypeObject* class_wrapper<T>::m_class_object;
 
 }}} // namespace boost::python::objects
 

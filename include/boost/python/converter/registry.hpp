@@ -8,14 +8,15 @@
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/type_id.hpp>
 # include <boost/python/detail/config.hpp>
-# include <list>
+# include <boost/python/converter/to_python_function.hpp>
+# include <vector>
 # include <memory>
 # include <utility>
 
 namespace boost { namespace python { namespace converter {
 
-struct BOOST_PYTHON_DECL wrapper_base;
-struct BOOST_PYTHON_DECL unwrapper_base;
+struct BOOST_PYTHON_DECL from_python_converter_base;
+struct BOOST_PYTHON_DECL to_python_converter_base;
 
 // This namespace acts as a sort of singleton
 namespace registry
@@ -31,43 +32,45 @@ namespace registry
       // Python object from_python to the C++ type with which this
       // converter is associated in the registry, or 0 if no such
       // converter exists.
-      std::pair<unwrapper_base*,void*> unwrapper(PyObject*) const;
+      from_python_converter_base const* get_from_python(PyObject*, void*& data) const;
 
-      // Return a converter appropriate for converting a C++ object
-      // whose type this entry is associated with in the registry to a
-      // Python object, or 0 if no such converter exists.
-      wrapper_base* wrapper() const;
+      // Return a conversion function appropriate for converting a C++
+      // object whose type this entry is associated with in the
+      // registry to a Python object, or 0 if no such converter
+      // exists. This function must be reinterpret_cast to the
+      // appropriate to_python_function type.
+      to_python_function_base get_to_python() const;
 
       // Conversion classes use these functions to register
       // themselves.
-      void insert(wrapper_base&);
-      void remove(wrapper_base&);
+      void insert(from_python_converter_base&);
+      void remove(from_python_converter_base&);
 
-      void insert(unwrapper_base&);
-      void remove(unwrapper_base&);
+      void insert(to_python_converter_base&);
+      void remove(to_python_converter_base&);
 
    private: // types
-      typedef std::list<unwrapper_base*> unwrappers;
+      typedef std::vector<from_python_converter_base*> from_python_converters;
       
    private: // helper functions
-      unwrappers::iterator find(unwrapper_base const&);
+      from_python_converters::iterator find(from_python_converter_base const&);
       
    private: // data members
       
       // The collection of from_python converters for the associated
       // C++ type.
-      unwrappers m_unwrappers;
+      from_python_converters m_from_python_converters;
 
       // The unique to_python converter for the associated C++ type.
-      converter::wrapper_base* m_wrapper;
+      to_python_converter_base* m_to_python_converter;
   };
 
   BOOST_PYTHON_DECL entry* find(type_id_t);
   
-  BOOST_PYTHON_DECL void insert(wrapper_base& x);
-  BOOST_PYTHON_DECL void insert(unwrapper_base& x);
-  BOOST_PYTHON_DECL void remove(wrapper_base& x);
-  BOOST_PYTHON_DECL void remove(unwrapper_base& x);
+  BOOST_PYTHON_DECL void insert(to_python_converter_base& x);
+  BOOST_PYTHON_DECL void insert(from_python_converter_base& x);
+  BOOST_PYTHON_DECL void remove(to_python_converter_base& x);
+  BOOST_PYTHON_DECL void remove(from_python_converter_base& x);
 }
 
 }}} // namespace boost::python::converter

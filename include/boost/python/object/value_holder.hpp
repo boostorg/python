@@ -22,43 +22,116 @@ struct value_holder : instance_holder
     
     template <class A1>
     value_holder(PyObject*, A1 a1)
-        : m_held(a1) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            )
+    {}
     
     template <class A1, class A2>
     value_holder(PyObject*, A1 a1, A2 a2)
-        : m_held(a1, a2) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            )
+    {}
     
     template <class A1, class A2, class A3>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3)
-        : m_held(a1, a2, a3) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            )
+    {}
     
     template <class A1, class A2, class A3, class A4>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4)
-        : m_held(a1, a2, a3, a4) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            )
+    {}
     
     template <class A1, class A2, class A3, class A4, class A5>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)
-        : m_held(a1, a2, a3, a4, a5) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            ) {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6)
-        : m_held(a1, a2, a3, a4, a5, a6) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            , (unwrap_reference<A6>::type&)(a6)
+            ) {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7)
-        : m_held(a1, a2, a3, a4, a5, a6, a7) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            , (unwrap_reference<A6>::type&)(a6)
+            , (unwrap_reference<A7>::type&)(a7)
+            )
+    {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8)
-        : m_held(a1, a2, a3, a4, a5, a6, a7, a8) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            , (unwrap_reference<A6>::type&)(a6)
+            , (unwrap_reference<A7>::type&)(a7)
+            , (unwrap_reference<A8>::type&)(a8)
+            )
+    {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9)
-        : m_held(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            , (unwrap_reference<A6>::type&)(a6)
+            , (unwrap_reference<A7>::type&)(a7)
+            , (unwrap_reference<A8>::type&)(a8)
+            , (unwrap_reference<A9>::type&)(a9)
+            )
+    {}
     
     template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
     value_holder(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10)
-        : m_held(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
+        : m_held(
+            (unwrap_reference<A1>::type&)(a1)
+            , (unwrap_reference<A2>::type&)(a2)
+            , (unwrap_reference<A3>::type&)(a3)
+            , (unwrap_reference<A4>::type&)(a4)
+            , (unwrap_reference<A5>::type&)(a5)
+            , (unwrap_reference<A6>::type&)(a6)
+            , (unwrap_reference<A7>::type&)(a7)
+            , (unwrap_reference<A8>::type&)(a8)
+            , (unwrap_reference<A9>::type&)(a9)
+            , (unwrap_reference<A10>::type&)(a10)
+            )
+    {}
 
  private: // required holder implementation
     void* holds(converter::type_id_t);

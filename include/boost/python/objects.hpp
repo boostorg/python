@@ -354,6 +354,8 @@ struct BOOST_PYTHON_DECL list_slice_proxy
 
 }} // namespace boost::python
 
+# ifndef BOOST_PYTHON_V2
+
 BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 
 BOOST_PYTHON_DECL PyObject* to_python(const boost::python::tuple&);
@@ -389,5 +391,5 @@ inline boost::python::dictionary from_python(PyObject* p, boost::python::type<co
 }
 
 BOOST_PYTHON_END_CONVERSION_NAMESPACE
-
+# endif 
 #endif // OBJECTS_DWA051100_H_

@@ -11,6 +11,8 @@
 #ifndef ARG_TUPLE_SIZE_DWA20011201_HPP
 # define ARG_TUPLE_SIZE_DWA20011201_HPP
 
+# include <boost/python/detail/char_array.hpp>
+
 namespace boost { namespace python { namespace detail {
 
 // Computes (at compile-time) the number of elements that a Python
@@ -222,16 +224,6 @@ struct arg_tuple_size<R (A0::*)(A1, A2, A3, A4, A5) const volatile>
 // See http://opensource.adobe.com  or
 // http://groups.yahoo.com/group/boost/message/5441 for
 // more examples
-
-// This little package is used to transmit the number of arguments
-// from the helper functions below to the sizeof() expression below.
-// Because we can never have an array of fewer than 1 element, we
-// add 1 to n and then subtract 1 from the result of sizeof() below.
-template <int n>
-struct char_array
-{
-    char elements[n+1];
-};
 
 // The following helper functions are never actually called, since
 // they are only used within a sizeof() expression, but the type of

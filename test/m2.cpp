@@ -7,12 +7,8 @@
 // This module exercises the converters exposed in m1 at a low level
 // by exposing raw Python extension functions that use wrap<> and
 // unwrap<> objects.
-#include <boost/python/convert.hpp>
 #include <boost/python/module.hpp>
 #include "simple_type.hpp"
-
-using boost::python::wrap;
-using boost::python::unwrap;
 
 // Get a simple (by value) from the argument, and return the
 // string it holds.

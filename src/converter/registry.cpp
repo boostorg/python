@@ -4,10 +4,11 @@
 //  "as is" without express or implied warranty, and with no claim as
 //  to its suitability for any purpose.
 
-# include <boost/python/converter/unwrapper.hpp>
-# include <boost/python/converter/wrapper.hpp>
+# include <boost/python/converter/to_python.hpp>
+# include <boost/python/converter/from_python.hpp>
+# include <boost/python/converter/builtin_converters.hpp>
+# include <boost/detail/binary_search.hpp>
 # include <map>
-# include <list>
 # include <algorithm>
 # include <stdexcept>
 # ifdef BOOST_PYTHON_TRACE
@@ -23,6 +24,15 @@ namespace // <unnamed>
   registry_t& entries()
   {
       static registry_t registry;
+      static bool builtin_converters_initialized = false;
+      if (!builtin_converters_initialized)
+      {
+          // Make this true early because registering the builtin
+          // converters will cause recursion.
+          builtin_converters_initialized = true;
+          
+          initialize_builtin_converters();
+      }
       return registry;
   }
 } // namespace <unnamed>
@@ -35,124 +45,127 @@ namespace registry
   }
 
   entry::entry()
-      : m_wrapper(0)
+      : m_to_python_converter(0)
   {
   }
 
   entry::~entry()
   {
-      if (m_wrapper != 0)
-          m_wrapper->m_can_unregister = false;
+      if (m_to_python_converter != 0)
+          m_to_python_converter->m_can_unregister = false;
       
-      for (unwrappers::iterator p = m_unwrappers.begin(); p != m_unwrappers.end(); ++p)
+      for (from_python_converters::iterator p = m_from_python_converters.begin()
+               ; p != m_from_python_converters.end()
+               ; ++p)
       {
           (*p)->m_can_unregister = false;
       }
   }
 
-  std::pair<unwrapper_base*,void*>
-  entry::unwrapper(PyObject* p) const
-  {
-      unwrapper_base* body = 0;
-      void* data = 0;
-      
-      for (unwrappers::const_iterator q = m_unwrappers.begin(),
-               finish = m_unwrappers.end();
+  from_python_converter_base const*
+  entry::get_from_python(PyObject* p, void*& data_out) const
+  {      
+      for (from_python_converters::const_iterator q = m_from_python_converters.begin(),
+               finish = m_from_python_converters.end();
            q != finish;
            ++q)
       {
-          data = (*q)->can_convert(p);
+          void* const data = (*q)->convertible(p);
           if (data != 0)
           {
-              body = *q;
+              data_out = data;
+              return *q;
               break;
           }
       }
-      return std::make_pair(body,data);
+      return 0;
   }
   
-  wrapper_base* entry::wrapper() const
+  to_python_function_base entry::get_to_python() const
   {
-      return m_wrapper;
+      return m_to_python_converter
+          ? m_to_python_converter->converter()
+          : 0;
   }
 
-  entry::unwrappers::iterator entry::find(unwrapper_base const& x)
+  entry::from_python_converters::iterator entry::find(from_python_converter_base const& x)
   {
-      return std::find(m_unwrappers.begin(), m_unwrappers.end(), &x);
+      return std::find(m_from_python_converters.begin(), m_from_python_converters.end(), &x);
   }
 
-  void entry::insert(unwrapper_base& x)
+  void entry::insert(from_python_converter_base& x)
   {
-      unwrappers::iterator p = this->find(x);
+      from_python_converters::iterator p = this->find(x);
       
-      assert(p == m_unwrappers.end());
-      if (p != m_unwrappers.end())
+      if (p != m_from_python_converters.end())
       {
+          assert(!"converter already registered");
           throw std::runtime_error(
               "trying to register unrapper which is already registered");
       }
-      m_unwrappers.push_back(&x);
+
+      m_from_python_converters.push_back(&x);
   }
   
-  void entry::remove(unwrapper_base& x)
+  void entry::remove(from_python_converter_base& x)
   {
-      unwrappers::iterator p = find(x);
+      from_python_converters::iterator p = find(x);
 
       // Be sure we're not removing a converter which hasn't been
       // registered.
-      assert(p != m_unwrappers.end());
-      if (p == m_unwrappers.end())
+      if (p == m_from_python_converters.end())
       {
+          assert(!"trying to unregister from_python_converter which is not registered");
           throw std::runtime_error(
-              "trying to unregister unwrapper which is not registered");
+              "trying to unregister from_python_converter which is not registered");
       }
-      m_unwrappers.erase(p);
+      m_from_python_converters.erase(p);
   }
   
-  void entry::insert(wrapper_base& x)
+  void entry::insert(to_python_converter_base& x)
   {
-      assert(m_wrapper == 0); // we have a problem otherwise
-      if (m_wrapper != 0)
+      assert(m_to_python_converter == 0); // we have a problem otherwise
+      if (m_to_python_converter != 0)
       {
           throw std::runtime_error(
-              "trying to register wrapper for a type which already has a registered wrapper");
+              "trying to register to_python_converter for a type which already has a registered to_python_converter");
       }
-      m_wrapper = &x;
+      m_to_python_converter = &x;
   }
   
-  void entry::remove(wrapper_base& x)
+  void entry::remove(to_python_converter_base& x)
   {
-      assert(m_wrapper == &x);
-      if (m_wrapper != &x)
+      assert(m_to_python_converter == &x);
+      if (m_to_python_converter != &x)
       {
           throw std::runtime_error(
-              "trying to unregister a wrapper which is not registered");
+              "trying to unregister a to_python_converter which is not registered");
       }
-      m_wrapper = 0;
+      m_to_python_converter = 0;
   }
 
-  void insert(wrapper_base& w)
+  void insert(to_python_converter_base& w)
   {
 # ifdef BOOST_PYTHON_TRACE
-      std::cout << "inserting wrapper for " << w.key() << std::endl;
+      std::cout << "inserting to_python_converter for " << w.key() << std::endl;
 # endif 
       find(w.key())->insert(w);
   }
 
-  void insert(unwrapper_base& u)
+  void insert(from_python_converter_base& u)
   {
 # ifdef BOOST_PYTHON_TRACE
-      std::cout << "inserting unwrapper for " << u.key() << std::endl;
+      std::cout << "inserting from_python_converter for " << u.key() << std::endl;
 # endif 
       find(u.key())->insert(u);
   }
 
-  void remove(wrapper_base& w)
+  void remove(to_python_converter_base& w)
   {
       find(w.key())->remove(w);
   }
 
-  void remove(unwrapper_base& u)
+  void remove(from_python_converter_base& u)
   {
       find(u.key())->remove(u);
   }

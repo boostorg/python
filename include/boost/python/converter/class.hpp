@@ -7,60 +7,67 @@
 # define CLASS_DWA20011215_HPP
 
 # include <boost/python/object/class.hpp>
-# include <boost/python/converter/unwrapper.hpp>
+# include <boost/python/converter/from_python.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
 template <class T>
-struct class_unwrapper
-    : private unwrapper<T&>
-    , private unwrapper<T const&>
-    , private unwrapper<T*>
-    , private unwrapper<T const*>
+struct class_from_python_converter
 {
- protected:
-# ifdef __GNUC__ // suppress warning that "all member functions are private" (duh)
-    void uncallable();
-# endif 
- private:
-    void* can_convert(PyObject*) const;
-    T& convert(PyObject*, void*, boost::type<T&>) const;
-    T const& convert(PyObject*, void*, boost::type<T const&>) const;
-    T* convert(PyObject*, void*, boost::type<T*>) const;
-    T const* convert(PyObject*, void*, boost::type<T const*>) const;
+    class_from_python_converter();
+    
+    static void* convertible(PyObject*);
+    static T& convert_ref(PyObject*, from_python_data&);
+    static T const& convert_cref(PyObject*, from_python_data&);
+    static T* convert_ptr(PyObject*, from_python_data&);
+    static T const* convert_cptr(PyObject*, from_python_data&);
+
+    from_python_converter<T&> to_ref;
+    from_python_converter<T const&> to_cref;
+    from_python_converter<T*> to_ptr;
+    from_python_converter<T const*> to_cptr;
 };
 
 //
 // implementations
 //
 template <class T>
-void* class_unwrapper<T>::can_convert(PyObject* p) const
+class_from_python_converter<T>::class_from_python_converter()
+    : to_ref(convertible, convert_ref)
+      , to_cref(convertible, convert_cref)
+      , to_ptr(convertible, convert_ptr)
+      , to_cptr(convertible, convert_cptr)
+{}
+
+template <class T>
+T& class_from_python_converter<T>::convert_ref(PyObject*, from_python_data& x)
+{
+    return *static_cast<T*>(x.stage1);
+}
+
+template <class T>
+T const& class_from_python_converter<T>::convert_cref(PyObject*, from_python_data& x)
+{
+    return *static_cast<T*>(x.stage1);
+}
+    
+
+template <class T>
+T* class_from_python_converter<T>::convert_ptr(PyObject*, from_python_data& x)
+{
+    return static_cast<T*>(x.stage1);
+}
+
+template <class T>
+T const* class_from_python_converter<T>::convert_cptr(PyObject*, from_python_data& x)
+{
+    return static_cast<T*>(x.stage1);
+}
+
+template <class T>
+void* class_from_python_converter<T>::convertible(PyObject* p)
 {
     return objects::find_instance<T>(p);
-}
-
-template <class T>
-T& class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T&>) const
-{
-    return *static_cast<T*>(found);
-}
-
-template <class T>
-T const& class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T const&>) const
-{
-    return *static_cast<T*>(found);
-}
-
-template <class T>
-T* class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T*>) const
-{
-    return static_cast<T*>(found);
-}
-
-template <class T>
-T const* class_unwrapper<T>::convert(PyObject*, void* found, boost::type<T const*>) const
-{
-    return static_cast<T*>(found);
 }
 
 }}} // namespace boost::python::converter

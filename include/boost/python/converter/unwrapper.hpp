@@ -1,3 +1,4 @@
+#error obsolete 
 // Copyright David Abrahams 2001. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
@@ -22,7 +23,7 @@ struct unwrapper : unwrapper_base
  public:
     unwrapper();
 
-    virtual T convert(PyObject*, void* data, boost::type<T>) const = 0;
+    virtual T convert(PyObject*, void*& data, boost::type<T>) const = 0;
 };
 
 //

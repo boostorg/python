@@ -1,3 +1,4 @@
+#error obsolete 
 // Copyright David Abrahams 2001. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided

@@ -10,35 +10,9 @@
 # include <boost/python/object/forward.hpp>
 # include <boost/python/object/class.hpp>
 # include <boost/python/detail/wrap_python.hpp>
+# include <boost/python/detail/eval.hpp>
 
 namespace boost { namespace python { namespace objects { 
-
-
-template <class T> struct undefined;
-template <class UnaryMetaFunction, class T>
-struct eval
-{
-# if defined(BOOST_MSVC) && BOOST_MSVC <= 1200
-   // based on the (non-conforming) MSVC trick from MPL
-    template<bool>
-    struct unarymetafunction_vc : UnaryMetaFunction {};
-
-    // illegal C++ which causes VC to admit that unarymetafunction_vc
-    // can have a nested template:
-    template<>
-    struct unarymetafunction_vc<true>
-    {
-        template<class> struct apply;
-    };
-
-    typedef typename unarymetafunction_vc<
-        ::boost::mpl::detail::msvc_never_true<UnaryMetaFunction>::value
-    >::template apply<T>::type type;
-# else
-    typedef typename UnaryMetaFunction::template apply<T>::type type;
-# endif
-};
-
 
 template <int nargs> struct make_holder;
 
@@ -48,7 +22,7 @@ struct make_holder<0>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename eval<Generator,T>::type holder;
+        typedef typename detail::eval<Generator,T>::type holder;
         static void execute(
             PyObject* p)
         {
@@ -64,7 +38,7 @@ struct make_holder<1>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename eval<Generator,T>::type holder;
+        typedef typename detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         
@@ -83,7 +57,7 @@ struct make_holder<2>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename eval<Generator,T>::type holder;
+        typedef typename detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;
@@ -103,7 +77,7 @@ struct make_holder<3>
     template <class T, class Generator, class ArgList>
     struct apply
     {
-        typedef typename eval<Generator,T>::type holder;
+        typedef typename detail::eval<Generator,T>::type holder;
         typedef typename mpl::at<0,ArgList>::type t0;
         typedef typename forward<t0>::type f0;
         typedef typename mpl::at<1,ArgList>::type t1;

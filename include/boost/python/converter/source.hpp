@@ -20,15 +20,11 @@ namespace boost { namespace python { namespace converter {
 template <class T>
 struct source
 {
-    BOOST_STATIC_CONSTANT(bool, use_identity = (::boost::is_pointer<T>::value));
-
-    typedef typename mpl::select_type<
-        use_identity
-        , T
-        , typename add_reference<
+    typedef
+        typename add_reference<
                 typename add_const<T>::type
           >::type
-    >::type type;
+    type;
 };
 
 }}} // namespace boost::python::converter
