@@ -28,10 +28,10 @@ template <class T, class Base>
 struct PyPtrConversions : Base
 {
     inline friend T from_python(PyObject* x, py::Type<const T&>)
-        { return T(py::Downcast<T::value_type>(x).get(), T::new_ref); }
+        { return T(py::Downcast<typename T::value_type>(x).get(), T::new_ref); }
 
     inline friend T from_python(PyObject* x, py::Type<T>)
-        { return T(py::Downcast<T::value_type>(x).get(), T::new_ref); }
+        { return T(py::Downcast<typename T::value_type>(x).get(), T::new_ref); }
     
     inline friend PyObject* to_python(T x)
         { return py::as_object(x.release()); }

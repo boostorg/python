@@ -30,7 +30,10 @@ class ClassWrapper
     // to C++ verbatim (as a 'Tuple const &' and 'Dict const &' 
     // respectively). This is useful for manual argument passing.
     // It's also the only possibility to pass keyword arguments to C++.
-    void def_raw(RawArgumentsFunction::PtrFun fn, const char* name)
+    // Fn must have a signatur that is compatible to 
+    //     PyObject * (*)(PyObject * aTuple, PyObject * aDictionary)
+    template <class Fn>
+    void def_raw(Fn fn, const char* name)
         { m_class->def_raw(fn, name); }
 
     // define member functions. In fact this works for free functions, too -

@@ -563,24 +563,19 @@ struct RawTest
     int i_;
 };
 
-template class py::ExtensionClass<RawTest>;
+PyObject * raw(py::Tuple const & args, py::Dict const & keywords);
 
-PyObject * raw(py::Tuple const & args, py::Dict const & keywords)
+int raw1(PyObject * args, PyObject * keywords)
 {
-    if(args.size() != 2 || keywords.size() != 2)
-    {
-        PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-        throw py::ArgumentError();
-    }
-    
-    RawTest * first = from_python(args[0].get(), py::Type<RawTest *>());
-    int second = from_python(args[1].get(), py::Type<int>());
-    
-    int third = from_python(keywords[py::String("third")].get(), py::Type<int>());
-    int fourth = from_python(keywords[py::String("fourth")].get(), py::Type<int>());
-    
-    return to_python(first->i_ + second + third + fourth);
+    return PyTuple_Size(args) + PyDict_Size(keywords);
 }
+
+int raw2(py::Ptr args, py::Ptr keywords)
+{
+    return PyTuple_Size(args.get()) + PyDict_Size(keywords.get());
+}
+
+
 
 /************************************************************/
 /*                                                          */
@@ -853,6 +848,25 @@ void init_module(py::Module& m)
     rawtest_class.def_raw(&raw, "raw");
     
     m.def_raw(&raw, "raw");
+    m.def_raw(&raw1, "raw1");
+    m.def_raw(&raw2, "raw2");
+}
+
+PyObject * raw(py::Tuple const & args, py::Dict const & keywords)
+{
+    if(args.size() != 2 || keywords.size() != 2)
+    {
+        PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
+        throw py::ArgumentError();
+    }
+    
+    RawTest * first = from_python(args[0].get(), py::Type<RawTest *>());
+    int second = from_python(args[1].get(), py::Type<int>());
+    
+    int third = from_python(keywords[py::String("third")].get(), py::Type<int>());
+    int fourth = from_python(keywords[py::String("fourth")].get(), py::Type<int>());
+    
+    return to_python(first->i_ + second + third + fourth);
 }
 
 void init_module()

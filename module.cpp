@@ -34,11 +34,6 @@ void Module::add(PyTypeObject* x, const char* name /*= 0*/)
         name ? name : x->tp_name);
 }
 
-void Module::def_raw(RawFunctionPtr fn, const char* name)
-{
-    add(new RawArgumentsFunction(fn), name);
-}
-
 PyMethodDef Module::initial_methods[] = { { 0, 0, 0, 0 } };
 
 }

@@ -858,6 +858,25 @@ test inheritB2
     >>> raw(r,1)
     Traceback (innermost last):
     TypeError: wrong number of arguments
+    >>> raw()
+    Traceback (innermost last):
+    TypeError: wrong number of arguments
+    >>> raw1(1,second=1)
+    2
+    >>> raw1(1)
+    1
+    >>> raw1(second=1)
+    1
+    >>> raw1()
+    0
+    >>> raw2(1,second=1)
+    2
+    >>> raw2(1)
+    1
+    >>> raw2(second=1)
+    1
+    >>> raw2()
+    0
     
 
 ========= Prove that the "phantom base class" issue is resolved ==========

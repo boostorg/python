@@ -75,24 +75,28 @@ struct WrappedFunctionPointer : Function
 	const PtrFun m_pf;
 };
 
-// RawArgumentsFunction
+// raw_arguments_function
 //      A function that passes the Python argument tuple and keyword dictionary 
 //      verbatim to C++ (useful for customized argument parsing and variable
 //      argument lists)
-struct RawArgumentsFunction : Function
+template <class Ret, class Args, class Keywords>
+struct raw_arguments_function : Function
 {
-	typedef PyObject * (*PtrFun)(Tuple const &, Dict const &); 
+	typedef Ret (*PtrFun)(Args, Keywords); 
 	
-	RawArgumentsFunction(PtrFun pf)
+	raw_arguments_function(PtrFun pf)
         : m_pf(pf) {}
 
  private:
 	PyObject* do_call(PyObject* args, PyObject* keywords) const
         { 
-            return (*m_pf)(Tuple(Ptr(args, Ptr::new_ref)),
-                           keywords ? 
-                                Dict(Ptr(keywords, Ptr::new_ref)) : 
-                                Dict()); 
+            Ptr dict(keywords ? 
+                       Ptr(keywords, Ptr::new_ref) :
+                       PyDict_New());
+            
+            return to_python(
+                  (*m_pf)(from_python(args, py::Type<Args>()),
+                          from_python(dict.get(), py::Type<Keywords>()))); 
         }
     
     const char* description() const
@@ -155,6 +159,13 @@ inline Function* new_wrapped_function(F pmf)
 }
 
 namespace detail {
+    template <class R, class Args, class Keywords>
+    Function* new_raw_arguments_function(R (*pmf)(Args, Keywords))
+    {
+        return new raw_arguments_function<R, Args, Keywords>(pmf);
+    }
+
+
   // A helper function for new_virtual_function(), below.  Implements the core
   // functionality once the return type has already been deduced. R is expected to
   // be Type<X>, where X is the actual return type of V.

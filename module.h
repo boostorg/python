@@ -30,7 +30,11 @@ public:
     
     void add(Ptr x, const char*name);
 
-    void def_raw(RawFunctionPtr fn, const char* name);
+    template <class Fn>
+    void def_raw(Fn fn, const char* name)
+    {
+        add(py::detail::new_raw_arguments_function(fn), name);
+    }
     
     template <class Fn>
     void def(Fn fn, const char* name)
