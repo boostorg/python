@@ -15,7 +15,7 @@ struct C
     }
     operator int() const
     {
-        return value;    
+        return (int)value;    
     } 
     
     double operator()()

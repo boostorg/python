@@ -11,7 +11,7 @@ template <class T>
 list VectorToList(const std::vector<T> & v)
 {
     list res;
-    std::vector<T>::const_iterator it;
+    typename std::vector<T>::const_iterator it;
     for(it = v.begin(); it != v.end(); ++it){
         res.append(*it);
     }
