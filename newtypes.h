@@ -120,14 +120,14 @@ class TypeObject : public TypeObjectBase
     typedef T Instance;
 
     TypeObject(PyTypeObject* type_type, const char* name)
-        : Base(type_type)
+        : TypeObjectBase(type_type)
     {
         assert(name != 0);
         this->tp_name = const_cast<char*>(name);
     }
 
     TypeObject(PyTypeObject* type_type)
-        : Base(type_type)
+        : TypeObjectBase(type_type)
     {
         this->tp_name = const_cast<char*>(typeid(Instance).name());
     }
