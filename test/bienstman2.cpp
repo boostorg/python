@@ -11,11 +11,11 @@ struct E
    const D fe2(const C&, const C&) {return D();}
 };
 
-BOOST_PYTHON_MODULE_INIT(m)
+BOOST_PYTHON_MODULE_INIT(bienstman2_ext)
 {
   using namespace boost::python;
 
-  module m("m");
+  module m("bienstman2_ext");
   
   m
     .add(class_<C>("C"))
