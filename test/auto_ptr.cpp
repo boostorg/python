@@ -42,14 +42,12 @@ std::auto_ptr<X> make()
 std::auto_ptr<X> callback(object f)
 {
     std::auto_ptr<X> x(new X(77));
-//    call<void>(f.ptr(),x);
-//    return std::auto_ptr<X>(new X(77));
     return call<std::auto_ptr<X> >(f.ptr(), x);
 }
 
 std::auto_ptr<X> extract_(object o)
 {
-    return extract<std::auto_ptr<X> >(o);
+    return extract<std::auto_ptr<X>&>(o);
 }
 
 BOOST_PYTHON_MODULE(auto_ptr_ext)
