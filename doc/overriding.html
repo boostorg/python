@@ -47,17 +47,17 @@ class hello
   <code>PyObject*</code> argument. The initial argument should be stored in the <tt>self</tt> data
   member described above. 
 
-  <li>If the class being wrapped is ever returned <i>by
+  <li><a name="derived_3">If</a> the class being wrapped is ever returned <i>by
   value</i> from a wrapped function, be sure you do the same for the
   <tt>T</tt>'s copy constructor: you'll need a constructor taking arguments
   <tt>(PyObject*,&nbsp;const&nbsp;T&amp;)</tt>.
 
-  <li><a name="derived_3">An</a> implementation of each virtual function you may
+  <li><a name="derived_4">An</a> implementation of each virtual function you may
   wish to override in Python which uses
   <tt>callback&lt</tt><i>return-type</i><tt>&gt;::call_method(self,&nbsp;&quot;</tt><i>name</i><tt>&quot;,&nbsp;</tt><i>args...</i><tt>)</tt> to call
   the Python override.
 
-  <li><a name="derived_4">For</a> each non-pure virtual function meant to be
+  <li><a name="derived_5">For</a> each non-pure virtual function meant to be
   overridable from Python, a static member function (or a free function) taking
   a reference or pointer to the <tt>T</tt> as the first parameter and which
   forwards any additional parameters neccessary to the <i>default</i>
@@ -211,5 +211,5 @@ href="http://cs.calvin.edu/c++/C++Standard-Nov97/basic.html#basic.def.odr">ODR</
       express or implied warranty, and with no claim as to its suitability for
       any purpose.
     <p>
-      Updated: Mar 6, 2001
+      Updated: Mar 21, 2001
 
