@@ -15,7 +15,7 @@
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/converter/class.hpp>
-#include <boost/python/reference_from_python.hpp>
+#include <boost/python/lvalue_from_python.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/value_from_python.hpp>
 #include <boost/python/errors.hpp>
@@ -141,6 +141,26 @@ int f(simple const& s)
     return strlen(s.s);
 }
 
+int f_mutable_ref(simple& s)
+{
+    return strlen(s.s);
+}
+
+int f_mutable_ptr(simple* s)
+{
+    return strlen(s->s);
+}
+
+int f_const_ptr(simple const* s)
+{
+    return strlen(s->s);
+}
+
+int f2(SimpleObject const& s)
+{
+    return strlen(s.x.s);
+}
+
 // A trivial passthru function for simple objects
 simple const& g(simple const& x)
 {
@@ -188,7 +208,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
     using boost::python::module;
     using boost::python::class_;
     using boost::python::converter::from_python_converter;
-    using boost::python::reference_from_python;
+    using boost::python::lvalue_from_python;
     using boost::python::value_from_python;
     using boost::python::type_from_python;
     using boost::python::get_member;
@@ -205,14 +225,21 @@ BOOST_PYTHON_MODULE_INIT(m1)
     static from_python_converter<int&> c3(
         &(boost::python::type_from_python<&NoddyType>::convertible), noddy_to_int_ref);
 
-    static boost::python::reference_from_python<
+    static boost::python::lvalue_from_python<
         &SimpleType
         , simple
         , SimpleObject
+#if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
+        , boost::python::get_member<SimpleObject, simple, &SimpleObject::x>
+#else 
         , extract_simple_object
+#endif 
         >
         unwrap_simple;
 
+    static boost::python::lvalue_from_python<&SimpleType, SimpleObject>
+        unwrap_simple2;
+    
     module m1("m1");
 
     typedef boost::python::objects::pointer_holder_generator<
@@ -229,9 +256,14 @@ BOOST_PYTHON_MODULE_INIT(m1)
       .def("new_noddy", new_noddy)
       .def("new_simple", new_simple)
 
-      // Expose f()
+      // Expose f() in all its variations
       .def("f", f)
+      .def("f_mutable_ref", f_mutable_ref)
+      .def("f_mutable_ptr", f_mutable_ptr)
+      .def("f_const_ptr", f_const_ptr)
 
+      .def("f2", f2)
+        
       // Expose g()
       .def("g", g , return_value_policy<copy_const_reference>()
           )

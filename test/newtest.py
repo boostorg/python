@@ -57,6 +57,18 @@ try: wrap_int_ref(n)
 >>> f(g(s))
 12
 
+>>> f_mutable_ref(g(s))
+12
+
+>>> f_const_ptr(g(s))
+12
+
+>>> f_mutable_ptr(g(s))
+12
+
+>>> f2(g(s))
+12
+
 Create an extension class which wraps "complicated" (init1 and get_n)
 are a complicated constructor and member function, respectively.
 
