@@ -9,8 +9,8 @@
 # include <boost/python/type_id.hpp>
 # include <boost/shared_ptr.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/type_traits/object_traits.hpp>
 # include <boost/type_traits/is_polymorphic.hpp>
+# include <boost/type_traits/is_base_and_derived.hpp>
 # include <boost/detail/workaround.hpp>
 
 namespace boost { namespace python { namespace objects {
