@@ -298,6 +298,11 @@ PyObject* reprable<Base>::instance_repr(PyObject* obj) const
     return downcast<instance>(obj)->repr();
 }
 
+  // Helper class for optimized allocation of PODs: If two PODs
+  // happen to contain identical byte patterns, they may share their
+  // memory. Reference counting is used to free unused memory. 
+  // This is useful because method tables of related extension classes tend
+  // to be identical, so less memory is needed for them.
   class shared_pod_manager
   {
       typedef std::pair<char*, std::size_t> holder;
@@ -307,28 +312,42 @@ PyObject* reprable<Base>::instance_repr(PyObject* obj) const
       static shared_pod_manager& obj();
       ~shared_pod_manager();
 
-      template <class T>
-      static void replace_if_equal(T*& t)
-      {
-          t = reinterpret_cast<T*>(obj().replace_if_equal(t, sizeof(T)));
-      }
-
-      template <class T>
-      static void make_unique_copy(T*& t)
-      {
-          t = reinterpret_cast<T*>(obj().make_unique_copy(t, sizeof(T)));
-      }
-
+      // Allocate memory for POD T and fill it with zeros.
+      // This memory is initially not shared.
       template <class T>
       static void create(T*& t)
       {
           t = reinterpret_cast<T*>(obj().create(sizeof(T)));
       }
 
+      // Decrement the refcount for the memory t points to. If the count 
+      // goes to zero, the memory is freed.
       template <class T>
       static void dispose(T* t)
       {
           obj().dec_ref(t, sizeof(T));
+      }
+
+      // Attempt to share the memory t points to. If memory with the same 
+      // contents already exists, t is replaced by a pointer to this memory,
+      // and t's old memory is disposed. Otherwise, t will be registered for
+      // potential future sharing.
+      template <class T>
+      static void replace_if_equal(T*& t)
+      {
+          t = reinterpret_cast<T*>(obj().replace_if_equal(t, sizeof(T)));
+      }
+
+      // Create a copy of t's memory that is guaranteed to be private to t.
+      // Afterwards t points to the new memory, unless it was already private, in
+      // which case there is no change (except that t's memory will no longer
+      // be considered for future sharing - see raplade_if_equal())
+      // This function *must* be called before the contents of (*t) can
+      // be overwritten. Otherwise, inconsistencies and crashes may result.
+      template <class T>
+      static void make_unique_copy(T*& t)
+      {
+          t = reinterpret_cast<T*>(obj().make_unique_copy(t, sizeof(T)));
       }
 
    private:

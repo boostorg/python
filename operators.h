@@ -11,9 +11,15 @@
 namespace python {
 
 namespace detail {
+  
+  // helper class for automatic operand type detection
+  // during operator wrapping.
   struct auto_operand {};
 }
 
+// Define operator ids that can be or'ed together
+// (python::op_add | python::op_sub | python::op_mul).
+// This allows to wrap several operators in one line.
 enum operator_id
 { 
     op_add = 0x1, 
@@ -39,12 +45,20 @@ enum operator_id
     op_cmp = 0x100000 
 };
 
+// Wrap the operators given by "which". Usage:
+//   foo_class.def(python::operators<(python::op_add | python::op_sub)>());
 template <long which, class operand = python::detail::auto_operand>
 struct operators {};
 
+// Wrap heterogeneous operators with given left operand type. Usage:
+//   foo_class.def(python::operators<(python::op_add | python::op_sub)>(),
+//                 python::left_operand<int>());
 template <class T>
 struct left_operand {};
 
+// Wrap heterogeneous operators with given right operand type. Usage:
+//   foo_class.def(python::operators<(python::op_add | python::op_sub)>(),
+//                 python::right_operand<int>());
 template <class T>
 struct right_operand {};
 
@@ -183,7 +197,14 @@ namespace detail
 
       };
   };
-  
+
+
+// Fully specialize define_operator for all operators defined in operator_id above.
+// Every specialization defines one function object for normal operator calls and one
+// for operator calls with operands reversed ("__r*__" function variants).
+// Specializations for most operators follow a standard pattern: execute the expression
+// that uses the operator in question. This standard pattern is realized by the following 
+// macros so that the actual specialization can be done by just calling a macro.
 #define PY_DEFINE_BINARY_OPERATORS(id, oper)                                            \
   template <>                                                                           \
   struct define_operator<op_##id>                                                       \
@@ -269,6 +290,12 @@ namespace detail
 #undef PY_DEFINE_BINARY_OPERATORS
 #undef PY_DEFINE_UNARY_OPERATORS
 
+// Some operators need special treatment, e.g. because there is no corresponding 
+// expression in C++. These are specialized manually.
+
+// pow(): Manual specialization needed because an error message is required if this 
+// function is called with three arguments. The "power modulo" operator is not  
+// supported by define_operator, but can be wrapped manually (see special.html).
   template <>
   struct define_operator<op_pow>
   {
@@ -322,6 +349,8 @@ namespace detail
       static const char * rname() { return "__rpow__"; }
   };
 
+// divmod(): Manual specialization needed because we must actually call two operators and
+// return a tuple containing both results
   template <>
   struct define_operator<op_divmod>
   {
@@ -379,6 +408,8 @@ namespace detail
       static const char * rname() { return "__rdivmod__"; }
   };
 
+// cmp(): Manual specialization needed because there is no three-way compare in C++.
+// It is implemented by two one-way comparisons with operators reversed in the second.
   template <>
   struct define_operator<op_cmp>
   {
@@ -430,6 +461,8 @@ namespace detail
       static const char * rname() { return "__rcmp__"; }
   };
 
+// str(): Manual specialization needed because the string conversion does not follow
+// the standard pattern relized by the macros.
   template <>
   struct define_operator<op_str>
   {
