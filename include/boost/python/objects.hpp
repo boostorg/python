@@ -11,6 +11,7 @@
 
 # ifdef BOOST_PYTHON_V2
 #  include <boost/python/objects2.hpp>
+#  include <boost/python/list.hpp>
 # else
 #  include <boost/python/detail/wrap_python.hpp>
 #  include <boost/python/detail/config.hpp>

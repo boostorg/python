@@ -29,17 +29,17 @@ struct item_policies : const_item_policies
 //
 template <class U>
 inline object_item
-object_operators<U>::operator[](self_cref key)
+object_operators<U>::operator[](object_cref key)
 {
-    object_cref x = *static_cast<U*>(this);
+    object_cref2 x = *static_cast<U*>(this);
     return object_item(x, key);
 }
 
 template <class U>
 inline const_object_item
-object_operators<U>::operator[](self_cref key) const
+object_operators<U>::operator[](object_cref key) const
 {
-    object_cref x = *static_cast<U const*>(this);
+    object_cref2 x = *static_cast<U const*>(this);
     return const_object_item(x, key);
 }
 

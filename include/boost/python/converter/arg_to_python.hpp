@@ -14,6 +14,7 @@
 # include <boost/python/to_python_indirect.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/detail/convertible.hpp>
+# include <boost/python/detail/string_literal.hpp>
 # include <boost/python/base_type_traits.hpp>
 // Bring in specializations
 # include <boost/python/converter/builtin_converters.hpp>
@@ -73,6 +74,11 @@ namespace detail
   template <class T>
   struct select_arg_to_python
   {
+      // Special handling for char const[N]; interpret them as char
+      // const* for the sake of conversion
+      BOOST_STATIC_CONSTANT(
+          bool, is_string = python::detail::is_string_literal<T const>::value);
+      
       BOOST_STATIC_CONSTANT(
           bool, manager = is_object_manager<T>::value);
       
@@ -89,22 +95,27 @@ namespace detail
       typedef typename unwrap_pointer<T>::type unwrapped_ptr;
 
       typedef typename mpl::select_type<
-          manager
-          , object_manager_arg_to_python<T>
+          is_string
+          , arg_to_python<char const*>
           , typename mpl::select_type<
-              ptr
-              , pointer_deep_arg_to_python<T>
+              manager
+              , object_manager_arg_to_python<T>
               , typename mpl::select_type<
-                  ptr_wrapper
-                  , pointer_shallow_arg_to_python<unwrapped_ptr>
+                  ptr
+                  , pointer_deep_arg_to_python<T>
                   , typename mpl::select_type<
-                      ref_wrapper
-                      , reference_arg_to_python<unwrapped_referent>
-                      , value_arg_to_python<T>
+                      ptr_wrapper
+                      , pointer_shallow_arg_to_python<unwrapped_ptr>
+                      , typename mpl::select_type<
+                          ref_wrapper
+                          , reference_arg_to_python<unwrapped_referent>
+                          , value_arg_to_python<T>
+                        >::type
                     >::type
                 >::type
             >::type
-        >::type type;
+        >::type
+      type;
   };
 }
 

@@ -30,50 +30,50 @@ struct slice_policies : const_slice_policies
 //
 template <class U>
 object_slice
-object_operators<U>::slice(self_cref start, self_cref finish)
+object_operators<U>::slice(object_cref start, object_cref finish)
 {
-    object_cref x = *static_cast<U*>(this);
-    return object_slice(x, std::make_pair(start.ptr(), finish.ptr()));
+    object_cref2 x = *static_cast<U*>(this);
+    return object_slice(x, std::make_pair(borrowed(start.ptr()), borrowed(finish.ptr())));
 }
 
 template <class U>
 const_object_slice
-object_operators<U>::slice(self_cref start, self_cref finish) const
+object_operators<U>::slice(object_cref start, object_cref finish) const
 {
-    object_cref x = *static_cast<U const*>(this);
-    return const_object_slice(x, std::make_pair(start.ptr(), finish.ptr()));
+    object_cref2 x = *static_cast<U const*>(this);
+    return const_object_slice(x, std::make_pair(borrowed(start.ptr()), borrowed(finish.ptr())));
 }
 
 template <class U>
 object_slice
-object_operators<U>::slice(slice_nil, self_cref finish)
+object_operators<U>::slice(slice_nil, object_cref finish)
 {
-    object_cref x = *static_cast<U*>(this);
-    return object_slice(x, std::make_pair(handle<>(), finish.ptr()));
+    object_cref2 x = *static_cast<U*>(this);
+    return object_slice(x, std::make_pair(allow_null((PyObject*)0), borrowed(finish.ptr())));
 }
 
 template <class U>
 const_object_slice
-object_operators<U>::slice(slice_nil, self_cref finish) const
+object_operators<U>::slice(slice_nil, object_cref finish) const
 {
-    object_cref x = *static_cast<U const*>(this);
-    return const_object_slice(x, std::make_pair(handle<>(), finish.ptr()));
+    object_cref2 x = *static_cast<U const*>(this);
+    return const_object_slice(x, std::make_pair(allow_null((PyObject*)0), borrowed(finish.ptr())));
 }
 
 template <class U>
 object_slice
-object_operators<U>::slice(self_cref start, slice_nil)
+object_operators<U>::slice(object_cref start, slice_nil)
 {
-    object_cref x = *static_cast<U*>(this);
-    return object_slice(x, std::make_pair(start.ptr(), handle<>()));
+    object_cref2 x = *static_cast<U*>(this);
+    return object_slice(x, std::make_pair(borrowed(start.ptr()), allow_null((PyObject*)0)));
 }
 
 template <class U>
 const_object_slice
-object_operators<U>::slice(self_cref start, slice_nil) const
+object_operators<U>::slice(object_cref start, slice_nil) const
 {
-    object_cref x = *static_cast<U const*>(this);
-    return const_object_slice(x, std::make_pair(start.ptr(), handle<>()));
+    object_cref2 x = *static_cast<U const*>(this);
+    return const_object_slice(x, std::make_pair(borrowed(start.ptr()), allow_null((PyObject*)0)));
 }
 # if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
 template <class U>

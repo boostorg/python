@@ -62,6 +62,7 @@ bpl-test test_pointer_adoption ;
 bpl-test operators ;
 bpl-test callbacks ;
 bpl-test object ;
+bpl-test list ;
 bpl-test virtual_functions ;
 bpl-test back_reference ;
 bpl-test implicit ;
@@ -88,6 +89,7 @@ run bases.cpp ;
 run if_else.cpp ;
 run pointee.cpp ;
 run result.cpp ;
+compile string_literal.cpp ;
 compile borrowed.cpp : $(PYTHON_PROPERTIES) ;
 compile object_manager.cpp : $(PYTHON_PROPERTIES) ;
 

@@ -14,7 +14,7 @@ template <class U>
 object object_operators<U>::operator()() const
 {
     object const& f = *static_cast<U const*>(this);
-    return call<object>(f.ptr().get());
+    return call<object>(f.ptr());
 }
 
 
@@ -23,7 +23,7 @@ inline
 object_operators<U>::operator bool_type() const
 {
     object const& x = *static_cast<U const*>(this);
-    return PyObject_IsTrue(x.ptr().get()) ? &object::ptr : 0;
+    return PyObject_IsTrue(x.ptr()) ? &object::ptr : 0;
 }
 
 template <class U>
@@ -31,7 +31,7 @@ inline bool
 object_operators<U>::operator!() const
 {
     object const& x = *static_cast<U const*>(this);
-    return !PyObject_IsTrue(x.ptr().get());
+    return !PyObject_IsTrue(x.ptr());
 }
 
 # define BOOST_PYTHON_COMPARE_OP(op, opid)                      \
@@ -39,7 +39,7 @@ template <class L, class R>                                     \
 bool operator op(L const& l, R const& r)                        \
 {                                                               \
     return PyObject_RichCompareBool(                            \
-        object(l).ptr().get(), object(r).ptr().get(), opid);    \
+        object(l).ptr(), object(r).ptr(), opid);                \
 }
 BOOST_PYTHON_COMPARE_OP(>, Py_GT)
 BOOST_PYTHON_COMPARE_OP(>=, Py_GE)

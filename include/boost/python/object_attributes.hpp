@@ -30,14 +30,14 @@ struct attribute_policies : const_attribute_policies
 template <class U>
 inline object_attribute object_operators<U>::attr(char const* name)
 {
-    object_cref x = *static_cast<U*>(this);
+    object_cref2 x = *static_cast<U*>(this);
     return object_attribute(x, name);
 }
 
 template <class U>
 inline const_object_attribute object_operators<U>::attr(char const* name) const
 {
-    object_cref x = *static_cast<U const*>(this);
+    object_cref2 x = *static_cast<U const*>(this);
     return const_object_attribute(x, name);
 }
 

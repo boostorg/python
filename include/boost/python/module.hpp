@@ -76,7 +76,7 @@ inline module& module::setattr(const char* name, handle<> const& x)
 
 inline module& module::add(PyTypeObject* x)
 {
-    this->base::add(x);
+    this->base::add(handle<>(borrowed(x)));
     return *this;
 }
 

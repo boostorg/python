@@ -7,7 +7,7 @@
 #include <boost/python/object/function.hpp>
 #include <numeric>
 #include <boost/python/errors.hpp>
-#include <boost/python/objects.hpp>
+#include <boost/python/objects2.hpp>
 #include <algorithm>
 #include <cstring>
 

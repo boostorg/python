@@ -13,6 +13,7 @@ if $(UNIX) && ( $(OS) = AIX )
 
 dll bpl
   : 
+  src/list.cpp
   src/aix_init_module.cpp
   src/converter/from_python.cpp
   src/converter/registry.cpp

@@ -5,6 +5,7 @@
 // to its suitability for any purpose.
 
 #include <boost/python/object_operators.hpp>
+#include <boost/python/detail/raw_pyobject.hpp>
 
 namespace boost { namespace python { namespace api {
 
@@ -12,8 +13,9 @@ namespace boost { namespace python { namespace api {
 BOOST_PYTHON_DECL object operator op(object const& l, object const& r)  \
 {                                                                       \
     return object(                                                      \
-        (object::new_pyobject_reference*)                               \
-        PyNumber_##name(l.ptr().get(), r.ptr().get()));                 \
+        detail::new_reference(                                          \
+            PyNumber_##name(l.ptr(), r.ptr()))                          \
+        );                                                              \
 }
 
 BOOST_PYTHON_BINARY_OPERATOR(+, Add)
@@ -32,8 +34,8 @@ BOOST_PYTHON_BINARY_OPERATOR(|, Or)
 BOOST_PYTHON_DECL object& operator op##=(object& l, object const& r)    \
 {                                                                       \
     return l = object(                                                  \
-        (object::new_pyobject_reference*)                               \
-        PyNumber_InPlace##name(l.ptr().get(), r.ptr().get()));          \
+        (detail::new_reference)                                         \
+            PyNumber_InPlace##name(l.ptr(), r.ptr()));                  \
 }
     
 BOOST_PYTHON_INPLACE_OPERATOR(+, Add)

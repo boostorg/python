@@ -14,6 +14,8 @@
 
 namespace boost { namespace python {
 
+class list;
+
 class BOOST_PYTHON_DECL objects_base
 {
  public:
@@ -95,67 +97,6 @@ class  tuple : public tuple_base
     {
         tuple_base::set_item(pos, rhs);
     }
-};
-
-class list;
-
-struct BOOST_PYTHON_DECL list_proxy;
-struct BOOST_PYTHON_DECL list_slice_proxy;
-
-class BOOST_PYTHON_DECL list_base : public objects_base
-{
- protected:
-    typedef list_proxy proxy;
-    typedef list_slice_proxy slice_proxy;
- public:
-    explicit list_base(handle<> p);
-    explicit list_base(std::size_t sz = 0);
-    static PyTypeObject* type_obj();
-    static bool accepts(handle<> p);
-    std::size_t size() const;
-    handle<> operator[](std::size_t pos) const;
-    proxy operator[](std::size_t pos);
-    handle<> get_item(std::size_t pos) const;
-
-    void set_item(std::size_t pos, const handle<>& );
-    
-//    void set_item(std::size_t pos, const object& );
-
-    void insert(std::size_t index, const handle<>& item);
-
-    void push_back(const handle<>& item);
-    
-    void append(const handle<>& item);
-    
-    list slice(int low, int high) const;
-    slice_proxy slice(int low, int high);
-    void sort();
-    void reverse();
-    tuple as_tuple() const;
-};
-
-class list : public list_base
-{
- public:    
-    explicit list(handle<> p) : list_base(p) {}
-    explicit list(std::size_t sz = 0) : list_base(sz) {}
-    template <class T>
-    void set_item(std::size_t pos, const T& x)
-        { this->set_item(pos, make_ref(x)); }
-    template <class T>
-    void insert(std::size_t index, const T& x)
-        { this->insert(index, make_ref(x)); }
-    template <class T>
-    void push_back(const T& item)
-        { this->push_back(make_ref(item)); }
-    template <class T>
-    void append(const T& item)
-        { this->append(make_ref(item)); }
-    
-    void set_item(std::size_t pos, const handle<>& x) { list_base::set_item(pos, x); }
-    void insert(std::size_t index, const handle<>& item) { list_base::insert(index, item); }
-    void push_back(const handle<>& item) { list_base::push_back(item); }
-    void append(const handle<>& item) { list_base::append(item); }
 };
 
 class BOOST_PYTHON_DECL string
@@ -304,43 +245,6 @@ class dictionary : public dictionary_base
         { this->erase(make_ref(key)); }
     void erase(handle<> key)
     { dictionary_base::erase(key); }
-};
-
-struct BOOST_PYTHON_DECL list_proxy
-{
-    template <class T>
-    const handle<>& operator=(const T& rhs)
-        { return (*this) = make_ref(rhs); }
-    const handle<>& operator=(const handle<>& rhs);
-    
-    operator handle<>() const;
-    
- private:
-    friend class list_base;
-    list_proxy(const handle<>& list, std::size_t index);
-    
-    // This is needed to work around the very strange MSVC error report that the
-    // return type of the built-in operator= differs from that of the ones
-    // defined above. Couldn't hurt to make these un-assignable anyway, though.
-    const handle<>& operator=(const list_proxy&); // Not actually implemented
- private:
-    list m_list;
-    std::size_t m_index;
-};
-
-struct BOOST_PYTHON_DECL list_slice_proxy
-{
-    const list& operator=(const list& rhs);
-    operator handle<>() const;
-    operator list() const;
-    std::size_t size() const;
-    handle<> operator[](std::size_t pos) const;
- private:
-    friend class list_base;
-    list_slice_proxy(const handle<>& list, int low, int high);
- private:
-    handle<> m_list;
-    int m_low, m_high;
 };
 
 }} // namespace boost::python

@@ -73,10 +73,10 @@ inline proxy<Policies> const& proxy<Policies>::operator=(typename proxy::copy_ct
 
 # define BOOST_PYTHON_PROXY_INPLACE(op)                                         \
 template <class Policies, class R>                                              \
-proxy<Policies> const& operator op(proxy<Policies> const& lhs, R const& other)  \
+proxy<Policies> const& operator op(proxy<Policies> const& lhs, R const& rhs)    \
 {                                                                               \
     object old(lhs);                                                            \
-    return lhs = (old op other);                                                \
+    return lhs = (old op rhs);                                                  \
 } 
 BOOST_PYTHON_PROXY_INPLACE(+=)
 BOOST_PYTHON_PROXY_INPLACE(-=)

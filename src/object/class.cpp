@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
-#include <boost/python/objects.hpp>
+#include <boost/python/objects2.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
@@ -210,7 +210,7 @@ namespace objects
         type_handle query(class_id id) const;
         void set(class_id, type_handle class_object);
      private:
-        typedef detail::map_entry<class_id,type_handle> entry;
+        typedef python::detail::map_entry<class_id,type_handle> entry;
         std::vector<entry> m_impl;
     };
 
