@@ -7,14 +7,33 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/converter/arg_from_python.hpp>
+# if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400)) \
+    || BOOST_WORKAROUND(BOOST_INTEL_WIN, BOOST_TESTED_AT(800))
+# include <boost/type_traits/remove_cv.hpp>
+#endif
 
 namespace boost { namespace python { 
 
 template <class T>
 struct arg_from_python
-    : converter::select_arg_from_python<T>::type
+    : converter::select_arg_from_python<
+# if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400)) \
+    || BOOST_WORKAROUND(BOOST_INTEL_WIN, BOOST_TESTED_AT(800))
+          typename boost::remove_cv<T>::type
+# else
+          T
+# endif 
+      >::type
 {
-    typedef typename converter::select_arg_from_python<T>::type base;
+    typedef typename converter::select_arg_from_python<
+# if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400)) \
+    || BOOST_WORKAROUND(BOOST_INTEL_WIN, BOOST_TESTED_AT(800))
+          typename boost::remove_cv<T>::type
+# else
+          T
+# endif 
+        >::type base;
+    
     arg_from_python(PyObject*);
 };
 
