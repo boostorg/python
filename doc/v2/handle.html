@@ -174,7 +174,7 @@ virtual ~handle();
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> <code>Py_XDECREF(m_p)</code></dt>
+      <dt><b>Effects:</b> <code>Py_XDECREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p))</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -182,7 +182,8 @@ explicit handle(detail::borrowed&lt;null_ok&lt;Y&gt; &gt;* p);
 </pre>
 
     <dl class="function-semantics">
-      <dt><b>Effects:</b> <code>Py_XDECREF(m_p)</code></dt>
+      <dt><b>Effects:</b> 
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -191,7 +192,7 @@ explicit handle(null_ok&lt;detail::borrowed&lt;Y&gt; &gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -200,7 +201,7 @@ explicit handle(detail::borrowed&lt;Y&gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a href=
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p)); m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a href=
       "errors.html#expect_non_null-spec">expect_non_null</a>(p));</code></dt>
     </dl>
 <pre>
@@ -210,7 +211,7 @@ explicit handle(null_ok&lt;Y&gt;* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(p);&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(p);</code></dt>
     </dl>
 <pre>
 template &lt;class Y&gt;
@@ -219,7 +220,7 @@ explicit handle(Y* p);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(p);&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(p));&nbsp;m_p&nbsp;=&nbsp;</code><i>upcast</i><code>&lt;T*&gt;(<a
        href=
       "errors.html#expect_non_null-spec">expect_non_null</a>(p));</code></dt>
     </dl>
@@ -238,7 +239,7 @@ handle(handle const&amp; r);
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>m_p&nbsp;=&nbsp;r.m_p;&nbsp;Py_XINCREF(m_p);</code></dt>
+      <code>m_p&nbsp;=&nbsp;r.m_p;&nbsp;Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p));</code></dt>
     </dl>
 
     <h4><a name="handle-spec-modifiers">Class <code>handle</code>
@@ -251,7 +252,7 @@ handle&amp; operator=(handle&lt;Y&gt; const &amp; r); // never throws
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-      <code>Py_XINCREF(r.m_p);&nbsp;Py_XDECREF(m_p);&nbsp;m_p&nbsp;=&nbsp;r.m_p;</code></dt>
+      <code>Py_XINCREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(r.m_p));&nbsp;Py_XDECREF(</code><i>upcast</i><code>&lt;PyObject*&gt;(m_p));&nbsp;m_p&nbsp;=&nbsp;r.m_p;</code></dt>
     </dl>
 <pre>
 T* release();
