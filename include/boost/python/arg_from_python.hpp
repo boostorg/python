@@ -7,6 +7,7 @@
 # define ARG_FROM_PYTHON_DWA2002128_HPP
 
 # include <boost/python/converter/arg_from_python.hpp>
+# include <boost/python/detail/indirect_traits.hpp>
 
 namespace boost { namespace python { 
 
@@ -37,6 +38,37 @@ struct arg_from_python<PyObject* const&>
     bool convertible() const { return true; }
     PyObject*const& operator()(PyObject*const& source) const { return source; }
 };
+
+namespace detail
+{
+  //
+  // Meta-iterators for use with caller<>
+  //
+  
+  // temporary hack
+  template <class T> struct nullary : T
+  {
+      nullary(PyObject* x) : T(x), m_p(x) {}
+      typename T::result_type operator()() { return this->T::operator()(m_p); }
+      PyObject* m_p;
+  };
+
+  // An MPL metafunction class which returns arg_from_python<ArgType>
+  struct gen_arg_from_python
+  {
+      template <class ArgType> struct apply
+      {
+          typedef nullary<arg_from_python<ArgType> > type;
+      };
+  };
+
+  // An MPL iterator over an endless sequence of gen_arg_from_python
+  struct args_from_python
+  {
+      typedef gen_arg_from_python type;
+      typedef args_from_python next;
+  };
+}
 
 //
 // implementations

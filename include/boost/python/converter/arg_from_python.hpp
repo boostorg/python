@@ -159,11 +159,11 @@ struct select_arg_from_python
             = boost::python::detail::is_reference_to_pointer<T>::value
             && boost::python::detail::is_reference_to_const<T>::value
             && !boost::python::detail::is_reference_to_volatile<T>::value);
-    
+
     
     BOOST_STATIC_CONSTANT(
         bool, ref =
-        boost::python::detail::is_reference_to_non_const<T>::value
+            boost::python::detail::is_reference_to_non_const<T>::value
         || boost::python::detail::is_reference_to_volatile<T>::value);
 
     BOOST_STATIC_CONSTANT(

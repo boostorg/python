@@ -162,7 +162,7 @@ namespace detail
 #define BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN(z, index, data)                       \
     static RT BOOST_PP_CAT(func_,                                               \
         BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (            \
-            ClassT& obj BOOST_PP_COMMA_IF(index)                                \
+            ClassT obj BOOST_PP_COMMA_IF(index)                                 \
             BOOST_PP_ENUM_BINARY_PARAMS_Z(1, index, T, arg)                     \
         )                                                                       \
     {                                                                           \
