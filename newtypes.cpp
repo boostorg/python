@@ -535,40 +535,23 @@ const CapabilityEntry capabilities[] = {
   void add_capability(
       std::size_t n,
       PyTypeObject* dest_,
-      AllMethods& all_methods,
-      const PyTypeObject* src_)
+      AllMethods& all_methods)
   {
       assert(n < PY_ARRAY_LENGTH(capabilities));
       const CapabilityEntry& c = capabilities[n];
-
-      const char* const* src = src_ ? reinterpret_cast<const char* const*>(
-          reinterpret_cast<const char*>(src_) + c.offset1) : 0;
 
       char** const dest = reinterpret_cast<char**>(
           reinterpret_cast<char*>(dest_) + c.offset1);
             
       if (c.substructure_size == 0)
       {
-          if (src == 0 || 
-#if defined(__MWERKS__) && __MWERKS__ <= 0x4000 || defined(__alpha) && defined(__osf__)
-          ((const Dispatch*)src)
-#else
-          reinterpret_cast<const Dispatch*>(src)
-#endif
-           != 0) {
-              *reinterpret_cast<Dispatch*>(dest) = c.dispatch;
-          }
+          *reinterpret_cast<Dispatch*>(dest) = c.dispatch;
       }
       else
       {
-          if (src == 0 ||
-              *src != 0 && *reinterpret_cast<const Dispatch*>(*src + c.offset2) != 0)
-          {
-              *dest = reinterpret_cast<char*>(&all_methods) + c.allmethods_offset;
-              *reinterpret_cast<Dispatch*>(*dest + c.offset2) = c.dispatch;
-          }
+          *dest = reinterpret_cast<char*>(&all_methods) + c.allmethods_offset;
+          *reinterpret_cast<Dispatch*>(*dest + c.offset2) = c.dispatch;
       }
-      
   }
 } // namespace detail
 
