@@ -82,7 +82,8 @@ class Exporter(object):
 
 
     def __eq__(self, other):
-        return self.Name() == other.Name()
+        return type(self) is type(other) and self.Name() == other.Name() \
+            and self.interface_file == other.interface_file
 
     def __ne__(self, other):
-        return self.Name() != other.Name()
+        return not self == other

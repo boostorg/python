@@ -20,7 +20,7 @@ class CppParserError(Exception): pass
 class CppParser:
     'Parses a header file and returns a list of declarations'
     
-    def __init__(self, includes=None, defines=None, cache_dir=None):
+    def __init__(self, includes=None, defines=None, cache_dir=None, version=None):
         'includes and defines ar the directives given to gcc'
         if includes is None:
             includes = []
@@ -28,6 +28,7 @@ class CppParser:
             defines = []
         self.includes = includes
         self.defines = defines
+        self.version = version
         #if cache_dir is None:
         #    cache_dir = tempfile.mktemp()
         #    self.delete_cache = True
@@ -168,6 +169,9 @@ class CppParser:
         if os.path.isfile(cache_file):
             f = file(cache_file, 'rb')
             try:
+                version = load(f)
+                if version != self.version:
+                    return None
                 cache = load(f)
                 if cache.has_key(key):
                     self.cache_files.append(cache_file)
@@ -195,6 +199,7 @@ class CppParser:
         if os.path.isfile(cache_file):
             f = file(cache_file, 'rb')
             try:
+                version = load(f)
                 cache = load(f)
             finally:
                 f.close()
@@ -204,6 +209,7 @@ class CppParser:
         self.cache_files.append(cache_file)
         f = file(cache_file, 'wb')
         try:
+            dump(self.version, f, 1)
             dump(cache, f, 1)
         finally:
             f.close()

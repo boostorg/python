@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 from declarations import Typedef
 
-__version__ = '0.9.18'
+__version__ = '0.9.19'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -205,7 +205,7 @@ def Begin():
     for interface in interfaces:
         ExecuteInterface(interface)
     # create the parser
-    parser = CppParser(includes, defines, cache_dir)
+    parser = CppParser(includes, defines, cache_dir, __version__)
     try:
         if not create_cache:
             if not generate_main:
@@ -299,7 +299,6 @@ def GenerateCode(parser, module, out, interfaces, multiple):
     exported_names = dict([(x.Name(), None) for x in exports])
 
     # order the exports
-    interfaces_order = OrderInterfaces(interfaces)
     order = {}
     for export in exports:
         if export.interface_file in order:
@@ -307,6 +306,7 @@ def GenerateCode(parser, module, out, interfaces, multiple):
         else:
             order[export.interface_file] = [export]
     exports = []
+    interfaces_order = OrderInterfaces(interfaces)
     for interface in interfaces_order:
         exports.extend(order[interface])
     del order
@@ -362,7 +362,7 @@ def UsePsyco():
 
 def main():
     start = time.clock()
-    UsePsyco()
+    #UsePsyco()
     status = Begin()
     print '%0.2f seconds' % (time.clock()-start)
     sys.exit(status) 
