@@ -18,8 +18,12 @@
 // trouble for non-conforming compilers and libraries.
 #include <math.h>
 
+#if BOOST_WORKAROUND(BOOST_MSVC, == 1310)
 // vc7.1 seems to require this (incorrectly) in order to use the "not" keyword
 #include <ciso646>
+#elif BOOST_WORKAROUND(__EDG_VERSION__, <= 238)
+#define not !
+#endif
 
 using namespace boost::python;
 
