@@ -19,10 +19,12 @@ struct C
         return x+1;
     }
 
-    const std::string& name() { return _name; }
-    void set_name(const std::string& name) { _name = name; }
-    std::string _name;
+    const std::string& get_name() { return name; }
+    void set_name(const std::string& name) { this->name = name; }
+private:
+    std::string name;
 
+public:
     // test data members
     static int static_value;
     static const int const_static_value;

@@ -16,7 +16,7 @@ class VarExporter(Exporter):
     def Export(self, codeunit, exported_names):
         if self.info.exclude: return
         decl = self.GetDeclaration(self.info.name)
-        if not decl.type.const: 
+        if not decl._type._const: 
             msg = '---> Warning: The global variable "%s" is non-const:\n' \
                   '              changes in Python will not reflect in C++.'
             print msg % self.info.name

@@ -75,10 +75,9 @@ You can optionally declare the function in the interface file itself:</p>
     </span><span class=identifier>set_wrapper</span><span class=special>(</span><span class=identifier>names</span><span class=special>, </span><span class=identifier>names_wrapper</span><span class=special>)
 </span></pre></code>
 <p>
-The same mechanism can be used with methods too. Just remember that the first
-parameter of wrappers for methods is a pointer to the class, like in
-<a href="../../index.html">
-Boost.Python</a>:</p>
+The same mechanism can be used with member functions too. Just remember that
+the first parameter of wrappers for member functions is a pointer to the
+class, as in:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>C
     </span><span class=special>{
@@ -104,7 +103,7 @@ And then in the interface file:</p>
 Boost.Python</a> accepts either a pointer or a
 reference to the class in wrappers for member functions as the first parameter,
 Pyste expects them to be a <b>pointer</b>. Doing otherwise will prevent your
-code to compile when you set a wrapper for a virtual method.
+code to compile when you set a wrapper for a virtual member function.
     </td>
   </tr>
 </table>

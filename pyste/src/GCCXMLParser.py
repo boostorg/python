@@ -5,6 +5,9 @@ from copy import deepcopy
 from utils import enumerate
 
 
+#==============================================================================
+# Exceptions
+#==============================================================================
 class InvalidXMLError(Exception): pass
 
 class ParserError(Exception): pass
@@ -12,6 +15,9 @@ class ParserError(Exception): pass
 class InvalidContextError(ParserError): pass
 
 
+#==============================================================================
+# GCCXMLParser
+#==============================================================================
 class GCCXMLParser(object):
     'Parse a GCC_XML file and extract the top-level declarations.'
     
@@ -21,6 +27,7 @@ class GCCXMLParser(object):
         self.elements = self.GetElementsFromXML(filename)
         # high level declarations
         self.declarations = []
+        self._names = {}
         # parse the elements
         for id in self.elements:
             element, decl = self.elements[id]
@@ -37,6 +44,12 @@ class GCCXMLParser(object):
 
 
     def AddDecl(self, decl):
+        if decl._FullName() in self._names:
+            decl._is_unique= False
+            for d in self.declarations:
+                if d._FullName() == decl._FullName():
+                    d._is_unique = False
+        self._names[decl._FullName()] = 0
         self.declarations.append(decl)
 
         
@@ -102,18 +115,17 @@ class GCCXMLParser(object):
         restricted, id = Check(id, 'r')
         decl = self.GetDecl(id)
         if isinstance(decl, Type):
-            res = decl.Copy()
+            res = deepcopy(decl)
             if const:
-                res.const = const
+                res._const = const
             if volatile: 
-                res.volatile = volatile
+                res._volatile = volatile
             if restricted:
-                res.restricted = restricted
+                res._restricted = restricted
         else:
-            res = Type(decl.FullName(), const)
-            res.volatile = volatile
-            res.restricted = restricted
-            res.incomplete = decl.incomplete
+            res = Type(decl._FullName(), const)
+            res._volatile = volatile
+            res._restricted = restricted
         return res            
         
                 
@@ -130,8 +142,7 @@ class GCCXMLParser(object):
         
     def ParseUnknown(self, id, element):
         name = '__Unknown_Element_%s' % id
-        namespace = '::'
-        decl = Declaration(name, namespace)
+        decl = Unknown(name)
         self.Update(id, decl)
         
         
@@ -139,10 +150,10 @@ class GCCXMLParser(object):
         namespace = element.get('name')
         context = element.get('context')
         if context:
-            outerns = self.GetDecl(context)
-            if not outerns.endswith('::'):
-                outerns += '::'
-            namespace = outerns + namespace
+            outer = self.GetDecl(context)
+            if not outer.endswith('::'):
+                outer += '::'
+            namespace = outer + namespace
         if namespace.startswith('::'):
             namespace = namespace[2:]
         self.Update(id, namespace)
@@ -155,19 +166,19 @@ class GCCXMLParser(object):
         
     def ParseVariable(self, id, element):
         # in gcc_xml, a static Field is declared as a Variable, so we check
-        # this and call the Field parser if apply.
+        # this and call the Field parser.
         context = self.GetDecl(element.get('context'))
         if isinstance(context, Class):
             self.ParseField(id, element)
             elem, decl = self.elements[id]
-            decl.static = True
+            decl._static = True
         else:
             namespace = context
             name = element.get('name')                    
             type_ = self.GetType(element.get('type'))
             location = self.GetLocation(element.get('location'))
             variable = Variable(type_, name, namespace)
-            variable.location = location
+            variable._location = location
             self.AddDecl(variable)
             self.Update(id, variable)
         
@@ -176,9 +187,9 @@ class GCCXMLParser(object):
         args = []
         for child in element:
             if child.tag == 'Argument':
-                type_ = self.GetType(child.get('type'))
-                type_.default = child.get('default')                
-                args.append(type_)
+                type = self.GetType(child.get('type'))
+                type._default = child.get('default')                
+                args.append(type)
         return args
 
     
@@ -190,8 +201,9 @@ class GCCXMLParser(object):
         namespace = self.GetDecl(element.get('context'))
         location = self.GetLocation(element.get('location'))
         params = self.GetArguments(element)
+        incomplete = bool(int(element.get('incomplete', 0)))
         function = functionType(name, namespace, returns, params)
-        function.location = location
+        function._location = location
         self.AddDecl(function)
         self.Update(id, function)
 
@@ -225,10 +237,10 @@ class GCCXMLParser(object):
                 # "Unimplemented" tag, but we are not interested in this classes
                 # anyway
                 continue
-            base = Base(decl.FullName(), visib)
+            base = Base(decl._FullName(), visib)
             this_level.append(base)
             # normalize with the other levels
-            for index, level in enumerate(decl.hierarchy):
+            for index, level in enumerate(decl._hierarchy):
                 if index < len(next_levels):
                     next_levels[index] = next_levels[index] + level
                 else:
@@ -256,25 +268,27 @@ class GCCXMLParser(object):
         abstract = bool(int(element.get('abstract', '0')))
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
-        incomplete = bool(element.get('incomplete', False))
+        incomplete = bool(int(element.get('incomplete', 0)))
         if isinstance(context, str): 
             class_ = Class(name, context, [], abstract)
         else:
             # a nested class
             visib = element.get('access', Scope.public)
             class_ = NestedClass(
-                name, context.FullName(), visib, [], abstract)
-        self.AddDecl(class_)
+                name, context._FullName(), visib, [], abstract)
+        class_._incomplete = incomplete
         # we have to add the declaration of the class before trying        
         # to parse its members and bases, to avoid recursion.
-        class_.location = location
-        class_.incomplete = incomplete
+        self.AddDecl(class_)
+        class_._location = location
         self.Update(id, class_)       
         # now we can get the members and the bases
-        class_.hierarchy = self.GetHierarchy(element.get('bases'))        
-        if class_.hierarchy:
-            class_.bases = class_.hierarchy[0]
-        class_.members = self.GetMembers(element.get('members'))
+        class_._hierarchy = self.GetHierarchy(element.get('bases'))        
+        if class_._hierarchy:
+            class_._bases = class_._hierarchy[0]
+        members = self.GetMembers(element.get('members'))
+        for member in members:
+            class_._AddMember(member)
 
 
     def ParseStruct(self, id, element):
@@ -288,26 +302,24 @@ class GCCXMLParser(object):
 
 
     def ParseArrayType(self, id, element):
-        type_ = self.GetType(element.get('type'))
+        type = self.GetType(element.get('type'))
         min = element.get('min')
         max = element.get('max')
-        array = ArrayType(type_.name, type_.const)
-        array.min = min
-        array.max = max
+        array = ArrayType(type._name, type._const, min, max)
         self.Update(id, array)
 
         
     def ParseReferenceType(self, id, element):
-        type_ = self.GetType(element.get('type'))
-        expand = not isinstance(type_, FunctionType)
-        ref = ReferenceType(type_.name, type_.const, None, type_.incomplete, expand)
+        type = self.GetType(element.get('type'))
+        expand = not isinstance(type, FunctionType)
+        ref = ReferenceType(type._name, type._const, None, expand, type._suffix)
         self.Update(id, ref)
         
         
     def ParsePointerType(self, id, element):
-        type_ = self.GetType(element.get('type'))
-        expand = not isinstance(type_, FunctionType)
-        ref = PointerType(type_.name, type_.const, None, type_.incomplete, expand)
+        type = self.GetType(element.get('type'))
+        expand = not isinstance(type, FunctionType)
+        ref = PointerType(type._name, type._const, None, expand, type._suffix)
         self.Update(id, ref)
         
         
@@ -319,7 +331,7 @@ class GCCXMLParser(object):
 
 
     def ParseMethodType(self, id, element):
-        class_ = self.GetDecl(element.get('basetype')).FullName()
+        class_ = self.GetDecl(element.get('basetype'))._FullName()
         result = self.GetType(element.get('returns'))
         args = self.GetArguments(element)
         method = MethodType(result, args, class_)
@@ -329,19 +341,19 @@ class GCCXMLParser(object):
     def ParseField(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context')).FullName()
+        classname = self.GetDecl(element.get('context'))._FullName()
         type_ = self.GetType(element.get('type'))
         static = bool(int(element.get('extern', '0')))
         location = self.GetLocation(element.get('location'))
         var = ClassVariable(type_, name, classname, visib, static)
-        var.location = location
+        var._location = location
         self.Update(id, var)
 
 
     def ParseMethod(self, id, element, methodType=Method):
         name = element.get('name')
         result = self.GetType(element.get('returns'))
-        classname = self.GetDecl(element.get('context')).FullName()
+        classname = self.GetDecl(element.get('context'))._FullName()
         visib = element.get('access', Scope.public)
         static = bool(int(element.get('static', '0')))
         virtual = bool(int(element.get('virtual', '0')))
@@ -351,7 +363,7 @@ class GCCXMLParser(object):
         params = self.GetArguments(element)
         method = methodType(
             name, classname, result, params, visib, virtual, abstract, static, const)
-        method.location = location
+        method._location = location
         self.Update(id, method)
 
 
@@ -362,22 +374,22 @@ class GCCXMLParser(object):
     def ParseConstructor(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context')).FullName()
+        classname = self.GetDecl(element.get('context'))._FullName()
         location = self.GetLocation(element.get('location'))
         params = self.GetArguments(element)
         ctor = Constructor(name, classname, params, visib)
-        ctor.location = location
+        ctor._location = location
         self.Update(id, ctor)
 
 
     def ParseDestructor(self, id, element):
         name = element.get('name')
         visib = element.get('access', Scope.public)
-        classname = self.GetDecl(element.get('context')).FullName()
+        classname = self.GetDecl(element.get('context'))._FullName()
         virtual = bool(int(element.get('virtual', '0')))
         location = self.GetLocation(element.get('location'))
         des = Destructor(name, classname, visib, virtual)
-        des.location = location
+        des._location = location
         self.Update(id, des)
 
 
@@ -390,7 +402,7 @@ class GCCXMLParser(object):
         type = self.GetType(element.get('type'))        
         context = self.GetDecl(element.get('context'))
         if isinstance(context, Class):
-            context = context.FullName()
+            context = context._FullName()
         typedef = Typedef(type, name, context)
         self.Update(id, typedef)
         self.AddDecl(typedef)
@@ -400,40 +412,22 @@ class GCCXMLParser(object):
         name = element.get('name')
         location = self.GetLocation(element.get('location'))
         context = self.GetDecl(element.get('context'))
+        incomplete = bool(int(element.get('incomplete', 0))) 
         if isinstance(context, str):
             enum = Enumeration(name, context)
         else:
             visib = element.get('access', Scope.public)
-            enum = ClassEnumeration(name, context.FullName(), visib)
+            enum = ClassEnumeration(name, context._FullName(), visib)
         self.AddDecl(enum)
-        enum.location = location
+        enum._location = location
         for child in element:
             if child.tag == 'EnumValue':
                 name = child.get('name')
                 value = int(child.get('init'))
-                enum.values[name] = value
+                enum._values[name] = value
+        enum._incomplete = incomplete
         self.Update(id, enum)
 
-
-    def ParseUnimplemented(self, id, element):
-        'No idea of what this is'
-        self.Update(id, Declaration('', ''))
-        
-
-    def ParseUnion(self, id, element):
-        name = element.get('name')
-        context = self.GetDecl(element.get('context'))
-        location = self.GetLocation(element.get('location'))
-        if isinstance(context, str):
-            # a free union
-            union = Union(name, context)
-            self.AddDecl(union)
-        else:
-            visib = element.get('access', Scope.public)
-            union = ClassUnion(name, context.FullName(), visib)
-        union.location = location
-        self.Update(id, union)
-        
 
 
 def ParseDeclarations(filename):

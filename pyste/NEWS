@@ -1,3 +1,7 @@
+2 July 2003
+Jim Wilson found a bug where types like "char**" were being interpreted as 
+"char*". Thanks Jim!
+
 16 June 2003
 Thanks to discussions with David Abrahams and Roman Sulzhyk, some behaviours
 have changed:

@@ -24,7 +24,8 @@
    </tr>
 </table>
 <p>
-Suppose that you want to add a function to a class, turning it into a method:</p>
+Suppose that you want to add a function to a class, turning it into a member
+function:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>World
     </span><span class=special>{
@@ -38,7 +39,7 @@ Suppose that you want to add a function to a class, turning it into a method:</p
     }
 </span></pre></code>
 <p>
-Here, we want to make <tt>greet</tt> work as a method of the class <tt>World</tt>. We do
+Here, we want to make <tt>greet</tt> work as a member function of the class <tt>World</tt>. We do
 that using the <tt>add_method</tt> construct:</p>
 <code><pre>
     <span class=identifier>W </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=string>&quot;World&quot;</span><span class=special>, </span><span class=string>&quot;hello.h&quot;</span><span class=special>)
@@ -46,7 +47,7 @@ that using the <tt>add_method</tt> construct:</p>
 </span></pre></code>
 <p>
 Notice also that then you can rename it, set its policy, just like a regular
-method:</p>
+member function:</p>
 <code><pre>
     <span class=identifier>rename</span><span class=special>(</span><span class=identifier>W</span><span class=special>.</span><span class=identifier>greet</span><span class=special>, </span><span class=literal>'Greet'</span><span class=special>)
 </span></pre></code>

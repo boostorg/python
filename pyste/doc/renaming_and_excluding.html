@@ -25,7 +25,7 @@
    </tr>
 </table>
 <p>
-You can easily rename functions, classes, methods, attributes, etc. Just use the
+You can easily rename functions, classes, member functions, attributes, etc. Just use the
 function <tt>rename</tt>, like this:</p>
 <code><pre>
     <span class=identifier>World </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=string>&quot;World&quot;</span><span class=special>, </span><span class=string>&quot;hello.h&quot;</span><span class=special>)
@@ -34,7 +34,7 @@ function <tt>rename</tt>, like this:</p>
     </span><span class=identifier>rename</span><span class=special>(</span><span class=identifier>show</span><span class=special>, </span><span class=string>&quot;Show&quot;</span><span class=special>)
 </span></pre></code>
 <p>
-You can rename methods and attributes using this syntax:</p>
+You can rename member functions and attributes using this syntax:</p>
 <code><pre>
     <span class=identifier>rename</span><span class=special>(</span><span class=identifier>World</span><span class=special>.</span><span class=identifier>greet</span><span class=special>, </span><span class=string>&quot;Greet&quot;</span><span class=special>)
     </span><span class=identifier>rename</span><span class=special>(</span><span class=identifier>World</span><span class=special>.</span><span class=identifier>set</span><span class=special>, </span><span class=string>&quot;Set&quot;</span><span class=special>)
@@ -43,7 +43,7 @@ You can rename methods and attributes using this syntax:</p>
     </span><span class=identifier>rename</span><span class=special>(</span><span class=identifier>choice</span><span class=special>.</span><span class=identifier>blue</span><span class=special>, </span><span class=string>&quot;Blue&quot;</span><span class=special>)
 </span></pre></code>
 <p>
-You can exclude functions, classes, methods, attributes, etc, in the same way,
+You can exclude functions, classes, member functions, attributes, etc, in the same way,
 with the function <tt>exclude</tt>:</p>
 <code><pre>
     <span class=identifier>exclude</span><span class=special>(</span><span class=identifier>World</span><span class=special>.</span><span class=identifier>greet</span><span class=special>)
@@ -59,6 +59,18 @@ To access the operators of a class, access the member <tt>operator</tt> like thi
 </span></pre></code>
 <p>
 The string inside the brackets is the same as the name of the operator in C++.<br></p>
+<a name="virtual_member_functions"></a><h2>Virtual Member Functions</h2><p>
+Pyste automatically generates wrappers for virtual member functions, but you
+may want to disable this behaviour (for performance reasons, or to let the
+code more clean) if you do not plan to override the functions in Python. To do
+this, use the function <tt>final</tt>:</p>
+<code><pre>
+    <span class=identifier>C </span><span class=special>= </span><span class=identifier>Class</span><span class=special>(</span><span class=literal>'C'</span><span class=special>, </span><span class=literal>'C.h'</span><span class=special>)
+    </span><span class=identifier>final</span><span class=special>(</span><span class=identifier>C</span><span class=special>.</span><span class=identifier>foo</span><span class=special>) </span>##<span class=identifier>C</span><span class=special>::</span><span class=identifier>foo </span><span class=identifier>is </span><span class=identifier>a </span><span class=keyword>virtual </span><span class=identifier>member </span><span class=identifier>function
+</span></pre></code>
+<p>
+No virtual wrapper code will be generated for the virtual member function
+C::foo that way.</p>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

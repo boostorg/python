@@ -22,22 +22,19 @@ class FunctionExporter(Exporter):
             decls = self.GetDeclarations(self.info.name)
             for decl in decls:
                 self.info.policy = exporterutils.HandlePolicy(decl, self.info.policy)
-                exporterutils.WarnForwardDeclarations(decl)
                 self.ExportDeclaration(decl, len(decls) == 1, codeunit)
                 self.ExportOpaquePointer(decl, codeunit)
             self.GenerateOverloads(decls, codeunit)  
 
 
     def ExportDeclaration(self, decl, unique, codeunit):
-        name = self.info.rename or decl.name
+        name = self.info.rename or decl._name
         defs = namespaces.python + 'def("%s", ' % name
         wrapper = self.info.wrapper
         if wrapper:
             pointer = '&' + wrapper.FullName()
-        elif not unique:                
-            pointer = decl.PointerDeclaration()
         else:
-            pointer = '&' + decl.FullName()
+            pointer = decl._PointerDeclaration()
         defs += pointer            
         defs += self.PolicyCode()                            
         overload = self.OverloadName(decl)
@@ -51,9 +48,9 @@ class FunctionExporter(Exporter):
             
 
     def OverloadName(self, decl):
-        if decl.minArgs != decl.maxArgs:
+        if decl._minArgs != decl._maxArgs:
             return '%s_overloads_%i_%i' % \
-                (decl.name, decl.minArgs, decl.maxArgs)
+                (decl._name, decl._minArgs, decl._maxArgs)
         else:
             return ''
 
@@ -64,7 +61,7 @@ class FunctionExporter(Exporter):
             overload = self.OverloadName(decl)
             if overload and overload not in codes:
                 code = 'BOOST_PYTHON_FUNCTION_OVERLOADS(%s, %s, %i, %i)' %\
-                    (overload, decl.FullName(), decl.minArgs, decl.maxArgs)
+                    (overload, decl._FullName(), decl._minArgs, decl_.maxArgs)
                 codeunit.Write('declaration', code + '\n')
                 codes[overload] = None
         
@@ -80,7 +77,7 @@ class FunctionExporter(Exporter):
 
     def ExportOpaquePointer(self, function, codeunit):
         if self.info.policy == return_value_policy(return_opaque_pointer):
-            type = function.result.name
+            type = function._result._name
             macro = 'BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(%s)' % type
             if macro not in self._exported_opaque_pointers:
                 codeunit.Write('declaration-outside', macro)

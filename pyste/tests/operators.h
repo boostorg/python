@@ -2,8 +2,6 @@
 #define OPERATORS_H
 
 
-#include <iostream>
-
 namespace operators {
 
 struct C
