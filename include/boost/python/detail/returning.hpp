@@ -359,8 +359,9 @@ struct returning
     static PyObject* call(R (*pf)(), PyObject*, PyObject* /* keywords */ )
     {
         // find the result converter
-        wrap<R> r;
-        return r( (*pf)() );
+        wrap<R> c0;
+        if (!c0) return 0;
+        return c0( (*pf)() );
     }
     template <class A0>
     static PyObject* call(R (*pf)(A0), PyObject* args, PyObject* /* keywords */ )
@@ -369,9 +370,9 @@ struct returning
         unwrap<A0> c0(PyTuple_GET_ITEM(args, 0));
 
         // find the result converter
-        wrap_more<R> r(c0);
+        wrap_more<R> c1(c0);
         if (!c0) return 0;
-        return r( (*pf)(*c0) );
+        return c1( (*pf)(*c0) );
     }
     template <class A0, class A1>
     static PyObject* call(R (*pf)(A0, A1), PyObject* args, PyObject* /* keywords */ )
@@ -381,9 +382,9 @@ struct returning
         unwrap_more<A1> c1(PyTuple_GET_ITEM(args, 1), c0);
 
         // find the result converter
-        wrap_more<R> r(c1);
+        wrap_more<R> c2(c1);
         if (!c0) return 0;
-        return r( (*pf)(*c0, *c1) );
+        return c2( (*pf)(*c0, *c1) );
     }
     template <class A0, class A1, class A2>
     static PyObject* call(R (*pf)(A0, A1, A2), PyObject* args, PyObject* /* keywords */ )
@@ -394,9 +395,9 @@ struct returning
         unwrap_more<A2> c2(PyTuple_GET_ITEM(args, 2), c1);
 
         // find the result converter
-        wrap_more<R> r(c2);
+        wrap_more<R> c3(c2);
         if (!c0) return 0;
-        return r( (*pf)(*c0, *c1, *c2) );
+        return c3( (*pf)(*c0, *c1, *c2) );
     }
     template <class A0, class A1, class A2, class A3>
     static PyObject* call(R (*pf)(A0, A1, A2, A3), PyObject* args, PyObject* /* keywords */ )
@@ -408,9 +409,9 @@ struct returning
         unwrap_more<A3> c3(PyTuple_GET_ITEM(args, 3), c2);
 
         // find the result converter
-        wrap_more<R> r(c3);
+        wrap_more<R> c4(c3);
         if (!c0) return 0;
-        return r( (*pf)(*c0, *c1, *c2, *c3) );
+        return c4( (*pf)(*c0, *c1, *c2, *c3) );
     }
     template <class A0, class A1, class A2, class A3, class A4>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4), PyObject* args, PyObject* /* keywords */ )
@@ -423,9 +424,9 @@ struct returning
         unwrap_more<A4> c4(PyTuple_GET_ITEM(args, 4), c3);
 
         // find the result converter
-        wrap_more<R> r(c4);
+        wrap_more<R> c5(c4);
         if (!c0) return 0;
-        return r( (*pf)(*c0, *c1, *c2, *c3, *c4) );
+        return c5( (*pf)(*c0, *c1, *c2, *c3, *c4) );
     }
     template <class A0, class A1, class A2, class A3, class A4, class A5>
     static PyObject* call(R (*pf)(A0, A1, A2, A3, A4, A5), PyObject* args, PyObject* /* keywords */ )
@@ -439,9 +440,9 @@ struct returning
         unwrap_more<A5> c5(PyTuple_GET_ITEM(args, 5), c4);
 
         // find the result converter
-        wrap_more<R> r(c5);
+        wrap_more<R> c6(c5);
         if (!c0) return 0;
-        return r( (*pf)(*c0, *c1, *c2, *c3, *c4, *c5) );
+        return c6( (*pf)(*c0, *c1, *c2, *c3, *c4, *c5) );
     }
 };
                            
