@@ -103,14 +103,11 @@ StringMapPythonClass::StringMapPythonClass(boost::python::module_builder& m)
     : boost::python::class_builder<StringMap >(m, "StringMap")
 {
     def(boost::python::constructor<>());
-#if defined(BOOST_MSVC) && BOOST_MSVC == 1300
-    // MSVC7 incorrectly makes this the target of this function
+    // Some compilers make the target of this function
     // pointer the same type as the class in which it is defined (some
     // standard library class), instead of StringMap.
     def((std::size_t (StringMap::*)()const)&StringMap::size, "__len__");
-#else 
-    def(&StringMap::size, "__len__");
-#endif 
+    
     def(&get_item, "__getitem__");
     def(&set_item, "__setitem__");
     def(&del_item, "__delitem__");
@@ -980,8 +977,8 @@ void init_module(boost::python::module_builder& m)
     boost::python::class_builder<Range> range(m, "Range");
     range.def(boost::python::constructor<int>());
     range.def(boost::python::constructor<int, int>());
-    range.def((void (Range::*)(std::size_t))&Range::length, "__len__");
     range.def((std::size_t (Range::*)() const)&Range::length, "__len__");
+    range.def((void (Range::*)(std::size_t))&Range::length, "__len__");
     range.def(&Range::operator[], "__getitem__");
     range.def(&Range::slice, "__getslice__");
     range.def(&range_str, "__str__");
