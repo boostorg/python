@@ -85,21 +85,11 @@ class python_import_extension_class_converters
     }
 
     friend std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<std::auto_ptr<T> >) {
-#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
-        PyErr_SetString(PyExc_RuntimeError, "not implemented");
-        throw import_error();
-#else
-        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p); // XXX tru64_cxx: no suitable copy constructor
-#endif
+        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p);
     }
 
     friend const std::auto_ptr<T>& from_python(PyObject* p, boost::python::type<const std::auto_ptr<T>&>) {
-#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
-        PyErr_SetString(PyExc_RuntimeError, "not implemented");
-        throw import_error();
-#else
-        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p); // XXX tru64_cxx: no suitable copy constructor
-#endif
+        return boost::python::detail::import_extension_class<T>::get_converters()->auto_ptr_value_from_python(p);
     }
 
     friend PyObject* to_python(std::auto_ptr<T> x) {
@@ -111,21 +101,11 @@ class python_import_extension_class_converters
     }
 
     friend boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<boost::shared_ptr<T> >) {
-#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
-        PyErr_SetString(PyExc_RuntimeError, "not implemented");
-        throw import_error();
-#else
-        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p); // XXX tru64_cxx: initial value of reference to non-const must be an lvalue
-#endif
+        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p);
     }
 
     friend const boost::shared_ptr<T>& from_python(PyObject* p, boost::python::type<const boost::shared_ptr<T>&>) {
-#ifdef BOOST_PYTHON_TRU64_CXX_PROBLEM
-        PyErr_SetString(PyExc_RuntimeError, "not implemented");
-        throw import_error();
-#else
-        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p); // XXX tru64_cxx: returning reference to local temporary
-#endif
+        return boost::python::detail::import_extension_class<T>::get_converters()->shared_ptr_value_from_python(p);
     }
 
     friend PyObject* to_python(boost::shared_ptr<T> x) {
@@ -155,9 +135,9 @@ struct export_converter_object_base
   virtual T* T_pointer_from_python(PyObject* obj) = 0;
   virtual T& T_reference_from_python(PyObject* obj) = 0;
   virtual std::auto_ptr<T>& auto_ptr_reference_from_python(PyObject* obj) = 0;
-  virtual std::auto_ptr<T> auto_ptr_value_from_python(PyObject* obj) = 0;
+  virtual std::auto_ptr<T>& auto_ptr_value_from_python(PyObject* obj) = 0;
   virtual boost::shared_ptr<T>& shared_ptr_reference_from_python(PyObject* obj) = 0;
-  virtual boost::shared_ptr<T> shared_ptr_value_from_python(PyObject* obj) = 0;
+  virtual boost::shared_ptr<T>& shared_ptr_value_from_python(PyObject* obj) = 0;
 };
 
 // Converters to be used if T is not copyable.
@@ -184,13 +164,13 @@ struct export_converter_object_noncopyable : export_converter_object_base<T>
   virtual std::auto_ptr<T>& auto_ptr_reference_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<std::auto_ptr<T> >());
   }
-  virtual std::auto_ptr<T> auto_ptr_value_from_python(PyObject* obj) {
+  virtual std::auto_ptr<T>& auto_ptr_value_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_value(obj, boost::python::type<std::auto_ptr<T> >());
   }
   virtual boost::shared_ptr<T>& shared_ptr_reference_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<boost::shared_ptr<T> >());
   }
-  virtual boost::shared_ptr<T> shared_ptr_value_from_python(PyObject* obj) {
+  virtual boost::shared_ptr<T>& shared_ptr_value_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_value(obj, boost::python::type<boost::shared_ptr<T> >());
   }
 };
