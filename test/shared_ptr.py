@@ -1,6 +1,11 @@
 '''
 >>> from shared_ptr_ext import *
 
+>>> x = X(17)
+>>> null_x = null(x)
+>>> null_x # should be None
+>>> identity(null_x) # should also be None
+
 >>> a = New(1)
 >>> A.call_f(a)
 1
@@ -50,6 +55,8 @@ bye
 >>> try: modify(z)
 ... except TypeError: pass
 ... else: 'print expected a TypeError'
+
+>>> stored_z() # should be None
 >>> store(z)
 >>> assert stored_z() is z  # show that deleter introspection works
 >>> del z

@@ -56,7 +56,13 @@ struct functions
         def("store", &store);
         def("modify", &modify); 
         def("look_store", &look_store); 
+        def("identity", &identity); 
+        def("null", &null); 
     }
+
+    static shared_ptr<T> identity(shared_ptr<T> x) { return x; }
+    static shared_ptr<T> null(T const&) { return shared_ptr<T>(); }
+    
 
     static shared_ptr<T> storage;
 };
