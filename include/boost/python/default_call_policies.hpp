@@ -29,14 +29,16 @@ struct default_result_converter;
 
 struct default_call_policies
 {
-    // Nothing to do
-    static bool precall(PyObject*)
+    // Ownership of this argument tuple will ultimately be adopted by
+    // the caller.
+    static PyObject* precall(PyObject* args_)
     {
-        return true;
+        Py_INCREF(args_);
+        return args_;
     }
 
     // Pass the result through
-    static PyObject* postcall(PyObject*, PyObject* result)
+    static PyObject* postcall(PyObject* args_, PyObject* result)
     {
         return result;
     }

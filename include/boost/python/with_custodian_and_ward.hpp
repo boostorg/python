@@ -16,7 +16,7 @@ namespace boost { namespace python {
 template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
 struct with_custodian_and_ward : BasePolicy_
 {
-    static bool precall(PyObject* args);
+    static PyObject* precall(PyObject* args);
 };
 
 template <std::size_t custodian, std::size_t ward, class BasePolicy_ = default_call_policies>
@@ -29,31 +29,39 @@ struct with_custodian_and_ward_postcall : BasePolicy_
 // implementations
 //
 template <std::size_t custodian, std::size_t ward, class BasePolicy_>
-bool with_custodian_and_ward<custodian,ward,BasePolicy_>::precall(PyObject* args_)
+PyObject*
+with_custodian_and_ward<custodian,ward,BasePolicy_>::precall(
+    PyObject* args_
+)
 {
     BOOST_STATIC_ASSERT(custodian != ward);
     BOOST_STATIC_ASSERT(custodian > 0);
     BOOST_STATIC_ASSERT(ward > 0);
     
     PyObject* patient = PyTuple_GetItem(args_, ward - 1);
-    if (patient == 0) return false;
+    if (patient == 0)
+        return 0;
+    
     PyObject* nurse = PyTuple_GetItem(args_, custodian - 1);
-    if (nurse == 0) return false;
+    if (nurse == 0)
+        return 0;
     
     PyObject* life_support = python::objects::make_nurse_and_patient(nurse, patient);
     if (life_support == 0)
-        return false;
+        return 0;
     
-    bool result = BasePolicy_::precall(args_);
-    
-    if (!result)
+    args_ = BasePolicy_::precall(args_);
+    if (args_ == 0)
         Py_XDECREF(life_support);
     
-    return result;
+    return args_;
 }
 
 template <std::size_t custodian, std::size_t ward, class BasePolicy_>
-PyObject* with_custodian_and_ward_postcall<custodian,ward,BasePolicy_>::postcall(PyObject* args_, PyObject* result)
+PyObject*
+with_custodian_and_ward_postcall<custodian,ward,BasePolicy_>::postcall(
+    PyObject* args_
+  , PyObject* result)
 {
     BOOST_STATIC_ASSERT(custodian != ward);
     

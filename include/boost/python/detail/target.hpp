@@ -31,7 +31,7 @@ namespace boost { namespace python { namespace detail {
 #  include BOOST_PP_ITERATE()
 
 template <class R, class T>
-boost::type<T*>* target(R (T::*)) { return 0; }
+T& (* target(R (T::*)) )() { return 0; }
 
 }}} // namespace boost::python::detail
 
@@ -44,7 +44,7 @@ boost::type<T*>* target(R (T::*)) { return 0; }
 # define N BOOST_PP_ITERATION()
 
 template <class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
-boost::type<BOOST_PP_IF(N, A0, void)>* target(R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)))
+BOOST_PP_IF(N, A0, void)(* target(R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A))) )()
 {
     return 0;
 }
@@ -66,7 +66,7 @@ boost::type<BOOST_PP_IF(N, A0, void)>* target(R (*)(BOOST_PP_ENUM_PARAMS_Z(1, N,
 # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
 
 template <class R, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
-boost::type<T Q*>* target(R (T::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q)
+T& (* target(R (T::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q) )()
 {
     return 0;
 }

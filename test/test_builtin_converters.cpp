@@ -56,6 +56,8 @@ handle<> return_null_handle()
 
 char const* rewrap_value_mutable_cstring(char* x) { return x; }
 
+object identity_(object x) { return x; }
+
 BOOST_PYTHON_MODULE(builtin_converters)
 {    
     def("get_type", get_type);
@@ -83,8 +85,20 @@ BOOST_PYTHON_MODULE(builtin_converters)
     def("rewrap_value_complex_float", by_value<std::complex<float> >::rewrap);
     def("rewrap_value_complex_double", by_value<std::complex<double> >::rewrap);
     def("rewrap_value_complex_long_double", by_value<std::complex<long double> >::rewrap);
-    def("rewrap_value_wstring", by_value<std::wstring>::rewrap);
-    def("rewrap_value_string", by_value<std::wstring>::rewrap);
+    def("rewrap_value_wstring",
+# ifdef BOOST_NO_STD_WSTRING
+        identity_
+# else 
+        by_value<std::wstring>::rewrap
+# endif 
+    );
+    def("rewrap_value_string",
+# ifdef BOOST_NO_STD_WSTRING
+        identity_
+# else 
+        by_value<std::wstring>::rewrap
+# endif 
+    );
     def("rewrap_value_string", by_value<std::string>::rewrap);
     def("rewrap_value_cstring", by_value<char const*>::rewrap);
     def("rewrap_value_handle", by_value<handle<> >::rewrap);

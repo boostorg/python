@@ -6,20 +6,26 @@
 #ifndef ITERATOR_DWA2002510_HPP
 # define ITERATOR_DWA2002510_HPP
 
-# include <boost/python/object/iterator_core.hpp>
+# include <boost/python/detail/prefix.hpp>
+
 # include <boost/python/class.hpp>
-# include <boost/python/object/class_detail.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/return_by_value.hpp>
-# include <boost/python/object/function_object.hpp>
 # include <boost/python/handle.hpp>
-# include <boost/type.hpp>
-# include <boost/python/arg_from_python.hpp>
-# include <boost/mpl/apply.hpp>
+# include <boost/python/make_function.hpp>
+
+# include <boost/python/object/iterator_core.hpp>
+# include <boost/python/object/class_detail.hpp>
+# include <boost/python/object/function_object.hpp>
+
 # include <boost/mpl/vector/vector10.hpp>
-# include <boost/bind.hpp>
-# include <boost/bind/protect.hpp>
+# include <boost/mpl/if.hpp>
+
 # include <boost/python/detail/raw_pyobject.hpp>
+
+# include <boost/type.hpp>
+
+# include <boost/type_traits/is_same.hpp>
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/add_const.hpp>
 
@@ -40,6 +46,62 @@ struct iterator_range
 {
     iterator_range(object sequence, Iterator start, Iterator finish);
 
+    typedef boost::detail::iterator_traits<Iterator> traits_t;
+
+    struct next
+    {
+        typedef typename mpl::if_<
+            is_reference<
+                typename traits_t::reference
+            >
+          , typename traits_t::reference
+          , typename traits_t::value_type
+        >::type result_type;
+        
+        result_type
+        operator()(iterator_range<NextPolicies,Iterator>& self)
+        {
+            if (self.m_start == self.m_finish)
+                stop_iteration_error();
+            return *self.m_start++;
+        }
+
+# if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
+        // CWPro8 has a codegen problem when this is an empty class
+        int garbage;
+# endif 
+    };
+    
+# ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
+    // for compilers which can't deduce the value_type of pointers, we
+    // have a special implementation of next.  This takes advantage of
+    // the fact that T* results are treated like T& results by
+    // Boost.Python's function wrappers.
+    struct next_ptr
+    {
+        typedef Iterator result_type;
+        
+        result_type
+        operator()(iterator_range<NextPolicies,Iterator>& self)
+        {
+            if (self.m_start == self.m_finish)
+                stop_iteration_error();
+            return self.m_start++;
+        }
+    };
+    
+    typedef mpl::if_<
+        is_same<
+            boost::detail::please_invoke_BOOST_TT_BROKEN_COMPILER_SPEC_on_cv_unqualified_pointee<Iterator>
+          , typename traits_t::value_type
+        >
+      , next_ptr
+      , next
+    >::type next_fn;
+# else
+    typedef next next_fn;
+# endif
+    
     object m_sequence; // Keeps the sequence alive while iterating.
     Iterator m_start;
     Iterator m_finish;
@@ -47,62 +109,6 @@ struct iterator_range
 
 namespace detail
 {
-  // Guts of the iterator's next() function. We can't just wrap an
-  // ordinary function because we don't neccessarily know the result
-  // type of dereferencing the iterator. This also saves us from
-  // throwing C++ exceptions to indicate end-of-sequence.
-  template <class Iterator, class Policies>
-  struct iterator_next
-  {
-      static PyObject* execute(PyObject* args_, PyObject* kw, Policies const& policies)
-      {
-          typedef iterator_range<Policies,Iterator> range_;
-          
-          PyObject* py_self = PyTuple_GET_ITEM(args_, 0);
-          arg_from_python<range_*> c0(py_self);
-          range_* self = c0();
-
-          // Done iterating?
-          if (self->m_start == self->m_finish)
-          {
-              objects::set_stop_iteration_error();
-              return 0;
-          }
-    
-          // note: precall happens before we can check for the result
-          // converter in this case, to ensure it happens before the
-          // iterator is dereferenced. However, the arity is 1 so
-          // there's not much risk that this will amount to anything.
-          if (!policies.precall(args_)) return 0;
-
-          PyObject* result = iterator_next::convert_result(*self->m_start);
-          ++self->m_start;
-          
-          return policies.postcall(args_, result);
-      }
-   private:
-      // Convert the result of dereferencing the iterator. Dispatched
-      // here because we can't neccessarily get the value_type of the
-      // iterator without PTS. This way, we deduce the value type by
-      // dereferencing.
-      template <class ValueType>
-      static PyObject* convert_result(ValueType& x)
-      {
-          typedef typename Policies::result_converter result_converter;
-          typename mpl::apply1<result_converter,ValueType&>::type cr;
-
-          return cr(x);
-      }
-      template <class ValueType>
-      static PyObject* convert_result(ValueType const& x)
-      {
-          typedef typename Policies::result_converter result_converter;
-          typename mpl::apply1<result_converter,ValueType const&>::type cr;
-
-          return cr(x);
-      }
-  };
-
   // Get a Python class which contains the given iterator and
   // policies, creating it if neccessary. Requires: NextPolicies is
   // default-constructible.
@@ -118,93 +124,90 @@ namespace detail
       if (class_obj.get() != 0)
           return object(class_obj);
 
-      // Make a callable object which can be used as the iterator's next() function.
-      object next_function = 
-          objects::function_object(
-              py_function(
-                  bind(&detail::iterator_next<Iterator,NextPolicies>::execute, _1, _2, policies)
-                , mpl::vector2<
-# if defined BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-                      object
-# else 
-                      typename boost::detail::iterator_traits<Iterator>::value_type
-# endif 
-                    , Iterator
-                  >()
-              )
-          );
-    
+      typedef typename range_::next_fn next_fn;
+      typedef typename next_fn::result_type result_type;
+      
       return class_<range_>(name, no_init)
           .def("__iter__", identity_function())
-          .setattr("next", next_function)
-          ;
+          .def(
+              "next"
+            , make_function(
+                next_fn()
+              , policies
+              , mpl::vector2<result_type,range_&>()
+            ));
   }
 
-  // This class template acts as a generator for an ordinary function
-  // which builds a Python iterator.
-  template <class Target, class Iterator
-            , class Accessor1, class Accessor2
-            , class NextPolicies
-            >
-  struct make_iterator_help
+  // A function object which builds an iterator_range.
+  template <
+      class Target
+    , class Iterator
+    , class Accessor1
+    , class Accessor2
+    , class NextPolicies
+  >
+  struct py_iter_
   {
+      py_iter_(Accessor1 const& get_start, Accessor2 const& get_finish)
+        : m_get_start(get_start)
+        , m_get_finish(get_finish)
+      {}
+      
       // Extract an object x of the Target type from the first Python
       // argument, and invoke get_start(x)/get_finish(x) to produce
       // iterators, which are used to construct a new iterator_range<>
       // object that gets wrapped into a Python iterator.
-      static PyObject* create(
-          Accessor1 const& get_start, Accessor2 const& get_finish
-          , PyObject* args_, PyObject* /*kw*/)
+      iterator_range<NextPolicies,Iterator>
+      operator()(back_reference<Target&> x) const
       {
           // Make sure the Python class is instantiated.
           detail::demand_iterator_class("iterator", (Iterator*)0, NextPolicies());
-
-          to_python_value<iterator_range<NextPolicies,Iterator> > cr;
-
-          // Extract x from the first argument
-          PyObject* arg0 = PyTuple_GET_ITEM(args_, 0);
-          arg_from_python<Target> c0(arg0);
-          if (!c0.convertible()) return 0;
-          typename arg_from_python<Target>::result_type x = c0();
-
-          // Build and convert the iterator_range<>.
-          return cr(
-              iterator_range<NextPolicies,Iterator>(
-                  object((python::detail::borrowed_reference)arg0)
-                  , get_start(x), get_finish(x)));
+          
+          return iterator_range<NextPolicies,Iterator>(
+              x.source()
+            , m_get_start(x.get())
+            , m_get_finish(x.get())
+          );
       }
+   private:
+      Accessor1 m_get_start;
+      Accessor2 m_get_finish;
   };
 
-  template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>
+  template <class Target, class Iterator, class NextPolicies, class Accessor1, class Accessor2>
   inline object make_iterator_function(
       Accessor1 const& get_start
     , Accessor2 const& get_finish
+    , NextPolicies const& next_policies
     , Iterator const& (*)()
     , boost::type<Target>*
-    , NextPolicies*
     , int
   )
   {
-      return 
-          objects::function_object(
-              py_function(
-                  boost::bind(
-                      &make_iterator_help<
-                          Target,Iterator,Accessor1,Accessor2,NextPolicies
-                      >::create
-                      , get_start, get_finish, _1, _2)
-                , mpl::vector2<object, Target>()
-              )
-          );
+      return make_function(
+          py_iter_<Target,Iterator,Accessor1,Accessor2,NextPolicies>(get_start, get_finish)
+        , default_call_policies()
+        , mpl::vector2<iterator_range<NextPolicies,Iterator>, back_reference<Target&> >()
+      );
   }
 
-  template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>
+  template <class Target, class Iterator, class NextPolicies, class Accessor1, class Accessor2>
   inline object make_iterator_function(
-      Accessor1 const& get_start, Accessor2 const& get_finish, Iterator& (*)(), boost::type<Target>*, NextPolicies*, ...)
+      Accessor1 const& get_start
+    , Accessor2 const& get_finish
+    , NextPolicies const& next_policies
+    , Iterator& (*)()
+    , boost::type<Target>*
+    , ...)
   {
       return make_iterator_function(
-          get_start, get_finish, (Iterator const&(*)())0
-          , (boost::type<Target>*)0, (NextPolicies*)0, 0);
+          get_start
+        , get_finish
+        , next_policies
+        , (Iterator const&(*)())0
+        , (boost::type<Target>*)0
+        , 0
+      );
   }
 
 }
@@ -215,22 +218,26 @@ namespace detail
 // (where x is an instance of Target) to produce begin and end
 // iterators for the range, and an instance of NextPolicies is used as
 // CallPolicies for the Python iterator's next() function. 
-template <class NextPolicies, class Target, class Accessor1, class Accessor2>
+template <class Target, class NextPolicies, class Accessor1, class Accessor2>
 inline object make_iterator_function(
-    Accessor1 const& get_start, Accessor2 const& get_finish
-    , boost::type<Target>* = 0, NextPolicies* = 0)
+    Accessor1 const& get_start
+  , Accessor2 const& get_finish
+  , NextPolicies const& next_policies
+  , boost::type<Target>* = 0
+)
 {
     typedef typename Accessor1::result_type iterator;
     typedef typename add_const<iterator>::type iterator_const;
     typedef typename add_reference<iterator_const>::type iterator_cref;
       
     return detail::make_iterator_function(
-        get_start, get_finish
-        , (iterator_cref(*)())0
-        , (boost::type<Target>*)0
-        , (NextPolicies*)0
-        , 0
-        );
+        get_start
+      , get_finish
+      , next_policies
+      , (iterator_cref(*)())0
+      , (boost::type<Target>*)0
+      , 0
+    );
 }
 
 //

@@ -393,13 +393,13 @@ namespace detail
       template <class ClassT, class CallPoliciesT, class Signature, class NArgs>
       static void apply(
           ClassT& cl
-          , CallPoliciesT const& policies
-          , Signature const& args
-          , NArgs
-          , char const* doc
-          , detail::keyword_range const& keywords)
+        , CallPoliciesT const& policies
+        , Signature const& args
+        , NArgs
+        , char const* doc
+        , detail::keyword_range const& keywords)
       {
-          def_init_aux(cl, args, NArgs(), policies, doc, keywords);
+          detail::def_init_aux(cl, args, NArgs(), policies, doc, keywords);
       }
   };
 }

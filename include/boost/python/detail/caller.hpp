@@ -18,6 +18,8 @@
 #  include <boost/type_traits/is_same.hpp>
 
 #  include <boost/python/type_id.hpp>
+#  include <boost/python/handle.hpp>
+
 #  include <boost/python/detail/invoke.hpp>
 #  include <boost/python/detail/signature.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
@@ -147,15 +149,19 @@ struct caller_arity<N>
 # endif 
             // all converters have been checked. Now we can do the
             // precall part of the policy
-            if (!m_data.second().precall(args_))
+            PyObject* inner_args = m_data.second().precall(args_);
+            if (inner_args == 0)
                 return 0;
 
+            // manage the inner arguments
+            handle<> keeper(allow_null(inner_args));
+                
             typedef typename detail::invoke_tag<F>::type tag;
 
             PyObject* result = detail::invoke(
                 tag(), result_converter(), m_data.first() BOOST_PP_ENUM_TRAILING_PARAMS(N, c));
             
-            return m_data.second().postcall(args_, result);
+            return m_data.second().postcall(inner_args, result);
         }
 
         static unsigned min_arity() { return N; }

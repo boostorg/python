@@ -31,9 +31,10 @@ BOOST_PYTHON_DECL object const& identity_function()
     return result;
 }
 
-void set_stop_iteration_error()
+void stop_iteration_error()
 {
     PyErr_SetObject(PyExc_StopIteration, Py_None);
+    throw_error_already_set();
 }
 
 }}} // namespace boost::python::objects

@@ -8,12 +8,12 @@
 
 # include <boost/python/detail/prefix.hpp>
 
+# include <boost/python/handle.hpp>
+
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/return_by_value.hpp>
 # include <boost/python/return_internal_reference.hpp>
-# include <boost/python/arg_from_python.hpp>
-
-# include <boost/python/object/function_object.hpp>
+# include <boost/python/make_function.hpp>
 
 # include <boost/python/converter/builtin_converters.hpp>
 
@@ -24,11 +24,13 @@
 # include <boost/type_traits/add_reference.hpp>
 # include <boost/type_traits/is_member_pointer.hpp>
 
+# if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
+#  include <boost/type_traits/remove_cv.hpp>
+# endif 
+
 # include <boost/mpl/apply_if.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/mpl/vector/vector10.hpp>
-
-# include <boost/bind.hpp>
 
 # include <boost/detail/workaround.hpp>
 
@@ -43,97 +45,57 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  //
-  // Raw Getter and Setter function generators.  These class templates
-  // generate static functions which can be bound together with
-  // policies and wrapped to generate the python callable objects
-  // mentioned above.
-  //
 
-  //
-  // Generates get and set functions for access through
-  // pointers-to-data-members
-  //
-  template <class Data, class Class, class Policies>
+  // A small function object which handles the getting and setting of
+  // data members.
+  template <class Data, class Class>
   struct member
   {
-      static PyObject* get(Data Class::*pm, PyObject* args_, PyObject*, Policies const& policies)
-      {
-          arg_from_python<Class*> c0(PyTuple_GET_ITEM(args_, 0));
-          if (!c0.convertible()) return 0;
-
-          // find the result converter
-          typedef typename Policies::result_converter result_converter;
-          typedef typename boost::add_reference<Data>::type source;
-          typename mpl::apply1<result_converter,source>::type cr;
-        
-          if (!policies.precall(args_)) return 0;
-
-          PyObject* result = cr( (c0())->*pm );
-        
-          return policies.postcall(args_, result);
-      }
-  
-      static PyObject* set(Data Class::*pm, PyObject* args_, PyObject*, Policies const& policies)
-      {
-          // check that each of the arguments is convertible
-          arg_from_python<Class&> c0(PyTuple_GET_ITEM(args_, 0));
-          if (!c0.convertible()) return 0;
-
-          typedef typename add_const<Data>::type target1;
-          typedef typename add_reference<target1>::type target;
-          arg_from_python<target> c1(PyTuple_GET_ITEM(args_, 1));
+   private:
+      typedef typename add_const<Data>::type data_const;
+      typedef typename add_reference<data_const>::type data_cref;
       
-          if (!c1.convertible()) return 0;
-
-          if (!policies.precall(args_)) return 0;
-
-          (c0()).*pm = c1();
-        
-          return policies.postcall(args_, detail::none());
+   public:      
+      member(Data Class::*which) : m_which(which) {}
+      
+      Data& operator()(Class& c) const
+      {
+          return c.*m_which;
       }
+
+      void operator()(Class& c, data_cref d) const
+      {
+          c.*m_which = d;
+      }
+   private:
+      Data Class::*m_which;
   };
 
-  //
-  // Generates get and set functions for access through ordinary
-  // pointers.  These are generally used to wrap static data members,
-  // but can also be used to expose namespace-scope data as class
-  // attributes.
-  //
-  template <class Data, class Policies>
+  // A small function object which handles the getting and setting of
+  // non-member objects.
+  template <class Data>
   struct datum
   {
-      static PyObject* get(Data *p, PyObject* args_, PyObject*, Policies const& policies)
-      {
-          // find the result converter
-          typedef typename Policies::result_converter result_converter;
-          typedef typename boost::add_reference<Data>::type source;
-          typename mpl::apply1<result_converter,source>::type cr;
-        
-          if (!policies.precall(args_)) return 0;
-
-          PyObject* result = cr( *p );
-        
-          return policies.postcall(args_, result);
-      }
-  
-      static PyObject* set(Data* p, PyObject* args_, PyObject*, Policies const& policies)
-      {
-          // check that each of the arguments is convertible
-          typedef typename add_const<Data>::type target1;
-          typedef typename add_reference<target1>::type target;
-          arg_from_python<target> c0(PyTuple_GET_ITEM(args_, 0));
+   private:
+      typedef typename add_const<Data>::type data_const;
+      typedef typename add_reference<data_const>::type data_cref;
       
-          if (!c0.convertible()) return 0;
-
-          if (!policies.precall(args_)) return 0;
-
-          *p = c0();
-        
-          return policies.postcall(args_, detail::none());
+   public:      
+      datum(Data *which) : m_which(which) {}
+      
+      Data& operator()() const
+      {
+          return *m_which;
       }
-  };
 
+      void operator()(data_cref d) const
+      {
+          *m_which = d;
+      }
+   private:
+      Data *m_which;
+  };
+  
   //
   // Helper metafunction for determining the default CallPolicy to use
   // for attribute access.  If T is a [reference to a] class type X
@@ -208,13 +170,8 @@ namespace detail
   template <class D, class Policies>
   inline object make_getter(D* d, Policies const& policies, mpl::false_, int)
   {
-      return objects::function_object(
-          objects::py_function(
-              ::boost::bind(
-                  &detail::datum<D,Policies>::get, d, _1, _2
-                  , policies)
-            , mpl::vector1<D>()
-          )
+      return python::make_function(
+          detail::datum<D>(d), policies, mpl::vector1<D&>()
       );
   }
   
@@ -230,14 +187,16 @@ namespace detail
   template <class C, class D, class Policies>
   inline object make_getter(D C::*pm, Policies const& policies, mpl::true_, int)
   {
-    return objects::function_object(
-        objects::py_function(
-            ::boost::bind(
-                &detail::member<D,C,Policies>::get, pm, _1, _2
-                , policies)
-          , mpl::vector2<D, C const*>()
-        )
-    );
+#if BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3003))
+      typedef typename remove_cv<C>::type Class;
+#else
+      typedef C Class;
+#endif 
+      return python::make_function(
+          detail::member<D,Class>(pm)
+        , policies
+        , mpl::vector2<D&,Class&>()
+      );
   }
       
   // Handle pointers-to-members without policies
@@ -268,13 +227,8 @@ namespace detail
   template <class D, class Policies>
   inline object make_setter(D* p, Policies const& policies, mpl::false_, int)
   {
-      return objects::function_object(
-          objects::py_function(
-              ::boost::bind(
-                  &detail::datum<D,Policies>::set, p, _1, _2
-                  , policies)
-              , mpl::vector2<void, D const&>()
-          )
+      return python::make_function(
+          detail::datum<D>(p), policies, mpl::vector2<void,D const&>()
       );
   }
 
@@ -282,13 +236,10 @@ namespace detail
   template <class C, class D, class Policies>
   inline object make_setter(D C::*pm, Policies const& policies, mpl::true_, int)
   {
-      return objects::function_object(
-          objects::py_function(
-              ::boost::bind(
-                  &detail::member<D,C,Policies>::set, pm, _1, _2
-                  , policies)
-            , mpl::vector3<void, C*, D const&>()
-          )
+      return python::make_function(
+          detail::member<D,C>(pm)
+        , policies
+        , mpl::vector3<void, C&, D const&>()
       );
   }
 
