@@ -26,17 +26,7 @@ namespace
   static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } };
   extern "C" void initlibboost_python()
   {
-      Py_InitModule("libbboost_python", initial_methods);
-  }
-
-  extern "C" void initlibboost_python_debug()
-  {
-      Py_InitModule("libbboost_python_debug", initial_methods);
-  }
-
-  extern "C" void initlibboost_python_pydebug()
-  {
-      Py_InitModule("libbboost_python_pydebug", initial_methods);
+      Py_InitModule("libboost_python", initial_methods);
   }
 
   struct find_and_open_file
@@ -115,7 +105,7 @@ void aix_init_module(
     static bool initialized;
     if (!initialized)
     {
-        char const* const name = "libbpl.so";
+        char const* const name = "libboost_python.so";
         find_and_open_file dynlib("LIBPATH", name);
         if (dynlib.fp == 0)
         {
@@ -123,8 +113,8 @@ void aix_init_module(
             return;
         }
         
-        std::string::size_type pos = pos = dynlib.filename.find_first_of(".so",0);
-        if (pos == std::string::npos)
+        std::string::size_type pos = pos = dynlib.filename.rfind(".so");
+        if (pos != dynlib.filename.size() - 3)
         {
             fprintf(stderr, "dynamic library %s must end with .so\n", dynlib.filename.c_str());
             return;
