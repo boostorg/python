@@ -19,16 +19,13 @@ struct as_to_python_function
     // the first overload ensures it isn't used in case T is a
     // reference.
     template <class U>
-    static int convert_function_must_take_value_or_const_reference(U(*)(T), int, T* = 0);
+    static void convert_function_must_take_value_or_const_reference(U(*)(T), int, T* = 0) {}
     template <class U>
-    static int convert_function_must_take_value_or_const_reference(U(*)(T const&), long ...);
+    static void convert_function_must_take_value_or_const_reference(U(*)(T const&), long ...) {}
         
     static PyObject* convert(void const* x)
     {
-        BOOST_STATIC_ASSERT(
-            sizeof(
-                convert_function_must_take_value_or_const_reference(&ToPython::convert, 1L))
-            == sizeof(int));
+        convert_function_must_take_value_or_const_reference(&ToPython::convert, 1L);
         
         // Yes, the const_cast below opens a hole in const-correctness,
         // but it's needed to convert auto_ptr<U> to python.
