@@ -215,6 +215,7 @@ namespace
 
       vertex_t v = add_vertex(full_graph().topology());
       vertex_t v2 = add_vertex(up_graph().topology());
+      (void)v2; // prevent unused var warning on non-debug compile
       assert(v == v2);
       return type_index().insert(p, boost::make_tuple(type, v, dynamic_id_function(0)));
   }
