@@ -66,10 +66,12 @@
     the custodian as long as the <i>custodian</i> object supports <a
     href="http://www.python.org/doc/current/lib/module-weakref.html">weak
     references</a> (Boost.Python extension classes all support weak
-    references). The two class templates
+    references). If the <i>custodian</i> object does not support weak
+    references and is not <code>None</code>, an appropriate exception
+    will be thrown. The two class templates
     <code>with_custodian_and_ward</code> and
     <code>with_custodian_and_ward_postcall</code> differ in the point
-    at which they take effect. 
+    at which they take effect.
 
     <p>In order to reduce the chance of inadvertently
     creating dangling pointers, the default is to do lifetime binding

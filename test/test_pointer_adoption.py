@@ -70,6 +70,11 @@ Test call policies for constructors here
 >>> num_a_instances()
 0
 
+>>> as_A(create('dynalloc')) is None
+0
+>>> base = Base()
+>>> as_A(base) is None
+1
 """
 def run(args = None):
     import sys

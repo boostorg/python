@@ -29,7 +29,12 @@ struct inner
     std::string s;
 };
 
-struct A
+struct Base
+{
+    virtual ~Base() {}
+};
+
+struct A : Base
 {
     A(std::string const& s)
         : x(s)
@@ -76,40 +81,47 @@ A* create(std::string const& s)
     return new A(s);
 }
 
+A* as_A(Base* b)
+{
+    return dynamic_cast<A*>(b);
+}
+
 BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
 {
-    boost::python::module("test_pointer_adoption_ext")
-        .def("num_a_instances", num_a_instances)
+    boost::python::module m("test_pointer_adoption_ext");
+        m.def("num_a_instances", num_a_instances)
 
         // Specify the manage_new_object return policy to take
         // ownership of create's result
         .def("create", create, return_value_policy<manage_new_object>())
-        
-        .add(
-            
-            class_<A>(no_init)
-            .def("content", &A::content)
-            .def("get_inner", &A::get_inner, return_internal_reference<>())
-            )
 
+        .def("as_A", as_A, return_internal_reference<>())
         .add(
-            class_<inner>(no_init)
-            .def("change", &inner::change)
-            )
+
+    class_<Base>("Base")
+            );
         
-        .add(
-            class_<B>("B")
-            .def_init(args<A*>(), with_custodian_and_ward_postcall<1,2>())
+    m.add(class_<A, bases<Base> >(no_init)
+        .def("content", &A::content)
+        .def("get_inner", &A::get_inner, return_internal_reference<>())
+        )
+    
+    .add(class_<inner>(no_init)
+        .def("change", &inner::change)
+        )
+        
+    .add(class_<B>("B")
+        .def_init(args<A*>(), with_custodian_and_ward_postcall<1,2>())
             
-            .def("adopt", &B::adopt
-                 // Adopt returns a pointer referring to a subobject of its 2nd argument (1st being "self")
-                 , return_internal_reference<2
-                      // Meanwhile, self holds a reference to the 2nd argument.
-                      , with_custodian_and_ward<1,2> >()
-                )
-            
-            .def("a_content", &B::a_content)
+        .def("adopt", &B::adopt
+             // Adopt returns a pointer referring to a subobject of its 2nd argument (1st being "self")
+             , return_internal_reference<2
+             // Meanwhile, self holds a reference to the 2nd argument.
+             , with_custodian_and_ward<1,2> >()
             )
+            
+         .def("a_content", &B::a_content))
         ;
 }
 
+#include "module_tail.cpp"
