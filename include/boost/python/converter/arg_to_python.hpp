@@ -130,17 +130,6 @@ struct arg_to_python
 };
 
 //
-// Convenience macros for call<> and call_method<> code generation
-//
-# define BOOST_PYTHON_ARG_TO_PYTHON_GET(index,ignored)     \
-    converter::arg_to_python<BOOST_PP_CAT(A,index)>(       \
-        BOOST_PP_CAT(a,index)).get()
-
-# define BOOST_PYTHON_ARG_STRING(nargs)                         \
-    "(" BOOST_PP_REPEAT(nargs,BOOST_PYTHON_PROJECT_2ND,"O") ")"
-
-
-//
 // implementations
 //
 namespace detail
