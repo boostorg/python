@@ -21,109 +21,83 @@
 
     <h2>Contents</h2>
 
+    
+<dl class="page-index">
+  <dt><a href="#introduction">Introduction</a> 
+  <dt><a href="#classes">Classes</a> 
+  <dd> 
     <dl class="page-index">
-      <dt><a href="#introduction">Introduction</a>
-
-      <dt><a href="#classes">Classes</a>
-
-      <dd>
-        <dl class="page-index">
-          <dt><a href="#def_visitor-spec">Class <code>def_visitor</code></a><dd>
-          <a href="#def_visitor-spec-synopsis">Class <code>def_visitor</code> synopsis</a>
-          </dd>
-        </dl>
-
-      <dd>
-        <dl class="page-index">
-          <dt><a href="#my_def_visitor-spec">Class <code>my_def_visitor</code></a>
-
-          <dd>
-            <dl class="page-index">
-              <dt><a href="#my_def_visitor-spec-synopsis">Class my_def_visitor synopsis</a>
-
-              <dt><a href="#my_def_visitor-spec-observers">Class my_def_visitor observer functions</a>
-
-              </dl>
-        </dl>
-
-      
-  <dt><a href="#examples">Example</a>
+      <dt><a href="#def_visitor-spec">Class <code>def_visitor</code></a>
+      <dd> <a href="#def_visitor-synopsis">Class <code>def_visitor</code> 
+        synopsis</a></dd>
+      <dd> <a href="#def_visitor-requirements">Class <code>def_visitor</code> 
+        requirements</a></dd>
+    </dl>
+  <dt><a href="#examples">Example</a> 
 </dl>
     <hr>
 
     <h2><a name="introduction"></a>Introduction</h2>
 
-    <p><code>&lt;boost/python/def_visitor.hpp&gt;</code> provides a generic visitation 
-    interface through which the <a href="class.html">class_</a> <b>def</b> 
-    member functionality can be extended non-intrusively to avoid cluttering the
-    <a href="class.html">class_</a> interface. It declares the <code>def_visitor&lt;T&gt;
-    </code>class template, which is parameterized on the derived type T, which 
-    provides the actual <b>def</b> functionality through its <b>visit</b> member 
-    functions.<h2><a name="classes"></a>Classes</h2>
+    
+<p><code>&lt;boost/python/def_visitor.hpp&gt;</code> provides a generic visitation 
+  interface through which the <a href="class.html">class_</a> <b>def</b> member 
+  functionality can be extended non-intrusively to avoid cluttering the <a href="class.html">class_</a> 
+  interface. It declares the <code>def_visitor&lt;T&gt; </code>class template, 
+  which is parameterized on the derived type <tt>DerivedVisitor</tt>, which provides 
+  the actual <b>def</b> functionality through its <b>visit</b> member functions.
+<h2><a name="classes"></a>Classes</h2>
 
     <h3><a name="def_visitor-spec"></a>Class template <code>def_visitor&lt;DerivedVisitor&gt;</code></h3>
 
-    <p>The class def_visitor is a base class paramaterized by its derived class. 
-    The def_visitor class is a protocol class. It's derived class, 
-    DerivedVisitor, is expected to have a member function visit. The def_visitor 
-    class is never instantiated directly. Instead, an instance of its subclass, 
-    DerivedVisitor,&nbsp; is passed on as an argument to the
-    <a href="class.html">class_</a> def member function.<h4>
-<a name="def_visitor-spec-synopsis"></a>Class <code>def_visitor </code>synopsis</h4>
+    
+<p>The class def_visitor is a base class paramaterized by its derived class. The 
+  def_visitor class is a protocol class. Its derived class, DerivedVisitor, is 
+  expected to have a member function visit. The def_visitor class is never instantiated 
+  directly. Instead, an instance of its subclass, DerivedVisitor,&nbsp; is passed 
+  on as an argument to the <a href="class.html">class_</a> def member function.
+<h4>
+<a name="def_visitor-synopsis" id="def_visitor-synopsis"></a>Class <code>def_visitor </code>synopsis</h4>
 <pre>namespace boost { namespace python {
 
     template &lt;class DerivedVisitor&gt;
     class def_visitor {};
 }</pre>
-<h3><a name="my_def_visitor-spec"></a>Class <tt>my_</tt><code>def_visitor</code></h3>
+<h3><a name="def_visitor-requirements"></a><code>def_visitor </code>requirements</h3>
 
-    <p>A prototypical derived class of def_visitor. This client supplied class 
-    is expected to<ul>
+    
+<p>The <span class="pre">client supplied class </span><span class="pre"></span><tt class="literal"><span class="pre">DerivedVisitor</span></tt> 
+  template parameter is expected to:
+<ul>
   <li>be privately derived from def_visitor</li>
-  <li>grant friend access to def_visitor_access</li>
-  <li>define either or both visit member functions.</li>
-  </ul>
+  <li>grant friend access to class def_visitor_access</li>
+  <li>define either or both visit member functions listed in the table below:</li>
+</ul>
 
-    <h4><a name="my_def_visitor-spec-synopsis"></a>Class <code>my_def_visitor </code> synopsis</h4>
-<pre>class my_def_visitor : boost::python::def_visitor&lt;my_def_visitor&gt;
-{
-    friend class def_visitor_access;
-
-    template &lt;class classT&gt;
-    void visit(classT&amp; c) const;
-
-    template &lt;class classT, class OptionalArgs&gt;
-    void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;
-};
-</pre>
-
-    <h4><a name="my_def_visitor-spec-observers"></a>Class <code>my_def_visitor </code>
-    observer functions</h4>
-<pre>template &lt;class classT&gt;
-void visit(classT&amp; c) const;</pre>
-<dl class="function-semantics">
-  <dt><b>Requires:</b> c is an instance of a <a href="class.html">class_</a>&nbsp; 
-    being wrapped to Python. This is a client supplied function.
-  <dt><b>Effects:</b> A call to c.def(visitor), where c is a class_ instance and 
-    visitor is a def_visitor derived class forwards to this visitor's visit member 
-    function.
-  <dt><b> Rationale:</b> Allows my_def_visitor to non-intrusively add functionality 
-    to the <a href="class.html">class_</a> def member function.
-</dl>
-
-    <pre>template &lt;class classT, class OptionalArgs&gt;
-void visit(classT&amp; c, char const* name, OptionalArgs const&amp; options) const;</pre>
-<dl class="function-semantics">
-  <dt><b>Requires:</b> c is an instance of a <a href="class.html">class_</a>&nbsp; 
-    being wrapped to Python. name is a client supplied name. This is a client 
-    supplied function.
-  <dt><b>Effects:</b> A call to c.def(name, visitor) or c.def(name, visitor, options), 
-    where c is a class_ instance, visitor is a def_visitor derived class and options 
-    are context specific optional arguments, forwards to this visitor's visit 
-    member function.
-  <dt><b>Rationale:</b> Allows my_def_visitor to non-intrusively add functionality 
-    to the <a href="class.html">class_</a> def member function.
-</dl>
+    
+<table border class="table">
+  <tr> 
+    <td width="181" nowrap><b>Expression</b></td>
+    <td width="85"><b>Return Type</b></td>
+    <td width="330"><b>Requirements</b></td>
+    <td width="259"><b>Effects</b></td>
+  </tr>
+  <tr> 
+    <td nowrap>visitor.visit(cls)</td>
+    <td>void</td>
+    <td>cls is an instance of a <a href="class.html">class_</a>&nbsp; being wrapped 
+      to Python. visitor is a def_visitor derived class.</td>
+    <td>A call to cls.def(visitor) forwards to this member function.</td>
+  </tr>
+  <tr> 
+    <td nowrap>visitor.visit(cls, name, options)</td>
+    <td>void</td>
+    <td>cls is a class_ instance, name is a C string. visitor is a def_visitor 
+      derived class. options is a context specific optional argument.</td>
+    <td>A call to cls.def(name, visitor) or cls.def(name, visitor, options) forwards 
+      to this member function. </td>
+  </tr>
+</table>
 
     <h2><a name="examples"></a>Example</h2>
 
