@@ -4,28 +4,29 @@ long long support
 use Python generic numeric coercion in from_python() for C++ numeric types
 Rename PyPtr to Reference.
 Report Cygwin linker memory issues
-pickling support
 __init__ stuff
          Make abstract classes non-instantiable (?)
          Call default __init__ functions automatically where applicable (?)
 Support for Python LONG types in Objects.h
 Throw TypeError after asserting when objects from objects.cpp detect a type mismatch.
-Add callback-through-function ability to callback.h
 Figure out how to package everything as a shared library.
 Unicode string support
 Add read-only wrapper for __dict__ attribute
-More template member functions for the elements of objects.h
+Objects.h support for generic objects, Sequence objects, etc.
+empty() member functions for objects.hpp
 
 Testing
     Python 2.0
     object revival in __del__
     More thorough tests of objects.h/cpp classes
+    Better reference-count checking
 
 Optimizations
-    Reference-counting for UniquePodSet?
     Remove one level of indirection on type objects (no vtbl?).
     Specializations of Caller<> for commmon combinations of argument types (?)
-    Collect common code into a nice shared library.
+    Replace uses of XXXable classes
+    Don't allocate instance __dict__ unless used.
+    
         
 Documentation:
 
