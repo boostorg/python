@@ -225,22 +225,22 @@ namespace aux
   
   bool array_base::isaligned() const
   {
-      return extract<bool>(attr("isaligned"));
+      return extract<bool>(attr("isaligned")());
   }
   
   bool array_base::iscontiguous() const
   {      
-      return extract<bool>(attr("isaligned"));
+      return extract<bool>(attr("iscontiguous")());
   }
   
   long array_base::itemsize() const
   {
-      return extract<long>(attr("itemsize"));
+      return extract<long>(attr("itemsize")());
   }
   
   long array_base::nelements() const
   {
-      return extract<long>(attr("nelements"));
+      return extract<long>(attr("nelements")());
   }
   
   object array_base::nonzero() const
