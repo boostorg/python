@@ -67,8 +67,8 @@ inline registration::registration(type_info target_type)
     : target_type(target_type)
       , lvalue_chain(0)
       , rvalue_chain(0)
-      , m_to_python(0)
       , m_class_object(0)
+      , m_to_python(0)
 {}
 
 inline bool operator<(registration const& lhs, registration const& rhs)
