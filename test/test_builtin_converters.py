@@ -6,6 +6,14 @@
 0
 >>> rewrap_value_bool(33)
 1
+>>> rewrap_value_char('x')
+'x'
+
+  Note that there's currently silent truncation of strings passed to
+  char arguments.
+
+>>> rewrap_value_char('xy')
+'x'
 >>> rewrap_value_signed_char(42)
 42
 >>> rewrap_value_unsigned_char(42)
@@ -42,12 +50,26 @@
 >>> rewrap_value_string('yo, wassup?')
 'yo, wassup?'
 
+  Note that we can currently get a mutable pointer into an immutable
+  Python string:
+  
+>>> rewrap_value_mutable_cstring('hello, world')
+'hello, world'
+
 >>> rewrap_const_reference_bool(None)
 0
 >>> rewrap_const_reference_bool(0)
 0
 >>> rewrap_const_reference_bool('yes')
 1
+>>> rewrap_const_reference_char('x')
+'x'
+
+  Note that there's currently silent truncation of strings passed to
+  char arguments.
+
+>>> rewrap_const_reference_char('xy')
+'x'
 >>> rewrap_const_reference_signed_char(42)
 42
 >>> rewrap_const_reference_unsigned_char(42)

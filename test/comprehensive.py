@@ -1273,6 +1273,10 @@ import sys
 def run(args = None):
     if args is not None:
         sys.argv = args
+        
+    if hasattr(sys,'setdlopenflags'):
+        sys.setdlopenflags( 6 ) # dl.RTLD_NOW | dl.RTLD_GLOBAL)
+        
     import doctest, comprehensive
     return doctest.testmod(comprehensive)
     

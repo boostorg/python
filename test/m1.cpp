@@ -10,9 +10,6 @@
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/type_from_python.hpp>
-#include <boost/python/object/value_holder.hpp>
-#include <boost/python/object/pointer_holder.hpp>
-#include <boost/python/object/class.hpp>
 #include <boost/python/copy_const_reference.hpp>
 #include <boost/python/return_value_policy.hpp>
 #include <boost/python/to_python_converter.hpp>
@@ -98,9 +95,7 @@ PyObject* new_simple()
 
 //
 // Declare some wrappers/unwrappers to test the low-level conversion
-// mechanism. See boost/python/converter/source.hpp,target.hpp for a
-// description of how the type parameters to wrapper<> and unwrapper<>
-// are selected.
+// mechanism. 
 //
 using boost::python::to_python_converter;
 

@@ -25,11 +25,14 @@ struct by_const_reference
     }
 };
 
+char const* rewrap_value_mutable_cstring(char* x) { return x; }
+
 BOOST_PYTHON_MODULE_INIT(builtin_converters)
 {
     boost::python::module("builtin_converters")
         
         .def("rewrap_value_bool", by_value<bool>::rewrap)
+        .def("rewrap_value_char", by_value<char>::rewrap)
         .def("rewrap_value_signed_char", by_value<signed char>::rewrap)
         .def("rewrap_value_unsigned_char", by_value<unsigned char>::rewrap)
         .def("rewrap_value_int", by_value<int>::rewrap)
@@ -47,8 +50,12 @@ BOOST_PYTHON_MODULE_INIT(builtin_converters)
         .def("rewrap_value_string", by_value<std::string>::rewrap)
         .def("rewrap_value_cstring", by_value<char const*>::rewrap)
 
+        // Expose this to illustrate our failings ;-). See test_builtin_converters.py
+        .def("rewrap_value_mutable_cstring", rewrap_value_mutable_cstring)
+
 
         .def("rewrap_const_reference_bool", by_const_reference<bool>::rewrap)
+        .def("rewrap_const_reference_char", by_const_reference<char>::rewrap)
         .def("rewrap_const_reference_signed_char", by_const_reference<signed char>::rewrap)
         .def("rewrap_const_reference_unsigned_char", by_const_reference<unsigned char>::rewrap)
         .def("rewrap_const_reference_int", by_const_reference<int>::rewrap)
