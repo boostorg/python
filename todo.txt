@@ -1,36 +1,155 @@
-High Priority:
---------------
+.. -*- mode: rst -*-
+====================================
+ Boost.Python TODO list |(logo)|__
+====================================
 
-Finish shared_ptr support:
-    http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023,
-    http://mail.python.org/pipermail/c++-sig/2003-April/003760.html
-    http://article.gmane.org/gmane.comp.python.c%2B%2B/2847
+.. |(logo)| image:: ../../c++boost.gif
+   :alt: Boost
 
-Replace "bad argument type for builtin operation" with better error
-messages.
+__ ../../index.htm
 
-   Implement type_info streaming for GCC
-   (http://mail.python.org/pipermail/c++-sig/2002-June/001277.html)
+:copyright: Copyright David Abrahams 2003. See accompanying
+            license_ for terms of use.
 
-Converter scoping: http://article.gmane.org/gmane.comp.python.c++/2044
+This is a list of work which "really ought to get done".  In some
+cases people have promised to the work but have not yet moved on their
+promises.
 
-Document builtin correspondences between builtiin Python types and C++
-types
+.. contents:: Outline
 
-Medium Priority:
-----------------
+.. _license: ../../LICENSE
 
-FILE* conversions: http://aspn.activestate.com/ASPN/Mail/Message/1411366
+Class Support
+=============
 
-"Constructor Functors/Factory Constructors" - enabling the addition of
-new construction routines which aren't in the C++ interface
+Base Class for Virtual Function Callback Wrappers
+-------------------------------------------------
 
-Low Priority:
-------------
-Write "inside the Python type system", a survey of typeobject.c in
-Python source
+* http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023
+  (bottom of message)
 
-Better overload resolution - choose best match (maybe never)
+* http://mail.python.org/pipermail/c++-sig/2003-August/005297.html
+  (search for ``VirtualDispatcher``) describes how callback classes
+  can swap ownership relationship with their Python wrappers.
 
-Detect non-explicit constructors and automatically call
-implicitly_convertible<>.
+
+
+Functions
+=========
+
+Wrapping Function Objects
+--------------------------
+
+  It should be possible to wrap classes which support ``operator()``
+  as Python methods.
+
+  http://mail.python.org/pipermail/c++-sig/2003-August/005184.html
+
+
+"Best Match" Overload Resolution
+--------------------------------
+
+  Overload resolution currently depends on the order in which ``def``
+  calls are made (preferring later overloads).  This should be
+  changed so that the best-matching overload is always selected.
+  This may await Langbinding_ integration, since the technology is
+  already in Luabind_.
+
+  .. _Luabind: http://luabind.sf.net
+
+Injected Constructors
+---------------------
+
+  Enabling the addition of new constructor functors or factory
+  constructors which aren't in the underlying C++ interface.
+  Interface still to be decided.  Here is a discussion of it:
+
+    http://aspn.activestate.com/ASPN/Mail/Message/1744280
+
+  However, I'm pretty sure we can't use the init<>(f) interface here
+  because it will have to instantiate the code for the wrapped
+  class' default constructor, which may not exist.
+
+
+
+
+Type Converters
+===============
+
+Lvalue conversions from non-const ``PyTypeObject*``\ s
+------------------------------------------------------
+
+  http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1662717
+
+Converter Scoping
+-----------------
+
+  http://article.gmane.org/gmane.comp.python.c++/2044
+
+  If this gets done at all, it is going to happen in conjunction
+  with `Luabind integration`__.
+
+  __ Langbinding_
+
+``FILE* conversions``
+---------------------
+
+  http://aspn.activestate.com/ASPN/Mail/Message/1411366
+
+Post-Call Actions
+-----------------
+
+  From-Python converters should be passed an extra reference to a
+  chain of post-call actions in the Policies object, where they can
+  register an additional action.  See the end of
+  http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1755435
+
+``PyUnicode`` Support
+---------------------
+
+  Review and possibly incorporate changes from `Lijun Qin`_ at
+  http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1771145
+
+  .. _`Lijun Qin`: mailto:qinlj-at-solidshare.com
+
+Documentation
+=============
+
+Builtin Converters
+------------------
+
+  Builtin correspondences between builtiin Python types and C++
+  types need to be documented
+
+Internals
+---------
+
+  The structure of the framework needs to get documented; `Brett
+  Calcott`_ has promised to turn `this document`__ into something fit
+  for users
+
+  __ doc/internals.html
+
+  .. _`Brett Calcott`: mailto:brett.calcott-at-paradise.net.nz
+
+
+Large Scale
+===========
+
+Langbinding
+-----------
+
+  This project to generalizes Boost.Python to work for other
+  languages, initially Lua.  See discussions at
+  http://lists.sourceforge.net/lists/listinfo/boost-langbinding
+
+Refactoring and Reorganization
+------------------------------
+
+  http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1673338
+
+NumArray Support Enhancements
+-----------------------------
+
+  Consider integrating the enhancements described in
+  http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1757092

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.3.0: http://docutils.sourceforge.net/" />
+<title>Boost.Python TODO list Boost</title>
+<link rel="stylesheet" href="../../rst.css" type="text/css" />
+</head>
+<body>
+<div class="document" id="boost-python-todo-list-logo">
+<h1 class="title">Boost.Python TODO list <a class="reference" href="../../index.htm"><img alt="Boost" src="../../c++boost.gif" /></a></h1>
+<table class="field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">copyright:</th><td class="field-body">Copyright David Abrahams 2003. See accompanying
+<a class="reference" href="../../LICENSE">license</a> for terms of use.</td>
+</tr>
+</tbody>
+</table>
+<p>This is a list of work which &quot;really ought to get done&quot;.  In some
+cases people have promised to the work but have not yet moved on their
+promises.</p>
+<div class="contents topic" id="outline">
+<p class="topic-title"><a name="outline">Outline</a></p>
+<ul class="simple">
+<li><a class="reference" href="#class-support" id="id4" name="id4">Class Support</a><ul>
+<li><a class="reference" href="#base-class-for-virtual-function-callback-wrappers" id="id5" name="id5">Base Class for Virtual Function Callback Wrappers</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#functions" id="id6" name="id6">Functions</a><ul>
+<li><a class="reference" href="#wrapping-function-objects" id="id7" name="id7">Wrapping Function Objects</a></li>
+<li><a class="reference" href="#best-match-overload-resolution" id="id8" name="id8">&quot;Best Match&quot; Overload Resolution</a></li>
+<li><a class="reference" href="#injected-constructors" id="id9" name="id9">Injected Constructors</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#type-converters" id="id10" name="id10">Type Converters</a><ul>
+<li><a class="reference" href="#lvalue-conversions-from-non-const-pytypeobject-s" id="id11" name="id11">Lvalue conversions from non-const <tt class="literal"><span class="pre">PyTypeObject*</span></tt>s</a></li>
+<li><a class="reference" href="#converter-scoping" id="id12" name="id12">Converter Scoping</a></li>
+<li><a class="reference" href="#file-conversions" id="id13" name="id13"><tt class="literal"><span class="pre">FILE*</span> <span class="pre">conversions</span></tt></a></li>
+<li><a class="reference" href="#post-call-actions" id="id14" name="id14">Post-Call Actions</a></li>
+<li><a class="reference" href="#pyunicode-support" id="id15" name="id15"><tt class="literal"><span class="pre">PyUnicode</span></tt> Support</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#documentation" id="id16" name="id16">Documentation</a><ul>
+<li><a class="reference" href="#builtin-converters" id="id17" name="id17">Builtin Converters</a></li>
+<li><a class="reference" href="#internals" id="id18" name="id18">Internals</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#large-scale" id="id19" name="id19">Large Scale</a><ul>
+<li><a class="reference" href="#langbinding" id="id20" name="id20">Langbinding</a></li>
+<li><a class="reference" href="#refactoring-and-reorganization" id="id21" name="id21">Refactoring and Reorganization</a></li>
+<li><a class="reference" href="#numarray-support-enhancements" id="id22" name="id22">NumArray Support Enhancements</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="class-support">
+<h1><a class="toc-backref" href="#id4" name="class-support">Class Support</a></h1>
+<div class="section" id="base-class-for-virtual-function-callback-wrappers">
+<h2><a class="toc-backref" href="#id5" name="base-class-for-virtual-function-callback-wrappers">Base Class for Virtual Function Callback Wrappers</a></h2>
+<ul class="simple">
+<li><a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023">http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1456023</a>
+(bottom of message)</li>
+<li><a class="reference" href="http://mail.python.org/pipermail/c++-sig/2003-August/005297.html">http://mail.python.org/pipermail/c++-sig/2003-August/005297.html</a>
+(search for <tt class="literal"><span class="pre">VirtualDispatcher</span></tt>) describes how callback classes
+can swap ownership relationship with their Python wrappers.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="functions">
+<h1><a class="toc-backref" href="#id6" name="functions">Functions</a></h1>
+<div class="section" id="wrapping-function-objects">
+<h2><a class="toc-backref" href="#id7" name="wrapping-function-objects">Wrapping Function Objects</a></h2>
+<blockquote>
+<p>It should be possible to wrap classes which support <tt class="literal"><span class="pre">operator()</span></tt>
+as Python methods.</p>
+<p><a class="reference" href="http://mail.python.org/pipermail/c++-sig/2003-August/005184.html">http://mail.python.org/pipermail/c++-sig/2003-August/005184.html</a></p>
+</blockquote>
+</div>
+<div class="section" id="best-match-overload-resolution">
+<h2><a class="toc-backref" href="#id8" name="best-match-overload-resolution">&quot;Best Match&quot; Overload Resolution</a></h2>
+<blockquote>
+<p>Overload resolution currently depends on the order in which <tt class="literal"><span class="pre">def</span></tt>
+calls are made (preferring later overloads).  This should be
+changed so that the best-matching overload is always selected.
+This may await <a class="reference" href="#langbinding">Langbinding</a> integration, since the technology is
+already in <a class="reference" href="http://luabind.sf.net">Luabind</a>.</p>
+</blockquote>
+</div>
+<div class="section" id="injected-constructors">
+<h2><a class="toc-backref" href="#id9" name="injected-constructors">Injected Constructors</a></h2>
+<blockquote>
+<p>Enabling the addition of new constructor functors or factory
+constructors which aren't in the underlying C++ interface.
+Interface still to be decided.  Here is a discussion of it:</p>
+<blockquote>
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/1744280">http://aspn.activestate.com/ASPN/Mail/Message/1744280</a></blockquote>
+<p>However, I'm pretty sure we can't use the init&lt;&gt;(f) interface here
+because it will have to instantiate the code for the wrapped
+class' default constructor, which may not exist.</p>
+</blockquote>
+</div>
+</div>
+<div class="section" id="type-converters">
+<h1><a class="toc-backref" href="#id10" name="type-converters">Type Converters</a></h1>
+<div class="section" id="lvalue-conversions-from-non-const-pytypeobject-s">
+<h2><a class="toc-backref" href="#id11" name="lvalue-conversions-from-non-const-pytypeobject-s">Lvalue conversions from non-const <tt class="literal"><span class="pre">PyTypeObject*</span></tt>s</a></h2>
+<blockquote>
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1662717">http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1662717</a></blockquote>
+</div>
+<div class="section" id="converter-scoping">
+<h2><a class="toc-backref" href="#id12" name="converter-scoping">Converter Scoping</a></h2>
+<blockquote>
+<p><a class="reference" href="http://article.gmane.org/gmane.comp.python.c++/2044">http://article.gmane.org/gmane.comp.python.c++/2044</a></p>
+<p>If this gets done at all, it is going to happen in conjunction
+with <a class="reference" href="#langbinding">Luabind integration</a>.</p>
+</blockquote>
+</div>
+<div class="section" id="file-conversions">
+<h2><a class="toc-backref" href="#id13" name="file-conversions"><tt class="literal"><span class="pre">FILE*</span> <span class="pre">conversions</span></tt></a></h2>
+<blockquote>
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/1411366">http://aspn.activestate.com/ASPN/Mail/Message/1411366</a></blockquote>
+</div>
+<div class="section" id="post-call-actions">
+<h2><a class="toc-backref" href="#id14" name="post-call-actions">Post-Call Actions</a></h2>
+<blockquote>
+From-Python converters should be passed an extra reference to a
+chain of post-call actions in the Policies object, where they can
+register an additional action.  See the end of
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1755435">http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1755435</a></blockquote>
+</div>
+<div class="section" id="pyunicode-support">
+<h2><a class="toc-backref" href="#id15" name="pyunicode-support"><tt class="literal"><span class="pre">PyUnicode</span></tt> Support</a></h2>
+<blockquote>
+<p>Review and possibly incorporate changes from <a class="reference" href="mailto:qinlj-at-solidshare.com">Lijun Qin</a> at
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1771145">http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1771145</a></p>
+</blockquote>
+</div>
+</div>
+<div class="section" id="documentation">
+<h1><a class="toc-backref" href="#id16" name="documentation">Documentation</a></h1>
+<div class="section" id="builtin-converters">
+<h2><a class="toc-backref" href="#id17" name="builtin-converters">Builtin Converters</a></h2>
+<blockquote>
+Builtin correspondences between builtiin Python types and C++
+types need to be documented</blockquote>
+</div>
+<div class="section" id="internals">
+<h2><a class="toc-backref" href="#id18" name="internals">Internals</a></h2>
+<blockquote>
+<p>The structure of the framework needs to get documented; <a class="reference" href="mailto:brett.calcott-at-paradise.net.nz">Brett
+Calcott</a> has promised to turn <a class="reference" href="doc/internals.html">this document</a> into something fit
+for users</p>
+</blockquote>
+</div>
+</div>
+<div class="section" id="large-scale">
+<h1><a class="toc-backref" href="#id19" name="large-scale">Large Scale</a></h1>
+<div class="section" id="langbinding">
+<h2><a class="toc-backref" href="#id20" name="langbinding">Langbinding</a></h2>
+<blockquote>
+This project to generalizes Boost.Python to work for other
+languages, initially Lua.  See discussions at
+<a class="reference" href="http://lists.sourceforge.net/lists/listinfo/boost-langbinding">http://lists.sourceforge.net/lists/listinfo/boost-langbinding</a></blockquote>
+</div>
+<div class="section" id="refactoring-and-reorganization">
+<h2><a class="toc-backref" href="#id21" name="refactoring-and-reorganization">Refactoring and Reorganization</a></h2>
+<blockquote>
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1673338">http://aspn.activestate.com/ASPN/Mail/Message/c++-sig/1673338</a></blockquote>
+</div>
+<div class="section" id="numarray-support-enhancements">
+<h2><a class="toc-backref" href="#id22" name="numarray-support-enhancements">NumArray Support Enhancements</a></h2>
+<blockquote>
+Consider integrating the enhancements described in
+<a class="reference" href="http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1757092">http://aspn.activestate.com/ASPN/Mail/Message/C++-sig/1757092</a></blockquote>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<div class="footer">
+<a class="reference" href="todo.txt">View document source</a>.
+Generated on: 2003-08-26 15:39 UTC.
+Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
+</div>
+</body>
+</html>
