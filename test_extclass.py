@@ -842,6 +842,24 @@ test inheritB2
     >>> db2.inheritB2()
     'B2::inheritB2'
 
+========= Prove that the "phantom base class" issue is resolved ==========
+
+    >>> assert pa1_a1.__class__ == A1
+    >>> assert pb1_a1.__class__ == A1
+    >>> assert pb2_a1.__class__ == A1
+    >>> assert pc_a1.__class__ == A1
+    >>> assert pa2_a2.__class__ == A2
+    >>> assert pb1_a2.__class__ == A2
+    >>> assert pb1_b1.__class__ == B1
+    >>> assert pc_b1.__class__ == B1
+    >>> assert A1 in B1.__bases__
+    >>> assert A2 in B1.__bases__
+    >>> assert A1 in B2.__bases__
+    >>> assert A2 in B2.__bases__
+    >>> assert A1 in DA1.__bases__
+    >>> assert B1 in DB1.__bases__
+    >>> assert B2 in DB2.__bases__
+    
 ===============================================================
 test methodologies for wrapping functions that return a pointer
 
