@@ -7,7 +7,7 @@
 #include <boost/python/module_init.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
-#include <boost/mpl/type_list.hpp>
+#include <boost/mpl/list.hpp>
 
 #include <complex>
 

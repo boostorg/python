@@ -4,7 +4,7 @@ subproject libs/python ;
 SEARCH on <module@>python.jam = $(BOOST_BUILD_PATH) ;
 include <module@>python.jam ;
 
-local bpl-ldflags ;
+local bpl-linkflags ;
 
 if $(UNIX) && ( $(OS) = AIX )
 {
