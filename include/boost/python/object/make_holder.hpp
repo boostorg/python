@@ -1,58 +1,68 @@
+#if !defined(BOOST_PP_IS_ITERATING)
+
 // Copyright David Abrahams 2001. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef MAKE_HOLDER_DWA20011215_HPP
-# define MAKE_HOLDER_DWA20011215_HPP
 
-# include <boost/mpl/at.hpp>
-# include <boost/python/object/forward.hpp>
-# include <boost/python/object/class.hpp>
-# include <boost/python/detail/wrap_python.hpp>
-# include <boost/python/detail/preprocessor.hpp>
-# include <boost/preprocessor/repeat.hpp>
-# include <boost/preprocessor/enum.hpp>
+# ifndef MAKE_HOLDER_DWA20011215_HPP
+#  define MAKE_HOLDER_DWA20011215_HPP
 
-namespace boost { namespace python { namespace objects { 
+#  include <boost/python/object/forward.hpp>
+#  include <boost/python/object/class.hpp>
+#  include <boost/python/detail/wrap_python.hpp>
+#  include <boost/python/detail/preprocessor.hpp>
+
+#  include <boost/mpl/at.hpp>
+
+#  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/repeat.hpp>
+
+namespace boost { namespace python { namespace objects {
 
 template <int nargs> struct make_holder;
 
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/make_holder.hpp>
-# endif
+#  define BOOST_PYTHON_FORWARD_ARG(index, _)                \
+    typedef typename mpl::at<index,ArgList>::type t##index; \
+    typedef typename forward<t##index>::type f##index;
 
+#  define BOOST_PYTHON_DO_FORWARD_ARG(index, _) , f##index(a##index)
 
-# define BOOST_PYTHON_FORWARD_ARG(index, ignored)                                       \
-    typedef typename mpl::at<index,ArgList>::type BOOST_PP_CAT(t,index);                \
-    typedef typename forward<BOOST_PP_CAT(t,index)>::type BOOST_PP_CAT(f,index);
+// specializations...
+#  define BOOST_PP_ITERATION_PARAMS_1 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/make_holder.hpp>)
+#  include BOOST_PP_ITERATE()
 
-# define BOOST_PYTHON_DO_FORWARD_ARG(index, ignored)    \
-    BOOST_PP_CAT(f,index)(BOOST_PP_CAT(a, index))
-
-# define BOOST_PYTHON_MAKE_HOLDER(nargs,ignored)                                \
-template <>                                                                     \
-struct make_holder<nargs>                                                       \
-{                                                                               \
-    template <class Holder, class ArgList>                                      \
-    struct apply                                                                \
-    {                                                                           \
-        BOOST_PP_REPEAT(nargs, BOOST_PYTHON_FORWARD_ARG, nil)                   \
-                                                                                \
-        static void execute(                                                    \
-            PyObject* p                                                         \
-            BOOST_PP_COMMA_IF(nargs) BOOST_PYTHON_ENUM_PARAMS2(nargs, (t,a)) )  \
-        {                                                                       \
-            (new Holder(                                                        \
-                p                                                               \
-                BOOST_PP_COMMA_IF(nargs) BOOST_PP_ENUM(                         \
-                    nargs,BOOST_PYTHON_DO_FORWARD_ARG,nil)))->install(p);       \
-        }                                                                       \
-    };                                                                          \
-};
-
-BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_MAKE_HOLDER,nil)
+#  undef BOOST_PYTHON_FORWARD_ARG
+#  undef BOOST_PYTHON_DO_FORWARD_ARG
 
 }}} // namespace boost::python::objects
 
-#endif // MAKE_HOLDER_DWA20011215_HPP
+# endif // MAKE_HOLDER_DWA20011215_HPP
+
+#elif BOOST_PP_ITERATION_DEPTH() == 1
+# line BOOST_PP_LINE(__LINE__, make_holder.hpp)
+
+# define N BOOST_PP_ITERATION()
+
+template <>
+struct make_holder<N>
+{
+    template <class Holder, class ArgList>
+    struct apply
+    {
+        BOOST_PP_REPEAT(N, BOOST_PYTHON_FORWARD_ARG, nil)
+        static void execute(
+            PyObject* p
+            BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, t, a))
+        {
+            (new Holder(
+                p BOOST_PP_REPEAT(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
+        }
+    };
+};
+
+# undef N
+
+#endif

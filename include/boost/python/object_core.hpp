@@ -5,15 +5,18 @@
 // to its suitability for any purpose.
 #ifndef OBJECT_CORE_DWA2002615_HPP
 # define OBJECT_CORE_DWA2002615_HPP
+
+# include <boost/type.hpp>
+
 # include <boost/python/handle.hpp>
 # include <boost/python/converter/arg_to_python.hpp>
-# include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/call.hpp>
-# include <boost/preprocessor/max.hpp>
 # include <boost/python/slice_nil.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
 # include <boost/python/refcount.hpp>
-# include <boost/type.hpp>
+# include <boost/python/detail/preprocessor.hpp>
+
+# include <boost/preprocessor/iterate.hpp>
 
 namespace boost { namespace python { 
 
@@ -99,23 +102,8 @@ namespace api
       //
       object operator()() const;
 
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/object_call.hpp>
-# endif
-
-# define BOOST_PYTHON_OBJECT_CALL(nargs,ignored)                                                        \
-      template <BOOST_PP_ENUM_PARAMS(nargs, class A)>                                                   \
-      typename dependent<object,A0>::type                                                               \
-      operator()(BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))) const                                  \
-      {                                                                                                 \
-          typedef typename dependent<object,A0>::type obj;                                              \
-          U const& self = *static_cast<U const*>(this);                                                 \
-          return call<obj>(converter::get_managed_object(self), BOOST_PP_ENUM_PARAMS(nargs, a));        \
-      }
-
-      BOOST_PP_REPEAT_FROM_TO_2ND(
-          BOOST_PP_MAX(1, BOOST_PYTHON_ARITY_START), BOOST_PYTHON_ARITY_FINISH
-          , BOOST_PYTHON_OBJECT_CALL, ignored)
+# define BOOST_PP_ITERATION_PARAMS_1 3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/object_call.hpp>)
+# include BOOST_PP_ITERATE()
 
       // truth value testing
       //

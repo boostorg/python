@@ -1,20 +1,25 @@
+#if !defined(BOOST_PP_IS_ITERATING)
+
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef RESULT_DWA2002521_HPP
-# define RESULT_DWA2002521_HPP
 
-# include <boost/python/detail/preprocessor.hpp>
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/mpl/aux_/preprocessor.hpp>
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/mpl/select_type.hpp>
-# include <boost/type.hpp>
-# include <boost/type_traits/object_traits.hpp>
+# ifndef RESULT_DWA2002521_HPP
+#  define RESULT_DWA2002521_HPP
 
-namespace boost { namespace python { namespace detail { 
+#  include <boost/type.hpp>
+
+#  include <boost/python/detail/preprocessor.hpp>
+
+#  include <boost/type_traits/object_traits.hpp>
+#  include <boost/mpl/select_type.hpp>
+
+#  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/iterate.hpp>
+
+namespace boost { namespace python { namespace detail {
 
 // Defines a family of overloaded function which, given x, a function
 // pointer, member [function] pointer, or an AdaptableFunction object,
@@ -25,20 +30,13 @@ namespace boost { namespace python { namespace detail {
 // an AdaptableFunction object, you must pass OL as a second argument
 // to get this to work portably.
 
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/result.hpp>
-# endif 
+#  define BOOST_PP_ITERATION_PARAMS_1 \
+	4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/result.hpp>, BOOST_PYTHON_FUNCTION_POINTER)
+#  include BOOST_PP_ITERATE()
 
-#  define BOOST_PYTHON_FIRST_ARGUMENT_PF(args, ignored)                                         \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
-boost::type<R>* result(BOOST_PYTHON_FN(*,0,args), int = 0) { return 0; }
-
-#  define BOOST_PYTHON_FIRST_ARGUMENT_PMF(args, cv)                                             \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>                             \
-boost::type<R>* result(BOOST_PYTHON_FN(A0::*,1,args)cv(), int = 0) { return 0; }
-
-BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PF, nil)
-BOOST_PYTHON_REPEAT_MF_CV_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PMF)
+#  define BOOST_PP_ITERATION_PARAMS_1 \
+	4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/result.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER)
+#  include BOOST_PP_ITERATE()
 
 template <class R, class T>
 boost::type<R>* result(R (T::*), int = 0) { return 0; }
@@ -79,8 +77,47 @@ template <class X>
 boost::type<typename X::result_type>*
 result(X const&, short = 0) { return 0; }
 
-#  endif 
+#  endif
 
 }}} // namespace boost::python::detail
 
-#endif // RESULT_DWA2002521_HPP
+# endif // RESULT_DWA2002521_HPP
+
+/* --------------- function pointers --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_FUNCTION_POINTER
+# line BOOST_PP_LINE(__LINE__, result.hpp(function pointers))
+
+# define N BOOST_PP_ITERATION()
+
+template <class R BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+boost::type<R>* result(R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A)), int = 0)
+{
+    return 0;
+}
+
+# undef N
+
+/* --------------- pointers-to-members --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_POINTER_TO_MEMBER
+// Outer over cv-qualifiers
+
+# define BOOST_PP_ITERATION_PARAMS_2 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/result.hpp>)
+# include BOOST_PP_ITERATE()
+
+#elif BOOST_PP_ITERATION_DEPTH() == 2
+# line BOOST_PP_LINE(__LINE__, result.hpp(pointers-to-members))
+// Inner over arities
+
+# define N BOOST_PP_ITERATION()
+# define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
+
+template <class R, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+boost::type<R>* result(R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q, int = 0)
+{
+    return 0;
+}
+
+# undef N
+# undef Q
+
+#endif

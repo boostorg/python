@@ -11,6 +11,7 @@
 # include <boost/python/converter/to_python_function_type.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/constructor_function.hpp>
+# include <boost/python/converter/convertible_function.hpp>
 
 namespace boost { namespace python { namespace converter {
 
@@ -33,7 +34,7 @@ namespace registry
 
   // Insert an rvalue from_python converter
   BOOST_PYTHON_DECL void insert(
-      void* (*convertible)(PyObject*)
+      convertible_function
       , constructor_function
       , type_info
       );
@@ -41,7 +42,7 @@ namespace registry
   // Insert an rvalue from_python converter at the tail of the
   // chain. Used for implicit conversions
   BOOST_PYTHON_DECL void push_back(
-      void* (*convertible)(PyObject*)
+      convertible_function
       , constructor_function
       , type_info
       );

@@ -6,105 +6,58 @@
 #ifndef PREPROCESSOR_DWA200247_HPP
 # define PREPROCESSOR_DWA200247_HPP
 
-# include <boost/config.hpp>
-# include <boost/preprocessor/tuple/to_list.hpp>
+# include <boost/preprocessor/cat.hpp>
+# include <boost/preprocessor/comma_if.hpp>
+# include <boost/preprocessor/repeat.hpp>
 # include <boost/preprocessor/tuple/elem.hpp>
-# include <boost/preprocessor/list/for_each.hpp>
-# include <boost/preprocessor/repeat_from_to_2nd.hpp>
-# include <boost/preprocessor/inc.hpp>
-# include <boost/preprocessor/empty.hpp>
-# include <boost/preprocessor/enum.hpp>
-# include <boost/preprocessor/expr_if.hpp>
 
-namespace boost { namespace python { namespace detail { 
+// stuff that should be in the preprocessor library
 
-# define BOOST_PYTHON_CONST() const
-# define BOOST_PYTHON_VOLATILE() volatile
-# define BOOST_PYTHON_CONST_VOLATILE() const volatile
+# define BOOST_PYTHON_APPLY(x) BOOST_PP_CAT(BOOST_PYTHON_APPLY_, x)
 
-#  define BOOST_PYTHON_ALL_CV                                           \
-     BOOST_PP_TUPLE_TO_LIST(4, (BOOST_PP_EMPTY                          \
-                                 , BOOST_PYTHON_CONST                   \
-                                 , BOOST_PYTHON_VOLATILE                \
-                                 , BOOST_PYTHON_CONST_VOLATILE))
+# define BOOST_PYTHON_APPLY_BOOST_PYTHON_ITEM(v) v
+# define BOOST_PYTHON_APPLY_BOOST_PYTHON_NIL
+
+// cv-qualifiers
 
 # if !defined(__MWERKS__) || __MWERKS__ > 0x2407
-#  define BOOST_PYTHON_MEMBER_FUNCTION_CV BOOST_PYTHON_ALL_CV
+#  define BOOST_PYTHON_CV_COUNT 4
 # else
-#  define BOOST_PYTHON_MEMBER_FUNCTION_CV BOOST_PP_TUPLE_TO_LIST(1, (BOOST_PP_EMPTY))
-# endif 
+#  define BOOST_PYTHON_CV_COUNT 1
+# endif
 
-#ifndef BOOST_PYTHON_DEBUGGABLE_ARITY
-# define BOOST_PYTHON_DEBUGGABLE_ARITY 15
-#endif 
+# ifndef BOOST_PYTHON_MAX_ARITY
+#  define BOOST_PYTHON_MAX_ARITY 15
+# endif
 
-#ifndef BOOST_PYTHON_MAX_ARITY
-# if !defined(__EDG_VERSION__) || __EDG_VERSION__ > 245
-// Generate at least two more arguments just to test the syntax
-#  define BOOST_PYTHON_MAX_ARITY 17
-# else
-// Current EDG compilers have a really slow preprocessor which makes
-// it important not to generate new functions with it unless
-// absolutely neccessary
-#  define BOOST_PYTHON_MAX_ARITY BOOST_PYTHON_DEBUGGABLE_ARITY
-# endif 
-#endif 
+# define BOOST_PYTHON_CV_QUALIFIER(i)                          \
+    BOOST_PYTHON_APPLY(                                        \
+        BOOST_PP_TUPLE_ELEM(4, i, BOOST_PYTHON_CV_QUALIFIER_I) \
+    )
 
-#ifdef BOOST_PYTHON_GENERATE_CODE
-# undef BOOST_STATIC_CONSTANT
-# define BOOST_PYTHON_ARITY_START 0
-# define BOOST_PYTHON_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
-# define BOOST_PYTHON_MF_ARITY_START 1
-# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY))
-#else
-# define BOOST_PYTHON_ARITY_START BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY)
-# define BOOST_PYTHON_ARITY_FINISH BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY)
-# define BOOST_PYTHON_MF_ARITY_START BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_DEBUGGABLE_ARITY))
-# define BOOST_PYTHON_MF_ARITY_FINISH BOOST_PP_INC(BOOST_PP_INC(BOOST_PYTHON_MAX_ARITY))
-#endif 
+# define BOOST_PYTHON_CV_QUALIFIER_I      \
+    (                                     \
+        BOOST_PYTHON_NIL,                 \
+        BOOST_PYTHON_ITEM(const),         \
+        BOOST_PYTHON_ITEM(volatile),      \
+        BOOST_PYTHON_ITEM(const volatile) \
+    )
 
-#if BOOST_PYTHON_MAX_ARITY > BOOST_PYTHON_DEBUGGABLE_ARITY
+// enumerators
+# define BOOST_PYTHON_UNARY_ENUM(c, text) BOOST_PP_REPEAT(c, BOOST_PYTHON_UNARY_ENUM_I, text)
+# define BOOST_PYTHON_UNARY_ENUM_I(n, text) BOOST_PP_COMMA_IF(n) text ## n
 
-# define BOOST_PYTHON_FN(inner,start,count) \
-    R(inner)(BOOST_MPL_TEMPLATE_PARAMETERS(start,count,A))
+# define BOOST_PYTHON_BINARY_ENUM(c, a, b) BOOST_PP_REPEAT(c, BOOST_PYTHON_BINARY_ENUM_I, (a, b))
+# define BOOST_PYTHON_BINARY_ENUM_I(n, _) BOOST_PP_COMMA_IF(n) BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2, 0, _), n) BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2, 1, _), n)
 
-# define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)           \
-    BOOST_PP_REPEAT_FROM_TO_2ND(                                \
-        BOOST_PYTHON_ARITY_START, BOOST_PYTHON_ARITY_FINISH     \
-        , function, data)
+# define BOOST_PYTHON_ENUM_WITH_DEFAULT(c, text, def) BOOST_PP_REPEAT(c, BOOST_PYTHON_ENUM_WITH_DEFAULT_I, (text, def))
+# define BOOST_PYTHON_ENUM_WITH_DEFAULT_I(n, _) BOOST_PP_COMMA_IF(n) BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2, 0, _), n) = BOOST_PP_TUPLE_ELEM(2, 1, _)
 
-# define BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,data)                \
-    BOOST_PP_REPEAT_FROM_TO_2ND(                                        \
-        BOOST_PYTHON_MF_ARITY_START, BOOST_PYTHON_MF_ARITY_FINISH       \
-        , function, data)
+// fixed text (no commas)
+# define BOOST_PYTHON_FIXED(n, text) text
 
-#  define BOOST_PYTHON_REPEAT_PMF_CV(index, function, cv) \
-   BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,cv) 
-
-# define BOOST_PYTHON_REPEAT_MF_CV_2ND(function) \
-   BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_REPEAT_PMF_CV,function,BOOST_PYTHON_MEMBER_FUNCTION_CV) 
-
-# define BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(function) \
-   BOOST_PP_LIST_FOR_EACH(BOOST_PYTHON_REPEAT_PMF_CV,function,BOOST_PYTHON_ALL_CV)
-
-#define BOOST_PYTHON_NUMBER_PAIR(Index, Pair)           \
-  BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2,0,Pair),Index)     \
-  BOOST_PP_CAT(BOOST_PP_TUPLE_ELEM(2,1,Pair),Index)
-
-#define BOOST_PYTHON_ENUM_PARAMS2(N, Pair) BOOST_PP_ENUM(N, BOOST_PYTHON_NUMBER_PAIR, Pair)
-
-# define BOOST_PYTHON_PROJECT_1ST(a1,a2) a1
-# define BOOST_PYTHON_PROJECT_2ND(a1,a2) a2
-#else
-
-# define BOOST_PYTHON_REPEAT_ARITY_2ND(function,data)
-# define BOOST_PYTHON_REPEAT_MF_ARITY_2ND(function,data) 
-# define BOOST_PYTHON_REPEAT_MF_ALL_CV_2ND(function)
-# define BOOST_PYTHON_REPEAT_MF_CV_2ND(function)
-# define BOOST_PYTHON_REPEAT_PMF_CV(index, function, cv)
-
-#endif
-
-}}} // namespace boost::python::detail
+// flags
+# define BOOST_PYTHON_FUNCTION_POINTER 0x0001
+# define BOOST_PYTHON_POINTER_TO_MEMBER 0x0002
 
 #endif // PREPROCESSOR_DWA200247_HPP

@@ -6,19 +6,20 @@
 #ifndef REGISTRATIONS_DWA2002223_HPP
 # define REGISTRATIONS_DWA2002223_HPP
 
+# include <boost/python/converter/convertible_function.hpp>
 # include <boost/python/converter/constructor_function.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
 struct lvalue_from_python_registration
 {
-    void* (*convert)(PyObject* source);
+    convertible_function convert;
     lvalue_from_python_registration* next;
 };
 
 struct rvalue_from_python_registration
 {
-    void* (*convertible)(PyObject*);
+    convertible_function convertible;
     constructor_function construct;
     rvalue_from_python_registration* next;
 };

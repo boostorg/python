@@ -1,25 +1,35 @@
+#if !defined(BOOST_PP_IS_ITERATING)
+
 // Copyright David Abrahams 2001. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef POINTER_HOLDER_DWA20011215_HPP
-# define POINTER_HOLDER_DWA20011215_HPP
 
-# include <boost/python/object/class.hpp>
-# include <boost/python/type_id.hpp>
-# include <boost/python/object/inheritance.hpp>
-# include <boost/python/object/find_instance.hpp>
-# include <boost/python/object/forward.hpp>
-# include <boost/type.hpp>
-# include <boost/mpl/select_type.hpp>
-# include <boost/mpl/apply.hpp>
-# include <boost/python/pointee.hpp>
-# include <boost/python/detail/preprocessor.hpp>
-# include <boost/preprocessor/enum_params.hpp>
-# include <boost/python/detail/force_instantiate.hpp>
+# ifndef POINTER_HOLDER_DWA20011215_HPP
+#  define POINTER_HOLDER_DWA20011215_HPP 
 
-namespace boost { namespace python { namespace objects { 
+#  include <boost/type.hpp>
+
+#  include <boost/python/object/class.hpp>
+#  include <boost/python/type_id.hpp>
+#  include <boost/python/object/inheritance.hpp>
+#  include <boost/python/object/find_instance.hpp>
+#  include <boost/python/object/forward.hpp>
+#  include <boost/python/pointee.hpp>
+#  include <boost/python/detail/force_instantiate.hpp>
+#  include <boost/python/detail/preprocessor.hpp>
+
+#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/apply.hpp>
+
+#  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/repeat.hpp>
+
+namespace boost { namespace python { namespace objects {
+
+#  define BOOST_PYTHON_UNFORWARD_LOCAL(n, _) BOOST_PP_COMMA_IF(n) (typename unforward<A##n>::type)(a##n)
 
 template <class Pointer, class Value>
 struct pointer_holder : instance_holder
@@ -27,25 +37,10 @@ struct pointer_holder : instance_holder
     pointer_holder(Pointer);
 
     // Forward construction to the held object
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/pointer_holder.hpp>
-# endif 
 
+#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 1)
+#  include BOOST_PP_ITERATE()
 
-# define BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER(nargs, ignored)          \
-    BOOST_PP_EXPR_IF(nargs, template <)                                 \
-        BOOST_PP_ENUM_PARAMS(nargs, class A)                            \
-    BOOST_PP_EXPR_IF(nargs, >)                                          \
-    pointer_holder(PyObject*                                            \
-                   BOOST_PP_COMMA_IF(nargs)                             \
-                   BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,a)))             \
-        : m_p(new Value(                                                \
-                  BOOST_PP_ENUM(nargs, BOOST_PYTHON_UNFORWARD, nil)     \
-            ))                                                          \
-    {}
-
-    BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER,nil)
-        
  private: // required holder implementation
     void* holds(type_info);
 
@@ -59,30 +54,12 @@ struct pointer_holder_back_reference : instance_holder
  private:
     typedef typename python::pointee<Pointer>::type held_type;
  public:
-    
-    pointer_holder_back_reference(Pointer);
-    
-    // Forward construction to the held object
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/ptr_holder_back_reference.hpp>
-# endif
-    
-# define BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE(nargs, ignored)           \
-    BOOST_PP_EXPR_IF(nargs, template <)                                                 \
-        BOOST_PP_ENUM_PARAMS(nargs, class A)                                            \
-    BOOST_PP_EXPR_IF(nargs, >)                                                          \
-    pointer_holder_back_reference(PyObject* p                                           \
-                   BOOST_PP_COMMA_IF(nargs)                                             \
-                   BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,a)))                             \
-        : m_p(new held_type(                                                            \
-                    p BOOST_PP_COMMA_IF(nargs)                                          \
-                    BOOST_PP_ENUM(nargs, BOOST_PYTHON_UNFORWARD, nil)                   \
-            ))                                                                          \
-    {                                                                                   \
-        python::detail::force_instantiate(instance_finder<held_type>::registration);    \
-    }
 
-    BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CONSTRUCT_POINTER_HOLDER_BACK_REFERENCE,nil)
+    pointer_holder_back_reference(Pointer);
+
+    // Forward construction to the held object
+#  define BOOST_PP_ITERATION_PARAMS_1 4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/object/pointer_holder.hpp>, 2)
+#  include BOOST_PP_ITERATE()
 
  private: // required holder implementation
     void* holds(type_info);
@@ -90,6 +67,8 @@ struct pointer_holder_back_reference : instance_holder
  private: // data members
     Pointer m_p;
 };
+
+#  undef BOOST_PYTHON_UNFORWARD_LOCAL
 
 template <class Pointer, class Value>
 inline pointer_holder<Pointer,Value>::pointer_holder(Pointer p)
@@ -130,4 +109,43 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t)
 
 }}} // namespace boost::python::objects
 
-#endif // POINTER_HOLDER_DWA20011215_HPP
+# endif // POINTER_HOLDER_DWA20011215_HPP
+
+/* --------------- pointer_holder --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
+# line BOOST_PP_LINE(__LINE__, pointer_holder.hpp)
+
+# define N BOOST_PP_ITERATION()
+
+# if (N != 0)
+    template< BOOST_PYTHON_UNARY_ENUM(N, class A) >
+# endif
+    pointer_holder(PyObject* BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+        : m_p(new Value(
+                BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            ))
+    {}
+
+# undef N
+
+/* --------------- pointer_holder_back_reference --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 2
+# line BOOST_PP_LINE(__LINE__, pointer_holder.hpp(pointer_holder_back_reference))
+
+# define N BOOST_PP_ITERATION()
+
+# if (N != 0)
+    template < BOOST_PYTHON_UNARY_ENUM(N, class A) >
+# endif
+    pointer_holder_back_reference(
+        PyObject* p BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, a))
+        : m_p(new held_type(
+                    p BOOST_PP_COMMA_IF(N) BOOST_PP_REPEAT(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
+            ))
+    {
+        python::detail::force_instantiate(instance_finder<held_type>::registration);
+    }
+
+# undef N
+
+#endif

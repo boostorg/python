@@ -1,38 +1,74 @@
+#if !defined(BOOST_PP_IS_ITERATING)
+
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef TARGET_DWA2002521_HPP
-# define TARGET_DWA2002521_HPP
 
-# include <boost/python/detail/preprocessor.hpp>
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/mpl/aux_/preprocessor.hpp>
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/preprocessor/if.hpp>
-# include <boost/type.hpp>
+# ifndef TARGET_DWA2002521_HPP
+#  define TARGET_DWA2002521_HPP
 
-namespace boost { namespace python { namespace detail { 
+#  include <boost/python/detail/preprocessor.hpp>
 
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/target.hpp>
-# endif 
+#  include <boost/type.hpp>
 
-#  define BOOST_PYTHON_FIRST_ARGUMENT_PF(args, ignored)                                         \
-template <class R BOOST_PP_COMMA_IF(args) BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>      \
-boost::type<BOOST_PP_IF(args, A0, void)>* target(BOOST_PYTHON_FN(*,0,args)) { return 0; }
+#  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/if.hpp>
+#  include <boost/preprocessor/iterate.hpp>
 
-#  define BOOST_PYTHON_FIRST_ARGUMENT_PMF(args, cv)                                     \
-template <class R, BOOST_MPL_TEMPLATE_PARAMETERS(0, args, class A)>                     \
-boost::type<A0 cv()*>* target(BOOST_PYTHON_FN(A0::*,1,args)cv()) { return 0; }
+namespace boost { namespace python { namespace detail {
 
-BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PF, nil)
-BOOST_PYTHON_REPEAT_MF_CV_2ND(BOOST_PYTHON_FIRST_ARGUMENT_PMF)
+#  define BOOST_PP_ITERATION_PARAMS_1 \
+	4, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/target.hpp>, BOOST_PYTHON_FUNCTION_POINTER)
+#  include BOOST_PP_ITERATE()
+
+#  define BOOST_PP_ITERATION_PARAMS_1 \
+	4, (0, BOOST_PYTHON_CV_COUNT - 1, <boost/python/detail/target.hpp>, BOOST_PYTHON_POINTER_TO_MEMBER)
+#  include BOOST_PP_ITERATE()
 
 template <class R, class T>
 boost::type<T*>* target(R (T::*)) { return 0; }
 
 }}} // namespace boost::python::detail
 
-#endif // TARGET_DWA2002521_HPP
+# endif // TARGET_DWA2002521_HPP
+
+/* --------------- function pointers --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_FUNCTION_POINTER
+# line BOOST_PP_LINE(__LINE__, target.hpp(function_pointers))
+
+# define N BOOST_PP_ITERATION()
+
+template <class R BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+boost::type<BOOST_PP_IF(N, A0, void)>* target(R (*)(BOOST_PYTHON_UNARY_ENUM(N, A)))
+{
+    return 0;
+}
+
+# undef N
+
+/* --------------- pointers-to-members --------------- */
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == BOOST_PYTHON_POINTER_TO_MEMBER
+// Outer over cv-qualifiers
+
+# define BOOST_PP_ITERATION_PARAMS_2 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/target.hpp>)
+# include BOOST_PP_ITERATE()
+
+#elif BOOST_PP_ITERATION_DEPTH() == 2
+# line BOOST_PP_LINE(__LINE__, target.hpp(pointers-to-members))
+// Inner over arities
+
+# define N BOOST_PP_ITERATION()
+# define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
+
+template <class R, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+boost::type<T Q*>* target(R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q)
+{
+    return 0;
+}
+
+# undef N
+# undef Q
+
+#endif

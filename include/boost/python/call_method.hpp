@@ -1,52 +1,63 @@
+#if !defined(BOOST_PP_IS_ITERATING)
+
 // Copyright David Abrahams 2002. Permission to copy, use,
 // modify, sell and distribute this software is granted provided this
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef CALL_METHOD_DWA2002411_HPP
-# define CALL_METHOD_DWA2002411_HPP
+# ifndef CALL_METHOD_DWA2002411_HPP
+#  define CALL_METHOD_DWA2002411_HPP
 
-# include <boost/python/converter/arg_to_python.hpp>
-# include <boost/python/converter/return_from_python.hpp>
-# include <boost/python/detail/preprocessor.hpp>
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/preprocessor/enum.hpp>
-# include <boost/preprocessor/enum_params.hpp>
-# include <boost/preprocessor/repeat.hpp>
-# include <boost/preprocessor/cat.hpp>
-# include <boost/python/detail/void_return.hpp>
-# include <boost/type.hpp>
+#  include <boost/type.hpp>
 
-namespace boost { namespace python { 
+#  include <boost/python/converter/arg_to_python.hpp>
+#  include <boost/python/converter/return_from_python.hpp>
+#  include <boost/python/detail/preprocessor.hpp>
+#  include <boost/python/detail/void_return.hpp>
 
-# ifndef BOOST_PYTHON_GENERATE_CODE
-#  include <boost/python/preprocessed/call_method.hpp>
-# endif
+#  include <boost/preprocessor/comma_if.hpp>
+#  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/repeat.hpp>
 
-# define BOOST_PYTHON_CALL_METHOD_FUNCTION(nargs,ignored)                       \
-template <                                                                      \
-    class R                                                                     \
-    BOOST_PP_COMMA_IF(nargs) BOOST_PP_ENUM_PARAMS(nargs, class A)               \
-    >                                                                           \
-typename detail::returnable<R>::type                                            \
-call_method(PyObject* self, char const* name                                    \
-     BOOST_PP_COMMA_IF(nargs) BOOST_PYTHON_ENUM_PARAMS2(nargs, (A,const& a))    \
-   , boost::type<R>* = 0                                                        \
-    )                                                                           \
-{                                                                               \
-    converter::return_from_python<R> converter;                                 \
-    return converter(                                                           \
-        PyEval_CallMethod(                                                      \
-            self                                                                \
-            , const_cast<char*>(name)                                           \
-            , const_cast<char*>(BOOST_PYTHON_ARG_STRING(nargs))                 \
-            BOOST_PP_COMMA_IF(nargs)                                            \
-            BOOST_PP_ENUM(nargs,BOOST_PYTHON_ARG_TO_PYTHON_GET,nil)             \
-            ));                                                                 \
-}
+namespace boost { namespace python {
 
-BOOST_PYTHON_REPEAT_ARITY_2ND(BOOST_PYTHON_CALL_METHOD_FUNCTION,data)
+# define BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET(n, _) \
+    , converter::arg_to_python<A##n>(a##n).get()
+
+# define BOOST_PP_ITERATION_PARAMS_1 3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/call_method.hpp>)
+# include BOOST_PP_ITERATE()
+
+# undef BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET
 
 }} // namespace boost::python
 
-#endif // CALL_METHOD_DWA2002411_HPP
+# endif // CALL_METHOD_DWA2002411_HPP
+
+#elif BOOST_PP_ITERATION_DEPTH() == 1
+# line BOOST_PP_LINE(__LINE__, call_method.hpp)
+
+# define N BOOST_PP_ITERATION()
+
+template <
+    class R
+    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)
+    >
+typename detail::returnable<R>::type
+call_method(PyObject* self, char const* name
+    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, const& a)
+    , boost::type<R>* = 0
+    )
+{
+    converter::return_from_python<R> converter;
+    return converter(
+        PyEval_CallMethod(
+            self
+            , const_cast<char*>(name)
+            , const_cast<char*>("(" BOOST_PP_REPEAT(N, BOOST_PYTHON_FIXED, "O") ")")
+            BOOST_PP_REPEAT(N, BOOST_PYTHON_FAST_ARG_TO_PYTHON_GET, nil)
+            ));
+}
+
+# undef N
+
+#endif // BOOST_PP_IS_ITERATING
