@@ -74,24 +74,24 @@ Being able to build is nice, but there is nothing to build yet. Embedding the Py
 
 [page:1 Using the interpreter]
 
-As you probably already know, objects in Python are reference-counted. Naturally, the PyObjects of the Python/C API are also reference-counted. There is a difference however. While the reference-counting is fully automatic in Python, the Python/C API requires you to do it [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is messy and especially hard to get right in the presence of C++ exceptions. Fortunately Boost.Python provides the [@../../v2/handle.html handle] class template to automate the process.
+As you probably already know, objects in Python are reference-counted. Naturally, the [^PyObject]s of the Python/C API are also reference-counted. There is a difference however. While the reference-counting is fully automatic in Python, the Python/C API requires you to do it [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is messy and especially hard to get right in the presence of C++ exceptions. Fortunately Boost.Python provides the [@../../v2/handle.html handle] class template to automate the process.
 
 [h2 Reference-counting handles]
 
-There are two ways in which a function in the Python/C API can return a PyObject*: as a ['borrowed reference] or as a ['new reference]. Which of these a function uses, is listed in that function's documentation. The two require slightely different approaches to reference-counting but both can be 'handled' by Boost.Python.
+There are two ways in which a function in the Python/C API can return a [^PyObject*]: as a ['borrowed reference] or as a ['new reference]. Which of these a function uses, is listed in that function's documentation. The two require slightely different approaches to reference-counting but both can be 'handled' by Boost.Python.
 
-For a function returning a ['borrowed reference] we'll have to tell the handle that the PyObject pointer is borrowed with the aptly named [@../../v2/handle.html#borrowed-spec borrowed] function. Two functions returning borrowed references are PyImport_AddModule and PyModule_GetDict. The former returns a reference to an already imported module, the latter retrieves a module's namespace dictionary. Let's use them to retrieve the namespace of the [^__main__] module:
+For a function returning a ['borrowed reference] we'll have to tell the [^handle] that the [^PyObject*] is borrowed with the aptly named [@../../v2/handle.html#borrowed-spec borrowed] function. Two functions returning borrowed references are PyImport_AddModule and PyModule_GetDict. The former returns a reference to an already imported module, the latter retrieves a module's namespace dictionary. Let's use them to retrieve the namespace of the [^__main__] module:
 
     handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
     handle<> main_namespace(borrowed( PyModule_GetDict(main_module.get()) ));
 
-Because the Python/C API doesn't know anything about handles, we used the [@../../v2/handle.html#handle-spec-observers get] member function to retrieve the PyObject pointer from which the handle was constructed.
+Because the Python/C API doesn't know anything about [^handle]s, we used the [@../../v2/handle.html#handle-spec-observers get] member function to retrieve the [^PyObject*] from which the [^handle] was constructed.
 
-For a function returning a ['new reference] we can just create a handle out of the raw PyObject pointer without wrapping it in a call to borrowed. One such function that returns a new reference is PyRun_String which we'll discuss in the next section.
+For a function returning a ['new reference] we can just create a [^handle] out of the raw [^PyObject*] without wrapping it in a call to borrowed. One such function that returns a new reference is PyRun_String which we'll discuss in the next section.
 
 [blurb __detail__ [*Handle is a class ['template], so why haven't we been using any template parameters?][br]
 [br]
-Handle has a single template parameter specifying the type of the managed object. This type is PyObject 99% of the time, so the parameter was defaulted to PyObject for convenience. Therefore we can use the shorthand handle<> instead of the longer, but equivalent, handle<PyObject>.
+[^handle] has a single template parameter specifying the type of the managed object. This type is [^PyObject] 99% of the time, so the parameter was defaulted to [^PyObject] for convenience. Therefore we can use the shorthand [^handle<>] instead of the longer, but equivalent, [^handle<PyObject>].
 ]
 
 [h2 Running Python code]
@@ -126,11 +126,11 @@ We have already seen how to get the [^__main__] module's namespace so let's run 
 
 This should create a file called 'hello.txt' in the current directory containing a phrase that is well-known in programming circles. 
 
-__note__ [*Note] that we wrap the return value of PyRun_String in a (nameless) handle even though we are not interested in it. If we didn't do this, the the returned object would be kept alive unnecessarily. Unless you want to be a Dr. Frankenstein, always wrap PyObject pointers in handles.
+__note__ [*Note] that we wrap the return value of PyRun_String in a (nameless) [^handle] even though we are not interested in it. If we didn't do this, the the returned object would be kept alive unnecessarily. Unless you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
 
 [h2 Beyond handles]
 
-It's nice that handle manages the reference counting details for us, but other than that it doesn't do much. Often we'd like to have a more useful class to manipulate Python objects. But we have already seen such a class in the [@object_interface.html previous section]: the aptly named [^object] class and it's derivatives. What we haven't seen, is that they can be constructed from a handle. The following examples should illustrate this fact:
+It's nice that [^handle] manages the reference counting details for us, but other than that it doesn't do much. Often we'd like to have a more useful class to manipulate Python objects. But we have already seen such a class in the [@object_interface.html previous section]: the aptly named [^object] class and it's derivatives. What we haven't seen, is that they can be constructed from a [^handle]. The following examples should illustrate this fact:
 
     handle<> main_module(borrowed( PyImport_AddModule("__main__") ));
     main_namespace dict(handle<>(borrowed( PyModule_GetDict(main_module.get()) )));
@@ -144,11 +144,11 @@ Here we create a dictionary object for the [^__main__] module's namespace. Then 
                                          main_namespace.ptr(), main_namespace.ptr()) ));
     int five_squared = extract<int>(result);
 
-__note__ [*Note] that [^object]'s member function to return the wrapped PyObject pointer is called [^ptr] instead of [^get]. This makes sense if you take into account the different functions that object and handle perform.
+__note__ [*Note] that [^object]'s member function to return the wrapped [^PyObject*] is called [^ptr] instead of [^get]. This makes sense if you take into account the different functions that [^object] and [^handle] perform.
 
 [h2 Exception handling]
 
-If an exception occurs in the execution of some Python code, the PyRun_String function returns a null pointer. Constructing a handle out of this null pointer throws [@../../v2/errors.html#error_already_set-spec error_already_set], so basically, the Python exception is automatically translated into a C++ exception when using handle:
+If an exception occurs in the execution of some Python code, the PyRun_String function returns a null pointer. Constructing a [^handle] out of this null pointer throws [@../../v2/errors.html#error_already_set-spec error_already_set], so basically, the Python exception is automatically translated into a C++ exception when using [^handle]:
 
     try
     {
@@ -162,7 +162,7 @@ If an exception occurs in the execution of some Python code, the PyRun_String fu
         // handle the exception in some way
     }
 
-The [^error_already_set] exception class doesn't carry any information in itself. To find out more about the Python exception that occurred, you need to use the [@http://www.python.org/doc/api/exceptionHandling.html exception handling functions] of the Python/C API in your catch-statement. This can be as simple as calling PyErr_Print() to print the exception's traceback to the console, or comparing the type of the exception with those of the [@http://www.python.org/doc/api/standardExceptions.html standard exceptions]:
+The [^error_already_set] exception class doesn't carry any information in itself. To find out more about the Python exception that occurred, you need to use the [@http://www.python.org/doc/api/exceptionHandling.html exception handling functions] of the Python/C API in your catch-statement. This can be as simple as calling [@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to print the exception's traceback to the console, or comparing the type of the exception with those of the [@http://www.python.org/doc/api/standardExceptions.html standard exceptions]:
 
     catch(error_already_set)
     {
@@ -179,7 +179,7 @@ The [^error_already_set] exception class doesn't carry any information in itself
 
 (To retrieve even more information from the exception you can use some of the other exception handling functions listed [@http://www.python.org/doc/api/exceptionHandling.html here].)
 
-If you'd rather not have handle throw a C++ exception when it is constructed, you can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same way you'd use borrowed:
+If you'd rather not have [^handle] throw a C++ exception when it is constructed, you can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same way you'd use borrowed:
 
     handle<> result(allow_null( PyRun_String("5/0", Py_eval_input, 
                                              main_namespace.ptr(), main_namespace.ptr()) ));
