@@ -89,7 +89,9 @@ struct rvalue_from_python_storage
 template <class T>
 struct rvalue_from_python_data : rvalue_from_python_storage<T>
 {
-# if (!defined(__MWERKS__) || __MWERKS__ >= 0x3000) && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245)
+# if (!defined(__MWERKS__) || __MWERKS__ >= 0x3000) \
+        && (!defined(__EDG_VERSION__) || __EDG_VERSION__ >= 245) \
+        && (!defined(__DECCXX_VER) || __DECCXX_VER > 60590014)
     // This must always be a POD struct with m_data its first member.
     BOOST_STATIC_ASSERT(offsetof(rvalue_from_python_storage<T>,stage1) == 0);
 # endif
