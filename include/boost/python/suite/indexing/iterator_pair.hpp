@@ -30,6 +30,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
+#include <boost/type_traits.hpp>
 
 namespace indexing {
   template<typename Iterator>
