@@ -21,10 +21,13 @@ rule turn-off-intel-debug-symbols ( toolset variant : properties * )
     }
     return $(properties) ;
 }
-  
-local UNIT_TEST_PROPERTIES = $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
-  [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB ;
 
+template py-unit-test
+  :
+  : $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
+    [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB
+      ;
+  
 # Convenience rule makes declaring tests faster
 rule bpl-test ( name ? : files * : requirements * )
 {
@@ -61,16 +64,17 @@ rule bpl-test ( name ? : files * : requirements * )
                     m = $(m)_ext ;
                 }
             }
-            extension $(m) : $(f) <dll>../build/boost_python : $(requirements) ;
+            extension $(m) : $(f) <template>../build/extension : $(requirements) ;
             modules += $(m) ;
         }
     }
 
-    return [ boost-python-runtest $(name) : $(py) <pyd>$(modules) ] ;
+    return [ boost-python-runtest $(name) : $(py) <pyd>$(modules) : $(requirements) ] ;
 }
 
 test-suite python
-  : [
+  :
+   [
     run ../test/embedding.cpp <lib>../build/boost_python
       : # program args
       : # input files
@@ -82,7 +86,7 @@ test-suite python
           <$(gcc-compilers)><debug-python><library-path>$(CYGWIN_PYTHON_DEBUG_DLL_PATH)
             <$(gcc-compilers)><*><library-path>$(CYGWIN_PYTHON_DLL_PATH)
               <find-library>$(PYTHON_EMBEDDED_LIBRARY)
-                ]
+  ]
 
 [
 bpl-test crossmod_exception
@@ -106,7 +110,7 @@ bpl-test crossmod_exception
 
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
 
-[ extension builtin_converters : test_builtin_converters.cpp <dll>../build/boost_python ]
+[ extension builtin_converters : test_builtin_converters.cpp <template>../build/extension ]
 [ boost-python-runtest builtin_converters : test_builtin_converters.py <pyd>builtin_converters ]
 
 [ bpl-test test_pointer_adoption ]
@@ -164,45 +168,30 @@ bpl-test crossmod_exception
 
 [ run indirect_traits_test.cpp ]
 [ run destroy_test.cpp ]
-[ run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor : : : $(UNIT_TEST_PROPERTIES) ]
-[ run bases.cpp : : : $(UNIT_TEST_PROPERTIES) ]
+[ run pointer_type_id_test.cpp  <lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
+[ run bases.cpp  <template>py-unit-test ]
 [ run if_else.cpp ]
-[ run pointee.cpp : : : $(UNIT_TEST_PROPERTIES) ]
+[ run pointee.cpp  <template>py-unit-test ]
 [ run result.cpp ]
 
 [ compile string_literal.cpp ]
-[ compile borrowed.cpp : $(UNIT_TEST_PROPERTIES) ]
-[ compile object_manager.cpp : $(UNIT_TEST_PROPERTIES) ]
-[ compile copy_ctor_mutates_rhs.cpp : $(UNIT_TEST_PROPERTIES) ]
+[ compile borrowed.cpp  <template>py-unit-test ]
+[ compile object_manager.cpp   <template>py-unit-test ]
+[ compile copy_ctor_mutates_rhs.cpp   <template>py-unit-test ]
 
-[ run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor
-  : # command-line args
-  : # input files
-  : $(UNIT_TEST_PROPERTIES)
-    ]
+[ run upcast.cpp  <lib>../../test/build/boost_test_exec_monitor  <template>py-unit-test ]
+  
+[ run select_holder.cpp  <lib>../../test/build/boost_test_exec_monitor  <template>py-unit-test ]
+  
+[ run select_from_python_test.cpp ../src/converter/type_id.cpp
+  <lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
 
-[ run select_holder.cpp  <lib>../../test/build/boost_test_exec_monitor
-  : # command-line args
-  : # input files
-  : $(UNIT_TEST_PROPERTIES)
-    ]
+[ run select_arg_to_python_test.cpp ../src/converter/type_id.cpp
+<lib>../../test/build/boost_test_exec_monitor <template>py-unit-test ]
 
-
-[ run select_from_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/boost_test_exec_monitor
-  : # command-line args
-  : # input files
-  : $(UNIT_TEST_PROPERTIES)
-    ]
-
-[ run select_arg_to_python_test.cpp ../src/converter/type_id.cpp  <lib>../../test/build/boost_test_exec_monitor
-  : # command-line args
-  : # input files
-  : $(UNIT_TEST_PROPERTIES)
-    ]
-
-[ compile-fail ./raw_pyobject_fail1.cpp : $(PYTHON_PROPERTIES) ]
-[ compile-fail ./raw_pyobject_fail2.cpp : $(PYTHON_PROPERTIES) ]
-[ compile-fail ./as_to_python_function.cpp : $(PYTHON_PROPERTIES) ]
-[ compile-fail ./object_fail1.cpp : $(PYTHON_PROPERTIES) ]
+[ compile-fail ./raw_pyobject_fail1.cpp <template>py-unit-test ]
+[ compile-fail ./raw_pyobject_fail2.cpp <template>py-unit-test ]
+[ compile-fail ./as_to_python_function.cpp <template>py-unit-test ]
+[ compile-fail ./object_fail1.cpp <template>py-unit-test ]
   ;
 }

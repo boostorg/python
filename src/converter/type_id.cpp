@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#if !defined(__GNUC__) || __GNUC__ >= 3 || __SGI_STL_PORT
+#if !defined(__GNUC__) || __GNUC__ >= 3 || __SGI_STL_PORT || __EDG_VERSION__
 # include <ostream>
 #else 
 # include <ostream.h>
@@ -33,10 +33,19 @@ namespace boost { namespace python {
 #    if __GNUC__ < 3
 
 namespace cxxabi = :: ;
-#  else
+extern "C" char* __cxa_demangle(char const*, char*, std::size_t*, int*);
+#    else
+
 namespace cxxabi = ::abi;       // GCC 3.1 and later
+
+#     if __GNUC__ == 3 && __GNUC_MINOR__ == 0
+namespace abi
+{
+  extern "C" char* __cxa_demangle(char const*, char*, std::size_t*, int*);
+}
+#     endif 
 #    endif
-#   endif
+#   endif 
 
 namespace
 {
