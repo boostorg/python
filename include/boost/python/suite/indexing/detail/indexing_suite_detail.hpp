@@ -10,7 +10,7 @@
 # include <boost/scoped_ptr.hpp>
 # include <boost/get_pointer.hpp>
 # include <boost/detail/binary_search.hpp>
-# include <boost/cast.hpp>
+# include <boost/numeric/conversion/cast.hpp>
 # include <vector>
 # include <map>
 #include <iostream>
