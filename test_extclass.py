@@ -275,6 +275,10 @@ Numeric tests:
     1/6
     >>> print x / y
     8/3
+    >>> print x + 1 # testing coercion
+    5/3
+    >>> print 1 + x # coercion the other way
+    5/3
     
 delete non-existent attribute:
     del m.foobar
