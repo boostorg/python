@@ -68,6 +68,8 @@ namespace detail {
   };
 
   typedef BaseClassInfo DerivedClassInfo;
+
+  struct add_operator_base;
 }
 
 class ExtensionClassBase : public Class<ExtensionInstance>
@@ -91,6 +93,7 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     virtual std::vector<py::detail::DerivedClassInfo> const& derived_classes() const = 0;
 
  protected:
+    friend struct detail::add_operator_base;
     void add_method(PyPtr<Function> method, const char* name);
     void add_method(Function* method, const char* name);
     
@@ -372,15 +375,35 @@ enum operator_id
 
 namespace detail
 {
+  struct auto_operand {};
 
-    struct auto_operand {};
+  template <class Specified>
+  struct operand_select
+  {
+      template <class WrappedType>
+      struct wrapped
+      {
+          typedef Specified type;
+      };
+  };
 
-    template <int i>
-    struct define_operator;
+  template <>
+  struct operand_select<auto_operand>
+  {
+      template <class WrappedType>
+      struct wrapped
+      {
+          typedef const WrappedType& type;
+      };
+  };
 
+  template <long> struct define_operator;
+  template <long> struct choose_op;
+  template <long> struct choose_rop;
+  template <long> struct choose_unary_op;
 }
 
-template <int which, class operand = py::detail::auto_operand>
+template <long which, class operand = py::detail::auto_operand>
 struct operators {};
 
 template <class T>
@@ -391,21 +414,19 @@ struct right_operand {};
 
 namespace detail
 {
+  template <class From, class To>
+  struct DefineConversion
+  {
+      static void * upcast_ptr(void * v)
+      {
+          return static_cast<To *>(static_cast<From *>(v));
+      }
 
-    template <class From, class To>
-    struct DefineConversion
-    {
-        static void * upcast_ptr(void * v)
-        {
-            return static_cast<To *>(static_cast<From *>(v));
-        }
-
-        static void * downcast_ptr(void * v)
-        {
-            return dynamic_cast<To *>(static_cast<From *>(v));
-        }
-    };
-
+      static void * downcast_ptr(void * v)
+      {
+          return dynamic_cast<To *>(static_cast<From *>(v));
+      }
+  };
 }
 
 enum WithoutDowncast { without_downcast };
@@ -443,7 +464,7 @@ class ExtensionClass
 """ % args
         + gen_function(
 """    template <%(class A%n%:, %)>
-    void def(Constructor<%(A%n%:, %)>)
+    inline void def(Constructor<%(A%n%:, %)>)
     // The following incantation builds a Signature1, Signature2,... object. It
     // should _all_ get optimized away.
     { add_constructor(
@@ -456,294 +477,44 @@ class ExtensionClass
 
     // export homogeneous operators (type of both lhs and rhs is 'operator')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>());
-    template <int which, class operand>
-    void def(operators<which, operand>)
-    {
-        register_coerce();
-        
-        if(which & py::op_add)
-            add_method(new typename detail::define_operator<(which & py::op_add)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_add)>::name());
-                
-        if(which & py::op_sub)
-            add_method(new typename detail::define_operator<(which & py::op_sub)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_sub)>::name());
-                
-        if(which & py::op_mul)
-            add_method(new typename detail::define_operator<(which & py::op_mul)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_mul)>::name());
-                
-        if(which & py::op_div)
-            add_method(new typename detail::define_operator<(which & py::op_div)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_div)>::name());
-                
-        if(which & py::op_mod)
-            add_method(new typename detail::define_operator<(which & py::op_mod)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_mod)>::name());
-                
-        if(which & py::op_divmod)
-            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_divmod)>::name());
-                
-        if(which & py::op_pow)
-            add_method(new typename detail::define_operator<(which & py::op_pow)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_pow)>::name());
-                
-        if(which & py::op_lshift)
-            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_lshift)>::name());
-                
-        if(which & py::op_rshift)
-            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_rshift)>::name());
-                
-        if(which & py::op_and)
-            add_method(new typename detail::define_operator<(which & py::op_and)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_and)>::name());
-                
-        if(which & py::op_xor)
-            add_method(new typename detail::define_operator<(which & py::op_xor)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_xor)>::name());
-                
-        if(which & py::op_or)
-            add_method(new typename detail::define_operator<(which & py::op_or)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_or)>::name());
-                
-        if(which & py::op_neg)
-            add_method(new typename detail::define_operator<(which & py::op_neg)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_neg)>::name());
-                
-        if(which & py::op_pos)
-            add_method(new typename detail::define_operator<(which & py::op_pos)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_pos)>::name());
-                
-        if(which & py::op_abs)
-            add_method(new typename detail::define_operator<(which & py::op_abs)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_abs)>::name());
-                
-        if(which & py::op_invert)
-            add_method(new typename detail::define_operator<(which & py::op_invert)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_invert)>::name());
-                
-        if(which & py::op_int)
-            add_method(new typename detail::define_operator<(which & py::op_int)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_int)>::name());
-                
-        if(which & py::op_long)
-            add_method(new typename detail::define_operator<(which & py::op_long)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_long)>::name());
-                
-        if(which & py::op_float)
-            add_method(new typename detail::define_operator<(which & py::op_float)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_float)>::name());
-                
-        if(which & py::op_cmp)
-            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_cmp)>::name());
-                
-        if(which & py::op_str)
-            add_method(new typename detail::define_operator<(which & py::op_str)>::
-                operator_function<operand>(),
-                detail::define_operator<(which & py::op_str)>::name());
-                
-    }
-
+    
     // export homogeneous operators (type of both lhs and rhs is 'T const &')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>());
-    template <int which>
-    void def(operators<which, py::detail::auto_operand>)
+    template <long which, class Operand>
+    inline void def(operators<which,Operand>)
     {
-        def(operators<which, T const &>());
-    }   
+        typedef typename detail::operand_select<Operand>::template wrapped<T>::type true_operand;
+        def_operators(operators<which,true_operand>());
+    }
 
     // export heterogeneous operators (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
     //                       py::right_operand<int const &>());
-    template <int which, class left, class right>
-    void def(operators<which, left>, right_operand<right>)
-    {
-        register_coerce();
-        
-        if(which & py::op_add)
-            add_method(new typename detail::define_operator<(which & py::op_add)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_add)>::name());
-                
-        if(which & py::op_sub)
-            add_method(new typename detail::define_operator<(which & py::op_sub)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_sub)>::name());
-                
-        if(which & py::op_mul)
-            add_method(new typename detail::define_operator<(which & py::op_mul)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_mul)>::name());
-                
-        if(which & py::op_div)
-            add_method(new typename detail::define_operator<(which & py::op_div)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_div)>::name());
-                
-        if(which & py::op_mod)
-            add_method(new typename detail::define_operator<(which & py::op_mod)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_mod)>::name());
-                
-        if(which & py::op_divmod)
-            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_divmod)>::name());
-                
-        if(which & py::op_pow)
-            add_method(new typename detail::define_operator<(which & py::op_pow)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_pow)>::name());
-                
-        if(which & py::op_lshift)
-            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_lshift)>::name());
-                
-        if(which & py::op_rshift)
-            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_rshift)>::name());
-                
-        if(which & py::op_and)
-            add_method(new typename detail::define_operator<(which & py::op_and)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_and)>::name());
-                
-        if(which & py::op_xor)
-            add_method(new typename detail::define_operator<(which & py::op_xor)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_xor)>::name());
-                
-        if(which & py::op_or)
-            add_method(new typename detail::define_operator<(which & py::op_or)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_or)>::name());
-                
-        if(which & py::op_cmp)
-            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
-                operator_function<left, right>(),
-                detail::define_operator<(which & py::op_cmp)>::name());
-                
-    }
-    
+
     // export heterogeneous operators (type of lhs: 'T const &', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
     //                       py::right_operand<int const &>());
-    template <int which, class right>
-    void def(operators<which, py::detail::auto_operand>, right_operand<right> r)
+    template <long which, class Left, class Right>
+    inline void def(operators<which,Left>, right_operand<Right> r)
     {
-        def(operators<which, T const &>(), r);
+        typedef typename detail::operand_select<Left>::template wrapped<T>::type true_left;
+        def_operators(operators<which,true_left>(), r);
     }
 
     // export heterogeneous reverse-argument operators 
     // (type of lhs: 'left', of rhs: 'right')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub), Foo>(),
     //                       py::left_operand<int const &>());
-    template <int which, class left, class right>
-    void def(operators<which, right>, left_operand<left>)
-    {
-        register_coerce();
-        
-        if(which & py::op_add)
-            add_method(new typename detail::define_operator<(which & py::op_add)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_add)>::rname());
-                
-        if(which & py::op_sub)
-            add_method(new typename detail::define_operator<(which & py::op_sub)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_sub)>::rname());
-                
-        if(which & py::op_mul)
-            add_method(new typename detail::define_operator<(which & py::op_mul)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_mul)>::rname());
-                
-        if(which & py::op_div)
-            add_method(new typename detail::define_operator<(which & py::op_div)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_div)>::rname());
-                
-        if(which & py::op_mod)
-            add_method(new typename detail::define_operator<(which & py::op_mod)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_mod)>::rname());
-                
-        if(which & py::op_divmod)
-            add_method(new typename detail::define_operator<(which & py::op_divmod)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_divmod)>::rname());
-                
-        if(which & py::op_pow)
-            add_method(new typename detail::define_operator<(which & py::op_pow)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_pow)>::rname());
-                
-        if(which & py::op_lshift)
-            add_method(new typename detail::define_operator<(which & py::op_lshift)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_lshift)>::rname());
-                
-        if(which & py::op_rshift)
-            add_method(new typename detail::define_operator<(which & py::op_rshift)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_rshift)>::rname());
-                
-        if(which & py::op_and)
-            add_method(new typename detail::define_operator<(which & py::op_and)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_and)>::rname());
-                
-        if(which & py::op_xor)
-            add_method(new typename detail::define_operator<(which & py::op_xor)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_xor)>::rname());
-                
-        if(which & py::op_or)
-            add_method(new typename detail::define_operator<(which & py::op_or)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_or)>::rname());
-                
-        if(which & py::op_cmp)
-            add_method(new typename detail::define_operator<(which & py::op_cmp)>::
-                roperator_function<right, left>(),
-                detail::define_operator<(which & py::op_cmp)>::rname());
-                
-    }
     
     // export heterogeneous reverse-argument operators 
     // (type of lhs: 'left', of rhs: 'T const &')
     // usage:  foo_class.def(py::operators<(py::op_add | py::op_sub)>(),
     //                       py::left_operand<int const &>());
-    template <int which, class left>
-    void def(operators<which, py::detail::auto_operand>, left_operand<left> l)
+    template <long which, class Left, class Right>
+    inline void def(operators<which,Right>, left_operand<Left> l)
     {
-        def(operators<which, T const &>(), l);
+        typedef typename detail::operand_select<Right>::template wrapped<T>::type true_right;
+        def_operators(operators<which,true_right>(), l);
     }
 
     // define a function that passes Python arguments and keywords
@@ -753,7 +524,7 @@ class ExtensionClass
     // Fn must have a signatur that is compatible to 
     //     PyObject * (*)(PyObject * aTuple, PyObject * aDictionary)
     template <class Fn>
-    void def_raw(Fn fn, const char* name)
+    inline void def_raw(Fn fn, const char* name)
     {
         this->add_method(py::detail::new_raw_arguments_function(fn), name);
     }
@@ -763,7 +534,7 @@ class ExtensionClass
     // appropriate self argument (as a pointer), they can be used just like
     // ordinary member functions -- just like Python!
     template <class Fn>
-    void def(Fn fn, const char* name)
+    inline void def(Fn fn, const char* name)
     {
         this->add_method(new_wrapped_function(fn), name);
     }
@@ -772,7 +543,7 @@ class ExtensionClass
     // default_fn should be a function which provides the default implementation.
     // Be careful that default_fn does not in fact call fn virtually!
     template <class Fn, class DefaultFn>
-    void def(Fn fn, const char* name, DefaultFn default_fn)
+    inline void def(Fn fn, const char* name, DefaultFn default_fn)
     {
         this->add_method(py::detail::new_virtual_function(Type<T>(), fn, default_fn), name);
     }
@@ -780,7 +551,7 @@ class ExtensionClass
     // Provide a function which implements x.<name>, reading from the given
     // member (pm) of the T instance
     template <class MemberType>
-    void def_getter(MemberType T::*pm, const char* name)
+    inline void def_getter(MemberType T::*pm, const char* name)
     {
         this->add_getter_method(new GetterFunction<T, MemberType>(pm), name);
     }
@@ -788,14 +559,14 @@ class ExtensionClass
     // Provide a function which implements assignment to x.<name>, writing to
     // the given member (pm) of the T instance
     template <class MemberType>
-    void def_setter(MemberType T::*pm, const char* name)
+    inline void def_setter(MemberType T::*pm, const char* name)
     {
         this->add_setter_method(new SetterFunction<T, MemberType>(pm), name);
     }
     
     // Expose the given member (pm) of the T instance as a read-only attribute
     template <class MemberType>
-    void def_readonly(MemberType T::*pm, const char* name)
+    inline void def_readonly(MemberType T::*pm, const char* name)
     {
         this->add_setter_method(new ReadOnlySetattrFunction(name), name);
         this->def_getter(pm, name);
@@ -803,7 +574,7 @@ class ExtensionClass
     
     // Expose the given member (pm) of the T instance as a read/write attribute
     template <class MemberType>
-    void def_read_write(MemberType T::*pm, const char* name)
+    inline void def_read_write(MemberType T::*pm, const char* name)
     {
         this->def_getter(pm, name);
         this->def_setter(pm, name);
@@ -851,6 +622,74 @@ class ExtensionClass
     void* extract_object_from_holder(InstanceHolderBase* v) const;
 
  private: // Utility functions
+    template <long which, class Operand>
+    inline void def_operators(operators<which,Operand>)
+    {
+        register_coerce();
+        
+        detail::choose_op<(which & op_add)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_sub)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_mul)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_div)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_mod)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_divmod)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_pow)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_lshift)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_rshift)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_and)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_xor)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_or)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_neg)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_pos)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_abs)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_invert)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_int)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_long)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_float)>::template args<Operand>::add(this);
+        detail::choose_op<(which & op_cmp)>::template args<Operand>::add(this);
+        detail::choose_unary_op<(which & op_str)>::template args<Operand>::add(this);
+    }
+
+    template <long which, class Left, class Right>
+    inline void def_operators(operators<which,Left>, right_operand<Right>)
+    {
+        register_coerce();
+        
+        detail::choose_op<(which & op_add)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_sub)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_mul)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_div)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_mod)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_divmod)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_pow)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_lshift)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_rshift)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_and)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_xor)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_or)>::template args<Left,Right>::add(this);
+        detail::choose_op<(which & op_cmp)>::template args<Left,Right>::add(this);
+    }
+    
+    template <long which, class Left, class Right>
+    inline void def_operators(operators<which,Right>, left_operand<Left>)
+    {
+        register_coerce();
+        
+        detail::choose_rop<(which & op_add)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_sub)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_mul)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_div)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_mod)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_divmod)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_pow)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_lshift)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_rshift)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_and)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_xor)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_or)>::template args<Left,Right>::add(this);
+        detail::choose_rop<(which & op_cmp)>::template args<Left,Right>::add(this);
+    }
+    
     template <class Signature>
     void add_constructor(Signature sig)
     {
