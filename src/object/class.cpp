@@ -4,6 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
+#include <boost/python/detail/prefix.hpp>
 #include <boost/mpl/lambda.hpp> // #including this first is an intel6 workaround
 
 #include <boost/python/object/class.hpp>
