@@ -230,7 +230,7 @@ struct init_function
     }
 };
 
-class BOOST_PYTHON_DECL init : public function
+class init : public function
 {
 private: // override function hook
     PyObject* do_call(PyObject* args, PyObject* keywords) const;

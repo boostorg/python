@@ -13,7 +13,7 @@
 
 namespace boost { namespace python { namespace detail {
 
-struct BOOST_PYTHON_DECL empty {};
+struct empty {};
 template <class Derived, class Base = empty>
 struct singleton : Base
 {

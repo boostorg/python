@@ -52,12 +52,12 @@ template <class Specified> struct operand_select;
   template <long> struct choose_unary_op;
   template <long> struct define_operator;
 
-BOOST_PYTHON_DECL meta_class<extension_instance>* extension_meta_class();
-BOOST_PYTHON_DECL extension_instance* get_extension_instance(PyObject* p);
-BOOST_PYTHON_DECL void report_missing_instance_data(extension_instance*, class_t<extension_instance>*, const std::type_info&);
-BOOST_PYTHON_DECL void report_missing_ptr_data(extension_instance*, class_t<extension_instance>*, const std::type_info&);
-BOOST_PYTHON_DECL void report_missing_class_object(const std::type_info&);
-BOOST_PYTHON_DECL void report_released_smart_pointer(const std::type_info&);
+meta_class<extension_instance>* extension_meta_class();
+extension_instance* get_extension_instance(PyObject* p);
+void report_missing_instance_data(extension_instance*, class_t<extension_instance>*, const std::type_info&);
+void report_missing_ptr_data(extension_instance*, class_t<extension_instance>*, const std::type_info&);
+void report_missing_class_object(const std::type_info&);
+void report_released_smart_pointer(const std::type_info&);
     
 template <class T>
 T* check_non_null(T* p)
@@ -71,7 +71,7 @@ template <class Held> class held_instance;
 
 typedef void* (*conversion_function_ptr)(void*);
 
-struct BOOST_PYTHON_DECL base_class_info
+struct base_class_info
 {
     base_class_info(extension_class_base* t, conversion_function_ptr f)
         :class_object(t), convert(f)
@@ -85,7 +85,7 @@ typedef base_class_info derived_class_info;
 
 struct add_operator_base;
 
-class BOOST_PYTHON_DECL extension_class_base : public class_t<extension_instance>
+class extension_class_base : public class_t<extension_instance>
 {
  public:
     extension_class_base(const char* name);
@@ -378,7 +378,7 @@ namespace detail {
 
 template <class T> class instance_holder;
 
-class BOOST_PYTHON_DECL read_only_setattr_function : public function
+class read_only_setattr_function : public function
 {
  public:
     read_only_setattr_function(const char* name);
@@ -725,7 +725,7 @@ public:
 
 // Abstract base class for all obj holders. Base for template class
 // instance_holder<>, below.
-class BOOST_PYTHON_DECL instance_holder_base
+class instance_holder_base
 {
 public:
     virtual ~instance_holder_base() {}
@@ -813,7 +813,7 @@ class instance_ptr_holder : public instance_holder<HeldType>
     PtrType m_ptr;
 };
 
-class BOOST_PYTHON_DECL extension_instance : public instance
+class extension_instance : public instance
 {
  public:
     extension_instance(PyTypeObject* class_);

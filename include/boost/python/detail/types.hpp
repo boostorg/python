@@ -37,7 +37,7 @@ namespace detail {
 
 class instance_holder_base;
 
-class BOOST_PYTHON_DECL type_object_base : public python_type
+class type_object_base : public python_type
 {
  public:
     explicit type_object_base(PyTypeObject* type_type);
@@ -327,7 +327,7 @@ PyObject* reprable<Base>::instance_repr(PyObject* obj) const
   // memory. Reference counting is used to free unused memory. 
   // This is useful because method tables of related extension classes tend
   // to be identical, so less memory is needed for them.
-  class BOOST_PYTHON_DECL shared_pod_manager
+  class shared_pod_manager
   {
       typedef std::pair<char*, std::size_t> holder;
       typedef std::vector<holder> storage;
@@ -394,7 +394,7 @@ PyObject* reprable<Base>::instance_repr(PyObject* obj) const
   };
 
 
-  BOOST_PYTHON_DECL void add_capability(type_object_base::capability capability, 
+  void add_capability(type_object_base::capability capability, 
                       PyTypeObject* dest);
 
 // This macro gets the length of an array as a compile-time constant, and will
