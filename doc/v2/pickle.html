@@ -173,7 +173,7 @@ provide pickle support.
     For simplicity, the <tt>__dict__</tt> is not included in the result
     of <tt>__getstate__</tt>. This is not generally recommended, but a
     valid approach if it is anticipated that the object's
-    <tt>__dict__</tt> will always be empty. Note that the safet guard
+    <tt>__dict__</tt> will always be empty. Note that the safety guard
     described below will catch the cases where this assumption is violated.
 
 <hr>
@@ -188,24 +188,15 @@ provide pickle support.
 <hr>
 <h2>Pitfall and Safety Guard</h2>
 
-In Boost.Python extension modules with many extension classes,
-providing complete pickle support for all classes would be a
-significant overhead. In general complete pickle support should only be
-implemented for extension classes that will eventually be pickled.
-However, the author of a Boost.Python extension module might not
-anticipate correctly which classes need support for pickle.
-Unfortunately, the pickle protocol described above has an important
-pitfall that the end user of a Boost.Python extension module might not
-be aware of:
-
-<dl>
-<dt>
+The pickle protocol described above has an important pitfall that the
+end user of a Boost.Python extension module might not be aware of:
+<p>
 <strong>
 <tt>__getstate__</tt> is defined and the instance's <tt>__dict__</tt>
 is not empty.
 </strong>
 <p>
-<dd>
+
   The author of a Boost.Python extension class might provide a
   <tt>__getstate__</tt> method without considering the possibilities
   that:
@@ -239,9 +230,9 @@ is not empty.
   To resolve this problem, it should first be established that the
   <tt>__getstate__</tt> and <tt>__setstate__</tt> methods manage the
   instances's <tt>__dict__</tt> correctly. Note that this can be done
-  both at the C++ and the Python level. Finally, the safety guard
+  either at the C++ or the Python level. Finally, the safety guard
   should intentionally be overridden. E.g. in C++ (from
-  <a href="../../test/pickle3.cpp"><tt>pickle3.cpp</tt></a>:
+  <a href="../../test/pickle3.cpp"><tt>pickle3.cpp</tt></a>):
 
 <pre>
   struct world_pickle_suite : boost::python::pickle_suite
@@ -263,12 +254,19 @@ is not empty.
       def __setstate__(self, state):
         # your code here
 </pre>
-</dl>
 
 <hr>
 <h2>Practical Advice</h2>
 
 <ul>
+<li>
+  In Boost.Python extension modules with many extension classes,
+  providing complete pickle support for all classes would be a
+  significant overhead. In general complete pickle support should
+  only be implemented for extension classes that will eventually
+  be pickled.
+
+<p>
 <li>
   Avoid using <tt>__getstate__</tt> if the instance can also be
   reconstructed by way of <tt>__getinitargs__</tt>. This automatically
