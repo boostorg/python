@@ -87,6 +87,9 @@ class ExtensionClassBase : public Class<ExtensionInstance>
     void* try_base_class_conversions(InstanceHolderBase*) const;
     void* try_derived_class_conversions(InstanceHolderBase*) const;
 
+    void set_attribute(const char* name, PyObject* x_);
+    void set_attribute(const char* name, Ptr x);
+    
  private:
     virtual void* extract_object_from_holder(InstanceHolderBase* v) const = 0;
     virtual std::vector<py::detail::BaseClassInfo> const& base_classes() const = 0;
@@ -425,7 +428,11 @@ class ExtensionClass
         detail::BaseClassInfo baseInfo(base, 
                             &detail::DefineConversion<S, T>::downcast_ptr);
         ClassRegistry<T>::register_base_class(baseInfo);
-        add_base(Ptr(as_object(base), Ptr::new_ref));
+
+        Class<ExtensionInstance>* target = (bases().size() == 0)
+            ? this
+            : Downcast<Class<ExtensionInstance> >(bases()[0].get()).get();
+        target->add_base(Ptr(as_object(base), Ptr::new_ref));
         
         detail::DerivedClassInfo derivedInfo(this, 
                             &detail::DefineConversion<T, S>::upcast_ptr);
@@ -441,7 +448,11 @@ class ExtensionClass
         // conversion functions
         detail::BaseClassInfo baseInfo(base, 0);
         ClassRegistry<T>::register_base_class(baseInfo);
-        add_base(Ptr(as_object(base), Ptr::new_ref));
+
+        Class<ExtensionInstance>* target = (bases().size() == 0)
+            ? this
+            : Downcast<Class<ExtensionInstance> >(bases()[0].get()).get();
+        target->add_base(Ptr(as_object(base), Ptr::new_ref));
         
         detail::DerivedClassInfo derivedInfo(this, 
                            &detail::DefineConversion<T, S>::upcast_ptr);
