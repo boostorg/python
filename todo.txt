@@ -16,7 +16,7 @@ __ ../../index.htm
 
 .. contents:: Outline
 
-.. _license: ../../LICENSE
+.. _license: ../../LICENSE_1_0.txt
 
 Class Support
 =============

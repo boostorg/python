@@ -54,7 +54,7 @@ focused on reducing the support burden. In recent weeks, responding to
 requests for support, espcially surrounding building the library, had
 begun to impede progress on development. There was a major push to
 release a stable 1.28.0 of Boost, including documentation of <a
-href="../../../../tools/build/index.html">Boost.Build</a> and specific
+href="../../../../tools/build/v1/build_system.htm">Boost.Build</a> and specific
 <a href="../building.html">instructions</a> for building Boost.Python
 v1. The documentation for Boost.Python v2 was also updated as
 described <a href="#documentation">here</a>.
@@ -70,7 +70,7 @@ described <a href="#documentation">here</a>.
   Martin Casado which uncovered the key mechanism required to allow
   shared libraries to use functions from the Python executable. The
   current solution used in Boost.Build relies on a <a
-  href="../../../../tools/build/gen_aix_import_file.py">Python
+  href="../../../../tools/build/v1/gen_aix_import_file.py">Python
   Script</a> as part of the build process. This is not a problem for
   Boost.Python, as Python will be available. However, the commands
   issued by the script are so simple that a 100%-pure-Boost.Jam
@@ -84,8 +84,7 @@ described <a href="#documentation">here</a>.
 
 Support for exposing C++ operators and functions as the corresponding
 Python special methods was added. Thinking that the Boost.Python
-<a href="../special.html#numeric">v1 interface</a> was a little too
-esoteric (especially the use of
+v1 interface was a little too esoteric (especially the use of
 <code>left_operand&lt;...&gt;/right_operand&lt;...&gt;</code> for
 asymmetric operands), I introduced a simple form of <a
 href="http://osl.iu.edu/~tveldhui/papers/Expression-Templates/exprtmpl.html">expression
@@ -155,7 +154,7 @@ This forced the exposure of the <a
       href="http://www.python.org/2.2/descrintro.html#property"><code>property</code></a>
       interface used internally to implement the data member exposure
       facility described in <a
-      href="Mar2002#data_members">March</a>. Properties are an
+      href="Mar2002.html#data_members">March</a>. Properties are an
       incredibly useful idiom, so it's good to be able to provide them
       at little new development cost.
 
@@ -212,7 +211,7 @@ Major updates were made to the following pages:
 
 <blockquote>
 <dl>
-        <dt><a href="call.html">call.html</a><dd> <dt><a href="updated">updated</a><dd>
+        <dt><a href="call.html">call.html</a><dd> <dt>updated<dd>
         <dt><a href="class.html">class.html</a><dd>
         <dt><a href="reference.html">reference.html</a><dd>
 </dl>

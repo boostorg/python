@@ -60,8 +60,8 @@ namespace boost { namespace python
    template &lt;class T&gt;
    struct to_python_value
    {
-      typedef typename <a href="../../../type_traits/index.htm#transformations">add_reference</a>&lt;
-         typename <a href="../../../type_traits/index.htm#transformations">add_const</a>&lt;T&gt;::type
+      typedef typename <a href="../../../type_traits/index.html#transformations">add_reference</a>&lt;
+         typename <a href="../../../type_traits/index.html#transformations">add_const</a>&lt;T&gt;::type
       &gt;::type argument_type;
 
       static bool convertible();
