@@ -35,7 +35,7 @@ class Object
 class Tuple : public Object
 {
  public:
-    Tuple(std::size_t n = 0);
+    explicit Tuple(std::size_t n = 0);
     explicit Tuple(Ptr p);
 
     template <class First, class Second>
@@ -61,6 +61,16 @@ class Tuple : public Object
         set_item(0, Ptr(to_python(first)));
         set_item(1, Ptr(to_python(second)));
         set_item(2, Ptr(to_python(third)));
+    }
+    
+    template <class First, class Second, class Third, class Fourth>
+    Tuple(const First& first, const Second& second, const Third& third, const Fourth& fourth)
+        : Object(Ptr(PyTuple_New(4)))
+    {
+        set_item(0, Ptr(to_python(first)));
+        set_item(1, Ptr(to_python(second)));
+        set_item(2, Ptr(to_python(third)));
+        set_item(3, Ptr(to_python(fourth)));
     }
     
     static PyTypeObject* type_object();
