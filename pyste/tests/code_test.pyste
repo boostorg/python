@@ -1,0 +1,9 @@
+Class('A', 'code_test.h')
+header_code('#include <string>\n')
+global_declaration_code('''
+int get(A& a) { return a.x; }
+
+std::string foo() { return "Hello!"; }
+''')
+module_code('    def("get", &get);\n')
+module_code('    def("foo", &foo);\n')

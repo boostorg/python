@@ -43,7 +43,7 @@ from CppParser import CppParser, CppParserError
 import time
 from declarations import Typedef
 
-__VERSION__ = '0.9.14'
+__version__ = '0.9.15'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -75,7 +75,7 @@ def ProcessIncludes(includes):
 def ParseArguments():
 
     def Usage():
-        print __doc__ % __VERSION__
+        print __doc__ % __version__
         sys.exit(1)
         
     try:
@@ -125,7 +125,7 @@ def ParseArguments():
         elif opt in ['-h', '--help']:
             Usage()
         elif opt in ['-v', '--version']:
-            print 'Pyste version %s' % __VERSION__
+            print 'Pyste version %s' % __version__
             sys.exit(2)
         elif opt == '--generate-main':
             generate_main = True
@@ -193,6 +193,10 @@ def CreateContext():
     context['manage_new_object'] = manage_new_object
     # utils
     context['Wrapper'] = exporterutils.FunctionWrapper
+    context['header_code'] = lambda code: infos.CodeInfo(code, 'include')
+    context['declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration')
+    context['global_declaration_code'] = lambda code: infos.CodeInfo(code, 'declaration-outside')
+    context['module_code'] = lambda code: infos.CodeInfo(code, 'module')
     return context                                        
 
     

@@ -7,6 +7,7 @@ from IncludeExporter import IncludeExporter
 from EnumExporter import EnumExporter
 from HeaderExporter import HeaderExporter
 from VarExporter import VarExporter
+from CodeExporter import CodeExporter
 from exporterutils import FunctionWrapper
 from utils import makeid
 
@@ -174,6 +175,21 @@ class VarInfo(DeclarationInfo):
         exporter.interface_file = exporters.current_interface 
         
                                  
+#==============================================================================
+# CodeInfo                                 
+#==============================================================================
+class CodeInfo(DeclarationInfo):
+
+    def __init__(self, code, section):
+        DeclarationInfo.__init__(self)
+        self._Attribute('code', code)
+        self._Attribute('section', section)
+        exporter = CodeExporter(InfoWrapper(self))
+        if exporter not in exporters.exporters:
+            exporters.exporters.append(exporter)
+        exporter.interface_file = exporters.current_interface
+        
+
 #==============================================================================
 # InfoWrapper
 #==============================================================================

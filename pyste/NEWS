@@ -1,3 +1,6 @@
+17 August 2003
+Added support for insertion of user code in the generated code.
+
 16 August 2003
 Applied a patch by Gottfried Ganssauge that adds exception specifiers to 
 wrapper functions and pointer declarations. Thanks a lot Gottfried!!
