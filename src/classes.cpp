@@ -11,8 +11,6 @@
 // 03 Mar 01  added: pickle safety measures (Ralf W. Grosse-Kunstleve)
 // 03 Mar 01  bug fix: use bound_function::create() (instead of new bound_function)
 
-#define BOOST_PYTHON_SOURCE
-
 #include <boost/python/classes.hpp>
 #include <boost/python/detail/functions.hpp>
 #include <boost/python/detail/singleton.hpp>
@@ -645,7 +643,7 @@ PyObject* instance::divmod(PyObject* other)
 
 PyObject* instance::power(PyObject* exponent, PyObject* modulus)
 {
-    if (as_object(modulus->ob_type) == Py_None)
+    if (as_object(modulus) == Py_None)
         return callback<PyObject*>::call_method(this, "__pow__", exponent);
     else
         return callback<PyObject*>::call_method(this, "__pow__", exponent, modulus);
