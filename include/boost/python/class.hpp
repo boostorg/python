@@ -436,14 +436,14 @@ class class_ : public objects::class_base
 
     template <class D>
     self& def_readonly_impl(
-        char const* name, D& d BOOST_PYTHON_NO_DATA_MEMBER)
+        char const* name, D& d BOOST_PYTHON_NO_DATA_MEMBER, char const*)
     {
         return this->add_static_property(name, python::make_getter(d));
     }
 
     template <class D>
     self& def_readwrite_impl(
-        char const* name, D& d  BOOST_PYTHON_NO_DATA_MEMBER)
+        char const* name, D& d  BOOST_PYTHON_NO_DATA_MEMBER, char const*)
     {
         return this->add_static_property(name, python::make_getter(d), python::make_setter(d));
     }
