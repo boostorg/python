@@ -14,6 +14,7 @@ struct X // a container element
     void reset() { s = "reset"; }
     void foo() { s = "foo"; }
     bool operator==(X const& x) const { return s == x.s; }
+    bool operator!=(X const& x) const { return s != x.s; }
 };
 
 std::string x_value(X const& x)
