@@ -40,12 +40,12 @@ namespace
       {
           if (module_name.size() == 0)
           {
-              module_name = "Numeric";
-              type_name = "ArrayType";
-              if (load(false))
-                  return true;
               module_name = "numarray";
               type_name = "NDArray";
+              if (load(false))
+                  return true;
+              module_name = "Numeric";
+              type_name = "ArrayType";
           }
 
           state = failed;
