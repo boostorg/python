@@ -89,8 +89,15 @@ class class_ : objects::class_base
     typedef class_<T,Bases,HolderGenerator> self;
  public:
 
-    // Construct with the module and class name
-    class_(module&, char const* name = typeid(T).name());
+    // Construct with the module and automatically derive the class
+    // name
+    class_(module&);
+    
+    // Construct with the module and class name.  [ Would have used a
+    // default argument but gcc-2.95.2 choked on typeid(T).name() as a
+    // default parameter value]
+    class_(module&, char const* name);
+
 
     // Wrap a member function or a non-member function which can take
     // a T, T cv&, or T cv* as its first parameter, or a callable
@@ -100,7 +107,8 @@ class class_ : objects::class_base
     {
         // Use function::add_to_namespace to achieve overloading if
         // appropriate.
-        objects::function::add_to_namespace(this->object(), name, ref(detail::wrap_function(f)));
+        objects::function::add_to_namespace(
+            this->object(), name, ref(detail::wrap_function(f)));
         return *this;
     }
 
@@ -151,6 +159,17 @@ class class_ : objects::class_base
 //
 // implementations
 //
+template <class T, class Bases, class HolderGenerator>
+inline class_<T, Bases, HolderGenerator>::class_(
+    module& m)
+    : class_base(m, typeid(T).name(), id_vector::size, id_vector().ids)
+{
+    // Bring the class converters into existence. This static object
+    // will survive until the shared library this module lives in is
+    // unloaded (that doesn't happen until Python terminates).
+    static objects::class_converters<T,Bases> converters(object());
+}
+
 template <class T, class Bases, class HolderGenerator>
 inline class_<T, Bases, HolderGenerator>::class_(
     module& m, char const* name)
