@@ -171,7 +171,7 @@ namespace
   
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
-      static LONG_LONG extract(PyObject* intermediate)
+      static BOOST_PYTHON_LONG_LONG extract(PyObject* intermediate)
       {
           if (PyInt_Check(intermediate))
           {
@@ -179,7 +179,7 @@ namespace
           }
           else
           {
-              LONG_LONG result = PyLong_AsLongLong(intermediate);
+              BOOST_PYTHON_LONG_LONG result = PyLong_AsLongLong(intermediate);
               
               if (PyErr_Occurred())
                   throw_error_already_set();
@@ -191,15 +191,15 @@ namespace
 
   struct unsigned_long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
-      static unsigned LONG_LONG extract(PyObject* intermediate)
+      static unsigned BOOST_PYTHON_LONG_LONG extract(PyObject* intermediate)
       {
           if (PyInt_Check(intermediate))
           {
-              return numeric_cast<unsigned LONG_LONG>(PyInt_AS_LONG(intermediate));
+              return numeric_cast<unsigned BOOST_PYTHON_LONG_LONG>(PyInt_AS_LONG(intermediate));
           }
           else
           {
-              unsigned LONG_LONG result = PyLong_AsUnsignedLongLong(intermediate);
+              unsigned BOOST_PYTHON_LONG_LONG result = PyLong_AsUnsignedLongLong(intermediate);
               
               if (PyErr_Occurred())
                   throw_error_already_set();
@@ -350,8 +350,8 @@ void initialize_builtin_converters()
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
 # ifdef HAVE_LONG_LONG
-    slot_rvalue_from_python<signed LONG_LONG,long_long_rvalue_from_python>();
-    slot_rvalue_from_python<unsigned LONG_LONG,unsigned_long_long_rvalue_from_python>();
+    slot_rvalue_from_python<signed BOOST_PYTHON_LONG_LONG,long_long_rvalue_from_python>();
+    slot_rvalue_from_python<unsigned BOOST_PYTHON_LONG_LONG,unsigned_long_long_rvalue_from_python>();
 # endif
         
     // floating types

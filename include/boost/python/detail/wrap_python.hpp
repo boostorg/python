@@ -155,3 +155,13 @@ typedef int pid_t;
 #elif _MSC_VER
 # pragma warning(disable:4786)
 #endif
+
+#if defined(HAVE_LONG_LONG)
+# if defined(PY_LONG_LONG)
+#  define BOOST_PYTHON_LONG_LONG PY_LONG_LONG
+# elif defined(LONG_LONG)
+#  define BOOST_PYTHON_LONG_LONG LONG_LONG
+# else
+#  error "HAVE_LONG_LONG defined but not PY_LONG_LONG or LONG_LONG"
+# endif
+#endif
