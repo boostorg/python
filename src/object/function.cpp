@@ -220,7 +220,7 @@ void function::argument_error(PyObject* args, PyObject* keywords) const
         }
 
         signatures.append(
-            "%s(%s) -> %s" % make_tuple(f->m_name, str(", ").join(formal), s[0].basename)
+            "%s(%s)" % make_tuple(f->m_name, str(", ").join(formal))
             );
     }
 
