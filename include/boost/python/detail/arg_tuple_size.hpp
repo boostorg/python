@@ -21,6 +21,8 @@
 # include <boost/preprocessor/comma_if.hpp>
 # include <boost/preprocessor/iterate.hpp>
 # include <boost/preprocessor/debug/line.hpp>
+# include <boost/preprocessor/enum_params.hpp>
+# include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -74,7 +76,7 @@ struct arg_tuple_size
 
 # if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-template <class R BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+template <class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
 struct arg_tuple_size<R (*)(BOOST_PYTHON_UNARY_ENUM(N, A))>
 {
     BOOST_STATIC_CONSTANT(std::size_t, value = N);
@@ -82,7 +84,7 @@ struct arg_tuple_size<R (*)(BOOST_PYTHON_UNARY_ENUM(N, A))>
 
 # else
 
-template<class R BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+template<class R BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
 char_array<N> arg_tuple_size_helper(
         R (*)(BOOST_PYTHON_UNARY_ENUM(N, A)));
 
@@ -107,17 +109,17 @@ char_array<N> arg_tuple_size_helper(
 
 # if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 
-template <class R, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
-struct arg_tuple_size<R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q>
+template <class R, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
+struct arg_tuple_size<R (T::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q>
 {
     BOOST_STATIC_CONSTANT(std::size_t, value = N + 1U);
 };
 
 # else
 
-template <class R, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+template <class R, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
 char_array<N + 1> arg_tuple_size_helper(
-    R (T::*)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q);
+    R (T::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q);
 
 # endif // !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 

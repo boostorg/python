@@ -13,9 +13,11 @@
 
 namespace boost { namespace python { 
 
+# define BOOST_PYTHON_BASE_PARAMS BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_MAX_BASES, B)
+
   // A type list for specifying bases
   template < BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(BOOST_PYTHON_MAX_BASES, typename B, mpl::void_) >
-  struct bases : detail::type_list< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, B) >::type
+  struct bases : detail::type_list< BOOST_PYTHON_BASE_PARAMS >::type
   {};
 
   namespace detail
@@ -25,14 +27,14 @@ namespace boost { namespace python {
     {
         BOOST_STATIC_CONSTANT(bool, value = false);
     };
-    template < BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, class B) >
-    struct specifies_bases< bases< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, B) > >
+    template < BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_MAX_BASES, class B) >
+    struct specifies_bases< bases< BOOST_PYTHON_BASE_PARAMS > >
     {
         BOOST_STATIC_CONSTANT(bool, value = true);
     };
 # else
-    template < BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, class B) >
-    static char is_bases_helper(bases< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, B) > const&);
+    template < BOOST_PYTHON_BASE_PARAMS >
+    static char is_bases_helper(bases< BOOST_PYTHON_BASE_PARAMS > const&);
     
     static char (& is_bases_helper(...) )[256];
 
@@ -55,6 +57,7 @@ namespace boost { namespace python {
     {
     };
   }
+# undef BOOST_PYTHON_BASE_PARAMS
 }} // namespace boost::python
 
 #endif // BASES_DWA2002321_HPP

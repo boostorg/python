@@ -128,7 +128,7 @@ struct overloads_common
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
                 0)                                                              \
                                                                                 \
-            BOOST_PP_REPEAT_FROM_TO(                                            \
+            BOOST_PP_REPEAT_FROM_TO_2(                                          \
                 BOOST_PP_SUB_D(1, n_args, n_dflts),                             \
                 BOOST_PP_INC(n_args),                                           \
                 BOOST_PYTHON_FUNC_WRAPPER_GEN,                                  \
@@ -170,7 +170,7 @@ struct overloads_common
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
                 0)                                                              \
                                                                                 \
-            BOOST_PP_REPEAT_FROM_TO(                                            \
+            BOOST_PP_REPEAT_FROM_TO_2(                                          \
                 BOOST_PP_SUB_D(1, n_args, n_dflts),                             \
                 BOOST_PP_INC(n_args),                                           \
                 BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN,                              \

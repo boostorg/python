@@ -35,30 +35,30 @@
 #include <boost/preprocessor/repeat.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT                                \
+#define BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT                                \
     BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(                                        \
         BOOST_PYTHON_MAX_ARITY,                                                 \
         class T,                                                                \
         mpl::void_)                                                             \
 
-#define BOOST_PYTHON_TEMPLATE_TYPES                                             \
-    BOOST_PP_ENUM_PARAMS(                                                       \
+#define BOOST_PYTHON_OVERLOAD_TYPES                                             \
+    BOOST_PP_ENUM_PARAMS_Z(1,                                                   \
         BOOST_PYTHON_MAX_ARITY,                                                 \
         class T)                                                                \
 
-#define BOOST_PYTHON_TEMPLATE_ARGS                                              \
-    BOOST_PP_ENUM_PARAMS(                                                       \
+#define BOOST_PYTHON_OVERLOAD_ARGS                                              \
+    BOOST_PP_ENUM_PARAMS_Z(1,                                                   \
         BOOST_PYTHON_MAX_ARITY,                                                 \
         T)                                                                      \
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python {
 
-template <BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT>
+template <BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT>
 struct init; // forward declaration
 
 ///////////////////////////////////////
-template <BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT>
+template <BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT>
 struct optional; // forward declaration
 
 namespace detail {
@@ -77,8 +77,8 @@ namespace detail {
 
     private:
 
-        template <BOOST_PYTHON_TEMPLATE_TYPES>
-        static boost::type_traits::yes_type f(optional<BOOST_PYTHON_TEMPLATE_ARGS>);
+        template <BOOST_PYTHON_OVERLOAD_TYPES>
+        static boost::type_traits::yes_type f(optional<BOOST_PYTHON_OVERLOAD_ARGS>);
         static boost::type_traits::no_type f(...);
         static T t();
 
@@ -101,8 +101,8 @@ namespace detail {
         BOOST_STATIC_CONSTANT(bool, value = false);
     };
 
-    template <BOOST_PYTHON_TEMPLATE_TYPES>
-    struct is_optional_impl<optional<BOOST_PYTHON_TEMPLATE_ARGS> > {
+    template <BOOST_PYTHON_OVERLOAD_TYPES>
+    struct is_optional_impl<optional<BOOST_PYTHON_OVERLOAD_ARGS> > {
 
         BOOST_STATIC_CONSTANT(bool, value = true);
     };
@@ -147,10 +147,10 @@ struct init_with_call_policies
     char const* doc;
 };
 
-template <BOOST_PYTHON_TEMPLATE_TYPES>
-struct init : public init_base<init<BOOST_PYTHON_TEMPLATE_ARGS> >
+template <BOOST_PYTHON_OVERLOAD_TYPES>
+struct init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
 {
-    typedef init<BOOST_PYTHON_TEMPLATE_ARGS> self_t;
+    typedef init<BOOST_PYTHON_OVERLOAD_ARGS> self_t;
 
     init(char const* doc_ = 0)
     : doc(doc_) {}
@@ -167,7 +167,7 @@ struct init : public init_base<init<BOOST_PYTHON_TEMPLATE_ARGS> >
     operator[](CallPoliciesT const& policies) const
     { return init_with_call_policies<CallPoliciesT, self_t>(policies, doc); }
 
-    typedef detail::type_list<BOOST_PYTHON_TEMPLATE_ARGS> signature_;
+    typedef detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS> signature_;
     typedef typename mpl::end<signature_>::type finish;
 
     // Find the optional<> element, if any
@@ -252,9 +252,9 @@ struct init<> : public init_base<init<> >
 //      optional<T0...TN>::type returns a typelist.
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <BOOST_PYTHON_TEMPLATE_TYPES>
+template <BOOST_PYTHON_OVERLOAD_TYPES>
 struct optional
-    : detail::type_list<BOOST_PYTHON_TEMPLATE_ARGS>
+    : detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS>
 {
 };
 
@@ -350,9 +350,9 @@ define_init(ClassT& cl, InitT const& i)
 
 }} // namespace boost::python
 
-#undef BOOST_PYTHON_TEMPLATE_TYPES_WITH_DEFAULT
-#undef BOOST_PYTHON_TEMPLATE_TYPES
-#undef BOOST_PYTHON_TEMPLATE_ARGS
+#undef BOOST_PYTHON_OVERLOAD_TYPES_WITH_DEFAULT
+#undef BOOST_PYTHON_OVERLOAD_TYPES
+#undef BOOST_PYTHON_OVERLOAD_ARGS
 #undef BOOST_PYTHON_IS_OPTIONAL_VALUE
 #undef BOOST_PYTHON_APPEND_TO_INIT
 

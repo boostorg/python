@@ -19,6 +19,7 @@
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -112,8 +113,8 @@ boost::type<R>* result(R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A)), int = 0)
 # define N BOOST_PP_ITERATION()
 # define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_RELATIVE_ITERATION(1))
 
-template <class R, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
-boost::type<R>* result(R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q, int = 0)
+template <class R, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
+boost::type<R>* result(R (T::*pmf)(BOOST_PP_ENUM_PARAMS_Z(1, N, A)) Q, int = 0)
 {
     return 0;
 }

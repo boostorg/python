@@ -25,6 +25,7 @@
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 #  include <boost/mpl/apply.hpp>
 
@@ -89,7 +90,7 @@ struct returning<void>
 
 # if (BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_RETURNING_NON_VOID)
 
-    template<class P BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template<class P BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
         R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A))
         , PyObject* args_
@@ -110,7 +111,7 @@ struct returning<void>
     }
 # elif (BOOST_PP_ITERATION_FLAGS() & BOOST_PYTHON_RETURNING_VOID)
 
-    template<class P BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template<class P BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
         R (*pf)(BOOST_PYTHON_UNARY_ENUM(N, A))
         , PyObject* args_
@@ -155,7 +156,7 @@ struct returning<void>
 
 # if (BOOST_PP_RELATIVE_FLAGS(1) & BOOST_PYTHON_RETURNING_NON_VOID)
 
-    template<class P, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template<class P, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
         R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q
         , PyObject* args_
@@ -183,7 +184,7 @@ struct returning<void>
     }
 # elif (BOOST_PP_RELATIVE_FLAGS(1) & BOOST_PYTHON_RETURNING_VOID)
 
-    template<class P, class T BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)>
+    template<class P, class T BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)>
     static PyObject* call(
         R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q
         , PyObject* args_

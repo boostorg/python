@@ -24,6 +24,7 @@
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 
 namespace boost { namespace python
 {
@@ -88,7 +89,7 @@ PyObject* operator()(
 
 template <
     class P, class R, class T
-    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)
+    BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)
     >
 PyObject* operator()(
     R (T::*pmf)(BOOST_PYTHON_UNARY_ENUM(N, A)) Q

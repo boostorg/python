@@ -31,6 +31,9 @@ struct is_list_arg<mpl::void_>
 
 template<int> struct type_list_impl_chooser;
 
+#  define BOOST_PYTHON_LIST_ACTUAL_PARAMS BOOST_PP_ENUM_PARAMS_Z(1,BOOST_PYTHON_LIST_SIZE,T)
+#  define BOOST_PYTHON_LIST_FORMAL_PARAMS BOOST_PP_ENUM_PARAMS_Z(1,BOOST_PYTHON_LIST_SIZE,class T)
+
 #  define BOOST_PP_ITERATION_PARAMS_1                                                           \
         (3, (0, BOOST_PYTHON_LIST_SIZE, <boost/python/detail/type_list_impl_no_pts.hpp>))
 #  include BOOST_PP_ITERATE()
@@ -41,7 +44,7 @@ template<int> struct type_list_impl_chooser;
     is_list_arg< BOOST_PP_CAT(T,n) >::value
     
 template<
-    BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE, class T)
+    BOOST_PYTHON_LIST_FORMAL_PARAMS
     >
 struct type_list_count_args
 {
@@ -52,25 +55,27 @@ struct type_list_count_args
 
 #  undef BOOST_PYTHON_IS_LIST_ARG
 #  undef BOOST_PYTHON_PLUS
-      
+#  undef BOOST_PYTHON_LIST_FORMAL_PARAMS
+#  undef BOOST_PYTHON_LIST_ACTUAL_PARAMS
+
 template<
-    BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE, class T)
+    BOOST_PYTHON_LIST_FORMAL_PARAMS
     >
 struct type_list_impl
 {
-    typedef type_list_count_args< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE,T) > arg_num_;
+    typedef type_list_count_args< BOOST_PYTHON_LIST_ACTUAL_PARAMS > arg_num_;
     typedef typename detail::type_list_impl_chooser< arg_num_::value >
-    ::template result_< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE,T) >::type type;
+    ::template result_< BOOST_PYTHON_LIST_ACTUAL_PARAMS >::type type;
 };
 
 template<
     BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(BOOST_PYTHON_LIST_SIZE, class T, mpl::void_)
     >
 struct type_list
-    : detail::type_list_impl< BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE,T) >::type
+    : detail::type_list_impl< BOOST_PYTHON_LIST_ACTUAL_PARAMS >::type
 {
     typedef typename detail::type_list_impl<
-        BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE,T)
+        BOOST_PYTHON_LIST_ACTUAL_PARAMS
         >::type type;
 };
 
@@ -86,12 +91,12 @@ template<>
 struct type_list_impl_chooser<N>
 {
     template<
-        BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE, class T)
+        BOOST_PYTHON_LIST_FORMAL_PARAMS
         >
     struct result_
     {
         typedef BOOST_PP_CAT(mpl::list,N)<
-            BOOST_PP_ENUM_PARAMS(N, T)
+            BOOST_PYTHON_LIST_ACTUAL_PARAMS
             > type;
     };
 };

@@ -13,12 +13,13 @@
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/arithmetic/sub.hpp>
 #  include <boost/preprocessor/iterate.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
 template <BOOST_PP_ENUM_PARAMS_WITH_A_DEFAULT(BOOST_PYTHON_LIST_SIZE, class T, mpl::void_)>
 struct type_list
-    : BOOST_PP_CAT(mpl::list,BOOST_PYTHON_LIST_SIZE)<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_LIST_SIZE, T)>
+    : BOOST_PP_CAT(mpl::list,BOOST_PYTHON_LIST_SIZE)<BOOST_PP_ENUM_PARAMS_Z(1, BOOST_PYTHON_LIST_SIZE, T)>
 {
 };
 
@@ -37,15 +38,15 @@ struct type_list
 # define BOOST_PYTHON_VOID_ARGS BOOST_PP_SUB_D(1,BOOST_PYTHON_LIST_SIZE,N)
 
 template <
-    BOOST_PP_ENUM_PARAMS(N, class T)
+    BOOST_PP_ENUM_PARAMS_Z(1, N, class T)
     >
 struct type_list<
-    BOOST_PP_ENUM_PARAMS(N, T)
+    BOOST_PP_ENUM_PARAMS_Z(1, N, T)
     BOOST_PP_COMMA_IF(N)
     BOOST_PP_ENUM(
         BOOST_PYTHON_VOID_ARGS, BOOST_PYTHON_FIXED, mpl::void_)
     >
-   : BOOST_PP_CAT(mpl::list,N)<BOOST_PP_ENUM_PARAMS(N, T)>
+   : BOOST_PP_CAT(mpl::list,N)<BOOST_PP_ENUM_PARAMS_Z(1, N, T)>
 {
 };
 

@@ -20,6 +20,8 @@
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/repeat.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
+#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
+#  include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
 namespace boost { namespace python {
 
@@ -42,11 +44,11 @@ namespace boost { namespace python {
 
 template <
     class R
-    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_UNARY_ENUM(N, class A)
+    BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class A)
     >
 typename detail::returnable<R>::type
 call(PyObject* callable
-    BOOST_PP_COMMA_IF(N) BOOST_PYTHON_BINARY_ENUM(N, A, const& a)
+    BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, const& a)
     , boost::type<R>* = 0
     )
 {
