@@ -14,7 +14,13 @@ include <module@>python.jam ;
           <define>BOOST_PYTHON_V2
           ;
     
-    local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) ;
+    local gcc-release-properties
+      = <optimization>speed <cxxflags>-fomit-frame-pointer
+      <inlining>on <cxxflags>-foptimize-sibling-calls
+      ;
+    
+    local PYTHON_PROPERTIES = $(BOOST_PYTHON_V2_PROPERTIES) <gcc><release>$(gcc-release-properties)
+;
     
     dll bpl
       : 
@@ -37,39 +43,39 @@ include <module@>python.jam ;
     # -------- general test -------
     extension m1 : test/m1.cpp <dll>bpl
       : 
-      : debug-python
+      : 
       ;
 
     extension m2 : test/m2.cpp <dll>bpl
       : 
-      : debug-python ;
+      :  ;
 
-    boost-python-runtest try : test/newtest.py <pyd>m1 <pyd>m2 : : debug-python ;
+    boost-python-runtest try : test/newtest.py <pyd>m1 <pyd>m2 : :  ;
 
     # ----------- builtin converters -----------
     
     extension builtin_converters_ext : test/test_builtin_converters.cpp <dll>bpl
       :
-      : debug-python
+      : 
       ;
 
     boost-python-runtest test_builtin_converters : test/test_builtin_converters.py
       <pyd>builtin_converters_ext
       :
-      : debug-python
+      : 
       ;
     
     # ----------- pointer adoption -----------
     
     extension test_pointer_adoption_ext : test/test_pointer_adoption.cpp <dll>bpl
       :
-      : debug-python
+      : 
       ;
 
     boost-python-runtest test_pointer_adoption : test/test_pointer_adoption.py
       <pyd>test_pointer_adoption_ext
       :
-      : debug-python
+      : 
       ;
     
 }
