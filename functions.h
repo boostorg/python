@@ -89,15 +89,15 @@ struct raw_arguments_function : Function
 
  private:
 	PyObject* do_call(PyObject* args, PyObject* keywords) const
-        { 
-            Ptr dict(keywords ? 
-                       Ptr(keywords, Ptr::new_ref) :
-                       PyDict_New());
+    { 
+        Ptr dict(keywords ? 
+                 Ptr(keywords, Ptr::new_ref) :
+                 Ptr(PyDict_New()));
             
-            return to_python(
-                  (*m_pf)(from_python(args, py::Type<Args>()),
-                          from_python(dict.get(), py::Type<Keywords>()))); 
-        }
+        return to_python(
+            (*m_pf)(from_python(args, py::Type<Args>()),
+                    from_python(dict.get(), py::Type<Keywords>()))); 
+    }
     
     const char* description() const
         { return typeid(PtrFun).name(); }
