@@ -3,6 +3,11 @@ Defines classes that represent declarations found in C++ header files.
     
 '''
 
+# version indicates the version of the declarations. Whenever a declaration
+# changes, this variable should be updated, so that the caches can be rebuilt
+# automatically
+version = '1.0'
+
 #==============================================================================
 # Declaration
 #==============================================================================

@@ -4,6 +4,7 @@ import os
 import glob
 import shutil
 import sys
+import time
 
 #=============================================================================
 # win32 configuration
@@ -94,12 +95,23 @@ def main(multiple, module=None):
         modules = get_modules()
     else:
         modules = [module]
+    
+    start = time.clock()
     for module in modules:    
         build_pyste(multiple, module) 
+    print '-'*50
+    print 'Building pyste files: %0.2f seconds' % (time.clock()-start)
+    print
+    
+    start = time.clock()
+    for module in modules:
         if multiple:
             compile_multiple(module)
         else:
             compile_single(module) 
+    print '-'*50
+    print 'Compiling files: %0.2f seconds' % (time.clock()-start) 
+    print
     if len(modules) == 1:
         os.system('python %sUT.py' % modules[0])
     else:

@@ -1,6 +1,6 @@
 23 August 2003
 Fixed bug where some Imports where not writing their include files.  
-Now whenever the Pyste version changes, the cache files are rebuilt
+Now whenever the declarations change, the cache files are rebuilt
 automatically.
 
 19 August 2003

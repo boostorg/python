@@ -41,9 +41,9 @@ import sys
 from policies import *
 from CppParser import CppParser, CppParserError
 import time
-from declarations import Typedef
+import declarations
 
-__version__ = '0.9.19'
+__version__ = '0.9.20'
 
 def RecursiveIncludes(include):
     'Return a list containg the include dir and all its subdirectories'
@@ -205,7 +205,7 @@ def Begin():
     for interface in interfaces:
         ExecuteInterface(interface)
     # create the parser
-    parser = CppParser(includes, defines, cache_dir, __version__)
+    parser = CppParser(includes, defines, cache_dir, declarations.version)
     try:
         if not create_cache:
             if not generate_main:
@@ -343,13 +343,13 @@ def GenerateCode(parser, module, out, interfaces, multiple):
     return 0
 
 
-def ExpandTypedefs(declarations, exported_names):
+def ExpandTypedefs(decls, exported_names):
     '''Check if the names in exported_names are a typedef, and add the real class 
     name in the dict.
     '''
     for name in exported_names.keys():
-        for decl in declarations:
-            if isinstance(decl, Typedef):
+        for decl in decls:
+            if isinstance(decl, declarations.Typedef):
                 exported_names[decl.type.FullName()] = None
 
 def UsePsyco():
