@@ -1,7 +1,8 @@
+Check for const reference parameters in all from_python functions in py.h, including implementations.
 Better python and C++ exception handling/error reporting.
 long long support
 use Python generic numeric coercion in from_python() for C++ numeric types
-Consider renaming PyPtr to Reference.
+Rename PyPtr to Reference.
 Report Cygwin linker memory issues
 pickling support
 Make abstract classes non-instantiable (?)
@@ -9,8 +10,7 @@ Support for Python LONG types in Objects.h
 Concept checking for to_python<T>() template function (Ullrich did this)
 Throw TypeError after asserting when objects from objects.cpp detect a type mismatch.
 Add callback-through-function ability to callback.h
-Fix repr() for extension classes to print
-    <extension_class /module-name/./class-name/ at /address/>
+Generate N+1-argument free functions and N-argument member functions from gen_all.py
 
 Testing
     Python 2.0
@@ -24,6 +24,8 @@ Optimizations
     Collect common code into a nice shared library.
         
 Documentation:
+
+    Alpha support
 
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
