@@ -108,7 +108,8 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.</p>
 <p>
 Now our package is ready. All the user has to do is put <tt class="literal">sounds</tt> into his
-<a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a> and fire up the interpreter:</p>
+<a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a> 
+and fire up the interpreter:</p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> sound</span><span class="special"> =</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">open</span><span class="special">(</span><span class="char">'file.mp3'</span><span class="special">)</span><span class="special">
@@ -220,7 +221,8 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 }</span></tt></pre>
 <p>
 If we are using the technique from the previous session,
-<a href="creating_packages.html" target="_top">Creating Packages</a>, we can code directly into <tt class="literal">geom/<span class="underline">_init</span>_.py</tt>:</p>
+<a href="techniques.html#creating_packages" target="_top">Creating Packages</a>, we can code directly 
+into <tt class="literal">geom/<span class="underline">_init</span>_.py</tt>:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">from</span><span class="identifier"> _geom</span><span class="identifier"> import</span><span class="special"> *</span>
 
 #<span class="identifier"> a</span><span class="identifier"> regular</span><span class="identifier"> function</span><span class="identifier">
@@ -346,7 +348,7 @@ the compilation of a single cpp, instead of the entire wrapper code.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
 <tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span> If you're exporting your classes with <a href="../../../pyste/index.html" target="_top">Pyste</a>,
+<span class="inlinemediaobject"><img src="../images/note.png"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
 take a look at the <tt class="literal">--multiple</tt> option, that generates the wrappers in
 various files as demonstrated here.</td></tr></tbody>
 </table></div>
@@ -355,7 +357,7 @@ various files as demonstrated here.</td></tr></tbody>
 <tbody><tr><td>
 <span class="inlinemediaobject"><img src="../images/note.png"></span> This method is useful too if you are getting the error message
 <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal structure overflow"</em></span> when compiling
-a large source file, as explained in the <a href="../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
+a large source file, as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
 </table></div>
 </div>
 </div>

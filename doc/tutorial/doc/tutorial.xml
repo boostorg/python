@@ -128,7 +128,7 @@ with every boost distribution: <emphasis role="bold">bjam</emphasis>.</para>
 <para>
 We shall skip over the details. Our objective will be to simply create the
 hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: <ulink url="../../building.html">building.html</ulink>.
+building Boost.Python, check out: <ulink url="../../../../building.html">building.html</ulink>.
 After this brief <emphasis>bjam</emphasis> tutorial, we should have built two DLLs:</para>
 <itemizedlist>
 <listitem>
@@ -165,7 +165,7 @@ the command line. Pre-built Boost.Jam executables are available for most
 platforms. The complete list of Bjam executables can be found 
 <ulink url="http://sourceforge.net/project/showfiles.php?group_id=7586">here</ulink>.</para>
 <anchor id="hello.let_s_jam_" /><bridgehead renderas="sect2">Let's Jam!</bridgehead><para>
-<inlinemediaobject><imageobject><imagedata fileref="images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
+<inlinemediaobject><imageobject><imagedata fileref="../images/jam.png"></imagedata></imageobject></inlinemediaobject></para>
 <para>
 Here is our minimalist Jamfile:</para>
 <programlisting><literal>    subproject libs/python/example/tutorial ;
@@ -582,7 +582,7 @@ instances of class <literal>Derived</literal>. In such cases, we use
 <literal>return_value_policy&lt;manage_new_object&gt;</literal> to instruct Python to adopt
 the pointer to <literal>Base</literal> and hold the instance in a new Python <literal>Base</literal>
 object until the the Python object is destroyed. We shall see more of
-Boost.Python <ulink url="call_policies.html">call policies</ulink> later.</para>
+Boost.Python <ulink url="functions.html#python.call_policies">call policies</ulink> later.</para>
 <programlisting>
 <literal>
 <phrase role="comment">// Tell Python to take ownership of factory's result
@@ -794,7 +794,7 @@ The overridden virtual function <literal>f</literal> of <literal>BaseWrap</liter
 <section id="python.virtual_functions_with_default_implementations">
 <title>Virtual Functions with Default Implementations</title>
 <para>
-Recall that in the <ulink url="class_virtual_functions.html">previous section</ulink>, we
+Recall that in the <ulink url="exposing.html#class_virtual_functions">previous section</ulink>, we
 wrapped a class with a pure virtual function that we then implemented in
 C++ or Python classes derived from it. Our base class:</para>
 <programlisting>
@@ -1178,7 +1178,7 @@ or more policies can be composed by chaining. Here's the general syntax:</para>
 </programlisting>
 <para>
 Here is the list of predefined call policies. A complete reference detailing
-these can be found <ulink url="../../v2/reference.html#models_of_call_policies">here</ulink>.</para>
+these can be found <ulink url="../../../../v2/reference.html#models_of_call_policies">here</ulink>.</para>
 <itemizedlist>
 <listitem>
 <emphasis role="bold">with_custodian_and_ward</emphasis><para/>
@@ -1308,7 +1308,7 @@ to retrieve the default arguments:</para>
 </programlisting>
 <para>
 Because of this, when wrapping C++ code, we had to resort to manual
-wrapping as outlined in the <ulink url="overloading.html">previous section</ulink>, or
+wrapping as outlined in the <ulink url="functions.html#overloading">previous section</ulink>, or
 writing thin wrappers:</para>
 <programlisting>
 <literal>
@@ -1401,7 +1401,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 </literal>
 </programlisting>
 <para>
-See the <ulink url="../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec">overloads reference</ulink>
+See the <ulink url="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec">overloads reference</ulink>
 for details.</para>
 <anchor id="default_arguments.init_and_optional" /><bridgehead renderas="sect2">init and optional</bridgehead><para>
 A similar facility is provided for class constructors, again, with
@@ -1479,12 +1479,12 @@ Notice though that we have a situation now where we have a minimum of zero
 It is important to emphasize however that <emphasis role="bold">the overloaded functions must
 have a common sequence of initial arguments</emphasis>. Otherwise, our scheme above
 will not work. If this is not the case, we have to wrap our functions
-<ulink url="overloading.html">manually</ulink>.</para>
+<ulink url="functions.html#overloading">manually</ulink>.</para>
 <para>
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through <literal>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</literal> and
 its sister, <literal>BOOST_PYTHON_FUNCTION_OVERLOADS</literal>. Following up on our example
-presented in the section <ulink url="overloading.html">on overloading</ulink>, since the
+presented in the section <ulink url="functions.html#overloading">on overloading</ulink>, since the
 first 4 overload functins have a common sequence of initial arguments, we
 can use <literal>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</literal> to automatically wrap the
 first three of the <literal>def</literal>s and manually wrap just the last. Here's
@@ -1525,7 +1525,7 @@ bidirectional mapping between C++ and Python while maintaining the Python
 feel. Boost.Python C++ <literal>object</literal>s are as close as possible to Python. This
 should minimize the learning curve significantly.</para>
 <para>
-<inlinemediaobject><imageobject><imagedata fileref="images/python.png"></imagedata></imageobject></inlinemediaobject></para>
+<inlinemediaobject><imageobject><imagedata fileref="../images/python.png"></imagedata></imageobject></inlinemediaobject></para>
 
 <section id="python.basic_interface">
 <title>Basic Interface</title>
@@ -1770,7 +1770,7 @@ associated with the C++ type passed as its first parameter.</para>
  The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
-attributes. Details can be found <ulink url="../../v2/scope.html">here</ulink>.</entry>
+attributes. Details can be found <ulink url="../../../../v2/scope.html">here</ulink>.</entry>
 </row>
 </tbody>
 </tgroup>
@@ -1823,7 +1823,7 @@ Boost.Python's static link library comes in two variants. Both are located
 in Boost's <literal>/libs/python/build/bin-stage</literal> subdirectory. On Windows, the
 variants are called <literal>boost_python.lib</literal> (for release builds) and
 <literal>boost_python_debug.lib</literal> (for debugging). If you can't find the libraries,
-you probably haven't built Boost.Python yet. See <ulink url="../../building.html
+you probably haven't built Boost.Python yet. See <ulink url="../../../../building.html
 Building">and Testing</ulink> on how to do this.</para>
 <para>
 Python's static link library can be found in the <literal>/libs</literal> subdirectory of
@@ -1881,7 +1881,7 @@ automatic in Python, the Python/C API requires you to do it
 <ulink url="http://www.python.org/doc/current/api/refcounts.html">by hand</ulink>. This is
 messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the <ulink url="../../v2/handle.html">handle</ulink> and
-<ulink url="../../v2/object.html">object</ulink> class templates to automate the process.</para>
+<ulink url="../../../../v2/object.html">object</ulink> class templates to automate the process.</para>
 <anchor id="using_the_interpreter.reference_counting_handles_and_objects" /><bridgehead renderas="sect2">Reference-counting handles and objects</bridgehead><para>
 There are two ways in which a function in the Python/C API can return a
 <literal>PyObject*</literal>: as a <emphasis>borrowed reference</emphasis> or as a <emphasis>new reference</emphasis>. Which of
@@ -1891,7 +1891,7 @@ be 'handled' by Boost.Python.</para>
 <para>
 For a function returning a <emphasis>borrowed reference</emphasis> we'll have to tell the
 <literal>handle</literal> that the <literal>PyObject*</literal> is borrowed with the aptly named
-<ulink url="../../v2/handle.html#borrowed-spec">borrowed</ulink> function. Two functions
+<ulink url="../../../../v2/handle.html#borrowed-spec">borrowed</ulink> function. Two functions
 returning borrowed references are <ulink url="http://www.python.org/doc/current/api/importing.html#l2h-125">PyImport_AddModule</ulink> and <ulink url="http://www.python.org/doc/current/api/moduleObjects.html#l2h-594">PyModule_GetDict</ulink>.
 The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
@@ -2001,7 +2001,7 @@ you want to be a Dr. Frankenstein, always wrap <literal>PyObject*</literal>s in 
 It's nice that <literal>handle</literal> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the <ulink url="object_interface.html">previous section</ulink>: the aptly
+above, and in the <ulink url="object.html">previous section</ulink>: the aptly
 named <literal>object</literal> class and it's derivatives. We've already seen that they
 can be constructed from a <literal>handle</literal>. The following examples should further
 illustrate this fact:</para>
@@ -2047,7 +2047,11 @@ int</phrase><phrase role="identifier"> five_squared</phrase><phrase role="specia
 take into account the different functions that <literal>object</literal> and <literal>handle</literal>
 perform.</para>
 <anchor id="using_the_interpreter.exception_handling" /><bridgehead renderas="sect2">Exception handling</bridgehead><para>
-If an exception occurs in the execution of some Python code, the <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink> function returns a null pointer. Constructing a <literal>handle</literal> out of this null pointer throws <ulink url="../../v2/errors.html#error_already_set-spec">error_already_set</ulink>, so basically, the Python exception is automatically translated into a C++ exception when using <literal>handle</literal>:</para>
+If an exception occurs in the execution of some Python code, the <ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink> 
+function returns a null pointer. Constructing a <literal>handle</literal> out of this null 
+pointer throws <ulink url="../../../../v2/errors.html#error_already_set-spec">error_already_set</ulink>, 
+so basically, the Python exception is automatically translated into a 
+C++ exception when using <literal>handle</literal>:</para>
 <programlisting>
 <literal>
 <phrase role="keyword">try</phrase><phrase role="special">
@@ -2069,7 +2073,14 @@ catch</phrase><phrase role="special">(</phrase><phrase role="identifier">error_a
 </literal>
 </programlisting>
 <para>
-The <literal>error_already_set</literal> exception class doesn't carry any information in itself. To find out more about the Python exception that occurred, you need to use the <ulink url="http://www.python.org/doc/api/exceptionHandling.html">exception handling functions</ulink> of the Python<emphasis>C API in your catch-statement. This can be as simple as calling [@http:</emphasis>/www.python.org/doc/api<emphasis>exceptionHandling.html#l2h-70 PyErr_Print()] to print the exception's traceback to the console, or comparing the type of the exception with those of the [@http:</emphasis>/www.python.org/doc/api/standardExceptions.html standard exceptions]:</para>
+The <literal>error_already_set</literal> exception class doesn't carry any information in itself. 
+To find out more about the Python exception that occurred, you need to use the 
+<ulink url="http://www.python.org/doc/api/exceptionHandling.html">exception handling functions</ulink> 
+of the Python/C API in your catch-statement. This can be as simple as calling 
+<ulink url="http://www.python.org/doc/api/exceptionHandling.html#l2h-70">PyErr_Print()</ulink> to 
+print the exception's traceback to the console, or comparing the type of the 
+exception with those of the <ulink url="http://www.python.org/doc/api/standardExceptions.html">
+standard exceptions</ulink>:</para>
 <programlisting>
 <literal>
 <phrase role="keyword">catch</phrase><phrase role="special">(</phrase><phrase role="identifier">error_already_set</phrase><phrase role="special">)</phrase><phrase role="special">
@@ -2087,9 +2098,12 @@ The <literal>error_already_set</literal> exception class doesn't carry any infor
 </literal>
 </programlisting>
 <para>
-(To retrieve even more information from the exception you can use some of the other exception handling functions listed <ulink url="http://www.python.org/doc/api/exceptionHandling.html">here</ulink>.)</para>
+(To retrieve even more information from the exception you can use some of the other 
+exception handling functions listed <ulink url="http://www.python.org/doc/api/exceptionHandling.html">here</ulink>.)</para>
 <para>
-If you'd rather not have <literal>handle</literal> throw a C++ exception when it is constructed, you can use the <ulink url="../../v2/handle.html#allow_null-spec">allow_null</ulink> function in the same way you'd use borrowed:</para>
+If you'd rather not have <literal>handle</literal> throw a C++ exception when it is constructed, you 
+can use the <ulink url="../../v2/handle.html#allow_null-spec">allow_null</ulink> function in the same 
+way you'd use borrowed:</para>
 <programlisting>
 <literal>
 <phrase role="identifier">handle</phrase><phrase role="special">&lt;&gt;</phrase><phrase role="identifier"> result</phrase><phrase role="special">((</phrase><phrase role="identifier">allow_null</phrase><phrase role="special">(</phrase><ulink url="http://www.python.org/doc/current/api/veryhigh.html#l2h-55">PyRun_String</ulink><phrase role="special">(</phrase><phrase role="string">
@@ -2331,7 +2345,8 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.</para>
 <para>
 Now our package is ready. All the user has to do is put <literal>sounds</literal> into his
-<ulink url="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000">PYTHONPATH</ulink> and fire up the interpreter:</para>
+<ulink url="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000">PYTHONPATH</ulink> 
+and fire up the interpreter:</para>
 <programlisting>
 <literal>
 <phrase role="special">&gt;&gt;&gt;</phrase><phrase role="identifier"> import</phrase><phrase role="identifier"> sounds</phrase><phrase role="special">.</phrase><phrase role="identifier">io</phrase><phrase role="special">
@@ -2478,7 +2493,8 @@ BOOST_PYTHON_MODULE</phrase><phrase role="special">(</phrase><phrase role="ident
 </programlisting>
 <para>
 If we are using the technique from the previous session,
-<ulink url="creating_packages.html">Creating Packages</ulink>, we can code directly into <literal>geom/<emphasis role="underline">_init</emphasis>_.py</literal>:</para>
+<ulink url="techniques.html#creating_packages">Creating Packages</ulink>, we can code directly 
+into <literal>geom/<emphasis role="underline">_init</emphasis>_.py</literal>:</para>
 <programlisting>
 <literal>
 <phrase role="identifier">from</phrase><phrase role="identifier"> _geom</phrase><phrase role="identifier"> import</phrase><phrase role="special"> *</phrase>
@@ -2627,7 +2643,7 @@ the compilation of a single cpp, instead of the entire wrapper code.</para>
 <tbody>
 <row>
 <entry>
-<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> If you're exporting your classes with <ulink url="../../../pyste/index.html">Pyste</ulink>,
+<inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> If you're exporting your classes with <ulink url="../../../../../pyste/index.html">Pyste</ulink>,
 take a look at the <literal>--multiple</literal> option, that generates the wrappers in
 various files as demonstrated here.</entry>
 </row>
@@ -2642,7 +2658,7 @@ various files as demonstrated here.</entry>
 <entry>
 <inlinemediaobject><imageobject><imagedata fileref="../images/note.png"></imagedata></imageobject></inlinemediaobject> This method is useful too if you are getting the error message
 <emphasis>&quot;fatal error C1204:Compiler limit:internal structure overflow&quot;</emphasis> when compiling
-a large source file, as explained in the <ulink url="../../v2/faq.html#c1204">FAQ</ulink>.</entry>
+a large source file, as explained in the <ulink url="../../../../v2/faq.html#c1204">FAQ</ulink>.</entry>
 </row>
 </tbody>
 </tgroup>

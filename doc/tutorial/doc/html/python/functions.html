@@ -178,7 +178,7 @@ A reference to <tt class="literal">y.x</tt> is returned
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id422413"></a>Call Policies</h2>
+<a name="id422411"></a>Call Policies</h2>
 <p>
 Call Policies may be used in situations such as the example detailed above.
 In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
@@ -207,7 +207,7 @@ or more policies can be composed by chaining. Here's the general syntax:</p>
         policy3</span><span class="special">&lt;</span><span class="identifier">args</span><span class="special">...&gt;</span><span class="special"> &gt;</span><span class="special"> &gt;</span></tt></pre>
 <p>
 Here is the list of predefined call policies. A complete reference detailing
-these can be found <a href="../../v2/reference.html#models_of_call_policies" target="_top">here</a>.</p>
+these can be found <a href="../../../../v2/reference.html#models_of_call_policies" target="_top">here</a>.</p>
 <div class="itemizedlist"><ul type="disc">
 <li>
 <span class="bold"><b>with_custodian_and_ward</b></span><p></p>
@@ -323,7 +323,7 @@ to retrieve the default arguments:</p>
 </span></tt></pre>
 <p>
 Because of this, when wrapping C++ code, we had to resort to manual
-wrapping as outlined in the <a href="overloading.html" target="_top">previous section</a>, or
+wrapping as outlined in the <a href="functions.html#overloading" target="_top">previous section</a>, or
 writing thin wrappers:</p>
 <pre class="programlisting"><tt class="literal"><span class="comment">// write "thin wrappers"
 </span><span class="keyword">int</span><span class="identifier"> f1</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> x</span><span class="special">)</span><span class="special"> {</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span><span class="special"> }</span><span class="keyword">
@@ -347,7 +347,7 @@ are overloaded with a common sequence of initial arguments
 </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id424227"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
+<a name="id424225"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
 <p>
 Boost.Python now has a way to make it easier. For instance, given a function:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">int</span><span class="identifier"> foo</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> a</span><span class="special">,</span><span class="keyword"> char</span><span class="identifier"> b</span><span class="special"> =</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> unsigned</span><span class="identifier"> c</span><span class="special"> =</span><span class="number"> 2</span><span class="special">,</span><span class="keyword"> double</span><span class="identifier"> d</span><span class="special"> =</span><span class="number"> 3</span><span class="special">)</span><span class="special">
@@ -366,7 +366,7 @@ and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt> 
 automatically add all the foo variants for us:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span><span class="identifier"> foo</span><span class="special">,</span><span class="identifier"> foo_overloads</span><span class="special">());</span></tt></pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id424506"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
+<a name="id424504"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
 <p>
 Objects here, objects there, objects here there everywhere. More frequently
 than anything else, we need to expose member functions of our classes to
@@ -395,10 +395,10 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 <tt class="literal">george_overloads</tt> that can then be used as an argument to <tt class="literal">def(...)</tt>:</p>
 <pre class="programlisting"><tt class="literal"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"wack_em"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">george</span><span class="special">::</span><span class="identifier">wack_em</span><span class="special">,</span><span class="identifier"> george_overloads</span><span class="special">());</span></tt></pre>
 <p>
-See the <a href="../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
+See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
 for details.</p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id424834"></a>init and optional</h2>
+<a name="id424831"></a>init and optional</h2>
 <p>
 A similar facility is provided for class constructors, again, with
 default arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>? For example,
@@ -456,17 +456,17 @@ Then...</p>
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.</p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id425481"></a>Manual Wrapping</h2>
+<a name="id425478"></a>Manual Wrapping</h2>
 <p>
 It is important to emphasize however that <span class="bold"><b>the overloaded functions must
 have a common sequence of initial arguments</b></span>. Otherwise, our scheme above
 will not work. If this is not the case, we have to wrap our functions
-<a href="overloading.html" target="_top">manually</a>.</p>
+<a href="functions.html#overloading" target="_top">manually</a>.</p>
 <p>
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> and
 its sister, <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>. Following up on our example
-presented in the section <a href="overloading.html" target="_top">on overloading</a>, since the
+presented in the section <a href="functions.html#overloading" target="_top">on overloading</a>, since the
 first 4 overload functins have a common sequence of initial arguments, we
 can use <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> to automatically wrap the
 first three of the <tt class="literal">def</tt>s and manually wrap just the last. Here's

@@ -258,7 +258,7 @@ instances of class <tt class="literal">Derived</tt>. In such cases, we use
 <tt class="literal">return_value_policy&lt;manage_new_object&gt;</tt> to instruct Python to adopt
 the pointer to <tt class="literal">Base</tt> and hold the instance in a new Python <tt class="literal">Base</tt>
 object until the the Python object is destroyed. We shall see more of
-Boost.Python <a href="call_policies.html" target="_top">call policies</a> later.</p>
+Boost.Python <a href="functions.html#python.call_policies" target="_top">call policies</a> later.</p>
 <pre class="programlisting"><tt class="literal"><span class="comment">// Tell Python to take ownership of factory's result
 </span><span class="identifier">def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span><span class="identifier"> factory</span><span class="special">,</span><span class="identifier">
     return_value_policy</span><span class="special">&lt;</span><span class="identifier">manage_new_object</span><span class="special">&gt;());</span></tt></pre>
@@ -432,7 +432,7 @@ The overridden virtual function <tt class="literal">f</tt> of <tt class="literal
 <div></div>
 </div>
 <p>
-Recall that in the <a href="class_virtual_functions.html" target="_top">previous section</a>, we
+Recall that in the <a href="exposing.html#class_virtual_functions" target="_top">previous section</a>, we
 wrapped a class with a pure virtual function that we then implemented in
 C++ or Python classes derived from it. Our base class:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">struct</span><span class="identifier"> Base</span><span class="special">
@@ -501,7 +501,7 @@ Calling <tt class="literal">call_f</tt>, passing in a <tt class="literal">derive
 <div></div>
 </div>
 <a name="class_operators_special_functions.python_operators"></a><h2>
-<a name="id420104"></a>Python Operators</h2>
+<a name="id420103"></a>Python Operators</h2>
 <p>
 C is well known for the abundance of operators. C++ extends this to the
 extremes by allowing operator overloading. Boost.Python takes advantage of
@@ -538,7 +538,7 @@ you might need to interact with in an operator expression is (cheaply)
 default-constructible. You can use <tt class="literal">other&lt;T&gt;()</tt> in place of an actual
 <tt class="literal">T</tt> instance when writing "self expressions".</p>
 <a name="class_operators_special_functions.special_methods"></a><h2>
-<a name="id420790"></a>Special Methods</h2>
+<a name="id420789"></a>Special Methods</h2>
 <p>
 Python has a few more <span class="emphasis"><em>Special Methods</em></span>. Boost.Python supports all of the
 standard special method names supported by real Python class instances. A

@@ -86,7 +86,7 @@ with every boost distribution: [*bjam].
 
 We shall skip over the details. Our objective will be to simply create the
 hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: [@../../building.html building.html].
+building Boost.Python, check out: [@../../../../building.html building.html].
 After this brief ['bjam] tutorial, we should have built two DLLs:
 
 * boost_python.dll
@@ -115,7 +115,7 @@ platforms. The complete list of Bjam executables can be found
 [@http://sourceforge.net/project/showfiles.php?group_id=7586 here].
 
 [h2 Let's Jam!]
-[$images/jam.png]
+[$../images/jam.png]
 
 Here is our minimalist Jamfile:
 
@@ -468,7 +468,7 @@ instances of class [^Derived]. In such cases, we use
 [^return_value_policy<manage_new_object>] to instruct Python to adopt
 the pointer to [^Base] and hold the instance in a new Python [^Base]
 object until the the Python object is destroyed. We shall see more of
-Boost.Python [@call_policies.html call policies] later.
+Boost.Python [@functions.html#python.call_policies call policies] later.
 
     // Tell Python to take ownership of factory's result
     def("factory", factory,
@@ -614,7 +614,7 @@ Here's what's happening:
 [endsect]
 [section Virtual Functions with Default Implementations]
 
-Recall that in the [@class_virtual_functions.html previous section], we
+Recall that in the [@exposing.html#class_virtual_functions previous section], we
 wrapped a class with a pure virtual function that we then implemented in
 C++ or Python classes derived from it. Our base class:
 
@@ -918,7 +918,7 @@ or more policies can be composed by chaining. Here's the general syntax:
             policy3<args...> > >
 
 Here is the list of predefined call policies. A complete reference detailing
-these can be found [@../../v2/reference.html#models_of_call_policies here].
+these can be found [@../../../../v2/reference.html#models_of_call_policies here].
 
 * [*with_custodian_and_ward]\n Ties lifetimes of the arguments
 * [*with_custodian_and_ward_postcall]\n Ties lifetimes of the arguments and results
@@ -1000,7 +1000,7 @@ to retrieve the default arguments:
     def("f", f);                            // defaults lost!
 
 Because of this, when wrapping C++ code, we had to resort to manual
-wrapping as outlined in the [@overloading.html previous section], or
+wrapping as outlined in the [@functions.html#overloading previous section], or
 writing thin wrappers:
 
     // write "thin wrappers"
@@ -1073,7 +1073,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 
     .def("wack_em", &george::wack_em, george_overloads());
 
-See the [@../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
+See the [@../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
 for details.
 
 [h2 init and optional]
@@ -1140,12 +1140,12 @@ Notice though that we have a situation now where we have a minimum of zero
 It is important to emphasize however that [*the overloaded functions must
 have a common sequence of initial arguments]. Otherwise, our scheme above
 will not work. If this is not the case, we have to wrap our functions
-[@overloading.html manually].
+[@functions.html#overloading manually].
 
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] and
 its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Following up on our example
-presented in the section [@overloading.html on overloading], since the
+presented in the section [@functions.html#overloading on overloading], since the
 first 4 overload functins have a common sequence of initial arguments, we
 can use [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the
 first three of the [^def]s and manually wrap just the last. Here's
@@ -1179,7 +1179,7 @@ bidirectional mapping between C++ and Python while maintaining the Python
 feel. Boost.Python C++ [^object]s are as close as possible to Python. This
 should minimize the learning curve significantly.
 
-[$images/python.png]
+[$../images/python.png]
 
 [section Basic Interface]
 
@@ -1361,7 +1361,7 @@ associated with the C++ type passed as its first parameter.
 [blurb __note__ [*what is a scope?]\n\n The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
-attributes. Details can be found [@../../v2/scope.html here].]
+attributes. Details can be found [@../../../../v2/scope.html here].]
 
 You can access those values in Python as
 
@@ -1422,7 +1422,7 @@ Boost.Python's static link library comes in two variants. Both are located
 in Boost's [^/libs/python/build/bin-stage] subdirectory. On Windows, the
 variants are called [^boost_python.lib] (for release builds) and
 [^boost_python_debug.lib] (for debugging). If you can't find the libraries,
-you probably haven't built Boost.Python yet. See [@../../building.html
+you probably haven't built Boost.Python yet. See [@../../../../building.html
 Building and Testing] on how to do this.
 
 Python's static link library can be found in the [^/libs] subdirectory of
@@ -1478,7 +1478,7 @@ automatic in Python, the Python/C API requires you to do it
 [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is
 messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the [@../../v2/handle.html handle] and
-[@../../v2/object.html object] class templates to automate the process.
+[@../../../../v2/object.html object] class templates to automate the process.
 
 [h2 Reference-counting handles and objects]
 
@@ -1490,7 +1490,7 @@ be 'handled' by Boost.Python.
 
 For a function returning a ['borrowed reference] we'll have to tell the
 [^handle] that the [^PyObject*] is borrowed with the aptly named
-[@../../v2/handle.html#borrowed-spec borrowed] function. Two functions
+[@../../../../v2/handle.html#borrowed-spec borrowed] function. Two functions
 returning borrowed references are PyImport_AddModule and PyModule_GetDict.
 The former returns a reference to an already imported module, the latter
 retrieves a module's namespace dictionary. Let's use them to retrieve the
@@ -1580,7 +1580,7 @@ you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
 It's nice that [^handle] manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the [@object_interface.html previous section]: the aptly
+above, and in the [@object.html previous section]: the aptly
 named [^object] class and it's derivatives. We've already seen that they
 can be constructed from a [^handle]. The following examples should further
 illustrate this fact:
@@ -1622,7 +1622,11 @@ perform.
 
 [h2 Exception handling]
 
-If an exception occurs in the execution of some Python code, the PyRun_String function returns a null pointer. Constructing a [^handle] out of this null pointer throws [@../../v2/errors.html#error_already_set-spec error_already_set], so basically, the Python exception is automatically translated into a C++ exception when using [^handle]:
+If an exception occurs in the execution of some Python code, the PyRun_String 
+function returns a null pointer. Constructing a [^handle] out of this null 
+pointer throws [@../../../../v2/errors.html#error_already_set-spec error_already_set], 
+so basically, the Python exception is automatically translated into a 
+C++ exception when using [^handle]:
 
     try
     {
@@ -1641,7 +1645,14 @@ If an exception occurs in the execution of some Python code, the PyRun_String fu
         // handle the exception in some way
     }
 
-The [^error_already_set] exception class doesn't carry any information in itself. To find out more about the Python exception that occurred, you need to use the [@http://www.python.org/doc/api/exceptionHandling.html exception handling functions] of the Python/C API in your catch-statement. This can be as simple as calling [@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to print the exception's traceback to the console, or comparing the type of the exception with those of the [@http://www.python.org/doc/api/standardExceptions.html standard exceptions]:
+The [^error_already_set] exception class doesn't carry any information in itself. 
+To find out more about the Python exception that occurred, you need to use the 
+[@http://www.python.org/doc/api/exceptionHandling.html exception handling functions] 
+of the Python/C API in your catch-statement. This can be as simple as calling 
+[@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to 
+print the exception's traceback to the console, or comparing the type of the 
+exception with those of the [@http://www.python.org/doc/api/standardExceptions.html 
+standard exceptions]:
 
     catch(error_already_set)
     {
@@ -1656,9 +1667,12 @@ The [^error_already_set] exception class doesn't carry any information in itself
         }
     }
 
-(To retrieve even more information from the exception you can use some of the other exception handling functions listed [@http://www.python.org/doc/api/exceptionHandling.html here].)
+(To retrieve even more information from the exception you can use some of the other 
+exception handling functions listed [@http://www.python.org/doc/api/exceptionHandling.html here].)
 
-If you'd rather not have [^handle] throw a C++ exception when it is constructed, you can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same way you'd use borrowed:
+If you'd rather not have [^handle] throw a C++ exception when it is constructed, you 
+can use the [@../../v2/handle.html#allow_null-spec allow_null] function in the same 
+way you'd use borrowed:
 
     handle<> result((allow_null(PyRun_String(
         "5/0"
@@ -1845,7 +1859,8 @@ actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.
 
 Now our package is ready. All the user has to do is put [^sounds] into his
-[@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH] and fire up the interpreter:
+[@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH] 
+and fire up the interpreter:
 
     >>> import sounds.io
     >>> import sounds.filters
@@ -1965,7 +1980,8 @@ we have a class [^point] in C++:
     }
 
 If we are using the technique from the previous session,
-[@creating_packages.html Creating Packages], we can code directly into [^geom/__init__.py]:
+[@techniques.html#creating_packages Creating Packages], we can code directly 
+into [^geom/__init__.py]:
 
     from _geom import *
 
@@ -2083,13 +2099,13 @@ This method is recommended too if you are developing the C++ library and
 exporting it to Python at the same time: changes in a class will only demand
 the compilation of a single cpp, instead of the entire wrapper code.
 
-[blurb __note__ If you're exporting your classes with [@../../../pyste/index.html Pyste],
+[blurb __note__ If you're exporting your classes with [@../../../../../pyste/index.html Pyste],
 take a look at the [^--multiple] option, that generates the wrappers in
 various files as demonstrated here.]
 
 [blurb __note__ This method is useful too if you are getting the error message
 ['"fatal error C1204:Compiler limit:internal structure overflow"] when compiling
-a large source file, as explained in the [@../../v2/faq.html#c1204 FAQ].]
+a large source file, as explained in the [@../../../../v2/faq.html#c1204 FAQ].]
 
 [endsect]
 [endsect] [/ General Techniques]

@@ -45,7 +45,7 @@ As mentioned, one of the goals of Boost.Python is to provide a
 bidirectional mapping between C++ and Python while maintaining the Python
 feel. Boost.Python C++ <tt class="literal">object</tt>s are as close as possible to Python. This
 should minimize the learning curve significantly.</p>
-<p><span class="inlinemediaobject"><img src="images/python.png"></span></p>
+<p><span class="inlinemediaobject"><img src="../images/python.png"></span></p>
 <div class="section" lang="en">
 <div class="titlepage">
 <div><div><h3 class="title">
@@ -155,7 +155,7 @@ C++:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">dict</span><span class="identifier"> d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>  #<span class="identifier"> copies</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="identifier">
 d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span>           #<span class="identifier"> modifies</span><span class="identifier"> the</span><span class="identifier"> copy</span></tt></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id427287"></a>class_&lt;T&gt; as objects</h2>
+<a name="id427284"></a>class_&lt;T&gt; as objects</h2>
 <p>
 Due to the dynamic nature of Boost.Python objects, any <tt class="literal">class_&lt;T&gt;</tt> may
 also be one of these types! The following code snippet wraps the class
@@ -240,7 +240,7 @@ associated with the C++ type passed as its first parameter.</p>
  The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
-attributes. Details can be found <a href="../../v2/scope.html" target="_top">here</a>.</td></tr></tbody>
+attributes. Details can be found <a href="../../../../v2/scope.html" target="_top">here</a>.</td></tr></tbody>
 </table></div>
 <p>
 You can access those values in Python as</p>
