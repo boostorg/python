@@ -614,17 +614,157 @@ generate these dispatchers (and other wrapping code) automatically.
 If these are successful it will mark a move away from wrapping
 everything directly in pure C++ for many of our users.
 
+Serialization
+=============
+
+*Serialization* is the process of converting objects in memory to a
+form that can be stored on disk or sent over a network connection. The
+serialized object (most often a plain string) can be retrieved and
+converted back to the original object. A good serialization system will
+automatically convert entire object hierarchies. Python's standard
+``pickle`` module is such a system.  It leverages the language's
+virtually unlimited runtime introspection facilities for serializing
+practically arbitrary user-defined objects. With a few simple and
+unintrusive provisions this powerful machinery can be extended to work
+for wrapped C++ objects. Here is a simple example::
+
+    #include <string>
+
+    struct World
+    {
+        World(std::string a_msg) : msg(a_msg) {}
+        std::string greet() const { return msg; }
+        std::string msg;
+    };
+
+    #include <boost/python.hpp>
+    using namespace boost::python;
+
+    struct World_picklers : pickle_suite
+    {
+      static tuple
+      getinitargs(World const& w) { return make_tuple(w.greet()); }
+    };
+
+    BOOST_PYTHON_MODULE(hello)
+    {
+        class_<World>("World", init<std::string>())
+            .def("greet", &World::greet)
+            .def_pickle(World_picklers())
+        ;
+    }
+
+Now let's create a ``World`` object and put it to rest on disk::
+
+    >>> import hello
+    >>> import pickle
+    >>> a_world = hello.World("howdy")
+    >>> pickle.dump(a_world, open("my_world", "w"))
+
+Resurrecting the ``World`` object in a different process is equally easy::
+
+    >>> import pickle
+    >>> resurrected_world = pickle.load(open("my_world", "r"))
+    >>> resurrected_world.greet()
+    'howdy'
+
+Boost.Python's ``pickle_suite`` fully supports the documented
+``pickle`` protocols. Of course ``cPickle`` can also be used for faster
+processing. Enabling serialization of more complex C++ objects requires
+a little more work than is shown in this example, but the ``object``
+interface (see next section) greatly helps in keeping the code
+manageable.
+
+==================
+ Object interface
+==================
+
+Experienced extension module authors will be familiar with the 'C' view
+of Python objects, the ubiquitous ``PyObject*``. Most if not all Python
+'C' API functions involve ``PyObject*`` as arguments or return type.  A
+major complication is the raw reference counting interface presented to
+the 'C' programmer. E.g. some API functions return *new references* and
+others return *borrowed references*. It is up to the extension module
+writer to properly increment and decrement reference counts.  This
+quickly becomes cumbersome and error prone, especially if there are
+multiple execution paths.
+
+Boost.Python provides a type ``object`` which is essentially a high
+level wrapper around ``PyObject*``. ``object`` automates reference
+counting as much as possible. It also provides the facilities for
+converting arbitrary C++ types to Python objects and vice versa.
+This should significantly reduce the learning effort for prospective
+extension module writers.
+
+To illustrate, this Python code snippet::
+
+    def f(x, y):
+         if (y == 'foo'):
+             x[3:7] = 'bar'
+         else:
+             x.items += y(3, x)
+         return x
+
+Can be rewritten in C++ using Boost.Python facilities::
+
+    object f(object x, object y) {
+         if (y == "foo")
+             x.slice(3,7) = "bar";
+         else
+             x.attr("items") += y(3, x);
+         return x;
+    }
+
+The ``extract<T>`` class template can be used to convert Python objects
+to C++ types::
+
+    object o(3);
+    double x = extract<double>(o);
+
+If the C++ type cannot be extracted an appropriate exception is thrown
+(``extract<T>`` provides facilities for avoiding exceptions if this is
+desired).
+
+All registered user-defined conversions are automatically accessible
+through the ``object`` interface. With reference to the ``World`` class
+defined in previous examples::
+
+    object as_python_object(World("howdy"));
+    World back_as_c_plus_plus_object = extract<World>(as_python_object);
+
+The ``object`` type is accompanied by a set of derived types
+that mirror the Python built-in types such as ``list``, ``dict``,
+``tuple``, etc. as much as possible. This enables convenient
+manipulation of these high-level types from C++::
+
+    dict d;
+    d["some"] = "thing";
+    d["lucky_number"] = 13;
+    list l = d.keys();
+
 =============
  Conclusions
 =============
 
-Perhaps one day we'll have a language with the simplicity and
-expressive power of Python and the compile-time muscle of C++.  Being
-able to take advantage of all of these facilities without paying the
-mental and development-time penalties of crossing a language barrier
-would bring enormous benefits.  Until then, interoperability tools
-like Boost.Python can help lower the barrier and make the benefits of
-both languages more accessible to both communities.
+The examples in this paper illustrate that Boost.Python enables
+seamless interoperability between C++ and Python. Importantly, this is
+achieved without introducing a third syntax: the Python/C++ interface
+definitions are written in pure C++. This avoids any problems with
+parsing the C++ code to be interfaced to Python, yet the interface
+definitions are concise and maintainable. Freed from much of the
+intricacies of crossing a language boundary, software designers can
+take full advantage of two rich and complimentary language
+environments.
+
+.. I'm not ready to give up on all of this quite yet
+
+.. Perhaps one day we'll have a language with the simplicity and
+   expressive power of Python and the compile-time muscle of C++.  Being
+   able to take advantage of all of these facilities without paying the
+   mental and development-time penalties of crossing a language barrier
+   would bring enormous benefits.  Until then, interoperability tools
+   like Boost.Python can help lower the barrier and make the benefits of
+   both languages more accessible to both communities.
 
 ===========
  Footnotes
