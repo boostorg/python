@@ -571,11 +571,17 @@ extern "C"
         else
             return python::incref(f->name().ptr());
     }
+
+    static PyObject* function_get_class(PyObject* op, void*)
+    {
+        return python::incref(reinterpret_cast<PyObject *>(&PyCFunction_Type));
+    }
 }
     
 static PyGetSetDef function_getsetlist[] = {
     {"__name__", (getter)function_get_name, 0 },
     {"func_name", (getter)function_get_name, 0 },
+    {"__class__", (getter)function_get_class, 0 },
     {"__doc__", (getter)function_get_doc, (setter)function_set_doc},
     {"func_doc", (getter)function_get_doc, (setter)function_set_doc},
     {NULL} /* Sentinel */
