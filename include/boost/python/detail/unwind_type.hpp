@@ -141,9 +141,12 @@ inline typename Generator::result_type
 unwind_type(type<U>*p = 0, Generator* = 0)
 {
     BOOST_STATIC_CONSTANT(int, indirection
-                          = (pointer_ * is_pointer<U>::value)
-                          | (reference_ * is_reference<U>::value)
-                          | (reference_to_pointer_ * is_reference_to_pointer<U>::value));
+                          = (is_pointer<U>::value ? pointer_ : 0)
+                          + (is_reference_to_pointer<U>::value
+                             ? reference_to_pointer_
+                             : is_reference<U>::value
+                             ? reference_
+                             : 0));
         
     return unwind_helper2<indirection>::execute((U(*)())0,(Generator*)0);
 }
