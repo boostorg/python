@@ -9,17 +9,18 @@
 ///////////////////////////////////////////////////////////////////////////////
 #if !defined(BOOST_PP_IS_ITERATING)
 
-#ifndef SIGNATURE_JDG20020813_HPP
-#define SIGNATURE_JDG20020813_HPP
+# ifndef SIGNATURE_JDG20020813_HPP
+#  define SIGNATURE_JDG20020813_HPP
 
-#include <boost/preprocessor/repeat.hpp>
-#include <boost/preprocessor/enum.hpp>
-#include <boost/preprocessor/enum_params.hpp>
-#include <boost/preprocessor/empty.hpp>
-#include <boost/preprocessor/arithmetic/sub.hpp>
-#include <boost/preprocessor/iterate.hpp>
-#include <boost/mpl/type_list.hpp>
-#include <boost/preprocessor/debug/line.hpp>
+#  include <boost/python/detail/preprocessor.hpp>
+#  include <boost/preprocessor/repeat.hpp>
+#  include <boost/preprocessor/enum.hpp>
+#  include <boost/preprocessor/enum_params.hpp>
+#  include <boost/preprocessor/empty.hpp>
+#  include <boost/preprocessor/arithmetic/sub.hpp>
+#  include <boost/preprocessor/iterate.hpp>
+#  include <boost/mpl/type_list.hpp>
+#  include <boost/preprocessor/debug/line.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {
@@ -53,70 +54,68 @@ namespace boost { namespace python { namespace detail {
 //  and arguments of the input signature and stuffs them in an mpl::type_list.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_TEMPLATE_GEN(z, index, data)  class BOOST_PP_CAT(T, index)
 
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PP_ITERATION_PARAMS_1                                             \
+#  define BOOST_PP_ITERATION_PARAMS_1                                   \
     (3, (0, BOOST_PYTHON_MAX_ARITY-1, <boost/python/signature.hpp>))
 
-#include BOOST_PP_ITERATE()
-#undef BOOST_PYTHON_TEMPLATE_GEN
+#  include BOOST_PP_ITERATE()
 
 }
 
 }} // namespace boost::python
 
 ///////////////////////////////////////////////////////////////////////////////
-#endif // SIGNATURE_JDG20020813_HPP
+# endif // SIGNATURE_JDG20020813_HPP
 
 #else // defined(BOOST_PP_IS_ITERATING)
-// PP vertical iteration code
 
-///////////////////////////////////////////////////////////////////////////////
+# define N BOOST_PP_ITERATION()
+
 template <
-    class RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM(BOOST_PP_ITERATION(), BOOST_PYTHON_TEMPLATE_GEN, BOOST_PP_EMPTY)>
+    class RT BOOST_PP_COMMA_IF(N)
+    BOOST_PYTHON_UNARY_ENUM(N, class T)>
 inline boost::mpl::type_list<
-    RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>
-get_signature(RT(*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)))
+    RT BOOST_PP_COMMA_IF(N)
+    BOOST_PP_ENUM_PARAMS(N, T)>
+get_signature(RT(*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
     return boost::mpl::type_list<
-            RT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-            BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>();
+            RT BOOST_PP_COMMA_IF(N)
+            BOOST_PP_ENUM_PARAMS(N, T)>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-#if BOOST_PP_ITERATION() <= (BOOST_PYTHON_MAX_ARITY - 2)
+#if N <= (BOOST_PYTHON_MAX_ARITY - 2)
 
 template <
-    class RT, class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM(BOOST_PP_ITERATION(), BOOST_PYTHON_TEMPLATE_GEN, BOOST_PP_EMPTY)>
+    class RT, class ClassT BOOST_PP_COMMA_IF(N)
+    BOOST_PYTHON_UNARY_ENUM(N, class T)>
 inline boost::mpl::type_list<
-    RT, ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>
-get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)))
+    RT, ClassT BOOST_PP_COMMA_IF(N)
+    BOOST_PP_ENUM_PARAMS(N, T)>
+get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
     return boost::mpl::type_list<
-            RT, ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-            BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>();
+            RT, ClassT BOOST_PP_COMMA_IF(N)
+            BOOST_PP_ENUM_PARAMS(N, T)>();
 }
 
 ///////////////////////////////////////
 template <
-    class RT, class ClassT BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM(BOOST_PP_ITERATION(), BOOST_PYTHON_TEMPLATE_GEN, BOOST_PP_EMPTY)>
+    class RT, class ClassT BOOST_PP_COMMA_IF(N)
+    BOOST_PYTHON_UNARY_ENUM(N, class T)>
 inline boost::mpl::type_list<
-    RT, ClassT const BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-    BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>
-get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)) const)
+    RT, ClassT const BOOST_PP_COMMA_IF(N)
+    BOOST_PP_ENUM_PARAMS(N, T)>
+get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)) const)
 {
     return boost::mpl::type_list<
             RT, ClassT const
-            BOOST_PP_COMMA_IF(BOOST_PP_ITERATION())
-            BOOST_PP_ENUM_PARAMS(BOOST_PP_ITERATION(), T)>();
+            BOOST_PP_COMMA_IF(N)
+            BOOST_PP_ENUM_PARAMS(N, T)>();
 }
 
-#endif // BOOST_PP_ITERATION() < (BOOST_PYTHON_MAX_ARITY - 2)
+#endif // N < (BOOST_PYTHON_MAX_ARITY - 2)
 
 #endif // !defined(BOOST_PP_IS_ITERATING)
