@@ -169,15 +169,15 @@ struct func_stubs_with_call_policies
         char const* doc_string() const                                          \
         { return doc; }                                                         \
                                                                                 \
-        default_call_policies                                                   \
+        ::boost::python::default_call_policies                                                   \
         call_policies() const                                                   \
-        { return default_call_policies(); }                                     \
+        { return ::boost::python::default_call_policies(); }                                     \
                                                                                 \
         template <class CallPoliciesT>                                          \
-        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
         operator[](CallPoliciesT const& policies) const                         \
         {                                                                       \
-            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+            return ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>         \
                 (policies, doc);                                                \
         }                                                                       \
                                                                                 \
@@ -203,15 +203,15 @@ struct func_stubs_with_call_policies
         char const* doc_string() const                                          \
         { return doc; }                                                         \
                                                                                 \
-        default_call_policies                                                   \
+        ::boost::python::default_call_policies                                                   \
         call_policies() const                                                   \
-        { return default_call_policies(); }                                     \
+        { return ::boost::python::default_call_policies(); }                                     \
                                                                                 \
         template <class CallPoliciesT>                                          \
-        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
         operator[](CallPoliciesT const& policies) const                         \
         {                                                                       \
-            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+            return ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>         \
                 (policies, doc);                                                \
         }                                                                       \
                                                                                 \
@@ -237,15 +237,15 @@ struct func_stubs_with_call_policies
         char const* doc_string() const                                          \
         { return doc; }                                                         \
                                                                                 \
-        default_call_policies                                                   \
+        ::boost::python::default_call_policies                                                   \
         call_policies() const                                                   \
-        { return default_call_policies(); }                                     \
+        { return ::boost::python::default_call_policies(); }                                     \
                                                                                 \
         template <class CallPoliciesT>                                          \
-        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
         operator[](CallPoliciesT const& policies) const                         \
         {                                                                       \
-            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+            return ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>         \
                 (policies, doc);                                                \
         }                                                                       \
                                                                                 \
@@ -269,15 +269,15 @@ struct func_stubs_with_call_policies
         char const* doc_string() const                                          \
         { return doc; }                                                         \
                                                                                 \
-        default_call_policies                                                   \
+        ::boost::python::default_call_policies                                                   \
         call_policies() const                                                   \
-        { return default_call_policies(); }                                     \
+        { return ::boost::python::default_call_policies(); }                                     \
                                                                                 \
         template <class CallPoliciesT>                                          \
-        func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
+        ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>                    \
         operator[](CallPoliciesT const& policies) const                         \
         {                                                                       \
-            return func_stubs_with_call_policies<CallPoliciesT, self_t>         \
+            return ::boost::python::func_stubs_with_call_policies<CallPoliciesT, self_t>         \
                 (policies, doc);                                                \
         }                                                                       \
                                                                                 \

@@ -52,7 +52,7 @@ namespace detail
       void operator()(T*) const
       {
           *(*p)++ = type_id<T>();
-      };
+      }
 
       type_info** p;
   };
