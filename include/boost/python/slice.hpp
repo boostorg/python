@@ -17,16 +17,14 @@
 
 namespace boost { namespace python {
 
-class slice : public object
+class BOOST_PYTHON_DECL slice : public object
 {
  private:
     // Helper function to work around bugs in MSVC 6
-    BOOST_PYTHON_DECL
     static object new_slice(PyObject*, PyObject*, PyObject*);
 
  public:
 	// Equivalent to slice(::)
-	BOOST_PYTHON_DECL
 	slice();
 
 	// Each argument must be slice_nil, or implicitly convertable to object.
