@@ -51,42 +51,42 @@ namespace detail {
 //
 // signature chaining
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class T10>
-struct Signature10 {};
+struct signature10 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9>
-struct Signature9 {};
+struct signature9 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9, class X>
-inline Signature10<X, T1, T2, T3, T4, T5, T6, T7, T8, T9> prepend(type<X>, Signature9<T1, T2, T3, T4, T5, T6, T7, T8, T9>)
-    { return Signature10<X, T1, T2, T3, T4, T5, T6, T7, T8, T9>(); }
+inline signature10<X, T1, T2, T3, T4, T5, T6, T7, T8, T9> prepend(type<X>, signature9<T1, T2, T3, T4, T5, T6, T7, T8, T9>)
+    { return signature10<X, T1, T2, T3, T4, T5, T6, T7, T8, T9>(); }
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
-struct Signature8 {};
+struct signature8 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class X>
-inline Signature9<X, T1, T2, T3, T4, T5, T6, T7, T8> prepend(type<X>, Signature8<T1, T2, T3, T4, T5, T6, T7, T8>)
-    { return Signature9<X, T1, T2, T3, T4, T5, T6, T7, T8>(); }
+inline signature9<X, T1, T2, T3, T4, T5, T6, T7, T8> prepend(type<X>, signature8<T1, T2, T3, T4, T5, T6, T7, T8>)
+    { return signature9<X, T1, T2, T3, T4, T5, T6, T7, T8>(); }
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7>
-struct Signature7 {};
+struct signature7 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class X>
-inline Signature8<X, T1, T2, T3, T4, T5, T6, T7> prepend(type<X>, Signature7<T1, T2, T3, T4, T5, T6, T7>)
-    { return Signature8<X, T1, T2, T3, T4, T5, T6, T7>(); }
+inline signature8<X, T1, T2, T3, T4, T5, T6, T7> prepend(type<X>, signature7<T1, T2, T3, T4, T5, T6, T7>)
+    { return signature8<X, T1, T2, T3, T4, T5, T6, T7>(); }
 
 template <class T1, class T2, class T3, class T4, class T5, class T6>
-struct Signature6 {};
+struct signature6 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class T6, class X>
-inline Signature7<X, T1, T2, T3, T4, T5, T6> prepend(type<X>, Signature6<T1, T2, T3, T4, T5, T6>)
-    { return Signature7<X, T1, T2, T3, T4, T5, T6>(); }
+inline signature7<X, T1, T2, T3, T4, T5, T6> prepend(type<X>, signature6<T1, T2, T3, T4, T5, T6>)
+    { return signature7<X, T1, T2, T3, T4, T5, T6>(); }
 
 template <class T1, class T2, class T3, class T4, class T5>
 struct signature5 {};
 
 template <class T1, class T2, class T3, class T4, class T5, class X>
-inline Signature6<X, T1, T2, T3, T4, T5> prepend(type<X>, signature5<T1, T2, T3, T4, T5>)
-    { return Signature6<X, T1, T2, T3, T4, T5>(); }
+inline signature6<X, T1, T2, T3, T4, T5> prepend(type<X>, signature5<T1, T2, T3, T4, T5>)
+    { return signature6<X, T1, T2, T3, T4, T5>(); }
 
 template <class T1, class T2, class T3, class T4>
 struct signature4 {};
