@@ -137,11 +137,32 @@ template <class T, class U = py::HeldInstance<T> >
 class PyExtensionClassConverters
 {
  public:
-#ifdef BOOST_MSVC
-    // Convert return values of type T to python objects.  What happens if T is
-    // not copyable? Apparently there is no problem with g++ or MSVC unless this
-    // is actually used. With a conforming compiler we will have a problem.
-    friend PyObject* to_python(const T& x)
+    // Get an object which can be used to convert T to/from python. This is used
+    // as a kind of concept check by the global template
+    //
+    //     from_python(PyObject*,  py::Type<const T&>)
+    //
+    // below this class, to prevent the confusing messages that would otherwise
+    // pop up. Now, if T hasn't been wrapped as an extension class, the user
+    // will see an error message about the lack of an eligible
+    // py_extension_class_converters() function.
+    friend PyExtensionClassConverters py_extension_class_converters(py::Type<T>)
+    { 
+        return PyExtensionClassConverters();
+    }
+
+    // This is a member function because in a conforming implementation, friend
+    // funcitons defined inline in the class body are all instantiated as soon
+    // as the enclosing class is instantiated. If T is not copyable, that causes
+    // a compiler error. Instead, we access this function through the global
+    // template 
+    //
+    //     from_python(PyObject*,  py::Type<const T&>)
+    //
+    // defined below this class. Since template functions are instantiated only
+    // on demand, errors will be avoided unless T is noncopyable and the user
+    // writes code which causes us to try to copy a T.
+    PyObject* to_python(const T& x) const
     {
         py::PyPtr<py::ExtensionInstance> result(create_instance());
         result->add_implementation(
@@ -149,11 +170,7 @@ class PyExtensionClassConverters
                 new py::InstanceValueHolder<T,U>(result.get(), x)));
         return result.release();
     }
-#else
-    friend py::Type<U> py_holder_type(const T&)
-        { return py::Type<U>(); }
-#endif
-
+    
     // Convert to T*
     friend T* from_python(PyObject* obj, py::Type<T*>)
     {
@@ -256,25 +273,15 @@ class PyExtensionClassConverters
         { return ptr_to_python(x); }
 };
 
-#ifndef BOOST_MSVC
-template <class T, class U>
-py::InstanceHolderBase*
-py_copy_to_new_value_holder(py::ExtensionInstance* p, const T& x, py::Type<U>)
-{
-    return new py::InstanceValueHolder<T,U>(p, x);
-}
-
+// Convert T to_python, instantiated on demand and only if there isn't a
+// non-template overload for this function. This version is the one invoked when
+// T is a wrapped class. See the first 2 functions declared in
+// PyExtensionClassConverters above for more info.
 template <class T>
 PyObject* to_python(const T& x)
 {
-    py::PyPtr<py::ExtensionInstance> result(
-        PyExtensionClassConverters<T>::create_instance());
-    result->add_implementation(
-        std::auto_ptr<py::InstanceHolderBase>(
-            py_copy_to_new_value_holder(result.get(), x, py_holder_type(x))));
-    return result.release();
+    return py_extension_class_converters(py::Type<T>()).to_python(x);
 }
-#endif
 
 #ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE // back from global namespace for this GCC bug
 namespace py {
