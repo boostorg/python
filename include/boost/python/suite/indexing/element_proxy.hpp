@@ -169,10 +169,12 @@ namespace boost
   }
 }
 
-// Including more headers here is a little weird, but it seems to fix a problem with
-// the "Compaq C++ V6.5-031 for Compaq Tru64 UNIX V5.1 (Rev. 732)" compiler, which
-// doesn't otherwise find our get_pointer overload during the instantiation of
-// register_ptr_to_python
+// Including more headers here is a little weird, but it fixes a
+// problem with Compaq C++ V6.5-031 (at least) which implements
+// two-phase name lookup. get_pointer is used unqualified within some
+// templates used by register_ptr_to_python, so our overload needs to
+// be visible during parsing of the templates, not just during their
+// instantiation.
 
 #include <boost/python/implicit.hpp>
 #include <boost/python/register_ptr_to_python.hpp>
