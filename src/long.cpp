@@ -5,36 +5,36 @@
 // to its suitability for any purpose.
 #include <boost/python/long.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python { namespace detail {
 
-detail::new_non_null_reference long_::call(object const& arg_)
+new_non_null_reference long_base::call(object const& arg_)
 {
     return (detail::new_non_null_reference)PyObject_CallFunction(
         (PyObject*)&PyLong_Type, "(O)", 
         arg_.ptr());
 }
 
-detail::new_non_null_reference long_::call(object const& arg_, object const& base)
+new_non_null_reference long_base::call(object const& arg_, object const& base)
 {
     return (detail::new_non_null_reference)PyObject_CallFunction(
         (PyObject*)&PyLong_Type, "(OO)", 
         arg_.ptr(), base.ptr());
 }
 
-long_::long_()
+long_base::long_base()
     : object(
         detail::new_reference(
             PyObject_CallFunction((PyObject*)&PyLong_Type, "()"))
         )
 {}
 
-long_::long_(object_cref arg)
-    : object(long_::call(arg))
+long_base::long_base(object_cref arg)
+    : object(long_base::call(arg))
 {}
 
-long_::long_(object_cref arg, object_cref base)
-    : object(long_::call(arg, base))
+long_base::long_base(object_cref arg, object_cref base)
+    : object(long_base::call(arg, base))
 {}
 
 
-}} // namespace boost::python
+}}} // namespace boost::python

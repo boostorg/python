@@ -1,4 +1,6 @@
 """
+>>> False = 0 # Python 2.2 needs these
+>>> True = 1
 
 >>> from defaults_ext import *
 >>> bar(1)

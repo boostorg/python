@@ -330,7 +330,7 @@ namespace objects
     //             rest corresponding to its declared bases.
     //
     inline object
-    new_class(char const* name, std::size_t num_types, class_id const* const types)
+    new_class(char const* name, std::size_t num_types, class_id const* const types, char const* doc)
     {
       assert(num_types >= 1);
       
@@ -348,7 +348,12 @@ namespace objects
       }
 
       // Call the class metatype to create a new class
-      object result = object(class_metatype())(module_prefix() + name, bases, dict());
+      dict d;
+      
+      if (doc != 0)
+          d["__doc__"] = doc;
+      
+      object result = object(class_metatype())(module_prefix() + name, bases, d);
       assert(PyType_IsSubtype(result.ptr()->ob_type, &PyType_Type));
       
       if (scope().ptr() != Py_None)
@@ -360,7 +365,7 @@ namespace objects
   
   class_base::class_base(
       char const* name, std::size_t num_types, class_id const* const types, char const* doc)
-      : object(new_class(name, num_types, types))
+      : object(new_class(name, num_types, types, doc))
   {
       // Insert the new class object in the registry
       converter::registration& converters = const_cast<converter::registration&>(
@@ -368,9 +373,6 @@ namespace objects
 
       // Class object is leaked, for now
       converters.class_object = (PyTypeObject*)incref(this->ptr());
-
-      if (doc)
-          this->attr("__doc__") = doc;
   }
 
   void class_base::set_instance_size(std::size_t instance_size)

@@ -8,7 +8,7 @@
 #include "simple_type.hpp"
 #include "complicated.hpp"
 #include <boost/python/def.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/lvalue_from_pytype.hpp>
 #include <boost/python/copy_const_reference.hpp>
@@ -199,7 +199,7 @@ D take_d_shared_ptr(boost::shared_ptr<D> d) { return *d; }
 
 boost::shared_ptr<A> d_factory() { return boost::shared_ptr<B>(new D); }
 
-BOOST_PYTHON_MODULE_INIT(m1)
+BOOST_PYTHON_MODULE(m1)
 {
     using namespace boost::python;
     using boost::shared_ptr;

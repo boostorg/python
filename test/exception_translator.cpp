@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/exception_translator.hpp>
 
@@ -15,7 +15,7 @@ void throw_error()
     
 }
 
-BOOST_PYTHON_MODULE_INIT(exception_translator_ext)
+BOOST_PYTHON_MODULE(exception_translator_ext)
 {
   using namespace boost::python;
   register_exception_translator<error>(&translate);

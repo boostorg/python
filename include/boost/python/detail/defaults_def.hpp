@@ -219,7 +219,7 @@ namespace detail
         char const* name,
         OverloadsT const& overloads,
         NameSpaceT& name_space,
-        SigT sig)
+        SigT const& sig)
     {
         typedef typename mpl::front<SigT>::type return_type;
         typedef typename OverloadsT::void_return_type void_return_type;

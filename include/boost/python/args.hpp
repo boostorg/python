@@ -7,7 +7,6 @@
 # define KEYWORDS_DWA2002323_HPP
 
 # include <boost/python/args_fwd.hpp>
-# include <boost/python/handle.hpp>
 # include <boost/config.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/detail/type_list.hpp>
@@ -32,12 +31,6 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  struct keyword
-  {
-      char const* name;
-      handle<> default_value;
-  };
-  
   template <std::size_t nkeywords>
   struct keywords
   {

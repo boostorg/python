@@ -11,93 +11,116 @@
 
 namespace boost { namespace python { 
 
-class list : public object
+namespace detail
 {
+  struct BOOST_PYTHON_DECL list_base : object
+  {
+      void append(object_cref); // append object to end
+
+      long count(object_cref value) const; // return number of occurrences of value
+
+      void extend(object_cref sequence); // extend list by appending sequence elements
+    
+      long index(object_cref value) const; // return index of first occurrence of value
+
+      void insert(int index, object_cref); // insert object before index
+      void insert(object const& index, object_cref);
+
+      object pop(); // remove and return item at index (default last)
+      object pop(long index);
+      object pop(object const& index);
+
+      void remove(object_cref value); // remove first occurrence of value
+    
+      void reverse(); // reverse *IN PLACE*
+
+      void sort(); //  sort *IN PLACE*; if given, cmpfunc(x, y) -> -1, 0, 1
+      void sort(object_cref cmpfunc);
+
+
+   protected:
+      list_base(); // new list
+      explicit list_base(object_cref sequence); // new list initialized from sequence's items
+
+      BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list_base, object)
+   private:    
+      static detail::new_non_null_reference call(object const&);
+  };
+}
+
+class list : public detail::list_base
+{
+    typedef detail::list_base base;
  public:
-    BOOST_PYTHON_DECL list(); // new list
-    explicit BOOST_PYTHON_DECL list(object_cref sequence); // new list initialized from sequence's items
+    list() {} // new list
 
     template <class T>
     explicit list(T const& sequence)
-        : object(list::call(object(sequence)))
+        : base(object(sequence))
     {
     }
-
-    BOOST_PYTHON_DECL void append(object_cref); // append object to end
 
     template <class T>
     void append(T const& x)
     {
-        this->append(object(x));
+        base::append(object(x));
     }
-
-    BOOST_PYTHON_DECL long count(object_cref value) const; // return number of occurrences of value
 
     template <class T>
     long count(T const& value) const
     {
-        return this->count(object(value));
+        return base::count(object(value));
     }
-    
-    BOOST_PYTHON_DECL void extend(object_cref sequence); // extend list by appending sequence elements
     
     template <class T>
     void extend(T const& x)
     {
-        this->extend(object(x));
+        base::extend(object(x));
     }
-
-    BOOST_PYTHON_DECL long index(object_cref value) const; // return index of first occurrence of value
 
     template <class T>
     long index(T const& x) const
     {
-        return this->index(object(x));
+        return base::index(object(x));
     }
     
-    BOOST_PYTHON_DECL void insert(int index, object_cref); // insert object before index
-    BOOST_PYTHON_DECL void insert(object const& index, object_cref);
-
     template <class T>
     void insert(int index, T const& x) // insert object before index
     {
-        this->insert(index, object(x));
+        base::insert(index, object(x));
     }
     
     template <class T>
     void insert(object const& index, T const& x) // insert object before index
     {
-        this->insert(index, object(x));
+        base::insert(index, object(x));
     }
-    
-    BOOST_PYTHON_DECL object pop(); // remove and return item at index (default last)
-    BOOST_PYTHON_DECL object pop(long index);
-    BOOST_PYTHON_DECL object pop(object const& index);
 
-    BOOST_PYTHON_DECL void remove(object_cref value); // remove first occurrence of value
+    object pop() { return base::pop(); }
+    object pop(long index) { return base::pop(index); }
     
+    template <class T>
+    object pop(T const& index)
+    {
+        return base::pop(object(index));
+    }
+
     template <class T>
     void remove(T const& value)
     {
-        this->remove(object(value));
+        base::remove(object(value));
     }
+
+    void sort() { base::sort(); }
     
-    BOOST_PYTHON_DECL void reverse(); // reverse *IN PLACE*
-
-    BOOST_PYTHON_DECL void sort(); //  sort *IN PLACE*; if given, cmpfunc(x, y) -> -1, 0, 1
-    BOOST_PYTHON_DECL void sort(object_cref cmpfunc);
-
     template <class T>
     void sort(T const& value)
     {
-        this->sort(object(value));
+        base::sort(object(value));
     }
     
  public: // implementation detail -- for internal use only
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list, object)
-    
- private:
-    static BOOST_PYTHON_DECL detail::new_non_null_reference call(object const&);
+    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(list, base)
 };
 
 //

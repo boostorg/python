@@ -1196,7 +1196,7 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
     return BOOST_PYTHON_CONVERSION::to_python(first->i_ + second + third + fourth);
 }
 
-BOOST_PYTHON_MODULE_INIT(boost_python_test)
+BOOST_PYTHON_MODULE(boost_python_test)
 {
     boost::python::module_builder boost_python_test("boost_python_test");
     init_module(boost_python_test);

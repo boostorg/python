@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/mpl/list.hpp>
@@ -13,7 +13,7 @@
 
 struct M {M(const std::complex<double>&) {} };
 
-BOOST_PYTHON_MODULE_INIT(bienstman5_ext)
+BOOST_PYTHON_MODULE(bienstman5_ext)
 {
   using namespace boost::python;
 

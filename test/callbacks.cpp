@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 //#include <boost/python/returning.hpp>
 #include <boost/python/class.hpp>
@@ -113,7 +113,7 @@ object apply_object_object(PyObject* f, object x)
 
 int X::counter;
 
-BOOST_PYTHON_MODULE_INIT(callbacks_ext)
+BOOST_PYTHON_MODULE(callbacks_ext)
 {
     def("apply_object_object", apply_object_object);
     def("apply_to_own_type", apply_to_own_type);

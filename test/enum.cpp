@@ -5,7 +5,7 @@
 // to its suitability for any purpose.
 #include <boost/python/enum.hpp>
 #include <boost/python/def.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 
 using namespace boost::python;
 
@@ -13,7 +13,7 @@ enum color { red = 1, green = 2, blue = 4 };
 
 color identity_(color x) { return x; }
 
-BOOST_PYTHON_MODULE_INIT(enum_ext)
+BOOST_PYTHON_MODULE(enum_ext)
 {
     enum_<color>("color")
         .value("red", red)

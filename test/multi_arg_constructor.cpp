@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 
@@ -10,7 +10,7 @@ struct A
         ) {}
 };
 
-BOOST_PYTHON_MODULE_INIT(multi_arg_constructor_ext)
+BOOST_PYTHON_MODULE(multi_arg_constructor_ext)
 {
   using namespace boost::python;
   using boost::shared_ptr;

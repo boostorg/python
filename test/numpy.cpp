@@ -6,7 +6,7 @@
 
 #include <boost/python/numeric.hpp>
 #include <boost/python/tuple.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 
 using namespace boost::python;
@@ -92,7 +92,7 @@ void exercise_numarray(numeric::array& y, object check)
     check(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2), true, true));
 }
 
-BOOST_PYTHON_MODULE_INIT(numpy_ext)
+BOOST_PYTHON_MODULE(numpy_ext)
 {
     def("new_array", new_array);
     def("take_array", take_array);

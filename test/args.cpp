@@ -3,11 +3,12 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/args.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/class.hpp>
+#include <boost/python/overloads.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include "test_class.hpp"
 
@@ -38,7 +39,7 @@ struct X
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_f_overloads, X::f, 0, 3)
 
-BOOST_PYTHON_MODULE_INIT(args_ext)
+BOOST_PYTHON_MODULE(args_ext)
 {
     def("f", f, args("x", "y", "z")
         , "This is f's docstring"

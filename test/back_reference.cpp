@@ -4,7 +4,7 @@
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
 #include <boost/python/class.hpp>
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/has_back_reference.hpp>
 #include <boost/python/back_reference.hpp>
@@ -87,7 +87,7 @@ bool y_equality(back_reference<Y const&> y1, Y const& y2)
     return &y1.get() == &y2;
 }
 
-BOOST_PYTHON_MODULE_INIT(back_reference_ext)
+BOOST_PYTHON_MODULE(back_reference_ext)
 {
     def("copy_Y", copy_Y, return_value_policy<copy_const_reference>());
     def("copy_Z", copy_Z, return_value_policy<copy_const_reference>());

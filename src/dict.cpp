@@ -1,8 +1,7 @@
 #include <boost/python/dict.hpp>
 #include <boost/python/extract.hpp>
 
-namespace boost { namespace python {
-    
+namespace boost { namespace python { namespace detail {
 namespace
 {
   // When returning list objects from methods, it may turn out that the
@@ -18,28 +17,28 @@ namespace
   }
 
   // No PyDict_CheckExact; roll our own.
-  inline bool check_exact(dict const* p)
+  inline bool check_exact(dict_base const* p)
   {
       return  p->ptr()->ob_type == &PyDict_Type;
   }
 }
 
-detail::new_reference dict::call(object const& arg_)
+detail::new_reference dict_base::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
         (PyObject*)&PyDict_Type, "(O)", 
         arg_.ptr());
 }
 
-dict::dict()
+dict_base::dict_base()
     : object(detail::new_reference(PyDict_New()))
 {}
     
-dict::dict(object_cref data)
-    : object(dict::call(data))
+dict_base::dict_base(object_cref data)
+    : object(call(data))
 {}
     
-void dict::clear()
+void dict_base::clear()
 {
     if (check_exact(this))
         PyDict_Clear(this->ptr());
@@ -47,7 +46,7 @@ void dict::clear()
         this->attr("clear")();
 }
 
-dict dict::copy()
+dict dict_base::copy()
 {
     if (check_exact(this))
     {
@@ -62,7 +61,7 @@ dict dict::copy()
     }
 }
 
-object dict::get(object_cref k) const
+object dict_base::get(object_cref k) const
 {
     if (check_exact(this))
     {
@@ -75,17 +74,17 @@ object dict::get(object_cref k) const
     }
 }
 
-object dict::get(object_cref k, object_cref d) const
+object dict_base::get(object_cref k, object_cref d) const
 {
     return this->attr("get")(k,d);
 }
 
-bool dict::has_key(object_cref k) const
+bool dict_base::has_key(object_cref k) const
 {
     return extract<bool>(this->attr("has_key")(k)); 
 }
 
-list dict::items() const
+list dict_base::items() const
 {
     if (check_exact(this))
     {
@@ -98,22 +97,22 @@ list dict::items() const
     }
 }
 
-object dict::iteritems() const
+object dict_base::iteritems() const
 {
     return this->attr("iteritems")();
 }
 
-object dict::iterkeys() const
+object dict_base::iterkeys() const
 {
     return this->attr("iterkeys")();
 }
 
-object dict::itervalues() const
+object dict_base::itervalues() const
 {
     return this->attr("itervalues")();
 }
 
-list dict::keys() const
+list dict_base::keys() const
 {
     if (check_exact(this))
     {
@@ -126,24 +125,24 @@ list dict::keys() const
     }
 }
 
-tuple dict::popitem()
+tuple dict_base::popitem()
 {
     return tuple(detail::borrowed_reference(
                      this->attr("popitem")().ptr()
                      ));
 }
 
-object dict::setdefault(object_cref k)
+object dict_base::setdefault(object_cref k)
 {
     return this->attr("setdefault")(k);
 }
 
-object dict::setdefault(object_cref k, object_cref d)
+object dict_base::setdefault(object_cref k, object_cref d)
 {
     return this->attr("setdefault")(k,d);
 }
 
-void dict::update(object_cref other)
+void dict_base::update(object_cref other)
 {
     if (check_exact(this))
     {
@@ -156,7 +155,7 @@ void dict::update(object_cref other)
     }
 }
 
-list dict::values() const
+list dict_base::values() const
 {
     if (check_exact(this))
     {
@@ -169,4 +168,4 @@ list dict::values() const
     }
 }
 
-}}  // namespace boost::python
+}}}  // namespace boost::python

@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/iterator.hpp>
@@ -35,7 +35,7 @@ list_range2 range2(list_int& x)
 // to work around an MSVC6 linker bug, which causes it to complain
 // about a "duplicate comdat" if the input iterator is instantiated in
 // the same module with the others.
-BOOST_PYTHON_MODULE_INIT(input_iterator)
+BOOST_PYTHON_MODULE(input_iterator)
 {
     def("range2", &::range2);
     

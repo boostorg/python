@@ -3,7 +3,7 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/object.hpp>
 
@@ -279,7 +279,7 @@ bool check_inplace(object l, object o)
     return true;
 }
 
-BOOST_PYTHON_MODULE_INIT(object_ext)
+BOOST_PYTHON_MODULE(object_ext)
 {
     def("call_object_3", call_object_3);
     def("message", message);

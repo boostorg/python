@@ -35,7 +35,6 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     void add_property(char const* name, object const& fget);
     void add_property(char const* name, object const& fget, object const& fset);
     void setattr(char const* name, object const&);
-    void enable_pickling(bool getstate_manages_dict);
 
     // Set a special attribute in the class which tells Boost.Python
     // to allocate extra bytes for embedded C++ objects in Python
@@ -45,6 +44,10 @@ struct BOOST_PYTHON_DECL class_base : python::api::object
     // Set an __init__ function which throws an appropriate exception
     // for abstract classes.
     void def_no_init();
+
+    // Implementation detail. Hiding this in the private section would
+    // require use of template friend declarations.
+    void enable_pickling(bool getstate_manages_dict);
 };
 
 }}} // namespace boost::python::objects

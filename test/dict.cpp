@@ -1,4 +1,4 @@
-#include <boost/python/module_init.hpp>
+#include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/dict.hpp>
@@ -68,7 +68,7 @@ void test_templates(object print)
     //print(tmp[3]);
 }
     
-BOOST_PYTHON_MODULE_INIT(dict_ext)
+BOOST_PYTHON_MODULE(dict_ext)
 {
     def("new_dict", new_dict);
     def("data_dict", data_dict);
