@@ -16,9 +16,7 @@ namespace { // Avoid cluttering the global namespace.
   }
 }
 
-extern "C"
-DL_EXPORT(void)
-initnoncopyable_import()
+BOOST_PYTHON_MODULE_INIT(noncopyable_import)
 {
   try
   {

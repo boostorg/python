@@ -3,9 +3,7 @@ namespace python = boost::python;
 
 #include "noncopyable.h"
 
-extern "C"
-DL_EXPORT(void)
-initnoncopyable_export()
+BOOST_PYTHON_MODULE_INIT(noncopyable_export)
 {
   try
   {
