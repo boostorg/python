@@ -16,7 +16,8 @@
 //  compiler command-line.
 
 // Revision History:
-// 01 Mar 01  define PyObject_INIT() for Python 1.x
+// 04 Mar 01  Rolled in some changes from the Dragon fork (Dave Abrahams)
+// 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
 
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
@@ -64,6 +65,8 @@ typedef int pid_t;
 #   define _MSC_VER 900
 #  endif
 
+# elif defined(_MSC_VER)
+#  include <limits> // prevents Python.h from defining LONGLONG_MAX, LONGLONG_MIN, and ULONGLONG_MAX
 # endif
 
 #endif // _WIN32
