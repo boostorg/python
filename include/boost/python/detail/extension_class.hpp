@@ -286,7 +286,7 @@ class python_extension_class_converters
         boost::python::detail::report_missing_ptr_data(self, boost::python::detail::class_registry<T>::class_object(), typeid(T));
         boost::python::throw_argument_error();
 
-        return *(PtrType*)0;
+        return *(PtrType*)obj;
     }
 
     // Extract from obj a reference to the PtrType object which is holding a
