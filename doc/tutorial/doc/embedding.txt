@@ -2,6 +2,7 @@
 
 [/ this probably needs to be merged into quickstart.txt ]
 
+[def __alert__              [$theme/alert.gif]]
 [def :-)                    [$theme/smiley.gif]]
 [def Py_Initialize          [@http://www.python.org/doc/current/api/initialization.html#l2h-652  Py_Initialize]]
 [def Py_Finalize            [@http://www.python.org/doc/current/api/initialization.html#l2h-656  Py_Finalize]]
@@ -13,27 +14,35 @@
 [def Py_XINCREF             [@http://www.python.org/doc/current/api/countingRefs.html#l2h-65     Py_XINCREF]]
 [def Py_XDECREF             [@http://www.python.org/doc/current/api/countingRefs.html#l2h-67     Py_XDECREF]]
 [def PyImport_AppendInittab [@http://www.python.org/doc/current/api/importing.html#l2h-137       PyImport_AppendInittab]]
+[def PyImport_AddModule     [@http://www.python.org/doc/current/api/importing.html#l2h-125       PyImport_AddModule]]
+[def PyModule_GetDict       [@http://www.python.org/doc/current/api/moduleObjects.html#l2h-594   PyModule_GetDict]]
 [def handle                 [@../../v2/handle.html                                               handle]]
 
-[page Embedding]
+[page:0 Embedding]
 
-[h2 Embedding basics]
+[h2 Getting started]
 
 By now you should know how to use Boost.Python to call your C++ code from Python. However sometimes you might need to do the reverse: call Python code from the C++-side. This requires you to 'embed' the Python interpreter in your C++ program. For this we need to use the [@http://www.python.org/doc/current/api/api.html Python C API].
 
-The basics to embedding with the API are pretty simple. First you need to make sure that your program links with [^pythonXY.lib] where X.Y is your Python version number. You'll typically find this library in the libs subdirectory of your Python installation. Now your program can follow these steps:
+To get started you'll need to follow these simple steps:
 
-# '''#include''' [^"Python.h"]
+# You need to make sure that your program links with [^pythonXY.lib] where X.Y is your Python version number. You'll typically find this library in the [^/libs] subdirectory of your Python installation.[br][br]
 
-# Call Py_Initialize() to start the Python interpreter.
+# Your program must '''#include''' [^"Python.h"]. You'll need to add Python's [^/include] subdirectory to your include path for this.[br][br]
 
-# Call other Python C API routines. 
+# Call Py_Initialize() to start the Python interpreter. Also creates the [^__main__] module.[br][br]
+
+# Call other Python C API routines.[br][br]
 
 # Call Py_Finalize() to stop the Python interpreter and release its resources.
 
 Of course, there can be other C++ code between all of these steps.
 
-Now this looks pretty simple, but we'll see in the next section that step 3 can be tricky.
+[:[*TODO:] [^Perhaps there should be a template Jamfile for embedding? Then we can put (a link to) it here.]]
+
+[:['[*Now that we can embed the interpreter in our programs, lets see how to put it to use...]]]
+
+[page:1 Embedding basics]
 
 [h2 Manual reference counting]
 
@@ -45,11 +54,9 @@ I will briefly explain how to update the reference counts correctly, but I'll so
 
 The API functions that return PyObject pointers are listed in the Python C API documentation as either returning a ['borrowed] or a ['new] reference. The difference is in ['reference ownership]. 
 
-When a ['new] reference is returned, you own that reference. Therefore you don't need to worry about the object being deallocated while you still need it. You do need to decrease the reference count when you are done with it however, otherwise the object will never be deallocated. In other words, you'll have a resource leak. 
+When a ['new] reference is returned, you own that reference. Therefore you don't need to worry about the object being deallocated while you still need it. You do need to decrease the reference count when you are done with it however, otherwise the object will never be deallocated: you'll have a ['resource leak]. 
 
 Here's a simple example:
-
-[:[*TODO:] [^need different examples because the current ones can be done very naturally with python::tuple which makes them rather unsuitable for explaining python::handle ]]
 
     // Create a new tuple of 3 elements long
     PyObject* my_tuple = PyTuple_New(3);
@@ -57,7 +64,7 @@ Here's a simple example:
     // We're done with the tuple
     Py_XDECREF(my_tuple);
 
-When a ['borrowed] reference is returned, you do not have ownership of the reference. So if you just want to discard the return value, there is nothing you have to do: you didn't own it anyway. If want to use it however, you'll first have to increase its reference count (to prevent the objects deletion). Then later on when you are done with itm you'll need to decrease the reference count again. Here's another example:
+When a ['borrowed] reference is returned, you do not have ownership of the reference. So if you just want to discard the return value, there is nothing you have to do: you didn't own it anyway. If want to use it however, you'll first have to increase its reference count (to prevent the object's deletion). Then later on when you are done with itm you'll need to decrease the reference count again. Here's another example:
 
     // Retrieve the first item in the tuple
     PyObject* first = PyTuple_GetItem(my_tuple, 0);
@@ -68,29 +75,82 @@ When a ['borrowed] reference is returned, you do not have ownership of the refer
 
 While this certainly works, it's hardly elegant and it's easy to make mistakes, especially when there are multiple execution paths.
 
+[h2 Running Python code from C++]
+
+To run Python code from C++ there is a family of functions in the API starting with the PyRun_ prefix. You can find the list of these fuctions [@http://www.python.org/doc/current/api/veryhigh.html here]. I shall discuss one of them, the others work very similarly.
+
+    PyObject* PyRun_String(char *str, int start, PyObject *globals, PyObject *locals)
+
+PyRun_String takes the code to execute as a null-terminated (C-style) string in its [^str] parameter. The function returns a new reference to the Python object which results from executing the code. If a Python exception occurred during execution, the null pointer is returned.
+
+The [^start] parameter is the start symbol from the Python grammar to use for interpreting the code. The possible values are:
+
+[table Start symbols
+
+    [Py_eval_input]   [for interpreting isolated expressions]
+    [Py_file_input]   [for interpreting sequences of statements]
+    [Py_single_input] [for interpreting a single statement]
+]
+
+Lastly, the [^globals] and [^locals] parameters are Python dictionaries containing the globals and locals of the context in which to run the code. For most intents and purposes you can use the namespace dictionary of the running module for both [^globals] and [^locals].
+
+So how do we get a module's namespace dictionary? First we need to get a reference to the module. The function to do this is PyImport_AddModule. Contrary to what you might guess from its name, it returns a borrowed reference to an [*existing] module. 
+
+Then once we have a reference to the module, we can use PyModule_GetDict to get a borrowed reference to the module's namespace dictionary.
+
+Since the running module is usually the [^__main__] module created upon interpreter initialization, the code to execute a Python program from a string becomes:
+
+    // Get the __main__ module namespace
+    PyObject* main_module = PyImport_AddModule("__main__");
+    Py_XINCREF(main_module);
+    PyObject* main_namespace = PyModule_GetDict(main_module);
+    Py_XINCREF(main_namespace);
+    // Run a single Python expression and retrieve the result
+    PyObject* result = PyRun_String("1 + 1", 
+        Py_eval_input, main_namespace, main_namespace);
+    ... // Use the result
+    // Cleanup
+    Py_XDECREF(result);
+    Py_XDECREF(main_namespace);
+    Py_XDECREF(main_module);
+
+
+[blurb __alert__ [*Warning][br][br]
+
+Be careful about what Python code you run and where. Running the addition above on your computer can hardly do any harm. But letting users run arbitrary Python code through your program which is running on a webserver can be a security risk.
+]
+
+[:['[*Next up: How Boost.Python can simplify embedding...]]]
+
+[page:1 Embedding with Boost.Python]
+
 [h2 Boost.Python to the rescue]
 
-Now we get to the good news. If you don't want to do all the error prone reference counting yourself, you can let Boost.Python do all the work. First include [^<boost/python.hpp>] instead of [^"Python.h"] and link to [^boost_python.lib] (or [^boost_python_debug.lib]) instead of [^pythonXY.lib]. Then all we really need to do is replace every PyObject* with handle<PyObject> and we can remove all the Py_XINCREFs and Py_XDECREFs! All the reference counting will be done automagically through the power of the [@http://sourceforge.net/docman/display_doc.php?docid=8673&group_id=9028 Resource Acquisition Is Initialization] idiom. 
+Now we get to the good news. If you don't want to do all the error prone reference counting yourself, you can let Boost.Python do all the work. First include [^<boost/python.hpp>] instead of [^"Python.h"] and link to [^boost_python.lib] (or [^boost_python_debug.lib]) instead of [^pythonXY.lib]. Then all we really need to do is replace every PyObject* with handle<> and we can remove all the Py_XINCREFs and Py_XDECREFs! All the reference counting will be done automagically through the power of the [@http://sourceforge.net/docman/display_doc.php?docid=8673&group_id=9028 Resource Acquisition Is Initialization] idiom. 
 
-We still need a way to differentiate between new and borrowed references though. Luckily, this is pretty straightforward using the [@../../v2/handle.html#borrowed-spec borrowed] function. Here is an example using handle that combines the functionality of the above two PyObject* examples. Notice how it is both shorter and cleaner:
+We still need a way to differentiate between new and borrowed references though. Luckily, this is pretty straightforward using the [@../../v2/handle.html#borrowed-spec borrowed] function. Let's rewrite the example to run Python code from a string to use handles:
 
-    // Create a new tuple of 3 elements long
-    handle<PyObject> my_tuple( PyTuple_New(3) );
-    // Retrieve the first item in the tuple
-    handle<PyObject> first( borrowed(PyTuple_GetItem(my_tuple.get(), 0)) );
-    ... // Use first here
+    // Get the __main__ module namespace
+    handle<> main_module( borrowed(PyImport_AddModule("__main__")) );
+    handle<> main_namespace( borrowed(PyModule_GetDict(main_module)) );
+    // Run a single Python expression and retrieve the result
+    handle<> result( PyRun_String("1 + 1", 
+        Py_eval_input, main_namespace.get(), main_namespace.get()) );
+    ... // Use the result
 
-Note that the handle member function get() returns the raw PyObject* that is held by the handle. 
-
-[:[*TODO:] [^Explain PyRun_... basics, somewhere. Perhaps these functions can be used in the examples?]]
+The [@../../v2/handle.html#handle-spec-observers get]() member function used here returns the raw PyObject* that is held by the handle.
 
 [h2 Boost.Python modules in an embedded program]
 
-Now that we know how to call Python code from C++ and C++ code from Python, how about doing it both at the same time? Sometimes you might want to call Python code from C++ and have that Python code call C++ code again. If you built your Boost.Python module then you can just use it in your embedded Python code as you would in a standalone Python program: no further changes necessary.
+Now that we know how to call Python code from C++ and C++ code from Python, how about doing both at the same time? Sometimes you might want to call Python code from C++ and have that Python code call C++ code again. 
 
-However, you can also define the Boost.Python module in the same program that embeds the Python code which will be using the module. Then you won't have to build the module and place it in the proper directory, and this also prevents others from using it in their own Python code. (Unless they start taking your executable apart that is. :-)) 
+If you built your Boost.Python module and put it in the proper directory, you can just use it in your embedded Python code as you would in a standalone Python program. The embedded interpreter will be able to find your module just as the standalone interpreter would.
 
-Doing this is relatively straightforward. You just define your Boost.Python module as usual and use the basic embedding steps described above. However, before calling Py_Initialize you call PyImport_AppendInittab first. This function takes the name and initialization function of your module as parameters and adds the module to the interpreters list of builtin modules. So when the Python interpreter comes across an import statement, it will find the module in its list of builtin modules instead of (unsuccessfully) searching for it in the Python directory.
+However, you can also define the Boost.Python module in the same program that embeds the Python interpreter. Then you won't have to build the module seperately and place it in the proper directory. This also prevents others from using your module in their own Python code. (Unless they start taking your executable apart that is. :-)) 
+
+Doing this is relatively straightforward. You just define your Boost.Python module as usual and use the basic embedding steps described earlier. However, before calling Py_Initialize you call PyImport_AppendInittab first. 
+
+This function takes the name and [@../../v2/module.html#BOOST_PYTHON_MODULE-spec initialization function] of your module as parameters and adds the module to the interpreter's list of builtin modules. So when the Python interpreter comes across an import statement, it will find the module in its list of builtin modules instead of (unsuccessfully) searching for it in the Python directory.
 
 Your program will look something like this:
 
@@ -103,9 +163,12 @@ Your program will look something like this:
     Py_Initialize();
     ...
 
-There is one catch at the moment though. You must [*not] call Py_Finalize. Boost.Python keeps some PyObject references alive in global data structures, and when those go out of scope after interpreter finalization, Python crashes. This will be fixed in the future. 
+[blurb __alert__ [*Warning][br][br]
+
+When creating Boost.Python modules in the same program that embeds interpreter, you must [*['not]] call Py_Finalize. Boost.Python keeps some PyObject references alive in global data structures, and when those go out of scope after interpreter finalization, Python crashes. This will be fixed in the future. Stay tuned.
+]
 
 [h2 Additional reading]
 
-A more elaborate example showing these techniques is located at [@../../../test/embedding.cpp libs/python/test/embedding.cpp]. 
+A more elaborate example showing these techniques is located at [@../../../test/embedding.cpp /libs/python/test/embedding.cpp]. 
 
