@@ -91,7 +91,11 @@ BOOST_PYTHON_MODULE(operators_ext)
         .def(pow(self,self))
         .def(pow(self,int()))
         .def(pow(int(),self))
+#if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+        .def(!self)  // it doesn't know about the "not" keyword!
+#else
         .def(not self)
+#endif 
         ;
 
     class_<test_class<1> >("Z", init<int>())
