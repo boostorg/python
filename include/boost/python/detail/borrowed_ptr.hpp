@@ -29,6 +29,24 @@ struct is_borrowed_ptr<borrowed<T>*>
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
+template<typename T>
+struct is_borrowed_ptr<borrowed<T> const*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+template<typename T>
+struct is_borrowed_ptr<borrowed<T> volatile*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
+template<typename T>
+struct is_borrowed_ptr<borrowed<T> const volatile*>
+{
+    BOOST_STATIC_CONSTANT(bool, value = true);
+};
+
 # else // no partial specialization
 
 typedef char (&yes_borrowed_ptr_t)[1];
