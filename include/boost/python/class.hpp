@@ -61,6 +61,9 @@ namespace boost { namespace python {
 
 enum no_init_t { no_init };
 
+template <class Derived>
+struct def_arg {}; // Generic visitor
+
 namespace detail
 {
   // This function object is used with mpl::for_each to write the id
@@ -88,7 +91,7 @@ namespace detail
 
   template <detail::operator_id, class L, class R>
   struct operator_;
-
+  
   // Register to_python converters for a class T.  The first argument
   // will be mpl::true_ unless noncopyable was specified as a
   // class_<...> template parameter. The 2nd argument is a pointer to
@@ -267,6 +270,14 @@ class class_ : public objects::class_base
     {
         define_init(*this, i.derived());
         return *this;
+    }
+
+    // Generic visitation
+    template <class Derived>
+    self& def(def_arg<Derived> const& visitor)
+    {
+         static_cast<Derived const&>(visitor).visit(*this);
+         return *this;
     }
 
     // Wrap a member function or a non-member function which can take
