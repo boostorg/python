@@ -19,7 +19,7 @@
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/for_each.hpp>
-# include <boost/mpl/bool_t.hpp>
+# include <boost/mpl/bool_c.hpp>
 # include <boost/python/object/select_holder.hpp>
 # include <boost/python/object/class_wrapper.hpp>
 # include <boost/python/data_members.hpp>
@@ -42,14 +42,14 @@ namespace detail
   // to the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<true> const&, Holder*, ref const& obj, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_c<true> const&, Holder*, ref const& obj, T* = 0)
   {
       objects::class_wrapper<T,Holder> x(obj);
   }
 
   // Tag dispatched to have no effect.
   template <class T, class Holder>
-  static inline void register_copy_constructor(mpl::bool_t<false> const&, Holder*, ref const&, T* = 0)
+  static inline void register_copy_constructor(mpl::bool_c<false> const&, Holder*, ref const&, T* = 0)
   {
   }
 }
@@ -148,7 +148,7 @@ class class_ : public objects::class_base
     // Define the default constructor.
     self& def_init()
     {
-        this->def_init(mpl::type_list<>::type());
+        this->def_init(mpl::list<>::type());
         return *this;
     }
 
@@ -196,7 +196,7 @@ class class_ : public objects::class_base
     
             // Write the rest of the elements into succeeding positions.
             class_id* p = ids + 1;
-            mpl::for_each<bases, void, detail::write_type_id>::execute(&p);
+            mpl::fold<bases, void, detail::write_type_id>::execute(&p);
         }
         
         BOOST_STATIC_CONSTANT(
@@ -218,7 +218,7 @@ inline class_<T,X1,X2,X3>::class_()
     objects::register_class_from_python<T,bases>();
     
     detail::register_copy_constructor<T>(
-        mpl::bool_t<is_copyable>()
+        mpl::bool_c<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , this->object());
 }
@@ -231,7 +231,7 @@ inline class_<T,X1,X2,X3>::class_(char const* name)
     objects::register_class_from_python<T,bases>();
     
     detail::register_copy_constructor<T>(
-        mpl::bool_t<is_copyable>()
+        mpl::bool_c<is_copyable>()
         , objects::select_holder<T,held_type>((held_type*)0).get()
         , this->object());
 }
@@ -271,7 +271,7 @@ namespace detail
 
     template <class T, class Prev>
     struct select_held_type
-        : mpl::select_type<
+        : mpl::select_if_c<
             type_traits::ice_or<
                  specifies_bases<T>::value
                , is_same<T,noncopyable>::value
