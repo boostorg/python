@@ -6,7 +6,7 @@
 #ifndef RETURN_FROM_PYTHON_DWA200265_HPP
 # define RETURN_FROM_PYTHON_DWA200265_HPP
 
-# include <boost/python/converter/callback_from_python_base.hpp>
+# include <boost/python/converter/from_python.hpp>
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/converter/registered_pointee.hpp>
@@ -77,7 +77,7 @@ struct return_from_python<void>
     
     result_type operator()(PyObject* x) const
     {
-        converter::detail::absorb_result(x);
+        converter::void_from_python(x);
 # ifdef BOOST_NO_VOID_RETURNS
         return result_type();
 # endif 
@@ -101,21 +101,21 @@ namespace detail
   inline typename return_rvalue_from_python<T>::result_type
   return_rvalue_from_python<T>::operator()(PyObject* obj)
   {
-      return *(T*)convert_rvalue(obj, m_data.stage1, m_data.storage.bytes);
+      return *(T*)rvalue_from_python_stage2(obj, m_data.stage1, m_data.storage.bytes);
   }
 
   template <class T>
   inline T return_reference_from_python<T>::operator()(PyObject* obj) const
   {
       return python::detail::void_ptr_to_reference(
-          callback_convert_reference(obj, registered<T>::converters)
+          reference_from_python(obj, registered<T>::converters)
           , (T(*)())0);
   }
 
   template <class T>
   inline T return_pointer_from_python<T>::operator()(PyObject* obj) const
   {
-      return T(callback_convert_pointer(obj, registered_pointee<T>::converters));
+      return T(pointer_from_python(obj, registered_pointee<T>::converters));
   }
 }
   

@@ -27,7 +27,7 @@ dll bpl
   src/module.cpp
   src/objects2.cpp
   src/converter/builtin_converters.cpp
-  src/converter/callback.cpp
+  src/converter/arg_to_python_base.cpp
   src/object/iterator.cpp
   src/object_protocol.cpp
   src/object_operators.cpp

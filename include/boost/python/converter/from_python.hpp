@@ -18,11 +18,20 @@ struct rvalue_from_python_chain;
 BOOST_PYTHON_DECL void* get_lvalue_from_python(
     PyObject* source, registration const&);
 
+BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
+    PyObject* source, registration const&);
+
 BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source, registration const&);
 
-BOOST_PYTHON_DECL rvalue_from_python_chain const* implicit_conversion_chain(
-    PyObject* source, registration const&);
+BOOST_PYTHON_DECL void* rvalue_from_python_stage2(
+    PyObject*, rvalue_from_python_stage1_data&, void* storage);
+
+BOOST_PYTHON_DECL void* reference_from_python(PyObject*, registration const&);
+BOOST_PYTHON_DECL void* pointer_from_python(PyObject*, registration const&);
+
+BOOST_PYTHON_DECL void void_from_python(PyObject*);
+
 
 }}} // namespace boost::python::converter
 
