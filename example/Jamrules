@@ -3,4 +3,5 @@
 
 # Edit this path to point at the root directory of your Boost
 # installation.  Absolute paths work, too.
-project boost : ../../.. ;
+path-global BOOST_ROOT : ../../.. ;
+project boost : $(BOOST_ROOT) ;
