@@ -35,16 +35,16 @@ inline void handle_exception()
     handle_exception(detail::rethrow);
 }
 
-BOOST_PYTHON_DECL PyObject* expect_non_null_impl(PyObject* x);
+BOOST_PYTHON_DECL void throw_argument_error();
+BOOST_PYTHON_DECL void throw_error_already_set();
 
 template <class T>
 inline T* expect_non_null(T* x)
 {
-    return (T*)expect_non_null_impl((PyObject*)x);
+    if (x == 0)
+        throw_error_already_set();
+    return x;
 }
-
-BOOST_PYTHON_DECL void throw_argument_error();
-BOOST_PYTHON_DECL void throw_error_already_set();
 
 }} // namespace boost::python
 
