@@ -210,7 +210,8 @@ bool Dict::accepts(Ptr p)
 void Dict::clear()
 { PyDict_Clear(get()); }
 
-const Ptr& Dict::Proxy::operator=(const Ptr& rhs) {
+const Ptr& Dict::Proxy::operator=(const Ptr& rhs)
+{
     if (PyDict_SetItem(m_dict.get(), m_key.get(), rhs.get()) == -1)
         throw ErrorAlreadySet();
     return rhs;
@@ -234,13 +235,24 @@ Ptr Dict::operator[](Ptr key) const {
 }
 
     
-Ptr Dict::get_item(const Ptr& key, const Ptr& default_ /* = Ptr() */)
+Ptr Dict::get_item(const Ptr& key, const Ptr& default_ /* = Ptr() */) const
 {
     PyObject* value_or_null = PyDict_GetItem(get(), key.get());
     if (value_or_null == 0 && !PyErr_Occurred())
         return default_;
     else
         return Ptr(value_or_null, Ptr::borrowed); // Will throw if there was another error
+}
+        
+void Dict::set_item(const Ptr& key, const Ptr& value)
+{
+    if (PyDict_SetItem(get(), key.get(), value.get()) == -1)
+        throw ErrorAlreadySet();
+}
+        
+void Dict::set_item(const Object& key, const Ptr& value)
+{
+    set_item(key.reference(), value);
 }
         
 void Dict::erase(Ptr key) {
@@ -264,7 +276,7 @@ Ptr Dict::operator[](const Object& key) const
     return this->operator[](key.reference());
 }
 
-Ptr Dict::get_item(const Object& key, Ptr default_)
+Ptr Dict::get_item(const Object& key, Ptr default_) const
 {
     return this->get_item(key.reference(), default_);
 }
@@ -402,16 +414,31 @@ Tuple List::as_tuple() const
 
 const Ptr& List::Proxy::operator=(const Ptr& rhs)
 {
-    int result = PyList_SetItem(m_list.get(), m_index, rhs.get());
-    if (result == -1)
-        throw ErrorAlreadySet();
-    Py_INCREF(rhs.get());
+    m_list.set_item(m_index, rhs);
     return rhs;
 }
 
 List::Proxy::operator Ptr() const
 {
     return Ptr(PyList_GetItem(m_list.get(), m_index), Ptr::borrowed);
+}
+
+Ptr List::get_item(std::size_t pos) const
+{
+    return Ptr(PyList_GetItem(this->get(), pos), Ptr::borrowed);
+}
+
+void List::set_item(std::size_t pos, Ptr rhs)
+{
+    int result = PyList_SetItem(this->get(), pos, rhs.get());
+    if (result == -1)
+        throw ErrorAlreadySet();
+    Py_INCREF(rhs.get());
+}
+
+void List::set_item(std::size_t pos, Object rhs)
+{
+    this->set_item(pos, rhs.reference());
 }
 
 List::Proxy::Proxy(const Ptr& list, std::size_t index)

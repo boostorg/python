@@ -19,9 +19,34 @@
 
 namespace py {
 
+
+#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+}
+#endif
+
+template <class T, class Base>
+struct PyPtrConversions : Base
+{
+    inline friend T from_python(PyObject* x, py::Type<const T&>)
+        { return T(x, T::new_ref); }
+
+    inline friend T from_python(PyObject* x, py::Type<T>)
+        { return T(x, T::new_ref); }
+    
+    inline friend PyObject* to_python(T x)
+        { return x.release(); }
+    
+};
+
+#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
+namespace py {
+using ::PyPtrConversions;
+#endif
+
 template <class T>
 class PyPtr
-	: public boost::dereferenceable<PyPtr<T>, T*> // supplies op->
+	: public PyPtrConversions<PyPtr<T>,
+       boost::dereferenceable<PyPtr<T>, T*> > // supplies op->
 {
 public:
 	PyPtr(const PyPtr& rhs)

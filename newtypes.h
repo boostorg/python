@@ -181,6 +181,18 @@ class Setattrable : public Base
     int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
 };
 
+template <class Base>
+class Reprable : public Base
+{
+ public:
+    typedef Reprable Properties; // Convenience for derived class construction
+    typedef typename Base::Instance Instance;
+    Reprable(PyTypeObject* type_type, const char* name);
+    Reprable(PyTypeObject* type_type);
+ private:
+    PyObject* instance_repr(PyObject* instance) const;
+};
+
 //
 // Member function definitions
 //
@@ -259,6 +271,27 @@ template <class Base>
 int Setattrable<Base>::instance_setattr(PyObject* instance, const char* name, PyObject* value) const
 {
     return Downcast<Instance>(instance)->setattr(name, value);
+}
+
+// Reprable
+template <class Base>
+Reprable<Base>::Reprable(PyTypeObject* type_type, const char* name)
+    : Base(type_type, name)
+{
+    this->enable(repr);
+}
+        
+template <class Base>
+Reprable<Base>::Reprable(PyTypeObject* type_type)
+    : Base(type_type)
+{
+    this->enable(repr);
+}
+        
+template <class Base>
+PyObject* Reprable<Base>::instance_repr(PyObject* instance) const
+{
+    return Downcast<Instance>(instance)->repr();
 }
 
 namespace detail {

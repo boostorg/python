@@ -87,7 +87,7 @@ namespace detail {
       m_bases = new_bases;
   }
 
-  PyObject* ClassBase::getattr(const char* name)
+  PyObject* ClassBase::getattr(const char* name) const
   {
       if (!PY_CSTD_::strcmp(name, "__dict__"))
       {
@@ -152,6 +152,18 @@ namespace detail {
       }
       return 0;
   }
+
+  // Mostly copied wholesale from Python's classobject.c
+  PyObject* ClassBase::repr() const
+  {
+      PyObject *mod = PyDict_GetItemString(m_name_space.get(), "__module__");
+      unsigned long address = reinterpret_cast<unsigned long>(this);
+      String result = (mod == NULL || !PyString_Check(mod))
+                ? String("<extension class %s at %lx>") % Tuple(m_name, address)
+                : String("<extension class %s.%s at %lx>") % Tuple(Ptr(mod, Ptr::borrowed), m_name, address);
+      return result.reference().release();
+  }
+
 
   int ClassBase::setattr(const char* name, PyObject* value)
   {

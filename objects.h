@@ -87,6 +87,9 @@ class List : public Object
     std::size_t size();
     Ptr operator[](std::size_t pos) const;
     Proxy operator[](std::size_t pos);
+    Ptr get_item(std::size_t pos) const;
+    void set_item(std::size_t pos, Ptr);
+    void set_item(std::size_t pos, Object);
     void insert(std::size_t index, Ptr item);
     void push_back(Ptr item);
     void append(Ptr item);
@@ -155,14 +158,16 @@ class Dict : public Object
     Proxy operator[](Ptr key);
     Ptr operator[](Ptr key) const;
 
-    Ptr get_item(const Ptr& key, const Ptr& _default = Ptr());
+    Ptr get_item(const Ptr& key, const Ptr& default_ = Ptr()) const;
+    void set_item(const Ptr& key, const Ptr& value);
         
     void erase(Ptr key);
 
     Proxy operator[](const Object& key);
     Ptr operator[](const Object& key) const;
 
-    Ptr get_item(const Object& key, Ptr default_ = Ptr());
+    Ptr get_item(const Object& key, Ptr default_ = Ptr()) const;
+    void set_item(const Object& key, const Ptr& value);
         
     void erase(const Object& key);
 
@@ -194,7 +199,7 @@ struct List::Proxy
     friend class List;
     Proxy(const Ptr& list, std::size_t index);
  private:
-    Ptr m_list;
+    List m_list;
     std::size_t m_index;
 };
 

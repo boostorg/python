@@ -92,9 +92,10 @@ namespace detail {
       Dict& dict();
       
       // Standard Python functions.
-      PyObject* getattr(const char* name);
+      PyObject* getattr(const char* name) const;
       int setattr(const char* name, PyObject* value);
-    
+      PyObject* repr() const;
+      
    protected:
       bool initialize_instance(Instance* instance, PyObject* args, PyObject* keywords);
       void add_base(Ptr base);
@@ -184,7 +185,7 @@ class Class
 // The type of a Class<T> object.
 template <class T>
 class MetaClass
-    : public Callable<Getattrable<Setattrable<TypeObject<Class<T> > > > >,
+    : public Reprable<Callable<Getattrable<Setattrable<TypeObject<Class<T> > > > > >,
       boost::noncopyable
 {
  public:
@@ -192,7 +193,6 @@ class MetaClass
 
     // Standard Python functions.
     PyObject* call(PyObject* args, PyObject* keywords);
- private:
     
     struct TypeObject
         : Singleton<TypeObject, Callable<py::TypeObject<MetaClass> > >

@@ -379,6 +379,14 @@ void ExtensionClassBase::add_default_method(PyPtr<Function> method, const char* 
         // clear our dict now. It will henceforth contain only default method
         // implementations.
         dict() = Dict();
+
+        // Copy the "__module__" attribute from the fake base class, if any
+        PyObject *module_name = PyDict_GetItemString(new_base->dict().get(), "__module__");
+        if (module_name != 0 && PyString_Check(module_name))
+        {
+            static String module_key("__module__", String::interned);
+            PyDict_SetItem(dict().get(), module_key.get(), module_name);
+        }
     }
     Function::add_to_namespace(method, name, dict().get());
 }
