@@ -51,7 +51,7 @@ void function::add_to_namespace(reference<function> new_function, const char* na
                             (string("Attempt to overload ") + name
                              + " failed. The existing attribute has type "
                              + existing_object->ob_type->tp_name).get());
-            throw error_already_set();
+            throw_error_already_set();
         }
     }
 }

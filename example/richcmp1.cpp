@@ -35,7 +35,7 @@ namespace vects {
     { \
       if (lhs.size() != rhs.size()) { \
         PyErr_SetString(PyExc_ValueError, "vectors have different sizes"); \
-        throw boost::python::error_already_set(); \
+        boost::python::throw_error_already_set(); \
       } \
       std::vector<bool> result(lhs.size()); \
       for (std::size_t i=0; i<lhs.size(); i++) { \

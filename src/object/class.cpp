@@ -222,7 +222,7 @@ namespace
           string report("extension class wrapper for base class ");
           (report += id.name()) += " has not been created yet";
           PyErr_SetObject(PyExc_RuntimeError, report.get());
-          throw error_already_set();
+          throw_error_already_set();
       }
       return p->value;
   }
@@ -273,14 +273,14 @@ void class_base::add_property(char const* name, ref const& fget)
 {
     ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "O", fget.get()));
     if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 void class_base::add_property(char const* name, ref const& fget, ref const& fset)
 {
     ref property(PyObject_CallFunction((PyObject*)&PyProperty_Type, "OO", fget.get(), fset.get()));
     if (PyObject_SetAttrString(object().get(), const_cast<char*>(name), property.get()) < 0)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 }}} // namespace boost::python::objects

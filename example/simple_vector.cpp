@@ -32,7 +32,7 @@ namespace { // Avoid cluttering the global namespace.
 
   void raise_vector_IndexError() {
     PyErr_SetString(PyExc_IndexError, "vector index out of range");
-    throw python::error_already_set();
+    python::throw_error_already_set();
   }
 
   double getitem(const std::vector<double>& vd, std::size_t key) {
@@ -90,8 +90,8 @@ BOOST_PYTHON_MODULE_INIT(simple_vector)
     python::class_builder<std::vector<double>, vector_double_wrapper>
       vector_double(this_module, "vector_double");
 
-    vector_double.def(python::constructor<>());
     vector_double.def(python::constructor<int>());
+    vector_double.def(python::constructor<>());
     vector_double.def(python::constructor<python::tuple>());
     vector_double.def(&std::vector<double>::size, "__len__");
     vector_double.def(getitem, "__getitem__");

@@ -24,7 +24,7 @@ namespace detail
             PyErr_SetString(
                 PyExc_TypeError
                 , const_cast<char*>("no to_python (by-value) converter found for type"));
-            throw error_already_set();
+            throw_error_already_set();
         }
         
         return source == 0
@@ -46,7 +46,7 @@ namespace detail
           PyErr_SetString(
               PyExc_TypeError
               , const_cast<char*>("no from_python rvalue or lvalue converters found for type"));
-          throw error_already_set();
+          throw_error_already_set();
       }
   }
 
@@ -57,7 +57,7 @@ namespace detail
           PyErr_SetString(
               PyExc_TypeError
               , const_cast<char*>("no from_python lvalue converters found for type"));
-          throw error_already_set();
+          throw_error_already_set();
       }
   }
 
@@ -71,7 +71,7 @@ namespace detail
           PyErr_SetString(
               PyExc_ReferenceError
               , const_cast<char*>("Attempt to return dangling internal reference"));
-          throw error_already_set();
+          throw_error_already_set();
       }
       void* result = find(source, converters);
       if (!result)
@@ -79,7 +79,7 @@ namespace detail
           PyErr_SetString(
               PyExc_TypeError
               , const_cast<char*>("no registered from_python lvalue converter was able to convert object"));
-          throw error_already_set();
+          throw_error_already_set();
       }
       return result;
   }
@@ -101,7 +101,7 @@ namespace detail
       PyErr_SetString(
           PyExc_TypeError
           , const_cast<char*>("class not registered for to_python type"));
-      throw error_already_set();
+      throw_error_already_set();
   }
   
   BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_stage1_data& data, void* storage)
@@ -115,7 +115,7 @@ namespace detail
           PyErr_SetString(
               PyExc_TypeError
               , const_cast<char*>("no registered from_python lvalue or rvalue converter was able to convert object"));
-          throw error_already_set();
+          throw_error_already_set();
       }
       if (data.construct != 0)
           data.construct(src, &data);

@@ -29,26 +29,53 @@ among others.
 <h2>Supported Platforms</h2>
 <p>Boost.Python is known to have been tested in the following configurations:
 
+
 <ul>
-<li>Against Python 2.0 using the following compiler/library combinations:
+<li>Against <a href="http://www.python/org/2.2.1">Python 2.2.1</a> using
+the following compilers (Note that pickling doesn't work with Python
+2.2 due to a core language bug;
+<a href="http://www.python/org/2.2.1">2.2.1</a> fixes that).
+
 <ul>
   <li><a
-  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>
-  with the native library.
+  href="http://msdn.microsoft.com/vstudio/downloads/updates/sp/vs6/sp5/default.asp">MSVC++6sp5</a>. All
+  tests pass.
 
-  <li>An upcoming release of <a
-        href="http://www.metrowerks.com/products/windows/">Metrowerks
-        CodeWarrior Pro6 for Windows</a> with the native library (the first
-        release has a bug that's fatal to Boost.Python)
+  <li><a href="http://www.metrowerks.com/products/windows/">Metrowerks
+        CodeWarrior Pro7.2 for Windows</a>. All tests pass.
 
-        <li><a
+  <li><a href="http://gcc.gnu.org">GCC 3.0.4</a> under <a
+  href="www.cygwin.com">Cygwin</a>. All tests pass.
+
+  <li><a href="http://gcc.gnu.org">GCC 2.95.2</a> under <a
+    href="www.mingw.org">MinGW</a>. Comprehensive test fails at
+    runtime due to a compiler code-generation bug. Other tests seem to
+    work.
+
+  <li><a
         href="http://developer.intel.com/software/products/compilers/c50/">Intel
-        C++ 5.0</a>. Compilation succeeds, but tests <font
-        color="#FF0000"><b>FAILED at runtime</b></font> due to a bug in its
-        exception-handling implementation.
+        C++ 6.0</a> beta: Comprehensive test fails to link due to a
+        linker bug. Other tests seem to work.
+
+  <li><a
+        href="http://developer.intel.com/software/products/compilers/c50/">Intel
+        C++ 5.0</a> Comprehensive test fails at runtime due to an
+        exception-handling bug. Other tests seem to work.
+
+  <li><a href="http://msdn.microsoft.com/visualc/">MSVC++7 (Visual
+       Studio .NET)</a>. Some tests fail to compile (comprehensive.cpp,
+       ivect.cpp, dvect.cpp, noncopyable_export.cpp); others seem to work.
 </ul>
 
-<li>Against Python 1.5.2 using the following compiler/library: 
+
+<li>Against Python 2.0 using the following compilers:
+<ul>
+  <li><a
+  href="http://msdn.microsoft.com/vstudio/sp/vs6sp4/dnldoverview.asp">MSVC++6sp4</a>.
+
+</ul>
+
+<li>Against Python 1.5.2 using the following compiler/library combinations: 
 
   <ul>
   <li><a

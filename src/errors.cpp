@@ -39,10 +39,20 @@ BOOST_PYTHON_DECL bool handle_exception_impl(function0<void> f)
     return true;
 }
 
+void BOOST_PYTHON_DECL throw_argument_error()
+{
+    throw argument_error();
+}
+
+void BOOST_PYTHON_DECL throw_error_already_set()
+{
+    throw error_already_set();
+}
+
 BOOST_PYTHON_DECL PyObject* expect_non_null(PyObject* x)
 {
     if (x == 0)
-        throw error_already_set();
+        throw_error_already_set();
     return x;
 }
 
@@ -53,7 +63,7 @@ namespace detail {
       if (!PyComplex_Check(p))
       {
           PyErr_SetString(PyExc_TypeError, "expected a complex number");
-          throw boost::python::argument_error();
+          boost::python::throw_argument_error();
       }
   }
 

@@ -30,7 +30,7 @@ BOOST_PYTHON_DECL long from_python(PyObject* p, boost::python::type<long>)
     {
         result = PyInt_AsLong(p);
         if (PyErr_Occurred())
-            throw boost::python::argument_error();
+            boost::python::throw_argument_error();
     }
     return result;
 }
@@ -41,7 +41,7 @@ BOOST_PYTHON_DECL double from_python(PyObject* p, boost::python::type<double>)
     {
         result = PyFloat_AsDouble(p);
         if (PyErr_Occurred())
-            throw boost::python::argument_error();
+            boost::python::throw_argument_error();
     }
     return result;
 }
@@ -61,11 +61,9 @@ T integer_from_python(PyObject* p, boost::python::type<T>)
         const char message[] = "%ld out of range for %s";
         sprintf(buffer, message, long_result, typeid(T).name());
         PyErr_SetString(PyExc_ValueError, buffer);
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2407
     return 0; // Not smart enough to know that the catch clause always rethrows
-#endif
 }
 
 template <class T>
@@ -81,7 +79,7 @@ PyObject* integer_to_python(T value)
     {
         const char message[] = "value out of range for Python int";
         PyErr_SetString(PyExc_ValueError, message);
-        throw boost::python::error_already_set();
+        boost::python::throw_error_already_set();
     }
     
     return to_python(value_as_long);
@@ -134,7 +132,7 @@ BOOST_PYTHON_DECL char from_python(PyObject* p, boost::python::type<char>)
     if (PyString_Check(p)) l = PyString_Size(p);
     if (l < 0 || l > 1) {
         PyErr_SetString(PyExc_TypeError, "expected string of length 0 or 1");
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
     if (l == 0) return '\0';
     return PyString_AsString(p)[0];
@@ -174,7 +172,7 @@ BOOST_PYTHON_DECL void from_python(PyObject* p, boost::python::type<void>)
 {
     if (p != Py_None) {
         PyErr_SetString(PyExc_TypeError, "expected argument of type None");
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
 }
 
@@ -182,7 +180,7 @@ BOOST_PYTHON_DECL const char* from_python(PyObject* p, boost::python::type<const
 {
     const char* s = PyString_AsString(p);
     if (!s)
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     return s;
 }
 
@@ -195,7 +193,7 @@ BOOST_PYTHON_DECL std::string from_python(PyObject* p, boost::python::type<std::
 {
     if (! PyString_Check(p)) {
         PyErr_SetString(PyExc_TypeError, "expected a string");
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
     return std::string(PyString_AsString(p), PyString_Size(p));
 }

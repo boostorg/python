@@ -122,7 +122,7 @@ void set_first(IntPair& p, int value)
 void del_first(const IntPair&)
 {
     PyErr_SetString(PyExc_AttributeError, "first can't be deleted!");
-    throw boost::python::error_already_set();
+    boost::python::throw_error_already_set();
 }
 
 IntPairPythonClass::IntPairPythonClass(boost::python::module_builder& m)
@@ -146,14 +146,14 @@ void IntPairPythonClass::setattr(IntPair& x, const std::string& name, int value)
     else
     {
         PyErr_SetString(PyExc_AttributeError, name.c_str());
-        throw boost::python::error_already_set();
+        boost::python::throw_error_already_set();
     }
 }
 
 void IntPairPythonClass::delattr(IntPair&, const char*)
 {
     PyErr_SetString(PyExc_AttributeError, "Attributes can't be deleted!");
-    throw boost::python::error_already_set();
+    boost::python::throw_error_already_set();
 }
 
 int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
@@ -165,11 +165,9 @@ int IntPairPythonClass::getattr(const IntPair& p, const std::string& s)
     else
     {
         PyErr_SetString(PyExc_AttributeError, s.c_str());
-        throw boost::python::error_already_set();
+        boost::python::throw_error_already_set();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2407
     return 0;
-#endif
 }
 
 namespace { namespace file_local {
@@ -177,8 +175,8 @@ void throw_key_error_if_end(const StringMap& m, StringMap::const_iterator p, std
 {
     if (p == m.end())
     {
-		PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(key));
-        throw boost::python::error_already_set();
+        PyErr_SetObject(PyExc_KeyError, BOOST_PYTHON_CONVERSION::to_python(key));
+        boost::python::throw_error_already_set();
     }
 }
 }} // namespace <anonymous>::file_local
@@ -871,7 +869,7 @@ namespace bpl_test {
       if (state.size() != 1) {
           PyErr_SetString(PyExc_ValueError,
                           "Unexpected argument in call to __setstate__.");
-          throw boost::python::error_already_set();
+          boost::python::throw_error_already_set();
       }
     
       const int number = BOOST_PYTHON_CONVERSION::from_python(state[0].get(), boost::python::type<int>());
@@ -1182,7 +1180,7 @@ PyObject* raw(const boost::python::tuple& args, const boost::python::dictionary&
     if(args.size() != 2 || keywords.size() != 2)
     {
         PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
     
     RawTest* first = BOOST_PYTHON_CONVERSION::from_python(args[0].get(), boost::python::type<RawTest*>());

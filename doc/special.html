@@ -768,7 +768,7 @@ void throw_key_error_if_end(
     if (p == m.end())
     {
         PyErr_SetObject(PyExc_KeyError, boost::python::converters::to_python(key));
-        throw boost::python::error_already_set();
+        boost::python::throw_error_already_set();
     }
 }
 

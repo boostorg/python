@@ -24,7 +24,7 @@ T object_from_python(PyObject* p, type<T>)
     if (!T::accepts(x))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw error_already_set();
+        throw_error_already_set();
     }
     return T(x);
 }
@@ -111,7 +111,7 @@ tuple_base::tuple_base(ref p)
     if (!accepts(p))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw error_already_set();
+        throw_error_already_set();
     }
 }
 
@@ -164,7 +164,7 @@ string::string(ref p)
     if (!accepts(p))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw error_already_set();
+        throw_error_already_set();
     }
 }
     
@@ -225,7 +225,7 @@ dictionary_base::dictionary_base(ref p)
     if (!accepts(p))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw error_already_set();
+        throw_error_already_set();
     }
 }
 
@@ -244,7 +244,7 @@ void dictionary_base::clear()
 const ref& dictionary_proxy::operator=(const ref& rhs)
 {
     if (PyDict_SetItem(m_dict.get(), m_key.get(), rhs.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
     return rhs;
 }
 
@@ -283,12 +283,12 @@ ref dictionary_base::get_item(const ref& key, const ref& default_) const
 void dictionary_base::set_item(const ref& key, const ref& value)
 {
     if (PyDict_SetItem(get(), key.get(), value.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 void dictionary_base::erase(ref key) {
     if (PyDict_DelItem(get(), key.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 list dictionary_base::items() const { return list(ref(PyDict_Items(get()))); }
@@ -347,7 +347,7 @@ list_base::list_base(ref p)
     if (!accepts(p))
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw error_already_set();
+        throw_error_already_set();
     }
 }
 
@@ -384,13 +384,13 @@ list_proxy list_base::operator[](std::size_t pos)
 void list_base::insert(std::size_t index, const ref& item)
 {
     if (PyList_Insert(get(), index, item.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 void list_base::push_back(const ref& item)
 {
     if (PyList_Append(get(), item.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 void list_base::append(const ref& item)
@@ -411,13 +411,13 @@ list_slice_proxy list_base::slice(int low, int high)
 void list_base::sort()
 {
     if (PyList_Sort(get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 void list_base::reverse()
 {
     if (PyList_Reverse(get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 tuple list_base::as_tuple() const
@@ -445,7 +445,7 @@ void list_base::set_item(std::size_t pos, const ref& rhs)
 {
     int result = PyList_SetItem(this->get(), pos, rhs.get());
     if (result == -1)
-        throw error_already_set();
+        throw_error_already_set();
     Py_INCREF(rhs.get());
 }
 
@@ -457,7 +457,7 @@ list_proxy::list_proxy(const ref& list, std::size_t index)
 const list& list_slice_proxy::operator=(const list& rhs)
 {
     if (PyList_SetSlice(m_list.get(), m_low, m_high, rhs.get()) == -1)
-        throw error_already_set();
+        throw_error_already_set();
     return rhs;
 }
 

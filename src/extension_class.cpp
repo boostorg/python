@@ -143,7 +143,7 @@ extension_instance* get_extension_instance(PyObject* p)
     if (p->ob_type->ob_type != extension_meta_class())
     {
         PyErr_SetString(PyExc_TypeError, p->ob_type->tp_name);
-        throw boost::python::argument_error();
+        boost::python::throw_argument_error();
     }
     return static_cast<extension_instance*>(p);
 }
@@ -157,7 +157,7 @@ extension_instance::add_implementation(std::auto_ptr<instance_holder_base> holde
         if (typeid(*holder) == typeid(**p))
         {
             PyErr_SetString(PyExc_RuntimeError, "Base class already initialized");
-            throw error_already_set();
+            throw_error_already_set();
         }
     }
     m_wrapped_objects.push_back(holder.release());
@@ -242,9 +242,9 @@ void two_string_error(PyObject* exception_object, const char* format, const char
                 
     PyErr_SetString(exception_object, buffer);
     if (exception_object == PyExc_TypeError)
-        throw argument_error();
+        throw_argument_error();
     else
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 // This is called when an attempt has been made to convert the given obj to
@@ -309,7 +309,7 @@ void report_missing_class_object(const std::type_info& info)
     const char message[] = "Cannot convert <%.*s> to python; its Python class was never created or has been deleted.";
     sprintf(buffer, message, sizeof(buffer) - sizeof(message) - 1, info.name());
     PyErr_SetString(PyExc_RuntimeError, buffer);
-    throw error_already_set();
+    throw_error_already_set();
 }
 
 void report_released_smart_pointer(const std::type_info& info)
@@ -318,7 +318,7 @@ void report_released_smart_pointer(const std::type_info& info)
     const char message[] = "Converting from python, pointer or smart pointer to <%.*s> is NULL.";
     sprintf(buffer, message, sizeof(buffer) - sizeof(message) - 1, info.name());
     PyErr_SetString(PyExc_RuntimeError, buffer);
-    throw argument_error();
+    throw_argument_error();
 }
 
 read_only_setattr_function::read_only_setattr_function(const char* name)

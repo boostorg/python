@@ -95,7 +95,7 @@ void function::add_to_namespace(
             dict = PyObject_GetAttrString(ns, "__dict__");
 
         if (dict == 0)
-            throw error_already_set();
+            throw_error_already_set();
         
         ref existing(PyObject_GetItem(dict, name.get()), ref::null_ok);
         
@@ -110,7 +110,7 @@ void function::add_to_namespace(
     // The PyObject_GetAttrString() call above left an active error
     PyErr_Clear();
     if (PyObject_SetAttr(ns, name.get(), attribute.get()) < 0)
-        throw error_already_set();
+        throw_error_already_set();
 }
 
 namespace

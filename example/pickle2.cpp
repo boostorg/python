@@ -63,7 +63,7 @@ namespace { // Avoid cluttering the global namespace.
     if (state.size() != 1) {
       PyErr_SetString(PyExc_ValueError,
         "Unexpected argument in call to __setstate__.");
-      throw python::error_already_set();
+      python::throw_error_already_set();
     }
     int number = from_python(state[0].get(), python::type<int>());
     if (number != 42)

@@ -39,7 +39,7 @@ namespace example {
 
   void raise_vector_IndexError() {
     PyErr_SetString(PyExc_IndexError, "vector index out of range");
-    throw boost::python::error_already_set();
+    boost::python::throw_error_already_set();
   }
 
   template <typename T>

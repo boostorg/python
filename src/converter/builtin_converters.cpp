@@ -224,7 +224,7 @@ namespace
           else if (!PyFloat_Check(intermediate)) 
           {
               PyErr_SetString(PyExc_TypeError, "__complex__ method did not return a Complex object");
-              throw error_already_set();
+              throw_error_already_set();
           }
           
           return PyFloat_AS_DOUBLE(intermediate);

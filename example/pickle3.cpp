@@ -99,7 +99,7 @@ namespace {
   {
       if(args.size() != 1 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-          throw boost::python::error_already_set();
+          boost::python::throw_error_already_set();
       }
       const world& w = from_python(args[0].get(), type<const world&>());
       ref mydict = getattr(args[0], "__dict__");
@@ -115,7 +115,7 @@ namespace {
   {
       if(args.size() != 2 || keywords.size() != 0) {
           PyErr_SetString(PyExc_TypeError, "wrong number of arguments");
-          throw boost::python::error_already_set();
+          boost::python::throw_error_already_set();
       }
       world& w = from_python(args[0].get(), type<world&>());
       ref mydict = getattr(args[0], "__dict__");
@@ -123,7 +123,7 @@ namespace {
       if (state.size() != 2) {
         PyErr_SetString(PyExc_ValueError,
           "Unexpected argument in call to __setstate__.");
-        throw python::error_already_set();
+        python::throw_error_already_set();
       }
       // restore the object's __dict__
       dictionary odict = from_python(mydict.get(), type<dictionary>());

@@ -112,7 +112,7 @@ namespace {
               if (getstate_manages_dict.get() == 0)
               {
                   PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__getstate_manages_dict__ not set)");
-                  throw error_already_set();
+                  throw_error_already_set();
               }
           }
 
@@ -127,7 +127,7 @@ namespace {
           if (dict_defines_state.get() == 0)
           {
               PyErr_SetString(PyExc_RuntimeError, "Incomplete pickle support (__dict_defines_state__ not set)");
-              throw error_already_set();
+              throw_error_already_set();
           }
       }
 
@@ -274,7 +274,7 @@ namespace detail {
       {
           boost::python::string message("Special attribute names other than '__doc__' and '__name__' are read-only, in particular: ");
           PyErr_SetObject(PyExc_TypeError, (message + name).get());
-          throw error_already_set();
+          throw_error_already_set();
       }
       
       if (PyCallable_Check(value))
@@ -485,7 +485,7 @@ int instance::setattr(const char* name, PyObject* value)
     if (BOOST_CSTD_::strcmp(name, "__class__") == 0)
     {
         PyErr_SetString(PyExc_TypeError, "__class__ attribute is read-only");
-        throw error_already_set();
+        throw_error_already_set();
     }
     
     if (BOOST_CSTD_::strcmp(name, "__dict__") == 0)
@@ -999,9 +999,15 @@ namespace {
   }
 }
 
-BOOST_PYTHON_DECL void adjust_slice_indices(PyObject* obj, int& start, int& finish)
+BOOST_PYTHON_DECL bool adjust_slice_indices(PyObject* obj, int& start, int& finish)
 {
-    int length = callback<int>::call_method(obj, "__len__");
+    ref len(PyEval_CallMethod(obj, "__len__", "()")
+            , ref::null_ok);
+    
+    if (len.get() == 0)
+        return false;
+
+    int length = PyInt_AsLong(len.get());
     
     // This is standard Python class behavior.
     if (start < 0)
@@ -1014,6 +1020,8 @@ BOOST_PYTHON_DECL void adjust_slice_indices(PyObject* obj, int& start, int& fini
         start = 0;
     if (finish < 0)
         finish = 0;
+    
+    return true;
 }
 
 namespace detail {

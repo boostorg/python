@@ -77,7 +77,7 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
     if (tup.size() != 3) {
       PyErr_SetString(PyExc_ValueError,
         "expecting exactly 3 values in tuple.");
-      throw python::error_already_set();
+      python::throw_error_already_set();
     }
     MillerIndex result;
     for (int i = 0; i < 3; i++)

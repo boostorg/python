@@ -22,12 +22,22 @@ namespace
   {
       python::ref module_obj(PyImport_ImportModule((char*) module_name));
       PyObject* module_dict = PyModule_GetDict(module_obj.get());
-      if (module_dict == 0) throw python::import_error();
+      if (module_dict == 0) python::throw_import_error();
       return module_dict;
   }
 }
 
 namespace boost { namespace python {
+
+void BOOST_PYTHON_DECL throw_import_error()
+{
+    throw import_error();
+}
+
+void BOOST_PYTHON_DECL throw_export_error()
+{
+    throw export_error();
+}
 
 namespace detail
 {
@@ -43,20 +53,20 @@ namespace detail
       if (py_class == 0) {
           err = std::string("module ") + module_name + " has no attribute " + py_class_name;
           PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-          throw python::import_error();
+          python::throw_import_error();
       }
       python::ref c_obj(PyObject_GetAttrString(py_class, const_cast<char*>(attribute_name.c_str())), ref::null_ok);
       if (c_obj.get() == 0) {
           err = std::string("object ") + module_name + "." + py_class_name
               + " has no attribute " + attribute_name;
           PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-          throw python::import_error();
+          python::throw_import_error();
       }
       if (! PyCObject_Check(c_obj.get())) {
           err = std::string("object ") + module_name + "." + py_class_name + "."
               + attribute_name + " is not a PyCObject";
           PyErr_SetString(PyExc_RuntimeError, const_cast<char*>(err.c_str()));
-          throw python::import_error();
+          python::throw_import_error();
       }
       return PyCObject_AsVoidPtr(c_obj.get());
   }
@@ -76,7 +86,7 @@ namespace detail
                   imported_major, imported_minor);
           PyErr_SetString(PyExc_RuntimeError,
                           "Fatal: export_converters_api mismatch");
-          throw import_error();
+          throw_import_error();
       }
       if (importing_minor != imported_minor) {
           // Python uses fprintf(stderr, ...) for API warnings.
