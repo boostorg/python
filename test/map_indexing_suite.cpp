@@ -23,7 +23,7 @@ std::string x_value(X const& x)
 }
 
 BOOST_PYTHON_MODULE(map_indexing_suite_ext)
-{    
+{
     class_<X>("X")
         .def(init<>())
         .def(init<X>())
@@ -39,10 +39,15 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
     class_<std::map<std::string, X> >("XMap")
         .def(map_indexing_suite<std::map<std::string, X> >())
     ;
-        
+
     // Compile check only...
     class_<std::map<int, int> >("IntMap")
         .def(map_indexing_suite<std::map<int, int> >())
+    ;
+
+    // Compile check only...
+    class_<std::map<std::string, boost::shared_ptr<X> > >("TestMap")
+        .def(map_indexing_suite<std::map<std::string, boost::shared_ptr<X> > >())
     ;
 }
 
