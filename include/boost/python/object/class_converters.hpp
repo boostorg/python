@@ -6,12 +6,17 @@
 #ifndef CLASS_CONVERTERS_DWA2002119_HPP
 # define CLASS_CONVERTERS_DWA2002119_HPP
 
-# include <boost/mpl/for_each.hpp>
 # include <boost/python/converter/registry.hpp>
+# include <boost/python/converter/shared_ptr_from_python.hpp>
+
 # include <boost/python/object/find_instance.hpp>
 # include <boost/python/object/inheritance.hpp>
+
 # include <boost/python/detail/force_instantiate.hpp>
+
 # include <boost/type_traits/add_pointer.hpp>
+
+# include <boost/mpl/for_each.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -62,13 +67,14 @@ struct register_base_of
     }
 };
 
-// Brings into existence all converters associated with a class Bases
+// Brings into existence all converters associated with a class. Bases
 // is expected to be an mpl sequence of base types.
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
     // cause the static registration to be instantiated.
     python::detail::force_instantiate(instance_finder<Derived>::registration);
+    python::detail::force_instantiate(converter::shared_ptr_from_python<Derived>::registration);
     
     // register all up/downcasts here
     register_dynamic_id<Derived>();

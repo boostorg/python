@@ -25,7 +25,7 @@ BOOST_PYTHON_MODULE(bienstman1_ext)
   using boost::python::return_value_policy;
   using boost::python::reference_existing_object;
 
-  class_<A, shared_ptr<A> >("A");
+  class_<A>("A");
 
   class_<V, boost::noncopyable>("V", no_init)
       .def("inside", &V::inside, 

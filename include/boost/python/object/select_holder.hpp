@@ -130,10 +130,7 @@ namespace detail
       static inline void register_(mpl::bool_c<false>)
       {
           python::detail::force_instantiate(
-              objects::class_value_wrapper<
-                Ptr
-                , type
-                , make_instance<T,type> >());
+              objects::class_value_wrapper<Ptr, make_instance<T,type> >());
     
           python::detail::force_instantiate(
               instance_finder<Ptr>::registration);

@@ -13,9 +13,8 @@ struct A
 BOOST_PYTHON_MODULE(multi_arg_constructor_ext)
 {
   using namespace boost::python;
-  using boost::shared_ptr;
 
-  class_<A, shared_ptr<A> >(
+  class_<A>(
       "A"
       , init<double, double, double, double, double, double, double, double, double>()
       )

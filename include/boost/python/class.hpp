@@ -85,7 +85,7 @@ namespace detail
   static inline void register_copy_constructor(mpl::bool_c<true> const&, SelectHolder const& , T* = 0)
   {
       typedef typename SelectHolder::type holder;
-      force_instantiate(objects::class_wrapper<T,holder, objects::make_instance<T,holder> >());
+      force_instantiate(objects::class_cref_wrapper<T, objects::make_instance<T,holder> >());
       SelectHolder::register_();
   }
 

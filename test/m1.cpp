@@ -258,15 +258,15 @@ BOOST_PYTHON_MODULE(m1)
 
     // sequence points don't ensure that "A" is constructed before "B"
     // or "C" below if we make them part of the same chain
-    class_<B,bases<A>, shared_ptr<B> >("B")
+    class_<B,bases<A> >("B")
         .def("name", &B::name)
         ;
         
-    class_<C,bases<A>, shared_ptr<C> >("C")
+    class_<C,bases<A> >("C")
         .def("name", &C::name)
         ;
 
-    class_<D,shared_ptr<D>, bases<B,C> >("D")
+    class_<D, bases<B,C> >("D")
         .def("name", &D::name)
         ;
 
