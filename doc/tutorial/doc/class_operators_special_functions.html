@@ -25,7 +25,7 @@
    </tr>
 </table>
 <a name="python_operators"></a><h2>Python Operators</h2><p>
-C is well known for the abundance of oparators. C++ extends this to the
+C is well known for the abundance of operators. C++ extends this to the
 extremes by allowing operator overloading. Boost.Python takes advantage of
 this and makes it easy to wrap C++ operator-powered classes.</p>
 <p>
@@ -76,14 +76,22 @@ that correspond to these Python <i>special functions</i>. Example:</p>
     </span><span class=identifier>ostream</span><span class=special>&amp; </span><span class=keyword>operator</span><span class=special>&lt;&lt;(</span><span class=identifier>ostream</span><span class=special>&amp;,</span><span class=identifier>Rational</span><span class=special>);
 
     </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Rational</span><span class=special>&gt;()
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>float_</span><span class=special>(</span><span class=identifier>self</span><span class=special>))  </span><span class=comment>// __float__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>pow</span><span class=special>(</span><span class=identifier>self</span><span class=special>))     </span><span class=comment>// __pow__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>abs</span><span class=special>(</span><span class=identifier>self</span><span class=special>))     </span><span class=comment>// __abs__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>str</span><span class=special>(</span><span class=identifier>self</span><span class=special>))     </span><span class=comment>// __str__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>float_</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                  </span><span class=comment>// __float__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>pow</span><span class=special>(</span><span class=identifier>self</span><span class=special>, </span><span class=identifier>other</span><span class=special>&lt;</span><span class=identifier>Rational</span><span class=special>&gt;))    </span><span class=comment>// __pow__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>abs</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     </span><span class=comment>// __abs__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>str</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     </span><span class=comment>// __str__
         </span><span class=special>;
 </span></pre></code>
 <p>
 Need we say more?</p>
+<table width="80%" border="0" align="center">
+  <tr>
+    <td class="note_box">
+<img src="theme/lens.gif"></img> What is the business of <tt>operator&lt;&lt;</tt> <tt>.def(str(self))</tt>?
+Well, the method <tt>str</tt> requires the <tt>operator&lt;&lt;</tt> to do its work (i.e.
+<tt>operator&lt;&lt;</tt> is used by the method defined by def(str(self)).    </td>
+  </tr>
+</table>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>

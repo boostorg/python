@@ -137,14 +137,14 @@ Calling <tt>derived.f()</tt>:</p>
 Will yield the expected result. Finally, calling calling the free function
 <tt>call_f</tt> with <tt>derived</tt> as argument:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>derived</span><span class=special>())
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>derived</span><span class=special>)
     </span><span class=number>42
 </span></pre></code>
 <p>
 Will also yield the expected result.</p>
 <p>
 Here's what's happening:</p>
-<ol><li><tt>call_f(derived())</tt> is called in Python</li><li>This corresponds to <tt>def(&quot;call_f&quot;, call_f);</tt>. Boost.Python dispatches this call.</li><li><tt>int call_f(Base&amp; b) { return b.f(); }</tt> accepts the call.</li><li>The overridden virtual function <tt>f</tt> of <tt>BaseWrap</tt> is called.</li><li><tt>call_method&lt;int&gt;(self, &quot;f&quot;);</tt> dispatches the call back to Python.</li><li><tt>def f(self): return 42</tt> is finally called.</li></ol><p>
+<ol><li><tt>call_f(derived)</tt> is called in Python</li><li>This corresponds to <tt>def(&quot;call_f&quot;, call_f);</tt>. Boost.Python dispatches this call.</li><li><tt>int call_f(Base&amp; b) { return b.f(); }</tt> accepts the call.</li><li>The overridden virtual function <tt>f</tt> of <tt>BaseWrap</tt> is called.</li><li><tt>call_method&lt;int&gt;(self, &quot;f&quot;);</tt> dispatches the call back to Python.</li><li><tt>def f(self): return 42</tt> is finally called.</li></ol><p>
 Rewind back to our <tt>Base</tt> class, if its member function <tt>f</tt> was not
 declared as pure virtual:</p>
 <code><pre>
@@ -207,7 +207,7 @@ Calling <tt>call_f</tt>, passing in a <tt>base</tt> object:</p>
 <p>
 Calling <tt>call_f</tt>, passing in a <tt>derived</tt> object:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>derived</span><span class=special>())
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>derived</span><span class=special>)
     </span><span class=number>42
 </span></pre></code>
 <table border="0">

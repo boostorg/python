@@ -29,6 +29,17 @@ Now the first thing you'd want to do is to build the Hello World module and
 try it for yourself in Python. In this section, we shall outline the steps
 necessary to achieve that. We shall use the build tool that comes bundled
 with every boost distribution: <b>bjam</b>.</p>
+<table width="80%" border="0" align="center">
+  <tr>
+    <td class="note_box">
+<img src="theme/lens.gif"></img> <b>Building without bjam</b><br><br>
+
+Besides bjam, there are of course other ways to get your module built.
+What's written here should not be taken as &quot;the one and only way&quot;.
+There are of course other build tools apart from <tt>bjam</tt>.
+    </td>
+  </tr>
+</table>
 <p>
 We shall skip over the details. Our objective will be to simply create the
 hello world module and run it in Python. For a complete reference to
@@ -47,11 +58,13 @@ The <tt>hello.cpp</tt> file is our C++ hello world example. The <tt>Jamfile</tt>
 minimalist <i>bjam</i> script that builds the DLLs for us.</p>
 <p>
 Before anything else, you should have the bjam executable in your boost
-directory. Pre-built Boost.Jam executables are available for most
+directory or somewhere in your path such that <tt>bjam</tt> can be executed in
+the command line. Pre-built Boost.Jam executables are available for most
 platforms. For example, a pre-built Microsoft Windows bjam executable can
 be downloaded <a href="http://boost.sourceforge.net/jam-executables/bin.ntx86/bjam.zip">
 here</a>.
-The complete list of bjam pre-built executables can be found <a href="../../../../../tools/build/index.html#Jam">
+The complete list of bjam pre-built
+executables can be found <a href="../../../../../tools/build/index.html#Jam">
 here</a>.</p>
 <a name="lets_jam_"></a><h2>Lets Jam!</h2><p>
 <img src="theme/jam.png"></img></p>
