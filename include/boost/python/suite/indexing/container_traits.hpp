@@ -29,13 +29,6 @@
 #include "iterator_suite.hpp"
 #include <boost/type_traits.hpp>
 
-#include "iterator_pair.hpp"
-#include <set>
-#include <map>
-#include <list>
-#include <deque>
-#include <vector>
-
 namespace indexing {
   /////////////////////////////////////////////////////////////////////////
   // Traits for the iterator_pair container emulator
@@ -54,9 +47,6 @@ namespace indexing {
     static bool const has_erase          = false;
     static bool const has_pop_back       = false;
     static bool const has_push_back      = false;
-
-    // Default implementations of support functions
-    typedef container_algorithms<iterator_pair_traits> algorithms;
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -105,9 +95,6 @@ namespace indexing {
     static bool const has_erase          = is_mutable;
     static bool const has_pop_back       = false;
     static bool const has_push_back      = false;
-
-    // Default implementations of support functions
-    typedef container_algorithms<default_container_traits> algorithms;
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -121,13 +108,6 @@ namespace indexing {
     static bool const has_push_back      = is_mutable;
   };
 
-  template<typename Container>
-  struct list_traits : public default_sequence_traits<Container>
-  {
-    // Some special algo's for list (using member functions)
-    typedef list_algorithms<list_traits> algorithms;
-  };
-
   /////////////////////////////////////////////////////////////////////////
   // Associative containers set and multiset
   /////////////////////////////////////////////////////////////////////////
@@ -136,9 +116,6 @@ namespace indexing {
   struct set_traits : public default_container_traits<Container>
   {
     static IndexStyle const index_style = index_style_nonlinear;
-
-    // Special algo's for set types (using member functions)
-    typedef assoc_algorithms<set_traits> algorithms;
   };
 
   /////////////////////////////////////////////////////////////////////////
@@ -155,126 +132,6 @@ namespace indexing {
     typedef typename Container::key_type    key_type; // find, count, ...
 
     static IndexStyle const index_style = index_style_nonlinear;
-
-    // Special algo's for map types (using member functions)
-    typedef assoc_algorithms<map_traits> algorithms;
-  };
-
-  /////////////////////////////////////////////////////////////////////////
-  // Automated trait selection
-  /////////////////////////////////////////////////////////////////////////
-
-  namespace container_details {
-    template<typename Container> struct traits_by_type;
-
-    // traits_by_type instances should include two typedefs, one for
-    // the non-const version of the container, and one for the
-    // const version. This saves having to have two specializations
-    // of traits_by_type for every kind of container.
-
-    // std::set
-    template <class Key, class Compare, class Allocator>
-    class traits_by_type<std::set<Key, Compare, Allocator> >
-    {
-      typedef std::set<Key, Compare, Allocator> Container;
-
-    public:
-      typedef set_traits<Container>       mutable_type;
-      typedef set_traits<Container const> const_type;
-    };
-
-    // std::multiset
-    template <class Key, class Compare, class Allocator>
-    class traits_by_type<std::multiset<Key, Compare, Allocator> >
-    {
-      typedef std::multiset<Key, Compare, Allocator> Container;
-
-    public:
-      typedef set_traits<Container>       mutable_type;
-      typedef set_traits<Container const> const_type;
-    };
-
-    // std::map
-    template <class Key, class T, class Compare, class Allocator>
-    class traits_by_type<std::map<Key, T, Compare, Allocator> >
-    {
-      typedef std::map<Key, T, Compare, Allocator> Container;
-
-    public:
-      typedef map_traits<Container>       mutable_type;
-      typedef map_traits<Container const> const_type;
-    };
-
-    // std::multimap
-    template <class Key, class T, class Compare, class Allocator>
-    class traits_by_type<std::multimap<Key, T, Compare, Allocator> >
-    {
-      typedef std::multimap<Key, T, Compare, Allocator> Container;
-
-    public:
-      typedef map_traits<Container>       mutable_type;
-      typedef map_traits<Container const> const_type;
-    };
-
-    // std::vector
-    template <class T, class Allocator>
-    class traits_by_type<std::vector<T, Allocator> >
-    {
-      typedef std::vector<T, Allocator> Container;
-
-    public:
-      typedef default_sequence_traits<Container>       mutable_type;
-      typedef default_sequence_traits<Container const> const_type;
-    };
-
-    // std::deque
-    template <class T, class Allocator>
-    class traits_by_type<std::deque<T, Allocator> >
-    {
-      typedef std::deque<T, Allocator> Container;
-
-    public:
-      typedef default_sequence_traits<Container>       mutable_type;
-      typedef default_sequence_traits<Container const> const_type;
-    };
-
-    // std::list
-    template <class T, class Allocator>
-    class traits_by_type<std::list<T, Allocator> >
-    {
-      typedef std::list<T, Allocator> Container;
-
-    public:
-      typedef list_traits<Container>       mutable_type;
-      typedef list_traits<Container const> const_type;
-    };
-
-    // Iterator ranges
-    template <typename Iterator>
-    class traits_by_type<indexing::iterator_pair<Iterator> >
-    {
-      typedef ::indexing::iterator_pair<Iterator> Container;
-
-    public:
-      typedef iterator_pair_traits<Container>       mutable_type;
-      typedef iterator_pair_traits<Container const> const_type; // ?
-    };
-  }
-
-  // Select the right traits for each supported kind of container
-
-  // Generic version (mutable containers)
-  template<class Container>
-  struct container_traits
-    : public container_details::traits_by_type<Container>::mutable_type
-  {
-  };
-
-  // Partial specialization for const containers
-  template<class Container>
-  struct container_traits<Container const>
-    : public container_details::traits_by_type<Container>::const_type
-  {
   };
 }
 
