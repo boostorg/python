@@ -631,9 +631,15 @@ proxy&lt;object_slice&gt; slice(T const&amp; start; start, V const&amp; finish);
 
     <h3><a name="object-spec"></a>Class <code>object</code></h3>
 
-    <p>The intention is that <code>object</code> acts as much like a Python
-    variable as possible. Thus expressions you'd expect to work in Python
-    should generally work in the same way from C++.</p>
+    <p>The intention is that <code>object</code> acts as much like a
+    Python variable as possible. Thus expressions you'd expect to work
+    in Python should generally work in the same way from C++. Most of
+    <code>object</code>'s interface is provided by its base class
+    <code><a
+    href="#object_operators-spec">object_operators</a>&lt;object&gt;</code>,
+    and the <a href="#functions">free functions</a> defined in this
+    header.
+</p> 
 
     <h4><a name="object-spec-synopsis"></a>Class <code>object</code>
     synopsis</h4>
