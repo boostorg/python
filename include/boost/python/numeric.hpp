@@ -10,6 +10,7 @@
 # include <boost/python/str.hpp>
 # include <boost/preprocessor/iteration/local.hpp>
 # include <boost/preprocessor/cat.hpp>
+# include <boost/preprocessor/repetition/enum.hpp>
 # include <boost/preprocessor/repetition/enum_params.hpp>
 # include <boost/preprocessor/repetition/enum_binary_params.hpp>
 
