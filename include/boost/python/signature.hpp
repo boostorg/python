@@ -19,7 +19,7 @@
 #  include <boost/preprocessor/empty.hpp>
 #  include <boost/preprocessor/arithmetic/sub.hpp>
 #  include <boost/preprocessor/iterate.hpp>
-#  include <boost/mpl/type_list.hpp>
+#  include <boost/mpl/list.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,28 +30,28 @@ namespace boost { namespace python { namespace detail {
 //  The following macros generate expansions for:
 //
 //      template <class RT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, T0...TN>
+//      inline mpl::list<RT, T0...TN>
 //      get_signature(RT(*)(T0...TN))
 //      {
-//          return boost::mpl::type_list<RT, T0...TN>();
+//          return mpl::list<RT, T0...TN>();
 //      }
 //
 //      template <class RT, class ClassT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      inline mpl::list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN)))
 //      {
-//          return boost::mpl::type_list<RT, ClassT, T0...TN>();
+//          return mpl::list<RT, ClassT, T0...TN>();
 //      }
 //
 //      template <class RT, class ClassT, class T0... class TN>
-//      inline boost::mpl::type_list<RT, ClassT, T0...TN>
+//      inline mpl::list<RT, ClassT, T0...TN>
 //      get_signature(RT(ClassT::*)(T0...TN) const))
 //      {
-//          return boost::mpl::type_list<RT, ClassT const, T0...TN>();
+//          return mpl::list<RT, ClassT const, T0...TN>();
 //      }
 //
 //  These functions extract the return type, class (for member functions)
-//  and arguments of the input signature and stuffs them in an mpl::type_list.
+//  and arguments of the input signature and stuffs them in an mpl::list.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -75,12 +75,12 @@ namespace boost { namespace python { namespace detail {
 template <
     class RT BOOST_PP_COMMA_IF(N)
     BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
+inline mpl::list<
     RT BOOST_PP_COMMA_IF(N)
     BOOST_PP_ENUM_PARAMS(N, T)>
 get_signature(RT(*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
-    return boost::mpl::type_list<
+    return mpl::list<
             RT BOOST_PP_COMMA_IF(N)
             BOOST_PP_ENUM_PARAMS(N, T)>();
 }
@@ -91,12 +91,12 @@ get_signature(RT(*)(BOOST_PP_ENUM_PARAMS(N, T)))
 template <
     class RT, class ClassT BOOST_PP_COMMA_IF(N)
     BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
+inline mpl::list<
     RT, ClassT BOOST_PP_COMMA_IF(N)
     BOOST_PP_ENUM_PARAMS(N, T)>
 get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)))
 {
-    return boost::mpl::type_list<
+    return mpl::list<
             RT, ClassT BOOST_PP_COMMA_IF(N)
             BOOST_PP_ENUM_PARAMS(N, T)>();
 }
@@ -105,12 +105,12 @@ get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)))
 template <
     class RT, class ClassT BOOST_PP_COMMA_IF(N)
     BOOST_PYTHON_UNARY_ENUM(N, class T)>
-inline boost::mpl::type_list<
+inline mpl::list<
     RT, ClassT const BOOST_PP_COMMA_IF(N)
     BOOST_PP_ENUM_PARAMS(N, T)>
 get_signature(RT(ClassT::*)(BOOST_PP_ENUM_PARAMS(N, T)) const)
 {
-    return boost::mpl::type_list<
+    return mpl::list<
             RT, ClassT const
             BOOST_PP_COMMA_IF(N)
             BOOST_PP_ENUM_PARAMS(N, T)>();

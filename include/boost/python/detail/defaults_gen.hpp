@@ -224,11 +224,11 @@ struct func_stubs_base {};
 //          template <typename SigT>
 //          struct gen {
 //
-//              typedef typename mpl::at<0, SigT>::type RT;
-//              typedef typename mpl::at<1, SigT>::type T0;
-//              typedef typename mpl::at<2, SigT>::type T1;
-//              typedef typename mpl::at<3, SigT>::type T2;
-//              typedef typename mpl::at<4, SigT>::type T3;
+//              typedef typename mpl::at_c<0, SigT>::type RT;
+//              typedef typename mpl::at_c<1, SigT>::type T0;
+//              typedef typename mpl::at_c<2, SigT>::type T1;
+//              typedef typename mpl::at_c<3, SigT>::type T2;
+//              typedef typename mpl::at_c<4, SigT>::type T3;
 //
 //              static RT func_0(T0 arg0)
 //              { return foo(arg0); }

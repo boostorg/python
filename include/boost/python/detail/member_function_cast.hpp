@@ -11,7 +11,7 @@
 
 #  include <boost/python/detail/preprocessor.hpp>
 
-#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/if.hpp>
 #  include <boost/type_traits/composite_traits.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>
@@ -71,7 +71,7 @@ struct member_function_cast
 # ifndef BOOST_NO_FUNCTION_TEMPLATE_ORDERING
     : member_function_cast_impl<T>
 # else 
-    : mpl::select_type<
+    : mpl::if_c<
         is_member_function_pointer<SF>::value
         , member_function_cast_impl<T>
         , non_member_function_cast_impl

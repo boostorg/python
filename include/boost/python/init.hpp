@@ -10,13 +10,15 @@
 #ifndef INIT_JDG20020820_HPP
 #define INIT_JDG20020820_HPP
 
-#include <boost/mpl/type_list.hpp>
-#include <boost/mpl/for_each.hpp>
-#include <boost/mpl/select_type.hpp>
+#include <boost/mpl/list.hpp>
+#include <boost/mpl/fold_backward.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/mpl/at.hpp>
 #include <boost/mpl/size.hpp>
+#include <boost/mpl/push_front.hpp>
 #include <boost/mpl/pop_front.hpp>
 #include <boost/mpl/pop_back.hpp>
+#include <boost/mpl/push_back.hpp>
 
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
@@ -32,7 +34,7 @@
     (                                                                           \
         BOOST_PYTHON_MAX_ARITY,                                                 \
         class T,                                                                \
-        boost::mpl::null_argument                                               \
+        mpl::void_                                               \
     )                                                                           \
 
 #define BOOST_PYTHON_TEMPLATE_TYPES                                             \
@@ -69,7 +71,7 @@ namespace detail {
     //
     ///////////////////////////////////////////////////////////////////////////
     template <class T>
-    struct is_nil : public boost::is_same<T, boost::mpl::null_argument> {};
+    struct is_nil : public boost::is_same<T, mpl::void_> {};
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -128,7 +130,7 @@ namespace detail {
         template <class ListT, class T>
         struct apply {
 
-            typedef typename boost::mpl::push_back<ListT, T>::sequence sequence;
+            typedef typename mpl::push_back<ListT, T>::type type;
         };
     };
 
@@ -140,12 +142,11 @@ namespace detail {
         //  Case 2: optional case, T is an optional, append all
         //          the contents of the optional T into back of ListT
 
-            typedef typename boost::mpl::for_each
-            <
-                typename T::sequence,
+            typedef typename mpl::fold_backward<
+                typename T::type,
                 ListT,
-                boost::mpl::push_back<boost::mpl::_1, boost::mpl::_2>
-            >::state sequence;
+                mpl::push_front<mpl::_1, mpl::_2>
+            >::type type;
         };
     };
 
@@ -156,26 +157,24 @@ namespace detail {
         template <class ListT, class T>
         struct apply {
 
-            typedef ListT sequence;
+            typedef ListT type;
         };
     };
 
     template <class ListT, class T>
     struct append_to_init {
 
-        typedef typename boost::mpl::select_type
-        <
-            is_optional<T>::value,              // if
-            append_to_init_helper2,             // then
-            typename boost::mpl::select_type    // else
-            <
-                is_nil<T>::value,               // if
-                append_to_init_helper3,         // then
-                append_to_init_helper1          // else
+        typedef typename mpl::if_c<
+            is_optional<T>::value       
+            , append_to_init_helper2
+            , typename mpl::if_c<
+                is_nil<T>::value
+                , append_to_init_helper3
+                , append_to_init_helper1
             >::type
         >::type helper;
 
-        typedef typename helper::template apply<ListT, T>::sequence sequence;
+        typedef typename helper::template apply<ListT, T>::type type;
     };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -197,7 +196,7 @@ namespace detail {
 
         //  case where size of sequence is not zero
 
-            typedef typename boost::mpl::pop_front<ListT>::sequence rest;
+            typedef typename mpl::pop_front<ListT>::type rest;
 
             enum {
 
@@ -206,8 +205,8 @@ namespace detail {
                 //  the rest of the type list
 
                 first_is_optional =
-                    is_optional<typename boost::mpl::at<0, ListT>::type>::value,
-                size_of_rest = boost::mpl::size<rest>::value,
+                    is_optional<typename mpl::at_c<0, ListT>::type>::value,
+                size_of_rest = mpl::size<rest>::value,
                 rest_is_nil = (size_of_rest == 0),
                 is_ok = first_is_optional ? rest_is_nil :
                     check_init_params_helper<size_of_rest>
@@ -233,11 +232,11 @@ namespace detail {
     template <BOOST_PYTHON_TEMPLATE_TYPES>
     struct check_init_params : init_base {
 
-        typedef boost::mpl::type_list<BOOST_PYTHON_TEMPLATE_ARGS> params;
+        typedef mpl::list<BOOST_PYTHON_TEMPLATE_ARGS> params;
 
         BOOST_STATIC_ASSERT
         (
-            check_init_params_helper<boost::mpl::size<params>::value>
+            check_init_params_helper<mpl::size<params>::value>
                 ::template apply<params>::is_ok
         );
     };
@@ -262,16 +261,15 @@ namespace detail {
     struct count_optionals2 {
 
         BOOST_STATIC_CONSTANT(
-            int, value = boost::mpl::size<typename T::sequence>::value + 1);
+            int, value = mpl::size<typename T::type>::value + 1);
     };
 
     template <class T>
     struct count_optionals
-    :   boost::mpl::select_type
-        <
-            is_optional<T>::value,  //  if
-            count_optionals2<T>,    //  then
-            count_optionals1<T>     //  else
+    :   mpl::if_c<
+            is_optional<T>::value  //  if
+            , count_optionals2<T>    //  then
+            , count_optionals1<T>     //  else
         >::type
     {
     };
@@ -292,7 +290,7 @@ namespace detail {
 //
 //  init
 //
-//      init<T0...TN>::sequence returns a typelist. One of T0..TN
+//      init<T0...TN>::type returns a typelist. One of T0..TN
 //      mat be an optional<...> see below. There should be only one
 //      optional in the input types and an optional should be the
 //      last in the list.
@@ -303,19 +301,19 @@ namespace detail {
     <                                                                           \
         BOOST_PP_CAT(l, INDEX),                                                 \
         BOOST_PP_CAT(T, BOOST_PP_INC(INDEX))                                    \
-    >::sequence BOOST_PP_CAT(l, BOOST_PP_INC(INDEX));                           \
+    >::type BOOST_PP_CAT(l, BOOST_PP_INC(INDEX));                           \
 
 
 template <BOOST_PYTHON_TEMPLATE_TYPES>
 struct init : detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 {
-    typedef boost::mpl::type_list<T0> l0;
+    typedef mpl::list<T0> l0;
     BOOST_PP_REPEAT
         (BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY), BOOST_PYTHON_APPEND_TO_INIT, 0)
 
-    typedef BOOST_PP_CAT(l, BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY)) sequence;
+    typedef BOOST_PP_CAT(l, BOOST_PP_DEC(BOOST_PYTHON_MAX_ARITY)) type;
 
-    BOOST_STATIC_CONSTANT(int, n_arguments = boost::mpl::size<sequence>::value);
+    BOOST_STATIC_CONSTANT(int, n_arguments = mpl::size<type>::value);
 
     BOOST_STATIC_CONSTANT(int, n_defaults =
         (detail::count_optional_types<BOOST_PYTHON_TEMPLATE_ARGS>::value)
@@ -326,13 +324,13 @@ struct init : detail::check_init_params<BOOST_PYTHON_TEMPLATE_ARGS>
 //
 //  optional
 //
-//      optional<T0...TN>::sequence returns a typelist.
+//      optional<T0...TN>::type returns a typelist.
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <BOOST_PYTHON_TEMPLATE_TYPES>
 struct optional {
 
-    typedef boost::mpl::type_list<BOOST_PYTHON_TEMPLATE_ARGS> sequence;
+    typedef mpl::list<BOOST_PYTHON_TEMPLATE_ARGS> type;
 };
 
 namespace detail {
@@ -356,7 +354,7 @@ namespace detail {
         static void apply(ClassT& cl, CallPoliciesT const& policies, ArgsT const& args, char const* doc)
         {
             cl.def_init(args, policies, doc);
-            typename boost::mpl::pop_back<ArgsT>::sequence next;
+            typename mpl::pop_back<ArgsT>::type next;
             define_class_init_helper<N-1>::apply(cl, policies, next, doc);
         }
     };
@@ -407,7 +405,7 @@ template <class ClassT, class CallPoliciesT, class InitT>
 void
 define_init(ClassT& cl, InitT const& i, CallPoliciesT const& policies, char const* doc)
 {
-    typedef typename InitT::sequence args_t;
+    typedef typename InitT::type args_t;
     detail::define_class_init_helper<InitT::n_defaults>::apply(cl, policies, args_t(), doc);
 }
 

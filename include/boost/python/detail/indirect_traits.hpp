@@ -5,11 +5,17 @@
 // to its suitability for any purpose.
 #ifndef INDIRECT_TRAITS_DWA2002131_HPP
 # define INDIRECT_TRAITS_DWA2002131_HPP
-# include <boost/type_traits/cv_traits.hpp>
-# include <boost/type_traits/composite_traits.hpp>
-# include <boost/type_traits/function_traits.hpp>
-# include <boost/type_traits/object_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/type_traits/is_function.hpp>
+# include <boost/type_traits/detail/ice_and.hpp>
+# include <boost/type_traits/is_reference.hpp>
+# include <boost/type_traits/is_pointer.hpp>
+# include <boost/type_traits/is_class.hpp>
+# include <boost/type_traits/is_const.hpp>
+# include <boost/type_traits/is_volatile.hpp>
+# include <boost/type_traits/remove_cv.hpp>
+# include <boost/type_traits/remove_reference.hpp>
+# include <boost/type_traits/remove_pointer.hpp>
+# include <boost/mpl/if.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
@@ -184,7 +190,7 @@ typedef char (&outer_no_type)[1];
 template <typename V>
 struct is_const_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_const<V>::value
         , inner_yes_type
         , inner_no_type
@@ -194,7 +200,7 @@ struct is_const_help
 template <typename V>
 struct is_volatile_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_volatile<V>::value
         , inner_yes_type
         , inner_no_type
@@ -204,7 +210,7 @@ struct is_volatile_help
 template <typename V>
 struct is_pointer_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_pointer<V>::value
         , inner_yes_type
         , inner_no_type
@@ -214,7 +220,7 @@ struct is_pointer_help
 template <typename V>
 struct is_class_help
 {
-    typedef typename mpl::select_type<
+    typedef typename mpl::if_c<
         is_class<V>::value
         , inner_yes_type
         , inner_no_type
@@ -228,7 +234,7 @@ struct is_reference_to_function
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
-        = sizeof(::boost::detail::is_function_tester(t)) == sizeof(::boost::type_traits::yes_type));
+        = sizeof(::boost::type_traits::is_function_ptr_tester(t)) == sizeof(::boost::type_traits::yes_type));
 #   endif
 
 template <class T>
@@ -237,7 +243,7 @@ struct is_pointer_to_function
     static T t;
     BOOST_STATIC_CONSTANT(
         bool, value
-        = sizeof(::boost::detail::is_function_tester(t)) == sizeof(::boost::type_traits::yes_type));
+        = sizeof(::boost::type_traits::is_function_ptr_tester(t)) == sizeof(::boost::type_traits::yes_type));
 };
 
 struct false_helper1

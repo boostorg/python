@@ -6,10 +6,11 @@
 #ifndef FORWARD_DWA20011215_HPP
 # define FORWARD_DWA20011215_HPP
 
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
+# include <boost/type_traits/add_const.hpp>
 # include <boost/ref.hpp>
 
 namespace boost { namespace python { namespace objects { 
@@ -30,7 +31,7 @@ struct reference_to_value
 // is T.
 template <class T>
 struct forward
-    : mpl::select_type<
+    : mpl::if_c<
         is_scalar<T>::value
         , T
         , reference_to_value<T> >

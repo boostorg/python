@@ -14,7 +14,7 @@
 
 #include <boost/python/detail/defaults_gen.hpp>
 #include <boost/type_traits.hpp>
-#include <boost/mpl/int_t.hpp>
+#include <boost/mpl/int_c.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/iterate.hpp>
 #include <boost/python/detail/type_list_utils.hpp>
@@ -86,7 +86,7 @@ static void name_space_def(
 //      template <typename StubsT, typename NameSpaceT>
 //      inline void
 //      define_stub_function(
-//          char const* name, StubsT s, NameSpaceT& name_space, boost::mpl::int_t<N>)
+//          char const* name, StubsT s, NameSpaceT& name_space, mpl::int_c<N>)
 //      {
 //          name_space.def(name, &StubsT::func_N);
 //      }
@@ -186,9 +186,9 @@ struct define_stub_function {};
 //  is a typelist that specifies the return type, the class (for member
 //  functions, and the arguments. Here are some SigT examples:
 //
-//      int foo(int)        mpl::type_list<int, int>
-//      void bar(int, int)  mpl::type_list<void, int, int>
-//      void C::foo(int)    mpl::type_list<void, C, int>
+//      int foo(int)        mpl::list<int, int>
+//      void bar(int, int)  mpl::list<void, int, int>
+//      void C::foo(int)    mpl::list<void, C, int>
 //
 ///////////////////////////////////////////////////////////////////////////////
     template <class StubsT, class CallPolicies, class NameSpaceT, class SigT>
@@ -205,7 +205,7 @@ struct define_stub_function {};
         typedef typename StubsT::v_type v_type;
         typedef typename StubsT::nv_type nv_type;
 
-        typedef typename mpl::select_type<
+        typedef typename mpl::if_c<
             boost::is_same<void, nth_type>::value
             , v_type
             , nv_type

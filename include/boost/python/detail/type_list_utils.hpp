@@ -24,7 +24,7 @@
 # include <boost/preprocessor/dec.hpp>
 # include <boost/preprocessor/debug/line.hpp>
 
-# include <boost/mpl/type_list.hpp>
+# include <boost/mpl/list.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -32,10 +32,10 @@ namespace boost { namespace python { namespace detail {
     && (!defined(BOOST_INTEL_CXX_VERSION) || BOOST_INTEL_CXX_VERSION > 600)
 
     template <int N, class L>
-    struct type_at : public boost::mpl::at<N, L> {};
+    struct type_at : mpl::at_c<N, L> {};
 
     template <class L>
-    struct type_list_size : public boost::mpl::size<L> {};
+    struct type_list_size : boost::mpl::size<L> {};
 
 //    template <class L>
 //    struct pop_front : public boost::mpl::pop_front<L> {};
@@ -77,36 +77,36 @@ namespace boost { namespace python { namespace detail {
 #  if (N < BOOST_PYTHON_MAX_ARITY-1)
 
     template <BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, class A)>
-    struct type_at<N, boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, A)> >
+    struct type_at<N, mpl::list<BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_ARITY, A)> >
     {
         typedef BOOST_PP_CAT(A, N) type;
     };
 
 //    template <BOOST_PP_ENUM_PARAMS(N, class A) BOOST_PP_COMMA_IF(N) class T>
-//    struct push_back<boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A)>, T>
+//    struct push_back<mpl::list<BOOST_PP_ENUM_PARAMS(N, A)>, T>
 //    {
-//        typedef boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A) BOOST_PP_COMMA_IF(N) T> sequence;
+//        typedef mpl::list<BOOST_PP_ENUM_PARAMS(N, A) BOOST_PP_COMMA_IF(N) T> sequence;
 //    };
 
 #   if (N > 0)
 
 //    template <BOOST_PP_ENUM_PARAMS(N, class A)>
-//    struct pop_front<boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A)> >
+//    struct pop_front<mpl::list<BOOST_PP_ENUM_PARAMS(N, A)> >
 //    {
-//        typedef boost::mpl::type_list<BOOST_PP_ENUM_SHIFTED_PARAMS(N, A)> sequence;
+//        typedef mpl::list<BOOST_PP_ENUM_SHIFTED_PARAMS(N, A)> sequence;
 //    };
 //
 //    template <BOOST_PP_ENUM_PARAMS(N, class A)>
-//    struct pop_back<boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A)> >
+//    struct pop_back<mpl::list<BOOST_PP_ENUM_PARAMS(N, A)> >
 //    {
-//        typedef boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(N), A)> sequence;
+//        typedef mpl::list<BOOST_PP_ENUM_PARAMS(BOOST_PP_DEC(N), A)> sequence;
 //    };
 
 #   endif
 #  endif
 
     template <BOOST_PP_ENUM_PARAMS(N, class A)>
-    struct type_list_size<boost::mpl::type_list<BOOST_PP_ENUM_PARAMS(N, A)> >
+    struct type_list_size<mpl::list<BOOST_PP_ENUM_PARAMS(N, A)> >
     {
         BOOST_STATIC_CONSTANT(long, value = N);
     };

@@ -5,11 +5,11 @@
 // to its suitability for any purpose.
 #ifndef TYPE_LIST_DWA200222_HPP
 # define TYPE_LIST_DWA200222_HPP
-# include <boost/mpl/type_list.hpp>
+# include <boost/mpl/list.hpp>
 
 namespace boost { namespace python { namespace detail { 
 
-struct empty_list : boost::mpl::type_list<>::type {};
+struct empty_list : boost::mpl::list<>::type {};
 
 }}} // namespace boost::python::detail
 

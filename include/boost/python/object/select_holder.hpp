@@ -15,10 +15,10 @@
 # include <boost/python/object/make_instance.hpp>
 # include <boost/python/object/instance.hpp>
 # include <boost/type.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/alignment_traits.hpp>
-# include <boost/mpl/bool_t.hpp>
+# include <boost/mpl/bool_c.hpp>
 # include <cstddef>
 
 namespace boost { namespace python { namespace objects {
@@ -30,7 +30,7 @@ namespace detail
   {
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,Held>::value) | has_back_reference<T>::value);
   
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           selector
           , value_holder_back_reference<T,Held>
           , value_holder<T>
@@ -38,18 +38,18 @@ namespace detail
 
       static inline void register_()
       {
-          select_value_holder::register_(mpl::bool_t<selector>());
+          select_value_holder::register_(mpl::bool_c<selector>());
       }
 
       static type* get() { return 0; }
       
    private:
-      static inline void register_(mpl::bool_t<true>)
+      static inline void register_(mpl::bool_c<true>)
       {
           python::detail::force_instantiate(instance_finder<Held>::registration);
       }
 
-      static inline void register_(mpl::bool_t<false>)
+      static inline void register_(mpl::bool_c<false>)
       {
       }
   };
@@ -60,7 +60,7 @@ namespace detail
       typedef typename python::pointee<Ptr>::type pointee;
       BOOST_STATIC_CONSTANT(bool, selector = (!is_same<T,pointee>::value) | has_back_reference<T>::value);
       
-      typedef typename mpl::select_type<
+      typedef typename mpl::if_c<
           selector
           , pointer_holder_back_reference<Ptr,T>
           , pointer_holder<Ptr,T>
@@ -68,13 +68,13 @@ namespace detail
       
       static inline void register_()
       {
-          select_pointer_holder::register_(mpl::bool_t<selector>());
+          select_pointer_holder::register_(mpl::bool_c<selector>());
       }
 
       static type* get() { return 0; }
       
    private:
-      static inline void register_(mpl::bool_t<true>)
+      static inline void register_(mpl::bool_c<true>)
       {
           // not implemented at least until we solve the back
           // reference issue mentioned in pointer_holder.hpp.
@@ -94,7 +94,7 @@ namespace detail
           }
       };
       
-      static inline void register_(mpl::bool_t<false>)
+      static inline void register_(mpl::bool_c<false>)
       {
           python::detail::force_instantiate(
               objects::class_wrapper<

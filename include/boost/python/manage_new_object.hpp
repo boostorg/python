@@ -6,7 +6,7 @@
 #ifndef MANAGE_NEW_OBJECT_DWA200222_HPP
 # define MANAGE_NEW_OBJECT_DWA200222_HPP
 # include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/python/to_python_indirect.hpp>
 # include <boost/type_traits/composite_traits.hpp>
 
@@ -27,7 +27,7 @@ struct manage_new_object
     template <class T>
     struct apply
     {
-        typedef typename mpl::select_type<
+        typedef typename mpl::if_c<
             boost::is_pointer<T>::value
             , to_python_indirect<T, detail::make_owning_holder>
             , detail::manage_new_object_requires_a_pointer_return_type<T>

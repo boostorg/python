@@ -29,7 +29,7 @@ namespace boost { namespace python { namespace objects {
 template <int nargs> struct make_holder;
 
 #  define BOOST_PYTHON_FORWARD_ARG(z, index, _)             \
-    typedef typename mpl::at<index,ArgList>::type t##index; \
+    typedef typename mpl::at_c<index,ArgList>::type t##index; \
     typedef typename forward<t##index>::type f##index;
 
 #  define BOOST_PYTHON_DO_FORWARD_ARG(z, index, _) , f##index(a##index)

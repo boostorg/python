@@ -11,7 +11,8 @@
 
 #  include <boost/python/detail/preprocessor.hpp>
 
-#  include <boost/mpl/type_list.hpp>
+#  include <boost/mpl/list.hpp>
+#  include <boost/mpl/at.hpp>
 
 #  include <boost/preprocessor/cat.hpp>
 #  include <boost/preprocessor/iterate.hpp>
@@ -33,22 +34,22 @@ namespace detail
 namespace boost { namespace python {
 
 // A type list for specifying arguments
-template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, boost::mpl::null_argument) >
+template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, mpl::void_) >
 struct args : detail::args_base<args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
-      , boost::mpl::type_list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A) >::type
+      , mpl::list< BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A) >::type
 {};
 
 }} // namespace boost::python
 
 #  else // slow template instantiators need this other version with
         // explicit specializations of mpl::size<> and
-        // mpl::at<>. Eventually, however, inheritance from mpl::list
+        // mpl::at_c<>. Eventually, however, inheritance from mpl::list
         // *should* be eliminated and the two versions unified, just in
         // order to get true arity independence
 
 namespace boost { namespace python {
 
-template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, boost::mpl::null_argument) >
+template < BOOST_PYTHON_ENUM_WITH_DEFAULT(BOOST_PYTHON_MAX_ARITY, typename A, mpl::void_) >
 struct args : detail::args_base<args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
 {};
 
@@ -86,14 +87,14 @@ struct size<boost::python::args<BOOST_PYTHON_UNARY_ENUM(N, A)> >
 
 # undef N
 
-/* ---------- at ---------- */
+/* ---------- at_c ---------- */
 #elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 2
 # line BOOST_PP_LINE(__LINE__, args.hpp(at))
 
 # define N BOOST_PP_ITERATION()
 
 template <BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, class A)>
-struct at<N, boost::python::args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
+struct at_c<N, boost::python::args<BOOST_PYTHON_UNARY_ENUM(BOOST_PYTHON_MAX_ARITY, A)> >
 {
     typedef BOOST_PP_CAT(A, N) type;
 };

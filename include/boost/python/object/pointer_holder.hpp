@@ -22,7 +22,7 @@
 #  include <boost/python/detail/preprocessor.hpp>
 #  include <boost/preprocessor/debug/line.hpp>
 
-#  include <boost/mpl/select_type.hpp>
+#  include <boost/mpl/if.hpp>
 #  include <boost/mpl/apply.hpp>
 
 #  include <boost/preprocessor/comma_if.hpp>

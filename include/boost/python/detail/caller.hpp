@@ -21,8 +21,6 @@
 #  include <boost/type_traits/composite_traits.hpp>
 #  include <boost/type_traits/same_traits.hpp>
 
-#  // temp:  include <boost/mpl/select_type.hpp>
-
 #  include <boost/preprocessor/comma_if.hpp>
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/debug/line.hpp>

@@ -8,7 +8,7 @@
 
 # include <boost/config.hpp>
 # include <boost/type.hpp>
-# include <boost/mpl/select_type.hpp>
+# include <boost/mpl/if.hpp>
 # include <boost/type_traits/object_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/python/tag.hpp>
@@ -77,7 +77,7 @@ typedef char (&no_borrowed_ptr_t)[2];
 no_borrowed_ptr_t is_borrowed_ptr_test(...);
 
 template <class T>
-typename mpl::select_type<
+typename mpl::if_c<
     is_pointer<T>::value
     , T
     , int
