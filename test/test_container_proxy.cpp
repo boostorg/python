@@ -80,10 +80,13 @@ static void increment (T const &proxy, int val) {
 }
 #endif
 
+template<typename T> T const &as_const (T &ref) { return ref; }
+
 template<typename ProxyContainer>
 void initial_tests (ProxyContainer &proxy_container)
 {
   typedef typename ProxyContainer::reference reference;
+  typedef typename ProxyContainer::const_reference const_reference;
 
   BOOST_CHECK (proxy_container.size() == 4);
   BOOST_CHECK (proxy_container.is_valid());
@@ -91,41 +94,62 @@ void initial_tests (ProxyContainer &proxy_container)
   proxy_container.insert (proxy_container.begin(), throwing_int (1));
 
   reference ref0 (proxy_container[0]);
-  BOOST_CHECK (ref0.use_count() == 2);
+  const_reference cref0 (proxy_container[0]);
+  BOOST_CHECK (ref0.use_count() == 3);
   BOOST_CHECK (ref0 == throwing_int (1));
+  BOOST_CHECK (cref0 == throwing_int (1));
 
   proxy_container.insert (proxy_container.begin(), throwing_int (2));
   BOOST_CHECK (proxy_container.is_valid());
 
-  BOOST_CHECK (ref0.use_count() == 2);
+  BOOST_CHECK (ref0.use_count() == 3);
   BOOST_CHECK (ref0 == throwing_int (1));
+  BOOST_CHECK (cref0 == throwing_int (1));
   BOOST_CHECK (proxy_container[0] == throwing_int (2));
 
   proxy_container.swap_elements (0, 1);
   BOOST_CHECK (proxy_container.is_valid());
 
-  BOOST_CHECK (ref0.use_count() == 2);
+  BOOST_CHECK (ref0.use_count() == 3);
   BOOST_CHECK (ref0 == throwing_int (1));
+  BOOST_CHECK (cref0 == throwing_int (1));
   BOOST_CHECK (proxy_container[1] == throwing_int (2));
 
   proxy_container.swap_elements (0, 1);
   proxy_container.erase (proxy_container.begin());
   BOOST_CHECK (proxy_container.is_valid());
 
-  BOOST_CHECK (ref0.use_count() == 2);
+  BOOST_CHECK (ref0.use_count() == 3);
+  BOOST_CHECK (cref0.use_count() == 3);
   ::increment (proxy_container[0], 2);
   BOOST_CHECK (ref0 == throwing_int (3));
+  BOOST_CHECK (cref0 == throwing_int (3));
   BOOST_CHECK (proxy_container[0] == throwing_int (3));
+  BOOST_CHECK (as_const(proxy_container)[0] == throwing_int (3));
 
   proxy_container.erase (proxy_container.begin());
   BOOST_CHECK (proxy_container.is_valid());
 
-  BOOST_CHECK (ref0.use_count() == 1);
+  // ref0 and cref0 should be detached from the container and both
+  // referring to the same object
+  BOOST_CHECK (ref0.use_count() == 2);
+  BOOST_CHECK (cref0.use_count() == 2);
   BOOST_CHECK (ref0 == throwing_int (3));
-  BOOST_CHECK (proxy_container[0] == throwing_int ());
+  BOOST_CHECK (cref0 == throwing_int (3));
+  ::increment (ref0, 1);
+  BOOST_CHECK (ref0 == throwing_int (4));
+  BOOST_CHECK (cref0 == throwing_int (4));
 
   BOOST_CHECK (proxy_container.size() == 4);
   BOOST_CHECK (proxy_container.is_valid());
+
+  // Check other comparison operators (mutable and const)
+  BOOST_CHECK (ref0 != throwing_int (0));
+  BOOST_CHECK (ref0 > throwing_int (3));
+  BOOST_CHECK (ref0 < throwing_int (5));
+  BOOST_CHECK (cref0 != throwing_int (0));
+  BOOST_CHECK (cref0 > throwing_int (3));
+  BOOST_CHECK (cref0 < throwing_int (5));
 }
 
 template<typename RawContainer, typename Generator>
