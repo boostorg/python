@@ -8,19 +8,130 @@
 
 #include "extclass.h"
 #include <cstring>
-#include <iostream>
 
 namespace py {
+namespace detail {
 
-namespace detail
-{
+  struct operator_dispatcher
+      : public PyObject
+  {
+      static PyTypeObject type_object;
+      static PyNumberMethods number_methods;
 
-    Tuple extension_class_coerce(PyObject * l, PyObject * r)
-    {
-        return py::Tuple(Ptr(new detail::operator_dispatcher(l, l)),
-                         Ptr(new detail::operator_dispatcher(r, 0)));
-    }
+      operator_dispatcher(const Ptr& o, const Ptr& s);
+      static void dealloc(PyObject* self);
+      static int coerce(PyObject** l, PyObject** r);
+      static PyObject* call_add(PyObject*, PyObject*);
+      static PyObject* call_sub(PyObject*, PyObject*);
+      static PyObject* call_mul(PyObject*, PyObject*);
+      static PyObject* call_div(PyObject*, PyObject*);
+      static PyObject* call_mod(PyObject*, PyObject*);
+      static PyObject* call_divmod(PyObject*, PyObject*);
+      static PyObject* call_lshift(PyObject*, PyObject*);
+      static PyObject* call_rshift(PyObject*, PyObject*);
+      static PyObject* call_and(PyObject*, PyObject*);
+      static PyObject* call_xor(PyObject*, PyObject*);
+      static PyObject* call_or(PyObject*, PyObject*);
+      static PyObject* call_pow(PyObject*, PyObject*, PyObject*);
+      static int call_cmp(PyObject*, PyObject*);
 
+      Ptr m_object;
+      Ptr m_self;
+  };
+
+}}
+
+PY_BEGIN_CONVERSION_NAMESPACE
+
+inline PyObject* to_python(py::detail::operator_dispatcher* n) { return n; }
+
+PY_END_CONVERSION_NAMESPACE
+
+
+namespace py{ namespace detail {
+
+  Tuple extension_class_coerce(Ptr l, Ptr r)
+  {
+      // Introduced sequence points for exception-safety.
+      Ptr first(new operator_dispatcher(l, l));
+      Ptr second(new operator_dispatcher(r, Ptr()));
+      return py::Tuple(first, second);
+  }
+
+  enum { unwrap_exception_code = -1000 };
+
+  int unwrap_args(PyObject* left, PyObject* right, PyObject*& self, PyObject*& other)
+  {
+      if (left->ob_type != &operator_dispatcher::type_object ||
+          right->ob_type != &operator_dispatcher::type_object)
+      {
+          String format("operator_dispatcher::unwrap_args(): internal error (%d, %d)");
+          String message(format % Tuple(__FILE__, __LINE__));
+          PyErr_SetObject(PyExc_RuntimeError, message.get());
+          return unwrap_exception_code;
+      }
+
+      operator_dispatcher* lwrapper = static_cast<operator_dispatcher*>(left);
+      operator_dispatcher* rwrapper = static_cast<operator_dispatcher*>(right);
+      
+      if (lwrapper->m_self.get() != 0)
+      {
+          self = lwrapper->m_self.get();
+          other = rwrapper->m_object.get();
+          return false;
+      }
+      else
+      {
+          self = rwrapper->m_self.get();
+          other = lwrapper->m_object.get();
+          return true;
+      }
+  }
+
+  int unwrap_pow_args(PyObject* left, PyObject* right, PyObject* m,
+                                  PyObject*& self, PyObject*& first, PyObject*& second)
+  {
+      if (left->ob_type != &operator_dispatcher::type_object ||
+          right->ob_type != &operator_dispatcher::type_object ||
+          m->ob_type != &operator_dispatcher::type_object)
+      {
+          String format("operator_dispatcher::unwrap_pow_args(): internal error (%d, %d)");
+          String message(format % Tuple(__FILE__, __LINE__));
+          PyErr_SetObject(PyExc_RuntimeError, message.get());
+          return unwrap_exception_code;
+      }
+
+      operator_dispatcher* lwrapper = static_cast<operator_dispatcher*>(left);
+      operator_dispatcher* rwrapper = static_cast<operator_dispatcher*>(right);
+      operator_dispatcher* mwrapper = static_cast<operator_dispatcher*>(m);
+
+      if (mwrapper->m_object->ob_type == &operator_dispatcher::type_object)
+      {
+          mwrapper = static_cast<operator_dispatcher*>(mwrapper->m_object.get());
+      }
+
+      if (lwrapper->m_self.get() != 0)
+      {
+          self = lwrapper->m_self.get();
+          first = rwrapper->m_object.get();
+          second = mwrapper->m_object.get();
+          return 0;
+      }
+      else if (rwrapper->m_self.get() != 0)
+      {
+          self = rwrapper->m_self.get();
+          first = lwrapper->m_object.get();
+          second = mwrapper->m_object.get();
+          return 1;
+      }
+      else
+      {
+          self = mwrapper->m_self.get();
+          first = lwrapper->m_object.get();
+          second = rwrapper->m_object.get();
+          return 2;
+      }
+  }
 } // namespace detail
 
 ExtensionInstance* get_extension_instance(PyObject* p)
@@ -252,10 +363,10 @@ ExtensionClassBase::ExtensionClassBase(const char* name)
 void* ExtensionClassBase::try_class_conversions(InstanceHolderBase* object) const
 {
     void* result = try_derived_class_conversions(object);
-    if(result) 
+    if (result) 
         return result;
         
-    if(!object->held_by_value())
+    if (!object->held_by_value())
         return try_base_class_conversions(object);
     else
         return 0;
@@ -265,7 +376,7 @@ void* ExtensionClassBase::try_base_class_conversions(InstanceHolderBase* object)
 {
     for (std::size_t i = 0; i < base_classes().size(); ++i)
     {
-        if(base_classes()[i].convert == 0) 
+        if (base_classes()[i].convert == 0) 
             continue;
         void* result1 = base_classes()[i].class_object->extract_object_from_holder(object);
         if (result1)
@@ -396,58 +507,61 @@ PyNumberMethods operator_dispatcher::number_methods =
     0 
 }; 
 
-operator_dispatcher::operator_dispatcher(PyObject * o, PyObject * s)
-: object(o), self(s)
+operator_dispatcher::operator_dispatcher(const Ptr& o, const Ptr& s)
+    : m_object(o), m_self(s)
 {
     ob_refcnt = 1;
     ob_type = &type_object;
 }
 
-void operator_dispatcher::dealloc(PyObject *self) 
+void operator_dispatcher::dealloc(PyObject* self) 
 { 
-    delete static_cast<operator_dispatcher *>(self);
+    delete static_cast<operator_dispatcher*>(self);
 } 
 
-int operator_dispatcher::coerce(PyObject ** l, PyObject ** r)
+int operator_dispatcher::coerce(PyObject** l, PyObject** r)
 {
     Py_INCREF(*l);
-    *r = new operator_dispatcher(*r, 0);
+    *r = new operator_dispatcher(Ptr(*r, Ptr::new_ref), Ptr());
     return 0;
 }
 
 
-#define py_define_operator(id, symbol) \
-    PyObject * operator_dispatcher::call_##id(PyObject * left, PyObject * right) \
-    { \
-        /* unwrap the arguments from their OperatorDispatcher */ \
-        PyObject * self, * other; \
-        bool reverse =  unwrap_args(left, right, self, other); \
-      \
-        /* call the function */ \
-        PyObject * result =  \
-           PyEval_CallMethod(self, \
-                             const_cast<char*>(reverse ? "__r" #id "__" : "__" #id "__"), \
-                             const_cast<char*>("(O)"), \
-                             other); \
-        if(result == 0 && PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)) \
-        { \
-            PyErr_Clear(); \
-            PyErr_SetString(PyExc_TypeError, "bad operand type(s) for " #symbol); \
-        } \
-        return result; \
+#define PY_DEFINE_OPERATOR(id, symbol) \
+    PyObject* operator_dispatcher::call_##id(PyObject* left, PyObject* right)                   \
+    {                                                                                           \
+        /* unwrap the arguments from their OperatorDispatcher */                                \
+        PyObject* self;                                                                         \
+        PyObject* other;                                                                        \
+        int reverse = unwrap_args(left, right, self, other);                                    \
+        if (reverse == unwrap_exception_code)                                                   \
+            return 0;                                                                           \
+                                                                                                \
+        /* call the function */                                                                 \
+        PyObject* result =                                                                      \
+           PyEval_CallMethod(self,                                                              \
+                             const_cast<char*>(reverse ? "__r" #id "__" : "__" #id "__"),       \
+                             const_cast<char*>("(O)"),                                          \
+                             other);                                                            \
+        if (result == 0 && PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)) \
+        {                                                                                       \
+            PyErr_Clear();                                                                      \
+            PyErr_SetString(PyExc_TypeError, "bad operand type(s) for " #symbol);               \
+        }                                                                                       \
+        return result;                                                                          \
     }
 
-py_define_operator(add, +)
-py_define_operator(sub, -)
-py_define_operator(mul, *)
-py_define_operator(div, /)
-py_define_operator(mod, %)
-py_define_operator(divmod, divmod)
-py_define_operator(lshift, <<)
-py_define_operator(rshift, >>)
-py_define_operator(and, &)
-py_define_operator(xor, ^)
-py_define_operator(or, |)
+PY_DEFINE_OPERATOR(add, +)
+PY_DEFINE_OPERATOR(sub, -)
+PY_DEFINE_OPERATOR(mul, *)
+PY_DEFINE_OPERATOR(div, /)
+PY_DEFINE_OPERATOR(mod, %)
+PY_DEFINE_OPERATOR(divmod, divmod)
+PY_DEFINE_OPERATOR(lshift, <<)
+PY_DEFINE_OPERATOR(rshift, >>)
+PY_DEFINE_OPERATOR(and, &)
+PY_DEFINE_OPERATOR(xor, ^)
+PY_DEFINE_OPERATOR(or, |)
 
 /* coercion rules for heterogeneous pow():
     pow(Foo, int): left, right coerced; m: None => reverse = 0
@@ -459,11 +573,14 @@ py_define_operator(or, |)
     pow(Foo, int, Foo): left, right, m coerced => reverse = 0
     pow(int, Foo, Foo): left, right, m coerced => reverse = 1 
 */
-PyObject * operator_dispatcher::call_pow(PyObject * left, PyObject * right, PyObject * m)
+PyObject* operator_dispatcher::call_pow(PyObject* left, PyObject* right, PyObject* m)
 {
     int reverse;
-    PyObject * self, * first, * second;
-    if(m->ob_type == Py_None->ob_type)
+    PyObject* self;
+    PyObject* first;
+    PyObject* second;
+    
+    if (m->ob_type == Py_None->ob_type)
     {
         reverse = unwrap_args(left, right, self, first);
         second = m; 
@@ -472,20 +589,23 @@ PyObject * operator_dispatcher::call_pow(PyObject * left, PyObject * right, PyOb
     {
         reverse = unwrap_pow_args(left, right, m, self, first, second);
     }
-
-    /* call the function */
-    PyObject * result = 
-       PyEval_CallMethod(self,
-                         const_cast<char*>((reverse == 0) ? 
-                                               "__pow__" : 
-                                               (reverse == 1) ?
-                                                   "__rpow__" :
-                                                   "__rrpow__"),
-                         const_cast<char*>("(OO)"),
-                         first, second);
-    if(result == 0 && 
-       (PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_TypeError) ||
-        PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)))
+    
+    if (reverse == unwrap_exception_code) 
+        return 0;                         
+                                              
+    // call the function
+    PyObject* result = 
+        PyEval_CallMethod(self,
+                          const_cast<char*>((reverse == 0)
+                                            ? "__pow__"
+                                            : (reverse == 1)
+                                              ? "__rpow__"
+                                              : "__rrpow__"),
+                          const_cast<char*>("(OO)"),
+                          first, second);
+    if (result == 0 && 
+        (PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_TypeError) ||
+         PyErr_GivenExceptionMatches(PyErr_Occurred(), PyExc_AttributeError)))
     {
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError, "bad operand type(s) for pow()");
@@ -493,98 +613,30 @@ PyObject * operator_dispatcher::call_pow(PyObject * left, PyObject * right, PyOb
     return result;
 }
 
-int operator_dispatcher::call_cmp(PyObject * left, PyObject * right)
+int operator_dispatcher::call_cmp(PyObject* left, PyObject* right)
 {
-    /* unwrap the arguments from their OperatorDispatcher */
-    PyObject * self, * other;
-    bool reverse =  unwrap_args(left, right, self, other);
- 
-    /* call the function */
-    PyObject * result = 
-       PyEval_CallMethod(self,
-                         const_cast<char*>(reverse ? "__rcmp__" : "__cmp__"),
-                         const_cast<char*>("(O)"),
-                         other);
-    if(result == 0)
+    // unwrap the arguments from their OperatorDispatcher
+    PyObject* self;
+    PyObject* other;
+    int reverse =  unwrap_args(left, right, self, other);
+    if (reverse == unwrap_exception_code)
+        return -1;
+    
+    // call the function
+    PyObject* result = 
+        PyEval_CallMethod(self,
+                          const_cast<char*>(reverse ? "__rcmp__" : "__cmp__"),
+                          const_cast<char*>("(O)"),
+                          other);
+    if (result == 0)
     {
         PyErr_Clear();
         PyErr_SetString(PyExc_TypeError, "bad operand type(s) for cmp()");
-        return 0;
+        return -1;
     }
     else
     {
         return PY_CONVERSION::from_python(result, Type<int>());
-    }
-}
-
-bool operator_dispatcher::unwrap_args(PyObject *  left, PyObject * right, 
-                                      PyObject * & self, PyObject * & other)
-{
-    if(left->ob_type != &operator_dispatcher::type_object ||
-       right->ob_type != &operator_dispatcher::type_object)
-    {
-        std::cerr << "operator_dispatcher::unwrap_args(): internal error (" __FILE__ ", " << 
-                      __LINE__ << ")" << std::endl;
-        exit(1);
-    }
-        
-    PyPtr<operator_dispatcher> lwrapper(static_cast<operator_dispatcher *>(left));
-    PyPtr<operator_dispatcher> rwrapper(static_cast<operator_dispatcher *>(right));
-    if(lwrapper->self != 0)
-    {
-        self = lwrapper->self;
-        other = rwrapper->object;
-        return false;
-    }
-    else
-    {
-        self = rwrapper->self;
-        other = lwrapper->object;
-        return true;
-    }
-}
-
-int operator_dispatcher::unwrap_pow_args(PyObject * left, PyObject * right, PyObject * m,
-                                PyObject * & self, PyObject * & first, PyObject * & second)
-{
-    if(left->ob_type != &operator_dispatcher::type_object ||
-       right->ob_type != &operator_dispatcher::type_object ||
-       m->ob_type != &operator_dispatcher::type_object)
-    {
-        std::cerr << "operator_dispatcher::unwrap_pow_args(): internal error (" __FILE__ ", " << 
-                      __LINE__ << ")" << std::endl;
-        exit(1);
-    }
-        
-    PyPtr<operator_dispatcher> lwrapper(static_cast<operator_dispatcher *>(left));
-    PyPtr<operator_dispatcher> rwrapper(static_cast<operator_dispatcher *>(right));
-    PyPtr<operator_dispatcher> mwrapper(static_cast<operator_dispatcher *>(m));
-    
-    if(mwrapper->object->ob_type == &operator_dispatcher::type_object)
-    {
-        mwrapper = PyPtr<operator_dispatcher>(static_cast<operator_dispatcher *>(mwrapper->object));
-    }
-    
-    if(lwrapper->self != 0)
-    {
-        self = lwrapper->self;
-        first = rwrapper->object;
-        second = mwrapper->object;
-        return 0;
-    }
-    else if(rwrapper->self != 0)
-    {
-        self = rwrapper->self;
-        first = lwrapper->object;
-        second = mwrapper->object;
-        return 1;
-    }
-    else
-    {
-        self = mwrapper->self;
-        first = lwrapper->object;
-        second = rwrapper->object;
-        return 2;
     }
 }
 
