@@ -32,7 +32,7 @@ extern "C"
         ((life_support*)self)->patient = 0;
         // Let the weak reference die. This probably kills us.
         Py_XDECREF(PyTuple_GET_ITEM(arg, 0));
-        return detail::none();
+        return ::boost::python::detail::none();
     }
 }
 
