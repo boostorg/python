@@ -16,28 +16,27 @@
 //
 
 #include <boost/python/suite/indexing/slice.hpp>
+#include <algorithm>
 
 /////////////////////////////////////////////////////////////////////////////
-// Check that setLength has been called, and throw otherwise
+// slice copy constructor
 /////////////////////////////////////////////////////////////////////////////
 
-void boost::python::indexing::slice::validate () const
+boost::python::indexing::slice::slice (slice const &copy)
+  : object (copy)
 {
-  if (mDirection == 0)
-    {
-      PyErr_SetString (PyExc_RuntimeError
-                       , "slice access attempted before setLength called");
-      boost::python::throw_error_already_set();
-    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Set up our member variables for a sequence of a given length
+// integer_slice constructor
 /////////////////////////////////////////////////////////////////////////////
 
-void boost::python::indexing::slice::setLength (int sequenceLength)
+boost::python::indexing::integer_slice::integer_slice (slice const &sl
+                                                       , int sequenceLength)
+  : mSlice (sl)
+  // Leave int members uninitialized
 {
-  PySlice_GetIndices ((PySliceObject *) this->ptr()
+  PySlice_GetIndices (reinterpret_cast<PySliceObject *> (mSlice.ptr())
                       , sequenceLength
                       , &mStart
                       , &mStop
@@ -56,10 +55,10 @@ void boost::python::indexing::slice::setLength (int sequenceLength)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Check if an index is within the range of this slice
+// Check if an index is within the range of this integer_slice
 /////////////////////////////////////////////////////////////////////////////
 
-bool boost::python::indexing::slice::inRange (int index)
+bool boost::python::indexing::integer_slice::in_range (int index)
 {
   return ((mStop - index) * mDirection) > 0;
 }

@@ -19,34 +19,40 @@
 #define slice_rmg_20030910_included
 
 #include <boost/python/object.hpp>
+#include <boost/python/errors.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
   struct BOOST_PYTHON_DECL slice : public boost::python::object
   {
-    //
-    // *** WARNING ***
-    //
-    // A newly constructed slice object is useless until setLength is called
-    //
+    // This is just a thin wrapper around boost::python::object
+    // so that it is possible to register a special converter for
+    // PySlice_Type and overload C++ functions on slice
+
+    slice (slice const &);
 
     template<typename T> inline slice (T const &ref);
+  };
 
-    void setLength (int sequenceLength);
-    // Tell slice object how big the container is (so it can adjust
-    // for negative indexes, etc...)
+  struct BOOST_PYTHON_DECL integer_slice
+  {
+    // This class provides a convenient interface to Python slice
+    // objects that contain integer bound and stride values.
 
-    int start() const { validate(); return mStart; }
-    int step() const  { validate(); return mStep; }
-    int stop() const  { validate(); return mStop; }
+    integer_slice (slice const &, int sequenceLength);
+    // integer_slice must know how big the container is so it can
+    // adjust for negative indexes, etc...
 
-    int size() const { validate(); return (mStop - mStart) / mStep; }
+    int start() const { return mStart; }
+    int step() const  { return mStep; }
+    int stop() const  { return mStop; }
 
-    bool inRange (int index);
+    int size() const { return (mStop - mStart) / mStep; }
+
+    bool in_range (int index);
 
   private:
-    void validate () const; // throws unless setLength has been called
-
+    slice mSlice;
     int mStart;
     int mStep;
     int mStop;
@@ -57,10 +63,6 @@ namespace boost { namespace python { namespace indexing {
 template<typename T>
 boost::python::indexing::slice::slice (T const &ref)
   : boost::python::object (ref)
-  , mStart (0)
-  , mStep (0)
-  , mStop (0)
-  , mDirection (0)
 {
   if (!PySlice_Check (this->ptr()))
     {
@@ -69,15 +71,14 @@ boost::python::indexing::slice::slice (T const &ref)
 
       boost::python::throw_error_already_set();
     }
-
-  // This slice object is still useless until setLength is called
 }
 
 namespace boost { namespace python { namespace converter {
   // Specialized converter to handle PySlice_Type objects
   template<>
   struct object_manager_traits<boost::python::indexing::slice>
-    : pytype_object_manager_traits<&PySlice_Type, ::boost::python::indexing::slice>
+    : pytype_object_manager_traits<&PySlice_Type
+                                   , ::boost::python::indexing::slice>
   {
   };
 }}}
