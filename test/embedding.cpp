@@ -29,7 +29,7 @@ class CppDerived : public Base
 {
 public:
     virtual ~CppDerived() {}
-    
+
     std::string hello()
     {
         return "Hello from C++!";
@@ -72,10 +72,10 @@ void test()
     python::object main_module = python::extract<python::object>(
         PyImport_AddModule("__main__")
     )();
-    
+
     // Retrieve the main module's namespace
     python::object main_namespace(main_module.attr("__dict__"));
-    
+
     // Define the derived class in Python.
     // (You'll normally want to put this in a .py file.)
     python::handle<> result(
@@ -83,15 +83,15 @@ void test()
         "from embedded_hello import *        \n"
         "class PythonDerived(Base):          \n"
         "    def hello(self):                \n"
-        "        return 'Hello from Python!' \n", 
+        "        return 'Hello from Python!' \n",
         Py_file_input, main_namespace.ptr(), main_namespace.ptr())
         );
     // Result is not needed
     result.reset();
 
     // Extract the raw Python object representing the just defined derived class
-    python::handle<> class_ptr( 
-        PyRun_String("PythonDerived\n", Py_eval_input, 
+    python::handle<> class_ptr(
+        PyRun_String("PythonDerived\n", Py_eval_input,
                      main_namespace.ptr(), main_namespace.ptr()) );
 
     // Wrap the raw Python object in a Boost.Python object
@@ -103,11 +103,26 @@ void test()
     CppDerived cpp;
     std::cout << cpp.hello() << std::endl;
 
-    // But now creating and using instances of the Python class is almost 
+    // But now creating and using instances of the Python class is almost
     // as easy!
     python::object py_base = PythonDerived();
     Base& py = python::extract<Base&>(py_base)();
     std::cout << py.hello() << std::endl;
+}
+
+void
+test_tutorial()
+{
+    using namespace boost::python;
+
+    object main_module =
+        object(handle<>(borrowed(PyImport_AddModule("__main__"))));
+    object main_namespace = extract<dict>(
+        object(handle<>(borrowed(PyModule_GetDict(main_module.ptr())))));
+    handle<>( PyRun_String("hello = file('hello.txt', 'w')\n"
+                           "hello.write('Hello world!')\n"
+                           "hello.close()", Py_file_input,
+                           main_namespace.ptr(), main_namespace.ptr()) );
 }
 
 int main()
@@ -118,6 +133,14 @@ int main()
             PyErr_Print();
         return 1;
     }
+
+    if (python::handle_exception(test_tutorial))
+    {
+        if (PyErr_Occurred())
+            PyErr_Print();
+        return 1;
+    }
+
     return 0;
 }
 #include "module_tail.cpp"
