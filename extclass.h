@@ -6,7 +6,7 @@
 //  The author gratefully acknowleges the support of Dragon Systems, Inc., in
 //  producing this work.
 //
-//  This file automatically generated for 10-argument constructors by
+//  This file automatically generated for 5-argument constructors by
 //  gen_extclass.python
 
 #ifndef EXTENSION_CLASS_DWA052000_H_
@@ -63,19 +63,19 @@ T* check_non_null(T* p)
 
 template <class T> class held_instance;
 
-typedef void* (*ConversionFunction)(void*);
+typedef void* (*conversion_function_ptr)(void*);
 
-struct BaseClassInfo
+struct base_class_info
 {
-    BaseClassInfo(extension_class_base* t, ConversionFunction f)
+    base_class_info(extension_class_base* t, conversion_function_ptr f)
         :class_object(t), convert(f)
         {}
     
     extension_class_base* class_object;
-    ConversionFunction convert;
+    conversion_function_ptr convert;
 };
 
-typedef BaseClassInfo derived_class_info;
+typedef base_class_info derived_class_info;
 
 struct add_operator_base;
 
@@ -96,7 +96,7 @@ class extension_class_base : public class_t<extension_instance>
     
  private:
     virtual void* extract_object_from_holder(instance_holder_base* v) const = 0;
-    virtual std::vector<BaseClassInfo> const& base_classes() const = 0;
+    virtual std::vector<base_class_info> const& base_classes() const = 0;
     virtual std::vector<derived_class_info> const& derived_classes() const = 0;
 
  protected:
@@ -121,15 +121,15 @@ class class_registry
     static void unregister_class(extension_class_base*);
 
     // Establish C++ inheritance relationships
-    static void register_base_class(BaseClassInfo const&);
+    static void register_base_class(base_class_info const&);
     static void register_derived_class(derived_class_info const&);
 
     // Query the C++ inheritance relationships
-    static std::vector<BaseClassInfo> const& base_classes();
+    static std::vector<base_class_info> const& base_classes();
     static std::vector<derived_class_info> const& derived_classes();
  private:
     static extension_class_base* static_class_object;
-    static std::vector<BaseClassInfo> static_base_class_info;
+    static std::vector<base_class_info> static_base_class_info;
     static std::vector<derived_class_info> static_derived_class_info;
 };
 
@@ -142,7 +142,7 @@ BOOST_PYTHON_BEGIN_CONVERSION_NAMESPACE
 // from T with some virtual function overriding boilerplate, or if there are no
 // virtual functions, U = held_instance<T>.
 template <class T, class U = python::detail::held_instance<T> >
-class PyExtensionClassConverters
+class python_extension_class_converters
 {
  public:
     // Get an object which can be used to convert T to/from python. This is used
@@ -154,9 +154,9 @@ class PyExtensionClassConverters
     // pop up. Now, if T hasn't been wrapped as an extension class, the user
     // will see an error message about the lack of an eligible
     // py_extension_class_converters() function.
-    friend PyExtensionClassConverters py_extension_class_converters(python::type<T>)
+    friend python_extension_class_converters py_extension_class_converters(python::type<T>)
     { 
-        return PyExtensionClassConverters();
+        return python_extension_class_converters();
     }
 
     // This is a member function because in a conforming implementation, friend
@@ -292,7 +292,7 @@ class PyExtensionClassConverters
 // Convert T to_python, instantiated on demand and only if there isn't a
 // non-template overload for this function. This version is the one invoked when
 // T is a wrapped class. See the first 2 functions declared in
-// PyExtensionClassConverters above for more info.
+// python_extension_class_converters above for more info.
 template <class T>
 PyObject* to_python(const T& x)
 {
@@ -303,7 +303,7 @@ BOOST_PYTHON_END_CONVERSION_NAMESPACE
 
 namespace python {
 
-BOOST_PYTHON_IMPORT_CONVERSION(PyExtensionClassConverters);
+BOOST_PYTHON_IMPORT_CONVERSION(python_extension_class_converters);
 
 namespace detail {
 
@@ -345,7 +345,7 @@ class read_only_setattr_function : public function
 // U.
 template <class T, class U = held_instance<T> >
 class extension_class
-    : public PyExtensionClassConverters<T, U>, // This generates the to_python/from_python functions
+    : public python_extension_class_converters<T, U>, // This generates the to_python/from_python functions
       public extension_class_base
 {
  public:
@@ -363,8 +363,8 @@ class extension_class
     ~extension_class();
 
     // define constructors
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    inline void def(constructor<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>)
+    template <class A1, class A2, class A3, class A4, class A5>
+    inline void def(constructor<A1, A2, A3, A4, A5>)
     // The following incantation builds a signature1, signature2,... object. It
     // should _all_ get optimized away.
     { add_constructor(
@@ -373,12 +373,7 @@ class extension_class
         prepend(type<A3>::id(),
         prepend(type<A4>::id(),
         prepend(type<A5>::id(),
-        prepend(type<A6>::id(),
-        prepend(type<A7>::id(),
-        prepend(type<A8>::id(),
-        prepend(type<A9>::id(),
-        prepend(type<A10>::id(),
-                signature0())))))))))));
+                signature0()))))));
     }
 
 
@@ -497,7 +492,7 @@ class extension_class
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
-        BaseClassInfo baseInfo(base, 
+        base_class_info baseInfo(base, 
                             &define_conversion<S, T>::downcast_ptr);
         class_registry<T>::register_base_class(baseInfo);
         add_base(ref(as_object(base), ref::increment_count));
@@ -514,7 +509,7 @@ class extension_class
     {
         // see extclass.cpp for an explanation of why we need to register
         // conversion functions
-        BaseClassInfo baseInfo(base, 0);
+        base_class_info baseInfo(base, 0);
         class_registry<T>::register_base_class(baseInfo);
         add_base(ref(as_object(base), ref::increment_count));
         
@@ -527,7 +522,7 @@ class extension_class
     typedef instance_value_holder<T,U> holder;
 
  private: // extension_class_base virtual function implementations
-    std::vector<BaseClassInfo> const& base_classes() const;
+    std::vector<base_class_info> const& base_classes() const;
     std::vector<derived_class_info> const& derived_classes() const;
     void* extract_object_from_holder(instance_holder_base* v) const;
 
@@ -630,16 +625,6 @@ public:
     held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4) : T(a1, a2, a3, a4) {}
     template <class A1, class A2, class A3, class A4, class A5>
     held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) : T(a1, a2, a3, a4, a5) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) : T(a1, a2, a3, a4, a5, a6) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) : T(a1, a2, a3, a4, a5, a6, a7) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) : T(a1, a2, a3, a4, a5, a6, a7, a8) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    held_instance(PyObject*, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) : T(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 };
 
 // Abstract base class for all obj holders. Base for template class
@@ -691,21 +676,6 @@ public:
     template <class A1, class A2, class A3, class A4, class A5>
     instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5) :
         m_held(p, a1, a2, a3, a4, a5) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6>
-    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6) :
-        m_held(p, a1, a2, a3, a4, a5, a6) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7>
-    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7) :
-        m_held(p, a1, a2, a3, a4, a5, a6, a7) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8>
-    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8) :
-        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9>
-    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9) :
-        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9) {}
-    template <class A1, class A2, class A3, class A4, class A5, class A6, class A7, class A8, class A9, class A10>
-    instance_value_holder(extension_instance* p, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5, A6 a6, A7 a7, A8 a8, A9 a9, A10 a10) :
-        m_held(p, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) {}
 
  public: // implementation of instance_holder_base required interface
     bool held_by_value() { return true; }
@@ -778,7 +748,7 @@ void extension_class<T, U>::def_standard_coerce()
 
 template <class T, class U>
 inline
-std::vector<BaseClassInfo> const& 
+std::vector<base_class_info> const& 
 extension_class<T, U>::base_classes() const
 {
     return class_registry<T>::base_classes();
@@ -825,7 +795,7 @@ inline void class_registry<T>::unregister_class(extension_class_base* p)
 }
 
 template <class T>
-void class_registry<T>::register_base_class(BaseClassInfo const& i)
+void class_registry<T>::register_base_class(base_class_info const& i)
 {
     static_base_class_info.push_back(i);
 }
@@ -837,7 +807,7 @@ void class_registry<T>::register_derived_class(derived_class_info const& i)
 }
 
 template <class T>
-std::vector<BaseClassInfo> const& class_registry<T>::base_classes()
+std::vector<base_class_info> const& class_registry<T>::base_classes()
 {
     return static_base_class_info;
 }
@@ -854,10 +824,11 @@ std::vector<derived_class_info> const& class_registry<T>::derived_classes()
 template <class T>
 extension_class_base* class_registry<T>::static_class_object;
 template <class T>
-std::vector<BaseClassInfo> class_registry<T>::static_base_class_info;
+std::vector<base_class_info> class_registry<T>::static_base_class_info;
 template <class T>
 std::vector<derived_class_info> class_registry<T>::static_derived_class_info;
 
 }} // namespace python::detail
 
 #endif // EXTENSION_CLASS_DWA052000_H_
+
