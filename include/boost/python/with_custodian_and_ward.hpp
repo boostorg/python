@@ -16,13 +16,14 @@ namespace boost { namespace python {
 
 namespace detail
 {
-  template <unsigned N>
+  template <std::size_t N>
   struct get_prev
   {
       template <class ArgumentPackage>
-      static PyObject* execute(ArgumentPackage const& args, PyObject*)
+      static PyObject* execute(ArgumentPackage const& args, PyObject* = 0)
       {
-          return get<(N-1)>(args);
+          int const pre_n = static_cast<int>(N) - 1; // separate line is gcc-2.96 workaround
+          return detail::get(mpl::int_<pre_n>(), args);
       }
   };
   template <>
@@ -59,8 +60,8 @@ struct with_custodian_and_ward : BasePolicy_
             return false;
         }
 
-        PyObject* patient = detail::get(mpl::int_<(ward-1)>(), args_);
-        PyObject* nurse = detail::get(mpl::int_<(custodian-1)>(), args_);
+        PyObject* patient = detail::get_prev<ward>::execute(args_);
+        PyObject* nurse = detail::get_prev<custodian>::execute(args_);
 
         PyObject* life_support = python::objects::make_nurse_and_patient(nurse, patient);
         if (life_support == 0)
@@ -93,8 +94,8 @@ struct with_custodian_and_ward_postcall : BasePolicy_
             return 0;
         }
         
-        PyObject* patient = ward > 0 ? detail::get(mpl::int_<(ward-1)>(),args_) : result;
-        PyObject* nurse = custodian > 0 ? detail::get(mpl::int_<(custodian-1)>(),args_) : result;
+        PyObject* patient = detail::get_prev<ward>::execute(args_, result);
+        PyObject* nurse = detail::get_prev<custodian>::execute(args_, result);
 
         if (nurse == 0) return 0;
     
