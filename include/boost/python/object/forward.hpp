@@ -11,7 +11,7 @@
 # include <boost/type_traits/composite_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 
-namespace boost { namespace python { namespace object { 
+namespace boost { namespace python { namespace objects { 
 
 // A little metaprogram which selects the type to pass through an
 // intermediate forwarding function when the destination argument type
@@ -28,6 +28,6 @@ struct forward
     >::type type;
 };
 
-}}} // namespace boost::python::object
+}}} // namespace boost::python::objects
 
 #endif // FORWARD_DWA20011215_HPP
