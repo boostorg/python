@@ -197,12 +197,10 @@ inline rvalue_data<T>::rvalue_data(void* convertible)
 template <class T>
 inline rvalue_data<T>::~rvalue_data()
 {
+    typedef typename add_reference<typename add_cv<T>::type>::type ref_type;
+
     if (this->stage1.convertible == this->storage.bytes)
-        python::detail::destroy_reference<
-            add_reference<
-                add_cv<T>::type
-            >::type
-        >(storage.bytes);
+        python::detail::destroy_reference<ref_type>(this->storage.bytes);
 }
 
 }}} // namespace boost::python::converter
