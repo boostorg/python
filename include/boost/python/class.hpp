@@ -59,7 +59,7 @@
 
 namespace boost { namespace python {
 
-template <class DerivedVisitor> struct def_visitor;
+template <class DerivedVisitor> class def_visitor;
 
 enum no_init_t { no_init };
 
