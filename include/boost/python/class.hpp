@@ -84,7 +84,7 @@ namespace detail
   // the type of holder that must be created. The 3rd argument is a
   // reference to the Python type object to be created.
   template <class T, class SelectHolder>
-  inline void register_class_to_python(mpl::true_ copyable, SelectHolder selector, T* = 0)
+  inline void register_class_to_python(mpl::true_, SelectHolder, T* = 0)
   {
       typedef typename SelectHolder::type holder;
       force_instantiate(objects::class_cref_wrapper<T, objects::make_instance<T,holder> >());
@@ -92,7 +92,7 @@ namespace detail
   }
 
   template <class T, class SelectHolder>
-  inline void register_class_to_python(mpl::false_ copyable, SelectHolder selector, T* = 0)
+  inline void register_class_to_python(mpl::false_, SelectHolder, T* = 0)
   {
       SelectHolder::register_();
   }

@@ -47,7 +47,7 @@ template <>
 struct value_destroyer<true,true>
 {
     template <class T>
-    static void execute(T const volatile* p)
+    static void execute(T const volatile*)
     {
     }
 };
@@ -56,7 +56,7 @@ template <>
 struct value_destroyer<false,true>
 {
     template <class T>
-    static void execute(T const volatile* p)
+    static void execute(T const volatile*)
     {
     }
 };
