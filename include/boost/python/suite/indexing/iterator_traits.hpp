@@ -129,7 +129,7 @@ namespace boost { namespace python { namespace indexing {
 
     public:
       typedef typename traits_by_category <max_category>
-        ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE traits<Iterator>::type type;
+        ::BOOST_NESTED_TEMPLATE traits<Iterator>::type type;
     };
   }
 

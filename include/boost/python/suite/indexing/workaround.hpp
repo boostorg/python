@@ -30,11 +30,6 @@
 # endif
 
 # if BOOST_WORKAROUND (BOOST_MSVC, <= 1300)
-// visualc.hpp never seems to define BOOST_NO_MEMBER_TEMPLATE_KEYWORD
-// so BOOST_NESTED_TEMPLATE ends up expanding to "template" instead of
-// being empty. This causes some compile errors with MSVC[67]
-#   define BOOST_PYTHON_INDEXING_NESTED_TEMPLATE
-
 // Workaround the lack of a reset member function in std::auto_ptr
 namespace boost { namespace python { namespace indexing {
 template<typename T> void reset_auto_ptr (T &aptr, T::element_type *pptr) {
@@ -44,7 +39,6 @@ template<typename T> void reset_auto_ptr (T &aptr, T::element_type *pptr) {
 #   define BOOST_PYTHON_INDEXING_RESET_AUTO_PTR \
         ::boost::python::indexing::reset_auto_ptr
 # else
-#   define BOOST_PYTHON_INDEXING_NESTED_TEMPLATE BOOST_NESTED_TEMPLATE
 #   define BOOST_PYTHON_INDEXING_RESET_AUTO_PTR( aptr, pptr ) \
         (aptr).reset(pptr)
 # endif

@@ -166,13 +166,12 @@ namespace boost { namespace python { namespace indexing {
 
     else
       {
-        detail::maybe_insert<container_traits::has_insert>
-          ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE apply
+        detail::maybe_insert<container_traits::has_insert>::
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
-        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
-          (static_cast<Algorithms *>(0),
+  && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          apply (static_cast<Algorithms *>(0),
 # else
-          <Algorithms> (
+          BOOST_NESTED_TEMPLATE apply <Algorithms> (
 # endif
               *m_ptr, m_pos, val);
 
@@ -228,13 +227,13 @@ namespace boost { namespace python { namespace indexing {
 
     else
       {
-        detail::maybe_erase<container_traits::has_erase>
-          ::BOOST_PYTHON_INDEXING_NESTED_TEMPLATE apply
+        detail::maybe_erase<container_traits::has_erase>::
+
 # if defined (BOOST_NO_MEMBER_TEMPLATES) \
-        && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
-          (static_cast<Algorithms *>(0),
+  && defined (BOOST_MSVC6_MEMBER_TEMPLATES)
+          apply (static_cast<Algorithms *>(0),
 # else
-          <Algorithms> (
+          BOOST_NESTED_TEMPLATE apply <Algorithms> (
 # endif
               *m_ptr, m_pos, m_slice.stop());
       }
