@@ -76,19 +76,29 @@
 #  define BOOST_PYTHON_STATIC_LINK
 #endif
 
-#if defined(BOOST_MSVC) && defined(_DLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
-#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+#if defined(__MWERKS__)
+# define BOOST_PYTHON_NO_TEMPLATE_EXPORT
 #endif
 
-#if defined(__BORLANDC__) && defined(_RTLDLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
-#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+#if defined(__GNUC__)
+# define BOOST_PYTHON_IMPORT_TEMPLATE_KEYWORD extern
+# define BOOST_PYTHON_EXPORT_TEMPLATE_KEYWORD extern
 #endif
 
-#if defined(__ICL) && defined(_DLL) && !defined(BOOST_PYTHON_HAS_DLL_RUNTIME)
-#  define BOOST_PYTHON_HAS_DLL_RUNTIME
+// Handle default cases
+#ifndef BOOST_PYTHON_IMPORT_TEMPLATE_KEYWORD
+# ifdef _WIN32
+#  define BOOST_PYTHON_IMPORT_TEMPLATE_KEYWORD extern
+# else
+#  define BOOST_PYTHON_IMPORT_TEMPLATE_KEYWORD
+# endif 
 #endif
 
-#if defined(BOOST_PYTHON_DYNAMIC_LIB) && defined(_WIN32) // && !defined(BOOST_PYTHON_STATIC_LINK)
+#ifndef BOOST_PYTHON_EXPORT_TEMPLATE_KEYWORD
+# define BOOST_PYTHON_EXPORT_TEMPLATE_KEYWORD
+#endif 
+
+#if defined(BOOST_PYTHON_DYNAMIC_LIB) && defined(_WIN32)
 #  if defined(BOOST_PYTHON_SOURCE)
 #     define BOOST_PYTHON_DECL __declspec(dllexport)
 #     define BOOST_PYTHON_BUILD_DLL
@@ -101,9 +111,25 @@
 #  define BOOST_PYTHON_DECL
 #endif
 
-#if (defined(BOOST_MSVC) || defined(__BORLANDC__)) && !defined(BOOST_PYTHON_NO_LIB) && !defined(BOOST_PYTHON_SOURCE)
-// #  include <boost/python/detail/python_library_include.hpp>
+#ifndef BOOST_PYTHON_DECL_TEMPLATE
+# ifndef BOOST_PYTHON_NO_TEMPLATE_EXPORT
+#  define BOOST_PYTHON_DECL_TEMPLATE BOOST_PYTHON_DECL
+# else
+#  define BOOST_PYTHON_DECL_TEMPLATE
+# endif
 #endif
+
+#if defined(BOOST_PYTHON_SOURCE)
+# define BOOST_PYTHON_EXPORT BOOST_PYTHON_EXPORT_TEMPLATE_KEYWORD
+#else
+# define BOOST_PYTHON_EXPORT BOOST_PYTHON_IMPORT_TEMPLATE_KEYWORD
+#endif
+
+# ifndef BOOST_PYTHON_EXPORT_TEMPLATE
+#  define  BOOST_PYTHON_EXPORT_TEMPLATE BOOST_PYTHON_EXPORT template
+# endif
+
+# define BOOST_PYTHON_EXPORT_TEMPLATE_CLASS BOOST_PYTHON_EXPORT template class BOOST_PYTHON_DECL
 
 // Borland C++ Fix/error check:
 #if defined(__BORLANDC__)
