@@ -81,10 +81,10 @@ BOOST_PYTHON_MODULE_INIT(my_module)
     python::module_builder my_module("my_module");                            
                                                                               
     python::class_builder&lt;Base&gt; base_class(my_module, "Base");          
-    base_class.def(python::constructor&lt;void&gt;());                        
+    base_class.def(python::constructor&lt;&gt;());                        
                                                                               
     python::class_builder&lt;Derived&gt; derived_class(my_module, "Derived"); 
-    derived_class.def(python::constructor&lt;void&gt;());                     
+    derived_class.def(python::constructor&lt;&gt;());                     
     <b>// Establish the inheritance relationship between Base and Derived     
     derived_class.declare_base(base_class);</b>                               
                                                                               
@@ -137,10 +137,10 @@ struct Derived2 { int f(); };
 <hr>
    ...
    python::class_builder&lt;Base&gt; base2_class(my_module, "Base2");
-   base2_class.def(python::constructor&lt;void&gt;());
+   base2_class.def(python::constructor&lt;&gt;());
 
    python::class_builder&lt;Derived2&gt; derived2_class(my_module, "Derived2");
-   derived2_class.def(python::constructor&lt;void&gt;());
+   derived2_class.def(python::constructor&lt;&gt;());
    derived_class.declare_base(base_class, <b>python::without_downcast</b>);
 </pre>
 </blockquote>
