@@ -11,6 +11,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <iostream>
 #include <stdexcept>
+#include <cassert>
 
 namespace python = boost::python;
 
@@ -68,13 +69,13 @@ void test()
     Py_Initialize();
 
     // Retrieve the main module
-    python::handle<> main_module(
-        python::borrowed(PyImport_AddModule("__main__")) );
-
-    // Retrieve the main modules namespace
-    python::handle<> main_namespace(
-        python::borrowed(PyModule_GetDict(main_module.get())) );
-
+    python::object main_module = python::extract<python::object>(
+        PyImport_AddModule("__main__")
+    )();
+    
+    // Retrieve the main module's namespace
+    python::object main_namespace(main_module.attr("__dict__"));
+    
     // Define the derived class in Python.
     // (You'll normally want to put this in a .py file.)
     python::handle<> result(
@@ -83,7 +84,7 @@ void test()
         "class PythonDerived(Base):          \n"
         "    def hello(self):                \n"
         "        return 'Hello from Python!' \n", 
-        Py_file_input, main_namespace.get(), main_namespace.get())
+        Py_file_input, main_namespace.ptr(), main_namespace.ptr())
         );
     // Result is not needed
     result.reset();
@@ -91,7 +92,7 @@ void test()
     // Extract the raw Python object representing the just defined derived class
     python::handle<> class_ptr( 
         PyRun_String("PythonDerived\n", Py_eval_input, 
-                     main_namespace.get(), main_namespace.get()) );
+                     main_namespace.ptr(), main_namespace.ptr()) );
 
     // Wrap the raw Python object in a Boost.Python object
     python::object PythonDerived(class_ptr);
