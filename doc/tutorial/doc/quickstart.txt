@@ -1122,7 +1122,7 @@ the construct:
         .value("blue", blue)
         ;
 
-can be used to expose to Python. The new enum type is created in the
+can be used to expose it to Python. The new enum type is created in the
 current [^scope()], which is usually the current module. The snippet above
 creates a Python class derived from Python's [^int] type which is
 associated with the C++ type passed as its first parameter.
