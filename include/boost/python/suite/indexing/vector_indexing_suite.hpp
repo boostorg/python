@@ -188,7 +188,7 @@ namespace boost { namespace python {
     private:
     
         static void
-        base_append(Container& container, PyObject* v)
+        base_append(Container& container, object v)
         {
             extract<data_type&> elem(v);
             // try if elem is an exact Data
@@ -214,12 +214,10 @@ namespace boost { namespace python {
         }
         
         static void
-        base_extend(Container& container, PyObject* v)
+        base_extend(Container& container, object v)
         {
             std::vector<data_type> temp;
-            handle<> l_(borrowed(v));
-            object l(l_);
-            container_utils::extend_container(temp, l);
+            container_utils::extend_container(temp, v);
             DerivedPolicies::extend(container, temp.begin(), temp.end());
         }
     };
