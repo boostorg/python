@@ -14,6 +14,7 @@ namespace detail {
 
   template <long> struct define_operator;
 
+  // Base class which grants access to ExtensionClassBase::add_method() to its derived classes
   struct add_operator_base
   {
    protected:
@@ -21,6 +22,17 @@ namespace detail {
           { target->add_method(method, name); }
   };
 
+//
+// choose_op, choose_unary_op, and choose_rop
+//
+// These templates use "poor man's partial specialization" to generate the
+// appropriate add_method() call (if any) for a given operator and argument set.
+//
+//  Usage:
+//      choose_op<(which & op_add)>::template args<left_t,right_t>::add(ext_class);
+// 
+// (see ExtensionClass<>::def_operators() for more examples).
+//
   template <long op_selector>
   struct choose_op
   {
@@ -37,7 +49,8 @@ namespace detail {
 
       };
   };
-  
+
+  // specialization for 0 has no effect
   template <>
   struct choose_op<0>
   {
@@ -68,6 +81,7 @@ namespace detail {
       };
   };
   
+  // specialization for 0 has no effect
   template <>
   struct choose_unary_op<0>
   {
@@ -98,6 +112,7 @@ namespace detail {
       };
   };
   
+  // specialization for 0 has no effect
   template <>
   struct choose_rop<0>
   {
@@ -111,91 +126,89 @@ namespace detail {
       };
   };
   
-#define PY_DEFINE_BINARY_OPERATORS(id, oper) \
-  template <> \
-  struct define_operator<op_##id> \
-  { \
-      template <class left, class right = left> \
-      struct operator_function : Function \
-      { \
-          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const \
-          {  \
-              Tuple args(Ptr(arguments, Ptr::new_ref)); \
-   \
-              return PY_CONVERSION::to_python( \
-                  PY_CONVERSION::from_python(args[0].get(), py::Type<left>()) oper \
-                  PY_CONVERSION::from_python(args[1].get(), py::Type<right>()));  \
-          } \
-   \
-          const char* description() const \
-              { return "__" #id "__"; } \
-   \
-      }; \
-      template <class right, class left> \
-      struct roperator_function : Function \
-      { \
-          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const \
-          {  \
-              Tuple args(Ptr(arguments, Ptr::new_ref)); \
-   \
-              return PY_CONVERSION::to_python( \
-                  PY_CONVERSION::from_python(args[1].get(), py::Type<left>()) oper \
-                  PY_CONVERSION::from_python(args[0].get(), py::Type<right>()));  \
-          } \
-   \
-          const char* description() const \
-              { return "__r" #id "__"; } \
-   \
-      }; \
-       \
-      static const char * name() { return "__" #id "__"; } \
-      static const char * rname() { return "__r" #id "__"; } \
+#define PY_DEFINE_BINARY_OPERATORS(id, oper)                                            \
+  template <>                                                                           \
+  struct define_operator<op_##id>                                                       \
+  {                                                                                     \
+      template <class Left, class Right = Left>                                         \
+      struct operator_function : Function                                               \
+      {                                                                                 \
+          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
+          {                                                                             \
+              Tuple args(Ptr(arguments, Ptr::new_ref));                                 \
+                                                                                        \
+              return PY_CONVERSION::to_python(                                          \
+                  PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) oper      \
+                  PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()));        \
+          }                                                                             \
+                                                                                        \
+          const char* description() const                                               \
+              { return "__" #id "__"; }                                                 \
+      };                                                                                \
+                                                                                        \
+      template <class Right, class Left>                                                \
+      struct roperator_function : Function                                              \
+      {                                                                                 \
+          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const        \
+          {                                                                             \
+              Tuple args(Ptr(arguments, Ptr::new_ref));                                 \
+                                                                                        \
+              return PY_CONVERSION::to_python(                                          \
+                  PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) oper      \
+                  PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()));        \
+          }                                                                             \
+                                                                                        \
+          const char* description() const                                               \
+              { return "__r" #id "__"; }                                                \
+                                                                                        \
+      };                                                                                \
+                                                                                        \
+      static const char * name() { return "__" #id "__"; }                              \
+      static const char * rname() { return "__r" #id "__"; }                            \
   }
 
 #define PY_DEFINE_UNARY_OPERATORS(id, oper) \
-  template <> \
-  struct define_operator<op_##id> \
-  { \
-      template <class operand> \
-      struct operator_function : Function \
-      { \
-          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const \
-          {  \
-              Tuple args(Ptr(arguments, Ptr::new_ref)); \
-   \
-              return PY_CONVERSION::to_python( \
-                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));  \
-          } \
-   \
-          const char* description() const \
-              { return "__" #id "__"; } \
-   \
-      }; \
-       \
-      static const char * name() { return "__" #id "__"; } \
+  template <>                                                                                   \
+  struct define_operator<op_##id>                                                               \
+  {                                                                                             \
+      template <class operand>                                                                  \
+      struct operator_function : Function                                                       \
+      {                                                                                         \
+          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
+          {                                                                                     \
+              Tuple args(Ptr(arguments, Ptr::new_ref));                                         \
+                                                                                                \
+              return PY_CONVERSION::to_python(                                                  \
+                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));        \
+          }                                                                                     \
+                                                                                                \
+          const char* description() const                                                       \
+              { return "__" #id "__"; }                                                         \
+      };                                                                                        \
+                                                                                                \
+      static const char * name() { return "__" #id "__"; }                                      \
   }
 
 #define PY_DEFINE_CONVERSION_OPERATORS(id, oper) \
-  template <> \
-  struct define_operator<op_##id> \
-  { \
-      template <class operand> \
-      struct operator_function : Function \
-      { \
-          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const \
-          {  \
-              Tuple args(Ptr(arguments, Ptr::new_ref)); \
-   \
-              return PY_CONVERSION::to_python( \
-                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));  \
-          } \
-   \
-          const char* description() const \
-              { return "__" #id "_"; } \
-   \
-      }; \
-       \
-      static const char * name() { return "__" #id "_"; } \
+  template <>                                                                                   \
+  struct define_operator<op_##id>                                                               \
+  {                                                                                             \
+      template <class operand>                                                                  \
+      struct operator_function : Function                                                       \
+      {                                                                                         \
+          PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const                \
+          {                                                                                     \
+              Tuple args(Ptr(arguments, Ptr::new_ref));                                         \
+                                                                                                \
+              return PY_CONVERSION::to_python(                                                  \
+                  oper(PY_CONVERSION::from_python(args[0].get(), py::Type<operand>())));        \
+          }                                                                                     \
+                                                                                                \
+          const char* description() const                                                       \
+              { return "__" #id "_"; }                                                          \
+      };                                                                                        \
+                                                                                                \
+      static const char * name() { return "__" #id "_"; }                                       \
   }
 
   PY_DEFINE_BINARY_OPERATORS(add, +);
@@ -225,22 +238,22 @@ namespace detail {
   template <>
   struct define_operator<op_pow>
   {
-      template <class left, class right = left>
+      template <class Left, class Right = Left>
       struct operator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
               Tuple args(Ptr(arguments, Ptr::new_ref));
 
-              if(args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
+              if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "expected 2 arguments, got 3");
                   throw ArgumentError();
               }
 
               return PY_CONVERSION::to_python(
-                  pow(PY_CONVERSION::from_python(args[0].get(), py::Type<left>()),
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<right>()))); 
+                  pow(PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()),
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()))); 
           }
 
           const char* description() const
@@ -248,22 +261,22 @@ namespace detail {
 
       };
 
-      template <class right, class left>
+      template <class Right, class Left>
       struct roperator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
           { 
               Tuple args(Ptr(arguments, Ptr::new_ref));
 
-              if(args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
+              if (args.size() == 3 && args[2]->ob_type != Py_None->ob_type)
               {
                   PyErr_SetString(PyExc_TypeError, "expected 2 arguments, got 3");
                   throw ArgumentError();
               }
 
               return PY_CONVERSION::to_python(
-                  pow(PY_CONVERSION::from_python(args[1].get(), py::Type<left>()),
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<right>()))); 
+                  pow(PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()),
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()))); 
           }
 
           const char* description() const
@@ -278,7 +291,7 @@ namespace detail {
   template <>
   struct define_operator<op_divmod>
   {
-      template <class left, class right = left>
+      template <class Left, class Right = Left>
       struct operator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
@@ -288,12 +301,12 @@ namespace detail {
 
               PyTuple_SET_ITEM(res, 0,
                 PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<left>()) /
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<right>()))); 
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) /
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
                 PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<left>()) %
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<right>())));
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) %
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>())));
 
               return res; 
           }
@@ -303,7 +316,7 @@ namespace detail {
 
       };
 
-      template <class right, class left>
+      template <class Right, class Left>
       struct roperator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
@@ -313,12 +326,12 @@ namespace detail {
 
               PyTuple_SET_ITEM(res, 0,
                 PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<left>()) /
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<right>()))); 
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) /
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()))); 
               PyTuple_SET_ITEM(res, 1,
                 PY_CONVERSION::to_python(
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<left>()) %
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<right>())));
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) %
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>())));
 
               return res; 
           }
@@ -335,7 +348,7 @@ namespace detail {
   template <>
   struct define_operator<op_cmp>
   {
-      template <class left, class right = left>
+      template <class Left, class Right = Left>
       struct operator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
@@ -343,11 +356,11 @@ namespace detail {
               Tuple args(Ptr(arguments, Ptr::new_ref));
 
               return PY_CONVERSION::to_python(
-                  (PY_CONVERSION::from_python(args[0].get(), py::Type<left>()) <
-                   PY_CONVERSION::from_python(args[1].get(), py::Type<right>())) ?
+                  (PY_CONVERSION::from_python(args[0].get(), py::Type<Left>()) <
+                   PY_CONVERSION::from_python(args[1].get(), py::Type<Right>())) ?
                        - 1 :
-                       (PY_CONVERSION::from_python(args[1].get(), py::Type<right>()) <
-                       PY_CONVERSION::from_python(args[0].get(), py::Type<left>())) ?
+                       (PY_CONVERSION::from_python(args[1].get(), py::Type<Right>()) <
+                       PY_CONVERSION::from_python(args[0].get(), py::Type<Left>())) ?
                            1 :
                            0) ; 
           }
@@ -357,7 +370,7 @@ namespace detail {
 
       };
 
-      template <class right, class left>
+      template <class Right, class Left>
       struct roperator_function : Function
       {
           PyObject* do_call(PyObject* arguments, PyObject* /* keywords */) const
@@ -365,11 +378,11 @@ namespace detail {
               Tuple args(Ptr(arguments, Ptr::new_ref));
 
               return PY_CONVERSION::to_python(
-                  (PY_CONVERSION::from_python(args[1].get(), py::Type<left>()) <
-                   PY_CONVERSION::from_python(args[0].get(), py::Type<right>())) ?
+                  (PY_CONVERSION::from_python(args[1].get(), py::Type<Left>()) <
+                   PY_CONVERSION::from_python(args[0].get(), py::Type<Right>())) ?
                        - 1 :
-                       (PY_CONVERSION::from_python(args[0].get(), py::Type<right>()) <
-                       PY_CONVERSION::from_python(args[1].get(), py::Type<left>())) ?
+                       (PY_CONVERSION::from_python(args[0].get(), py::Type<Right>()) <
+                       PY_CONVERSION::from_python(args[1].get(), py::Type<Left>())) ?
                            1 :
                            0) ; 
           }
