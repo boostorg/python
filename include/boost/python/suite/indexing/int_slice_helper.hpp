@@ -116,12 +116,14 @@ namespace boost { namespace python { namespace indexing {
   namespace detail {
     template<bool doit> struct maybe_insert {
       template<class Algorithms>
-      static void apply (typename Algorithms::container &
-                         , typename Algorithms::index_param
-                         , typename Algorithms::value_param)
+      static void apply (
+          typename Algorithms::container &
+          , typename Algorithms::index_param
+          , typename Algorithms::value_param)
       {
-        PyErr_SetString (PyExc_TypeError
-                         , "container does not support insertion into slice");
+        PyErr_SetString (
+            PyExc_TypeError
+            , "container does not support insertion into slice");
 
         boost::python::throw_error_already_set ();
       }
@@ -129,9 +131,10 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_insert<true> {
       template<class Algorithms>
-      static void apply (typename Algorithms::container &c
-                         , typename Algorithms::index_param i
-                         , typename Algorithms::value_param v)
+      static void apply (
+          typename Algorithms::container &c
+          , typename Algorithms::index_param i
+          , typename Algorithms::value_param v)
       {
         Algorithms::insert (c, i, v);
       }
@@ -143,8 +146,8 @@ namespace boost { namespace python { namespace indexing {
   {
     if (m_slice.step() != 1)
       {
-        PyErr_SetString (PyExc_ValueError
-                         , "attempt to insert via extended slice");
+        PyErr_SetString (
+            PyExc_ValueError, "attempt to insert via extended slice");
 
         boost::python::throw_error_already_set ();
       }
@@ -161,12 +164,13 @@ namespace boost { namespace python { namespace indexing {
   namespace detail {
     template<bool doit> struct maybe_erase {
       template<class Algorithms>
-      static void apply (typename Algorithms::container &
-                         , typename Algorithms::index_param
-                         , typename Algorithms::index_param)
+      static void apply (
+          typename Algorithms::container &
+          , typename Algorithms::index_param
+          , typename Algorithms::index_param)
       {
-        PyErr_SetString (PyExc_TypeError
-                         , "container does not support item deletion");
+        PyErr_SetString (
+            PyExc_TypeError, "container does not support item deletion");
 
         boost::python::throw_error_already_set ();
       }
@@ -174,9 +178,10 @@ namespace boost { namespace python { namespace indexing {
 
     template<> struct maybe_erase<true> {
       template<class Algorithms>
-      static void apply (typename Algorithms::container &c
-                         , typename Algorithms::index_param from
-                         , typename Algorithms::index_param to)
+      static void apply (
+          typename Algorithms::container &c
+          , typename Algorithms::index_param from
+          , typename Algorithms::index_param to)
       {
         Algorithms::erase_range (c, from, to);
       }
@@ -188,8 +193,8 @@ namespace boost { namespace python { namespace indexing {
   {
     if (m_slice.step() != 1)
       {
-        PyErr_SetString (PyExc_ValueError
-                         , "attempt to delete via extended slice");
+        PyErr_SetString (
+            PyExc_ValueError, "attempt to delete via extended slice");
 
         boost::python::throw_error_already_set ();
       }

@@ -62,9 +62,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_len<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__len__", &Algorithms::size, policy);
     }
@@ -87,9 +88,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_getitem<index_style_nonlinear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__getitem__", &Algorithms::get, policy);
     }
@@ -102,13 +104,15 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_getitem<index_style_linear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__getitem__", &Algorithms::get, policy);
-      pyClass.def ("__getitem__"
-                   , slice_handler<Algorithms, Policy>::make_getitem (policy));
+      pyClass.def (
+          "__getitem__"
+          , slice_handler<Algorithms, Policy>::make_getitem (policy));
     }
   };
 
@@ -129,9 +133,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_setitem<true, index_style_nonlinear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__setitem__", &Algorithms::assign, policy);
     }
@@ -144,13 +149,15 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_setitem<true, index_style_linear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__setitem__", &Algorithms::assign, policy);
-      pyClass.def ("__setitem__"
-                   , slice_handler<Algorithms, Policy>::make_setitem (policy));
+      pyClass.def (
+          "__setitem__"
+          , slice_handler<Algorithms, Policy>::make_setitem (policy));
     }
   };
 
@@ -171,9 +178,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_delitem<true, index_style_nonlinear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__delitem__", &Algorithms::erase_one, policy);
     }
@@ -186,13 +194,15 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_delitem<true, index_style_linear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("__delitem__", &Algorithms::erase_one, policy);
-      pyClass.def ("__delitem__"
-                   , slice_handler<Algorithms, Policy>::make_delitem (policy));
+      pyClass.def (
+          "__delitem__"
+          , slice_handler<Algorithms, Policy>::make_delitem (policy));
     }
   };
 
@@ -213,16 +223,19 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_iter<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       // *FIXME* seperate precall and postcall portions of the
       // policy (precall when generating the range object, postcall
       // when returing from range.next())
-      pyClass.def ("__iter__"
-                   , boost::python::range<Policy> (Algorithms::begin
-                                                   , Algorithms::end));
+      pyClass.def (
+          "__iter__"
+          , boost::python::range<Policy> (
+              Algorithms::begin
+              , Algorithms::end));
     }
   };
 
@@ -243,9 +256,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_sort<true, true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("sort", &Algorithms::sort, policy);
     }
@@ -268,9 +282,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_reverse<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("reverse", &Algorithms::reverse, policy);
     }
@@ -293,9 +308,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_append<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("append", &Algorithms::push_back, policy);
     }
@@ -318,9 +334,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_insert<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("insert", Algorithms::insert, policy);
     }
@@ -343,12 +360,14 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_extend<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
-      pyClass.def ("extend"
-                   , slice_handler<Algorithms, Policy>::make_extend (policy));
+      pyClass.def (
+          "extend"
+          , slice_handler<Algorithms, Policy>::make_extend (policy));
     }
   };
 
@@ -369,9 +388,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_index<true> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("index", Algorithms::get_index, policy);
     }
@@ -394,9 +414,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_count<true, index_style_none> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       pyClass.def ("count", Algorithms::count, policy);
       pyClass.def ("contains", Algorithms::contains, policy);
@@ -411,9 +432,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_count<true, index_style_linear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       // This is identical to the index_style_none version. Doing it
       // this way avoids using a partial specialization for
@@ -430,9 +452,10 @@ namespace boost { namespace python { namespace indexing {
   template<>
   struct maybe_add_count<true, index_style_nonlinear> {
     template<class PythonClass, class Algorithms, class Policy>
-    static void apply (PythonClass &pyClass
-                       , Algorithms const &
-                       , Policy const &policy)
+    static void apply (
+        PythonClass &pyClass
+        , Algorithms const &
+        , Policy const &policy)
     {
       // Nearest equivalent is has_key, since Python dictionaries
       // have at most one value for a key.
@@ -484,12 +507,13 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_delitem<traits::has_erase, traits::index_style>
         ::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_iter<((traits::index_style != index_style_linear)
-                      && traits::has_copyable_iter)>
+      maybe_add_iter
+        <(traits::index_style != index_style_linear)
+          && traits::has_copyable_iter>
         ::apply (pyClass, algorithms(), m_policy);
 
-      maybe_add_sort<traits::is_reorderable
-                     , value_traits_::lessthan_comparable>
+      maybe_add_sort
+        <traits::is_reorderable, value_traits_::lessthan_comparable>
         ::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_reverse<traits::is_reorderable>
@@ -501,12 +525,12 @@ namespace boost { namespace python { namespace indexing {
       maybe_add_insert<traits::has_insert>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_extend<(traits::has_insert
-                        && traits::index_style == index_style_linear)>
+      maybe_add_extend
+        <traits::has_insert && traits::index_style == index_style_linear>
         ::apply (pyClass, algorithms(), precallPolicy);
 
-      maybe_add_index<(traits::has_find
-                       && (traits::index_style == index_style_linear))>
+      maybe_add_index
+        <traits::has_find && (traits::index_style == index_style_linear)>
         ::apply (pyClass, algorithms(), precallPolicy);
 
       maybe_add_count<traits::has_find, traits::index_style>

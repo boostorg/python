@@ -358,8 +358,9 @@ namespace boost { namespace python { namespace indexing {
 
     // Erase the elements from the real container
     raw_iterator result
-      = raw_container().erase (raw_container().begin() + from.index
-                               , raw_container().begin() + to.index);
+      = raw_container().erase (
+          raw_container().begin() + from.index
+          , raw_container().begin() + to.index);
 
     return iterator (this, result);
   }
@@ -373,9 +374,8 @@ namespace boost { namespace python { namespace indexing {
 
     // Adjust indexes from iter.index onwards, since insert goes
     // before this element
-    adjust_indexes_back (m_map.lower_bound (iter.index)
-                         , m_map.end()
-                         , 1);
+    adjust_indexes_back (
+        m_map.lower_bound (iter.index), m_map.end(), 1);
 
     // Insert the element into the real container
     raw_iterator result
@@ -407,9 +407,8 @@ namespace boost { namespace python { namespace indexing {
 
     // Adjust indexes from iter.index onwanrds (insert goes before
     // this element)
-    adjust_indexes_back (m_map.lower_bound (iter.index)
-                         , m_map.end()
-                         , std::distance (from, to));
+    adjust_indexes_back (
+        m_map.lower_bound (iter.index), m_map.end(), std::distance (from, to));
 
     // Insert the element into the real container
     raw_container().insert (raw_container().begin() + iter.index, from, to);
@@ -498,9 +497,8 @@ namespace boost { namespace python { namespace indexing {
   template<class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjust_indexes_front (map_iterator low_bound
-                          , map_iterator high_bound
-                          , difference_type offset)
+  ::adjust_indexes_front (
+      map_iterator low_bound, map_iterator high_bound, difference_type offset)
   {
     // Adjust indexes in the given range of proxies by the given offset.
     // The adjustment is done by erasing and re-inserting the entries
@@ -525,9 +523,8 @@ namespace boost { namespace python { namespace indexing {
   template <class Container, class Holder>
   void
   container_proxy<Container, Holder>
-  ::adjust_indexes_back (map_iterator low_bound
-                         , map_iterator high_bound
-                         , difference_type offset)
+  ::adjust_indexes_back (
+      map_iterator low_bound, map_iterator high_bound, difference_type offset)
   {
     if (low_bound != high_bound)
       {

@@ -68,8 +68,8 @@ boost::python::indexing::slice::slice (T const &ref)
 {
   if (!PySlice_Check (this->ptr()))
     {
-      PyErr_SetString (PyExc_TypeError
-                       , "slice constructor: passed a non-slice object");
+      PyErr_SetString (
+          PyExc_TypeError, "slice constructor: passed a non-slice object");
 
       boost::python::throw_error_already_set();
     }
@@ -79,8 +79,8 @@ namespace boost { namespace python { namespace converter {
   // Specialized converter to handle PySlice_Type objects
   template<>
   struct object_manager_traits<boost::python::indexing::slice>
-    : pytype_object_manager_traits<&PySlice_Type
-                                   , ::boost::python::indexing::slice>
+    : pytype_object_manager_traits <
+         &PySlice_Type, ::boost::python::indexing::slice>
   {
   };
 }}}

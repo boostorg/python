@@ -111,8 +111,9 @@ namespace boost { namespace python { namespace indexing {
 
 namespace std {
   template<class C>
-  void iter_swap (boost::python::indexing::proxy_iterator<C> const &first
-                  , boost::python::indexing::proxy_iterator<C> const &second)
+  void iter_swap (
+      boost::python::indexing::proxy_iterator<C> const &first
+      , boost::python::indexing::proxy_iterator<C> const &second)
   {
     first.iter_swap (second);
   }

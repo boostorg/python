@@ -72,8 +72,8 @@ namespace boost { namespace python { namespace indexing {
   };
 
   template<typename Iterator>
-  iterator_pair<Iterator>::iterator_pair (iterator_param begin
-                                          , iterator_param end)
+  iterator_pair<Iterator>::iterator_pair (
+      iterator_param begin, iterator_param end)
     : m_begin (begin)
     , m_end (end)
   {

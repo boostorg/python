@@ -204,8 +204,8 @@ namespace boost { namespace python { namespace indexing {
 
     if (!read_ptr.get())
       {
-        PyErr_SetString (PyExc_TypeError
-                         , "Type assigned to slice must be a sequence");
+        PyErr_SetString (
+            PyExc_TypeError, "Type assigned to slice must be a sequence");
 
         boost::python::throw_error_already_set();
       }
