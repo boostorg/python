@@ -12,11 +12,11 @@ namespace boost { namespace python { namespace detail {
 
 // Concept: throw exception if api_major is changed
 //          show warning on stderr if api_minor is changed
-const int EXPORT_CONVERTERS_API_MAJOR = 1;
-const int EXPORT_CONVERTERS_API_MINOR = 1;
-const std::string converters_attribute_name = "__converters__";
-void *import_converters(const std::string& module_name,
-                        const std::string& klass_name,
+const int export_converters_api_major = 1;
+const int export_converters_api_minor = 1;
+extern const char* converters_attribute_name;
+void* import_converters(const std::string& module_name,
+                        const std::string& py_class_name,
                         const std::string& attribute_name);
 void check_export_converters_api(const int importing_major,
                                  const int importing_minor,
@@ -129,30 +129,30 @@ template <class T>
 struct export_converters_base
 {
   virtual const int get_api_major() const {
-    return detail::EXPORT_CONVERTERS_API_MAJOR; }
+    return detail::export_converters_api_major; }
   virtual const int get_api_minor() const {
-    return detail::EXPORT_CONVERTERS_API_MINOR; }
-  virtual PyObject *to_python(const T& x) = 0;
-  virtual PyObject *to_python(std::auto_ptr<T> x) = 0;
-  virtual PyObject *to_python(boost::shared_ptr<T> x) = 0;
+    return detail::export_converters_api_minor; }
+  virtual PyObject* to_python(const T& x) = 0;
+  virtual PyObject* to_python(std::auto_ptr<T> x) = 0;
+  virtual PyObject* to_python(boost::shared_ptr<T> x) = 0;
   virtual T* Tptr_from_python(PyObject* obj) = 0;
-  virtual std::auto_ptr<T>& auto_ptr_from_python(PyObject *obj) = 0;
-  virtual boost::shared_ptr<T>& shared_ptr_from_python(PyObject *obj) = 0;
+  virtual std::auto_ptr<T>& auto_ptr_from_python(PyObject* obj) = 0;
+  virtual boost::shared_ptr<T>& shared_ptr_from_python(PyObject* obj) = 0;
 };
 
 // Converters to be used if T is not copyable.
 template <class T>
 struct export_ptr_converters : export_converters_base<T>
 {
-  virtual PyObject *to_python(const T& x) {
+  virtual PyObject* to_python(const T& x) {
     PyErr_SetString(PyExc_RuntimeError,
       "to_python(const T&) converter not exported");
     throw import_error();
   }
-  virtual PyObject *to_python(std::auto_ptr<T> x) {
+  virtual PyObject* to_python(std::auto_ptr<T> x) {
     return BOOST_PYTHON_CONVERSION::to_python(x);
   }
-  virtual PyObject *to_python(boost::shared_ptr<T> x) {
+  virtual PyObject* to_python(boost::shared_ptr<T> x) {
     return BOOST_PYTHON_CONVERSION::to_python(x);
   }
   virtual T* Tptr_from_python(PyObject* obj) {
@@ -162,10 +162,10 @@ struct export_ptr_converters : export_converters_base<T>
   // THIS IS OUT OF SYNC WITH class python_extension_class_converters!
   // WE MIGHT NEED TO DEFINE MORE FUNCTIONS.
   // *****************************************************************
-  virtual std::auto_ptr<T>& auto_ptr_from_python(PyObject *obj) {
+  virtual std::auto_ptr<T>& auto_ptr_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<std::auto_ptr<T> >());
   }
-  virtual boost::shared_ptr<T>& shared_ptr_from_python(PyObject *obj) {
+  virtual boost::shared_ptr<T>& shared_ptr_from_python(PyObject* obj) {
     return BOOST_PYTHON_CONVERSION::python_extension_class_converters<T>::smart_ptr_reference(obj, boost::python::type<boost::shared_ptr<T> >());
   }
 };
@@ -174,7 +174,7 @@ struct export_ptr_converters : export_converters_base<T>
 template <class T>
 struct export_converters : export_ptr_converters<T>
 {
-  virtual PyObject *to_python(const T& x) {
+  virtual PyObject* to_python(const T& x) {
     BOOST_PYTHON_CONVERSION::python_extension_class_converters<T> cv;
     return cv.to_python(x);
   }
@@ -191,21 +191,21 @@ class import_extension_class
     : public python_import_extension_class_converters<T>
 {
  public:
-    inline import_extension_class(const char *module, const char* klass) {
+    inline import_extension_class(const char* module, const char* py_class) {
       m_module = module;
-      m_klass = klass;
+      m_py_class = py_class;
     }
 
     static boost::python::export_converters_base<T>* get_converters();
 
   private:
     static std::string m_module;
-    static std::string m_klass;
+    static std::string m_py_class;
     static boost::python::export_converters_base<T>* imported_converters;
 };
 
 template <class T> std::string import_extension_class<T>::m_module;
-template <class T> std::string import_extension_class<T>::m_klass;
+template <class T> std::string import_extension_class<T>::m_py_class;
 template <class T>
 boost::python::export_converters_base<T>*
 import_extension_class<T>::imported_converters = 0;
@@ -214,13 +214,13 @@ template <class T>
 boost::python::export_converters_base<T>*
 import_extension_class<T>::get_converters() {
   if (imported_converters == 0) {
-    void *cobject
-      = import_converters(m_module, m_klass, converters_attribute_name);
+    void* cobject
+      = import_converters(m_module, m_py_class, converters_attribute_name);
     imported_converters
       = static_cast<boost::python::export_converters_base<T>*>(cobject);
     check_export_converters_api(
-      EXPORT_CONVERTERS_API_MAJOR,
-      EXPORT_CONVERTERS_API_MINOR,
+      export_converters_api_major,
+      export_converters_api_minor,
       imported_converters->get_api_major(),
       imported_converters->get_api_minor());
   }
@@ -240,8 +240,8 @@ class import_class_builder
     : python_import_extension_class_converters<T>
 {
  public:
-    import_class_builder(const char *module, const char* klass)
-        : m_class(new detail::import_extension_class<T>(module, klass))
+    import_class_builder(const char* module, const char* py_class)
+        : m_class(new detail::import_extension_class<T>(module, py_class))
     { }
  private:
 
@@ -268,7 +268,7 @@ class x_class_builder
         : class_builder<T, U>(module, name) {
     add(
       ref(PyCObject_FromVoidPtr(reinterpret_cast<void*>(&export_cvts), NULL)),
-      const_cast<char*>(detail::converters_attribute_name.c_str()));
+      detail::converters_attribute_name);
   }
 };
 
