@@ -9,7 +9,8 @@
 # include <boost/python/detail/config.hpp>
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/converter/to_python_function_type.hpp>
-# include <boost/python/converter/from_python_function.hpp>
+# include <boost/python/converter/rvalue_from_python_data.hpp>
+# include <boost/python/converter/constructor_function.hpp>
 
 namespace boost { namespace python { namespace converter {
 

@@ -5,8 +5,7 @@
 // to its suitability for any purpose.
 #ifndef IMPLICIT_DWA2002326_HPP
 # define IMPLICIT_DWA2002326_HPP
-# include <boost/python/converter/from_python_data.hpp>
-# include <boost/python/converter/from_python_stage1_data.hpp>
+# include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registrations.hpp>
 
 namespace boost { namespace python { namespace converter { 
@@ -22,7 +21,7 @@ struct implicit
             find_chain(obj, rvalue_from_python_chain<Source>::value));
     }
       
-    static void construct(PyObject* obj, rvalue_stage1_data* data)
+    static void construct(PyObject* obj, rvalue_from_python_stage1_data* data)
     {
         // This is the registration we got from the convertible step
         rvalue_from_python_registration const* registration
@@ -36,7 +35,7 @@ struct implicit
         if (registration->construct != 0)
             registration->construct(obj, &intermediate_data.stage1);
           
-        void* storage = ((rvalue_base_data<Target>*)data)->storage.bytes;
+        void* storage = ((rvalue_from_python_storage<Target>*)data)->storage.bytes;
 #   if !defined(BOOST_MSVC) || _MSC_FULL_VER != 13012108 // vc7.01 alpha workaround
         new (storage) Target(*static_cast<Source*>(intermediate_data.stage1.convertible));
 #   else

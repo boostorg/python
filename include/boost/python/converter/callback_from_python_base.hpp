@@ -12,12 +12,13 @@ namespace detail
 {
 
   // Throw an exception
-  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_stage1_data const&);
-  BOOST_PYTHON_DECL void* convert_rvalue(PyObject*, rvalue_stage1_data& data, void* storage);
+  BOOST_PYTHON_DECL void throw_if_not_registered(rvalue_from_python_stage1_data const&);
+  BOOST_PYTHON_DECL void* convert_rvalue(PyObject*, rvalue_from_python_stage1_data&, void* storage);
   
   BOOST_PYTHON_DECL void throw_if_not_registered(lvalue_from_python_registration*const&);
   BOOST_PYTHON_DECL void* callback_convert_reference(PyObject*, lvalue_from_python_registration*const&);
   BOOST_PYTHON_DECL void* callback_convert_pointer(PyObject*, lvalue_from_python_registration*const&);
+  BOOST_PYTHON_DECL void absorb_result(PyObject*);
 }
 
 }}} // namespace boost::python::converter

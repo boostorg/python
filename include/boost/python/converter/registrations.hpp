@@ -6,7 +6,7 @@
 #ifndef REGISTRATIONS_DWA2002223_HPP
 # define REGISTRATIONS_DWA2002223_HPP
 
-# include <boost/python/converter/from_python_function.hpp>
+# include <boost/python/converter/constructor_function.hpp>
 
 namespace boost { namespace python { namespace converter { 
 

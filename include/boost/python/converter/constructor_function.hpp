@@ -3,19 +3,16 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
-#ifndef FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP
-# define FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP
-
-# include <boost/python/converter/from_python_function.hpp>
+#ifndef CONSTRUCTOR_FUNCTION_DWA200278_HPP
+# define CONSTRUCTOR_FUNCTION_DWA200278_HPP
 
 namespace boost { namespace python { namespace converter { 
 
-struct rvalue_stage1_data
-{
-    void* convertible;
-    constructor_function construct;
-};
+// Declares the type of functions used to construct C++ objects for
+// rvalue from_python conversions.
+struct rvalue_from_python_stage1_data;
+typedef void (*constructor_function)(PyObject* source, rvalue_from_python_stage1_data*);
 
 }}} // namespace boost::python::converter
 
-#endif // FROM_PYTHON_STAGE1_DATA_DWA2002223_HPP
+#endif // CONSTRUCTOR_FUNCTION_DWA200278_HPP

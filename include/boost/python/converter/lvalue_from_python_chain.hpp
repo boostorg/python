@@ -17,8 +17,8 @@ namespace boost { namespace python { namespace converter {
 // Given T == U*cv&, T == U*, or T == U&, lvalue_from_python_chain<T>
 // declares a "templated global reference" to the lvalue from_python
 // converter chain for U. The optional bool second argument is_return,
-// when true, removes special treatment for T == U*cv& so that the
-// converter for U* is found.
+// when true, removes the usual special treatment which causes the
+// converter for U* to bve used when T == U*cv&
 namespace detail
 {
   template <class T>

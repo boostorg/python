@@ -7,10 +7,12 @@
 # define RETURN_FROM_PYTHON_DWA200265_HPP
 
 # include <boost/python/converter/callback_from_python_base.hpp>
-# include <boost/python/converter/from_python_data.hpp>
+# include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/rvalue_from_python_chain.hpp>
 # include <boost/python/converter/lvalue_from_python_chain.hpp>
 # include <boost/python/detail/void_ptr.hpp>
+# include <boost/call_traits.hpp>
+# include <boost/python/detail/void_return.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -19,6 +21,7 @@ namespace detail
   template <class T>
   struct return_pointer_from_python
   {
+      typedef T result_type;
       return_pointer_from_python();
       T operator()(PyObject*) const;
   };
@@ -26,6 +29,7 @@ namespace detail
   template <class T>
   struct return_reference_from_python
   {
+      typedef T result_type;
       return_reference_from_python();
       T operator()(PyObject*) const;
   };
@@ -33,8 +37,9 @@ namespace detail
   template <class T>
   struct return_rvalue_from_python
   {
+      typedef call_traits<T>::param_type result_type;
       return_rvalue_from_python();
-      T const& operator()(PyObject*);
+      result_type operator()(PyObject*);
    private:
       rvalue_data<T> m_data;
   };
@@ -64,27 +69,20 @@ template <class T>
 struct return_from_python
     : detail::select_return_from_python<T>::type
 {
-    typedef T result_type;
-};
-
-struct void_result
-{
- private: 
-    void_result() {}
-    void operator=(void_result const&);
-    
-    friend struct return_from_python<void>;
 };
 
 // Specialization as a convenience for call and call_method
 template <>
 struct return_from_python<void>
 {
-    typedef void_result result_type;
+    typedef python::detail::returnable<void>::type result_type;
+    
     result_type operator()(PyObject* x) const
     {
-        Py_DECREF(expect_non_null(x));
+        converter::detail::absorb_result(x);
+# ifdef BOOST_NO_VOID_RETURNS
         return result_type();
+# endif 
     }
 };
 
@@ -101,7 +99,8 @@ namespace detail
   }
   
   template <class T>
-  inline T const& return_rvalue_from_python<T>::operator()(PyObject* obj)
+  inline typename return_rvalue_from_python<T>::result_type
+  return_rvalue_from_python<T>::operator()(PyObject* obj)
   {
       return *(T*)convert_rvalue(obj, m_data.stage1, m_data.storage.bytes);
   }

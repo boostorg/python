@@ -11,13 +11,14 @@
 # include <boost/python/detail/indirect_traits.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
-# include <boost/python/converter/from_python_data.hpp>
+# include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/mpl/select_type.hpp>
 # include <boost/python/converter/registry.hpp>
 # include <boost/python/converter/lvalue_from_python_chain.hpp>
 # include <boost/python/converter/rvalue_from_python_chain.hpp>
 # include <boost/python/detail/void_ptr.hpp>
 # include <boost/python/back_reference.hpp>
+# include <boost/python/detail/referent_storage.hpp>
 
 namespace boost { namespace python
 {
@@ -48,7 +49,7 @@ struct pointer_cref_arg_from_python
  private: // storage for a U*
     // needed because not all compilers will let us declare U* as the
     // return type of operator() -- we return U*const& instead
-    typename detail::referent_storage<T>::type m_result;
+    typename python::detail::referent_storage<T>::type m_result;
 };
 
 // Base class for pointer and reference converters
