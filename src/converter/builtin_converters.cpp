@@ -232,6 +232,30 @@ namespace
   };
 } 
 
+BOOST_PYTHON_DECL PyObject* do_call_to_python(char x)
+{
+    return PyString_FromStringAndSize(&x, 1);
+}
+  
+BOOST_PYTHON_DECL PyObject* do_call_to_python(char const* x)
+{
+    return x ? PyString_FromString(x) : boost::python::detail::none();
+}
+  
+BOOST_PYTHON_DECL PyObject* do_call_to_python(PyObject* x)
+{
+    return x ? x : boost::python::detail::none();
+}
+  
+BOOST_PYTHON_DECL PyObject* do_callback_to_python(PyObject* x)
+{
+    if (x == 0)
+        return boost::python::detail::none();
+      
+    Py_INCREF(x);
+    return x;
+}
+
 #define REGISTER_INT_CONVERTERS(U) slot_rvalue_from_python<U,int_rvalue_from_python>()
 #define REGISTER_INT_CONVERTERS2(U) REGISTER_INT_CONVERTERS(signed U); REGISTER_INT_CONVERTERS(unsigned U)  
 
