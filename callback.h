@@ -53,7 +53,8 @@ struct Callback
 // void f() { return g(); }
 template <>
 struct Callback<void>
-{    static void call_method(PyObject* self, const char* name)
+{
+    static void call_method(PyObject* self, const char* name)
         { expect_and_absorb_non_null(PyEval_CallMethod(self, const_cast<char*>(name), const_cast<char*>("()"))); }
 
     template <class A1>

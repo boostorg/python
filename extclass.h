@@ -297,24 +297,23 @@ class ReadOnlySetattrFunction : public Function
 namespace detail
 {
 
-template <class From, class To>
-struct DefineConversion
-{
-    static void * upcast_ptr(void * v)
-    {
-        return static_cast<To *>(static_cast<From *>(v));
-    }
+  template <class From, class To>
+  struct DefineConversion
+  {
+      static void * upcast_ptr(void * v)
+      {
+          return static_cast<To *>(static_cast<From *>(v));
+      }
 
-    static void * downcast_ptr(void * v)
-    {
-        return dynamic_cast<To *>(static_cast<From *>(v));
-    }
-};
+      static void * downcast_ptr(void * v)
+      {
+          return dynamic_cast<To *>(static_cast<From *>(v));
+      }
+  };
 
 }
 
 enum WithoutDowncast { without_downcast };
-
 
 // An easy way to make an extension base class which wraps T. Note that Python
 // subclasses of this class will simply be Class<ExtensionInstance> objects.
@@ -530,7 +529,7 @@ class InstancePtrHolder : public InstanceHolder<HeldType>
  public:
     HeldType* target() { return &*m_ptr; }
     PtrType& ptr() { return m_ptr; }
-    
+
     InstancePtrHolder(PtrType ptr) : m_ptr(ptr) {}
  private:
     PtrType m_ptr;
@@ -589,7 +588,8 @@ template <class T, class U>
 void* ExtensionClass<T, U>::extract_object_from_holder(InstanceHolderBase* v) const
 {
     py::InstanceHolder<T>* held = dynamic_cast<py::InstanceHolder<T>*>(v);
-    if(held) return held->target();
+    if(held)
+        return held->target();
     return 0;
 }
 
@@ -653,4 +653,3 @@ std::vector<py::detail::DerivedClassInfo> ClassRegistry<T>::static_derived_class
 } // namespace py
 
 #endif // EXTENSION_CLASS_DWA052000_H_
-
