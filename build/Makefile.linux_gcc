@@ -79,7 +79,7 @@ DEPOBJ= $(OBJ) comprehensive.o abstract.o \
 
 .SUFFIXES: .o .cpp
 
-all: libbpl.a test.so abstract.so \
+all: libbpl.a boost_python_test.so abstract.so \
      getting_started1.so getting_started2.so getting_started3.so \
      getting_started4.so getting_started5.so
 
@@ -111,8 +111,8 @@ libbpl.a: $(OBJ)
 	rm -f libbpl.a
 	ar r libbpl.a $(OBJ)
 
-test.so: $(OBJ) comprehensive.o
-	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o test.so -lm
+boost_python_test.so: $(OBJ) comprehensive.o
+	$(LD) $(LDOPTS) $(OBJ) comprehensive.o -o boost_python_test.so -lm
 
 abstract.so: $(OBJ) abstract.o
 	$(LD) $(LDOPTS) $(OBJ) abstract.o -o abstract.so
@@ -146,7 +146,7 @@ test:
 
 clean:
 	rm -f $(OBJ) libbpl.a libbpl.a.input
-	rm -f comprehensive.o test.so
+	rm -f comprehensive.o boost_python_test.so
 	rm -f abstract.o abstract.so
 	rm -f getting_started1.o getting_started1.so
 	rm -f getting_started2.o getting_started2.so
