@@ -19,8 +19,8 @@
 #ifndef int_wrapper_rmg_20030910_included
 #define int_wrapper_rmg_20030910_included
 
-#include <ostream>
-#include <boost/shared_ptr.hpp>
+#include <string>
+#include <sstream>
 #include <stdio.h>
 
 struct int_wrapper {
@@ -36,8 +36,7 @@ struct int_wrapper {
   inline ~int_wrapper ();
 
   inline void increment (int);
-
-  inline operator boost::shared_ptr<int_wrapper> () const;
+  inline std::string repr () const;
 
   inline static void setTrace (bool onoff);
 };
@@ -46,7 +45,6 @@ inline bool operator== (int_wrapper const &lhs, int_wrapper const &rhs);
 inline bool operator!= (int_wrapper const &lhs, int_wrapper const &rhs);
 inline bool operator< (int_wrapper const &lhs, int_wrapper const &rhs);
 inline int compare (int_wrapper const &lhs, int_wrapper const &rhs);
-inline std::ostream &operator<< (std::ostream &strm, int_wrapper const &iw);
 
 //
 // This is ugly. Put all of this stuff inline to avoid needing a
@@ -125,14 +123,11 @@ void int_wrapper::increment(int change)
   m_int += change;
 }
 
-int_wrapper::operator boost::shared_ptr<int_wrapper> () const
+std::string int_wrapper::repr () const
 {
-  if (our_trace_flag)
-    {
-      printf ("int_wrapper %u shared_ptr conversion\n", m_obj_number);
-    }
-
-  return boost::shared_ptr<int_wrapper> (new int_wrapper (*this));
+  std::stringstream temp;
+  temp << m_int;
+  return temp.str();
 }
 
 void int_wrapper::setTrace (bool onoff)
@@ -171,12 +166,6 @@ int compare (int_wrapper const &lhs, int_wrapper const &rhs)
     {
       return 0;
     }
-}
-
-std::ostream &operator<< (std::ostream &strm, int_wrapper const &iw)
-{
-  strm << iw.m_int;
-  return strm;
 }
 
 #endif // int_wrapper_rmg_20030910_included
