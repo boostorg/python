@@ -36,20 +36,9 @@ typedef detail::keywords<1> arg;
 
 namespace detail
 {
-  // A hack to simplify code by making arg a dependent name
-  template <std::size_t nkeywords>
-  struct dependent_arg
-  {
-      typedef arg type;
-  };
-  
   template <std::size_t nkeywords>
   struct keywords_base
   {
-      typedef typename
-        dependent_arg<nkeywords>::type
-      arg;
-      
       BOOST_STATIC_CONSTANT(std::size_t, size = nkeywords);
       
       keyword_range range() const
@@ -59,20 +48,11 @@ namespace detail
 
       keyword elements[nkeywords];
 
-      keywords<nkeywords+1> operator,(arg const &k) const
-      {
-          keywords<nkeywords> const& l = *static_cast<keywords<nkeywords> const*>(this);
-          python::detail::keywords<nkeywords+1> res;
-          std::copy(l.elements, l.elements+nkeywords, res.elements);
-          res.elements[nkeywords] = k.elements[0];
-          return res;
-      }
-      
+      keywords<nkeywords+1>
+      operator,(arg const &k) const;
+
       keywords<nkeywords + 1>
-      operator,(char const *name) const
-      {
-          return this->operator,(python::arg(name));
-      }
+      operator,(char const *name) const;
   };
   
   template <std::size_t nkeywords>
@@ -101,6 +81,26 @@ namespace detail
           return elements[0];
       }
   };
+
+  template <std::size_t nkeywords>
+  inline
+  keywords<nkeywords+1>
+  keywords_base<nkeywords>::operator,(arg const &k) const
+  {
+      keywords<nkeywords> const& l = *static_cast<keywords<nkeywords> const*>(this);
+      python::detail::keywords<nkeywords+1> res;
+      std::copy(l.elements, l.elements+nkeywords, res.elements);
+      res.elements[nkeywords] = k.elements[0];
+      return res;
+  }
+
+  template <std::size_t nkeywords>
+  inline
+  keywords<nkeywords + 1>
+  keywords_base<nkeywords>::operator,(char const *name) const
+  {
+      return this->operator,(python::arg(name));
+  }
 
 # ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template<typename T>
