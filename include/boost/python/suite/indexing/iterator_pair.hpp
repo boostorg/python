@@ -24,6 +24,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <algorithm>
+#include <utility>
 #include <boost/type_traits.hpp>
 
 namespace boost { namespace python { namespace indexing {
@@ -49,6 +50,7 @@ namespace boost { namespace python { namespace indexing {
 
   public:
     iterator_pair (iterator_param, iterator_param);
+    iterator_pair (std::pair<iterator, iterator> const &);
 
     iterator begin() const;
     iterator end() const;
@@ -69,6 +71,14 @@ namespace boost { namespace python { namespace indexing {
                                           , iterator_param end)
     : myBegin (begin)
     , myEnd (end)
+  {
+  }
+
+  template<typename Iterator>
+  iterator_pair<Iterator>
+  ::iterator_pair (std::pair<iterator, iterator> const &pair)
+    : myBegin (pair.first)
+    , myEnd (pair.second)
   {
   }
 
