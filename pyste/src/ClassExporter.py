@@ -271,27 +271,41 @@ class ClassExporter(Exporter):
             self.Add('inside', code)
 
     
+    def OverloadName(self, method):
+        'Returns the name of the overloads struct for the given method'
+        name = makeid(method.FullName())
+        overloads = '_overloads_%i_%i' % (method.minArgs, method.maxArgs)    
+        return name + overloads
+
+    
+    def GetAddedMethods(self):
+        added_methods = self.info.__added__
+        result = []
+        if added_methods:
+            for name, rename in added_methods:
+                decl = self.GetDeclaration(name)
+                self.info[name].rename = rename
+                result.append(decl)
+        return result
+
+                
     def ExportMethods(self):
-        'Export all the non-virtual methods of this class'        
+        '''Export all the non-virtual methods of this class, plus any function
+        that is to be exported as a method'''
             
-        def OverloadName(m):
-            'Returns the name of the overloads struct for the given method'            
-            return makeid(m.FullName()) + ('_overloads_%i_%i' % (m.minArgs, m.maxArgs))
-        
         declared = {}
         def DeclareOverloads(m):
             'Declares the macro for the generation of the overloads'
-            if not m.virtual:
-                if m.static:
-                    func = m.FullName()
-                    macro = 'BOOST_PYTHON_FUNCTION_OVERLOADS'
-                else:
-                    func = m.name
-                    macro = 'BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS' 
-                code = '%s(%s, %s, %i, %i)\n' % (macro, OverloadName(m), func, m.minArgs, m.maxArgs)
-                if code not in declared:
-                    declared[code] = True
-                    self.Add('declaration', code)
+            if (isinstance(m, Method) and m.static) or type(m) == Function:
+                func = m.FullName()
+                macro = 'BOOST_PYTHON_FUNCTION_OVERLOADS'
+            else:
+                func = m.name
+                macro = 'BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS' 
+            code = '%s(%s, %s, %i, %i)\n' % (macro, self.OverloadName(m), func, m.minArgs, m.maxArgs)
+            if code not in declared:
+                declared[code] = True
+                self.Add('declaration', code)
 
 
         def Pointer(m):
@@ -301,7 +315,11 @@ class ClassExporter(Exporter):
             if wrapper:
                 return '&' + wrapper.FullName()
             # return normal pointers to the methods of the class
-            is_unique = self.class_.IsUnique(m.name)
+            if isinstance(m, Method):
+                is_unique = self.class_.IsUnique(m.name)
+            else:
+                # function
+                is_unique = len(self.GetDeclarations(m.FullName())) == 1
             if is_unique:
                 return '&' + method.FullName()
             else:
@@ -310,9 +328,10 @@ class ClassExporter(Exporter):
         def IsExportable(m):
             'Returns true if the given method is exportable by this routine'
             ignore = (Constructor, ClassOperator, Destructor)
-            return isinstance(m, Method) and not isinstance(m, ignore) and not m.virtual        
+            return isinstance(m, Function) and not isinstance(m, ignore) and not m.virtual        
         
         methods = [x for x in self.public_members if IsExportable(x)]        
+        methods.extend(self.GetAddedMethods())
         
         for method in methods:
             method_info = self.info[method.name]
@@ -336,7 +355,7 @@ class ClassExporter(Exporter):
             if method.minArgs != method.maxArgs:
                 # add the overloads for this method
                 DeclareOverloads(method)
-                overload_name = OverloadName(method)
+                overload_name = self.OverloadName(method)
                 overload = ', %s%s()' % (namespaces.pyste, overload_name)
         
             # build the .def string to export the method
@@ -347,7 +366,7 @@ class ClassExporter(Exporter):
             code += ')'
             self.Add('inside', code)
             # static method
-            if method.static:
+            if isinstance(method, Method) and method.static:
                 code = '.staticmethod("%s")' % name
                 self.Add('inside', code)
             # add wrapper code if this method has one
@@ -593,7 +612,6 @@ class ClassExporter(Exporter):
                     self.Add('declaration-outside', macro)
                     self._exported_opaque_pointers[macro] = 1
 
-            
 
 #==============================================================================
 # Virtual Wrapper utils

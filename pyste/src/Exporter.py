@@ -8,10 +8,9 @@ class Exporter:
 
     INDENT = ' ' * 4
     
-    def __init__(self, info, parser_tail=None, parser_decl=None):
+    def __init__(self, info, parser_tail=None):
         self.info = info
         self.parser_tail = parser_tail
-        self.parser_decl = parser_decl
     
 
     def Name(self):
@@ -22,8 +21,7 @@ class Exporter:
         self.parser = parser
         header = self.info.include
         tail = self.parser_tail
-        decl = self.parser_decl
-        declarations, parser_header = parser.parse(header, tail, decl)
+        declarations, parser_header = parser.parse(header, tail)
         self.parser_header = parser_header
         self.SetDeclarations(declarations)
 

@@ -184,29 +184,34 @@ class InfoWrapper:
 #==============================================================================
 # Functions
 #==============================================================================
-def exclude(option):
-    option._Attribute('exclude', True)
+def exclude(info):
+    info._Attribute('exclude', True)
 
-def set_policy(option, policy):
-    option._Attribute('policy', policy)
+def set_policy(info, policy):
+    info._Attribute('policy', policy)
 
-def rename(option, name):
-    option._Attribute('rename', name)
+def rename(info, name):
+    info._Attribute('rename', name)
 
-def set_wrapper(option, wrapper):
+def set_wrapper(info, wrapper):
     if isinstance(wrapper, str):
         wrapper = FunctionWrapper(wrapper)
-    option._Attribute('wrapper', wrapper)
+    info._Attribute('wrapper', wrapper)
 
 def instantiate(template, types, rename=None):
     if isinstance(types, str):
         types = types.split()
     return template.Instantiate(types, rename)
 
-def use_shared_ptr(option):
-    option._Attribute('smart_ptr', 'boost::shared_ptr< %s >')
+def use_shared_ptr(info):
+    info._Attribute('smart_ptr', 'boost::shared_ptr< %s >')
 
-def use_auto_ptr(option):
-    option._Attribute('smart_ptr', 'std::auto_ptr< %s >')
+def use_auto_ptr(info):
+    info._Attribute('smart_ptr', 'std::auto_ptr< %s >')
         
-    
+def add_method(info, name, rename=None):
+    added = info._Attribute('__added__')
+    if added is None:
+        info._Attribute('__added__', [(name, rename)])
+    else:
+        added.append((name, rename))

@@ -477,3 +477,40 @@ Beware of non-const global variables: changes in Python won't reflect in C++!
 If you really must change them in Python, you will have to write some accessor
 functions, and export those.
 
+[page:1 Adding New Methods]
+
+Suppose that you want to add a function to a class, turning it into a method:
+
+    struct World
+    {
+        void set(std::string msg) { this->msg = msg; }
+        std::string msg;
+    };
+
+    std::string greet(World& w)
+    {
+        return w.msg;
+    }
+
+Here, we want to make [^greet] work as a method of the class [^World]. We do
+that using the [^add_method] construct:
+
+    W = Class("World", "hello.h")
+    add_method(W, "greet")
+
+Notice also that then you can rename it, set its policy, just like a regular
+method:
+
+    rename(W.greet, 'Greet')
+
+Now from Python:
+
+    >>> import hello
+    >>> w = hello.World()
+    >>> w.set('Ni')
+    >>> w.greet()
+    'Ni'
+    >>> print 'Oh no! The knights who say Ni!'
+    Oh no! The knights who say Ni!
+
+
