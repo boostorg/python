@@ -16,8 +16,8 @@ class BOOST_PYTHON_DECL scope : public object, noncopyable
 {
  public:
     inline scope(object const&);
+    inline scope();
     inline ~scope();
-    static inline object get();
     
  private: // data members
     PyObject* m_previous_scope;
@@ -35,15 +35,18 @@ inline scope::scope(object const& new_scope)
     current_scope = python::incref(new_scope.ptr());
 }
 
+inline scope::scope()
+    : object(detail::borrowed_reference(
+                 current_scope
+                 ))
+      , m_previous_scope(python::incref(current_scope))
+{
+}
+
 inline scope::~scope()
 {
     python::decref(current_scope);
     current_scope = m_previous_scope;
-}
-
-inline object scope::get()
-{
-    return object(detail::borrowed_reference(current_scope));
 }
 
 namespace converter

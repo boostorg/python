@@ -19,7 +19,7 @@ namespace boost { namespace python { namespace detail {
 module_base::module_base(const char* name)
     : m_module(
         allow_null(python::borrowed(
-                       scope::get().ptr()
+                       scope().ptr()
                        )))
 {
 }
@@ -94,6 +94,6 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
 
 namespace boost { namespace python {
 
-BOOST_PYTHON_DECL PyObject* scope::current_scope;
+BOOST_PYTHON_DECL PyObject* scope::current_scope = Py_None;
 
 }}
