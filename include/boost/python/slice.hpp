@@ -6,10 +6,10 @@
 //  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/config.hpp>
 #include <boost/python/object.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
-#include <boost/minmax.hpp>
 
 #include <iterator>
 #include <algorithm>
