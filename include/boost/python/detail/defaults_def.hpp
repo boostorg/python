@@ -199,7 +199,7 @@ struct define_stub_function {};
         >::type stubs_type;
 
         BOOST_STATIC_ASSERT(
-            (stubs_type::max_args + 1) <=
+            (stubs_type::max_args) <=
                 boost::python::detail::type_list_size<SigT>::value);
 
         typedef typename stubs_type::template gen<SigT> gen_type;
