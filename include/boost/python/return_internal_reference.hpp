@@ -30,9 +30,9 @@ struct internal_reference_to_python_generator
     struct apply
     {
         typedef typename mpl::select_type<
-            !is_object<T>::value
-            , to_python_indirect<T, detail::make_reference_holder>
+            is_object<T>::value
             , detail::return_internal_reference_requires_a_pointer_or_reference_return_type<T>
+            , to_python_indirect<T, detail::make_reference_holder>
         >::type type;
     };
 };
