@@ -110,16 +110,46 @@ namespace boost { namespace python {
             , Index
         > >
     {
-    public:
-    
+    private:
+        
+        typedef boost::mpl::or_<
+              boost::mpl::bool_<NoProxy>
+            , boost::mpl::or_<
+                  boost::is_integral<Element> 
+                , boost::is_float<Element> 
+                , boost::is_pointer<Element>
+                , boost::is_member_pointer<Element>
+                , boost::is_enum<Element>
+            > 
+        > no_proxy;
+                    
         typedef detail::container_element<Container, Index, DerivedPolicies>
             container_element_t;
+       
+        typedef typename boost::mpl::if_<
+              no_proxy
+            , iterator<Container>
+            , iterator<Container, return_internal_reference<> > >::type
+        def_iterator;
+    
+        static void
+        register_container_element(boost::mpl::false_)
+        { 
+            register_ptr_to_python<container_element_t>();
+        }
+        
+        static void
+        register_container_element(boost::mpl::true_)
+        { 
+        }
 
+    public:
+      
         template <class Class>
         void visit(Class& cl) const
         {
             // Hook into the class_ generic visitation .def function
-            register_ptr_to_python<container_element_t>();
+            register_container_element(no_proxy());
             
             cl
                 .def("__len__", base_size)
@@ -127,8 +157,7 @@ namespace boost { namespace python {
                 .def("__delitem__", &base_delete_item)
                 .def("__getitem__", &base_get_item)
                 .def("__contains__", &base_contains)
-                .def("__iter__", 
-                    iterator<Container, return_internal_reference<> >())
+                .def("__iter__", def_iterator())
 
                 .def("append", &base_append)
                 .def("extend", &base_extend)
@@ -136,9 +165,7 @@ namespace boost { namespace python {
         }        
         
     private:
-    
-        typedef boost::mpl::bool_<NoProxy> no_proxy;
-       
+           
         static object
         base_get_item_(
             back_reference<Container&> const& container, 
@@ -170,7 +197,7 @@ namespace boost { namespace python {
             // No Proxy
             return object(
                 DerivedPolicies::get_item(
-                    container, DerivedPolicies::
+                    container.get(), DerivedPolicies::
                         convert_index(container.get(), i)));
         }
 
@@ -181,17 +208,7 @@ namespace boost { namespace python {
                 return base_get_slice(
                     container.get(), reinterpret_cast<PySliceObject*>(i));
             
-            return base_get_item_(container, i, 
-                boost::mpl::or_<
-                      no_proxy
-                    , boost::mpl::or_<
-                          boost::is_integral<Element> 
-                        , boost::is_float<Element> 
-                        , boost::is_pointer<Element>
-                        , boost::is_member_pointer<Element>
-                        , boost::is_enum<Element>
-                    >
-                >());
+            return base_get_item_(container, i, no_proxy());
          }
 
         static object 

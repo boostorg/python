@@ -39,5 +39,10 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
     class_<std::vector<X> >("XVec")
         .def(vector_indexing_suite<std::vector<X> >())
     ;
+        
+    // Compile check only...
+    class_<std::vector<float> >("FloatVec")
+        .def(vector_indexing_suite<std::vector<float> >())
+    ;
 }
 
