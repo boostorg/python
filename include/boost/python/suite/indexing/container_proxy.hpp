@@ -1,4 +1,3 @@
-// -*- mode:c++; switch-modules-target: "testcontprox.cpp" -*-
 //
 // Header file container_proxy.hpp
 //
@@ -8,9 +7,18 @@
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 // at http://www.boost.org/LICENSE_1_0.txt)
 //
+// Class invariant:
+//   size() == m_proxies.size()
+//   for 0 <= i < size()
+//     m_proxies[i].get() != 0
+//     m_proxies[i]->owner() == this
+//     m_proxies[i]->index() == i
+//     m_proxies[i]->m_element_ptr.get() == 0
+//
 // History
 // =======
 // 2003/ 8/26   rmg     File creation
+// 2003/10/23   rmg     Change pointer container from map to sequence
 //
 // $Id$
 //
@@ -23,7 +31,7 @@
 #include <boost/python/suite/indexing/element_proxy.hpp>
 #include <boost/python/suite/indexing/workaround.hpp>
 
-#include <map>
+#include <vector>
 #include <cassert>
 #include <boost/shared_ptr.hpp>
 #include <boost/iterator/iterator_traits.hpp>
@@ -55,11 +63,19 @@ namespace boost { namespace python { namespace indexing {
     static void pre_destruction (P &)         { }
   };
 
+  struct vector_generator {
+    // Generates vector type for any element type with default allocator
+    template<typename Element> struct apply {
+      typedef std::vector<Element> type;
+    };
+  };
+
   template<class Container
-           , class Holder = identity<Container> >
+           , class Holder = identity<Container>
+           , class Generator = vector_generator>
   class container_proxy
   {
-    typedef container_proxy<Container, Holder> self_type;
+    typedef container_proxy<Container, Holder, Generator> self_type;
     typedef typename Container::iterator raw_iterator;
     typedef ::boost::detail::iterator_traits<raw_iterator> raw_iterator_traits;
 
@@ -103,9 +119,9 @@ namespace boost { namespace python { namespace indexing {
     reference       operator[] (size_type index)       { return at(index); }
     const_reference operator[] (size_type index) const { return at(index); }
 
-    size_type size() const { return raw_container().size(); }
-    size_type capacity() const { return raw_container().capacity(); }
-    void reserve(size_type s) { raw_container().reserve(s); }
+    size_type size ()     const { return raw_container().size(); }
+    size_type capacity () const { return raw_container().capacity(); }
+    void reserve (size_type s);
 
   public:
     iterator begin() { return iterator (this, static_cast<size_type>(0)); }
@@ -119,17 +135,27 @@ namespace boost { namespace python { namespace indexing {
     void push_back (raw_value_type const &copy) { insert (end(), copy); }
 
     value_type pop_back () {
-      value_type result = at (end() - 1);
+      value_type result = at (size() - 1);
       erase (end() - 1);
       return result;
     }
 
   public:
-    // Proxies for a given index must be detached before overwriting
-    // that container element.
+    // These functions are useful only when client code has direct
+    // non-const acccess to the raw container (e.g. via an indirect
+    // holder supplied to our constructor). Any code that directly
+    // modifies the contents of the raw container (by replacing,
+    // inserting or erasing elements) must notify the container_proxy.
+
     void detach_proxy (size_type index);
     void detach_proxies (size_type from, size_type to);
-    void detach_proxies (iterator from, iterator to);
+    // Call before overwriting element(s) in the raw container
+
+    void detach_and_forget_proxies (size_type from, size_type to);
+    // Call before erasing elements from the raw container
+
+    void insert_proxies (size_type from, size_type to);
+    // Call after inserting elements into the raw container
 
   public:
     // Convenient replacement of elements (automatic proxy detachment)
@@ -137,6 +163,8 @@ namespace boost { namespace python { namespace indexing {
     template<typename Iter> void replace (size_type index, Iter, Iter);
 
     void swap_elements (size_type index1, size_type index2);
+
+    bool is_valid () const; // Check the class invariant (for testing purposes)
 
   private:
     // Overloads for insertions with/without useful std::distance
@@ -148,137 +176,143 @@ namespace boost { namespace python { namespace indexing {
 
   private:
     typedef boost::shared_ptr<shared_proxy> pointer_impl;
-    typedef std::map<size_type, pointer_impl> map_type;
-    typedef typename map_type::iterator map_iterator;
-    typedef typename map_type::value_type map_value;
+    typedef typename Generator::apply<pointer_impl>::type pointer_container;
+    typedef typename pointer_container::iterator pointer_iterator;
 
   private:
     Container &raw_container();
 
-    static void detach_if_shared (map_value const &);
-
-    void adjust_indexes_front (map_iterator, map_iterator, difference_type);
-    void adjust_indexes_back (map_iterator, map_iterator, difference_type);
-    void adjust_index (map_iterator, difference_type offset);
+    void adjust_proxies (pointer_iterator, pointer_iterator, difference_type);
+    void write_proxies (size_type, size_type);
+    bool clear_proxy (pointer_impl &);         // detach and do not reset
+    void clear_proxies (size_type, size_type); // detach and do not reset
 
   private:
     held_type m_held_obj;
-    map_type m_map;
+    pointer_container m_proxies;
   };
 
-  template<class Container, class Holder>
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  container_proxy<Container, Holder, Generator>
   ::container_proxy ()
-    : m_held_obj ()
-    , m_map ()
+    : m_held_obj (Holder::create())
+    , m_proxies ()
   {
+    // Container is empty - no further processing
   }
 
-  template<class Container, class Holder>
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  container_proxy<Container, Holder, Generator>
   ::container_proxy (held_type const &held)
-    : m_held_obj (held)
-    , m_map ()
+    : m_held_obj (Holder::copy (held))
+    , m_proxies (size())
   {
+    write_proxies (0, size());
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   template<typename Iter>
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::container_proxy (Iter start, Iter finish)
     : m_held_obj (Holder::create())
-    , m_map ()
+    , m_proxies ()
   {
     insert (begin(), start, finish);
   }
 
-  template<class Container, class Holder>
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  container_proxy<Container, Holder, Generator>
   ::container_proxy (container_proxy const &copy)
     : m_held_obj (Holder::copy (copy.m_held_obj))
-    , m_map ()                      // Do *not* duplicate map
+    , m_proxies (size())
   {
+    write_proxies (0, size()); // Create our own proxies for the copied values
   }
 
-  template<class Container, class Holder>
-  container_proxy<Container, Holder> &
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  container_proxy<Container, Holder, Generator> &
+  container_proxy<Container, Holder, Generator>
   ::operator= (container_proxy const &copy)
   {
-    // All of our contained values are about to be dis-owned
-    std::for_each (m_map.begin(), m_map.end(), detach_if_shared);
-    m_map.clear();
+    // Copy original values into any proxies being shared by external pointers
+    clear_proxies (0, size());
+
     Holder::assign (m_held_obj, copy.m_held_obj);
+
+    m_proxies.resize (size());
+    write_proxies (0, m_proxies.size());
+
     return *this;
   }
 
-  template<class Container, class Holder>
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  container_proxy<Container, Holder, Generator>
   ::~container_proxy ()
   {
-    // All of our contained values are about to be dis-owned
-    std::for_each (m_map.begin(), m_map.end(), detach_if_shared);
+    // Copy original values into any proxies being shared by external pointers
+    clear_proxies (0, size());
     Holder::pre_destruction (m_held_obj);
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   Container &
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::raw_container ()
   {
     return Holder::get (m_held_obj);
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   Container const &
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::raw_container () const
   {
     return Holder::get (m_held_obj);
   }
 
-  template<class Container, class Holder>
-  typename container_proxy<Container, Holder>::reference
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::reserve (size_type size)
+  {
+    raw_container().reserve (size);
+    m_proxies.reserve (size);
+  }
+
+  template<class Container, class Holder, class Generator>
+  typename container_proxy<Container, Holder, Generator>::reference
+  container_proxy<Container, Holder, Generator>
   ::at (size_type index)
   {
-    pointer_impl &entry = m_map[index];
-
-    if (!entry.get())
-      {
-        entry.reset (new shared_proxy (this, index));
-      }
-
-    return reference (entry);
+    pointer_impl const &ptr (m_proxies.BOOST_INDEXING_AT (index));
+    assert (ptr->owner() == this);
+    assert (ptr->index() == index);
+    return reference (ptr);
   }
 
-  template<class Container, class Holder>
-  typename container_proxy<Container, Holder>::const_reference
-  container_proxy<Container, Holder>
+  template<class Container, class Holder, class Generator>
+  typename container_proxy<Container, Holder, Generator>::const_reference
+  container_proxy<Container, Holder, Generator>
   ::at (size_type index) const
   {
-    // const_cast allows insertion into map. Maybe this is wrong, and
-    // there can be no const-version of at. Alternatively, maybe
-    // the map member variable should be declared mutable.
-
-    container_proxy *mutable_this = const_cast<container_proxy *>(this);
-
-    return const_reference (mutable_this->at (index));
+    pointer_impl const &ptr (m_proxies.BOOST_INDEXING_AT (index));
+    assert (ptr->owner() == this);
+    assert (ptr->index() == index);
+    return const_reference (ptr);
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   void
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::replace (size_type index, raw_value_type const &copy)
   {
     detach_proxy (index);
     raw_container().BOOST_INDEXING_AT (index) = copy;
+    write_proxies (index, index + 1);
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   template<typename Iter>
   void
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::replace (size_type index, Iter from, Iter to)
   {
     while (from != to)
@@ -287,73 +321,60 @@ namespace boost { namespace python { namespace indexing {
       }
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   void
-  container_proxy<Container, Holder>
+  container_proxy<Container, Holder, Generator>
   ::swap_elements (size_type index1, size_type index2)
   {
-    map_iterator iter1 = m_map.find (index1);
-    map_iterator iter2 = m_map.find (index2);
+    pointer_impl &ptr1 (m_proxies[index1]);
+    pointer_impl &ptr2 (m_proxies[index2]);
 
-    difference_type distance
-      = static_cast<difference_type>(index2)
-      - static_cast<difference_type>(index1);
+    assert (ptr1->owner() == this);
+    assert (ptr2->owner() == this);
+    assert (ptr1->index() == index1);
+    assert (ptr2->index() == index2);
 
-    if ((iter1 == m_map.end()) && (iter2 == m_map.end()))
-      {
-        // No proxies exist for these indexes.
-      }
+    // Swap produces the diagrammed transformation. Any external
+    // pointers that refer to proxy1 or proxy2 will end up still
+    // pointing to their original (now relocated) values.
+    //
+    // .. ptr1 .. ptr2 ..     .. ptr1 .. ptr2  ..  (m_proxies)
+    //      |      |                 \  /
+    //      |      |                  \/
+    //      |      |                  /\.
+    //      V      V                 /  \.
+    //   proxy1  proxy2  -->    proxy1  proxy2
+    //      |      |                 \  /
+    //      |      |                  \/
+    //      |      |                  /\.
+    //      V      V                 /  \.
+    //  .. v1 ... v2 ..         .. v2 .. v1 ..  (raw_container)
 
-    else if ((iter1 != m_map.end()) && (iter2 == m_map.end()))
-      {
-        // Proxy for the first index only
-        map_iterator temp (iter1);
-        adjust_indexes_front (iter1, ++temp, distance); // Exactly one element
-      }
-
-    else if ((iter1 == m_map.end()) && (iter2 != m_map.end()))
-      {
-        // Proxy for the second index only
-        map_iterator temp (iter2);
-        adjust_indexes_front (iter2, ++temp, -distance);
-      }
-
-    else
-      {
-        // Proxies for both indexes
-        std::swap (iter1->second->m_index, iter2->second->m_index);
-        std::swap (iter1->second, iter2->second);
-      }
-
+    std::swap (ptr1->m_index, ptr2->m_index);
+    std::swap (ptr1, ptr2);
     std::swap (raw_container()[index1], raw_container()[index2]);
+
+    assert (m_proxies[index1]->index() == index1);
+    assert (m_proxies[index2]->index() == index2);
   }
 
-  template<class Container, class Holder>
-  typename container_proxy<Container, Holder>::iterator
-  container_proxy<Container, Holder>
-  ::erase (iterator iter)
+  template<class Container, class Holder, class Generator>
+  typename container_proxy<Container, Holder, Generator>::iterator
+  container_proxy<Container, Holder, Generator>::erase (iterator iter)
   {
     return erase (iter, iter + 1);
   }
 
-  template<class Container, class Holder>
-  typename container_proxy<Container, Holder>::iterator
-  container_proxy<Container, Holder>
-  ::erase (iterator from, iterator to)
+  template<class Container, class Holder, class Generator>
+  typename container_proxy<Container, Holder, Generator>::iterator
+  container_proxy<Container, Holder, Generator>::erase (
+      iterator from, iterator to)
   {
     assert (from.ptr == this);
     assert (to.ptr == this);
 
-    difference_type deleting = to.index - from.index;
-    map_iterator erase_begin = m_map.lower_bound (from.index);
-    map_iterator erase_end = m_map.lower_bound (to.index);
-
-    // Detach any proxies for the soon-to-be-erased elements
-    std::for_each (erase_begin, erase_end, detach_if_shared);
-    m_map.erase (erase_begin, erase_end);  // Note: erase_end remains valid
-
-    // Adjust the indexes of any following proxies
-    adjust_indexes_front (erase_end, m_map.end(), -deleting);
+    // Detach and remove the proxies for the about-to-be-erased elements
+    detach_and_forget_proxies (from.index, to.index);
 
     // Erase the elements from the real container
     raw_iterator result
@@ -364,60 +385,73 @@ namespace boost { namespace python { namespace indexing {
     return iterator (this, result);
   }
 
-  template<class Container, class Holder>
-  typename container_proxy<Container, Holder>::iterator
-  container_proxy<Container, Holder>
-  ::insert (iterator iter, raw_value_type const &copy)
+  template<class Container, class Holder, class Generator>
+  template<typename Iter>
+  void container_proxy<Container, Holder, Generator>::insert (
+      iterator iter, Iter from, Iter to, std::forward_iterator_tag)
   {
     assert (iter.ptr == this);
+    size_type count = std::distance (from, to);
 
-    // Adjust indexes from iter.index onwards, since insert goes
-    // before this element
-    adjust_indexes_back (
-        m_map.lower_bound (iter.index), m_map.end(), 1);
+    // Add empty proxy pointers for the new value(s) (could throw)
+    m_proxies.insert (m_proxies.begin() + iter.index, count, pointer_impl());
 
-    // Insert the element into the real container
-    raw_iterator result
-      = raw_container().insert (raw_container().begin() + iter.index, copy);
+    try
+      {
+        // Insert the new element(s) into the real container (could throw)
+        raw_container().insert (
+            raw_container().begin() + iter.index
+            , from
+            , to);
 
-    return iterator (this, result);
+        try
+          {
+            // Create new proxies for the new elements (could throw)
+            write_proxies (iter.index, iter.index + count);
+          }
+
+        catch (...)
+          {
+            raw_container().erase (
+                raw_container().begin() + iter.index
+                , raw_container().begin() + iter.index + count);
+
+            throw;
+          }
+      }
+
+    catch (...)
+      {
+        m_proxies.erase (
+            m_proxies.begin() + iter.index
+            , m_proxies.begin() + iter.index + count);
+
+        throw;
+      }
+
+    // Adjust any proxies after the inserted elements (nothrow)
+    adjust_proxies (
+        m_proxies.begin() + iter.index + count
+        , m_proxies.end()
+        , static_cast<difference_type> (count));
   }
 
-  template<class Container, class Holder>
-  template<typename Iter>
-  void
-  container_proxy<Container, Holder>
-  ::insert (iterator iter, Iter from, Iter to)
+  template<class Container, class Holder, class Generator>
+  typename container_proxy<Container, Holder, Generator>::iterator
+  container_proxy<Container, Holder, Generator>::insert (
+      iterator iter, raw_value_type const &copy)
   {
-    // Forward insertion to the right overloaded version
-    typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
-    insert (iter, from, to, category());
+    // Use the iterator-based version by treating the value as an
+    // array of size one (see section 5.7/4 of the C++98 standard)
+    insert (iter, &copy, (&copy) + 1, std::random_access_iterator_tag());
+
+    return iter;
   }
 
-  template<class Container, class Holder>
+  template<class Container, class Holder, class Generator>
   template<typename Iter>
-  void
-  container_proxy<Container, Holder>
-  ::insert (iterator iter, Iter from, Iter to, std::forward_iterator_tag)
-  {
-    // insert overload for iterators where we can get distance()
-
-    assert (iter.ptr == this);
-
-    // Adjust indexes from iter.index onwanrds (insert goes before
-    // this element)
-    adjust_indexes_back (
-        m_map.lower_bound (iter.index), m_map.end(), std::distance (from, to));
-
-    // Insert the element into the real container
-    raw_container().insert (raw_container().begin() + iter.index, from, to);
-  }
-
-  template<class Container, class Holder>
-  template<typename Iter>
-  void
-  container_proxy<Container, Holder>
-  ::insert (iterator iter, Iter from, Iter to, std::input_iterator_tag)
+  void container_proxy<Container, Holder, Generator>::insert (
+      iterator iter, Iter from, Iter to, std::input_iterator_tag)
   {
     // insert overload for iterators where we *can't* get distance()
     // so just insert elements one at a time
@@ -427,126 +461,183 @@ namespace boost { namespace python { namespace indexing {
       }
   }
 
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::detach_if_shared (map_value const &ent)
+  template<class Container, class Holder, class Generator>
+  template<typename Iter>
+  void container_proxy<Container, Holder, Generator>::insert (
+      iterator iter, Iter from, Iter to)
   {
-    if (!ent.second.unique())
-      {
-        ent.second->detach();
-      }
-    // If the pointer isn't shared, don't bother causing a copy of the
-    // container element, since the proxy is about to be deleted.
+    // Forward insertion to the right overloaded version
+    typedef typename BOOST_ITERATOR_CATEGORY<Iter>::type category;
+    insert (iter, from, to, category());
   }
 
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::detach_proxy (size_type index)
+  template<class Container, class Holder, class Generator>
+  bool container_proxy<Container, Holder, Generator>::clear_proxy (
+      pointer_impl &ptr)
   {
-    map_iterator iter = m_map.find (index);
+    // Warning - this can break the class invariant. Use only when the
+    // pointer is about to be overwritten or removed from m_proxies
 
-    if (iter != m_map.end())
-      {
-        detach_if_shared (*iter);
-        m_map.erase (iter);
-      }
-  }
-
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::detach_proxies (size_type from_index, size_type to_index)
-  {
-    map_iterator from = m_map.lower_bound (from_index);
-    map_iterator to = m_map.lower_bound (to_index);
-    std::for_each (from, to, detach_if_shared);
-    m_map.erase (from, to);
-  }
-
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::detach_proxies (iterator from, iterator to)
-  {
-    assert (from.ptr == this);
-    assert (to.ptr == this);
-    detach_proxies (from.index, to.index);
-  }
-
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::adjust_index (map_iterator iter, difference_type offset)
-  {
-    pointer_impl ptr (iter->second);  // Copy the shared pointer
-    m_map.erase (iter);               // Remove the map copy of it
+    assert (ptr->owner() == this);
 
     if (!ptr.unique())
       {
-        // Reinsert only if there are other pointers "out there"
-        // referring to the shared proxy
+        ptr->detach (); // Cause proxy to copy element value
+        return true;
+      }
 
-        ptr->m_index += offset;
-        m_map.insert (typename map_type::value_type (ptr->m_index, ptr));
+    else
+      {
+        // If the pointer isn't shared, don't bother causing a copy of
+        // the container element, since the proxy is about to be
+        // deleted or reused.
+        return false;
       }
   }
 
-  template<class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::adjust_indexes_front (
-      map_iterator low_bound, map_iterator high_bound, difference_type offset)
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::clear_proxies (
+      size_type from_index, size_type to_index)
   {
-    // Adjust indexes in the given range of proxies by the given offset.
-    // The adjustment is done by erasing and re-inserting the entries
-    // in the map.
-    //
-    // Could provide a hint iterator to the map insertion calls, except
-    // in the case that "low_bound" is right at the start of the container
-    // (the hint must be the element *before* the one to be inserted,
-    // and there is no element before the first one). This would mean
-    // additional complexity to deal with the special case somehow.
-
-    while (low_bound != high_bound)
+    while (from_index != to_index)
       {
-        map_iterator target (low_bound);
-
-        ++low_bound;  // Find next node before erasing the current target
-
-        adjust_index (target, offset);
+        clear_proxy (m_proxies[from_index]);
+        ++from_index;
       }
   }
 
-  template <class Container, class Holder>
-  void
-  container_proxy<Container, Holder>
-  ::adjust_indexes_back (
-      map_iterator low_bound, map_iterator high_bound, difference_type offset)
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>
+  ::detach_proxy (size_type index)
   {
-    if (low_bound != high_bound)
-      {
-        --high_bound;  // Adjust now because high_bound is one-past-the-end
+    pointer_impl &ptr (m_proxies[index]);
 
-        while (true)
+    assert (ptr->index() == index);
+
+    if (clear_proxy (ptr))
+      {
+        // To maintain class invariant
+        ptr.reset (new shared_proxy (this, index));
+      }
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::detach_proxies (
+      size_type from_index, size_type to_index)
+  {
+    while (from_index != to_index)
+      {
+        detach_proxy (from_index);
+        ++from_index;
+      }
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>
+  ::detach_and_forget_proxies (size_type from_index, size_type to_index)
+  {
+    difference_type deleting = to_index - from_index;
+    pointer_iterator erase_begin = m_proxies.begin() + from_index;
+    pointer_iterator erase_end = m_proxies.begin() + to_index;
+
+    // Adjust the indexes of any trailing proxies
+    adjust_proxies (erase_end, m_proxies.end(), -deleting);
+
+    // Detach any proxies without updating our pointers to them
+    clear_proxies (from_index, to_index);
+
+    // Remove the pointers
+    m_proxies.erase (erase_begin, erase_end);
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::insert_proxies (
+      size_type from_index, size_type to_index)
+  {
+    size_type count = to_index - from_index;
+
+    m_proxies.insert (
+        m_proxies.begin() + from_index, count, pointer_impl());
+
+    try
+      {
+        write_proxies (from_index, to_index); // Could throw
+      }
+
+    catch (...)
+      {
+        m_proxies.erase (
+            m_proxies.begin() + from_index
+            , m_proxies.begin() + to_index);
+
+        throw;
+      }
+
+    // Adjust any proxies after the inserted elements (nothrow)
+    adjust_proxies (
+        m_proxies.begin() + to_index
+        , m_proxies.end()
+        , static_cast<difference_type> (count));
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::adjust_proxies (
+      pointer_iterator from
+      , pointer_iterator to
+      , difference_type offset)
+  {
+    while (from != to)
+      {
+        (*from)->m_index += offset;
+        ++from;
+      }
+  }
+
+  template<class Container, class Holder, class Generator>
+  void container_proxy<Container, Holder, Generator>::write_proxies (
+      size_type from, size_type to)
+  {
+    // (over)write proxy pointers in the given range. Re-uses existing
+    // shared_proxy objects where possible. Does not call detach_proxy
+    // since it is assumed that the original values could have already
+    // been modified and copying them now would be wrong.
+
+    while (from != to)
+      {
+        pointer_impl &ptr (m_proxies[from]);
+
+        if ((ptr.get() == 0) || (!ptr.unique()))
           {
-            if (high_bound == low_bound)
-              {
-                adjust_index (high_bound, offset);  // Last one to adjust
-                break;
-              }
-
-            else
-              {
-                map_iterator target (high_bound);
-
-                --high_bound;   // Find previous node before doing erase
-
-                adjust_index (target, offset);   // Do erase
-              }
+            // Either no proxy yet allocated here, or there is one
+            // but it is being shared by an external pointer.
+            ptr.reset (new shared_proxy (this, from));
           }
+
+        else
+          {
+            // Re-use the existing object since we have the only pointer to it
+            assert (ptr->owner() == this);
+            ptr->m_index = from;
+          }
+
+        ++from;
       }
+  }
+
+  template<class Container, class Holder, class Generator>
+  bool container_proxy<Container, Holder, Generator>::is_valid () const
+  {
+    bool ok = size() == m_proxies.size(); // Sizes must match
+
+    for (size_type count = 0; ok && (count < size()); ++count)
+      {
+        pointer_impl const &ptr (m_proxies[count]);
+
+        ok = ptr.get() && (ptr->owner() == this) && (ptr->index() == count)
+          && !ptr->m_element_ptr.get();
+      }
+
+    return ok;
   }
 
 } } }
