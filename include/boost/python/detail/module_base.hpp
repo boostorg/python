@@ -26,7 +26,6 @@ class BOOST_PYTHON_DECL module_base
 
  protected:
     void setattr_doc(const char* name, python::object const&, char const* doc);
-    void add_class(type_handle const& class_obj);
 
  private:
     handle<> m_module;

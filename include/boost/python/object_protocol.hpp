@@ -19,6 +19,12 @@ object getattr(Target const& target, Key const& key)
     return getattr(object(target), object(key));
 }
 
+template <class Target, class Key, class Default>
+object getattr(Target const& target, Key const& key, Default const& default_)
+{
+    return getattr(object(target), object(key), object(default_));
+}
+
 
 template <class Key, class Value>
 void setattr(object const& target, Key const& key, Value const& value)

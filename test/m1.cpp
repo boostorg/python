@@ -211,9 +211,7 @@ BOOST_PYTHON_MODULE_INIT(m1)
 
     lvalue_from_pytype<extract_identity<SimpleObject>,&SimpleType>();
     
-    module m1("m1");
-
-    m1
+    module("m1")
       // Insert the metaclass for all extension classes
       .setattr("xclass", boost::python::objects::class_metatype())
     
@@ -239,40 +237,30 @@ BOOST_PYTHON_MODULE_INIT(m1)
       .def("take_b", take_b)
       .def("take_c", take_c)
       .def("take_d", take_d)
+        ;
 
-      .add(
-          class_<A, shared_ptr<A> >("A")
-          .def("name", &A::name)
-          )
-        
+    class_<A, shared_ptr<A> >("A")
+        .def("name", &A::name)
         ;
 
     // sequence points don't ensure that "A" is constructed before "B"
     // or "C" below if we make them part of the same chain
-    m1
-        .add(
-            class_<B,bases<A>, shared_ptr<B> >("B")
-            .def("name", &B::name)
-            )
+    class_<B,bases<A>, shared_ptr<B> >("B")
+        .def("name", &B::name)
+        ;
         
-        .add(
-            class_<C,bases<A>, shared_ptr<C> >("C")
-            .def("name", &C::name)
-            )
+    class_<C,bases<A>, shared_ptr<C> >("C")
+        .def("name", &C::name)
         ;
 
-    m1
-        .add(
-            class_<D,shared_ptr<D>, bases<B,C> >("D")
-            .def("name", &D::name)
-            )
+    class_<D,shared_ptr<D>, bases<B,C> >("D")
+        .def("name", &D::name)
+        ;
 
-        .add(
-            class_<complicated>("complicated",
-                                args<simple const&,int>())
-            .def_init(args<simple const&>())
-            .def("get_n", &complicated::get_n)
-            )
+    class_<complicated>("complicated",
+                        args<simple const&,int>())
+        .def_init(args<simple const&>())
+        .def("get_n", &complicated::get_n)
         ;
 }
 

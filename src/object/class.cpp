@@ -3,12 +3,14 @@
 // copyright notice appears in all copies. This software is provided
 // "as is" without express or implied warranty, and with no claim as
 // to its suitability for any purpose.
+#include <boost/python/scope.hpp>
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/find_instance.hpp>
 #include <boost/python/object/pickle_support.hpp>
 #include <boost/python/detail/map_entry.hpp>
 #include <boost/python/object.hpp>
+#include <boost/python/object_protocol.hpp>
 #include <boost/detail/binary_search.hpp>
 #include <boost/python/self.hpp>
 #include <boost/bind.hpp>
@@ -264,9 +266,17 @@ namespace objects
           PyTuple_SET_ITEM(bases.get(), i - 1, upcast<PyObject>(c.release()));
       }
 
+      object module_name = PyObject_IsInstance(scope().ptr(), upcast<PyObject>(&PyModule_Type))
+          ? scope().attr("__name__")
+          : getattr(scope(), "__module__", object(""))
+          ;
+
+      if (module_name)
+          module_name += '.';
+      
       // Build the (name, bases, dict) tuple for creating the new class
       handle<> args(PyTuple_New(3));
-      PyTuple_SET_ITEM(args.get(), 0, incref(python::object(name).ptr()));
+      PyTuple_SET_ITEM(args.get(), 0, incref((module_name + name).ptr()));
       PyTuple_SET_ITEM(args.get(), 1, bases.release());
       handle<> d(PyDict_New());
       PyTuple_SET_ITEM(args.get(), 2, d.release());
@@ -274,7 +284,12 @@ namespace objects
       // Call the class metatype to create a new class
       PyObject* c = PyObject_CallObject(upcast<PyObject>(class_metatype().get()), args.get());
       assert(PyType_IsSubtype(c->ob_type, &PyType_Type));
-      return object(python::detail::new_reference(c));
+      object result = object(python::detail::new_reference(c));
+      
+      if (scope().ptr() != Py_None)
+          scope().attr(name) = result;
+
+      return result;
     }
   }
   

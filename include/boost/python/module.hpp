@@ -38,7 +38,7 @@ class module : public detail::module_base
     template <class T1, class T2 , class T3, class T4>
     module& add(class_<T1,T2,T3,T4> const& c)
     {
-        this->add_class(type_handle(borrowed((PyTypeObject*)c.ptr())));
+        // Soon to disappear...
         return *this;
     }
     

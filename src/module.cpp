@@ -42,23 +42,6 @@ void module_base::add(type_handle const& x)
     this->setattr_doc(x->tp_name, python::object(x), 0);
 }
 
-void module_base::add_class(type_handle const& class_obj)
-{
-    this->add(class_obj);
-    
-    handle<> module_name(
-        PyObject_GetAttrString(
-            m_module.get(), const_cast<char*>("__name__"))
-        );
-    
-    int status = PyObject_SetAttrString(
-        python::upcast<PyObject>(class_obj.get())
-        , const_cast<char*>("__module__"), module_name.get());
-    
-    if (status == -1)
-        throw_error_already_set();
-}
-
 PyMethodDef module_base::initial_methods[] = { { 0, 0, 0, 0 } };
 
 namespace

@@ -15,6 +15,17 @@ BOOST_PYTHON_DECL object getattr(object const& target, object const& key)
     return object(detail::new_reference(PyObject_GetAttr(target.ptr(), key.ptr())));
 }
     
+BOOST_PYTHON_DECL object getattr(object const& target, object const& key, object const& default_)
+{
+    PyObject* result = PyObject_GetAttr(target.ptr(), key.ptr());
+    if (result == NULL && PyErr_ExceptionMatches(PyExc_AttributeError))
+    {
+        PyErr_Clear();
+        return default_;
+    }
+    return object(detail::new_reference(result));
+}
+        
 BOOST_PYTHON_DECL void setattr(object const& target, object const& key, object const& value)
 {
     if (PyObject_SetAttr(target.ptr(), key.ptr(), value.ptr()) == -1)
@@ -35,6 +46,17 @@ BOOST_PYTHON_DECL object getattr(object const& target, char const* key)
         ));
 }
     
+BOOST_PYTHON_DECL object getattr(object const& target, char const* key, object const& default_)
+{
+    PyObject* result = PyObject_GetAttrString(target.ptr(), const_cast<char*>(key));
+    if (result == NULL && PyErr_ExceptionMatches(PyExc_AttributeError))
+    {
+        PyErr_Clear();
+        return default_;
+    }
+    return object(detail::new_reference(result));
+    
+}
 BOOST_PYTHON_DECL void setattr(object const& target, char const* key, object const& value)
 {
     if (PyObject_SetAttrString(
