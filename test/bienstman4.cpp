@@ -9,9 +9,9 @@
 #include <boost/python/implicit.hpp>
 #include <boost/mpl/type_list.hpp>
 
-struct T1 {};
+struct Type1 {};
 
-struct Term {Term(T1 const&) {} };
+struct Term {Term(Type1 const&) {} };
 
 struct Expression {void add(Term const&) {} };
 
@@ -20,18 +20,18 @@ BOOST_PYTHON_MODULE_INIT(bienstman4_ext)
   using namespace boost::python;
   using boost::mpl::type_list;
 
-  implicitly_convertible<T1,Term>();
+  implicitly_convertible<Type1,Term>();
 
   module("bienstman4_ext")
     .add(class_<Expression>("Expression")
          .def("add", &Expression::add))
-    .add(class_<T1>("T1"))
+    .add(class_<Type1>("T1"))
     .add(class_<Term>("Term")
-         .def_init(type_list<T1&>()))
+         .def_init(type_list<Type1&>()))
     ;
   
 
-  T1 t1;
+  Type1 t1;
   Expression e;
   e.add(t1);
 }
