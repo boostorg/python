@@ -108,9 +108,9 @@ struct extract
 {
  private:
     typedef typename converter::select_extract<T>::type base;
-    typedef bool (extract<T>::*bool_type)() const;
  public:
     typedef typename base::result_type result_type;
+    
     operator result_type() const
     {
         return (*this)();
