@@ -14,6 +14,7 @@
 // 03 Mar 01  added: converters for [plain] char (Ralf W. Grosse-Kunstleve)
 
 #include <boost/python/conversions.hpp>
+#include <boost/python/detail/void_adaptor.hpp>
 #include <typeinfo>
 #include <exception>
 #ifndef BOOST_NO_LIMITS
@@ -23,15 +24,11 @@
 namespace boost { namespace python {
 
 // IMPORTANT: this function may only be called from within a catch block!
-void handle_exception()
+PyObject* handle_exception_impl(object_functor_base const& f)
 {
-    try {
-        // re-toss the current exception so we can find out what type it is.
-        // NOTE: a heinous bug in MSVC6 causes exception objects re-thrown in
-        // this way to be double-destroyed. Thus, you must only use objects that
-        // can tolerate double-destruction with that compiler. Metrowerks
-        // Codewarrior doesn't suffer from this problem.
-        throw;
+    try
+    {
+        return f();
     }
     catch(const boost::python::error_already_set&)
     {
@@ -49,6 +46,13 @@ void handle_exception()
     {
         PyErr_SetString(PyExc_RuntimeError, "unidentifiable C++ exception");
     }
+    return 0;
+}
+
+void handle_exception(void (*f)())
+{
+    handle_exception(
+        boost::python::detail::make_void_adaptor(f));
 }
 
 namespace detail {
@@ -116,7 +120,7 @@ T integer_from_python(PyObject* p, boost::python::type<T>)
         PyErr_SetString(PyExc_ValueError, buffer);
         throw boost::python::argument_error();
     }
-#if defined(__MWERKS__) && __MWERKS__ <= 0x2400
+#if defined(__MWERKS__) && __MWERKS__ <= 0x2406
     return 0; // Not smart enough to know that the catch clause always rethrows
 #endif
 }
