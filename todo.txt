@@ -4,21 +4,20 @@ use Python generic numeric coercion in from_python() for C++ numeric types
 Document error-handling
 Consider renaming PyPtr to Reference.
 Report Cygwin linker memory issues
-handle more arguments
-MI from both ExtensionClasses and Python classes, or at least don't crash(!)
 Remove one level of indirection on type objects (no vtbl?).
-Make multiple inheritance from real Python classes work
-Handle polymorphism (passing a Wrapped<Derived> as a Base*).
 Specializations of Caller<> for commmon combinations of argument types (?)
-special member functions for numeric types
 pickling support
-testing with Python 2.0
 Make abstract classes non-instantiable (?)
-Much more testing, especially of things in objects.h
 Support for Python LONG types in Objects.h
-Concept checking for to_python<T>() template function
-Support for __del__()
+Concept checking for to_python<T>() template function (Ullrich did this)
 Reference-counting for UniquePodSet?
+Throw TypeError after asserting when objects from objects.cpp detect a type mismatch.
+Collect common code into a nice shared library.
+
+Testing
+    Python 2.0
+    object revival in __del__
+    More thorough tests of objects.h/cpp classes
 
 Documentation:
     building
@@ -30,6 +29,28 @@ Documentation:
     differences between Python classes and ExtensionClasses
         additional capabilities of ExtensionClasses
         slice adjustment
+
+        Why special attributes other than __doc__ and __name__ are immutable.
+
+            An example of the problems with the built-in Python classes.
+
+            >>> class A:
+            ...     def __getattr__(self, name):
+            ...             return 'A.__getattr__'
+            ...
+            >>> class B(A): pass
+            ...
+            >>> class C(B): pass
+            ...
+            >>> C().x
+            'A.__getattr__'
+            >>> B.__bases__ = ()
+            >>> C().x
+            'A.__getattr__'
+
+    Multiple inheritance
+
+    Correct Zope slander re: MI.
 
     exception handling
 
