@@ -279,4 +279,3 @@ struct Init5 : Init
 }
 
 #endif // INIT_FUNCTION_DWA052000_H_
-
