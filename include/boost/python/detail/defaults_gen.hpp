@@ -211,7 +211,7 @@ namespace detail
     {                                                                           \
         typedef typename ::boost::python::detail::                              \
             error::more_keywords_than_function_arguments<                       \
-                Keywords::size,(n_args+n_dflts)>::too_many_keywords assertion;  \
+                Keywords::size,n_args>::too_many_keywords assertion;            \
     }                                                                           \
     template <class Keywords>                                                   \
     fstubs_name(Keywords const& keywords, char const* doc = 0)                  \
@@ -220,7 +220,7 @@ namespace detail
     {                                                                           \
         typedef typename ::boost::python::detail::                              \
             error::more_keywords_than_function_arguments<                       \
-                Keywords::size,(n_args+n_dflts)>::too_many_keywords assertion;  \
+                Keywords::size,n_args>::too_many_keywords assertion;            \
     }
 
 # if defined(BOOST_NO_VOID_RETURNS)
