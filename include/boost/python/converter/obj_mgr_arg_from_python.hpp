@@ -11,6 +11,7 @@
 # include <boost/python/detail/destroy.hpp>
 # include <boost/python/detail/construct.hpp>
 # include <boost/python/converter/object_manager.hpp>
+# include <boost/python/detail/raw_pyobject.hpp>
 
 //
 // arg_from_python converters for Python type wrappers, to be used as
