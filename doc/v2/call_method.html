@@ -121,7 +121,7 @@ class Base_callback : public Base
 using namespace boost::python;
 BOOST_PYTHON_MODULE_INIT(my_module)
 {
-    def("is_base", is_base)
+    def("is_base", is_base);
 
     class_&lt;Base,Base_callback, noncopyable&gt;("Base")
         .def("class_name", &amp;Base_callback::Base_name)

@@ -123,8 +123,8 @@ X make_x(int n) { return X(n); }
 
 BOOST_PYTHON_MODULE_INIT(implicit_ext)
 {
-    def("x_value", x_value)
-    def("make_x", make_x)
+    def("x_value", x_value);
+    def("make_x", make_x);
 
     class_&lt;X&gt;("X", 
         init&lt;int&gt;())
