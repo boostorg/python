@@ -49,7 +49,7 @@ bar(int a)
     return format % make_tuple(a, 'D', "default", 0.0);
 }
 
-BOOST_PYTHON_FUNCTION_GENERATOR(bar_stubs, bar, 1, 4)
+BOOST_PYTHON_FUNCTION_OVERLOADS(bar_stubs, bar, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -62,7 +62,7 @@ foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
     return format % make_tuple(a, b, c, d);
 }
 
-BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
+BOOST_PYTHON_FUNCTION_OVERLOADS(foo_stubs, foo, 1, 4)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -117,10 +117,10 @@ struct X {
     object state;
 };
 
-BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar_stubs, bar, 1, 4)
-BOOST_PYTHON_MEM_FUN_GENERATOR(X_bar2_stubs, bar2, 0, 4) // tests zero arg member function
-BOOST_PYTHON_MEM_FUN_GENERATOR(X_foo_2_stubs, foo, 1, 2)
-BOOST_PYTHON_MEM_FUN_GENERATOR(X_foo_3_stubs, foo, 2, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_bar_stubs, bar, 1, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_bar2_stubs, bar2, 0, 4) // tests zero arg member function
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_2_stubs, foo, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(X_foo_3_stubs, foo, 2, 3)
 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -224,8 +224,8 @@ struct func_stubs_base {};
 //
 //      There are two versions:
 //
-//          1. BOOST_PYTHON_FUNCTION_GENERATOR for free functions
-//          2. BOOST_PYTHON_MEM_FUN_GENERATOR for member functions.
+//          1. BOOST_PYTHON_FUNCTION_OVERLOADS for free functions
+//          2. BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS for member functions.
 //
 //      For instance, given a function:
 //
@@ -237,7 +237,7 @@ struct func_stubs_base {};
 //
 //      The macro invocation:
 //
-//          BOOST_PYTHON_FUNCTION_GENERATOR(foo_stubs, foo, 1, 4)
+//          BOOST_PYTHON_FUNCTION_OVERLOADS(foo_stubs, foo, 1, 4)
 //
 //      Generates this code:
 //
@@ -284,7 +284,7 @@ struct func_stubs_base {};
 //      for the return type (void) and the lack of the return keyword.
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define BOOST_PYTHON_FUNCTION_GENERATOR(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
+#define BOOST_PYTHON_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
     BPL_IMPL_GEN_FUNCTION_STUB                                                  \
     (                                                                           \
         FNAME,                                                                  \
@@ -293,7 +293,7 @@ struct func_stubs_base {};
         BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                        \
     )                                                                           \
 
-#define BOOST_PYTHON_MEM_FUN_GENERATOR(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
+#define BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(GENERATOR_NAME, FNAME, MIN_ARGS, MAX_ARGS)\
     BPL_IMPL_GEN_MEM_FUNCTION_STUB                                              \
     (                                                                           \
         FNAME,                                                                  \
@@ -301,6 +301,10 @@ struct func_stubs_base {};
         MAX_ARGS,                                                               \
         BOOST_PP_SUB(MAX_ARGS, MIN_ARGS)                                        \
     )                                                                           \
+
+// deprecated macro names (to be removed)
+#define BOOST_PYTHON_FUNCTION_GENERATOR BOOST_PYTHON_FUNCTION_OVERLOADS
+#define BOOST_PYTHON_MEM_FUN_GENERATOR BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
 
 ///////////////////////////////////////////////////////////////////////////////
 #endif // DEFAULTS_GEN_JDG20020807_HPP
