@@ -6,7 +6,7 @@ from settings import *
 from CodeUnit import CodeUnit
 from EnumExporter import EnumExporter
 from makeid import makeid
-
+from copy import deepcopy
 
 #==============================================================================
 # ClassExporter
@@ -63,22 +63,25 @@ class ClassExporter(Exporter):
             [x for x in self.class_.members if x.visibility == Scope.public]
         
         
+    def ClassBases(self):
+        bases = []
+        def GetBases(class_):
+            this_bases = [self.GetDeclaration(x.name) for x in class_.bases]
+            bases.extend(this_bases)
+            for base in this_bases:
+                GetBases(base)
+
+        GetBases(self.class_)
+        return bases
+
+    
     def Order(self):
         '''Return the TOTAL number of bases that this class has, including the
         bases' bases.  Do this because base classes must be instantialized
         before the derived classes in the module definition.  
         '''
+        return len(self.ClassBases())
         
-        def BasesCount(classname):
-            decl = self.GetDeclaration(classname)
-            bases = [x.name for x in decl.bases]
-            total = 0
-            for base in bases:
-                total += BasesCount(base)
-            return len(bases) + total
-
-        return BasesCount(self.class_.FullName())
-                
     
     def Export(self, codeunit, exported_names):
         self.ExportBasics()
@@ -348,7 +351,7 @@ class ClassExporter(Exporter):
                 break
 
         if has_virtual_methods:
-            generator = _VirtualWrapperGenerator(self.class_, self.info)
+            generator = _VirtualWrapperGenerator(self.class_, self.ClassBases(), self.info)
             self.Add('template', generator.FullName())
             for definition in generator.GenerateDefinitions():
                 self.Add('inside', definition)
@@ -570,10 +573,13 @@ def _ParamsInfo(m, count=None):
 class _VirtualWrapperGenerator(object):
     'Generates code to export the virtual methods of the given class'
 
-    def __init__(self, class_, info):
+    def __init__(self, class_, bases, info):
         self.class_ = class_
+        self.bases = deepcopy(bases)
         self.info = info
         self.wrapper_name = makeid(class_.FullName()) + '_Wrapper'
+        self.virtual_methods = None
+        self.GenerateVirtualMethods()
 
 
     def DefaultImplementationNames(self, method):
@@ -642,7 +648,7 @@ class _VirtualWrapperGenerator(object):
         class_name = self.class_.FullName()
         wrapper_name = pyste + self.wrapper_name
         result = method.result.FullName()
-        is_method_unique = self.class_.IsUnique(method.name)
+        is_method_unique = self.IsMethodUnique(method.name)
         constantness = ''
         if method.const:
             constantness = ' const'
@@ -658,7 +664,7 @@ class _VirtualWrapperGenerator(object):
                 param_list = [x.FullName() for x in method.parameters[:argNum]]
                 params = ', '.join(param_list)             
                 signature = '%s (%s::*)(%s)%s' % (result, wrapper_name, params, constantness)
-                default_pointer = '(%s)%s::%s' % (signature, wrapper_name, impl_name)
+                default_pointer = '(%s)&%s::%s' % (signature, wrapper_name, impl_name)
                 default_pointers.append(default_pointer)
             
         # get the pointer of the method
@@ -680,13 +686,30 @@ class _VirtualWrapperGenerator(object):
         return namespaces.pyste + self.wrapper_name
 
 
-    def VirtualMethods(self):
+    def GenerateVirtualMethods(self):
+        '''To correctly export all virtual methods, we must also make wrappers
+        for the virtual methods of the bases of this class, as if the methods
+        were from this class itself.
+        This method creates the instance variable self.virtual_methods.
+        '''        
         def IsVirtual(m):
             return type(m) == Method and m.virtual        
-        return [m for m in self.class_.members if IsVirtual(m)]
-        
+                                      
+        all_members = self.class_.members[:]
+        for base in self.bases:
+            for base_member in base.members:
+                base_member.class_ = self.class_.FullName()
+                all_members.append(base_member)
+        self.virtual_methods = [m for m in all_members if IsVirtual(m)]        
             
     
+    def IsMethodUnique(self, method):
+        count = {}
+        for m in self.virtual_methods:
+            count[m.name] = count.get(m.name, 0) + 1
+        return count[m.name] == 1
+        
+        
     def Constructors(self):
         def IsValid(m):
             return isinstance(m, Constructor) and m.visibility == Scope.public
@@ -695,7 +718,7 @@ class _VirtualWrapperGenerator(object):
         
     def GenerateDefinitions(self):
         defs = []
-        for method in self.VirtualMethods():
+        for method in self.virtual_methods:
             exclude = self.info[method.name].exclude
             # generate definitions only for public methods and non-abstract methods
             if method.visibility == Scope.public and not method.abstract and not exclude:
@@ -728,7 +751,7 @@ class _VirtualWrapperGenerator(object):
             code += cons_code
         # generate the body
         body = []
-        for method in self.VirtualMethods():
+        for method in self.virtual_methods:
             if not self.info[method.name].exclude:
                 body.append(self.Declaration(method, indent))            
         body = '\n'.join(body) 
