@@ -1,5 +1,5 @@
 CXXINCLUDES = @CXXINCLUDES@
-CXXFLAGS = @CXXFLAGS@ 
+SCXXFLAGS = @SCXXFLAGS@ 
 CXX = @CXX@
 CXX_SHARED_LINKER = @CXX_SHARED_LINKER@
 
@@ -11,11 +11,11 @@ TARGET_LIBFILENAME = lib$(TARGET_LIBNAME).a
 MODULE_EXTENSION = @shared_library_extension@
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(CXXINCLUDES) -c $*.cpp
+	$(CXX) $(SCXXFLAGS) $(CXXINCLUDES) -c $*.cpp
 
 %.d: %.cpp
 	@echo creating $@
-	@set -e; $(CXX) -M $(CXXFLAGS) $(CXXINCLUDES) -c $*.cpp \
+	@set -e; $(CXX) -M $(SCXXFLAGS) $(CXXINCLUDES) -c $*.cpp \
             | sed 's/\($*\)\.o[ :]*/\1.o $@ : /g' > $@; \
                 [ -s $@ ] || rm -f $@
 

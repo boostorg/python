@@ -15,18 +15,29 @@ ac_default_prefix=`pwd | sed 's?/libs/python$??'`
 ac_help="$ac_help
   --with-extra-includes=\"dir1 dir2 ...\" : look in these directories for include files"
 ac_help="$ac_help
-  --enable-shared-linker:  which flag tells the compiler to create a shared library ? 
-                           [-shared] "
+  --with-shared-library-extension:  file extension for shared libraries 
+                                    (including the dot) [UNIX: .so | Win32: .dll] "
 ac_help="$ac_help
-  --enable-position-independent-code:  which flag tells the compiler to create 
-                                       position independent code ? [-fPIC] "
+  --with-shared-cxx-linker:  command for creating a shared library from C++ objects. 
+                             [  g++:         $(CXX) -shared
+                                Comeau C++:  como-dyn-link
+                                Compaq C++:  $(CXX) -shared -expect_unresolved '*'
+                                SUN CC:      $(CXX) -G
+                                IRIX CC:     $(CXX) -shared
+                                HP-UX aCC:   ld -b   ] "
 ac_help="$ac_help
-  --enable-shared-library-extension:  file extension for shared libraries 
-                                      (including the dot) [UNIX: .so | Win32: .dll] "
+  --with-position-independent-code-flag:  flag that tells the compiler to generate
+                             position independent code 
+                             [  gcc/g++:     -fPIC
+                                Comeau C++:  --pic
+                                Compaq C++:  <empty>
+                                SUN CC:      $(CXX) -pic
+                                IRIX CC:     <empty>
+                                HP-UX aCC:   +z   ] "
 ac_help="$ac_help
   --with-python=dir : Python includes (required!). 
-                   if dir=yes: python package files will be searched for in 
-                      some standard directories.
+                   if dir=yes (default): python package files will be searched for 
+                      in some standard directories.
                    if dir is a directory: python package files will be searched for   
                       using 'find' below dir.
                    alternatively, you can specify:"
@@ -592,7 +603,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:596: checking host system type" >&5
+echo "configure:607: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -613,7 +624,7 @@ host_os=`echo $host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$host" 1>&6
 
 echo $ac_n "checking target system type""... $ac_c" 1>&6
-echo "configure:617: checking target system type" >&5
+echo "configure:628: checking target system type" >&5
 
 target_alias=$target
 case "$target_alias" in
@@ -631,7 +642,7 @@ target_os=`echo $target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 echo "$ac_t""$target" 1>&6
 
 echo $ac_n "checking build system type""... $ac_c" 1>&6
-echo "configure:635: checking build system type" >&5
+echo "configure:646: checking build system type" >&5
 
 build_alias=$build
 case "$build_alias" in
@@ -655,12 +666,12 @@ test "$host_alias" != "$target_alias" &&
 
 
 echo $ac_n "checking for Cygwin environment""... $ac_c" 1>&6
-echo "configure:659: checking for Cygwin environment" >&5
+echo "configure:670: checking for Cygwin environment" >&5
 if eval "test \"`echo '$''{'ac_cv_cygwin'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 664 "configure"
+#line 675 "configure"
 #include "confdefs.h"
 
 int main() {
@@ -671,7 +682,7 @@ int main() {
 return __CYGWIN__;
 ; return 0; }
 EOF
-if { (eval echo configure:675: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:686: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_cygwin=yes
 else
@@ -688,19 +699,19 @@ echo "$ac_t""$ac_cv_cygwin" 1>&6
 CYGWIN=
 test "$ac_cv_cygwin" = yes && CYGWIN=yes
 echo $ac_n "checking for mingw32 environment""... $ac_c" 1>&6
-echo "configure:692: checking for mingw32 environment" >&5
+echo "configure:703: checking for mingw32 environment" >&5
 if eval "test \"`echo '$''{'ac_cv_mingw32'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 697 "configure"
+#line 708 "configure"
 #include "confdefs.h"
 
 int main() {
 return __MINGW32__;
 ; return 0; }
 EOF
-if { (eval echo configure:704: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:715: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_mingw32=yes
 else
@@ -724,7 +735,7 @@ do
 # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:728: checking for $ac_word" >&5
+echo "configure:739: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CXX'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -756,7 +767,7 @@ test -n "$CXX" || CXX="gcc"
 
 
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:760: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
+echo "configure:771: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) works" >&5
 
 ac_ext=C
 # CXXFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -767,12 +778,12 @@ cross_compiling=$ac_cv_prog_cxx_cross
 
 cat > conftest.$ac_ext << EOF
 
-#line 771 "configure"
+#line 782 "configure"
 #include "confdefs.h"
 
 int main(){return(0);}
 EOF
-if { (eval echo configure:776: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:787: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   ac_cv_prog_cxx_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -798,12 +809,12 @@ if test $ac_cv_prog_cxx_works = no; then
   { echo "configure: error: installation or configuration problem: C++ compiler cannot create executables." 1>&2; exit 1; }
 fi
 echo $ac_n "checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:802: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:813: checking whether the C++ compiler ($CXX $CXXFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cxx_cross" 1>&6
 cross_compiling=$ac_cv_prog_cxx_cross
 
 echo $ac_n "checking whether we are using GNU C++""... $ac_c" 1>&6
-echo "configure:807: checking whether we are using GNU C++" >&5
+echo "configure:818: checking whether we are using GNU C++" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gxx'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -812,7 +823,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:816: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CXX-g++} -E conftest.C'; { (eval echo configure:827: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gxx=yes
 else
   ac_cv_prog_gxx=no
@@ -831,7 +842,7 @@ ac_test_CXXFLAGS="${CXXFLAGS+set}"
 ac_save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS=
 echo $ac_n "checking whether ${CXX-g++} accepts -g""... $ac_c" 1>&6
-echo "configure:835: checking whether ${CXX-g++} accepts -g" >&5
+echo "configure:846: checking whether ${CXX-g++} accepts -g" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_cxx_g'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -863,18 +874,8 @@ else
 fi
 
 
-#########################################################
 
 
-
-#########################################################
-
-
-          
-#########################################################
-
-
-          
 #########################################################
 
 
@@ -903,60 +904,94 @@ fi
     done
 
 
-  # Check whether --enable-shared-linker or --disable-shared-linker was given.
-if test "${enable_shared_linker+set}" = set; then
-  enableval="$enable_shared_linker"
-  :
-else
-  enable_shared_linker="-shared"
-fi
-
-  echo $ac_n "checking for how to build shared libraries ""... $ac_c" 1>&6
-echo "configure:916: checking for how to build shared libraries " >&5
-  if test ! "$enable_shared_linker" = "no"; then
-      CC_SHARED_LINKER="$(CC) $enable_shared_linker"
-      CXX_SHARED_LINKER="$(CXX) $enable_shared_linker"
-      
-      
-      echo "$ac_t""$(CC) $enable_shared_linker" 1>&6
-  else
-      echo "$ac_t"""disabled"" 1>&6
-  fi
-
-
-  # Check whether --enable-position-independent-code or --disable-position-independent-code was given.
-if test "${enable_position_independent_code+set}" = set; then
-  enableval="$enable_position_independent_code"
-  :
-else
-  enable_position_independent_code="-fPIC"
-fi
-
-  echo $ac_n "checking for how to create position independent code ""... $ac_c" 1>&6
-echo "configure:937: checking for how to create position independent code " >&5
-  if test ! "$enable_position_independent_code" = "no"; then
-      CCFLAGS="$CCFLAGS $enable_position_independent_code"
-      CXXFLAGS="$CXXFLAGS $enable_position_independent_code"
-      echo "$ac_t""$enable_position_independent_code" 1>&6
-  else
-      echo "$ac_t"""disabled"" 1>&6
-  fi
-
-
     
     
+    
+    
+    # try to guess the right configurations
     if test "$CYGWIN" = yes || test "$MINGW32" = yes; then
       shared_library_extension=".dll"
     else
       shared_library_extension=".so"
     fi
-    # Check whether --enable-shared-library-extension or --disable-shared-library-extension was given.
-if test "${enable_shared_library_extension+set}" = set; then
-  enableval="$enable_shared_library_extension"
+    
+    cxx_tmp="dummy $CXX dummy"
+    if test "$GXX" = "yes"; then                       # g++
+        shared_cxx_linker="$(CXX) -shared"
+        position_independent_code_flag="-fPIC"
+    elif test "$cxx_tmp2" = "como"; then             # Comeau C++
+        shared_cxx_linker="como-dyn-link"
+        position_independent_code_flag="--pic"
+    elif test "$cxx_tmp2" = "cxx"; then              # Compaq C++
+        case "$target" in
+          *dec*)     shared_cxx_linker="$(CXX) -shared -expect_unresolved '*'"
+                     position_independent_code_flag="";;
+        esac
+    elif test "$cxx_tmp2" = "CC"; then               # native compilers
+        case "$target" in
+          *solaris*) shared_cxx_linker="$(CXX) -G"
+                     position_independent_code_flag="-pic";;
+          *irix*)    shared_cxx_linker="$(CXX) -shared"
+                     position_independent_code_flag="";;
+          *hpux*)    shared_cxx_linker="ld -b"
+                     position_independent_code_flag="+z";;
+        esac
+    else
+        shared_c_linker=""
+        shared_cxx_linker=""
+        position_independent_code_flag=""
+    fi
+
+    enable_shared=yes
+    
+    if test "$enable_shared" != "no" ; then
+        echo $ac_n "checking for shared library extension ""... $ac_c" 1>&6
+echo "configure:950: checking for shared library extension " >&5
+        # Check whether --with-shared-library-extension or --without-shared-library-extension was given.
+if test "${with_shared_library_extension+set}" = set; then
+  withval="$with_shared_library_extension"
   :
 fi
 
+        if test "${with_shared_library_extension:+X}" != ""; then
+            shared_library_extension=$with_shared_library_extension
+        fi
+        echo "$ac_t""$shared_library_extension" 1>&6
+        
     
+    
+        echo $ac_n "checking for shared linker for C++ objects ""... $ac_c" 1>&6
+echo "configure:965: checking for shared linker for C++ objects " >&5
+        # Check whether --with-shared-cxx-linker or --without-shared-cxx-linker was given.
+if test "${with_shared_cxx_linker+set}" = set; then
+  withval="$with_shared_cxx_linker"
+  :
+fi
+
+        if test "${with_shared_cxx_linker:+X}" != ""; then
+            shared_cxx_linker=$with_shared_cxx_linker
+        fi
+        echo "$ac_t""$shared_cxx_linker" 1>&6
+        CXX_SHARED_LINKER="$shared_cxx_linker"
+        
+
+        echo $ac_n "checking for flag to create position independent code ""... $ac_c" 1>&6
+echo "configure:980: checking for flag to create position independent code " >&5
+        # Check whether --with-position-independent-code-flag or --without-position-independent-code-flag was given.
+if test "${with_position_independent_code_flag+set}" = set; then
+  withval="$with_position_independent_code_flag"
+  :
+fi
+
+        if test "${with_position_independent_code_flag:+X}" != ""; then
+            position_independent_code_flag=$with_position_independent_code_flag
+        fi
+        echo "$ac_t""$position_independent_code_flag" 1>&6
+        SCCFLAGS="$CCFLAGS $position_independent_code_flag"
+        SCXXFLAGS="$CXXFLAGS $position_independent_code_flag"
+        
+        
+    fi
 
 
 #########################################################
@@ -964,7 +999,7 @@ fi
 # Extract the first word of "python", so it can be a program name with args.
 set dummy python; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:968: checking for $ac_word" >&5
+echo "configure:1003: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_python_prog'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -999,6 +1034,7 @@ if test "${with_python+set}" = set; then
   :
 fi
 
+                       
     
     # Check whether --with-pythoninc or --without-pythoninc was given.
 if test "${with_pythoninc+set}" = set; then
@@ -1011,13 +1047,17 @@ fi
     pythoninclude="not found"
     
     if test ${with_python:-""} = "" -a ${with_pythonlib:-""} = "" -a ${with_pythoninc:-""} = ""; then
-        with_python="no"
+        if test "yes" = ""; then
+            with_python="no"
+        else
+            with_python=yes
+        fi
     fi
     
     if test ${with_python:-""} != "no"; then
         if test ! "" = "" ; then   # check for library
             echo $ac_n "checking for lib"" ""... $ac_c" 1>&6
-echo "configure:1021: checking for lib"" " >&5
+echo "configure:1061: checking for lib"" " >&5
             dirs=""
             if test -f ${with_pythonlib:-""}/lib"".so; then
                 dirs=${with_pythonlib:-""}/lib"".so
@@ -1090,7 +1130,7 @@ echo "configure:1021: checking for lib"" " >&5
         
         if test ! Python.h = "" ; then   # check for header
             echo $ac_n "checking for Python.h ""... $ac_c" 1>&6
-echo "configure:1094: checking for Python.h " >&5
+echo "configure:1134: checking for Python.h " >&5
             if test -f ${with_pythoninc:-""}/Python.h; then
                 dirs=$with_pythoninc/Python.h
             elif test -d ${with_python:-""}; then
@@ -1324,9 +1364,10 @@ s%@build_cpu@%$build_cpu%g
 s%@build_vendor@%$build_vendor%g
 s%@build_os@%$build_os%g
 s%@CXX@%$CXX%g
-s%@CC_SHARED_LINKER@%$CC_SHARED_LINKER%g
-s%@CXX_SHARED_LINKER@%$CXX_SHARED_LINKER%g
 s%@shared_library_extension@%$shared_library_extension%g
+s%@CXX_SHARED_LINKER@%$CXX_SHARED_LINKER%g
+s%@SCCFLAGS@%$SCCFLAGS%g
+s%@SCXXFLAGS@%$SCXXFLAGS%g
 s%@python_prog@%$python_prog%g
 s%@CXXINCLUDES@%$CXXINCLUDES%g
 

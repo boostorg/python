@@ -45,8 +45,8 @@ where
 >
 > ./configure \
     --with-pythoninc=/usr/local/include/python1.5 \ 
-    --enable-shared-linker=-G \
-    --enable-position-independent-code=-pic
+    --with-shared-cxx-linker="$CXX -G" \
+    --with-position-independent-code-flag=-pic
 >
 > make install
 </pre></blockquote>
@@ -54,9 +54,9 @@ where
 where 
 <blockquote><pre>
 --with-pythoninc: as above
---enable-shared-linker: flag that tells the compiler to build a
-        shared library (needed for Python modules)
---enable-position-independent-code: flag that tells the compiler 
+--with-shared-cxx-linker: command to build a shared library from C++
+        object files (needed for Python modules)
+--with-position-independent-code-flag: flag that tells the compiler 
         to create position independent code (needed for shared linking)
 </pre></blockquote>
 
@@ -68,7 +68,6 @@ after invoking
 > ./configure --help
 </pre></blockquote>
 
-    Reasonable defaults for each option are givem in brackets. 
     Of particular interest are the following options:
 
 <blockquote><pre>
@@ -76,6 +75,11 @@ after invoking
 --enable-shared-library-extension: the file extension for shared libraries  
 </pre></blockquote>
 
+        For most options, configure provides reasonable defaults, given in 
+        brackets. In particular, it is able to guess the right settings for 
+        shared library creation and linking on some common systems. Likewise, 
+        it tries to find Python in some standard directories if you don't 
+        specify a path explicitly.
       <p>   
          If this build process doesn't work for you, you must compile the 
          source files manually. The BPL source files are:

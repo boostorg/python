@@ -22,16 +22,16 @@ To build using another compiler:
 >
 > ./configure \
     --with-pythoninc=/usr/local/include/python1.5 \ 
-    --enable-shared-linker=-G \
-    --enable-position-independent-code=-pic
+    --with-shared-cxx-linker="$CXX -G" \
+    --with-position-independent-code-flag=-pic
 >
 > make install
     
 where 
     --with-pythoninc: as above
-    --enable-shared-linker: flag that tells the compiler to build a
-            shared library (needed for Python modules)
-    --enable-position-independent-code: flag that tells the compiler 
+    --with-shared-cxx-linker: command to build a shared library from C++
+            object files (needed for Python modules)
+    --with-position-independent-code-flag: flag that tells the compiler 
             to create position independent code (needed for shared linking)
 
         
@@ -43,6 +43,9 @@ more options:
 of particular interest are:
 
   --libdir: the install directory for 'libboostpython.a'
-  --enable-shared-library-extension: the file extension for shared libraries  
+  --with-shared-library-extension: the file extension for shared libraries  
 
-for most options, configure provides reaonable defaults, given in brackets
+For most options, configure provides reasonable defaults, given in brackets.
+In particular, it is able to guess the right settings for shared library 
+creation and linking on some common systems. Likewise, it tries to find Python
+in some standard directories if you don't specify a path explicitly.
