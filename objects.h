@@ -42,35 +42,35 @@ class Tuple : public Object
     Tuple(const std::pair<First,Second>& x)
         : Object(Ptr(PyTuple_New(2)))
     {
-        set_item(0, Ptr(to_python(x.first)));
-        set_item(1, Ptr(to_python(x.second)));
+        set_item(0, x.first);
+        set_item(1, x.second);
     }
     
     template <class First, class Second>
     Tuple(const First& first, const Second& second)
         : Object(Ptr(PyTuple_New(2)))
     {
-        set_item(0, Ptr(to_python(first)));
-        set_item(1, Ptr(to_python(second)));
+        set_item(0, first);
+        set_item(1, second);
     }
     
     template <class First, class Second, class Third>
     Tuple(const First& first, const Second& second, const Third& third)
         : Object(Ptr(PyTuple_New(3)))
     {
-        set_item(0, Ptr(to_python(first)));
-        set_item(1, Ptr(to_python(second)));
-        set_item(2, Ptr(to_python(third)));
+        set_item(0, first);
+        set_item(1, second);
+        set_item(2, third);
     }
     
     template <class First, class Second, class Third, class Fourth>
     Tuple(const First& first, const Second& second, const Third& third, const Fourth& fourth)
         : Object(Ptr(PyTuple_New(4)))
     {
-        set_item(0, Ptr(to_python(first)));
-        set_item(1, Ptr(to_python(second)));
-        set_item(2, Ptr(to_python(third)));
-        set_item(3, Ptr(to_python(fourth)));
+        set_item(0, first);
+        set_item(1, second);
+        set_item(2, third);
+        set_item(3, fourth);
     }
     
     static PyTypeObject* type_object();
@@ -78,7 +78,14 @@ class Tuple : public Object
     std::size_t size() const;
     Ptr operator[](std::size_t pos) const;
 
+    template <class T>
+    void set_item(std::size_t pos, const T& rhs)
+    {
+        this->set_item(pos, make_ptr(rhs));
+    }
+    
     void set_item(std::size_t pos, const Ptr& rhs);
+    
     Tuple slice(int low, int high) const;
 
     friend Tuple operator+(const Tuple&, const Tuple&);
@@ -98,11 +105,29 @@ class List : public Object
     Ptr operator[](std::size_t pos) const;
     Proxy operator[](std::size_t pos);
     Ptr get_item(std::size_t pos) const;
-    void set_item(std::size_t pos, Ptr);
-    void set_item(std::size_t pos, Object);
-    void insert(std::size_t index, Ptr item);
-    void push_back(Ptr item);
-    void append(Ptr item);
+
+    template <class T>
+    void set_item(std::size_t pos, const T& x)
+        { this->set_item(pos, make_ptr(x)); }
+    void set_item(std::size_t pos, const Ptr& );
+    
+//    void set_item(std::size_t pos, const Object& );
+
+    template <class T>
+    void insert(std::size_t index, const T& x)
+        { this->insert(index, make_ptr(x)); }
+    void insert(std::size_t index, const Ptr& item);
+
+    template <class T>
+    void push_back(const T& item)
+        { this->push_back(make_ptr(item)); }
+    void push_back(const Ptr& item);
+    
+    template <class T>
+    void append(const T& item)
+        { this->append(make_ptr(item)); }
+    void append(const Ptr& item);
+    
     List slice(int low, int high) const;
     SliceProxy slice(int low, int high);
     void sort();
@@ -110,7 +135,8 @@ class List : public Object
     Tuple as_tuple() const;
 };
 
-class String : public Object
+class String
+    : public Object, public boost::multipliable2<String, unsigned int>
 {
  public:
     // Construct from an owned PyObject*.
@@ -122,9 +148,6 @@ class String : public Object
 
     enum Interned { interned };
     String(const char* s, Interned);
-#if 0
-    String(const char* s, std::size_t length, Interned);
-#endif
     
     // Get the type object for Strings
     static PyTypeObject* type_object();
@@ -140,6 +163,7 @@ class String : public Object
     // The data must not be modified in any way. It must not be de-allocated. 
     const char* c_str() const;
 
+    String& operator*=(unsigned int repeat_count);
     String& operator+=(const String& rhs);
     friend String operator+(String x, String y);
     String& operator+=(const char* rhs);
@@ -165,25 +189,47 @@ class Dict : public Object
     static bool accepts(Ptr p);
     
  public:
+    template <class Key>
+    Proxy operator[](const Key& key)
+        { return this->operator[](make_ptr(key)); }
     Proxy operator[](Ptr key);
+    
+    template <class Key>
+    Ptr operator[](const Key& key) const
+        { return this->operator[](make_ptr(key)); }
     Ptr operator[](Ptr key) const;
 
-    Ptr get_item(const Ptr& key, const Ptr& default_ = Ptr()) const;
+    template <class Key>
+    Ptr get_item(const Key& key) const
+        { return this->get_item(make_ptr(key)); }
+    Ptr get_item(const Ptr& key) const;
+    
+    template <class Key, class Default>
+    Ptr get_item(const Key& key, const Default& default_) const
+        { return this->get_item(make_ptr(key), make_ptr(default_)); }
+    Ptr get_item(const Ptr& key, const Ptr& default_) const;
+    
+    template <class Key, class Value>
+    void set_item(const Key& key, const Value& value)
+        { this->set_item(make_ptr(key), make_ptr(value)); }
     void set_item(const Ptr& key, const Ptr& value);
-        
+
+    template <class Key>
+    void erase(const Key& key)
+        { this->erase(make_ptr(key)); }
     void erase(Ptr key);
 
-    Proxy operator[](const Object& key);
-    Ptr operator[](const Object& key) const;
+//    Proxy operator[](const Object& key);
+//    Ptr operator[](const Object& key) const;
 
-    Ptr get_item(const Object& key, Ptr default_ = Ptr()) const;
-    void set_item(const Object& key, const Ptr& value);
+//    Ptr get_item(const Object& key, Ptr default_ = Ptr()) const;
+//    void set_item(const Object& key, const Ptr& value);
         
-    void erase(const Object& key);
+//    void erase(const Object& key);
 
-    Ptr items() const;
-    Ptr keys() const;
-    Ptr values() const;
+    List items() const;
+    List keys() const;
+    List values() const;
 
     std::size_t size() const;
     // TODO: iterator support
@@ -191,11 +237,20 @@ class Dict : public Object
 
 struct Dict::Proxy
 {
+    template <class T>
+    const Ptr& operator=(const T& rhs)
+        { return (*this) = make_ptr(rhs); }
     const Ptr& operator=(const Ptr& rhs);
+
     operator Ptr() const;
  private:
     friend class Dict;
     Proxy(const Ptr& dict, const Ptr& key);
+
+    // This is needed to work around the very strange MSVC error report that the
+    // return type of the built-in operator= differs from that of the ones
+    // defined above. Couldn't hurt to make these un-assignable anyway, though.
+    const Ptr& operator=(const Proxy&); // Not actually implemented
  private:
     Ptr m_dict;
     Ptr m_key;
@@ -203,11 +258,21 @@ struct Dict::Proxy
 
 struct List::Proxy
 {
+    template <class T>
+    const Ptr& operator=(const T& rhs)
+        { return (*this) = make_ptr(rhs); }
     const Ptr& operator=(const Ptr& rhs);
+    
     operator Ptr() const;
+    
  private:
     friend class List;
     Proxy(const Ptr& list, std::size_t index);
+    
+    // This is needed to work around the very strange MSVC error report that the
+    // return type of the built-in operator= differs from that of the ones
+    // defined above. Couldn't hurt to make these un-assignable anyway, though.
+    const Ptr& operator=(const Proxy&); // Not actually implemented
  private:
     List m_list;
     std::size_t m_index;
@@ -228,9 +293,9 @@ struct List::SliceProxy
     int m_low, m_high;
 };
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-} // Back to the global namespace for this GCC bug
-#endif
+} // namespace py
+
+PY_BEGIN_CONVERSION_NAMESPACE
 
 PyObject* to_python(const py::Tuple&);
 py::Tuple from_python(PyObject* p, py::Type<py::Tuple>);
@@ -264,9 +329,6 @@ inline py::Dict from_python(PyObject* p, py::Type<const py::Dict&>)
     return from_python(p, py::Type<py::Dict>());
 }
 
-#ifdef PY_NO_INLINE_FRIENDS_IN_NAMESPACE
-namespace py {
-#endif
+PY_END_CONVERSION_NAMESPACE
 
-}
-#endif
+#endif // OBJECTS_DWA051100_H_
