@@ -192,7 +192,9 @@ inline class_<T, Bases, HolderGenerator>::class_(char const* name)
 template <class T, class Bases, class HolderGenerator>
 inline ref class_<T, Bases, HolderGenerator>::object() const
 {
-    return this->class_base::object();
+    typedef objects::class_base base;
+    
+    return this->base::object();
 }
 
 }} // namespace boost::python
