@@ -22,12 +22,15 @@
 #ifndef algo_selector_rmg_20030911_included
 #define algo_selector_rmg_20030911_included
 
+#include <boost/python/suite/indexing/container_proxy.hpp>
+// Include this early to ensure the declaration of the get_pointer
+// overload for element_proxy is in-scope for both name-lookup phases
+
 #include <boost/python/suite/indexing/container_traits.hpp>
 #include <boost/python/suite/indexing/algorithms.hpp>
 
-// Definitions of supported types
+// Definitions of further supported types
 #include <boost/python/suite/indexing/iterator_pair.hpp>
-#include <boost/python/suite/indexing/container_proxy.hpp>
 #include <set>
 #include <map>
 #include <list>
