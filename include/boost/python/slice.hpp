@@ -7,6 +7,7 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/python/object.hpp>
+#include <boost/python/extract.hpp>
 #include <boost/python/converter/pytype_object_mgr_traits.hpp>
 
 #include <iterator>
