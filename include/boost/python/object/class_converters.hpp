@@ -75,7 +75,11 @@ struct register_base_of
 template <class Derived, class Bases>
 inline void register_class_from_python(Derived* = 0, Bases* = 0)
 {
-    (void)instance_finder<Derived>::registration;
+    // cause the static registration to be instantiated. Can't just
+    // cast it to void on all compilers; some will skip its
+    // initialization.
+    void const* ignored = &instance_finder<Derived>::registration;
+    (void)ignored;
     
     // register all up/downcasts here
     register_dynamic_id<Derived>();

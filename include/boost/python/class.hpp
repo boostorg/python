@@ -169,6 +169,7 @@ class class_ : private objects::class_base
             std::size_t, size = mpl::size<bases>::value + 1);
         class_id ids[size];
     };
+    friend struct id_vector;
 };
 
 

@@ -52,4 +52,4 @@ int main()
     assert_mf_cast<int, Y>(3);
     assert_mf_cast<X, Y>(X());
     return 0;
-};
+}

@@ -148,7 +148,7 @@ struct value_holder_back_reference : instance_holder
     // Forward construction to the held object
     value_holder_back_reference(PyObject* p)
         : m_held() {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -158,7 +158,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A1>::type&)(a1)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -169,7 +169,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A2>::type&)(a2)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -181,7 +181,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A3>::type&)(a3)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -194,7 +194,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A4>::type&)(a4)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -207,7 +207,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A4>::type&)(a4)
             , (typename unwrap_reference<A5>::type&)(a5)
             ) {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -221,7 +221,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A5>::type&)(a5)
             , (typename unwrap_reference<A6>::type&)(a6)
             ) {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -237,7 +237,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A7>::type&)(a7)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -254,7 +254,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A8>::type&)(a8)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -272,7 +272,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A9>::type&)(a9)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
     
@@ -291,7 +291,7 @@ struct value_holder_back_reference : instance_holder
             , (typename unwrap_reference<A10>::type&)(a10)
             )
     {
-        (void)instance_finder<BackReferenceType>::registration;
+        void const* x = &instance_finder<BackReferenceType>::registration; (void)x;
     }
 
  private: // required holder implementation
