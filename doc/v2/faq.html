@@ -57,6 +57,11 @@
 
       <dt><a href="#ownership">How can I wrap a function which needs to take
       ownership of a raw pointer?</a></dt>
+
+      <dt><a href="#slow_compilation">Compilation takes too much time and eats too much memory! 
+      What can I do to make it faster?</a></dt>
+       
+      <dt><a href="#packages">How do I create sub-packages using Boost.Python?</a></dt>                
     </dl>
     <hr>
 
@@ -543,6 +548,20 @@ void b_insert(B&amp; b, std::auto_ptr&lt;A&gt; a)
     "manage_new_object.html#manage_new_object-spec">manage_new_object</a></code>
     will also be held by <code>auto_ptr</code>, so this transfer-of-ownership
     will also work correctly. 
+
+    <h2><a name="slow_compilation">Compilation takes too much time and eats too
+            much memory!  What can I do to make it faster?</a></h2> 
+    <p>
+    Please refer to the <a href="../tutorial/doc/reducing_compiling_time.html">Techniques</a> 
+    section in the tutorial. 
+    </p>
+ 
+    <h2><a name="packages">How do I create sub-packages using Boost.Python?</a></h2> 
+    <p>
+    In the <a href="../tutorial/doc/creating_packages.html.html">Techniques</a>
+    section of the tutorial this topic is explored.
+    </p>
+    
     <hr>
 
     <p>Revised 
