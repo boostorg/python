@@ -28,6 +28,11 @@ class tuple : public object
     static BOOST_PYTHON_DECL detail::new_reference call(object const&);
 };
 
+// for completeness
+inline tuple make_tuple() { return tuple(); }
+
+# define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_PYTHON_MAX_ARITY, <boost/python/detail/make_tuple.hpp>))
+# include BOOST_PP_ITERATE()
 
 //
 // Converter Specializations
