@@ -7,7 +7,7 @@
 # define ITERATOR_DWA2002510_HPP
 
 # include <boost/python/object/iterator_core.hpp>
-# include <boost/python/class_fwd.hpp>
+# include <boost/python/class.hpp>
 # include <boost/python/object/class_detail.hpp>
 # include <boost/python/return_value_policy.hpp>
 # include <boost/python/copy_const_reference.hpp>
@@ -19,6 +19,8 @@
 # include <boost/bind.hpp>
 # include <boost/bind/protect.hpp>
 # include <boost/python/detail/raw_pyobject.hpp>
+# include <boost/type_traits/add_reference.hpp>
+# include <boost/type_traits/add_const.hpp>
 
 namespace boost { namespace python { namespace objects {
 
@@ -155,7 +157,7 @@ namespace detail
           , PyObject* args_, PyObject* /*kw*/)
       {
           // Make sure the Python class is instantiated.
-          demand_iterator_class<Iterator,NextPolicies>("iterator");
+          detail::demand_iterator_class("iterator", (Iterator*)0, NextPolicies());
 
           to_python_value<iterator_range<NextPolicies,Iterator> > cr;
 
@@ -177,6 +179,30 @@ namespace detail
                   , get_start(x), get_finish(x)));
       }
   };
+
+  template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>
+  inline object make_iterator_function(
+      Accessor1 const& get_start, Accessor2 const& get_finish, Iterator const& (*)(), boost::type<Target>*, NextPolicies*, int)
+  {
+      return 
+          objects::function_object(
+              boost::bind(
+                  &make_iterator_help<
+                      Target,Iterator,Accessor1,Accessor2,NextPolicies
+                  >::create
+                  , get_start, get_finish, _1, _2)
+              , 1 );
+  }
+
+  template <class NextPolicies, class Target, class Iterator, class Accessor1, class Accessor2>
+  inline object make_iterator_function(
+      Accessor1 const& get_start, Accessor2 const& get_finish, Iterator& (*)(), boost::type<Target>*, NextPolicies*, ...)
+  {
+      return make_iterator_function(
+          get_start, get_finish, (Iterator const&(*)())0
+          , (boost::type<Target>*)0, (NextPolicies*)0, 0);
+  }
+
 }
 
 // Create a Python callable object which accepts a single argument
@@ -190,16 +216,17 @@ inline object make_iterator_function(
     Accessor1 const& get_start, Accessor2 const& get_finish
     , boost::type<Target>* = 0, NextPolicies* = 0)
 {
-    typedef typename Accessor1::result_type result_type;
+    typedef typename Accessor1::result_type iterator;
+    typedef typename add_const<iterator>::type iterator_const;
+    typedef typename add_reference<iterator_const>::type iterator_cref;
       
-    return 
-        objects::function_object(
-            boost::bind(
-                &detail::make_iterator_help<
-                    Target,result_type,Accessor1,Accessor2,NextPolicies
-                >::create
-                , get_start, get_finish, _1, _2)
-            , 1 );
+    return detail::make_iterator_function(
+        get_start, get_finish
+        , (iterator_cref(*)())0
+        , (boost::type<Target>*)0
+        , (NextPolicies*)0
+        , 0
+        );
 }
 
 //
