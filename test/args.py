@@ -4,6 +4,14 @@
 >>> raw(3, 4, foo = 'bar', baz = 42)
 ((3, 4), {'foo': 'bar', 'baz': 42})
 
+   Prove that we can handle empty keywords and non-keywords
+   
+>>> raw(3, 4)
+((3, 4), {})
+
+>>> raw(foo = 'bar')
+((), {'foo': 'bar'})
+
 >>> f(x= 1, y = 3, z = 'hello')
 (1, 3.0, 'hello')
 

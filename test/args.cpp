@@ -90,3 +90,5 @@ BOOST_PYTHON_MODULE(args_ext)
 
     def("inner", &X::inner, "docstring", args("self", "n"), return_internal_reference<>());
 }
+
+#include "module_tail.cpp"

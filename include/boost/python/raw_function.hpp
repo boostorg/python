@@ -29,7 +29,10 @@ namespace detail
       {
           return incref(
               object(
-                  f(tuple(borrowed_reference(args)), dict(borrowed_reference(keywords)))
+                  f(
+                      tuple(borrowed_reference(args))
+                    , keywords ? dict(borrowed_reference(keywords)) : dict()
+                  )
               ).ptr()
           );
       }
