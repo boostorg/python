@@ -12,12 +12,12 @@
 
 #include <boost/python/detail/preprocessor.hpp>
 #include <boost/preprocessor/repeat.hpp>
+#include <boost/preprocessor/repeat_from_to.hpp>
 #include <boost/preprocessor/enum.hpp>
 #include <boost/preprocessor/enum_params.hpp>
 #include <boost/preprocessor/tuple.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/arithmetic/sub.hpp>
-#include <boost/preprocessor/arithmetic/add.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/inc.hpp>
 #include <boost/preprocessor/empty.hpp>
@@ -68,14 +68,15 @@ struct func_stubs_with_call_policies
     typedef typename BOOST_PP_CAT(iter, index)::type BOOST_PP_CAT(T, index);    \
 
 #define BOOST_PYTHON_FUNC_WRAPPER_GEN(z, index, data)                           \
-    static RT BOOST_PP_CAT(func_, index) (                                      \
+    static RT BOOST_PP_CAT(func_,                                               \
+        BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (            \
         BOOST_PYTHON_BINARY_ENUM(                                               \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), T, arg)) \
+            index, T, arg))                                                     \
     {                                                                           \
         BOOST_PP_TUPLE_ELEM(3, 2, data)                                         \
         BOOST_PP_TUPLE_ELEM(3, 0, data)(                                        \
             BOOST_PP_ENUM_PARAMS(                                               \
-                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index),      \
+                index,                                                          \
                 arg));                                                          \
     }
 
@@ -97,8 +98,9 @@ struct func_stubs_with_call_policies
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
                 0)                                                              \
                                                                                 \
-            BOOST_PP_REPEAT_2ND(                                                \
-                BOOST_PP_INC(n_dflts),                                          \
+            BOOST_PP_REPEAT_FROM_TO(                                            \
+                BOOST_PP_SUB_D(1, n_args, n_dflts),                             \
+                BOOST_PP_INC(n_args),                                           \
                 BOOST_PYTHON_FUNC_WRAPPER_GEN,                                  \
                 (fname, BOOST_PP_SUB_D(1, n_args, n_dflts), ret))               \
         };                                                                      \
@@ -106,16 +108,14 @@ struct func_stubs_with_call_policies
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN(z, index, data)                       \
-    static RT BOOST_PP_CAT(func_, index) (                                      \
-        ClassT& obj BOOST_PP_COMMA_IF(                                          \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index))          \
-        BOOST_PYTHON_BINARY_ENUM(                                               \
-            BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), T, arg)  \
+    static RT BOOST_PP_CAT(func_,                                               \
+        BOOST_PP_SUB_D(1, index, BOOST_PP_TUPLE_ELEM(3, 1, data))) (            \
+            ClassT& obj BOOST_PP_COMMA_IF(index)                                \
+            BOOST_PYTHON_BINARY_ENUM(index, T, arg)                             \
         )                                                                       \
     {                                                                           \
         BOOST_PP_TUPLE_ELEM(3, 2, data) obj.BOOST_PP_TUPLE_ELEM(3, 0, data)(    \
-            BOOST_PP_ENUM_PARAMS(                                               \
-                BOOST_PP_ADD_D(1, BOOST_PP_TUPLE_ELEM(3, 1, data), index), arg) \
+            BOOST_PP_ENUM_PARAMS(index, arg)                                    \
         );                                                                      \
     }
 
@@ -140,8 +140,9 @@ struct func_stubs_with_call_policies
                 BOOST_PYTHON_TYPEDEF_GEN,                                       \
                 0)                                                              \
                                                                                 \
-            BOOST_PP_REPEAT_2ND(                                                \
-                BOOST_PP_INC(n_dflts),                                          \
+            BOOST_PP_REPEAT_FROM_TO(                                            \
+                BOOST_PP_SUB_D(1, n_args, n_dflts),                             \
+                BOOST_PP_INC(n_args),                                           \
                 BOOST_PYTHON_MEM_FUNC_WRAPPER_GEN,                              \
                 (fname, BOOST_PP_SUB_D(1, n_args, n_dflts), ret))               \
         };                                                                      \
