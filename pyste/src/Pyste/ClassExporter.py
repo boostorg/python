@@ -695,7 +695,7 @@ class _VirtualWrapperGenerator(object):
             constantness = ' const'
         
         # call_method callback
-        decl  = indent + '%s %s(%s)%s {\n' % (result, method.name, params, constantness)
+        decl  = indent + '%s %s(%s)%s%s {\n' % (result, method.name, params, constantness, method.Exceptions())
         param_names_str = ', '.join(param_names)
         if param_names_str:
             param_names_str = ', ' + param_names_str
@@ -804,7 +804,7 @@ class _VirtualWrapperGenerator(object):
         # them.
         def MethodSig(method):
             if method.const:
-                const = 'const'
+                const = ' const'
             else:
                 const = ''
             if method.result:
@@ -812,7 +812,8 @@ class _VirtualWrapperGenerator(object):
             else:
                 result = ''
             params = ', '.join([x.FullName() for x in method.parameters]) 
-            return '%s %s(%s) %s' % (result, method.name, params, const)                                 
+            return '%s %s(%s)%s%s' % (
+                result, method.name, params, const, method.Exceptions())  
 
         already_added = {}
         self.virtual_methods = []

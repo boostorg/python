@@ -44,7 +44,7 @@ class FunctionExporter(Exporter):
         codeunit.Write('module', self.INDENT + defs + '\n')  
         # add the code of the wrapper
         if wrapper and wrapper.code:
-            codeunit.Write('declaration', code + '\n')
+            codeunit.Write('declaration', wrapper.code + '\n')
             
 
     def OverloadName(self, decl):

@@ -193,6 +193,17 @@ class GCCXMLParser(object):
         return args
 
     
+    def GetExceptions(self, exception_list):
+        if exception_list is None:
+            return None
+
+        exceptions = []
+        for t in exception_list.split():
+            exceptions.append(self.GetType(t))
+
+        return exceptions
+
+
     def ParseFunction(self, id, element, functionType=Function):
         '''functionType is used because a Operator is identical to a normal 
         function, only the type of the function changes.'''
@@ -202,7 +213,8 @@ class GCCXMLParser(object):
         location = self.GetLocation(element.get('location'))
         params = self.GetArguments(element)
         incomplete = bool(int(element.get('incomplete', 0)))
-        function = functionType(name, namespace, returns, params)
+        throws = self.GetExceptions(element.get('throw', None))
+        function = functionType(name, namespace, returns, params, throws) 
         function.location = location
         self.AddDecl(function)
         self.Update(id, function)
@@ -366,9 +378,10 @@ class GCCXMLParser(object):
         abstract = bool(int(element.get('pure_virtual', '0')))
         const = bool(int(element.get('const', '0')))
         location = self.GetLocation(element.get('location'))
+        throws = self.GetExceptions(element.get('throw', None)) 
         params = self.GetArguments(element)
         method = methodType(
-            name, classname, result, params, visib, virtual, abstract, static, const)
+            name, classname, result, params, visib, virtual, abstract, static, const, throws)
         method.location = location
         self.Update(id, method)
 

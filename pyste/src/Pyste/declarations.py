@@ -196,14 +196,24 @@ class Function(Declaration):
     '''The declaration of a function.
     @ivar _result: instance of L{Type} or None.
     @ivar _parameters: list of L{Type} instances.
+    @ivar _throws: exception specifiers or None 
     '''
     
-    def __init__(self, name, namespace, result, params):
+    def __init__(self, name, namespace, result, params, throws=None): 
         Declaration.__init__(self, name, namespace)
         # the result type: instance of Type, or None (constructors)            
         self.result = result
         # the parameters: instances of Type
         self.parameters = params
+        # the exception specification
+        self.throws     = throws 
+
+
+    def Exceptions(self):
+        if self.throws is None:
+            return ""
+        else:
+            return " throw(%s)" % ', '.join (self.throws) 
 
 
     def PointerDeclaration(self, force=False):
@@ -264,10 +274,11 @@ class Method(Function):
     @ivar _static: if this method is static.
     @ivar _class: the full name of the class where this method was declared.
     @ivar _const: if this method is declared as const.
+    @ivar _throws: list of exception specificiers or None
     '''
 
-    def __init__(self, name, class_, result, params, visib, virtual, abstract, static, const):
-        Function.__init__(self, name, None, result, params)
+    def __init__(self, name, class_, result, params, visib, virtual, abstract, static, const, throws=None): 
+        Function.__init__(self, name, None, result, params, throws)
         self.visibility = visib
         self.virtual = virtual
         self.abstract = abstract
@@ -296,8 +307,8 @@ class Method(Function):
             const = ''
             if self.const:
                 const = 'const'            
-            return '(%s (%s::*)(%s) %s)&%s' %\
-                (result, self.class_, params, const, self.FullName()) 
+            return '(%s (%s::*)(%s) %s%s)&%s' %\
+                (result, self.class_, params, const, self.Exceptions(), self.FullName())  
 
 
 #==============================================================================

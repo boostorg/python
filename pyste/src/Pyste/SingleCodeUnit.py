@@ -50,7 +50,7 @@ class SingleCodeUnit:
         return self.code[section]
 
 
-    def SetCurrent(self, current):
+    def SetCurrent(self, *args):
         pass
 
 
