@@ -27,9 +27,11 @@
 # include "base_object.h"
 # include <typeinfo>
 # include <vector>
+# include <cassert>
 
 namespace py {
 
+class String;
 class InstanceHolderBase;
 
 class TypeObjectBase : public PythonType
@@ -116,12 +118,19 @@ class TypeObject : public TypeObjectBase
 {
  public:
     typedef T Instance;
-    
-    TypeObject(PyTypeObject* type_type, const char* name = 0)
-        : TypeObjectBase(type_type)
-        {
-            this->tp_name = const_cast<char*>(name ? name : typeid(Instance).name());
-        }
+
+    TypeObject(PyTypeObject* type_type, const char* name)
+        : Base(type_type)
+    {
+        assert(name != 0);
+        this->tp_name = const_cast<char*>(name);
+    }
+
+    TypeObject(PyTypeObject* type_type)
+        : Base(type_type)
+    {
+        this->tp_name = const_cast<char*>(typeid(Instance).name());
+    }
 
  private: // Overridable behaviors.
     // Called when the reference count goes to zero. The default implementation
@@ -142,7 +151,8 @@ class Callable : public Base
  public:
     typedef Callable Properties; // Convenience for derived class construction
     typedef typename Base::Instance Instance;
-    Callable(PyTypeObject* type_type, const char* name = 0);
+    Callable(PyTypeObject* type_type, const char* name);
+    Callable(PyTypeObject* type_type);
  private:
     PyObject* instance_call(PyObject* instance, PyObject* args, PyObject* kw) const;
 };
@@ -153,7 +163,8 @@ class Getattrable : public Base
  public:
     typedef Getattrable Properties; // Convenience for derived class construction
     typedef typename Base::Instance Instance;
-    Getattrable(PyTypeObject* type_type, const char* name = 0);
+    Getattrable(PyTypeObject* type_type, const char* name);
+    Getattrable(PyTypeObject* type_type);
  private:
     PyObject* instance_getattr(PyObject* instance, const char* name) const;
 };
@@ -164,7 +175,8 @@ class Setattrable : public Base
  public:
     typedef Setattrable Properties; // Convenience for derived class construction
     typedef typename Base::Instance Instance;
-    Setattrable(PyTypeObject* type_type, const char* name = 0);
+    Setattrable(PyTypeObject* type_type, const char* name);
+    Setattrable(PyTypeObject* type_type);
  private:
     int instance_setattr(PyObject* instance, const char* name, PyObject* value) const;
 };
@@ -195,6 +207,13 @@ Callable<Base>::Callable(PyTypeObject* type_type, const char* name)
 }
         
 template <class Base>
+Callable<Base>::Callable(PyTypeObject* type_type)
+    : Base(type_type)
+{
+    this->enable(call);
+}
+        
+template <class Base>
 PyObject* Callable<Base>::instance_call(PyObject* instance, PyObject* args, PyObject* kw) const
 {
     return Downcast<Instance>(instance)->call(args, kw);
@@ -209,6 +228,13 @@ Getattrable<Base>::Getattrable(PyTypeObject* type_type, const char* name)
 }
         
 template <class Base>
+Getattrable<Base>::Getattrable(PyTypeObject* type_type)
+    : Base(type_type)
+{
+    this->enable(getattr);
+}
+        
+template <class Base>
 PyObject* Getattrable<Base>::instance_getattr(PyObject* instance, const char* name) const
 {
     return Downcast<Instance>(instance)->getattr(name);
@@ -218,6 +244,13 @@ PyObject* Getattrable<Base>::instance_getattr(PyObject* instance, const char* na
 template <class Base>
 Setattrable<Base>::Setattrable(PyTypeObject* type_type, const char* name)
     : Base(type_type, name)
+{
+    this->enable(setattr);
+}
+        
+template <class Base>
+Setattrable<Base>::Setattrable(PyTypeObject* type_type)
+    : Base(type_type)
 {
     this->enable(setattr);
 }
@@ -250,7 +283,7 @@ namespace detail {
   extern const CapabilityEntry capabilities[];
   extern const std::size_t num_capabilities;
 
-  void add_capability(std::size_t index, PyTypeObject* dest, AllMethods&, const PyTypeObject* src = 0);
+  void add_capability(std::size_t index, PyTypeObject* dest, AllMethods&);
 
   class UniquePodSet
   {
