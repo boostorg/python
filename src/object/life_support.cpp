@@ -19,6 +19,7 @@ extern "C"
     static void
     life_support_dealloc(PyObject* self)
     {
+        Py_XDECREF(((life_support*)self)->patient);
         self->ob_type->tp_free(self);
     }
 
@@ -27,7 +28,8 @@ extern "C"
     {
         // Let the patient die now
         Py_XDECREF(((life_support*)self)->patient);
-        // Also let the weak reference die. This probably kills us.
+        ((life_support*)self)->patient = 0;
+        // Let the weak reference die. This probably kills us.
         Py_XDECREF(PyTuple_GET_ITEM(arg, 0));
         return detail::none();
     }
@@ -76,11 +78,11 @@ PyTypeObject life_support_type = {
     0                                       /* tp_new */
 };
 
-int make_nurse_and_patient(PyObject* nurse, PyObject* patient)
+PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)
 {
     life_support* system = PyObject_New(life_support, &life_support_type);
     if (!system)
-        return -1;
+        return 0;
     
     // We're going to leak this reference, but don't worry; the
     // life_support system decrements it when the nurse dies.
@@ -88,12 +90,12 @@ int make_nurse_and_patient(PyObject* nurse, PyObject* patient)
     if (!weakref)
     {
         Py_XDECREF(system);
-        return -1;
+        return 0;
     }
     
     system->patient = patient;
     Py_XINCREF(patient); // hang on to the patient until death
-    return 0;
+    return weakref;
 }
 
 }}} // namespace boost::python::objects

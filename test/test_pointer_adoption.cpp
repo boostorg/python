@@ -57,6 +57,21 @@ struct A
     inner x;
 };
 
+struct B
+{
+    B() : x(0) {}
+    
+    inner const* adopt(A* x) { this->x = x; return &x->get_inner(); }
+
+    std::string a_content()
+    {
+        return x ? x->content() : std::string("empty");
+    }
+
+    A* x;
+};
+
+
 A* create(std::string const& s)
 {
     return new A(s);
@@ -83,6 +98,19 @@ BOOST_PYTHON_MODULE_INIT(test_pointer_adoption_ext)
             .def("change", &inner::change)
             )
         
+        .add(
+            class_<B>("B")
+            .def_init()
+            
+            .def("adopt", &B::adopt
+                 // Adopt returns a pointer referring to a subobject of its 2nd argument (1st being "self")
+                 , return_internal_reference<2
+                      // Meanwhile, self holds a reference to the 2nd argument.
+                      , with_custodian_and_ward<1,2> >()
+                )
+            
+            .def("a_content", &B::a_content)
+            )
         ;
 }
 

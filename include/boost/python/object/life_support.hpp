@@ -10,7 +10,7 @@
 
 namespace boost { namespace python { namespace objects { 
 
-BOOST_PYTHON_DECL int make_nurse_and_patient(PyObject* nurse, PyObject* patient);
+BOOST_PYTHON_DECL PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient);
 
 }}} // namespace boost::python::object
 
