@@ -100,8 +100,8 @@ namespace detail
         Tuple
         , mpl::not_<
            mpl::or_<
-              is_reference_to_class<mpl::_1>
-              , is_reference_to_member_function_pointer<mpl::_1 >
+               indirect_traits::is_reference_to_class<mpl::_1>
+             , indirect_traits::is_reference_to_member_function_pointer<mpl::_1 >
            >
         >
      >
@@ -120,8 +120,8 @@ namespace detail
           Tuple
           , mpl::and_<
              mpl::not_<is_same<not_specified const&,mpl::_1> >
-               , is_reference_to_class<mpl::_1 >
-               , mpl::not_<is_reference_to_keywords<mpl::_1 > >
+              , indirect_traits::is_reference_to_class<mpl::_1 >
+              , mpl::not_<is_reference_to_keywords<mpl::_1 > >
           >
         >
   {
@@ -131,7 +131,7 @@ namespace detail
   struct default_implementation_extract
       : tuple_extract<
           Tuple
-          , is_reference_to_member_function_pointer<mpl::_1 >
+          , indirect_traits::is_reference_to_member_function_pointer<mpl::_1 >
           >
   {
   };

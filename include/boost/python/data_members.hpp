@@ -107,7 +107,7 @@ namespace detail
                   typename value_arg<T>::type
               >::uses_registry
           >
-        , is_reference_to_class<
+        , indirect_traits::is_reference_to_class<
               typename value_arg<T>::type
           >
        >

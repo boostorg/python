@@ -30,7 +30,7 @@ struct copy_non_const_reference
     struct apply
     {
         typedef typename mpl::if_c<
-            boost::python::detail::is_reference_to_non_const<T>::value
+            indirect_traits::is_reference_to_non_const<T>::value
             , to_python_value<T>
             , detail::copy_non_const_reference_expects_a_non_const_reference_return_type<T>
         >::type type;
