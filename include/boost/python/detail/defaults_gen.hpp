@@ -24,8 +24,7 @@
 #include <boost/preprocessor/empty.hpp>
 #include <boost/preprocessor/comma_if.hpp>
 #include <boost/config.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/front.hpp>
+#include <boost/mpl/begin_end.hpp>
 
 namespace boost { namespace python {
 
