@@ -27,6 +27,45 @@
 >>> apply_void_X_ref(increment, x)
 >>> x.value()
 43
+
+>>> apply_void_X_cref(increment, x) 
+>>> x.value()  # const-ness is not respected, sorry!
+44
+
+>>> last_x = 1
+>>> def decrement(x):
+...     global last_x
+...     last_x = x
+...     if x is not None:
+...         x.set(x.value() - 1)
+
+>>> apply_void_X_ptr(decrement, x)
+>>> x.value()
+43
+>>> last_x.value()
+43
+>>> increment(last_x)
+>>> x.value()
+44
+>>> last_x.value()
+44
+
+>>> apply_void_X_ptr(decrement, None)
+>>> assert last_x is None
+>>> x.value()
+44
+
+>>> last_x = 1
+>>> apply_void_X_deep_ptr(decrement, None)
+>>> assert last_x is None
+>>> x.value()
+44
+
+>>> apply_void_X_deep_ptr(decrement, x)
+>>> x.value()
+44
+>>> last_x.value()
+43
 '''
 
 def run(args = None):

@@ -8,6 +8,7 @@
 #include <boost/python/errors.hpp>
 #include <boost/python/converter/find_from_python.hpp>
 #include <boost/python/reference.hpp>
+#include <boost/python/detail/none.hpp>
 
 namespace boost { namespace python { namespace converter { 
 
@@ -25,7 +26,10 @@ namespace detail
                 , const_cast<char*>("no to_python (by-value) converter found for type"));
             throw error_already_set();
         }
-        return converter(const_cast<void*>(source));
+        
+        return source == 0
+            ? python::detail::none()
+            : converter(const_cast<void*>(source));
     }
   }
   
@@ -44,6 +48,14 @@ namespace detail
               , const_cast<char*>("no from_python (by-value) converters found for type"));
           throw error_already_set();
       }
+  }
+
+  BOOST_PYTHON_DECL void throw_no_class_registered()
+  {
+      PyErr_SetString(
+          PyExc_TypeError
+          , const_cast<char*>("class not registered for to_python type"));
+      throw error_already_set();
   }
   
   BOOST_PYTHON_DECL void* convert_rvalue(PyObject* src, rvalue_stage1_data& data, void* storage)

@@ -7,6 +7,7 @@
 #include <boost/python/returning.hpp>
 #include <boost/python/class.hpp>
 #include <boost/ref.hpp>
+#include <boost/python/ptr.hpp>
 
 using namespace boost::python;
 
@@ -42,9 +43,24 @@ X apply_X_X(PyObject* f, X x)
     return returning<X>::call(f, x);
 }
 
-void apply_void_X_ref(PyObject* f, X x)
+void apply_void_X_ref(PyObject* f, X& x)
 {
-    returning<X>::call(f, boost::ref(x));
+    returning<void>::call(f, boost::ref(x));
+}
+
+void apply_void_X_cref(PyObject* f, X const& x)
+{
+    returning<void>::call(f, boost::cref(x));
+}
+
+void apply_void_X_ptr(PyObject* f, X* x)
+{
+    returning<void>::call(f, ptr(x));
+}
+
+void apply_void_X_deep_ptr(PyObject* f, X* x)
+{
+    returning<void>::call(f, x);
 }
 
 int X::counter;
@@ -56,6 +72,9 @@ BOOST_PYTHON_MODULE_INIT(callbacks_ext)
         .def("apply_void_int", apply_void_int)
         .def("apply_X_X", apply_X_X)
         .def("apply_void_X_ref", apply_void_X_ref)
+        .def("apply_void_X_cref", apply_void_X_cref)
+        .def("apply_void_X_ptr", apply_void_X_ptr)
+        .def("apply_void_X_deep_ptr", apply_void_X_deep_ptr)
         .add(
             class_<X>("X")
             .def_init(args<int>())
@@ -67,5 +86,4 @@ BOOST_PYTHON_MODULE_INIT(callbacks_ext)
         ;
 }
 
-
-
+#include "module_tail.cpp"
