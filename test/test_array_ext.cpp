@@ -30,9 +30,7 @@ boost::python::indexing::iterator_range<int *> get_array_plain()
 {
   static int array[] = { 8, 6, 4, 2, 1, 3, 5, 7, 0 };
 
-  return boost::python::indexing::iterator_range<int *>
-    (boost::python::indexing::begin(array)
-     , boost::python::indexing::end(array));
+  return boost::python::indexing::make_iterator_range (array);
 }
 
 boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
@@ -42,9 +40,7 @@ boost::python::indexing::iterator_range<int_wrapper *> get_array_wrap()
     , int_wrapper(1), int_wrapper(3), int_wrapper(5)
     , int_wrapper(7), int_wrapper(0) };
 
-  return boost::python::indexing::iterator_range<int_wrapper *>
-    (boost::python::indexing::begin(array)
-     , boost::python::indexing::end(array));
+  return boost::python::indexing::make_iterator_range (array);
 }
 
 BOOST_PYTHON_MODULE(test_array_ext)
