@@ -31,7 +31,7 @@ from ClassExporter import ClassExporter
 from IncludeExporter import IncludeExporter
 from HeaderExporter import HeaderExporter
 
-__VERSION__ = '0.5.8'
+__VERSION__ = '0.5.9'
 
 def GetDefaultIncludes():
     if 'INCLUDE' in os.environ:
