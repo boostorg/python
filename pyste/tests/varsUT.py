@@ -14,4 +14,5 @@ class VarsTest(unittest.TestCase):
         testColor(_vars.green, 0, 255, 0)
         testColor(_vars.blue, 0, 0, 255)
 
-
+if __name__ == '__main__':
+    unittest.main()
