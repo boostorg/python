@@ -76,11 +76,12 @@ namespace boost { namespace python { namespace indexing {
 
     static slice_helper make_slice_helper (container &c, slice const &);
 
-    // Default visitor_helper
+    // Default visit_container_class
     template<typename PythonClass, typename Policy>
-    static void visitor_helper (PythonClass &pyClass, Policy const &policy)
+    static void visit_container_class(
+        PythonClass &pyClass, Policy const &policy)
     {
-      container_traits::visitor_helper (pyClass, policy);
+      container_traits::visit_container_class (pyClass, policy);
     }
 
 #if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
@@ -217,8 +218,8 @@ namespace boost { namespace python { namespace indexing {
   default_algorithms<ContainerTraits, Ovr>::find(
       container &c, key_param key)
   {
-    typedef typename container_traits::value_traits_ value_traits_;
-    typedef typename value_traits_::equal_to comparison;
+    typedef typename container_traits::value_traits_type vtraits;
+    typedef typename vtraits::equal_to comparison;
 
     return std::find_if(
         most_derived::begin(c),
@@ -258,8 +259,8 @@ namespace boost { namespace python { namespace indexing {
   default_algorithms<ContainerTraits, Ovr>::count(
       container &c, key_param key)
   {
-    typedef typename container_traits::value_traits_ value_traits_;
-    typedef typename value_traits_::equal_to comparison;
+    typedef typename container_traits::value_traits_type vtraits;
+    typedef typename vtraits::equal_to comparison;
 
     return std::count_if(
         most_derived::begin(c),
@@ -387,8 +388,8 @@ namespace boost { namespace python { namespace indexing {
   template<typename ContainerTraits, typename Ovr>
   void default_algorithms<ContainerTraits, Ovr>::sort (container &c)
   {
-    typedef typename container_traits::value_traits_ value_traits_;
-    typedef typename value_traits_::less comparison;
+    typedef typename container_traits::value_traits_type vtraits;
+    typedef typename vtraits::less comparison;
     std::sort (most_derived::begin(c), most_derived::end(c), comparison());
   }
 
@@ -491,6 +492,50 @@ namespace boost { namespace python { namespace indexing {
   {
     return c.count (key);
   }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Some meta-information to select algorithms for const and
+  // non-const qualified containers. All algorithms_selector specializations
+  // include two publically accessible typedefs, called
+  // mutable_algorithms and const_algorithms.  This saves having to
+  // have separate partial specializations of algorithms for
+  // const and non-const containers. Client code should probably
+  // specialize algorithms directly.
+  /////////////////////////////////////////////////////////////////////////
+
+  namespace detail {
+    template<typename Container> class algorithms_selector
+# if defined(BOOST_MPL_MSVC_60_ETI_BUG)
+    {
+      // Bogus types to prevent compile errors due to ETI
+      typedef algorithms_selector<Container> mutable_algorithms;
+      typedef algorithms_selector<Container> const_algorithms;
+    }
+# endif
+    ;
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // Algorithms selection for mutable containers
+  /////////////////////////////////////////////////////////////////////////
+
+  template<class Container>
+  struct algorithms
+    : public detail::algorithms_selector<Container>::mutable_algorithms
+  {
+  };
+
+# if !defined (BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+  /////////////////////////////////////////////////////////////////////////
+  // Algorithms selection for const-qualified containers
+  /////////////////////////////////////////////////////////////////////////
+
+  template<class Container>
+  struct algorithms<Container const>
+    : public detail::algorithms_selector<Container>::const_algorithms
+  {
+  };
+# endif
 } } }
 
 #endif // BOOST_PYTHON_INDEXING_ALGORITHMS_HPP
