@@ -527,10 +527,10 @@ Why is it an error? [^Base] is an abstract class. As such it is advisable
 to define the Python wrapper with [^no_init] as we have done above. Doing
 so will disallow abstract base classes such as [^Base] to be instantiated.
 
-[h2 Deriving a Python class]
+[page:1 Deriving a Python Class]
 
-Now, at last, we can even derive from our base class Base in Python. Before
-we can do that, we have to set up our class_ wrapper as:
+Continuing, now, at last, we can even derive from our base class Base in
+Python. Before we can do that, we have to set up our [^class_] wrapper as:
 
     class_<Base, BaseWrap, boost::noncopyable>("Base")
         ;
@@ -572,30 +572,45 @@ Here's what's happening:
 # [^call_method<int>(self, "f");] dispatches the call back to Python.
 # [^def f(self): return 42] is finally called.
 
-Rewind back to our [^Base] class, if its member function [^f] was not
-declared as pure virtual:
+[page:1 Virtual Functions with Default Implementations]
+
+Recall that in the [@class_virtual_functions.html previous section], we
+wrapped a class with a pure virtual function that we then implemented in
+C++ or Python classes derived from it. Our base class:
+
+    struct Base
+    {
+        virtual int f() = 0;
+    };
+
+had a pure virtual function [^f]. If, however, its member function [^f] was
+not declared as pure virtual:
 
     struct Base
     {
         virtual int f() { return 0; }
     };
 
-And instead is implemented to return [^0], as shown above.
+and instead had a default implementation that returns [^0], as shown above,
+we need to add a forwarding function that calls the [^Base] default virtual
+function [^f] implementation:
 
     struct BaseWrap : Base
     {
         BaseWrap(PyObject* self_)
             : self(self_) {}
         int f() { return call_method<int>(self, "f"); }
-        static int default_f(Base* b) { return b->Base::f(); } // <<=== added
+        int default_f() { return Base::f(); } // <<=== ***ADDED***
         PyObject* self;
     };
 
-then, our Boost.Python wrapper:
+Then, Boost.Python needs to keep track of 1) the dispatch function [^f] and
+2) the forwarding function to its default implementation [^default_f].
+There's a special [^def] function for this purpose. Here's how it is
+applied to our example above:
 
     class_<Base, BaseWrap>("Base")
-        .def("f", &BaseWrap::default_f)
-        ;
+        .def("f", &Base::f, &BaseWrap::default_f)
 
 Note that we are allowing [^Base] objects to be instantiated this time,
 unlike before where we specifically defined the [^class_<Base>] with
@@ -874,6 +889,51 @@ these can be found [@../../v2/reference.html#models_of_call_policies here].
 "Explicit is better than implicit"[br]
 "In the face of ambiguity, refuse the temptation to guess"[br]]
 
+[page:1 Overloading]
+
+The following illustrates a scheme for manually wrapping an overloaded
+member function or. Obviously, the same technique can be applied to
+wrapping overloaded non- member functions. Take note that this scheme
+applies to actual overloaded (member, non-member) functions as well as
+(member, non-member) functions with default arguments.
+
+We have here our C++ classes:
+
+    struct X
+    {
+        bool f(int a, double b = 0, char c = 'x')
+        {
+            return true;
+        }
+
+        int f(int a, int b, int c)
+        {
+            return a + b + c;
+        };
+    };
+
+Notice that class X has two overloaded functions with different signatures.
+The types of the arguments, and the return are totally different, unlike
+above where we have a common sequence of initial arguments.
+
+We shall start by introducing some member function pointer variables:
+
+    bool    (X::*fx1)(int)              = &X::f;
+    bool    (X::*fx2)(int, double)      = &X::f;
+    bool    (X::*fx3)(int, double, char)= &X::f;
+    int     (X::*fx4)(int, int, int)    = &X::f;
+
+The first three member function pointers take care of the first X::f
+overload. The one with default arguments. The last member function pointer
+takes care of the second X::f overload.
+
+With these in hand, we can proceed to define and wrap this for Python:
+
+    .def("f", fx1)
+    .def("f", fx2)
+    .def("f", fx3)
+    .def("f", fx4)
+
 [page:1 Default Arguments]
 
 Boost.Python wraps (member) function pointers. Unfortunately, C++ function
@@ -892,8 +952,9 @@ to retrieve the default arguments:
 
     def("f", f);                            // defaults lost!
 
-Because of this, when wrapping C++ code in earlier versions of
-Boost.Python, we had to resort to writing thin wrappers:
+Because of this, when wrapping C++ code, we had to resort to manual
+wrapping as outlined in the [@overloading.html previous section], or
+writing thin wrappers:
 
     // write "thin wrappers"
     int f1(int x) { f(x); }
@@ -987,7 +1048,7 @@ You can easily add this constructor to Boost.Python in one shot:
 Notice the use of [^init<...>] and [^optional<...>] to signify the default
 (optional arguments).
 
-[page:1 Overloading]
+[page:1 Auto-Overloading]
 
 It was mentioned in passing in the previous section that
 [^BOOST_PYTHON_FUNCTION_OVERLOADS] and [^BOOST_PYTHON_FUNCTION_OVERLOADS]
@@ -1030,56 +1091,17 @@ Notice though that we have a situation now where we have a minimum of zero
 
 It is important to emphasize however that [*the overloaded functions must
 have a common sequence of initial arguments]. Otherwise, our scheme above
-will not work.
-
-The following illustrates an alternate scheme for manually wrapping an
-overloaded member function instead of
-[^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]. Obviously, the same technique
-can be applied to wrapping overloaded non- member functions.
-
-We have here our C++ classes:
-
-    struct X
-    {
-        bool f(int a, double b = 0, char c = 'x')
-        {
-            return true;
-        }
-
-        int f(int a, int b, int c)
-        {
-            return a + b + c;
-        };
-    };
-
-Notice that class X has two overloaded functions with different signatures.
-The types of the arguments, and the return are totally different, unlike
-above where we have a common sequence of initial arguments.
-
-We shall start by introducing some member function pointer variables:
-
-    bool    (X::*fx1)(int)              = &X::f;
-    bool    (X::*fx2)(int, double)      = &X::f;
-    bool    (X::*fx3)(int, double, char)= &X::f;
-    int     (X::*fx4)(int, int, int)    = &X::f;
-
-The first three member function pointers take care of the first X::f
-overload. The one with default arguments. The last member function pointer
-takes care of the second X::f overload.
-
-With these in hand, we can proceed to define and wrap this for Python:
-
-    .def("f", fx1)
-    .def("f", fx2)
-    .def("f", fx3)
-    .def("f", fx4)
+will not work. If this is not the case, we have to wrap our functions
+[@overloading.html manually].
 
 Actually, we can mix and match manual wrapping of overloaded functions and
 automatic wrapping through [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] and
-its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Since the first overload
-has default arguments, we can use [^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS]
-to automatically wrap the first three of the [^def]s above and manually
-wrap just the last. Here's how we'll do this:
+its sister, [^BOOST_PYTHON_FUNCTION_OVERLOADS]. Following up on our example
+presented in the section [@overloading.html on overloading], since the
+first overload has default arguments, we can use
+[^BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS] to automatically wrap the first
+three of the [^def]s above and manually wrap just the last. Here's how
+we'll do this:
 
     BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(xf_overloads, f, 1, 4)
 
