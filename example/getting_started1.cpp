@@ -1,3 +1,5 @@
+// Example by Ralf W. Grosse-Kunstleve
+
 #include <string>
 
 namespace { // Avoid cluttering the global namespace.

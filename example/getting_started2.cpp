@@ -1,3 +1,5 @@
+// Example by Ralf W. Grosse-Kunstleve
+
 #include <iostream>
 #include <string>
 
