@@ -36,35 +36,33 @@ properties. Here's an example:</p>
         </span><span class=identifier>Num</span><span class=special>();
         </span><span class=keyword>float </span><span class=identifier>get</span><span class=special>() </span><span class=keyword>const</span><span class=special>;
         </span><span class=keyword>void </span><span class=identifier>set</span><span class=special>(</span><span class=keyword>float </span><span class=identifier>value</span><span class=special>);
-        </span><span class=special>...
-    </span><span class=special>};
+        ...
+    };
 </span></pre></code>
 <p>
 However, in Python attribute access is fine; it doesn't neccessarily break
 encapsulation to let users handle attributes directly, because the
 attributes can just be a different syntax for a method call. Wrapping our
 <tt>Num</tt> class using Boost.Python:</p>
-<code>
-<pre>
+<code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Num</span><span class=special>&gt;(</span><span class=string>&quot;Num&quot;</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>set</span><span class=special>);
-</span></pre>
-</code>
+        .</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, &amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
+        .</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, &amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>, &amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>set</span><span class=special>);
+</span></pre></code>
 <p>
 And at last, in Python:</p>
 <code><pre>
     <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>Num</span><span class=special>()
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value </span><span class=special>= </span><span class=number>3.14
+    &gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value </span><span class=special>= </span><span class=number>3.14
     </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value</span><span class=special>, </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>rovalue
     </span><span class=special>(</span><span class=number>3.14</span><span class=special>, </span><span class=number>3.14</span><span class=special>)
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>rovalue </span><span class=special>= </span><span class=number>2.17 </span>#<span class=identifier>error</span><span class=special>!
+    &gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>rovalue </span><span class=special>= </span><span class=number>2.17 </span>##<span class=identifier>error</span><span class=special>!
 </span></pre></code>
 <p>
 Take note that the class property <tt>rovalue</tt> is exposed as <b>read-only</b>
 since the <tt>rovalue</tt> setter member function is not passed in:</p>
 <code><pre>
-    <span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
+    <span class=special>.</span><span class=identifier>add_property</span><span class=special>(</span><span class=string>&quot;rovalue&quot;</span><span class=special>, &amp;</span><span class=identifier>Num</span><span class=special>::</span><span class=identifier>get</span><span class=special>)
 </span></pre></code>
 <table border="0">
   <tr>
@@ -74,7 +72,7 @@ since the <tt>rovalue</tt> setter member function is not passed in:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

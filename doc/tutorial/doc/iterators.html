@@ -34,12 +34,12 @@ iterators, but these are two very different beasts.</p>
 <ul><li>1 category (forward)</li><li>1 operation category (next())</li><li>Raises StopIteration exception at end</li></ul><p>
 The typical Python iteration protocol: <tt><b>for y in x...</b></tt> is as follows:</p>
 <code><pre>
-    <span class=identifier>iter </span><span class=special>= </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__iter__</span><span class=special>()         </span>#<span class=identifier>get </span><span class=identifier>iterator
+    <span class=identifier>iter </span><span class=special>= </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__iter__</span><span class=special>()         </span>##<span class=identifier>get </span><span class=identifier>iterator
     </span><span class=keyword>try</span><span class=special>:
         </span><span class=keyword>while </span><span class=number>1</span><span class=special>:
-        </span><span class=identifier>y </span><span class=special>= </span><span class=identifier>iter</span><span class=special>.</span><span class=identifier>next</span><span class=special>()         </span>#<span class=identifier>get </span><span class=identifier>each </span><span class=identifier>item
-        </span><span class=special>...                     </span>#<span class=identifier>process </span><span class=identifier>y
-    </span><span class=identifier>except </span><span class=identifier>StopIteration</span><span class=special>: </span><span class=identifier>pass  </span>#<span class=identifier>iterator </span><span class=identifier>exhausted
+        </span><span class=identifier>y </span><span class=special>= </span><span class=identifier>iter</span><span class=special>.</span><span class=identifier>next</span><span class=special>()         </span>##<span class=identifier>get </span><span class=identifier>each </span><span class=identifier>item
+        </span><span class=special>...                     </span>##<span class=identifier>process </span><span class=identifier>y
+    </span><span class=identifier>except </span><span class=identifier>StopIteration</span><span class=special>: </span><span class=identifier>pass  </span>##<span class=identifier>iterator </span><span class=identifier>exhausted
 </span></pre></code>
 <p>
 Boost.Python provides some mechanisms to make C++ iterators play along
@@ -47,14 +47,14 @@ nicely as Python iterators. What we need to do is to produce
 appropriate __iter__ function from C++ iterators that is compatible
 with the Python iteration protocol. For example:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>get_iterator </span><span class=special>= </span><span class=identifier>iterator</span><span class=special>&lt;</span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt; </span><span class=special>&gt;();
+    <span class=identifier>object </span><span class=identifier>get_iterator </span><span class=special>= </span><span class=identifier>iterator</span><span class=special>&lt;</span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt; &gt;();
     </span><span class=identifier>object </span><span class=identifier>iter </span><span class=special>= </span><span class=identifier>get_iterator</span><span class=special>(</span><span class=identifier>v</span><span class=special>);
     </span><span class=identifier>object </span><span class=identifier>first </span><span class=special>= </span><span class=identifier>iter</span><span class=special>.</span><span class=identifier>next</span><span class=special>();
 </span></pre></code>
 <p>
 Or for use in class_&lt;&gt;:</p>
 <code><pre>
-    <span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;__iter__&quot;</span><span class=special>, </span><span class=identifier>iterator</span><span class=special>&lt;</span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt; </span><span class=special>&gt;())
+    <span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;__iter__&quot;</span><span class=special>, </span><span class=identifier>iterator</span><span class=special>&lt;</span><span class=identifier>vector</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt; &gt;())
 </span></pre></code>
 <p>
 <b>range</b></p>
@@ -81,8 +81,8 @@ bogon Particle accelerator code:</p>
 Now, our C++ Wrapper:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>F</span><span class=special>&gt;(</span><span class=string>&quot;Field&quot;</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>property</span><span class=special>(</span><span class=string>&quot;pions&quot;</span><span class=special>, </span><span class=identifier>range</span><span class=special>(&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>p_begin</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>p_end</span><span class=special>))
-        </span><span class=special>.</span><span class=identifier>property</span><span class=special>(</span><span class=string>&quot;bogons&quot;</span><span class=special>, </span><span class=identifier>range</span><span class=special>(&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>b_begin</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>b_end</span><span class=special>));
+        .</span><span class=identifier>property</span><span class=special>(</span><span class=string>&quot;pions&quot;</span><span class=special>, </span><span class=identifier>range</span><span class=special>(&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>p_begin</span><span class=special>, &amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>p_end</span><span class=special>))
+        .</span><span class=identifier>property</span><span class=special>(</span><span class=string>&quot;bogons&quot;</span><span class=special>, </span><span class=identifier>range</span><span class=special>(&amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>b_begin</span><span class=special>, &amp;</span><span class=identifier>F</span><span class=special>::</span><span class=identifier>b_end</span><span class=special>));
 </span></pre></code>
 <table border="0">
   <tr>
@@ -92,7 +92,7 @@ Now, our C++ Wrapper:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

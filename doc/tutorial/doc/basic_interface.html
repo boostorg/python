@@ -34,7 +34,7 @@ To illustrate, this Python code snippet:</p>
 <code><pre>
     <span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>x</span><span class=special>, </span><span class=identifier>y</span><span class=special>):
          </span><span class=keyword>if </span><span class=special>(</span><span class=identifier>y </span><span class=special>== </span><span class=literal>'foo'</span><span class=special>):
-             </span><span class=identifier>x</span><span class=special>[</span><span class=number>3</span><span class=special>:</span><span class=number>7</span><span class=special>] </span><span class=special>= </span><span class=literal>'bar'
+             </span><span class=identifier>x</span><span class=special>[</span><span class=number>3</span><span class=special>:</span><span class=number>7</span><span class=special>] = </span><span class=literal>'bar'
          </span><span class=keyword>else</span><span class=special>:
              </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>items </span><span class=special>+= </span><span class=identifier>y</span><span class=special>(</span><span class=number>3</span><span class=special>, </span><span class=identifier>x</span><span class=special>)
          </span><span class=keyword>return </span><span class=identifier>x
@@ -45,16 +45,16 @@ To illustrate, this Python code snippet:</p>
 <p>
 Can be rewritten in C++ using Boost.Python facilities this way:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>object </span><span class=identifier>x</span><span class=special>, </span><span class=identifier>object </span><span class=identifier>y</span><span class=special>) </span><span class=special>{
+    <span class=identifier>object </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>object </span><span class=identifier>x</span><span class=special>, </span><span class=identifier>object </span><span class=identifier>y</span><span class=special>) {
          </span><span class=keyword>if </span><span class=special>(</span><span class=identifier>y </span><span class=special>== </span><span class=string>&quot;foo&quot;</span><span class=special>)
-             </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>slice</span><span class=special>(</span><span class=number>3</span><span class=special>,</span><span class=number>7</span><span class=special>) </span><span class=special>= </span><span class=string>&quot;bar&quot;</span><span class=special>;
+             </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>slice</span><span class=special>(</span><span class=number>3</span><span class=special>,</span><span class=number>7</span><span class=special>) = </span><span class=string>&quot;bar&quot;</span><span class=special>;
          </span><span class=keyword>else
-             </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;items&quot;</span><span class=special>) </span><span class=special>+= </span><span class=identifier>y</span><span class=special>(</span><span class=number>3</span><span class=special>, </span><span class=identifier>x</span><span class=special>);
+             </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;items&quot;</span><span class=special>) += </span><span class=identifier>y</span><span class=special>(</span><span class=number>3</span><span class=special>, </span><span class=identifier>x</span><span class=special>);
          </span><span class=keyword>return </span><span class=identifier>x</span><span class=special>;
-    </span><span class=special>}
-    </span><span class=identifier>object </span><span class=identifier>getfunc</span><span class=special>() </span><span class=special>{
+    }
+    </span><span class=identifier>object </span><span class=identifier>getfunc</span><span class=special>() {
         </span><span class=keyword>return </span><span class=identifier>object</span><span class=special>(</span><span class=identifier>f</span><span class=special>);
-    </span><span class=special>}
+    }
 </span></pre></code>
 <p>
 Apart from cosmetic differences due to the fact that we are writing the
@@ -68,7 +68,7 @@ coder.</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

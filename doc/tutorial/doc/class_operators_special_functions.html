@@ -32,7 +32,7 @@ this and makes it easy to wrap C++ operator-powered classes.</p>
 Consider a file position class <tt>FilePos</tt> and a set of operators that take
 on FilePos instances:</p>
 <code><pre>
-    <span class=keyword>class </span><span class=identifier>FilePos </span><span class=special>{ </span><span class=comment>/*...*/ </span><span class=special>};
+    <span class=keyword>class </span><span class=identifier>FilePos </span><span class=special>{ /*...*/ };
 
     </span><span class=identifier>FilePos     </span><span class=keyword>operator</span><span class=special>+(</span><span class=identifier>FilePos</span><span class=special>, </span><span class=keyword>int</span><span class=special>);
     </span><span class=identifier>FilePos     </span><span class=keyword>operator</span><span class=special>+(</span><span class=keyword>int</span><span class=special>, </span><span class=identifier>FilePos</span><span class=special>);
@@ -47,13 +47,13 @@ The class and the various operators can be mapped to Python rather easily
 and intuitively:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>FilePos</span><span class=special>&gt;(</span><span class=string>&quot;FilePos&quot;</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>+ </span><span class=keyword>int</span><span class=special>())          </span><span class=comment>// __add__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=keyword>int</span><span class=special>() </span><span class=special>+ </span><span class=identifier>self</span><span class=special>)          </span><span class=comment>// __radd__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>- </span><span class=identifier>self</span><span class=special>)           </span><span class=comment>// __sub__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>- </span><span class=keyword>int</span><span class=special>())          </span><span class=comment>// __sub__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>+= </span><span class=keyword>int</span><span class=special>())         </span><span class=comment>// __iadd__
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>+ </span><span class=keyword>int</span><span class=special>())          // </span><span class=identifier>__add__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=keyword>int</span><span class=special>() + </span><span class=identifier>self</span><span class=special>)          // </span><span class=identifier>__radd__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>- </span><span class=identifier>self</span><span class=special>)           // </span><span class=identifier>__sub__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>- </span><span class=keyword>int</span><span class=special>())          // </span><span class=identifier>__sub__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>+= </span><span class=keyword>int</span><span class=special>())         // </span><span class=identifier>__iadd__
         </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>-= </span><span class=identifier>other</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;())
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>&lt; </span><span class=identifier>self</span><span class=special>);          </span><span class=comment>// __lt__
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>self </span><span class=special>&lt; </span><span class=identifier>self</span><span class=special>);          // </span><span class=identifier>__lt__
 </span></pre></code>
 <p>
 The code snippet above is very clear and needs almost no explanation at
@@ -69,17 +69,17 @@ similar set of intuitive interfaces can also be used to wrap C++ functions
 that correspond to these Python <i>special functions</i>. Example:</p>
 <code><pre>
     <span class=keyword>class </span><span class=identifier>Rational
-    </span><span class=special>{ </span><span class=keyword>operator </span><span class=keyword>double</span><span class=special>() </span><span class=keyword>const</span><span class=special>; </span><span class=special>};
+    </span><span class=special>{ </span><span class=keyword>operator </span><span class=keyword>double</span><span class=special>() </span><span class=keyword>const</span><span class=special>; };
 
     </span><span class=identifier>Rational </span><span class=identifier>pow</span><span class=special>(</span><span class=identifier>Rational</span><span class=special>, </span><span class=identifier>Rational</span><span class=special>);
     </span><span class=identifier>Rational </span><span class=identifier>abs</span><span class=special>(</span><span class=identifier>Rational</span><span class=special>);
     </span><span class=identifier>ostream</span><span class=special>&amp; </span><span class=keyword>operator</span><span class=special>&lt;&lt;(</span><span class=identifier>ostream</span><span class=special>&amp;,</span><span class=identifier>Rational</span><span class=special>);
 
     </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Rational</span><span class=special>&gt;()
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>float_</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                  </span><span class=comment>// __float__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>pow</span><span class=special>(</span><span class=identifier>self</span><span class=special>, </span><span class=identifier>other</span><span class=special>&lt;</span><span class=identifier>Rational</span><span class=special>&gt;))    </span><span class=comment>// __pow__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>abs</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     </span><span class=comment>// __abs__
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>str</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     </span><span class=comment>// __str__
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>float_</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                  // </span><span class=identifier>__float__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>pow</span><span class=special>(</span><span class=identifier>self</span><span class=special>, </span><span class=identifier>other</span><span class=special>&lt;</span><span class=identifier>Rational</span><span class=special>&gt;))    // </span><span class=identifier>__pow__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>abs</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     // </span><span class=identifier>__abs__
+        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>str</span><span class=special>(</span><span class=identifier>self</span><span class=special>))                     // </span><span class=identifier>__str__
         </span><span class=special>;
 </span></pre></code>
 <p>
@@ -100,7 +100,7 @@ Well, the method <tt>str</tt> requires the <tt>operator&lt;&lt;</tt> to do its w
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

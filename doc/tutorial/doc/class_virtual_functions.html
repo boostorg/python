@@ -31,8 +31,8 @@ add a virtual function to our <tt>Base</tt> class:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>Base
     </span><span class=special>{
-        </span><span class=keyword>virtual </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() </span><span class=special>= </span><span class=number>0</span><span class=special>;
-    </span><span class=special>};
+        </span><span class=keyword>virtual </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() = </span><span class=number>0</span><span class=special>;
+    };
 </span></pre></code>
 <p>
 Since <tt>f</tt> is a pure virtual function, <tt>Base</tt> is now an abstract
@@ -40,7 +40,7 @@ class. Given an instance of our class, the free function <tt>call_f</tt>
 calls some implementation of this virtual function in a concrete
 derived class:</p>
 <code><pre>
-    <span class=keyword>int </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>Base</span><span class=special>&amp; </span><span class=identifier>b</span><span class=special>) </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>b</span><span class=special>.</span><span class=identifier>f</span><span class=special>(); </span><span class=special>}
+    <span class=keyword>int </span><span class=identifier>call_f</span><span class=special>(</span><span class=identifier>Base</span><span class=special>&amp; </span><span class=identifier>b</span><span class=special>) { </span><span class=keyword>return </span><span class=identifier>b</span><span class=special>.</span><span class=identifier>f</span><span class=special>(); }
 </span></pre></code>
 <p>
 To allow this function to be implemented in a Python derived class, we
@@ -49,10 +49,10 @@ need to create a class wrapper:</p>
     <span class=keyword>struct </span><span class=identifier>BaseWrap </span><span class=special>: </span><span class=identifier>Base
     </span><span class=special>{
         </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>)
-            </span><span class=special>: </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) </span><span class=special>{}
-        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); </span><span class=special>}
+            : </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
+        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
         </span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self</span><span class=special>;
-    </span><span class=special>};
+    };
 </span></pre></code>
 <table width="80%" border="0" align="center">
   <tr>
@@ -93,7 +93,7 @@ polymorphically <i>from</i> <b>C++</b>.    </td>
 Wrapping <tt>Base</tt> and the free function <tt>call_f</tt>:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>, </span><span class=identifier>no_init</span><span class=special>)
-        </span><span class=special>;
+        ;
     </span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;call_f&quot;</span><span class=special>, </span><span class=identifier>call_f</span><span class=special>);
 </span></pre></code>
 <p>
@@ -104,31 +104,31 @@ Python. To do that, it needs Base's copy constructor... which isn't
 available, since Base is an abstract class.</p>
 <p>
 In Python, let us try to instantiate our <tt>Base</tt> class:</p>
-<code>
-<pre>
+<code><pre>
     <span class=special>&gt;&gt;&gt; </span><span class=identifier>base </span><span class=special>= </span><span class=identifier>Base</span><span class=special>()
-    </span>RuntimeError: This class cannot be instantiated from Python</pre>
-</code> 
+    </span><span class=identifier>RuntimeError</span><span class=special>: </span><span class=identifier>This </span><span class=keyword>class </span><span class=identifier>cannot </span><span class=identifier>be </span><span class=identifier>instantiated </span><span class=identifier>from </span><span class=identifier>Python
+</span></pre></code>
 <p>
 Why is it an error? <tt>Base</tt> is an abstract class. As such it is advisable
 to define the Python wrapper with <tt>no_init</tt> as we have done above. Doing
 so will disallow abstract base classes such as <tt>Base</tt> to be instantiated.</p>
-<a name="deriving_a_python_class"></a><h2>Deriving a Python class</h2>
-<p> Now, at last, we can even derive from our base class <tt>Base</tt> in Python. 
-  Before we can do that, we have to set up our <tt>class_</tt> wrapper as:</p>
-<pre>    <code><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
-        </span><span class=special>;</span></code></pre>
-<p>Otherwise, we have to suppress the Base class' <tt>no_init</tt> by adding an 
-  <tt>__init__()</tt> method to all our derived classes. <tt>no_init </tt>actually 
-  adds an <tt>__init__</tt> method that raises a Python RuntimeError exception.</p>
-<code>
-<pre>
+<a name="deriving_a_python_class"></a><h2>Deriving a Python class</h2><p>
+Now, at last, we can even derive from our base class Base in Python. Before
+we can do that, we have to set up our class_ wrapper as:</p>
+<code><pre>
+    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>, </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>noncopyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
+        ;
+</span></pre></code>
+<p>
+Otherwise, we have to suppress the Base class' <tt>no_init</tt> by adding an
+<tt>__init__()</tt> method to all our derived classes. <tt>no_init</tt> actually adds
+an <tt>__init__</tt> method that raises a Python RuntimeError exception.</p>
+<code><pre>
     <span class=special>&gt;&gt;&gt; </span><span class=keyword>class </span><span class=identifier>Derived</span><span class=special>(</span><span class=identifier>Base</span><span class=special>):
-    </span><span class=special>...     </span><span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
-    </span><span class=special>...         </span><span class=keyword>return </span><span class=number>42
+    ...     </span><span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
+    ...         </span><span class=keyword>return </span><span class=number>42
     </span><span class=special>...
-</span></pre>
-</code> 
+</span></pre></code>
 <p>
 Cool eh? A Python class deriving from a C++ class!</p>
 <p>
@@ -159,8 +159,8 @@ declared as pure virtual:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>Base
     </span><span class=special>{
-        </span><span class=keyword>virtual </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=number>0</span><span class=special>; </span><span class=special>}
-    </span><span class=special>};
+        </span><span class=keyword>virtual </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=number>0</span><span class=special>; }
+    };
 </span></pre></code>
 <p>
 And instead is implemented to return <tt>0</tt>, as shown above.</p>
@@ -168,20 +168,19 @@ And instead is implemented to return <tt>0</tt>, as shown above.</p>
     <span class=keyword>struct </span><span class=identifier>BaseWrap </span><span class=special>: </span><span class=identifier>Base
     </span><span class=special>{
         </span><span class=identifier>BaseWrap</span><span class=special>(</span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self_</span><span class=special>)
-            </span><span class=special>: </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) </span><span class=special>{}
-        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); </span><span class=special>}
-        </span><span class=keyword>static </span><span class=keyword>int </span><span class=identifier>default_f</span><span class=special>(</span><span class=identifier>Base</span><span class=special>* </span><span class=identifier>b</span><span class=special>) </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>b</span><span class=special>-&gt;</span><span class=identifier>Base</span><span class=special>::</span><span class=identifier>f</span><span class=special>(); </span><span class=special>} </span><span class=comment>// &lt;&lt;=== added
+            : </span><span class=identifier>self</span><span class=special>(</span><span class=identifier>self_</span><span class=special>) {}
+        </span><span class=keyword>int </span><span class=identifier>f</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>call_method</span><span class=special>&lt;</span><span class=keyword>int</span><span class=special>&gt;(</span><span class=identifier>self</span><span class=special>, </span><span class=string>&quot;f&quot;</span><span class=special>); }
+        </span><span class=keyword>static </span><span class=keyword>int </span><span class=identifier>default_f</span><span class=special>(</span><span class=identifier>Base</span><span class=special>* </span><span class=identifier>b</span><span class=special>) { </span><span class=keyword>return </span><span class=identifier>b</span><span class=special>-&gt;</span><span class=identifier>Base</span><span class=special>::</span><span class=identifier>f</span><span class=special>(); } // &lt;&lt;=== </span><span class=identifier>added
         </span><span class=identifier>PyObject</span><span class=special>* </span><span class=identifier>self</span><span class=special>;
-    </span><span class=special>};
+    };
 </span></pre></code>
 <p>
 then, our Boost.Python wrapper:</p>
-<code>
-<pre>    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap, boost::non_copyable</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;f&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>BaseWrap</span><span class=special>::</span><span class=identifier>default_f</span><span class=special>)
-        </span><span class=special>;
-</span></pre>
-</code>
+<code><pre>
+    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>, </span><span class=identifier>BaseWrap</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;f&quot;</span><span class=special>, &amp;</span><span class=identifier>BaseWrap</span><span class=special>::</span><span class=identifier>default_f</span><span class=special>)
+        ;
+</span></pre></code>
 <p>
 Note that we are allowing <tt>Base</tt> objects to be instantiated this time,
 unlike before where we specifically defined the <tt>class_&lt;Base&gt;</tt> with
@@ -190,11 +189,11 @@ unlike before where we specifically defined the <tt>class_&lt;Base&gt;</tt> with
 In Python, the results would be as expected:</p>
 <code><pre>
     <span class=special>&gt;&gt;&gt; </span><span class=identifier>base </span><span class=special>= </span><span class=identifier>Base</span><span class=special>()
-    </span><span class=special>&gt;&gt;&gt; </span><span class=keyword>class </span><span class=identifier>Derived</span><span class=special>(</span><span class=identifier>Base</span><span class=special>):
-    </span><span class=special>...     </span><span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
-    </span><span class=special>...         </span><span class=keyword>return </span><span class=number>42
+    &gt;&gt;&gt; </span><span class=keyword>class </span><span class=identifier>Derived</span><span class=special>(</span><span class=identifier>Base</span><span class=special>):
+    ...     </span><span class=identifier>def </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>self</span><span class=special>):
+    ...         </span><span class=keyword>return </span><span class=number>42
     </span><span class=special>...
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>derived </span><span class=special>= </span><span class=identifier>Derived</span><span class=special>()
+    &gt;&gt;&gt; </span><span class=identifier>derived </span><span class=special>= </span><span class=identifier>Derived</span><span class=special>()
 </span></pre></code>
 <p>
 Calling <tt>base.f()</tt>:</p>
@@ -228,7 +227,7 @@ Calling <tt>call_f</tt>, passing in a <tt>derived</tt> object:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

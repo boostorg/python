@@ -38,11 +38,11 @@ build on our previous example:</p>
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>World
     </span><span class=special>{
-        </span><span class=identifier>World</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>msg</span><span class=special>): </span><span class=identifier>msg</span><span class=special>(</span><span class=identifier>msg</span><span class=special>) </span><span class=special>{} </span><span class=comment>// added constructor
-        </span><span class=keyword>void </span><span class=identifier>set</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>msg</span><span class=special>) </span><span class=special>{ </span><span class=keyword>this</span><span class=special>-&gt;</span><span class=identifier>msg </span><span class=special>= </span><span class=identifier>msg</span><span class=special>; </span><span class=special>}
-        </span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>greet</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>msg</span><span class=special>; </span><span class=special>}
+        </span><span class=identifier>World</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>msg</span><span class=special>): </span><span class=identifier>msg</span><span class=special>(</span><span class=identifier>msg</span><span class=special>) {} // </span><span class=identifier>added </span><span class=identifier>constructor
+        </span><span class=keyword>void </span><span class=identifier>set</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>msg</span><span class=special>) { </span><span class=keyword>this</span><span class=special>-&gt;</span><span class=identifier>msg </span><span class=special>= </span><span class=identifier>msg</span><span class=special>; }
+        </span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>greet</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>msg</span><span class=special>; }
         </span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>msg</span><span class=special>;
-    </span><span class=special>};
+    };
 </span></pre></code>
 <p>
 This time <tt>World</tt> has no default constructor; our previous
@@ -54,12 +54,12 @@ expose instead.</p>
     </span><span class=keyword>using </span><span class=keyword>namespace </span><span class=identifier>boost</span><span class=special>::</span><span class=identifier>python</span><span class=special>;
 
     </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>hello</span><span class=special>)
-    </span><span class=special>{
+    {
         </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>World</span><span class=special>&gt;(</span><span class=string>&quot;World&quot;</span><span class=special>, </span><span class=identifier>init</span><span class=special>&lt;</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>&gt;())
-            </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;greet&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>greet</span><span class=special>)
-            </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;set&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>set</span><span class=special>)
-        </span><span class=special>;
-    </span><span class=special>}
+            .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;greet&quot;</span><span class=special>, &amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>greet</span><span class=special>)
+            .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;set&quot;</span><span class=special>, &amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>set</span><span class=special>)
+        ;
+    }
 </span></pre></code>
 <p>
 <tt>init&lt;std::string&gt;()</tt> exposes the constructor taking in a
@@ -71,10 +71,10 @@ the <tt>def()</tt> member function. Say for example we have another World
 constructor taking in two doubles:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>World</span><span class=special>&gt;(</span><span class=string>&quot;World&quot;</span><span class=special>, </span><span class=identifier>init</span><span class=special>&lt;</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>&gt;())
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>init</span><span class=special>&lt;</span><span class=keyword>double</span><span class=special>, </span><span class=keyword>double</span><span class=special>&gt;())
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;greet&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>greet</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;set&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>set</span><span class=special>)
-    </span><span class=special>;
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=identifier>init</span><span class=special>&lt;</span><span class=keyword>double</span><span class=special>, </span><span class=keyword>double</span><span class=special>&gt;())
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;greet&quot;</span><span class=special>, &amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>greet</span><span class=special>)
+        .</span><span class=identifier>def</span><span class=special>(</span><span class=string>&quot;set&quot;</span><span class=special>, &amp;</span><span class=identifier>World</span><span class=special>::</span><span class=identifier>set</span><span class=special>)
+    ;
 </span></pre></code>
 <p>
 On the other hand, if we do not wish to expose any constructors at
@@ -93,7 +93,7 @@ Python RuntimeError exception.</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

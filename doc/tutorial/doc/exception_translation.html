@@ -33,16 +33,16 @@ then gives up:</p>
 </span></pre></code>
 <p>
 Users may provide custom translation. Here's an example:</p>
-<pre>
-    <code><span class=keyword>struct </span><span class=identifier>PodBayDoorException</span><span class=special>;
-    </span><span class=keyword>void </span><span class=identifier>translator</span><span class=special>(</span><span class=identifier>PodBayDoorException</span><span class=special> </span><span class="keyword">const</span><span class=special>&amp; </span><span class=identifier>x</span><span class=special>) {
+<code><pre>
+    <span class=keyword>struct </span><span class=identifier>PodBayDoorException</span><span class=special>;
+    </span><span class=keyword>void </span><span class=identifier>translator</span><span class=special>(</span><span class=identifier>PodBayDoorException </span><span class=keyword>const</span><span class=special>&amp; </span><span class=identifier>x</span><span class=special>) {
         </span><span class=identifier>PyErr_SetString</span><span class=special>(</span><span class=identifier>PyExc_UserWarning</span><span class=special>, </span><span class=string>&quot;I'm sorry Dave...&quot;</span><span class=special>);
     }
     </span><span class=identifier>BOOST_PYTHON_MODULE</span><span class=special>(</span><span class=identifier>kubrick</span><span class=special>) {
          </span><span class=identifier>register_exception_translator</span><span class=special>&lt;
               </span><span class=identifier>PodBayDoorException</span><span class=special>&gt;(</span><span class=identifier>translator</span><span class=special>);
          ...
-</span></code></pre>
+</span></pre></code>
 <table border="0">
   <tr>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
@@ -51,7 +51,7 @@ Users may provide custom translation. Here's an example:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

@@ -33,7 +33,7 @@ abstract base classes.</p>
 <p>
 Consider this trivial inheritance structure:</p>
 <code><pre>
-    <span class=keyword>struct </span><span class=identifier>Base </span><span class=special>{ </span><span class=keyword>virtual </span><span class=special>~</span><span class=identifier>Base</span><span class=special>(); </span><span class=special>};
+    <span class=keyword>struct </span><span class=identifier>Base </span><span class=special>{ </span><span class=keyword>virtual </span><span class=special>~</span><span class=identifier>Base</span><span class=special>(); };
     </span><span class=keyword>struct </span><span class=identifier>Derived </span><span class=special>: </span><span class=identifier>Base </span><span class=special>{};
 </span></pre></code>
 <p>
@@ -42,22 +42,22 @@ instances:</p>
 <code><pre>
     <span class=keyword>void </span><span class=identifier>b</span><span class=special>(</span><span class=identifier>Base</span><span class=special>*);
     </span><span class=keyword>void </span><span class=identifier>d</span><span class=special>(</span><span class=identifier>Derived</span><span class=special>*);
-    </span><span class=identifier>Base</span><span class=special>* </span><span class=identifier>factory</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=keyword>new </span><span class=identifier>Derived</span><span class=special>; </span><span class=special>}
+    </span><span class=identifier>Base</span><span class=special>* </span><span class=identifier>factory</span><span class=special>() { </span><span class=keyword>return </span><span class=keyword>new </span><span class=identifier>Derived</span><span class=special>; }
 </span></pre></code>
 <p>
 We've seen how we can wrap the base class <tt>Base</tt>:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>&gt;(</span><span class=string>&quot;Base&quot;</span><span class=special>)
-        </span><span class=comment>/*...*/
-        </span><span class=special>;
+        /*...*/
+        ;
 </span></pre></code>
 <p>
 Now we can inform Boost.Python of the inheritance relationship between
 <tt>Derived</tt> and its base class <tt>Base</tt>.  Thus:</p>
 <code><pre>
-    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Derived</span><span class=special>, </span><span class=identifier>bases</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>&gt; </span><span class=special>&gt;(</span><span class=string>&quot;Derived&quot;</span><span class=special>)
-        </span><span class=comment>/*...*/
-        </span><span class=special>;
+    <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Derived</span><span class=special>, </span><span class=identifier>bases</span><span class=special>&lt;</span><span class=identifier>Base</span><span class=special>&gt; &gt;(</span><span class=string>&quot;Derived&quot;</span><span class=special>)
+        /*...*/
+        ;
 </span></pre></code>
 <p>
 Doing so, we get some things for free:</p>
@@ -89,7 +89,7 @@ call policies</a> later.</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

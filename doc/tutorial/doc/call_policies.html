@@ -43,9 +43,9 @@ How should the library wrap this function? A naive approach builds a
 Python X object around result reference. This strategy might or might
 not work out. Here's an example where it didn't</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>) </span>#<span class=identifier>x </span><span class=identifier>refers </span><span class=identifier>to </span><span class=identifier>some </span><span class=identifier>C</span><span class=special>++ </span><span class=identifier>X
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>) </span>##<span class=identifier>x </span><span class=identifier>refers </span><span class=identifier>to </span><span class=identifier>some </span><span class=identifier>C</span><span class=special>++ </span><span class=identifier>X
     </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>del </span><span class=identifier>y
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>some_method</span><span class=special>() </span>#<span class=identifier>CRASH</span><span class=special>!
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>some_method</span><span class=special>() </span>##<span class=identifier>CRASH</span><span class=special>!
 </span></pre></code>
 <p>
 What's the problem?</p>
@@ -53,10 +53,10 @@ What's the problem?</p>
 Well, what if f() was implemented as shown below:</p>
 <code><pre>
     <span class=identifier>X</span><span class=special>&amp; </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>Y</span><span class=special>&amp; </span><span class=identifier>y</span><span class=special>, </span><span class=identifier>Z</span><span class=special>* </span><span class=identifier>z</span><span class=special>)
-    </span><span class=special>{
+    {
         </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>z </span><span class=special>= </span><span class=identifier>z</span><span class=special>;
         </span><span class=keyword>return </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>x</span><span class=special>;
-    </span><span class=special>}
+    }
 </span></pre></code>
 <p>
 The problem is that the lifetime of result X&amp; is tied to the lifetime
@@ -70,8 +70,8 @@ Here's what's happening:</p>
 <ol><li><tt>f</tt> is called passing in a reference to <tt>y</tt> and a pointer to <tt>z</tt></li><li>A reference to <tt>y.x</tt> is returned</li><li><tt>y</tt> is deleted. <tt>x</tt> is a dangling reference</li><li><tt>x.some_method()</tt> is called</li><li><b>BOOM!</b></li></ol><p>
 We could copy result into a new object:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>).</span><span class=identifier>set</span><span class=special>(</span><span class=number>42</span><span class=special>) </span>#<span class=identifier>Result </span><span class=identifier>disappears
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>get</span><span class=special>()       </span>#<span class=identifier>No </span><span class=identifier>crash</span><span class=special>, </span><span class=identifier>but </span><span class=identifier>still </span><span class=identifier>bad
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>).</span><span class=identifier>set</span><span class=special>(</span><span class=number>42</span><span class=special>) </span>##<span class=identifier>Result </span><span class=identifier>disappears
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>get</span><span class=special>()       </span>##<span class=identifier>No </span><span class=identifier>crash</span><span class=special>, </span><span class=identifier>but </span><span class=identifier>still </span><span class=identifier>bad
     </span><span class=number>3.14
 </span></pre></code>
 <p>
@@ -84,25 +84,25 @@ Our problems do not end there. Suppose Y is implemented as follows:</p>
     <span class=keyword>struct </span><span class=identifier>Y
     </span><span class=special>{
         </span><span class=identifier>X </span><span class=identifier>x</span><span class=special>; </span><span class=identifier>Z</span><span class=special>* </span><span class=identifier>z</span><span class=special>;
-        </span><span class=keyword>int </span><span class=identifier>z_value</span><span class=special>() </span><span class=special>{ </span><span class=keyword>return </span><span class=identifier>z</span><span class=special>-&gt;</span><span class=identifier>value</span><span class=special>(); </span><span class=special>}
-    </span><span class=special>};
+        </span><span class=keyword>int </span><span class=identifier>z_value</span><span class=special>() { </span><span class=keyword>return </span><span class=identifier>z</span><span class=special>-&gt;</span><span class=identifier>value</span><span class=special>(); }
+    };
 </span></pre></code>
 <p>
 Notice that the data member <tt>z</tt> is held by class Y using a raw
 pointer. Now we have a potential dangling pointer problem inside Y:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>) </span>#<span class=identifier>y </span><span class=identifier>refers </span><span class=identifier>to </span><span class=identifier>z
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>del </span><span class=identifier>z       </span>#<span class=identifier>Kill </span><span class=identifier>the </span><span class=identifier>z </span><span class=identifier>object
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>z_value</span><span class=special>() </span>#<span class=identifier>CRASH</span><span class=special>!
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>y</span><span class=special>, </span><span class=identifier>z</span><span class=special>) </span>##<span class=identifier>y </span><span class=identifier>refers </span><span class=identifier>to </span><span class=identifier>z
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>del </span><span class=identifier>z       </span>##<span class=identifier>Kill </span><span class=identifier>the </span><span class=identifier>z </span><span class=identifier>object
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>z_value</span><span class=special>() </span>##<span class=identifier>CRASH</span><span class=special>!
 </span></pre></code>
 <p>
 For reference, here's the implementation of <tt>f</tt> again:</p>
 <code><pre>
     <span class=identifier>X</span><span class=special>&amp; </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>Y</span><span class=special>&amp; </span><span class=identifier>y</span><span class=special>, </span><span class=identifier>Z</span><span class=special>* </span><span class=identifier>z</span><span class=special>)
-    </span><span class=special>{
+    {
         </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>z </span><span class=special>= </span><span class=identifier>z</span><span class=special>;
         </span><span class=keyword>return </span><span class=identifier>y</span><span class=special>.</span><span class=identifier>x</span><span class=special>;
-    </span><span class=special>}
+    }
 </span></pre></code>
 <p>
 Here's what's happening:</p>
@@ -113,7 +113,7 @@ are our friends:</p>
 <code><pre>
     <span class=identifier>def</span><span class=special>(</span><span class=string>&quot;f&quot;</span><span class=special>, </span><span class=identifier>f</span><span class=special>,
         </span><span class=identifier>return_internal_reference</span><span class=special>&lt;</span><span class=number>1</span><span class=special>,
-            </span><span class=identifier>with_custodian_and_ward</span><span class=special>&lt;</span><span class=number>1</span><span class=special>, </span><span class=number>2</span><span class=special>&gt; </span><span class=special>&gt;());
+            </span><span class=identifier>with_custodian_and_ward</span><span class=special>&lt;</span><span class=number>1</span><span class=special>, </span><span class=number>2</span><span class=special>&gt; &gt;());
 </span></pre></code>
 <p>
 What are the <tt>1</tt> and <tt>2</tt> parameters, you ask?</p>
@@ -138,7 +138,7 @@ or more policies can be composed by chaining. Here's the general syntax:</p>
 <code><pre>
     <span class=identifier>policy1</span><span class=special>&lt;</span><span class=identifier>args</span><span class=special>...,
         </span><span class=identifier>policy2</span><span class=special>&lt;</span><span class=identifier>args</span><span class=special>...,
-            </span><span class=identifier>policy3</span><span class=special>&lt;</span><span class=identifier>args</span><span class=special>...&gt; </span><span class=special>&gt; </span><span class=special>&gt;
+            </span><span class=identifier>policy3</span><span class=special>&lt;</span><span class=identifier>args</span><span class=special>...&gt; &gt; &gt;
 </span></pre></code>
 <p>
 Here is the list of predefined call policies. A complete reference detailing
@@ -160,7 +160,7 @@ here</a>.</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

@@ -32,23 +32,24 @@ member that we wish to be exposed may be regarded as <b>read-only</b> or
 <code><pre>
     <span class=keyword>struct </span><span class=identifier>Var
     </span><span class=special>{
-        </span><span class=identifier>Var</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>name</span><span class=special>) </span><span class=special>: </span><span class=identifier>name</span><span class=special>(</span><span class=identifier>name</span><span class=special>), </span><span class=identifier>value</span><span class=special>() </span><span class=special>{}
+        </span><span class=identifier>Var</span><span class=special>(</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=identifier>name</span><span class=special>) : </span><span class=identifier>name</span><span class=special>(</span><span class=identifier>name</span><span class=special>), </span><span class=identifier>value</span><span class=special>() {}
         </span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string </span><span class=keyword>const </span><span class=identifier>name</span><span class=special>;
         </span><span class=keyword>float </span><span class=identifier>value</span><span class=special>;
-    </span><span class=special>};
+    };
 </span></pre></code>
 <p>
 Our C++ <tt>Var</tt> class and its data members can be exposed to Python:</p>
 <code><pre>
     <span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Var</span><span class=special>&gt;(</span><span class=string>&quot;Var&quot;</span><span class=special>, </span><span class=identifier>init</span><span class=special>&lt;</span><span class=identifier>std</span><span class=special>::</span><span class=identifier>string</span><span class=special>&gt;())
-        </span><span class=special>.</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;name&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>name</span><span class=special>)
-        </span><span class=special>.</span><span class=identifier>def_readwrite</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>value</span><span class=special>);
+        .</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;name&quot;</span><span class=special>, &amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>name</span><span class=special>)
+        .</span><span class=identifier>def_readwrite</span><span class=special>(</span><span class=string>&quot;value&quot;</span><span class=special>, &amp;</span><span class=identifier>Var</span><span class=special>::</span><span class=identifier>value</span><span class=special>);
 </span></pre></code>
 <p>
-Then, in Python:</p>
+Then, in Python, assuming we have placed our Var class inside the namespace
+hello as we did before:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>Var</span><span class=special>(</span><span class=literal>'pi'</span><span class=special>)
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value </span><span class=special>= </span><span class=number>3.14
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>x </span><span class=special>= </span><span class=identifier>hello</span><span class=special>.</span><span class=identifier>Var</span><span class=special>(</span><span class=literal>'pi'</span><span class=special>)
+    &gt;&gt;&gt; </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value </span><span class=special>= </span><span class=number>3.14
     </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>print </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>name</span><span class=special>, </span><span class=literal>'is around'</span><span class=special>, </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>value
     </span><span class=identifier>pi </span><span class=identifier>is </span><span class=identifier>around </span><span class=number>3.14
 </span></pre></code>
@@ -68,7 +69,7 @@ as <b>read-write</b>.</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with

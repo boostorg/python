@@ -30,7 +30,7 @@ that of Python's:</p>
 <ul><li>list</li><li>dict</li><li>tuple</li><li>str</li><li>long_</li><li>enum</li></ul><p>
 These derived <tt>object</tt> types act like real Python types. For instance:</p>
 <code><pre>
-    <span class=identifier>str</span><span class=special>(</span><span class=number>1</span><span class=special>) </span><span class=special>==&gt; </span><span class=string>&quot;1&quot;
+    <span class=identifier>str</span><span class=special>(</span><span class=number>1</span><span class=special>) ==&gt; </span><span class=string>&quot;1&quot;
 </span></pre></code>
 <p>
 Wherever appropriate, a particular derived <tt>object</tt> has corresponding
@@ -50,11 +50,11 @@ declared below, is wrapped, it will only accept instances of Python's
 <tt>str</tt> type and subtypes.</p>
 <code><pre>
     <span class=keyword>void </span><span class=identifier>f</span><span class=special>(</span><span class=identifier>str </span><span class=identifier>name</span><span class=special>)
-    </span><span class=special>{
-        </span><span class=identifier>object </span><span class=identifier>n2 </span><span class=special>= </span><span class=identifier>name</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;upper&quot;</span><span class=special>)();   </span><span class=comment>// NAME = name.upper()
-        </span><span class=identifier>str </span><span class=identifier>NAME </span><span class=special>= </span><span class=identifier>name</span><span class=special>.</span><span class=identifier>upper</span><span class=special>();            </span><span class=comment>// better
+    {
+        </span><span class=identifier>object </span><span class=identifier>n2 </span><span class=special>= </span><span class=identifier>name</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;upper&quot;</span><span class=special>)();   // </span><span class=identifier>NAME </span><span class=special>= </span><span class=identifier>name</span><span class=special>.</span><span class=identifier>upper</span><span class=special>()
+        </span><span class=identifier>str </span><span class=identifier>NAME </span><span class=special>= </span><span class=identifier>name</span><span class=special>.</span><span class=identifier>upper</span><span class=special>();            // </span><span class=identifier>better
         </span><span class=identifier>object </span><span class=identifier>msg </span><span class=special>= </span><span class=string>&quot;%s is bigger than %s&quot; </span><span class=special>% </span><span class=identifier>make_tuple</span><span class=special>(</span><span class=identifier>NAME</span><span class=special>,</span><span class=identifier>name</span><span class=special>);
-    </span><span class=special>}
+    }
 </span></pre></code>
 <p>
 In finer detail:</p>
@@ -76,14 +76,14 @@ of most of Python's mutable types make copies, just as in Python.</p>
 <p>
 Python:</p>
 <code><pre>
-    <span class=special>&gt;&gt;&gt; </span><span class=identifier>d </span><span class=special>= </span><span class=identifier>dict</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__</span><span class=special>)     </span>#<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
-    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>]            </span>#<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
+    <span class=special>&gt;&gt;&gt; </span><span class=identifier>d </span><span class=special>= </span><span class=identifier>dict</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__</span><span class=special>)     </span>##<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
+    </span><span class=special>&gt;&gt;&gt; </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>]            </span>##<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
 </span></pre></code>
 <p>
 C++:</p>
 <code><pre>
-    <span class=identifier>dict </span><span class=identifier>d</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>));  </span>#<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
-    </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>] </span><span class=special>= </span><span class=number>3</span><span class=special>;           </span>#<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
+    <span class=identifier>dict </span><span class=identifier>d</span><span class=special>(</span><span class=identifier>x</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;__dict__&quot;</span><span class=special>));  </span>##<span class=identifier>copies </span><span class=identifier>x</span><span class=special>.</span><span class=identifier>__dict__
+    </span><span class=identifier>d</span><span class=special>[</span><span class=literal>'whatever'</span><span class=special>] = </span><span class=number>3</span><span class=special>;           </span>##<span class=identifier>modifies </span><span class=identifier>the </span><span class=identifier>copy
 </span></pre></code>
 <a name="class__lt_t_gt__as_objects"></a><h2>class_&lt;T&gt; as objects</h2><p>
 Due to the dynamic nature of Boost.Python objects, any <tt>class_&lt;T&gt;</tt> may
@@ -92,13 +92,13 @@ also be one of these types! The following code snippet wraps the class
 <p>
 We can use this to create wrapped instances. Example:</p>
 <code><pre>
-    <span class=identifier>object </span><span class=identifier>vec345 </span><span class=special>= </span><span class=special>(
+    <span class=identifier>object </span><span class=identifier>vec345 </span><span class=special>= (
         </span><span class=identifier>class_</span><span class=special>&lt;</span><span class=identifier>Vec2</span><span class=special>&gt;(</span><span class=string>&quot;Vec2&quot;</span><span class=special>, </span><span class=identifier>init</span><span class=special>&lt;</span><span class=keyword>double</span><span class=special>, </span><span class=keyword>double</span><span class=special>&gt;())
-            </span><span class=special>.</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;length&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Point</span><span class=special>::</span><span class=identifier>length</span><span class=special>)
-            </span><span class=special>.</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;angle&quot;</span><span class=special>, </span><span class=special>&amp;</span><span class=identifier>Point</span><span class=special>::</span><span class=identifier>angle</span><span class=special>)
-        </span><span class=special>)(</span><span class=number>3.0</span><span class=special>, </span><span class=number>4.0</span><span class=special>);
+            .</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;length&quot;</span><span class=special>, &amp;</span><span class=identifier>Point</span><span class=special>::</span><span class=identifier>length</span><span class=special>)
+            .</span><span class=identifier>def_readonly</span><span class=special>(</span><span class=string>&quot;angle&quot;</span><span class=special>, &amp;</span><span class=identifier>Point</span><span class=special>::</span><span class=identifier>angle</span><span class=special>)
+        )(</span><span class=number>3.0</span><span class=special>, </span><span class=number>4.0</span><span class=special>);
 
-    </span><span class=identifier>assert</span><span class=special>(</span><span class=identifier>vec345</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;length&quot;</span><span class=special>) </span><span class=special>== </span><span class=number>5.0</span><span class=special>);
+    </span><span class=identifier>assert</span><span class=special>(</span><span class=identifier>vec345</span><span class=special>.</span><span class=identifier>attr</span><span class=special>(</span><span class=string>&quot;length&quot;</span><span class=special>) == </span><span class=number>5.0</span><span class=special>);
 </span></pre></code>
 <table border="0">
   <tr>
@@ -108,7 +108,7 @@ We can use this to create wrapped instances. Example:</p>
    </tr>
 </table>
 <br>
-<hr size="1"><p class="copyright">Copyright &copy; 2002 David Abrahams<br>Copyright &copy; 2002 Joel de Guzman<br><br>
+<hr size="1"><p class="copyright">Copyright &copy; 2002-2003 David Abrahams<br>Copyright &copy; 2002-2003 Joel de Guzman<br><br>
 <font size="2">Permission to copy, use, modify, sell and distribute this document
  is granted provided this copyright notice appears in all copies. This document
  is provided &quot;as is&quot; without express or implied warranty, and with
