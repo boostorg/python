@@ -208,16 +208,19 @@
 
     <p><a name="slice_nil-spec"></a></p>
 <pre>
-enum slice_nil { _ };
+class slice_nil;
+static const _ = slice_nil();
 </pre>
     A type that can be used to get the effect of leaving out an index in a
     Python slice expression: 
 <pre>
 &gt;&gt;&gt; x[:-1]
+&gt;&gt;&gt; x[::-1]
 </pre>
     C++ equivalent: 
 <pre>
 x.slice(_,-1)
+x[slice(_,_,-1)]
 </pre>
 
     <h2><a name="classes"></a>Classes</h2>

@@ -13,7 +13,6 @@
 # include <boost/python/call.hpp>
 # include <boost/python/handle_fwd.hpp>
 # include <boost/python/errors.hpp>
-# include <boost/python/slice_nil.hpp>
 # include <boost/python/refcount.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/tag.hpp>
@@ -63,6 +62,7 @@ namespace api
   struct item_policies;
   struct const_slice_policies;
   struct slice_policies;
+  class slice_nil;
 
   typedef proxy<const_attribute_policies> const_object_attribute;
   typedef proxy<attribute_policies> object_attribute;
@@ -470,5 +470,7 @@ inline PyObject* get_managed_object(object const& x, tag_t)
 }
 
 }} // namespace boost::python
+
+# include <boost/python/slice_nil.hpp>
 
 #endif // OBJECT_CORE_DWA2002615_HPP

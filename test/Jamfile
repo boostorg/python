@@ -124,6 +124,7 @@ bpl-test crossmod_exception
 [ bpl-test dict ]
 [ bpl-test tuple ]
 [ bpl-test str ]
+[ bpl-test slice ]
 
 [ bpl-test virtual_functions ]
 [ bpl-test back_reference ]

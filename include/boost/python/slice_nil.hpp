@@ -7,17 +7,19 @@
 # define SLICE_NIL_DWA2002620_HPP
 
 # include <boost/python/detail/prefix.hpp>
+# include <boost/python/object_core.hpp>
 
 namespace boost { namespace python { namespace api {
 
-class object;
-
-enum slice_nil
+class slice_nil : public object
 {
-# ifndef _ // Watch out for GNU gettext users, who #define _(x)
-      _
-# endif 
+ public:
+	slice_nil() : object() {}
 };
+
+# ifndef _ // Watch out for GNU gettext users, who #define _(x)
+static const slice_nil _ = slice_nil();
+# endif 
 
 template <class T>
 struct slice_bound
