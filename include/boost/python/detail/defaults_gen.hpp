@@ -50,7 +50,7 @@ namespace detail
       {
           return m_keywords;
       }
-      
+
    private:
       char const* m_doc;
       detail::keyword_range m_keywords;
@@ -226,53 +226,51 @@ namespace detail
 # if defined(BOOST_NO_VOID_RETURNS)
 
 #  define BOOST_PYTHON_GEN_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)   \
-    BOOST_PYTHON_GEN_FUNCTION(                                                  \
-        fname, BOOST_PP_CAT(fstubs_name, NonVoid), n_args, n_dflts, return)     \
-    BOOST_PYTHON_GEN_FUNCTION(                                                  \
-        fname, BOOST_PP_CAT(fstubs_name, Void), n_args, n_dflts, ;)             \
     struct fstubs_name                                                          \
         : public ::boost::python::detail::overloads_common<fstubs_name>         \
     {                                                                           \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  non_void_return_type;       \
-        typedef BOOST_PP_CAT(fstubs_name, Void)   void_return_type;             \
+        BOOST_PYTHON_GEN_FUNCTION(                                              \
+            fname, non_void_return_type, n_args, n_dflts, return)               \
+        BOOST_PYTHON_GEN_FUNCTION(                                              \
+            fname, void_return_type, n_args, n_dflts, ;)                        \
+                                                                                \
         BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)        \
     };
 
 #  define BOOST_PYTHON_GEN_MEM_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)       \
-    BOOST_PYTHON_GEN_MEM_FUNCTION(                                                      \
-        fname, BOOST_PP_CAT(fstubs_name, NonVoid), n_args, n_dflts, return)             \
-    BOOST_PYTHON_GEN_MEM_FUNCTION(                                                      \
-        fname, BOOST_PP_CAT(fstubs_name, Void), n_args, n_dflts, ;)                     \
     struct fstubs_name                                                                  \
         : public ::boost::python::detail::overloads_common<fstubs_name>                 \
     {                                                                                   \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  non_void_return_type;               \
-        typedef BOOST_PP_CAT(fstubs_name, Void)   void_return_type;                     \
+        BOOST_PYTHON_GEN_MEM_FUNCTION(                                                  \
+            fname, non_void_return_type, n_args, n_dflts, return)                       \
+        BOOST_PYTHON_GEN_MEM_FUNCTION(                                                  \
+            fname, void_return_type, n_args, n_dflts, ;)                                \
+                                                                                        \
         BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
     };
 
 # else // !defined(BOOST_NO_VOID_RETURNS)
 
 #  define BOOST_PYTHON_GEN_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)   \
-    BOOST_PYTHON_GEN_FUNCTION(                                                  \
-        fname, BOOST_PP_CAT(fstubs_name, NonVoid), n_args, n_dflts, return)     \
     struct fstubs_name                                                          \
         : public ::boost::python::detail::overloads_common<fstubs_name>         \
     {                                                                           \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  non_void_return_type;       \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  void_return_type;           \
+        BOOST_PYTHON_GEN_FUNCTION(                                              \
+            fname, non_void_return_type, n_args, n_dflts, return)               \
+                                                                                \
+        typedef non_void_return_type void_return_type;                          \
         BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)        \
     };
 
 
 #  define BOOST_PYTHON_GEN_MEM_FUNCTION_STUB(fname, fstubs_name, n_args, n_dflts)       \
-    BOOST_PYTHON_GEN_MEM_FUNCTION(                                                      \
-        fname, BOOST_PP_CAT(fstubs_name, NonVoid), n_args, n_dflts, return)             \
     struct fstubs_name                                                                  \
         : public ::boost::python::detail::overloads_common<fstubs_name>                 \
     {                                                                                   \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  non_void_return_type;               \
-        typedef BOOST_PP_CAT(fstubs_name, NonVoid)  void_return_type;                   \
+        BOOST_PYTHON_GEN_MEM_FUNCTION(                                                  \
+            fname, non_void_return_type, n_args, n_dflts, return)                       \
+                                                                                        \
+        typedef non_void_return_type void_return_type;                                  \
         BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
     };
 
