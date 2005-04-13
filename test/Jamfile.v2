@@ -1,5 +1,6 @@
 
 use-project /boost/python : ../build ;
+project /boost/python/test ;
 
 # A bug in the Win32 intel compilers causes compilation of one of our
 # tests to take forever when debug symbols are enabled. This rule
@@ -57,7 +58,7 @@ bpl-test crossmod_exception
 [ bpl-test minimal ]
 [ bpl-test args ]
 [ bpl-test raw_ctor ]
-#[ bpl-test numpy ]
+[ bpl-test numpy ]
 [ bpl-test enum ]
 [ bpl-test exception_translator ]
 [ bpl-test pearu1 : test_cltree.py cltree.cpp ]
@@ -67,7 +68,7 @@ bpl-test crossmod_exception
    
 
 [ python-extension builtin_converters : test_builtin_converters.cpp /boost/python//boost_python ]
-[ run-pyd builtin_converters_test : test_builtin_converters.py builtin_converters ]
+[ bpl-test builtin_converters_test : test_builtin_converters.py builtin_converters ]
 
  [ bpl-test test_pointer_adoption ]
  [ bpl-test operators ]
@@ -118,7 +119,7 @@ bpl-test crossmod_exception
 [ python-extension map_indexing_suite_ext
     : map_indexing_suite.cpp int_map_indexing_suite.cpp
     /boost/python//boost_python ]
-[ run-pyd  
+[ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
