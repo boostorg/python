@@ -1,3 +1,7 @@
+25 April 2005
+- Fixed bug where the code for wrappers of member functions were defined outside 
+the pyste namespace. Reported by Dan Haffey.
+
 9 October 2004
 - Applied a patch by Christian Hudon that fixed an issue with files
 that had a tail and relative includes.

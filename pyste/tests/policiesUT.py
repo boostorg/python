@@ -3,10 +3,13 @@
 # (See accompanying file LICENSE_1_0.txt or copy at 
 # http:#www.boost.org/LICENSE_1_0.txt)
 import sys
-sys.path.append('../src')  
 import unittest
-from policies import *
+from Pyste.policies import *
 
+
+#================================================================================
+# PolicicesTest
+#================================================================================
 class PoliciesTest(unittest.TestCase):
     
     def testReturnInternal(self):

@@ -5,3 +5,6 @@
 *.arg
 *.dll
 .sconsign
+cache
+*.cpp
+*.pch

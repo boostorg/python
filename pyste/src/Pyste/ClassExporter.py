@@ -253,8 +253,11 @@ class ClassExporter(Exporter):
             return init
         
         constructors = [x for x in self.public_members if isinstance(x, Constructor)]
+        # don't export copy constructors if the class is abstract
+        # we could remove all constructors, but this will have the effect of
+        # inserting no_init in the declaration, which would not allow
+        # even subclasses to be instantiated.
         self.constructors = constructors[:]
-        # don't export constructors if the class is abstract
         if self.class_.abstract:
             for cons in constructors:
                 if cons.IsCopy():
@@ -277,6 +280,7 @@ class ClassExporter(Exporter):
             for cons in constructors:
                 code = '.def(%s)' % init_code(cons) 
                 self.Add('inside', code)
+
         # check if the class is copyable
         if not self.class_.HasCopyConstructor() or self.class_.abstract:
             self.Add('template', namespaces.boost + 'noncopyable')
@@ -392,7 +396,7 @@ class ClassExporter(Exporter):
             # add wrapper code if this method has one
             wrapper = method_info.wrapper
             if wrapper and wrapper.code:
-                self.Add('declaration-outside', wrapper.code)
+                self.Add('declaration', wrapper.code)
         
         # export staticmethod statements
         for name in staticmethods:

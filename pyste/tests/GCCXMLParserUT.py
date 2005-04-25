@@ -8,8 +8,8 @@ sys.path.append('../src')
 import unittest
 import tempfile
 import os.path
-import GCCXMLParser
-from declarations import *
+from Pyste import GCCXMLParser
+from Pyste.declarations import *
 
     
 class Tester(unittest.TestCase):
