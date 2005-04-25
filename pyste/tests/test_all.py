@@ -1,7 +1,7 @@
 #!/usr/bin/python
-# Copyright Bruno da Silva de Oliveira 2003. Use, modification and 
+# Copyright Bruno da Silva de Oliveira 2003. Use, modification and
 # distribution is subject to the Boost Software License, Version 1.0.
-# (See accompanying file LICENSE_1_0.txt or copy at 
+# (See accompanying file LICENSE_1_0.txt or copy at
 # http:#www.boost.org/LICENSE_1_0.txt)
 
 import os
@@ -14,28 +14,28 @@ import time
 # win32 configuration
 #=============================================================================
 if sys.platform == 'win32':
-    
+
     includes = '-ID:/programming/libraries/boost-cvs/boost -ID:/Bin/Python/include'
     build_pyste_cmd = 'python ../src/Pyste/pyste.py --cache-dir=cache %s ' % includes
     compile_single_cmd = 'cl /nologo /GR /GX -c %s -I. ' % includes
     link_single_cmd = 'link /nologo /DLL '\
         '/libpath:D:/programming/libraries/boost-cvs/lib /libpath:D:/Bin/Python/libs '\
-        'boost_python.lib python23.lib /out:_%s.dll '
+        'boost_python.lib python24.lib /out:_%s.dll '
     obj_ext = 'obj'
-    
+
 #=============================================================================
 # linux configuration
-#============================================================================= 
+#=============================================================================
 elif sys.platform == 'linux2':
-    
+
     build_pyste_cmd = 'python ../src/Pyste/pyste.py -I. '
     compile_single_cmd = 'g++ -shared -c -I. -I/usr/include/python2.2 '
     link_single_cmd = 'g++ -shared -o _%s.so -lboost_python '
     obj_ext = 'o'
 
-    
 
-def build_pyste(multiple, module): 
+
+def build_pyste(multiple, module):
     rest = '%s --module=_%s %s.pyste' % (multiple, module, module)
     execute(build_pyste_cmd + rest)
 
@@ -67,8 +67,8 @@ def compile_multiple(module):
 
 def execute(cmd):
     os.system(cmd)
-        
-        
+
+
 def run_tests():
     if os.system('python runtests.py') != 0:
         raise RuntimeError, 'tests failed'
@@ -93,36 +93,36 @@ def cleanup():
             shutil.rmtree('_' + module)
         except OSError: pass
 
-    
+
 def main(multiple, module=None):
     if module is None:
         modules = get_modules()
     else:
         modules = [module]
-    
+
     start = time.clock()
-    for module in modules:    
-        build_pyste(multiple, module) 
+    for module in modules:
+        build_pyste(multiple, module)
     print '-'*50
     print 'Building pyste files: %0.2f seconds' % (time.clock()-start)
     print
-    
+
     start = time.clock()
     for module in modules:
         if multiple:
             compile_multiple(module)
         else:
-            compile_single(module) 
+            compile_single(module)
     print '-'*50
-    print 'Compiling files: %0.2f seconds' % (time.clock()-start) 
+    print 'Compiling files: %0.2f seconds' % (time.clock()-start)
     print
     if len(modules) == 1:
         os.system('python %sUT.py' % modules[0])
     else:
         run_tests()
-    #cleanup() 
+    #cleanup()
 
-    
+
 def get_modules():
     def getname(file):
         return os.path.splitext(os.path.basename(file))[0]
@@ -137,4 +137,4 @@ if __name__ == '__main__':
 #        main('--multiple', module)
         main('', module)
     except RuntimeError, e:
-        print e        
+        print e
