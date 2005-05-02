@@ -13,7 +13,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -39,7 +39,7 @@ the gaps. However, Boost.Python already makes embedding a lot easier and,
 in a future version, it may become unnecessary to touch the Python/C API at
 all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png"></span></p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id460514"></a>Building embedded programs</h2>
+<a name="id460673"></a>Building embedded programs</h2>
 <p>
 To be able to use embedding in your programs, they have to be linked to
 both Boost.Python's and Python's static link library.</p>
@@ -59,7 +59,7 @@ Additionally, Python's <tt class="literal">/include</tt> subdirectory has to be 
 include path.</p>
 <p>
 In a Jamfile, all the above boils down to:</p>
-<pre class="programlisting"><tt class="literal">    projectroot c:\projects\embedded_program ; # location of the program
+<pre class="programlisting"><tt class="literal">projectroot c:\projects\embedded_program ; # location of the program
 
     # bring in the rules for python
     SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
@@ -75,23 +75,20 @@ In a Jamfile, all the above boils down to:</p>
         &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </tt></pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id460605"></a>Getting started</h2>
+<a name="id460764"></a>Getting started</h2>
 <p>
 Being able to build is nice, but there is nothing to build yet. Embedding
 the Python interpreter into one of your C++ programs requires these 4
 steps:</p>
 <div class="orderedlist"><ol type="1">
 <li>
-#include <tt class="literal">&lt;boost/python.hpp&gt;</tt><p></p>
-<p></p>
+#include <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
 </li>
 <li>
-Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>() to start the interpreter and create the <tt class="literal"><span class="underline">_main</span>_</tt> module.<p></p>
-<p></p>
+Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>() to start the interpreter and create the <tt class="literal"><span class="underline">_main</span>_</tt> module.<br><br>
 </li>
 <li>
-Call other Python C API routines to use the interpreter.<p></p>
-<p></p>
+Call other Python C API routines to use the interpreter.<br><br>
 </li>
 <li>
 Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-656" target="_top">Py_Finalize</a>() to stop the interpreter and release its resources.
@@ -113,7 +110,7 @@ messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a> and
 <a href="../../../../v2/object.html" target="_top">object</a> class templates to automate the process.</p>
 <a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id460737"></a>Reference-counting handles and objects</h2>
+<a name="id460895"></a>Reference-counting handles and objects</h2>
 <p>
 There are two ways in which a function in the Python/C API can return a
 <tt class="literal">PyObject*</tt>: as a <span class="emphasis"><em>borrowed reference</em></span> or as a <span class="emphasis"><em>new reference</em></span>. Which of
@@ -139,14 +136,12 @@ such function that returns a new reference is <a href="http://www.python.org/doc
 discuss in the next section.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Handle is a class <span class="emphasis"><em>template</em></span>, so why haven't we been using any template parameters?</b></span><p></p>
-<p></p>
-<tt class="literal">handle</tt> has a single template parameter specifying the type of the managed object. This type is <tt class="literal">PyObject</tt> 99% of the time, so the parameter was defaulted to <tt class="literal">PyObject</tt> for convenience. Therefore we can use the shorthand <tt class="literal">handle&lt;&gt;</tt> instead of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Handle is a class <span class="emphasis"><em>template</em></span>, so why haven't we been using any template parameters?</b></span><br><br><tt class="literal">handle</tt> has a single template parameter specifying the type of the managed object. This type is <tt class="literal">PyObject</tt> 99% of the time, so the parameter was defaulted to <tt class="literal">PyObject</tt> for convenience. Therefore we can use the shorthand <tt class="literal">handle&lt;&gt;</tt> instead of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
 </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id461039"></a>Running Python code</h2>
+<a name="id461200"></a>Running Python code</h2>
 <p>
 To run Python code from C++ there is a family of functions in the API
 starting with the PyRun prefix. You can find the full list of these
@@ -161,7 +156,7 @@ The <tt class="literal">start</tt> parameter is the start symbol from the Python
 for interpreting the code. The possible values are:</p>
 <div class="informaltable">
 <h4>
-<a name="id461201"></a><span class="table-title">Start symbols</span>
+<a name="id461362"></a><span class="table-title">Start symbols</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -219,12 +214,17 @@ the object's <tt class="literal">ptr</tt> member function to retrieve the <tt cl
 <p>
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.</p>
-<p><span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Note</b></span> that we wrap the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a> in a
-(nameless) <tt class="literal">handle</tt> even though we are not interested in it. If we didn't
-do this, the the returned object would be kept alive unnecessarily. Unless
-you want to be a Dr. Frankenstein, always wrap <tt class="literal">PyObject*</tt>s in <tt class="literal">handle</tt>s.</p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Note</b></span> that we wrap the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a> in a
+    (nameless) <tt class="literal">handle</tt> even though we are not interested in it. If we didn't
+    do this, the the returned object would be kept alive unnecessarily. Unless
+    you want to be a Dr. Frankenstein, always wrap <tt class="literal">PyObject*</tt>s in <tt class="literal">handle</tt>s.
+</td></tr></tbody>
+</table></div>
 <a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id461639"></a>Beyond handles</h2>
+<a name="id461811"></a>Beyond handles</h2>
 <p>
 It's nice that <tt class="literal">handle</tt> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
@@ -261,12 +261,17 @@ the dictionary. Another way to achieve the same result is to let
 ));</span><span class="keyword">
 
 int</span><span class="identifier"> five_squared</span><span class="special"> =</span><span class="identifier"> extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span></tt></pre>
-<p><span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Note</b></span> that <tt class="literal">object</tt>'s member function to return the wrapped
-<tt class="literal">PyObject*</tt> is called <tt class="literal">ptr</tt> instead of <tt class="literal">get</tt>. This makes sense if you
-take into account the different functions that <tt class="literal">object</tt> and <tt class="literal">handle</tt>
-perform.</p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Note</b></span> that <tt class="literal">object</tt>'s member function to return the wrapped
+    <tt class="literal">PyObject*</tt> is called <tt class="literal">ptr</tt> instead of <tt class="literal">get</tt>. This makes sense if you
+    take into account the different functions that <tt class="literal">object</tt> and <tt class="literal">handle</tt>
+    perform.
+</td></tr></tbody>
+</table></div>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id462209"></a>Exception handling</h2>
+<a name="id462393"></a>Exception handling</h2>
 <p>
 If an exception occurs in the execution of some Python code, the <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
 function returns a null pointer. Constructing a <tt class="literal">handle</tt> out of this null
@@ -296,7 +301,7 @@ To find out more about the Python exception that occurred, you need to use the
 of the Python/C API in your catch-statement. This can be as simple as calling
 <a href="http://www.python.org/doc/api/exceptionHandling.html#l2h-70" target="_top">PyErr_Print()</a> to
 print the exception's traceback to the console, or comparing the type of the
-exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html%20standard" target="_top">exceptions</a>:</p>
+exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html" target="_top">standard exceptions</a>:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span><span class="special">)</span><span class="special">
 {</span><span class="keyword">
     if</span><span class="special"> (</span><span class="identifier">PyErr_ExceptionMatches</span><span class="special">(</span><span class="identifier">PyExc_ZeroDivisionError</span><span class="special">))</span><span class="special">
@@ -331,7 +336,7 @@ if</span><span class="special"> (!</span><span class="identifier">result</span><
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

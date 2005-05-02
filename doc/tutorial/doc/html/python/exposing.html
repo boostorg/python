@@ -13,7 +13,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -61,10 +61,11 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 Here, we wrote a C++ class wrapper that exposes the member functions
 <tt class="literal">greet</tt> and <tt class="literal">set</tt>. Now, after building our module as a shared library, we
 may use our class <tt class="literal">World</tt> in Python. Here's a sample Python session:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> hello</span><span class="special">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> hello</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">set</span><span class="special">(</span><span class="char">'howdy'</span><span class="special">)</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="char">
+&gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">set</span><span class="special">(</span><span class="string">'howdy'</span><span class="special">)</span><span class="special">
+&gt;&gt;&gt;</span><span class="identifier"> planet</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="string">
 'howdy'</span></tt></pre>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -78,6 +79,7 @@ which is why we were able to write</p>
 <p>
 We may wish to wrap a class with a non-default constructor. Let us
 build on our previous example:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">struct</span><span class="identifier"> World</span><span class="special">
 {</span><span class="identifier">
     World</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="identifier"> msg</span><span class="special">):</span><span class="identifier"> msg</span><span class="special">(</span><span class="identifier">msg</span><span class="special">)</span><span class="special"> {}</span><span class="comment"> // added constructor
@@ -142,18 +144,18 @@ Our C++ <tt class="literal">Var</tt> class and its data members can be exposed t
 <p>
 Then, in Python, assuming we have placed our Var class inside the namespace
 hello as we did before:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="char">'pi'</span><span class="special">)</span><span class="special">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special"> =</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="string">'pi'</span><span class="special">)</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special"> =</span><span class="number"> 3.14</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> print</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">name</span><span class="special">,</span><span class="char"> 'is around'</span><span class="special">,</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="identifier">
-pi</span><span class="identifier"> is</span><span class="identifier"> around</span><span class="number"> 3.14</span></tt></pre>
+&gt;&gt;&gt;</span><span class="keyword"> print</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">name</span><span class="special">,</span><span class="string"> 'is around'</span><span class="special">,</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="identifier">
+pi</span><span class="keyword"> is</span><span class="identifier"> around</span><span class="number"> 3.14</span></tt></pre>
 <p>
 Note that <tt class="literal">name</tt> is exposed as <span class="bold"><b>read-only</b></span> while <tt class="literal">value</tt> is exposed
 as <span class="bold"><b>read-write</b></span>.</p>
-<pre class="programlisting"><tt class="literal">    &gt;&gt;&gt; x.name = 'e' # can't change name
-    Traceback (most recent call last):
-      File "&lt;stdin&gt;", line 1, in ?
-    AttributeError: can't set attribute
-</tt></pre>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">name</span><span class="special"> =</span><span class="string"> 'e'</span><span class="comment"> # can't change name
+</span><span class="identifier">Traceback</span><span class="special"> (</span><span class="identifier">most</span><span class="identifier"> recent</span><span class="identifier"> call</span><span class="identifier"> last</span><span class="special">):</span><span class="identifier">
+  File</span><span class="string"> "&lt;stdin&gt;"</span><span class="special">,</span><span class="identifier"> line</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> in</span>#<span class="identifier">
+AttributeError</span><span class="special">:</span><span class="identifier"> can</span>#<span class="identifier">t</span><span class="identifier"> set</span><span class="identifier"> attribute</span></tt></pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -164,6 +166,7 @@ upon. Well designed classes that take advantage of encapsulation hide
 the class' data members. The only way to access the class' data is
 through access (getter/setter) functions. Access functions expose class
 properties. Here's an example:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">struct</span><span class="identifier"> Num</span><span class="special">
 {</span><span class="identifier">
     Num</span><span class="special">();</span><span class="keyword">
@@ -181,14 +184,17 @@ attributes can just be a different syntax for a method call. Wrapping our
     .</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"value"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">set</span><span class="special">);</span></tt></pre>
 <p>
 And at last, in Python:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special"> =</span><span class="identifier"> Num</span><span class="special">()</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special"> =</span><span class="number"> 3.14</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">value</span><span class="special">,</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">rovalue</span><span class="special">
 (</span><span class="number">3.14</span><span class="special">,</span><span class="number"> 3.14</span><span class="special">)</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">rovalue</span><span class="special"> =</span><span class="number"> 2.17</span> #<span class="identifier"> error</span><span class="special">!</span></tt></pre>
+&gt;&gt;&gt;</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">rovalue</span><span class="special"> =</span><span class="number"> 2.17</span><span class="comment"> # error!
+</span></tt></pre>
 <p>
 Take note that the class property <tt class="literal">rovalue</tt> is exposed as <span class="bold"><b>read-only</b></span>
 since the <tt class="literal">rovalue</tt> setter member function is not passed in:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span><span class="special"> &amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span></tt></pre>
 </div>
 <div class="section" lang="en">
@@ -285,13 +291,10 @@ inherited <tt class="computeroutput"><span class="identifier">wrapper</span><spa
 overridden in Python, easier.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/alert.png"></span> MSVC6/7 Workaround<p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/alert.png"></span><span class="bold"><b>MSVC6/7 Workaround</b></span><br><br>
  
-If you are using Microsoft Visual C++ 6 or 7, you have to write <tt class="computeroutput"><span class="identifier">f</span></tt> as:<p></p>
-<p></p>
-<tt class="computeroutput"><span class="keyword">return</span><span class="identifier"> call</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">get_override</span><span class="special">(</span><span class="string">"f"</span><span class="special">).</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
+If you are using Microsoft Visual C++ 6 or 7, you have to write <tt class="computeroutput"><span class="identifier">f</span></tt> as:<br><br><tt class="computeroutput"><span class="keyword">return</span><span class="identifier"> call</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">get_override</span><span class="special">(</span><span class="string">"f"</span><span class="special">).</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
 </table></div>
 <p>
 BaseWrap's overridden virtual member function <tt class="computeroutput"><span class="identifier">f</span></tt> in effect calls the
@@ -305,9 +308,8 @@ Finally, exposing <tt class="computeroutput"><span class="identifier">Base</span
 function.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>member function and methods</b></span><p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>member function and methods</b></span><br><br>
  Python, like
 many object oriented languages uses the term <span class="bold"><b>methods</b></span>.  Methods
 correspond roughly to C++'s <span class="bold"><b>member functions</b></span>
@@ -356,14 +358,11 @@ Notice how we implemented <tt class="computeroutput"><span class="identifier">Ba
 override for <tt class="computeroutput"><span class="identifier">f</span></tt>. If none, then we call <tt class="computeroutput"><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">()</span></tt>.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/alert.png"></span> MSVC6/7 Workaround<p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/alert.png"></span><span class="bold"><b>MSVC6/7 Workaround</b></span><br><br>
  
 If you are using Microsoft Visual C++ 6 or 7, you have to rewrite the line
-with the <tt class="computeroutput"><span class="special">*</span><span class="identifier">note</span><span class="special">*</span></tt> as:<p></p>
-<p></p>
-<tt class="computeroutput"><span class="keyword">return</span><span class="identifier"> call</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">*&gt;(</span><span class="identifier">f</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
+with the <tt class="computeroutput"><span class="special">*</span><span class="identifier">note</span><span class="special">*</span></tt> as:<br><br><tt class="computeroutput"><span class="keyword">return</span><span class="identifier"> call</span><span class="special">&lt;</span><span class="keyword">char</span><span class="keyword"> const</span><span class="special">*&gt;(</span><span class="identifier">f</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
 </table></div>
 <p>
 Finally, exposing:</p>
@@ -377,9 +376,10 @@ forwarding function to its default implementation <tt class="literal">default_f<
 special <tt class="literal">def</tt> function for this purpose.</p>
 <p>
 In Python, the results would be as expected:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> base</span><span class="special"> =</span><span class="identifier"> Base</span><span class="special">()</span><span class="special">
 &gt;&gt;&gt;</span><span class="keyword"> class</span><span class="identifier"> Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span><span class="special">
-...</span><span class="identifier">     def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="special">
+...</span><span class="keyword">     def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="special">
 ...</span><span class="keyword">         return</span><span class="number"> 42</span><span class="special">
 ...</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> derived</span><span class="special"> =</span><span class="identifier"> Derived</span><span class="special">()</span></tt></pre>
@@ -396,7 +396,7 @@ Calling <tt class="literal">derived.f()</tt>:</p>
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div></div>
 <a name="class_operators_special_functions.python_operators"></a><h2>
-<a name="id451830"></a>Python Operators</h2>
+<a name="id451998"></a>Python Operators</h2>
 <p>
 C is well known for the abundance of operators. C++ extends this to the
 extremes by allowing operator overloading. Boost.Python takes advantage of
@@ -404,6 +404,7 @@ this and makes it easy to wrap C++ operator-powered classes.</p>
 <p>
 Consider a file position class <tt class="literal">FilePos</tt> and a set of operators that take
 on FilePos instances:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">class</span><span class="identifier"> FilePos</span><span class="special"> {</span><span class="comment"> /*...*/</span><span class="special"> };</span><span class="identifier">
 
 FilePos</span><span class="keyword">     operator</span><span class="special">+(</span><span class="identifier">FilePos</span><span class="special">,</span><span class="keyword"> int</span><span class="special">);</span><span class="identifier">
@@ -433,20 +434,20 @@ you might need to interact with in an operator expression is (cheaply)
 default-constructible. You can use <tt class="literal">other&lt;T&gt;()</tt> in place of an actual
 <tt class="literal">T</tt> instance when writing "self expressions".</p>
 <a name="class_operators_special_functions.special_methods"></a><h2>
-<a name="id452516"></a>Special Methods</h2>
+<a name="id452685"></a>Special Methods</h2>
 <p>
 Python has a few more <span class="emphasis"><em>Special Methods</em></span>. Boost.Python supports all of the
 standard special method names supported by real Python class instances. A
 similar set of intuitive interfaces can also be used to wrap C++ functions
 that correspond to these Python <span class="emphasis"><em>special functions</em></span>. Example:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">class</span><span class="identifier"> Rational</span><span class="special">
-{</span><span class="keyword"> operator</span><span class="keyword"> double</span><span class="special">()</span><span class="keyword"> const</span><span class="special">;</span><span class="special"> };</span><span class="identifier">
+{</span><span class="keyword"> public</span><span class="special">:</span><span class="keyword"> operator</span><span class="keyword"> double</span><span class="special">()</span><span class="keyword"> const</span><span class="special">;</span><span class="special"> };</span><span class="identifier">
 
 Rational</span><span class="identifier"> pow</span><span class="special">(</span><span class="identifier">Rational</span><span class="special">,</span><span class="identifier"> Rational</span><span class="special">);</span><span class="identifier">
 Rational</span><span class="identifier"> abs</span><span class="special">(</span><span class="identifier">Rational</span><span class="special">);</span><span class="identifier">
 ostream</span><span class="special">&amp;</span><span class="keyword"> operator</span><span class="special">&lt;&lt;(</span><span class="identifier">ostream</span><span class="special">&amp;,</span><span class="identifier">Rational</span><span class="special">);</span><span class="identifier">
 
-class_</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;()</span><span class="special">
+class_</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;(</span><span class="string">"Rational"</span><span class="special">)</span><span class="special">
     .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">float_</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span><span class="comment">                  // __float__
 </span><span class="special">    .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">pow</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> other</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;))</span><span class="comment">    // __pow__
 </span><span class="special">    .</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">abs</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span><span class="comment">                     // __abs__
@@ -456,16 +457,16 @@ class_</span><span class="special">&lt;</span><span class="identifier">Rational<
 Need we say more?</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span> What is the business of <tt class="literal">operator&lt;&lt;</tt><tt class="literal">.def(str(self))</tt>?
-Well, the method <tt class="literal">str</tt> requires the <tt class="literal">operator&lt;&lt;</tt> to do its work (i.e.
-<tt class="literal">operator&lt;&lt;</tt> is used by the method defined by def(str(self)).</td></tr></tbody>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span> What is the business of <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt>?
+Well, the method <tt class="computeroutput"><span class="identifier">str</span></tt> requires the <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt> to do its work (i.e.
+<tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt> is used by the method defined by <tt class="computeroutput"><span class="identifier">def</span><span class="special">(</span><span class="identifier">str</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span></tt>.</td></tr></tbody>
 </table></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

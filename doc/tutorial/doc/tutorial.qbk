@@ -1,7 +1,7 @@
 [library python
     [version 1.0]
     [authors [de Guzman, Joel], [Abrahams, David]]
-    [copyright 2002 2003 2004 Joel de Guzman, David Abrahams]
+    [copyright 2002 2003 2004 2005 Joel de Guzman, David Abrahams]
     [category inter-language support]
     [purpose
         Reflects C++ classes and functions into Python
@@ -21,6 +21,7 @@
 [def __alert__      [$images/alert.png]]
 [def __tip__        [$images/tip.png]]
 [def :-)            [$images/smiley.png]]
+[def __jam__        [$images/jam.png]]
 
 [section QuickStart]
 
@@ -58,9 +59,13 @@ can be exposed to Python by writing a Boost.Python wrapper:
 That's it. We're done. We can now build this as a shared library. The
 resulting DLL is now visible to Python. Here's a sample Python session:
 
+[python]
+
     >>> import hello
     >>> print hello.greet()
     hello, world
+
+[c++]
 
 [:['[*Next stop... Building your Hello World module from start to finish...]]]
 
@@ -115,7 +120,7 @@ platforms. The complete list of Bjam executables can be found
 [@http://sourceforge.net/project/showfiles.php?group_id=7586 here].
 
 [h2 Let's Jam!]
-[$../images/jam.png]
+__jam__
 
 Here is our minimalist Jamfile:
 
@@ -238,9 +243,13 @@ executable is.
 
 You may now fire up Python and run our hello module:
 
+[python]
+
     >>> import hello
     >>> print hello.greet()
     hello, world
+
+[c++]
 
 [:[*There you go... Have fun!]]
 
@@ -276,6 +285,8 @@ Here, we wrote a C++ class wrapper that exposes the member functions
 [^greet] and [^set]. Now, after building our module as a shared library, we
 may use our class [^World] in Python. Here's a sample Python session:
 
+[python]
+
     >>> import hello
     >>> planet = hello.World()
     >>> planet.set('howdy')
@@ -293,6 +304,8 @@ which is why we were able to write
 
 We may wish to wrap a class with a non-default constructor. Let us
 build on our previous example:
+
+[c++]
 
     struct World
     {
@@ -364,6 +377,8 @@ Our C++ [^Var] class and its data members can be exposed to Python:
 Then, in Python, assuming we have placed our Var class inside the namespace
 hello as we did before:
 
+[python]
+
     >>> x = hello.Var('pi')
     >>> x.value = 3.14
     >>> print x.name, 'is around', x.value
@@ -372,12 +387,10 @@ hello as we did before:
 Note that [^name] is exposed as [*read-only] while [^value] is exposed
 as [*read-write].
 
-[pre
     >>> x.name = 'e' # can't change name
     Traceback (most recent call last):
       File "<stdin>", line 1, in ?
     AttributeError: can't set attribute
-]
 
 [endsect]
 [section Class Properties]
@@ -387,6 +400,8 @@ upon. Well designed classes that take advantage of encapsulation hide
 the class' data members. The only way to access the class' data is
 through access (getter/setter) functions. Access functions expose class
 properties. Here's an example:
+
+[c++]
 
     struct Num
     {
@@ -407,6 +422,8 @@ attributes can just be a different syntax for a method call. Wrapping our
 
 And at last, in Python:
 
+[python]
+
     >>> x = Num()
     >>> x.value = 3.14
     >>> x.value, x.rovalue
@@ -415,6 +432,8 @@ And at last, in Python:
 
 Take note that the class property [^rovalue] is exposed as [*read-only]
 since the [^rovalue] setter member function is not passed in:
+
+[c++]
 
     .add_property("rovalue", &Num::get)
 
@@ -513,7 +532,7 @@ inherited `wrapper<Base>` (See [@../../../v2/wrapper.html Wrapper]). The
 `wrapper` template makes the job of wrapping classes that are meant to
 overridden in Python, easier.
 
-[blurb __alert__ MSVC6/7 Workaround\n\n 
+[blurb __alert__ [*MSVC6/7 Workaround]\n\n 
 If you are using Microsoft Visual C++ 6 or 7, you have to write `f` as:\n\n
 `return call<int>(this->get_override("f").ptr());`.]
 
@@ -577,7 +596,7 @@ We wrap it this way:
 Notice how we implemented `BaseWrap::f`. Now, we have to check if there is an 
 override for `f`. If none, then we call `Base::f()`.
 
-[blurb __alert__ MSVC6/7 Workaround\n\n 
+[blurb __alert__ [*MSVC6/7 Workaround]\n\n 
 If you are using Microsoft Visual C++ 6 or 7, you have to rewrite the line
 with the `*note*` as:\n\n
 `return call<char const*>(f.ptr());`.]
@@ -594,6 +613,8 @@ forwarding function to its default implementation [^default_f]. There's a
 special [^def] function for this purpose.
 
 In Python, the results would be as expected:
+
+[python]
 
     >>> base = Base()
     >>> class Derived(Base):
@@ -623,6 +644,8 @@ this and makes it easy to wrap C++ operator-powered classes.
 
 Consider a file position class [^FilePos] and a set of operators that take
 on FilePos instances:
+
+[c++]
 
     class FilePos { /*...*/ };
 
@@ -676,9 +699,9 @@ that correspond to these Python ['special functions]. Example:
 
 Need we say more?
 
-[blurb __note__ What is the business of [^operator<<] [^.def(str(self))]?
-Well, the method [^str] requires the [^operator<<] to do its work (i.e.
-[^operator<<] is used by the method defined by def(str(self)).]
+[blurb __note__ What is the business of `operator<<`?
+Well, the method `str` requires the `operator<<` to do its work (i.e.
+`operator<<` is used by the method defined by `def(str(self))`.]
 
 [endsect]
 [endsect] [/ Exposing Classes ]
@@ -771,6 +794,8 @@ Here's what's happening:
 
 We could copy result into a new object:
 
+[python]
+
     >>> f(y, z).set(42) # Result disappears
     >>> y.x.get()       # No crash, but still bad
     3.14
@@ -780,6 +805,8 @@ promise that the Python interface should reflect the C++ interface as
 closely as possible.
 
 Our problems do not end there. Suppose Y is implemented as follows:
+
+[c++]
 
     struct Y
     {
@@ -1117,6 +1144,8 @@ Class [^object] wraps [^PyObject*]. All the intricacies of dealing with
 
 To illustrate, this Python code snippet:
 
+[python]
+
     def f(x, y):
          if (y == 'foo'):
              x[3:7] = 'bar'
@@ -1128,6 +1157,8 @@ To illustrate, this Python code snippet:
        return f;
 
 Can be rewritten in C++ using Boost.Python facilities this way:
+
+[c++]
 
     object f(object x, object y) {
          if (y == "foo")
@@ -1194,18 +1225,22 @@ member functions.
 Demonstrates that you can write the C++ equivalent of [^"format" % x,y,z]
 in Python, which is useful since there's no easy way to do that in std C++.
 
-__alert__ [*Beware] the common pitfall of forgetting that the constructors
-of most of Python's mutable types make copies, just as in Python.
+[blurb
+    __alert__ [*Beware] the common pitfall of forgetting that the constructors
+    of most of Python's mutable types make copies, just as in Python.
+]
 
 Python:
+[python]
 
     >>> d = dict(x.__dict__)     # copies x.__dict__
     >>> d['whatever']            # modifies the copy
 
 C++:
+[c++]
 
-    dict d(x.attr("__dict__"));  # copies x.__dict__
-    d['whatever'] = 3;           # modifies the copy
+    dict d(x.attr("__dict__"));  // copies x.__dict__
+    d['whatever'] = 3;           // modifies the copy
 
 [h2 class_<T> as objects]
 
@@ -1292,11 +1327,15 @@ attributes. Details can be found [@../../../v2/scope.html here].]
 
 You can access those values in Python as
 
+[python]
+
     >>> my_module.choice.red
     my_module.choice.red
 
 where my_module is the module where the enum is declared. You can also
 create a new scope around a class:
+
+[c++]
 
     scope in_X = class_<X>("X")
                     .def( ... )
@@ -1497,10 +1536,12 @@ the object's [^ptr] member function to retrieve the [^PyObject*].
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.
 
-__note__ [*Note] that we wrap the return value of PyRun_String in a
-(nameless) [^handle] even though we are not interested in it. If we didn't
-do this, the the returned object would be kept alive unnecessarily. Unless
-you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
+[blurb
+    __note__ [*Note] that we wrap the return value of PyRun_String in a
+    (nameless) [^handle] even though we are not interested in it. If we didn't
+    do this, the the returned object would be kept alive unnecessarily. Unless
+    you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
+]
 
 [h2 Beyond handles]
 
@@ -1542,10 +1583,12 @@ PyRun_String return the result directly with Py_eval_input:
 
     int five_squared = extract<int>(result);
 
-__note__ [*Note] that [^object]'s member function to return the wrapped
-[^PyObject*] is called [^ptr] instead of [^get]. This makes sense if you
-take into account the different functions that [^object] and [^handle]
-perform.
+[blurb
+    __note__ [*Note] that [^object]'s member function to return the wrapped
+    [^PyObject*] is called [^ptr] instead of [^get]. This makes sense if you
+    take into account the different functions that [^object] and [^handle]
+    perform.
+]
 
 [h2 Exception handling]
 
@@ -1634,6 +1677,8 @@ iterators, but these are two very different beasts.
 
 The typical Python iteration protocol: [^[*for y in x...]] is as follows:
 
+[python]
+
     iter = x.__iter__()         # get iterator
     try:
         while 1:
@@ -1645,6 +1690,8 @@ Boost.Python provides some mechanisms to make C++ iterators play along
 nicely as Python iterators. What we need to do is to produce
 appropriate __iter__ function from C++ iterators that is compatible
 with the Python iteration protocol. For example:
+
+[c++]
 
     object get_iterator = iterator<vector<int> >();
     object iter = get_iterator(v);
@@ -1677,6 +1724,8 @@ with &T::begin, &T::end.
 Let's put this into action... Here's an example from some hypothetical
 bogon Particle accelerator code:
 
+[python]
+
     f = Field()
     for x in f.pions:
         smash(x)
@@ -1684,6 +1733,8 @@ bogon Particle accelerator code:
         count(y)
 
 Now, our C++ Wrapper:
+
+[c++]
 
     class_<F>("Field")
         .property("pions", range(&F::p_begin, &F::p_end))
@@ -1789,6 +1840,8 @@ Now our package is ready. All the user has to do is put [^sounds] into his
 [@http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000 PYTHONPATH]
 and fire up the interpreter:
 
+[python]
+
     >>> import sounds.io
     >>> import sounds.filters
     >>> sound = sounds.io.open('file.mp3')
@@ -1805,6 +1858,8 @@ it.
 
 If we want this flexibility, we will have to complicate our package hierarchy a
 little. First, we will have to change the name of the extension modules:
+
+[c++]
 
     /* file core.cpp */
     BOOST_PYTHON_MODULE(_core)
@@ -1834,6 +1889,8 @@ Now, we change our package hierarchy like so:
 Note that we created a directory for each extension module, and added a
 __init__.py to each one. But if we leave it that way, the user will have to
 access the functions in the core module with this syntax:
+
+[python]
 
     >>> import sounds.core._core
     >>> sounds.core._core.foo(...)
@@ -1899,6 +1956,8 @@ Yes, Python rox. :-)
 We can do the same with classes that were wrapped with Boost.Python. Suppose
 we have a class [^point] in C++:
 
+[c++]
+
     class point {...};
 
     BOOST_PYTHON_MODULE(_geom)
@@ -1909,6 +1968,8 @@ we have a class [^point] in C++:
 If we are using the technique from the previous session,
 [link python.creating_packages Creating Packages], we can code directly
 into [^geom/__init__.py]:
+
+[python]
 
     from _geom import *
 
@@ -1976,6 +2037,8 @@ If you have ever exported a lot of classes, you know that it takes quite a good
 time to compile the Boost.Python wrappers. Plus the memory consumption can
 easily become too high. If this is causing you problems, you can split the
 class_ definitions in multiple files:
+
+[c++]
 
     /* file point.cpp */
     #include <point.h>

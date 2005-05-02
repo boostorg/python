@@ -13,7 +13,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -42,7 +42,7 @@ overloading and default arguments.</p>
 <p>
 But before you do, you might want to fire up Python 2.2 or later and type
 <tt class="literal">&gt;&gt;&gt; import this</tt>.</p>
-<pre class="programlisting"><tt class="literal">    &gt;&gt;&gt; import this
+<pre class="programlisting"><tt class="literal">&gt;&gt;&gt; import this
     The Zen of Python, by Tim Peters
     Beautiful is better than ugly.
     Explicit is better than implicit.
@@ -121,15 +121,17 @@ A reference to <tt class="literal">y.x</tt> is returned
 </ol></div>
 <p>
 We could copy result into a new object:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span><span class="identifier"> z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> #<span class="identifier"> Result</span><span class="identifier"> disappears</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span>       #<span class="identifier"> No</span><span class="identifier"> crash</span><span class="special">,</span><span class="identifier"> but</span><span class="identifier"> still</span><span class="identifier"> bad</span><span class="number">
-3.14</span></tt></pre>
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span><span class="identifier"> z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span><span class="comment"> # Result disappears
+</span><span class="special">&gt;&gt;&gt;</span><span class="identifier"> y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span><span class="comment">       # No crash, but still bad
+</span><span class="number">3.14</span></tt></pre>
 <p>
 This is not really our intent of our C++ interface. We've broken our
 promise that the Python interface should reflect the C++ interface as
 closely as possible.</p>
 <p>
 Our problems do not end there. Suppose Y is implemented as follows:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">struct</span><span class="identifier"> Y</span><span class="special">
 {</span><span class="identifier">
     X</span><span class="identifier"> x</span><span class="special">;</span><span class="identifier"> Z</span><span class="special">*</span><span class="identifier"> z</span><span class="special">;</span><span class="keyword">
@@ -172,7 +174,7 @@ A reference to <tt class="literal">y.x</tt> is returned
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id454162"></a>Call Policies</h2>
+<a name="id454356"></a>Call Policies</h2>
 <p>
 Call Policies may be used in situations such as the example detailed above.
 In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
@@ -204,45 +206,44 @@ Here is the list of predefined call policies. A complete reference detailing
 these can be found <a href="../../../../v2/reference.html#models_of_call_policies" target="_top">here</a>.</p>
 <div class="itemizedlist"><ul type="disc">
 <li>
-<span class="bold"><b>with_custodian_and_ward</b></span><p></p>
+<span class="bold"><b>with_custodian_and_ward</b></span><br>
  Ties lifetimes of the arguments
 </li>
 <li>
-<span class="bold"><b>with_custodian_and_ward_postcall</b></span><p></p>
+<span class="bold"><b>with_custodian_and_ward_postcall</b></span><br>
  Ties lifetimes of the arguments and results
 </li>
 <li>
-<span class="bold"><b>return_internal_reference</b></span><p></p>
+<span class="bold"><b>return_internal_reference</b></span><br>
  Ties lifetime of one argument to that of result
 </li>
 <li>
-<span class="bold"><b>return_value_policy&lt;T&gt; with T one of:</b></span><p></p>
+<span class="bold"><b>return_value_policy&lt;T&gt; with T one of:</b></span><br>
 </li>
 <li>
-<span class="bold"><b>reference_existing_object</b></span><p></p>
+<span class="bold"><b>reference_existing_object</b></span><br>
 naive (dangerous) approach
 </li>
 <li>
-<span class="bold"><b>copy_const_reference</b></span><p></p>
+<span class="bold"><b>copy_const_reference</b></span><br>
 Boost.Python v1 approach
 </li>
 <li>
-<span class="bold"><b>copy_non_const_reference</b></span><p></p>
+<span class="bold"><b>copy_non_const_reference</b></span><br>
 </li>
 <li>
-<span class="bold"><b>manage_new_object</b></span><p></p>
+<span class="bold"><b>manage_new_object</b></span><br>
  Adopt a pointer and hold the instance
 </li>
 </ul></div>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/smiley.png"></span><span class="bold"><b>Remember the Zen, Luke:</b></span><p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/smiley.png"></span><span class="bold"><b>Remember the Zen, Luke:</b></span><br><br>
 
-"Explicit is better than implicit"<p></p>
+"Explicit is better than implicit"<br>
 
-"In the face of ambiguity, refuse the temptation to guess"<p></p>
+"In the face of ambiguity, refuse the temptation to guess"<br>
 </td></tr></tbody>
 </table></div>
 </div>
@@ -335,7 +336,7 @@ are overloaded with a common sequence of initial arguments
 </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id455979"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
+<a name="id456178"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
 <p>
 Boost.Python now has a way to make it easier. For instance, given a function:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">int</span><span class="identifier"> foo</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> a</span><span class="special">,</span><span class="keyword"> char</span><span class="identifier"> b</span><span class="special"> =</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> unsigned</span><span class="identifier"> c</span><span class="special"> =</span><span class="number"> 2</span><span class="special">,</span><span class="keyword"> double</span><span class="identifier"> d</span><span class="special"> =</span><span class="number"> 3</span><span class="special">)</span><span class="special">
@@ -354,7 +355,7 @@ and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt> 
 automatically add all the foo variants for us:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span><span class="identifier"> foo</span><span class="special">,</span><span class="identifier"> foo_overloads</span><span class="special">());</span></tt></pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id456259"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
+<a name="id456457"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
 <p>
 Objects here, objects there, objects here there everywhere. More frequently
 than anything else, we need to expose member functions of our classes to
@@ -386,7 +387,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
 for details.</p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id456586"></a>init and optional</h2>
+<a name="id456784"></a>init and optional</h2>
 <p>
 A similar facility is provided for class constructors, again, with
 default arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>? For example,
@@ -441,7 +442,7 @@ Then...</p>
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.</p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id457233"></a>Manual Wrapping</h2>
+<a name="id457431"></a>Manual Wrapping</h2>
 <p>
 It is important to emphasize however that <span class="bold"><b>the overloaded functions must
 have a common sequence of initial arguments</b></span>. Otherwise, our scheme above
@@ -469,7 +470,7 @@ Then...</p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

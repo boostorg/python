@@ -13,7 +13,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -26,7 +26,7 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.hello"></a> Building Hello World</h2></div></div></div>
 <a name="hello.from_start_to_finish"></a><h2>
-<a name="id446728"></a>From Start To Finish</h2>
+<a name="id378425"></a>From Start To Finish</h2>
 <p>
 Now the first thing you'd want to do is to build the Hello World module and
 try it for yourself in Python. In this section, we shall outline the steps
@@ -34,14 +34,12 @@ necessary to achieve that. We shall use the build tool that comes bundled
 with every boost distribution: <span class="bold"><b>bjam</b></span>.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Building without bjam</b></span><p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>Building without bjam</b></span><br><br>
 
     Besides bjam, there are of course other ways to get your module built.
     What's written here should not be taken as "the one and only way".
-    There are of course other build tools apart from <tt class="literal">bjam</tt>.<p></p>
-<p></p>
+    There are of course other build tools apart from <tt class="literal">bjam</tt>.<br><br>
 
     Take note however that the preferred build tool for Boost.Python is bjam.
     There are so many ways to set up the build incorrectly. Experience shows
@@ -95,11 +93,11 @@ the command line. Pre-built Boost.Jam executables are available for most
 platforms. The complete list of Bjam executables can be found
 <a href="http://sourceforge.net/project/showfiles.php?group_id=7586" target="_top">here</a>.</p>
 <a name="hello.let_s_jam_"></a><h2>
-<a name="id377058"></a>Let's Jam!</h2>
-<p><span class="inlinemediaobject"><img src="../../images/jam.png"></span></p>
+<a name="id377025"></a>Let's Jam!</h2>
+<p><span class="inlinemediaobject"><img src="../images/jam.png"></span></p>
 <p>
 Here is our minimalist Jamfile:</p>
-<pre class="programlisting"><tt class="literal">    subproject libs/python/example/tutorial ;
+<pre class="programlisting"><tt class="literal">subproject libs/python/example/tutorial ;
 
     SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
     include python.jam ;
@@ -113,22 +111,22 @@ Here is our minimalist Jamfile:</p>
 First, we need to specify our location in the boost project hierarchy.
 It so happens that the tutorial example is located in <tt class="literal">/libs/python/example/tutorial</tt>.
 Thus:</p>
-<pre class="programlisting"><tt class="literal">    subproject libs/python/example/tutorial ;
+<pre class="programlisting"><tt class="literal">subproject libs/python/example/tutorial ;
 </tt></pre>
 <p>
 Then we will include the definitions needed by Python modules:</p>
-<pre class="programlisting"><tt class="literal">    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+<pre class="programlisting"><tt class="literal">SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
     include python.jam ;
 </tt></pre>
 <p>
 Finally we declare our <tt class="literal">hello</tt> extension:</p>
-<pre class="programlisting"><tt class="literal">    extension hello                     # Declare a Python extension called hello
+<pre class="programlisting"><tt class="literal">extension hello                     # Declare a Python extension called hello
     :   hello.cpp                       # source
         &lt;dll&gt;../../build/boost_python   # dependencies
         ;
 </tt></pre>
 <a name="hello.running_bjam"></a><h2>
-<a name="id377153"></a>Running bjam</h2>
+<a name="id377119"></a>Running bjam</h2>
 <p><span class="emphasis"><em>bjam</em></span> is run using your operating system's command line interpreter.</p>
 <div class="blockquote"><blockquote class="blockquote"><p>Start it up.</p></blockquote></div>
 <p>
@@ -147,7 +145,7 @@ and that we are using Python version 2.2. You'll have to tweak this path
 appropriately.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
+<tbody><tr><td class="blurb">
 <span class="inlinemediaobject"><img src="../images/tip.png"></span> Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span>  "2.2.1",
 even if that's the version you have.</td></tr></tbody>
 </table></div>
@@ -164,7 +162,7 @@ not, then you will have to specify the appropriate tool. See
 further details.</p>
 <p>
 It should be building now:</p>
-<pre class="programlisting"><tt class="literal">    cd C:\dev\boost\libs\python\example\tutorial
+<pre class="programlisting"><tt class="literal">cd C:\dev\boost\libs\python\example\tutorial
     bjam -sTOOLS=msvc
     ...patience...
     ...found 1703 targets...
@@ -172,7 +170,7 @@ It should be building now:</p>
 </tt></pre>
 <p>
 And so on... Finally:</p>
-<pre class="programlisting"><tt class="literal">    vc-C++ ........\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
+<pre class="programlisting"><tt class="literal">vc-C++ ........\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
     runtime-link-dynamic\hello.obj
     hello.cpp
     vc-Link ........\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
@@ -213,14 +211,16 @@ can simply put these libraries inside the directory where the Python
 executable is.</p>
 <p>
 You may now fire up Python and run our hello module:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> hello</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> print</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="identifier">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> hello</span><span class="special">
+&gt;&gt;&gt;</span><span class="keyword"> print</span><span class="identifier"> hello</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span><span class="identifier">
 hello</span><span class="special">,</span><span class="identifier"> world</span></tt></pre>
+<p></p>
 <div class="blockquote"><blockquote class="blockquote"><p><span class="bold"><b>There you go... Have fun!</b></span></p></blockquote></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

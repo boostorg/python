@@ -13,7 +13,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -53,17 +53,19 @@ Class <tt class="literal">object</tt> wraps <tt class="literal">PyObject*</tt>. 
 <tt class="literal">object</tt>s can in fact be explicitly constructed from any C++ object.</p>
 <p>
 To illustrate, this Python code snippet:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> y</span><span class="special">):</span><span class="keyword">
-     if</span><span class="special"> (</span><span class="identifier">y</span><span class="special"> ==</span><span class="char"> 'foo'</span><span class="special">):</span><span class="identifier">
-         x</span><span class="special">[</span><span class="number">3</span><span class="special">:</span><span class="number">7</span><span class="special">]</span><span class="special"> =</span><span class="char"> 'bar'</span><span class="keyword">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="keyword">def</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> y</span><span class="special">):</span><span class="keyword">
+     if</span><span class="special"> (</span><span class="identifier">y</span><span class="special"> ==</span><span class="string"> 'foo'</span><span class="special">):</span><span class="identifier">
+         x</span><span class="special">[</span><span class="number">3</span><span class="special">:</span><span class="number">7</span><span class="special">]</span><span class="special"> =</span><span class="string"> 'bar'</span><span class="keyword">
      else</span><span class="special">:</span><span class="identifier">
          x</span><span class="special">.</span><span class="identifier">items</span><span class="special"> +=</span><span class="identifier"> y</span><span class="special">(</span><span class="number">3</span><span class="special">,</span><span class="identifier"> x</span><span class="special">)</span><span class="keyword">
-     return</span><span class="identifier"> x</span><span class="identifier">
+     return</span><span class="identifier"> x</span><span class="keyword">
 
 def</span><span class="identifier"> getfunc</span><span class="special">():</span><span class="keyword">
    return</span><span class="identifier"> f</span><span class="special">;</span></tt></pre>
 <p>
 Can be rewritten in C++ using Boost.Python facilities this way:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">object</span><span class="identifier"> f</span><span class="special">(</span><span class="identifier">object</span><span class="identifier"> x</span><span class="special">,</span><span class="identifier"> object</span><span class="identifier"> y</span><span class="special">)</span><span class="special"> {</span><span class="keyword">
      if</span><span class="special"> (</span><span class="identifier">y</span><span class="special"> ==</span><span class="string"> "foo"</span><span class="special">)</span><span class="identifier">
          x</span><span class="special">.</span><span class="identifier">slice</span><span class="special">(</span><span class="number">3</span><span class="special">,</span><span class="number">7</span><span class="special">)</span><span class="special"> =</span><span class="string"> "bar"</span><span class="special">;</span><span class="keyword">
@@ -135,18 +137,27 @@ member functions.</p>
 <p>
 Demonstrates that you can write the C++ equivalent of <tt class="literal">"format" % x,y,z</tt>
 in Python, which is useful since there's no easy way to do that in std C++.</p>
-<p><span class="inlinemediaobject"><img src="../images/alert.png"></span><span class="bold"><b>Beware</b></span> the common pitfall of forgetting that the constructors
-of most of Python's mutable types make copies, just as in Python.</p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/alert.png"></span><span class="bold"><b>Beware</b></span> the common pitfall of forgetting that the constructors
+    of most of Python's mutable types make copies, just as in Python.
+</td></tr></tbody>
+</table></div>
 <p>
-Python:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> d</span><span class="special"> =</span><span class="identifier"> dict</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special">)</span>     #<span class="identifier"> copies</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span>            #<span class="identifier"> modifies</span><span class="identifier"> the</span><span class="identifier"> copy</span></tt></pre>
+Python:
+</p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> d</span><span class="special"> =</span><span class="identifier"> dict</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special">)</span><span class="comment">     # copies x.__dict__
+</span><span class="special">&gt;&gt;&gt;</span><span class="identifier"> d</span><span class="special">[</span><span class="string">'whatever'</span><span class="special">]</span><span class="comment">            # modifies the copy
+</span></tt></pre>
 <p>
-C++:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">dict</span><span class="identifier"> d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>  #<span class="identifier"> copies</span><span class="identifier"> x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="identifier">
-d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span>           #<span class="identifier"> modifies</span><span class="identifier"> the</span><span class="identifier"> copy</span></tt></pre>
+C++:
+</p>
+<pre class="programlisting"><tt class="literal"><span class="identifier">dict</span><span class="identifier"> d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span><span class="comment">  // copies x.__dict__
+</span><span class="identifier">d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span><span class="comment">           // modifies the copy
+</span></tt></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id459043"></a>class_&lt;T&gt; as objects</h2>
+<a name="id459197"></a>class_&lt;T&gt; as objects</h2>
 <p>
 Due to the dynamic nature of Boost.Python objects, any <tt class="literal">class_&lt;T&gt;</tt> may
 also be one of these types! The following code snippet wraps the class
@@ -219,9 +230,8 @@ creates a Python class derived from Python's <tt class="literal">int</tt> type w
 associated with the C++ type passed as its first parameter.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
-<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>what is a scope?</b></span><p></p>
-<p></p>
+<tbody><tr><td class="blurb">
+<span class="inlinemediaobject"><img src="../images/note.png"></span><span class="bold"><b>what is a scope?</b></span><br><br>
  The scope is a class that has an
 associated global Python object which controls the Python namespace in
 which new extension classes and wrapped functions will be defined as
@@ -229,11 +239,13 @@ attributes. Details can be found <a href="../../../../v2/scope.html" target="_to
 </table></div>
 <p>
 You can access those values in Python as</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span><span class="identifier">
 my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span></tt></pre>
 <p>
 where my_module is the module where the enum is declared. You can also
 create a new scope around a class:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">scope</span><span class="identifier"> in_X</span><span class="special"> =</span><span class="identifier"> class_</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;(</span><span class="string">"X"</span><span class="special">)</span><span class="special">
                 .</span><span class="identifier">def</span><span class="special">(</span><span class="special"> ...</span><span class="special"> )</span><span class="special">
                 .</span><span class="identifier">def</span><span class="special">(</span><span class="special"> ...</span><span class="special"> )</span><span class="special">
@@ -248,7 +260,7 @@ create a new scope around a class:</p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

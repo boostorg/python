@@ -12,7 +12,7 @@
 <table cellpadding="2" width="100%">
 <td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
-<td align="center"><a href="../../../../../../libraries.htm">Libraries</a></td>
+<td align="center"><a href="../libraries.html">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
 <td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
@@ -83,14 +83,14 @@ Compiling these files will generate the following Python extensions:
 <tt class="literal">core.pyd</tt>, <tt class="literal">io.pyd</tt> and <tt class="literal">filters.pyd</tt>.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
+<tbody><tr><td class="blurb">
 <span class="inlinemediaobject"><img src="../images/note.png"></span> The extension <tt class="literal">.pyd</tt> is used for python extension modules, which
 are just shared libraries.  Using the default for your system, like <tt class="literal">.so</tt> for
 Unix and <tt class="literal">.dll</tt> for Windows, works just as well.</td></tr></tbody>
 </table></div>
 <p>
 Now, we create this directory structure for our Python package:</p>
-<pre class="programlisting"><tt class="literal">    sounds/
+<pre class="programlisting"><tt class="literal">sounds/
         <span class="underline">_init</span>_.py
         core.pyd
         filters.pyd
@@ -104,9 +104,10 @@ magic, that will be shown later.</p>
 Now our package is ready. All the user has to do is put <tt class="literal">sounds</tt> into his
 <a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a>
 and fire up the interpreter:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> sound</span><span class="special"> =</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">open</span><span class="special">(</span><span class="char">'file.mp3'</span><span class="special">)</span><span class="special">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">
+&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
+&gt;&gt;&gt;</span><span class="identifier"> sound</span><span class="special"> =</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">open</span><span class="special">(</span><span class="string">'file.mp3'</span><span class="special">)</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> new_sound</span><span class="special"> =</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(</span><span class="identifier">sound</span><span class="special">,</span><span class="number"> 1.0</span><span class="special">)</span></tt></pre>
 <p>
 Nice heh?</p>
@@ -120,6 +121,7 @@ it.</p>
 <p>
 If we want this flexibility, we will have to complicate our package hierarchy a
 little. First, we will have to change the name of the extension modules:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="comment">/* file core.cpp */</span><span class="identifier">
 BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_core</span><span class="special">)</span><span class="special">
 {</span><span class="special">
@@ -130,7 +132,7 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 Note that we added an underscore to the module name. The filename will have to
 be changed to <tt class="literal">_core.pyd</tt> as well, and we do the same to the other extension modules.
 Now, we change our package hierarchy like so:</p>
-<pre class="programlisting"><tt class="literal">    sounds/
+<pre class="programlisting"><tt class="literal">sounds/
         <span class="underline">_init</span>_.py
         core/
             <span class="underline">_init</span>_.py
@@ -146,18 +148,19 @@ Now, we change our package hierarchy like so:</p>
 Note that we created a directory for each extension module, and added a
 <span class="underline">_init</span>_.py to each one. But if we leave it that way, the user will have to
 access the functions in the core module with this syntax:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span></tt></pre>
 <p>
 which is not what we want. But here enters the <tt class="literal"><span class="underline">_init</span>_.py</tt> magic: everything
 that is brought to the <tt class="literal"><span class="underline">_init</span>_.py</tt> namespace can be accessed directly by the
 user.  So, all we have to do is bring the entire namespace from <tt class="literal">_core.pyd</tt>
 to <tt class="literal">core/<span class="underline">_init</span><span class="underline">.py]. So add this line of code to [^sounds/core/</span><span class="underline">init</span>_.py</tt>:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">from</span><span class="identifier"> _core</span><span class="identifier"> import</span><span class="special"> *</span></tt></pre>
+<pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> _core</span><span class="keyword"> import</span><span class="special"> *</span></tt></pre>
 <p>
 We do the same for the other packages. Now the user accesses the functions and
 classes in the extension modules like before:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(...)</span></tt></pre>
 <p>
 with the additional benefit that we can easily add pure Python functions to
@@ -166,18 +169,18 @@ function and a Python function. Let's add a <span class="emphasis"><em>pure</em>
 <tt class="literal">echo_noise</tt>, to the <tt class="literal">filters</tt> package. This function applies both the
 <tt class="literal">echo</tt> and <tt class="literal">noise</tt> filters in sequence in the given <tt class="literal">sound</tt> object. We
 create a file named <tt class="literal">sounds/filters/echo_noise.py</tt> and code our function:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">import</span><span class="identifier"> _filters</span><span class="identifier">
+<pre class="programlisting"><tt class="literal"><span class="keyword">import</span><span class="identifier"> _filters</span><span class="keyword">
 def</span><span class="identifier"> echo_noise</span><span class="special">(</span><span class="identifier">sound</span><span class="special">):</span><span class="identifier">
     s</span><span class="special"> =</span><span class="identifier"> _filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(</span><span class="identifier">sound</span><span class="special">)</span><span class="identifier">
     s</span><span class="special"> =</span><span class="identifier"> _filters</span><span class="special">.</span><span class="identifier">noise</span><span class="special">(</span><span class="identifier">sound</span><span class="special">)</span><span class="keyword">
     return</span><span class="identifier"> s</span></tt></pre>
 <p>
 Next, we add this line to <tt class="literal">sounds<span class="emphasis"><em>filters</em></span><span class="underline">_init</span>_.py</tt>:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">from</span><span class="identifier"> echo_noise</span><span class="identifier"> import</span><span class="identifier"> echo_noise</span></tt></pre>
+<pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> echo_noise</span><span class="keyword"> import</span><span class="identifier"> echo_noise</span></tt></pre>
 <p>
 And that's it. The user now accesses this function like any other function
 from the <tt class="literal">filters</tt> package:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo_noise</span><span class="special">(...)</span></tt></pre>
 </div>
 <div class="section" lang="en">
@@ -186,16 +189,16 @@ from the <tt class="literal">filters</tt> package:</p>
 <p>
 Thanks to Python's flexibility, you can easily add new methods to a class,
 even after it was already created:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> class</span><span class="identifier"> C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span><span class="identifier"> pass</span><span class="special">
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> class</span><span class="identifier"> C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span><span class="keyword"> pass</span><span class="special">
 &gt;&gt;&gt;</span><span class="special">
-&gt;&gt;&gt;</span> #<span class="identifier"> a</span><span class="identifier"> regular</span><span class="identifier"> function</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> def</span><span class="identifier"> C_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword"> return</span><span class="char"> 'A C instance!'</span><span class="special">
+&gt;&gt;&gt;</span><span class="comment"> # a regular function
+</span><span class="special">&gt;&gt;&gt;</span><span class="keyword"> def</span><span class="identifier"> C_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword"> return</span><span class="string"> 'A C instance!'</span><span class="special">
 &gt;&gt;&gt;</span><span class="special">
-&gt;&gt;&gt;</span> #<span class="identifier"> now</span><span class="identifier"> we</span><span class="identifier"> turn</span><span class="identifier"> it</span><span class="identifier"> in</span><span class="identifier"> a</span><span class="identifier"> member</span><span class="identifier"> function</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> C</span><span class="special">.</span><span class="identifier">__str__</span><span class="special"> =</span><span class="identifier"> C_str</span><span class="special">
+&gt;&gt;&gt;</span><span class="comment"> # now we turn it in a member function
+</span><span class="special">&gt;&gt;&gt;</span><span class="identifier"> C</span><span class="special">.</span><span class="identifier">__str__</span><span class="special"> =</span><span class="identifier"> C_str</span><span class="special">
 &gt;&gt;&gt;</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> c</span><span class="special"> =</span><span class="identifier"> C</span><span class="special">()</span><span class="special">
-&gt;&gt;&gt;</span><span class="identifier"> print</span><span class="identifier"> c</span><span class="identifier">
+&gt;&gt;&gt;</span><span class="keyword"> print</span><span class="identifier"> c</span><span class="identifier">
 A</span><span class="identifier"> C</span><span class="identifier"> instance</span><span class="special">!</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> C_str</span><span class="special">(</span><span class="identifier">c</span><span class="special">)</span><span class="identifier">
 A</span><span class="identifier"> C</span><span class="identifier"> instance</span><span class="special">!</span></tt></pre>
@@ -204,6 +207,7 @@ Yes, Python rox. <span class="inlinemediaobject"><img src="../images/smiley.png"
 <p>
 We can do the same with classes that were wrapped with Boost.Python. Suppose
 we have a class <tt class="literal">point</tt> in C++:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">class</span><span class="identifier"> point</span><span class="special"> {...};</span><span class="identifier">
 
 BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_geom</span><span class="special">)</span><span class="special">
@@ -214,14 +218,15 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 If we are using the technique from the previous session,
 <a href="techniques.html#python.creating_packages" title="Creating Packages">Creating Packages</a>, we can code directly
 into <tt class="literal">geom/<span class="underline">_init</span>_.py</tt>:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">from</span><span class="identifier"> _geom</span><span class="identifier"> import</span><span class="special"> *</span>
+<p></p>
+<pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> _geom</span><span class="keyword"> import</span><span class="special"> *</span><span class="comment">
 
-#<span class="identifier"> a</span><span class="identifier"> regular</span><span class="identifier"> function</span><span class="identifier">
-def</span><span class="identifier"> point_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword">
-    return</span><span class="identifier"> str</span><span class="special">((</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> self</span><span class="special">.</span><span class="identifier">y</span><span class="special">))</span>
+# a regular function
+</span><span class="keyword">def</span><span class="identifier"> point_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword">
+    return</span><span class="identifier"> str</span><span class="special">((</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> self</span><span class="special">.</span><span class="identifier">y</span><span class="special">))</span><span class="comment">
 
-#<span class="identifier"> now</span><span class="identifier"> we</span><span class="identifier"> turn</span><span class="identifier"> it</span><span class="identifier"> into</span><span class="identifier"> a</span><span class="identifier"> member</span><span class="identifier"> function</span><span class="identifier">
-point</span><span class="special">.</span><span class="identifier">__str__</span><span class="special"> =</span><span class="identifier"> point_str</span></tt></pre>
+# now we turn it into a member function
+</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">__str__</span><span class="special"> =</span><span class="identifier"> point_str</span></tt></pre>
 <p><span class="bold"><b>All</b></span> point instances created from C++ will also have this member function!
 This technique has several advantages:</p>
 <div class="itemizedlist"><ul type="disc">
@@ -241,35 +246,34 @@ Rapid prototyping (you can move the code to C++ if required without changing the
 <p>
 You can even add a little syntactic sugar with the use of metaclasses. Let's
 create a special metaclass that "injects" methods in other classes.</p>
-<pre class="programlisting"><tt class="literal">
-#<span class="identifier"> The</span><span class="identifier"> one</span><span class="identifier"> Boost</span><span class="special">.</span><span class="identifier">Python</span><span class="identifier"> uses</span><span class="keyword"> for</span><span class="identifier"> all</span><span class="identifier"> wrapped</span><span class="identifier"> classes</span><span class="special">.</span>
-#<span class="identifier"> You</span><span class="identifier"> can</span><span class="identifier"> use</span><span class="identifier"> here</span><span class="identifier"> any</span><span class="keyword"> class</span><span class="identifier"> exported</span><span class="identifier"> by</span><span class="identifier"> Boost</span><span class="identifier"> instead</span><span class="identifier"> of</span><span class="string"> "point"</span><span class="identifier">
-BoostPythonMetaclass</span><span class="special"> =</span><span class="identifier"> point</span><span class="special">.</span><span class="identifier">__class__</span><span class="keyword">
+<pre class="programlisting"><tt class="literal"><span class="comment"># The one Boost.Python uses for all wrapped classes.
+# You can use here any class exported by Boost instead of "point"
+</span><span class="identifier">BoostPythonMetaclass</span><span class="special"> =</span><span class="identifier"> point</span><span class="special">.</span><span class="identifier">__class__</span><span class="keyword">
 
 class</span><span class="identifier"> injector</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span><span class="keyword">
-    class</span><span class="identifier"> __metaclass__</span><span class="special">(</span><span class="identifier">BoostPythonMetaclass</span><span class="special">):</span><span class="identifier">
+    class</span><span class="identifier"> __metaclass__</span><span class="special">(</span><span class="identifier">BoostPythonMetaclass</span><span class="special">):</span><span class="keyword">
         def</span><span class="identifier"> __init__</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> name</span><span class="special">,</span><span class="identifier"> bases</span><span class="special">,</span><span class="identifier"> dict</span><span class="special">):</span><span class="keyword">
-            for</span><span class="identifier"> b</span><span class="identifier"> in</span><span class="identifier"> bases</span><span class="special">:</span><span class="keyword">
-                if</span><span class="identifier"> type</span><span class="special">(</span><span class="identifier">b</span><span class="special">)</span><span class="keyword"> not</span><span class="identifier"> in</span><span class="special"> (</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> type</span><span class="special">):</span><span class="keyword">
-                    for</span><span class="identifier"> k</span><span class="special">,</span><span class="identifier">v</span><span class="identifier"> in</span><span class="identifier"> dict</span><span class="special">.</span><span class="identifier">items</span><span class="special">():</span><span class="identifier">
+            for</span><span class="identifier"> b</span><span class="keyword"> in</span><span class="identifier"> bases</span><span class="special">:</span><span class="keyword">
+                if</span><span class="identifier"> type</span><span class="special">(</span><span class="identifier">b</span><span class="special">)</span><span class="keyword"> not</span><span class="keyword"> in</span><span class="special"> (</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> type</span><span class="special">):</span><span class="keyword">
+                    for</span><span class="identifier"> k</span><span class="special">,</span><span class="identifier">v</span><span class="keyword"> in</span><span class="identifier"> dict</span><span class="special">.</span><span class="identifier">items</span><span class="special">():</span><span class="identifier">
                         setattr</span><span class="special">(</span><span class="identifier">b</span><span class="special">,</span><span class="identifier">k</span><span class="special">,</span><span class="identifier">v</span><span class="special">)</span><span class="keyword">
-            return</span><span class="identifier"> type</span><span class="special">.</span><span class="identifier">__init__</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> name</span><span class="special">,</span><span class="identifier"> bases</span><span class="special">,</span><span class="identifier"> dict</span><span class="special">)</span>
+            return</span><span class="identifier"> type</span><span class="special">.</span><span class="identifier">__init__</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span><span class="identifier"> name</span><span class="special">,</span><span class="identifier"> bases</span><span class="special">,</span><span class="identifier"> dict</span><span class="special">)</span><span class="comment">
 
-#<span class="identifier"> inject</span><span class="identifier"> some</span><span class="identifier"> methods</span><span class="identifier"> in</span><span class="identifier"> the</span><span class="identifier"> point</span><span class="identifier"> foo</span><span class="keyword">
-class</span><span class="identifier"> more_point</span><span class="special">(</span><span class="identifier">injector</span><span class="special">,</span><span class="identifier"> point</span><span class="special">):</span><span class="identifier">
+# inject some methods in the point foo
+</span><span class="keyword">class</span><span class="identifier"> more_point</span><span class="special">(</span><span class="identifier">injector</span><span class="special">,</span><span class="identifier"> point</span><span class="special">):</span><span class="keyword">
     def</span><span class="identifier"> __repr__</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword">
-        return</span><span class="char"> 'Point(x=%s, y=%s)'</span><span class="special"> %</span><span class="special"> (</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> self</span><span class="special">.</span><span class="identifier">y</span><span class="special">)</span><span class="identifier">
-    def</span><span class="identifier"> foo</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="identifier">
-        print</span><span class="char"> 'foo!'</span></tt></pre>
+        return</span><span class="string"> 'Point(x=%s, y=%s)'</span><span class="special"> %</span><span class="special"> (</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> self</span><span class="special">.</span><span class="identifier">y</span><span class="special">)</span><span class="keyword">
+    def</span><span class="identifier"> foo</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span><span class="keyword">
+        print</span><span class="string"> 'foo!'</span></tt></pre>
 <p>
 Now let's see how it got:</p>
-<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="identifier"> print</span><span class="identifier"> point</span><span class="special">()</span><span class="identifier">
+<pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> print</span><span class="identifier"> point</span><span class="special">()</span><span class="identifier">
 Point</span><span class="special">(</span><span class="identifier">x</span><span class="special">=</span><span class="number">10</span><span class="special">,</span><span class="identifier"> y</span><span class="special">=</span><span class="number">10</span><span class="special">)</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> point</span><span class="special">().</span><span class="identifier">foo</span><span class="special">()</span><span class="identifier">
 foo</span><span class="special">!</span></tt></pre>
 <p>
 Another useful idea is to replace constructors with factory functions:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">_point</span><span class="special"> =</span><span class="identifier"> point</span><span class="identifier">
+<pre class="programlisting"><tt class="literal"><span class="identifier">_point</span><span class="special"> =</span><span class="identifier"> point</span><span class="keyword">
 
 def</span><span class="identifier"> point</span><span class="special">(</span><span class="identifier">x</span><span class="special">=</span><span class="number">0</span><span class="special">,</span><span class="identifier"> y</span><span class="special">=</span><span class="number">0</span><span class="special">):</span><span class="keyword">
     return</span><span class="identifier"> _point</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier"> y</span><span class="special">)</span></tt></pre>
@@ -287,6 +291,7 @@ If you have ever exported a lot of classes, you know that it takes quite a good
 time to compile the Boost.Python wrappers. Plus the memory consumption can
 easily become too high. If this is causing you problems, you can split the
 class_ definitions in multiple files:</p>
+<p></p>
 <pre class="programlisting"><tt class="literal"><span class="comment">/* file point.cpp */</span><span class="preprocessor">
 #include</span><span class="special"> &lt;</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span><span class="preprocessor">
 #include</span><span class="special"> &lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span><span class="keyword">
@@ -335,14 +340,14 @@ exporting it to Python at the same time: changes in a class will only demand
 the compilation of a single cpp, instead of the entire wrapper code.</p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
+<tbody><tr><td class="blurb">
 <span class="inlinemediaobject"><img src="../images/note.png"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
 take a look at the <tt class="literal">--multiple</tt> option, that generates the wrappers in
 various files as demonstrated here.</td></tr></tbody>
 </table></div>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td>
+<tbody><tr><td class="blurb">
 <span class="inlinemediaobject"><img src="../images/note.png"></span> This method is useful too if you are getting the error message
 <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal structure overflow"</em></span> when compiling
 a large source file, as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
@@ -351,7 +356,7 @@ a large source file, as explained in the <a href="../../../../v2/faq.html#c1204"
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2004 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">
