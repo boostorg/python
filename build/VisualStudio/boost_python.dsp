@@ -175,6 +175,10 @@ SOURCE=..\..\src\converter\registry.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\slice.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\str.cpp
 # End Source File
 # Begin Source File
@@ -184,6 +188,10 @@ SOURCE=..\..\src\tuple.cpp
 # Begin Source File
 
 SOURCE=..\..\src\converter\type_id.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\wrapper.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
