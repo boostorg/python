@@ -39,7 +39,7 @@ the gaps. However, Boost.Python already makes embedding a lot easier and,
 in a future version, it may become unnecessary to touch the Python/C API at
 all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png"></span></p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id460673"></a>Building embedded programs</h2>
+<a name="id460594"></a>Building embedded programs</h2>
 <p>
 To be able to use embedding in your programs, they have to be linked to
 both Boost.Python's and Python's static link library.</p>
@@ -61,21 +61,21 @@ include path.</p>
 In a Jamfile, all the above boils down to:</p>
 <pre class="programlisting"><tt class="literal">projectroot c:\projects\embedded_program ; # location of the program
 
-    # bring in the rules for python
-    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-    include python.jam ;
+# bring in the rules for python
+SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+include python.jam ;
 
-    exe embedded_program # name of the executable
-      : #sources
-         embedded_program.cpp
-      : # requirements
-         &lt;find-library&gt;boost_python &lt;library-path&gt;c:\boost\libs\python
-      $(PYTHON_PROPERTIES)
-        &lt;library-path&gt;$(PYTHON_LIB_PATH)
-        &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
+exe embedded_program # name of the executable
+  : #sources
+     embedded_program.cpp
+  : # requirements
+     &lt;find-library&gt;boost_python &lt;library-path&gt;c:\boost\libs\python
+  $(PYTHON_PROPERTIES)
+    &lt;library-path&gt;$(PYTHON_LIB_PATH)
+    &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </tt></pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id460764"></a>Getting started</h2>
+<a name="id460675"></a>Getting started</h2>
 <p>
 Being able to build is nice, but there is nothing to build yet. Embedding
 the Python interpreter into one of your C++ programs requires these 4
@@ -110,7 +110,7 @@ messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a> and
 <a href="../../../../v2/object.html" target="_top">object</a> class templates to automate the process.</p>
 <a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id460895"></a>Reference-counting handles and objects</h2>
+<a name="id460807"></a>Reference-counting handles and objects</h2>
 <p>
 There are two ways in which a function in the Python/C API can return a
 <tt class="literal">PyObject*</tt>: as a <span class="emphasis"><em>borrowed reference</em></span> or as a <span class="emphasis"><em>new reference</em></span>. Which of
@@ -141,7 +141,7 @@ discuss in the next section.</p>
 </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id461200"></a>Running Python code</h2>
+<a name="id461112"></a>Running Python code</h2>
 <p>
 To run Python code from C++ there is a family of functions in the API
 starting with the PyRun prefix. You can find the full list of these
@@ -156,7 +156,7 @@ The <tt class="literal">start</tt> parameter is the start symbol from the Python
 for interpreting the code. The possible values are:</p>
 <div class="informaltable">
 <h4>
-<a name="id461362"></a><span class="table-title">Start symbols</span>
+<a name="id461274"></a><span class="table-title">Start symbols</span>
 </h4>
 <table class="table">
 <colgroup>
@@ -224,7 +224,7 @@ containing a phrase that is well-known in programming circles.</p>
 </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id461811"></a>Beyond handles</h2>
+<a name="id461723"></a>Beyond handles</h2>
 <p>
 It's nice that <tt class="literal">handle</tt> manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
@@ -271,7 +271,7 @@ int</span><span class="identifier"> five_squared</span><span class="special"> =<
 </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id462393"></a>Exception handling</h2>
+<a name="id462304"></a>Exception handling</h2>
 <p>
 If an exception occurs in the execution of some Python code, the <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
 function returns a null pointer. Constructing a <tt class="literal">handle</tt> out of this null

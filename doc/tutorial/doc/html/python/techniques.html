@@ -91,10 +91,10 @@ Unix and <tt class="literal">.dll</tt> for Windows, works just as well.</td></tr
 <p>
 Now, we create this directory structure for our Python package:</p>
 <pre class="programlisting"><tt class="literal">sounds/
-        <span class="underline">_init</span>_.py
-        core.pyd
-        filters.pyd
-        io.pyd
+    <span class="underline">_init</span>_.py
+    core.pyd
+    filters.pyd
+    io.pyd
 </tt></pre>
 <p>
 The file <tt class="literal"><span class="underline">_init</span>_.py</tt> is what tells Python that the directory <tt class="literal">sounds/</tt> is
@@ -133,16 +133,16 @@ Note that we added an underscore to the module name. The filename will have to
 be changed to <tt class="literal">_core.pyd</tt> as well, and we do the same to the other extension modules.
 Now, we change our package hierarchy like so:</p>
 <pre class="programlisting"><tt class="literal">sounds/
+    <span class="underline">_init</span>_.py
+    core/
         <span class="underline">_init</span>_.py
-        core/
-            <span class="underline">_init</span>_.py
-            _core.pyd
-        filters/
-            <span class="underline">_init</span>_.py
-            _filters.pyd
-        io/
-            <span class="underline">_init</span>_.py
-            _io.pyd
+        _core.pyd
+    filters/
+        <span class="underline">_init</span>_.py
+        _filters.pyd
+    io/
+        <span class="underline">_init</span>_.py
+        _io.pyd
 </tt></pre>
 <p>
 Note that we created a directory for each extension module, and added a

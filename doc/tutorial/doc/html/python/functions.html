@@ -43,26 +43,26 @@ overloading and default arguments.</p>
 But before you do, you might want to fire up Python 2.2 or later and type
 <tt class="literal">&gt;&gt;&gt; import this</tt>.</p>
 <pre class="programlisting"><tt class="literal">&gt;&gt;&gt; import this
-    The Zen of Python, by Tim Peters
-    Beautiful is better than ugly.
-    Explicit is better than implicit.
-    Simple is better than complex.
-    Complex is better than complicated.
-    Flat is better than nested.
-    Sparse is better than dense.
-    Readability counts.
-    Special cases aren't special enough to break the rules.
-    Although practicality beats purity.
-    Errors should never pass silently.
-    Unless explicitly silenced.
-    In the face of ambiguity, refuse the temptation to guess.
-    There should be one-- and preferably only one --obvious way to do it
-    Although that way may not be obvious at first unless you're Dutch.
-    Now is better than never.
-    Although never is often better than <span class="bold"><b>right</b></span> now.
-    If the implementation is hard to explain, it's a bad idea.
-    If the implementation is easy to explain, it may be a good idea.
-    Namespaces are one honking great idea -- let's do more of those!
+The Zen of Python, by Tim Peters
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than <span class="bold"><b>right</b></span> now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
 </tt></pre>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -174,7 +174,7 @@ A reference to <tt class="literal">y.x</tt> is returned
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id454356"></a>Call Policies</h2>
+<a name="id454278"></a>Call Policies</h2>
 <p>
 Call Policies may be used in situations such as the example detailed above.
 In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
@@ -336,7 +336,7 @@ are overloaded with a common sequence of initial arguments
 </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id456178"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
+<a name="id456100"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
 <p>
 Boost.Python now has a way to make it easier. For instance, given a function:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">int</span><span class="identifier"> foo</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> a</span><span class="special">,</span><span class="keyword"> char</span><span class="identifier"> b</span><span class="special"> =</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> unsigned</span><span class="identifier"> c</span><span class="special"> =</span><span class="number"> 2</span><span class="special">,</span><span class="keyword"> double</span><span class="identifier"> d</span><span class="special"> =</span><span class="number"> 3</span><span class="special">)</span><span class="special">
@@ -355,7 +355,7 @@ and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt> 
 automatically add all the foo variants for us:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span><span class="identifier"> foo</span><span class="special">,</span><span class="identifier"> foo_overloads</span><span class="special">());</span></tt></pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id456457"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
+<a name="id456379"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
 <p>
 Objects here, objects there, objects here there everywhere. More frequently
 than anything else, we need to expose member functions of our classes to
@@ -387,7 +387,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
 for details.</p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id456784"></a>init and optional</h2>
+<a name="id456707"></a>init and optional</h2>
 <p>
 A similar facility is provided for class constructors, again, with
 default arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>? For example,
@@ -442,7 +442,7 @@ Then...</p>
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.</p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id457431"></a>Manual Wrapping</h2>
+<a name="id457353"></a>Manual Wrapping</h2>
 <p>
 It is important to emphasize however that <span class="bold"><b>the overloaded functions must
 have a common sequence of initial arguments</b></span>. Otherwise, our scheme above

@@ -125,40 +125,48 @@ __jam__
 Here is our minimalist Jamfile:
 
 [pre
-    subproject libs/python/example/tutorial ;
+# This is the top of our own project tree
+project-root ;
 
-    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-    include python.jam ;
+import python ;
 
-    extension hello                     # Declare a Python extension called hello
-    :   hello.cpp                       # source
-        <dll>../../build/boost_python   # dependencies
-        ;
+extension hello                     # Declare a Python extension called hello
+:   hello.cpp                       # source
+    # requirements and dependencies for Boost.Python extensions
+    <template>@boost/libs/python/build/extension
+    ;
 ]
 
-First, we need to specify our location in the boost project hierarchy.
-It so happens that the tutorial example is located in [^/libs/python/example/tutorial].
-Thus:
+First, we need to specify our location. You may place your project anywhere.
+[^project-root] allows you to do that.
 
 [pre
-    subproject libs/python/example/tutorial ;
+project-root ;
 ]
 
-Then we will include the definitions needed by Python modules:
+By doing so, you'll need a Jamrules file. Simply copy the one in the 
+[@../../../../example/tutorial/Jamrules example/tutorial directory] and tweak 
+the [^path-global BOOST_ROOT] to where your boost root directory is. The file
+has [@../../../../example/tutorial/Jamrules detailed instructions] you can follow.
+
+Then we will import the definitions needed by Python modules:
 
 [pre
-    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-    include python.jam ;
+import python ;
 ]
 
 Finally we declare our [^hello] extension:
 
 [pre
-    extension hello                     # Declare a Python extension called hello
-    :   hello.cpp                       # source
-        <dll>../../build/boost_python   # dependencies
-        ;
+extension hello                     # Declare a Python extension called hello
+:   hello.cpp                       # source
+
+    # requirements and dependencies for Boost.Python extensions
+    <template>@boost/libs/python/build/extension
+    ;
 ]
+
+The last part tells BJam that we are depending on the Boost Python Library.
 
 [h2 Running bjam]
 
@@ -170,29 +178,38 @@ Make sure that the environment is set so that we can invoke the C++
 compiler. With MSVC, that would mean running the [^Vcvars32.bat] batch
 file. For instance:
 
-    C:\Program Files\Microsoft Visual Studio\VC98\bin\Vcvars32.bat
+[pre
+C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\Tools\vsvars32.bat
+]
 
 Some environment variables will have to be setup for proper building of our
 Python modules. Example:
 
-    set PYTHON_ROOT=c:/dev/tools/python
-    set PYTHON_VERSION=2.2
+[pre
+set PYTHON_ROOT=c:/dev/tools/python
+set PYTHON_VERSION=2.2
+]
 
 The above assumes that the Python installation is in [^c:/dev/tools/python]
-and that we are using Python version 2.2. You'll have to tweak this path
+and that we are using Python version 2.2. You'll have to tweak these
 appropriately.
 
 [blurb __tip__ Be sure not to include a third number, e.g. [*not]  "2.2.1",
 even if that's the version you have.]
+
+Take note that you may also do that through the Jamrules file we put in
+our project as detailed above. The file
+has [@../../../../example/tutorial/Jamrules detailed instructions] you 
+can follow.
 
 Now we are ready... Be sure to [^cd] to [^libs/python/example/tutorial]
 where the tutorial [^"hello.cpp"] and the [^"Jamfile"] is situated.
 
 Finally:
 
-    bjam -sTOOLS=msvc
+    bjam -sTOOLS=vc-7_1
 
-We are again assuming that we are using Microsoft Visual C++ version 6. If
+We are again assuming that we are using Microsoft Visual C++ version 7.1. If
 not, then you will have to specify the appropriate tool. See
 [@../../../../../../tools/build/index.html Building Boost Libraries] for
 further details.
@@ -200,26 +217,26 @@ further details.
 It should be building now:
 
 [pre
-    cd C:\dev\boost\libs\python\example\tutorial
-    bjam -sTOOLS=msvc
-    ...patience...
-    ...found 1703 targets...
-    ...updating 40 targets...
+cd C:\dev\boost\libs\python\example\tutorial
+bjam -sTOOLS=msvc
+...patience...
+...found 1703 targets...
+...updating 40 targets...
 ]
 
 And so on... Finally:
 
 [pre
-    vc-C++ ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
-    runtime-link-dynamic\hello.obj
-    hello.cpp
-    vc-Link ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\msvc\debug\
-    runtime-link-dynamic\hello.pyd ..\..\..\..\libs\python\example\tutorial\bin\
-    hello.pyd\msvc\debug\runtime-link-dynamic\hello.lib
-       Creating library ..\..\..\..\libs\python\example\tutorial\bin\hello.pyd\
-       msvc\debug\runtime-link-dynamic\hello.lib and object ..\..\..\..\libs\python\
-       example\tutorial\bin\hello.pyd\msvc\debug\runtime-link-dynamic\hello.exp
-    ...updated 40 targets...
+Creating library bin\boost\libs\python\build\boost_python.dll\vc-7_1\debug\th
+reading-multi\boost_python.lib and object bin\boost\libs\python\build\boost_pyth
+on.dll\vc-7_1\debug\threading-multi\boost_python.exp
+vc-C++ bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.obj
+hello.cpp
+vc-Link bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.pyd bin\tutori
+al\hello.pyd\vc-7_1\debug\threading-multi\hello.lib
+   Creating library bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.li
+b and object bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.exp
+...updated 31 targets...
 ]
 
 If all is well, you should now have:
@@ -234,12 +251,10 @@ if you are on Windows, and
 
 if you are on Unix.
 
-[^boost_python.dll] can be found somewhere in [^libs\python\build\bin]
-while [^hello.pyd] can be found somewhere in
-[^libs\python\example\tutorial\bin]. After a successful build, you can just
-link in these DLLs with the Python interpreter. In Windows for example, you
-can simply put these libraries inside the directory where the Python
-executable is.
+[^boost_python.dll] and [^hello.pyd] can be found somewhere in your project's
+[^bin] directory. After a successful build, you can just link in these DLLs with 
+the Python interpreter. In Windows for example, you can simply put these libraries 
+inside the directory where the Python executable is.
 
 You may now fire up Python and run our hello module:
 
@@ -721,27 +736,27 @@ But before you do, you might want to fire up Python 2.2 or later and type
 [^>>> import this].
 
 [pre
-    >>> import this
-    The Zen of Python, by Tim Peters
-    Beautiful is better than ugly.
-    Explicit is better than implicit.
-    Simple is better than complex.
-    Complex is better than complicated.
-    Flat is better than nested.
-    Sparse is better than dense.
-    Readability counts.
-    Special cases aren't special enough to break the rules.
-    Although practicality beats purity.
-    Errors should never pass silently.
-    Unless explicitly silenced.
-    In the face of ambiguity, refuse the temptation to guess.
-    There should be one-- and preferably only one --obvious way to do it
-    Although that way may not be obvious at first unless you're Dutch.
-    Now is better than never.
-    Although never is often better than *right* now.
-    If the implementation is hard to explain, it's a bad idea.
-    If the implementation is easy to explain, it may be a good idea.
-    Namespaces are one honking great idea -- let's do more of those!
+>>> import this
+The Zen of Python, by Tim Peters
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
 ]
 
 [section Call Policies]
@@ -1401,20 +1416,20 @@ include path.
 In a Jamfile, all the above boils down to:
 
 [pre
-    projectroot c:\projects\embedded_program ; # location of the program
+projectroot c:\projects\embedded_program ; # location of the program
 
-    # bring in the rules for python
-    SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
-    include python.jam ;
+# bring in the rules for python
+SEARCH on python.jam = $(BOOST_BUILD_PATH) ;
+include python.jam ;
 
-    exe embedded_program # name of the executable
-      : #sources
-         embedded_program.cpp
-      : # requirements
-         <find-library>boost_python <library-path>c:\boost\libs\python
-      $(PYTHON_PROPERTIES)
-        <library-path>$(PYTHON_LIB_PATH)
-        <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
+exe embedded_program # name of the executable
+  : #sources
+     embedded_program.cpp
+  : # requirements
+     <find-library>boost_python <library-path>c:\boost\libs\python
+  $(PYTHON_PROPERTIES)
+    <library-path>$(PYTHON_LIB_PATH)
+    <find-library>$(PYTHON_EMBEDDED_LIBRARY) ;
 ]
 
 [h2 Getting started]
@@ -1825,11 +1840,11 @@ Unix and [^.dll] for Windows, works just as well.]
 Now, we create this directory structure for our Python package:
 
 [pre
-    sounds/
-        __init__.py
-        core.pyd
-        filters.pyd
-        io.pyd
+sounds/
+    __init__.py
+    core.pyd
+    filters.pyd
+    io.pyd
 ]
 
 The file [^__init__.py] is what tells Python that the directory [^sounds/] is
@@ -1873,17 +1888,17 @@ be changed to [^_core.pyd] as well, and we do the same to the other extension mo
 Now, we change our package hierarchy like so:
 
 [pre
-    sounds/
+sounds/
+    __init__.py
+    core/
         __init__.py
-        core/
-            __init__.py
-            _core.pyd
-        filters/
-            __init__.py
-            _filters.pyd
-        io/
-            __init__.py
-            _io.pyd
+        _core.pyd
+    filters/
+        __init__.py
+        _filters.pyd
+    io/
+        __init__.py
+        _io.pyd
 ]
 
 Note that we created a directory for each extension module, and added a
