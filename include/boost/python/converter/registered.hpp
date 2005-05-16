@@ -10,7 +10,6 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/detail/workaround.hpp>
-# include <boost/type.hpp>
 
 namespace boost {
 
@@ -59,49 +58,34 @@ struct registered<T&>
 namespace detail
 {
   inline void
-  register_shared_ptr(...)
+  register_shared_ptr0(...)
   {
   }
   
   template <class T>
   inline void
-  register_shared_ptr(type<shared_ptr<T> >)
+  register_shared_ptr0(shared_ptr<T>*)
   {
       registry::lookup_shared_ptr(type_id<shared_ptr<T> >());
   }
   
   template <class T>
   inline void
-  register_shared_ptr(type<shared_ptr<T> const>)
+  register_shared_ptr1(T const volatile*)
   {
-      detail::register_shared_ptr(type<shared_ptr<T> >());
-  }
-  
-  template <class T>
-  inline void
-  register_shared_ptr(type<shared_ptr<T> volatile>)
-  {
-      detail::register_shared_ptr(type<shared_ptr<T> >());
-  }
-  
-  template <class T>
-  inline void
-  register_shared_ptr(type<shared_ptr<T> const volatile>)
-  {
-      detail::register_shared_ptr(type<shared_ptr<T> >());
+      detail::register_shared_ptr0((T*)0);
   }
   
   template <class T>
   registration const& 
-  registry_lookup(type<T&>)
+  registry_lookup(T&(*)())
   {
-      detail::register_shared_ptr(type<T>());
+      detail::register_shared_ptr1((T*)0);
       return registry::lookup(type_id<T>());
   }
-  
+
   template <class T>
-  registration const& registered_base<T>::converters
-  = detail::registry_lookup(type<T>());
+  registration const& registered_base<T>::converters = detail::registry_lookup((T(*)())0);
 }
 
 }}} // namespace boost::python::converter

@@ -148,8 +148,9 @@ struct back_reference_arg_from_python
 
 template <class C, class T, class F>
 struct if_2
-  : mpl::eval_if<C, mpl::identity<T>, F>
-{};
+{
+    typedef typename mpl::eval_if<C, mpl::identity<T>, F>::type type;
+};
 
 // This metafunction selects the appropriate arg_from_python converter
 // type for an argument of type T.
@@ -176,18 +177,18 @@ struct select_arg_from_python
                         mpl::or_<
                             indirect_traits::is_reference_to_non_const<T>
                           , indirect_traits::is_reference_to_volatile<T>
-                            >
-                        , reference_arg_from_python<T>
-                        , mpl::if_<
-                              boost::python::is_back_reference<T>
-                            , back_reference_arg_from_python<T>
-                            , arg_rvalue_from_python<T>
-                          >
-                      >
-                  >
-              >
-          >
-      >::type type;
+                        >
+                      , reference_arg_from_python<T>
+                      , mpl::if_<
+                            boost::python::is_back_reference<T>
+                          , back_reference_arg_from_python<T>
+                          , arg_rvalue_from_python<T>
+                        >
+                    >
+                >
+            >
+        >
+    >::type type;
 };
 
 // ==================
