@@ -20,6 +20,10 @@ namespace registry
   // Get the registration corresponding to the type, creating it if necessary
   BOOST_PYTHON_DECL registration const& lookup(type_info);
 
+  // Get the registration corresponding to the type, creating it if
+  // necessary.  Use this first when the type is a shared_ptr.
+  BOOST_PYTHON_DECL registration const& lookup_shared_ptr(type_info);
+
   // Return a pointer to the corresponding registration, if one exists
   BOOST_PYTHON_DECL registration const* query(type_info);
   

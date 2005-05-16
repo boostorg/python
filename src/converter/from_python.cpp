@@ -43,7 +43,7 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
 
     // First check to see if it's embedded in an extension class
     // instance, as a special case.
-    data.convertible = objects::find_instance_impl(source, converters.target_type);
+    data.convertible = objects::find_instance_impl(source, converters.target_type, converters.is_shared_ptr);
     if (data.convertible)
     {
         data.construct = 0;

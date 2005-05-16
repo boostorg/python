@@ -407,7 +407,7 @@ namespace objects
   }
 
   BOOST_PYTHON_DECL void*
-  find_instance_impl(PyObject* inst, type_info type)
+  find_instance_impl(PyObject* inst, type_info type, bool null_shared_ptr_only)
   {
       if (inst->ob_type->ob_type != &class_metatype_object)
           return 0;
@@ -416,7 +416,7 @@ namespace objects
 
       for (instance_holder* match = self->objects; match != 0; match = match->next())
       {
-          void* const found = match->holds(type);
+          void* const found = match->holds(type, null_shared_ptr_only);
           if (found)
               return found;
       }

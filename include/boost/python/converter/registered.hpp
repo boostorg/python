@@ -10,8 +10,16 @@
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
 # include <boost/detail/workaround.hpp>
+# include <boost/type.hpp>
 
-namespace boost { namespace python { namespace converter { 
+namespace boost {
+
+// You'll see shared_ptr mentioned in this header because we need to
+// note which types are shared_ptrs in their registrations, to
+// implement special shared_ptr handling for rvalue conversions.
+template <class T> class shared_ptr;
+
+namespace python { namespace converter { 
 
 struct registration;
 
@@ -26,9 +34,9 @@ namespace detail
 
 template <class T>
 struct registered
-    : detail::registered_base<
+  : detail::registered_base<
         typename add_reference<
-           typename add_cv<T>::type
+            typename add_cv<T>::type
         >::type
     >
 {
@@ -50,10 +58,52 @@ struct registered<T&>
 //
 namespace detail
 {
+  inline void
+  register_shared_ptr(...)
+  {
+  }
+  
+  template <class T>
+  inline void
+  register_shared_ptr(type<shared_ptr<T> >)
+  {
+      registry::lookup_shared_ptr(type_id<shared_ptr<T> >());
+  }
+  
+  template <class T>
+  inline void
+  register_shared_ptr(type<shared_ptr<T> const>)
+  {
+      detail::register_shared_ptr(type<shared_ptr<T> >());
+  }
+  
+  template <class T>
+  inline void
+  register_shared_ptr(type<shared_ptr<T> volatile>)
+  {
+      detail::register_shared_ptr(type<shared_ptr<T> >());
+  }
+  
+  template <class T>
+  inline void
+  register_shared_ptr(type<shared_ptr<T> const volatile>)
+  {
+      detail::register_shared_ptr(type<shared_ptr<T> >());
+  }
+  
+  template <class T>
+  registration const& 
+  registry_lookup(type<T&>)
+  {
+      detail::register_shared_ptr(type<T>());
+      return registry::lookup(type_id<T>());
+  }
+  
   template <class T>
   registration const& registered_base<T>::converters
-     = registry::lookup(type_id<T>());
+  = detail::registry_lookup(type<T>());
 }
+
 }}} // namespace boost::python::converter
 
 #endif // REGISTERED_DWA2002710_HPP

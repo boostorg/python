@@ -128,7 +128,7 @@ namespace // <unnamed>
   }
 #endif // BOOST_PYTHON_CONVERTER_REGISTRY_APPLE_MACH_WORKAROUND
 
-  entry* get(type_info type)
+  entry* get(type_info type, bool is_shared_ptr = false)
   {
 #  ifdef BOOST_PYTHON_TRACE_REGISTRY
       registry_t::iterator p = entries().find(entry(type));
@@ -138,7 +138,7 @@ namespace // <unnamed>
                     ? "...NOT found\n" : "...found\n");
 #  endif
       std::pair<registry_t::const_iterator,bool> pos_ins
-          = entries().insert(entry(type));
+          = entries().insert(entry(type,is_shared_ptr));
       
 #  if __MWERKS__ >= 0x3000
       // do a little invariant checking if a change was made
@@ -228,6 +228,11 @@ namespace registry
   registration const& lookup(type_info key)
   {
       return *get(key);
+  }
+
+  registration const& lookup_shared_ptr(type_info key)
+  {
+      return *get(key, true);
   }
 
   registration const* query(type_info type)
