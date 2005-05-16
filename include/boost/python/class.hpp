@@ -301,15 +301,40 @@ class class_ : public objects::class_base
     }
 
     // Property creation
+ private:
     template <class Get>
-    self& add_property(char const* name, Get fget, char const* docstr = 0)
+    self& add_property_impl(char const* name, Get fget, char const* docstr, int)
     {
         base::add_property(name, this->make_getter(fget), docstr);
         return *this;
     }
 
     template <class Get, class Set>
-    self& add_property(char const* name, Get fget, Set fset, char const* docstr = 0)
+    self& add_property_impl(char const* name, Get fget, Set fset, ...)
+    {
+        base::add_property(
+            name, this->make_getter(fget), this->make_setter(fset), 0);
+        return *this;
+    }
+
+ public:    
+    template <class Get>
+    self& add_property(char const* name, Get fget)
+    {
+        base::add_property(name, this->make_getter(fget), 0);
+        return *this;
+    }
+
+    template <class Get, class DocStrOrSet>
+    self& add_property(char const* name, Get fget, DocStrOrSet docstr_or_set)
+    {
+        this->add_property_impl(name, this->make_getter(fget), docstr_or_set, 0);
+        return *this;
+    }
+
+    template <class Get, class Set>
+    self&
+    add_property(char const* name, Get fget, Set fset, char const* docstr)
     {
         base::add_property(
             name, this->make_getter(fget), this->make_setter(fset), docstr);
