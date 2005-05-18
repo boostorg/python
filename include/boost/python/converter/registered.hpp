@@ -81,7 +81,7 @@ namespace detail
   registry_lookup(T&(*)())
   {
       detail::register_shared_ptr1((T*)0);
-      return registry::lookup(type_id<T>());
+      return registry::lookup(type_id<T&>());
   }
 
   template <class T>

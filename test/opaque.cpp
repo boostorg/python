@@ -7,16 +7,8 @@
 # include <boost/python/module.hpp>
 # include <boost/python/return_value_policy.hpp>
 
-# if BOOST_WORKAROUND(__GNUC__, == 2) \
-    || BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(3)) \
-       && BOOST_WORKAROUND(__GNUC_MINOR__, BOOST_TESTED_AT(3)) \
-       && BOOST_WORKAROUND(__GNUC_PATCHLEVEL__, BOOST_TESTED_AT(3))
-typedef struct opaque_ {} *opaque;
-typedef struct opaque2_ {} *opaque2;
-# else 
 typedef struct opaque_ *opaque;
 typedef struct opaque2_ *opaque2;
-# endif 
 
 opaque the_op   = ((opaque) 0x47110815);
 opaque2 the_op2 = ((opaque2) 0x08154711);
