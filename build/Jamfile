@@ -63,6 +63,7 @@ if [ check-python-config ]
       $(bpl-linkflags)
         <msvc-stlport><release>$(msvc-stlport-workarounds)
         <darwin><*><linkflags>-bind_at_load
+        <gcc-3_3-darwin><*><linkflags>-bind_at_load
       ;
 
   template extension
