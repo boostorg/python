@@ -301,6 +301,22 @@ class class_ : public objects::class_base
     }
 
     // Property creation
+# if !BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
+    template <class Get>
+    self& add_property(char const* name, Get fget, char const* docstr = 0)
+    {
+        base::add_property(name, this->make_getter(fget), docstr);
+        return *this;
+    }
+
+    template <class Get, class Set>
+    self& add_property(char const* name, Get fget, Set fset, char const* docstr = 0)
+    {
+        base::add_property(
+            name, this->make_getter(fget), this->make_setter(fset), docstr);
+        return *this;
+    }
+# else
  private:
     template <class Get>
     self& add_property_impl(char const* name, Get fget, char const* docstr, int)
@@ -340,6 +356,7 @@ class class_ : public objects::class_base
             name, this->make_getter(fget), this->make_setter(fset), docstr);
         return *this;
     }
+# endif
         
     template <class Get>
     self& add_static_property(char const* name, Get fget)
