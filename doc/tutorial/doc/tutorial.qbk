@@ -1289,16 +1289,15 @@ we wanted to do above can be achieved by writing:
     Vec2& v = extract<Vec2&>(o);
     assert(l == v.length());
 
-The first line attempts to extract the "length" attribute of the
-Boost.Python [^object] [^o]. The second line attempts to ['extract] the
-[^Vec2] object from held by the Boost.Python [^object] [^o].
+The first line attempts to extract the "length" attribute of the Boost.Python 
+[^object]. The second line attempts to ['extract] the [^Vec2] object from held 
+by the Boost.Python [^object].
 
-Take note that we said "attempt to" above. What if the Boost.Python
-[^object] [^o] does not really hold a [^Vec2] type? This is certainly
-a possibility considering the dynamic nature of Python [^object]s. To
-be on the safe side, if the C++ type can't be extracted, an
-appropriate exception is thrown. To avoid an exception, we need to
-test for extractibility:
+Take note that we said "attempt to" above. What if the Boost.Python [^object] 
+does not really hold a [^Vec2] type? This is certainly a possibility considering 
+the dynamic nature of Python [^object]s. To be on the safe side, if the C++ type 
+can't be extracted, an appropriate exception is thrown. To avoid an exception, 
+we need to test for extractibility:
 
     extract<Vec2&> x(o);
     if (x.check()) {

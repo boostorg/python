@@ -157,7 +157,7 @@ C++:
 </span><span class="identifier">d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span><span class="special"> =</span><span class="number"> 3</span><span class="special">;</span><span class="comment">           // modifies the copy
 </span></tt></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id459119"></a>class_&lt;T&gt; as objects</h2>
+<a name="id454730"></a>class_&lt;T&gt; as objects</h2>
 <p>
 Due to the dynamic nature of Boost.Python objects, any <tt class="literal">class_&lt;T&gt;</tt> may
 also be one of these types! The following code snippet wraps the class
@@ -188,16 +188,15 @@ we wanted to do above can be achieved by writing:</p>
 Vec2</span><span class="special">&amp;</span><span class="identifier"> v</span><span class="special"> =</span><span class="identifier"> extract</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&amp;&gt;(</span><span class="identifier">o</span><span class="special">);</span><span class="identifier">
 assert</span><span class="special">(</span><span class="identifier">l</span><span class="special"> ==</span><span class="identifier"> v</span><span class="special">.</span><span class="identifier">length</span><span class="special">());</span></tt></pre>
 <p>
-The first line attempts to extract the "length" attribute of the
-Boost.Python <tt class="literal">object</tt><tt class="literal">o</tt>. The second line attempts to <span class="emphasis"><em>extract</em></span> the
-<tt class="literal">Vec2</tt> object from held by the Boost.Python <tt class="literal">object</tt><tt class="literal">o</tt>.</p>
+The first line attempts to extract the "length" attribute of the Boost.Python 
+<tt class="literal">object</tt>. The second line attempts to <span class="emphasis"><em>extract</em></span> the <tt class="literal">Vec2</tt> object from held 
+by the Boost.Python <tt class="literal">object</tt>.</p>
 <p>
-Take note that we said "attempt to" above. What if the Boost.Python
-<tt class="literal">object</tt><tt class="literal">o</tt> does not really hold a <tt class="literal">Vec2</tt> type? This is certainly
-a possibility considering the dynamic nature of Python <tt class="literal">object</tt>s. To
-be on the safe side, if the C++ type can't be extracted, an
-appropriate exception is thrown. To avoid an exception, we need to
-test for extractibility:</p>
+Take note that we said "attempt to" above. What if the Boost.Python <tt class="literal">object</tt> 
+does not really hold a <tt class="literal">Vec2</tt> type? This is certainly a possibility considering 
+the dynamic nature of Python <tt class="literal">object</tt>s. To be on the safe side, if the C++ type 
+can't be extracted, an appropriate exception is thrown. To avoid an exception, 
+we need to test for extractibility:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&amp;&gt;</span><span class="identifier"> x</span><span class="special">(</span><span class="identifier">o</span><span class="special">);</span><span class="keyword">
 if</span><span class="special"> (</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">check</span><span class="special">())</span><span class="special"> {</span><span class="identifier">
     Vec2</span><span class="special">&amp;</span><span class="identifier"> v</span><span class="special"> =</span><span class="identifier"> x</span><span class="special">();</span><span class="special"> ...</span></tt></pre>
