@@ -176,7 +176,7 @@ bpl-test crossmod_exception
 
 # --- unit tests of library components ---
 
-[ run indirect_traits_test.cpp ]
+[ compile indirect_traits_test.cpp ]
 [ run destroy_test.cpp ]
 [ run pointer_type_id_test.cpp <template>py-unit-test ]
 [ run bases.cpp  <template>py-unit-test ]
