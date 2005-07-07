@@ -11,6 +11,7 @@
 # include <boost/get_pointer.hpp>
 # include <boost/detail/binary_search.hpp>
 # include <boost/numeric/conversion/cast.hpp>
+# include <boost/type_traits/is_pointer.hpp>
 # include <vector>
 # include <map>
 #include <iostream>
@@ -462,13 +463,29 @@ namespace boost { namespace python { namespace detail {
         { 
         }
 
+        template <class DataType> 
+        static object
+        base_get_item_helper(DataType const& p, mpl::true_)
+        { 
+            return object(ptr(p));
+        }
+
+        template <class DataType> 
+        static object
+        base_get_item_helper(DataType const& x, mpl::false_)
+        { 
+            return object(x);
+        }
+
         static object
         base_get_item_(back_reference<Container&> const& container, PyObject* i)
         { 
-            return object(
+            return base_get_item_helper(
                 DerivedPolicies::get_item(
                     container.get(), DerivedPolicies::
-                        convert_index(container.get(), i)));
+                        convert_index(container.get(), i))
+              , is_pointer<BOOST_DEDUCED_TYPENAME Container::value_type>()
+            );
         }
 
         static void

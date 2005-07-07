@@ -162,6 +162,8 @@ bpl-test crossmod_exception
 [ bpl-test docstring ]
 
 [ bpl-test vector_indexing_suite ]
+[ bpl-test pointer_vector ]
+
 
 [ extension map_indexing_suite_ext
     : map_indexing_suite.cpp int_map_indexing_suite.cpp <template>../build/extension ]
