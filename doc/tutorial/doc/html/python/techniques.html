@@ -91,13 +91,13 @@ Unix and <tt class="literal">.dll</tt> for Windows, works just as well.</td></tr
 <p>
 Now, we create this directory structure for our Python package:</p>
 <pre class="programlisting"><tt class="literal">sounds/
-    <span class="underline">_init</span>_.py
+    __init__.py
     core.pyd
     filters.pyd
     io.pyd
 </tt></pre>
 <p>
-The file <tt class="literal"><span class="underline">_init</span>_.py</tt> is what tells Python that the directory <tt class="literal">sounds/</tt> is
+The file <tt class="literal">__init__.py</tt> is what tells Python that the directory <tt class="literal">sounds/</tt> is
 actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.</p>
 <p>
@@ -133,29 +133,29 @@ Note that we added an underscore to the module name. The filename will have to
 be changed to <tt class="literal">_core.pyd</tt> as well, and we do the same to the other extension modules.
 Now, we change our package hierarchy like so:</p>
 <pre class="programlisting"><tt class="literal">sounds/
-    <span class="underline">_init</span>_.py
+    __init__.py
     core/
-        <span class="underline">_init</span>_.py
+        __init__.py
         _core.pyd
     filters/
-        <span class="underline">_init</span>_.py
+        __init__.py
         _filters.pyd
     io/
-        <span class="underline">_init</span>_.py
+        __init__.py
         _io.pyd
 </tt></pre>
 <p>
 Note that we created a directory for each extension module, and added a
-<span class="underline">_init</span>_.py to each one. But if we leave it that way, the user will have to
+__init__.py to each one. But if we leave it that way, the user will have to
 access the functions in the core module with this syntax:</p>
 <p></p>
 <pre class="programlisting"><tt class="literal"><span class="special">&gt;&gt;&gt;</span><span class="keyword"> import</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">
 &gt;&gt;&gt;</span><span class="identifier"> sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span></tt></pre>
 <p>
-which is not what we want. But here enters the <tt class="literal"><span class="underline">_init</span>_.py</tt> magic: everything
-that is brought to the <tt class="literal"><span class="underline">_init</span>_.py</tt> namespace can be accessed directly by the
+which is not what we want. But here enters the <tt class="literal">__init__.py</tt> magic: everything
+that is brought to the <tt class="literal">__init__.py</tt> namespace can be accessed directly by the
 user.  So, all we have to do is bring the entire namespace from <tt class="literal">_core.pyd</tt>
-to <tt class="literal">core/<span class="underline">_init</span><span class="underline">.py]. So add this line of code to [^sounds/core/</span><span class="underline">init</span>_.py</tt>:</p>
+to <tt class="literal">core/__init__.py</tt>. So add this line of code to <tt class="literal">sounds<span class="emphasis"><em>core</em></span>__init__.py</tt>:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> _core</span><span class="keyword"> import</span><span class="special"> *</span></tt></pre>
 <p>
 We do the same for the other packages. Now the user accesses the functions and
@@ -175,7 +175,7 @@ def</span><span class="identifier"> echo_noise</span><span class="special">(</sp
     s</span><span class="special"> =</span><span class="identifier"> _filters</span><span class="special">.</span><span class="identifier">noise</span><span class="special">(</span><span class="identifier">sound</span><span class="special">)</span><span class="keyword">
     return</span><span class="identifier"> s</span></tt></pre>
 <p>
-Next, we add this line to <tt class="literal">sounds<span class="emphasis"><em>filters</em></span><span class="underline">_init</span>_.py</tt>:</p>
+Next, we add this line to <tt class="literal">sounds<span class="emphasis"><em>filters</em></span>__init__.py</tt>:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> echo_noise</span><span class="keyword"> import</span><span class="identifier"> echo_noise</span></tt></pre>
 <p>
 And that's it. The user now accesses this function like any other function
@@ -217,7 +217,7 @@ BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier"
 <p>
 If we are using the technique from the previous session,
 <a href="techniques.html#python.creating_packages" title="Creating Packages">Creating Packages</a>, we can code directly
-into <tt class="literal">geom/<span class="underline">_init</span>_.py</tt>:</p>
+into <tt class="literal">geom/__init__.py</tt>:</p>
 <p></p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">from</span><span class="identifier"> _geom</span><span class="keyword"> import</span><span class="special"> *</span><span class="comment">
 

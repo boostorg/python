@@ -1702,7 +1702,7 @@ The typical Python iteration protocol: [^[*for y in x...]] is as follows:
 
 Boost.Python provides some mechanisms to make C++ iterators play along
 nicely as Python iterators. What we need to do is to produce
-appropriate __iter__ function from C++ iterators that is compatible
+appropriate `__iter__` function from C++ iterators that is compatible
 with the Python iteration protocol. For example:
 
 [c++]
@@ -1840,13 +1840,13 @@ Now, we create this directory structure for our Python package:
 
 [pre
 sounds/
-    __init__.py
+    \_\_init\_\_.py
     core.pyd
     filters.pyd
     io.pyd
 ]
 
-The file [^__init__.py] is what tells Python that the directory [^sounds/] is
+The file [^\_\_init\_\_.py] is what tells Python that the directory [^sounds/] is
 actually a Python package. It can be a empty file, but can also perform some
 magic, that will be shown later.
 
@@ -1888,20 +1888,20 @@ Now, we change our package hierarchy like so:
 
 [pre
 sounds/
-    __init__.py
+    \_\_init\_\_.py
     core/
-        __init__.py
+        \_\_init\_\_.py
         _core.pyd
     filters/
-        __init__.py
+        \_\_init\_\_.py
         _filters.pyd
     io/
-        __init__.py
+        \_\_init\_\_.py
         _io.pyd
 ]
 
 Note that we created a directory for each extension module, and added a
-__init__.py to each one. But if we leave it that way, the user will have to
+\_\_init\_\_.py to each one. But if we leave it that way, the user will have to
 access the functions in the core module with this syntax:
 
 [python]
@@ -1909,10 +1909,10 @@ access the functions in the core module with this syntax:
     >>> import sounds.core._core
     >>> sounds.core._core.foo(...)
 
-which is not what we want. But here enters the [^__init__.py] magic: everything
-that is brought to the [^__init__.py] namespace can be accessed directly by the
+which is not what we want. But here enters the [^\_\_init\_\_.py] magic: everything
+that is brought to the [^\_\_init\_\_.py] namespace can be accessed directly by the
 user.  So, all we have to do is bring the entire namespace from [^_core.pyd]
-to [^core/__init__.py]. So add this line of code to [^sounds/core/__init__.py]:
+to [^core/\_\_init\_\_.py]. So add this line of code to [^sounds/core/\_\_init\_\_.py]:
 
     from _core import *
 
@@ -1935,7 +1935,7 @@ create a file named [^sounds/filters/echo_noise.py] and code our function:
         s = _filters.noise(sound)
         return s
 
-Next, we add this line to [^sounds/filters/__init__.py]:
+Next, we add this line to [^sounds/filters/\_\_init\_\_.py]:
 
     from echo_noise import echo_noise
 
@@ -1981,7 +1981,7 @@ we have a class [^point] in C++:
 
 If we are using the technique from the previous session,
 [link python.creating_packages Creating Packages], we can code directly
-into [^geom/__init__.py]:
+into [^geom/\_\_init\_\_.py]:
 
 [python]
 

@@ -261,7 +261,17 @@
     {
         font-style: italic;
     }
-    
+
+    span.underline
+    {
+        text-decoration: underline;
+    }
+
+    span.strikethrough
+    {
+        text-decoration: line-through;
+    }
+
     /* Copyright, Legal Notice */
     div div.legalnotice p
     {

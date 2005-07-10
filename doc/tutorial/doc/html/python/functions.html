@@ -174,7 +174,7 @@ A reference to <tt class="literal">y.x</tt> is returned
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id449892"></a>Call Policies</h2>
+<a name="id449873"></a>Call Policies</h2>
 <p>
 Call Policies may be used in situations such as the example detailed above.
 In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
@@ -336,7 +336,7 @@ are overloaded with a common sequence of initial arguments
 </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id451712"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
+<a name="id451695"></a>BOOST_PYTHON_FUNCTION_OVERLOADS</h2>
 <p>
 Boost.Python now has a way to make it easier. For instance, given a function:</p>
 <pre class="programlisting"><tt class="literal"><span class="keyword">int</span><span class="identifier"> foo</span><span class="special">(</span><span class="keyword">int</span><span class="identifier"> a</span><span class="special">,</span><span class="keyword"> char</span><span class="identifier"> b</span><span class="special"> =</span><span class="number"> 1</span><span class="special">,</span><span class="keyword"> unsigned</span><span class="identifier"> c</span><span class="special"> =</span><span class="number"> 2</span><span class="special">,</span><span class="keyword"> double</span><span class="identifier"> d</span><span class="special"> =</span><span class="number"> 3</span><span class="special">)</span><span class="special">
@@ -355,7 +355,7 @@ and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt> 
 automatically add all the foo variants for us:</p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span><span class="identifier"> foo</span><span class="special">,</span><span class="identifier"> foo_overloads</span><span class="special">());</span></tt></pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id451991"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
+<a name="id451974"></a>BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</h2>
 <p>
 Objects here, objects there, objects here there everywhere. More frequently
 than anything else, we need to expose member functions of our classes to
@@ -387,7 +387,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads reference</a>
 for details.</p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id452318"></a>init and optional</h2>
+<a name="id452301"></a>init and optional</h2>
 <p>
 A similar facility is provided for class constructors, again, with
 default arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>? For example,
@@ -442,7 +442,7 @@ Then...</p>
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.</p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id452965"></a>Manual Wrapping</h2>
+<a name="id452948"></a>Manual Wrapping</h2>
 <p>
 It is important to emphasize however that <span class="bold"><b>the overloaded functions must
 have a common sequence of initial arguments</b></span>. Otherwise, our scheme above

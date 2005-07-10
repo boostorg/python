@@ -65,7 +65,7 @@ The typical Python iteration protocol: <tt class="literal"><span class="bold"><b
 <p>
 Boost.Python provides some mechanisms to make C++ iterators play along
 nicely as Python iterators. What we need to do is to produce
-appropriate <span class="underline">_iter</span>_ function from C++ iterators that is compatible
+appropriate <tt class="computeroutput"><span class="identifier">__iter__</span></tt> function from C++ iterators that is compatible
 with the Python iteration protocol. For example:</p>
 <p></p>
 <pre class="programlisting"><tt class="literal"><span class="identifier">object</span><span class="identifier"> get_iterator</span><span class="special"> =</span><span class="identifier"> iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span><span class="special"> &gt;();</span><span class="identifier">
