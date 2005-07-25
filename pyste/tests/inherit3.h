@@ -8,7 +8,7 @@ namespace inherit3 {
     
 struct A
 {
-	A() { x = 0; }
+    A() { x = 0; }
     struct X { int y; };
     int x;
     virtual int foo() { return 0; }

@@ -23,11 +23,11 @@ compute the factorial
 '''
 
 def check_double_string():
-	"""
-	>>> assert check_double_string() == True
-	"""
-	from docstring_ext import X
-	return X.value.__doc__ == "gets the value of the object\n\nalso gets the value of the object"
+    """
+    >>> assert check_double_string() == True
+    """
+    from docstring_ext import X
+    return X.value.__doc__ == "gets the value of the object\n\nalso gets the value of the object"
 
 def run(args = None):
     import sys

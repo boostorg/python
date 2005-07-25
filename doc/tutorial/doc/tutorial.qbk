@@ -1562,7 +1562,7 @@ containing a phrase that is well-known in programming circles.
 It's nice that [^handle] manages the reference counting details for us, but
 other than that it doesn't do much. Often we'd like to have a more useful
 class to manipulate Python objects. But we have already seen such a class
-above, and in the [@object.html previous section]: the aptly
+above, and in the [@python/object.html previous section]: the aptly
 named [^object] class and it's derivatives. We've already seen that they
 can be constructed from a [^handle]. The following examples should further
 illustrate this fact:
