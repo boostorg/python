@@ -144,7 +144,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t, bool
     if (dst_t == python::type_id<Pointer>()
         && !(null_ptr_only && get_pointer(this->m_p))
     )
-	    return &this->m_p;
+        return &this->m_p;
 
     if (!get_pointer(this->m_p))
         return 0;
