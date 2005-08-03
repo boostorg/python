@@ -53,7 +53,7 @@ for the Python <a
  href="http://www.python.org/doc/2.3.3/api/slice-objects.html">slice</a>
 type.</p>
 <h2><a name="classes"></a>Classes</h2>
-<h3><a name="class-spec"></a>Class <code>slice</code></h3>
+<h3><a name="slice-spec"></a>Class <code>slice</code></h3>
 <p>Exposes the extended slicing protocol by wrapping the built-in slice
 type. The semantics of the constructors and member functions defined
 below can be fully understood by reading the <a
@@ -134,7 +134,7 @@ slice(Int1 start, Int2 stop, Int3 step);
   <dt><b>Effects:</b> constructs a new slice with start stop and step
 values.&nbsp; Equivalent to the slice object created
 by the built-in Python function <code><a
- href="http://www.python.org/doc/current/lib/built-in-functions.html#12h-62">slice(start,stop,step)</a></code>,
+ href="http://www.python.org/doc/current/lib/built-in-funcs.html">slice(start,stop,step)</a></code>,
 or as part of the Python expression <code>base[start:stop:step]</code>.</dt>
   <dt><b>Throws:</b> <code>error_already_set</code> and sets a Python <code>TypeError</code>
 exception if no conversion is possible from the arguments to type

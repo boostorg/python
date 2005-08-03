@@ -102,9 +102,9 @@ template &lt;class T&gt; struct apply
 
       <dt><b>Returns:</b> <code>typedef <a href=
       "to_python_indirect.html#to_python_indirect-spec">to_python_indirect</a>&lt;T,V&gt;
-      type</code>, where <code>V</code> is a <a href=
-      "to_python_indirect.html#HolderObjectGenerator">HolderObjectGenerator</a>
-      which constructs an instance holder containing an <i>unowned</i>
+      type</code>, where <code>V</code> is a class whose
+      static <code>execute</code> function constructs an instance
+      holder containing an <i>unowned</i>
       <code>U*</code> pointing to the referent of the wrapped function's
       return value.</dt>
     </dl>

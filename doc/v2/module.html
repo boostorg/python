@@ -71,7 +71,7 @@ This macro generates two functions in the scope where it is used:
 and <code>void&nbsp;init_module_<i>name</i>()</code>, whose body must
 follow the macro invocation. <code>init_<i>name</i></code> passes
 <code>init_module_<i>name</i></code> to <code><a
-href="errors.html#handle_exception">handle_exception</a>()</code> so
+href="errors.html#handle_exception-spec">handle_exception</a>()</code> so
 that any C++ exceptions generated are safely processeed. During the
 body of <code>init_<i>name</i></code>, the current <code><a
 href="scope.html#scope-spec">scope</a></code> refers to the module
