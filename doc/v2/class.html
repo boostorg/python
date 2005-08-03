@@ -130,7 +130,7 @@
         conversions from indirectly-held wrapped <code>B</code> instances to
         <code>T</code>.</td>
 
-        <td><code><a href="#bases">bases&lt;&gt;</a></code></td>
+        <td><code><a href="#bases-spec">bases&lt;&gt;</a></code></td>
       </tr>
 
       <tr>
@@ -153,7 +153,7 @@
         <td><code><font color="#007F00">NonCopyable</font></code></td>
 
         <td>If supplied, must be <a href=
-        "../../../utility/utility.htm#Class%20noncopyable">boost::noncopyable</a>.</td>
+        "../../../utility/utility.htm#Class_noncopyable">boost::noncopyable</a>.</td>
 
         <td>Suppresses automatic registration of <code>to_python</code>
         conversions which copy <code>T</code> instances. Required when
@@ -164,17 +164,17 @@
       </tr>
     </table>
 
-    <h4><a name="#HeldType">HeldType Semantics</a></h4>
+    <h4><a name="HeldType">HeldType Semantics</a></h4>
 
     <ol>
       <li>If <code>HeldType</code> is derived from T, its exposed
       constructor(s) must accept an initial <code>PyObject*</code> argument
       which refers back to the Python object that contains the
       <code>HeldType</code> instance, as shown in <a href=
-      "call_method.html#example">this example</a>. This argument is not
+      "call_method.html#examples">this example</a>. This argument is not
       included in the <em><a href=
       "init.html#init-expressions">init-expression</a></em> passed to <a
-      href="#class-spec-modifiers"><code>def(init_expr)</code></a>, below,
+      href="#class_-spec-modifiers"><code>def(init_expr)</code></a>, below,
       nor is it passed explicitly by users when Python instances of
       <code>T</code> are created. This idiom allows C++ virtual functions
       which will be overridden in Python to access the Python object so the
@@ -306,7 +306,7 @@ class_(char const* name, char const* docstring, Init init_spec);
       <a href="definitions.html#ntbs">ntbs</a>. If <code>init_spec</code> is
       supplied, it must be either the special enumeration constant
       <code>no_init</code> or an <a href=
-      "init.html#init-expression">init-expression</a> compatible with
+      "init.html#init-expressions">init-expression</a> compatible with
       <code>T</code>.</dt>
 
       <dt><b>Effects:</b> Constructs a <code>class_</code> object holding a
@@ -350,7 +350,7 @@ class_&amp; def(Init init_expr);
 
     <dl class="function-semantics">
       <dt><b>Requires:</b> <code>init_expr</code> is the result of an <a
-      href="init.html#init-expression">init-expression</a> compatible with
+      href="init.html#init-expressions">init-expression</a> compatible with
       <code>T</code>.</dt>
 
       <dt><b>Effects:</b> For each <a href="init.html#init-expressions">valid

@@ -79,7 +79,7 @@ call_method&lt;ResultType&gt;(self_object, "<i>method-name</i>", a1, a2... a<i>N
     the arguments <code>a1</code>...<code>a<i>N</i></code> are copied into
     new Python objects, but this behavior can be overridden by the use of
     <code><a href="ptr.html#ptr-spec">ptr()</a></code> and <a href=
-    "../../../bind/ref.html#reference_wrapper">ref()</a>:</p>
+    "../../../bind/ref.html">ref()</a>:</p>
 <pre>
 class X : boost::noncopyable
 {
@@ -128,7 +128,7 @@ void apply(PyObject* callable, X&amp; x)
 
       <tr>
         <td><code><a href=
-        "../../../bind/ref.html#reference_wrapper">boost::reference_wrapper</a>&lt;T&gt;</code></td>
+        "../../../bind/ref.html">boost::reference_wrapper</a>&lt;T&gt;</code></td>
 
         <td>The Python argument contains a pointer to, rather than a copy of,
         <code>x.get()</code>. Note: failure to ensure that no Python code
