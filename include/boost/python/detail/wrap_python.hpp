@@ -23,6 +23,10 @@
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
 #  undef _DEBUG // Don't let Python force the debug library just because we're debugging.
+#  ifndef _CRT_NOFORCE_MANIFEST
+#   define _CRT_NOFORCE_MANIFEST
+#   define _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
+#  endif
 #  define DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # endif
 #endif
@@ -97,7 +101,7 @@ typedef int pid_t;
 
 #   define HAVE_LONG_LONG 1
 #   define LONG_LONG long long
-#  endif 
+#  endif
 
 # elif defined(__MWERKS__)
 
@@ -143,6 +147,10 @@ typedef int pid_t;
 #ifdef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # undef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # define _DEBUG
+# ifdef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
+#  undef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
+#  undef _CRT_NOFORCE_MANIFEST
+# endif
 #endif
 
 #if !defined(PY_MAJOR_VERSION) || PY_MAJOR_VERSION < 2
