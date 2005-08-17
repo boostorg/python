@@ -54,6 +54,8 @@ if [ check-python-config ]
     object_protocol.cpp
     object_operators.cpp
     wrapper.cpp
+    exec.cpp
+    import.cpp
     ;
   
   dll boost_python

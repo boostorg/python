@@ -74,10 +74,10 @@ rule bpl-test ( name ? : files * : requirements * )
 
 test-suite python
   :
-   [
-    run ../test/embedding.cpp <lib>../build/boost_python
+  [
+    run ../test/exec.cpp <lib>../build/boost_python
       : # program args
-      : # input files
+      : ../test/exec.py
       : # requirements
       $(PYTHON_PROPERTIES)
         <define>BOOST_PYTHON_STATIC_LIB
