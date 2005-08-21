@@ -110,7 +110,7 @@ using namespace boost::python;
 struct X
 {
     X(int x) : v(x) {}
-    operator int() { return v; }
+    operator int() const { return v; }
     int v;
 };
 
