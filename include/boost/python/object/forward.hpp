@@ -12,7 +12,7 @@
 # include <boost/ref.hpp>
 # include <boost/python/detail/value_arg.hpp>
 # include <boost/python/detail/copy_ctor_mutates_rhs.hpp>
-# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+# if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
 #  include <boost/type_traits/is_enum.hpp>
 #  include <boost/mpl/and.hpp>
 #  include <boost/mpl/not.hpp>
@@ -42,7 +42,7 @@ struct reference_to_value
 template <class T>
 struct forward
     : mpl::if_<
-# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+# if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
           // vc6 chokes on unforwarding enums nested in classes
           mpl::and_<
               is_scalar<T>

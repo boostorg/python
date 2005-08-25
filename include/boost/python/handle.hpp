@@ -87,7 +87,7 @@ class handle
         return *this;
     }
 
-#if !defined(BOOST_MSVC) || (BOOST_MSVC > 1200)
+#if !defined(BOOST_MSVC) || (BOOST_MSVC >= 1300)
 
     template<typename Y>
     handle& operator=(handle<Y> const & r) // never throws

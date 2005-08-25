@@ -86,7 +86,7 @@ namespace api
   class object_operators : public def_visitor<U>
   {
    protected:
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
+# if !defined(BOOST_MSVC) || BOOST_MSVC >= 1300
       typedef object const& object_cref;
 # else 
       typedef object object_cref;
@@ -300,7 +300,7 @@ namespace api
       template <class T>
       explicit object(
           T const& x
-# if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+# if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
           // use some SFINAE to un-confuse MSVC about its
           // copy-initialization ambiguity claim.
         , typename mpl::if_<is_proxy<T>,int&,int>::type* = 0
@@ -331,7 +331,7 @@ namespace api
     inline explicit derived(python::detail::new_non_null_reference p)   \
         : base(p) {}
 
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1200
+# if !defined(BOOST_MSVC) || BOOST_MSVC >= 1300
 #  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_
 # else
   // MSVC6 has a bug which causes an explicit template constructor to
