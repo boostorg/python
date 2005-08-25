@@ -8,6 +8,8 @@
 
 namespace python = boost::python;
 
+std::string script;
+
 // An abstract base class
 class Base : public boost::noncopyable
 {
@@ -79,12 +81,13 @@ void exec_test()
   std::cout << py.hello() << std::endl;
 }
 
+// void exec_file_test(std::string const &script)
 void exec_file_test()
 {
   python::object main = python::import("__main__");
   python::dict global(main.attr("__dict__"));
   global.clear();
-  python::object result = python::exec_file("exec.py", global, global);
+  python::object result = python::exec_file(script.c_str(), global, global);
   std::string global_as_string = python::extract<std::string>(python::str(global))
     BOOST_EXTRACT_WORKAROUND;
   std::cout << global_as_string << std::endl;
@@ -97,8 +100,10 @@ void exec_test_error()
   python::object result = python::exec("print unknown \n", global, global);
 }
 
-int main()
+int main(int argc, char **argv)
 {
+  assert(argc == 2);
+  script = argv[1];
   bool success = true;
   // Initialize the interpreter
   Py_Initialize();

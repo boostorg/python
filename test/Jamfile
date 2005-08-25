@@ -77,7 +77,7 @@ test-suite python
   [
     run ../test/exec.cpp <lib>../build/boost_python
       : # program args
-      : ../test/exec.py
+      : exec.py
       : # requirements
       $(PYTHON_PROPERTIES)
         <define>BOOST_PYTHON_STATIC_LIB
