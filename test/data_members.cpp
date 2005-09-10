@@ -64,11 +64,7 @@ namespace
     static const Color3 black;
   };
 
-  const Color3 Color3::black
-#if BOOST_WORKAROUND(__GNUC__, BOOST_TESTED_AT(3))
-  = {}
-#endif 
-      ;
+  const Color3 Color3::black = {} ;
 
   void compilability_test()
   {
