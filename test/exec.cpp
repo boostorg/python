@@ -8,8 +8,6 @@
 
 namespace python = boost::python;
 
-std::string script;
-
 // An abstract base class
 class Base : public boost::noncopyable
 {
@@ -72,46 +70,52 @@ void exec_test()
 
   // Creating and using instances of the C++ class is as easy as always.
   CppDerived cpp;
-  std::cout << cpp.hello() << std::endl;
+  if (cpp.hello() != "Hello from C++!")
+    throw std::runtime_error("cpp.hello() returned unexpected string");
 
   // But now creating and using instances of the Python class is almost
   // as easy!
   python::object py_base = PythonDerived();
   Base& py = python::extract<Base&>(py_base) BOOST_EXTRACT_WORKAROUND;
-  std::cout << py.hello() << std::endl;
+
+  // Make sure the right 'hello' method is called.
+  if (py.hello() != "Hello from Python!")
+    throw std::runtime_error("py.hello() returned unexpected string");
 }
 
-// void exec_file_test(std::string const &script)
-void exec_file_test()
+void exec_file_test(std::string const &script)
 {
-  python::object main = python::import("__main__");
-  python::dict global(main.attr("__dict__"));
-  global.clear();
+  // Run a python script in an empty environment.
+  python::dict global;
   python::object result = python::exec_file(script.c_str(), global, global);
-  std::string global_as_string = python::extract<std::string>(python::str(global))
-    BOOST_EXTRACT_WORKAROUND;
-  std::cout << global_as_string << std::endl;
+
+  // Extract an object the script stored in the global dictionary.
+  if (python::extract<int>(global["number"]) !=  42)
+    throw std::runtime_error("'number' has unexpected value");
 }
 
 void exec_test_error()
 {
-  python::object main = python::import("__main__");
-  python::dict global(main.attr("__dict__"));
+  // Execute a statement that raises a python exception.
+  python::dict global;
   python::object result = python::exec("print unknown \n", global, global);
 }
 
 int main(int argc, char **argv)
 {
   assert(argc == 2);
-  script = argv[1];
+  std::string script = argv[1];
   bool success = true;
   // Initialize the interpreter
   Py_Initialize();
 
   if (python::handle_exception(exec_test) ||
-      python::handle_exception(exec_file_test))
+      python::handle_exception(boost::bind(exec_file_test, script)))
   {
-    if (PyErr_Occurred()) PyErr_Print();
+    if (PyErr_Occurred())
+    {
+      PyErr_Print();
+    }
     else
     {
       std::cerr << "A C++ exception was thrown  for which "
@@ -121,7 +125,10 @@ int main(int argc, char **argv)
   }
   if (python::handle_exception(exec_test_error))
   {
-    if (PyErr_Occurred()) PyErr_Print();
+    if (PyErr_Occurred())
+    {
+      PyErr_Print();
+    }
     else
     {
       std::cerr << "A C++ exception was thrown  for which "
@@ -129,8 +136,10 @@ int main(int argc, char **argv)
       success = false;
     }
   }
-  else success = false;
-
+  else
+  {
+    success = false;
+  }
   // Boost.Python doesn't support Py_Finalize yet.
   // Py_Finalize();
   return success ? 0 : 1;
