@@ -4,7 +4,22 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/python.hpp>
+#define BOOST_ENABLE_ASSERT_HANDLER 1
+#include <boost/assert.hpp>
 #include <iostream>
+
+namespace boost
+{
+
+void assertion_failed(char const * expr, char const * function,
+		      char const * file, long line)
+{
+  std::cerr << "assertion failed : " << expr << " in " << function
+	    << " at " << file << ':' << line << std::endl;
+  abort();
+}
+
+} // namespace boost
 
 namespace python = boost::python;
 
@@ -70,8 +85,7 @@ void exec_test()
 
   // Creating and using instances of the C++ class is as easy as always.
   CppDerived cpp;
-  if (cpp.hello() != "Hello from C++!")
-    throw std::runtime_error("cpp.hello() returned unexpected string");
+  BOOST_ASSERT(cpp.hello() == "Hello from C++!");
 
   // But now creating and using instances of the Python class is almost
   // as easy!
@@ -79,8 +93,7 @@ void exec_test()
   Base& py = python::extract<Base&>(py_base) BOOST_EXTRACT_WORKAROUND;
 
   // Make sure the right 'hello' method is called.
-  if (py.hello() != "Hello from Python!")
-    throw std::runtime_error("py.hello() returned unexpected string");
+  BOOST_ASSERT(py.hello() == "Hello from Python!");
 }
 
 void exec_file_test(std::string const &script)
@@ -90,8 +103,7 @@ void exec_file_test(std::string const &script)
   python::object result = python::exec_file(script.c_str(), global, global);
 
   // Extract an object the script stored in the global dictionary.
-  if (python::extract<int>(global["number"]) !=  42)
-    throw std::runtime_error("'number' has unexpected value");
+  BOOST_ASSERT(python::extract<int>(global["number"]) ==  42);
 }
 
 void exec_test_error()
