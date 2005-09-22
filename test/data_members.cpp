@@ -64,7 +64,11 @@ namespace
     static const Color3 black;
   };
 
-  const Color3 Color3::black = {} ;
+  const Color3 Color3::black
+#if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+  = {}
+#endif 
+      ;
 
   void compilability_test()
   {
