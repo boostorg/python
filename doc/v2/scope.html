@@ -121,13 +121,14 @@ scope();
 
     <p>C++ Module definition:</p>
 <pre>
+#include &lt;boost/python/module.hpp&gt;
 #include &lt;boost/python/class.hpp&gt;
 #include &lt;boost/python/scope.hpp&gt;
 using namespace boost::python;
 
 struct X
 {
-  void f();
+  void f() {}
 
   struct Y { int g() { return 42; } };
 };
@@ -145,8 +146,8 @@ BOOST_PYTHON_MODULE(nested)
             ;
 
    // Define a class Y in the current scope, X
-   class_&lt;Y&gt;("Y")
-      .def("g", &amp;Y::g)
+   class_&lt;X::Y&gt;("Y")
+      .def("g", &amp;X::Y::g)
       ;
 }
 </pre>
