@@ -1249,7 +1249,7 @@ Python:
 [python]
 
     >>> d = dict(x.__dict__)     # copies x.__dict__
-    >>> d['whatever']            # modifies the copy
+    >>> d['whatever'] = 3        # modifies the copy
 
 C++:
 [c++]
