@@ -1307,7 +1307,7 @@ __tip__ The astute reader might have noticed that the [^extract<T>]
 facility in fact solves the mutable copying problem:
 
     dict d = extract<dict>(x.attr("__dict__"));
-    d['whatever'] = 3;          # modifies x.__dict__ !
+    d["whatever"] = 3;          // modifies x.__dict__ !
 
 
 [endsect]
