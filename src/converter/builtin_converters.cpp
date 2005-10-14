@@ -278,6 +278,7 @@ namespace
       }
   };
 
+#if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
   // encode_string_unaryfunc/py_encode_string -- manufacture a unaryfunc
   // "slot" which encodes a Python string using the default encoding
   extern "C" PyObject* encode_string_unaryfunc(PyObject* x)
@@ -286,8 +287,6 @@ namespace
   }
   unaryfunc py_encode_string = encode_string_unaryfunc;
 
-
-#ifndef BOOST_NO_STD_WSTRING
   // A SlotPolicy for extracting C++ strings from Python objects.
   struct wstring_rvalue_from_python
   {
@@ -411,8 +410,8 @@ void initialize_builtin_converters()
     // Add an lvalue converter for char which gets us char const*
     registry::insert(convert_to_cstring,type_id<char>());
 
-# ifndef BOOST_NO_STD_WSTRING
     // Register by-value converters to std::string, std::wstring
+#if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
     slot_rvalue_from_python<std::wstring, wstring_rvalue_from_python>();
 # endif 
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();
