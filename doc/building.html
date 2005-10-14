@@ -82,9 +82,12 @@
     boost installation (if you have already built boost from the top level
     this may have no effect, since the work is already done).</p>
 
-    <h3><a name="configuration">Basic Configuration</a></h3>
-    You may need to configure the following variables to point Boost.Build at
-    your Python installation: 
+    <h3><a name="configuration">Basic Configuration</a></h3> You may
+    need to configure the following variables to point Boost.Build at
+    your Python installation.  Variables can be either set in the
+    environment or passed on the <code>bjam</code> command-line
+    as <code>-s</code><i>name</i><code>=</code><i>value</i>.  Variable
+    names are case-sensitive.
 
     <table border="1" summary="build configuration variables">
       <tr>
@@ -98,26 +101,27 @@
       </tr>
 
       <tr>
-        <td><code>PYTHON_ROOT</code></td>
-
-        <td>The root directory of your Python installation</td>
-
-        <td>Windows:&nbsp;<code>c:/tools/python</code>
-        Unix:&nbsp;<code>/usr/local</code></td>
-
-        <td>On Unix, this is the <code>--with-prefix=</code> directory used
-        to configure Python</td>
-      </tr>
-
       <tr>
         <td><code>PYTHON_VERSION</code></td>
 
         <td>The The 2-part python Major.Minor version number</td>
 
-        <td><code>2.2</code></td>
+        <td><code>2.4</code></td>
 
         <td>Be sure not to include a third number, e.g. <b>not</b>
         "<code>2.2.1</code>", even if that's the version you have.</td>
+      </tr>
+
+        <td><code>PYTHON_ROOT</code></td>
+
+        <td>The root directory of your Python installation</td>
+
+        <td>Windows:&nbsp;<code>c:/Python</code><i>(10*Version)</i>, e.g. <code>c:/Python24</code>
+<br>
+        Unix:&nbsp;<code>/usr/local</code></td>
+
+        <td>On Unix, this should be the <code>--prefix=</code> directory used
+        to configure Python when it was built and installed.</td>
       </tr>
 
       <tr>
