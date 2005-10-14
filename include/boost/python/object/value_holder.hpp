@@ -88,12 +88,12 @@ private: // required holder implementation
 template <class Value>
 void* value_holder<Value>::holds(type_info dst_t, bool null_ptr_only)
 {
-    if (void* wrapped = holds_wrapped(dst_t, addressof(m_held), addressof(m_held)))
+    if (void* wrapped = holds_wrapped(dst_t, boost::addressof(m_held), boost::addressof(m_held)))
         return wrapped;
     
     type_info src_t = python::type_id<Value>();
-    return src_t == dst_t ? addressof(m_held)
-        : find_static_type(addressof(m_held), src_t, dst_t);
+    return src_t == dst_t ? boost::addressof(m_held)
+        : find_static_type(boost::addressof(m_held), src_t, dst_t);
 }
 
 template <class Value, class Held>
@@ -134,7 +134,7 @@ void* value_holder_back_reference<Value,Held>::holds(
             BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             )
     {
-        python::detail::initialize_wrapper(self, addressof(this->m_held));
+        python::detail::initialize_wrapper(self, boost::addressof(this->m_held));
     }
 
 # undef N
