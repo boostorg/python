@@ -29,6 +29,39 @@
     <hr>
 
     <dl class="page-index">
+      <dt>14 October 2005 - 1.33.1 release</dt>
+
+      <dd>
+        <ul>
+          <li>The build now assumes Python 2.4 by default, rather than 2.2</li>
+          <li>Support Python that's built without Unicode support</li>
+          <li>Support for wrapping classes with overloaded
+          address-of (<code>&amp;</code>) operators</li>
+        </ul>
+      </dd>
+      <dt>14 August 2005 - 1.33 release</dt>
+
+      <dd>
+        <ul>
+          <li>Support for docstrings on nonstatic properties.</li>
+          <li>We now export the client-provided docstrings for <code>init&lt;optional&lt;&gt; &gt;</code> and
+<i>XXX</i><code>_FUNCTION_OVERLOADS()</code> for only the last overload.</li>
+
+          <li>Fixed some support for Embedded VC++ 4</li>
+
+          <li>Better support for rvalue from-python conversions of shared_ptr:
+always return a pointer that holds the owning python object *unless*
+the python object contains a NULL shared_ptr holder of the right type.
+</li>
+
+          <li>Support for exposing <code>vector&lt;T*&gt;</code> with the indexing suite.</li>
+          <li>Support for GCC-3.3 on MacOS.</li>
+          <li>updated visual studio project build file to include two new files (slice.cpp and wrapper.cpp)</li>
+          <li>Added search feature to the index page.</li>
+          <li>Numerous fixes to the tutorial
+          <li>Numerous workarounds for MSVC 6 and 7, GCC 2.96, and EDG 2.45</li>
+        </ul>
+      </dd>
       <dt>11 March 2005</dt>
 
       <dd>
