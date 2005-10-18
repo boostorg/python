@@ -53,6 +53,8 @@ lib boost_python
     object_protocol.cpp
     object_operators.cpp
     wrapper.cpp
+    import.cpp
+    exec.cpp
     :   <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
 	<library>/python//python

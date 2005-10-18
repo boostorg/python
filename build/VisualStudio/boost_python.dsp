@@ -193,6 +193,14 @@ SOURCE=..\..\src\converter\type_id.cpp
 
 SOURCE=..\..\src\wrapper.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\src\import.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\exec.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
