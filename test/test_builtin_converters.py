@@ -80,8 +80,8 @@ r"""
 'yo, wassup?'
 
 >>> try:
-...     unicode
-... catch:
+...     if unicode: pass
+... except:
 ...     print "u'yo, wassup?'"
 ... else:
 ...     eval("rewrap_value_wstring(u'yo, wassup?')")
@@ -90,8 +90,8 @@ u'yo, wassup?'
    test that overloading on unicode works:
 
 >>> try:
-...     unicode
-... catch:
+...     if unicode: pass
+... except:
 ...     print "u'yo, wassup?'"
 ... else:
 ...     eval("rewrap_value_string(u'yo, wassup?')")
