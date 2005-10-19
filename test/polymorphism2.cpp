@@ -13,6 +13,14 @@
 #include <boost/python/call.hpp>
 #include <boost/utility.hpp>
 
+#include <memory>
+
+#ifdef HELD_BY_AUTO_PTR
+# define HELD_PTR(X) , std::auto_ptr< X >
+#else
+# define HELD_PTR(X)
+#endif 
+
 using namespace boost::python;
 
 struct P
@@ -123,19 +131,23 @@ C& getCCppObj ()
 
 A* pass_a(A* x) { return x; }
 
+#ifdef HELD_BY_AUTO_PTR
+BOOST_PYTHON_MODULE_INIT(polymorphism2_auto_ptr_ext)
+#else
 BOOST_PYTHON_MODULE_INIT(polymorphism2_ext)
+#endif 
 {
-    class_<ACallback,boost::noncopyable>("A")
+    class_<ACallback HELD_PTR(A),boost::noncopyable>("A")
         .def("f", &A::f, &ACallback::default_f)
         ;
     
     def("getBCppObj", getBCppObj, return_value_policy<reference_existing_object>());
 
-    class_<C,bases<A>,boost::noncopyable>("C")
+    class_<C HELD_PTR(C),bases<A>,boost::noncopyable>("C")
         .def("f", &C::f)
         ;
     
-    class_<DCallback,bases<A>,boost::noncopyable>("D")
+    class_<DCallback HELD_PTR(D),bases<A>,boost::noncopyable>("D")
         .def("f", &D::f)
         .def("g", &D::g)
         ;
@@ -152,7 +164,7 @@ BOOST_PYTHON_MODULE_INIT(polymorphism2_ext)
         .def("f", pure_virtual(&P::f))
         ;
 
-    class_<Q, bases<P> >("Q")
+    class_<Q HELD_PTR(Q), bases<P> >("Q")
         .def("g", &P::g) // make sure virtual inheritance doesn't interfere
         ;
 }
