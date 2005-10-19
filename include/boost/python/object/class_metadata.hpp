@@ -53,7 +53,11 @@ struct register_base_of
     template <class Base>
     inline void operator()(Base*) const
     {
+# if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
         BOOST_MPL_ASSERT_NOT((is_same<Base,Derived>));
+# else
+        BOOST_STATIC_ASSERT(!(is_same<Base,Derived>::value));
+# endif 
         
         // Register the Base class
         register_dynamic_id<Base>();
@@ -205,7 +209,8 @@ struct class_metadata
     template <class T2>
     inline static void register_aux(python::wrapper<T2>*) 
     {
-        class_metadata::register_aux2((T2*)0, mpl::true_());
+        typedef typename mpl::not_<is_same<T2,wrapped> >::type use_callback;
+        class_metadata::register_aux2((T2*)0, use_callback());
     }
 
     inline static void register_aux(void*) 
@@ -248,6 +253,7 @@ struct class_metadata
     //
     inline static void maybe_register_class_to_python(void*, mpl::true_) {}
     
+
     template <class T2>
     inline static void maybe_register_class_to_python(T2*, mpl::false_)
     {
@@ -258,8 +264,6 @@ struct class_metadata
     // Support for registering callback classes
     //
     inline static void maybe_register_callback_class(void*, mpl::false_) {}
-
-    inline static void maybe_register_callback_class(wrapped*, mpl::true_) {}
 
     template <class T2>
     inline static void maybe_register_callback_class(T2*, mpl::true_)
