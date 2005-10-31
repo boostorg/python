@@ -65,8 +65,8 @@ header    >
 
     <p><code>&lt;boost/python/stl_iterator.hpp&gt;</code> provides types
     for creating <a href="http://www.sgi.com/tech/stl/Iterators.html">C++
-    Iterators</a> from <a href="http://www.python.org/doc/current/lib/typesseq.html">
-    Python sequences</a>.</p>
+    Iterators</a> from <a href="http://www.python.org/doc/current/lib/typeiter.html">
+    Python iterables</a>.</p>
 
     <h2><a name="classes"></a>Classes</h2>
 
@@ -111,19 +111,25 @@ namespace boost { namespace python
   template &lt;class ValueType&gt;
   struct stl_input_iterator
   {
+      typedef std::ptrdiff_t difference_type;
+      typedef ValueType value_type;
+      typedef ValueType* pointer;
+      typedef ValueType reference;
+      typedef std::input_iterator_tag iterator_category;
+
       stl_input_iterator();
       stl_input_iterator(<a href="object.html#object-spec">object</a> const&amp; ob);
 
       stl_input_iterator&amp; operator++();
       stl_input_iterator operator++(int);
-      
+
       ValueType operator*() const;
 
       friend bool operator==(stl_input_iterator const&amp; lhs, stl_input_iterator const&amp; rhs);
       friend bool operator!=(stl_input_iterator const&amp; lhs, stl_input_iterator const&amp; rhs);
   private:
-      <a href="object.html#object-spec">object</a> it_; // For exposition only
-      <a href="object.html#object-spec">object</a> ob_; // For exposition only
+      <a href="object.html#object-spec">object</a> it; // For exposition only
+      <a href="object.html#object-spec">object</a> ob; // For exposition only
   };
 }}
 </pre>
@@ -152,15 +158,12 @@ stl_input_iterator(object const&amp; ob)
     <dl class="function-semantics">
       <dt><b>Effects:</b>
         Calls <code>ob.attr("__iter__")()</code> and stores the resulting Python iterator
-        object in <code>this-&gt;it_</code>. Then, calls <code>this-&gt;it_.attr("next")()</code> and
-        stores the result in <code>this-&gt;ob_</code>. If the sequence is exhausted, sets
-        <code>this-&gt;ob_</code> to <code>object()</code>.
+        object in <code>this-&gt;it</code>. Then, calls <code>this-&gt;it.attr("next")()</code> and
+        stores the result in <code>this-&gt;ob</code>. If the sequence is exhausted, sets
+        <code>this-&gt;ob</code> to <code>object()</code>.
       </dt>
 
       <dt><b>Postconditions:</b> <code>this</code> is a dereferenceable or past-the-end.</dt>
-
-      <dt><b>Throws:</b> <code>error_already_set</code> if <code>ob</code> does not
-      provide an iterator.</dt>
     </dl>
 
     <h4>
@@ -174,8 +177,8 @@ stl_input_iterator&amp; operator++()
 
     <dl class="function-semantics">
       <dt><b>Effects:</b>
-        Calls <code>this-&gt;it_.attr("next")()</code> and stores the result in
-        <code>this-&gt;ob_</code>. If the sequence is exhausted, sets <code>this-&gt;ob_</code>
+        Calls <code>this-&gt;it.attr("next")()</code> and stores the result in
+        <code>this-&gt;ob</code>. If the sequence is exhausted, sets <code>this-&gt;ob</code>
         to <code>object()</code>.
       </dt>
 
@@ -208,10 +211,8 @@ ValueType operator*() const
         Returns the current element in the sequence.
       </dt>
       <dt><b>Returns:</b>
-        <code>extract&lt;ValueType&gt;(this-&gt;ob_);</code>
+        <code>extract&lt;ValueType&gt;(this-&gt;ob);</code>
       </dt>
-      <dt><b>Throws:</b> <code>error_already_set</code> if the current element in the sequence
-      is not of type <code>ValueType</code>.</dt>
     </dl>
 
 <pre>
@@ -224,7 +225,7 @@ friend bool operator==(stl_input_iterator const&amp; lhs, stl_input_iterator con
         false otherwise.
       </dt>
       <dt><b>Returns:</b>
-        <code>(lhs.ob_ == object()) == (rhs.ob_ == object())</code>
+        <code>(lhs.ob == object()) == (rhs.ob == object())</code>
       </dt>
     </dl>
 
