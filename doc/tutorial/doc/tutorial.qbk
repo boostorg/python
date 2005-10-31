@@ -1754,6 +1754,38 @@ Now, our C++ Wrapper:
         .property("pions", range(&F::p_begin, &F::p_end))
         .property("bogons", range(&F::b_begin, &F::b_end));
 
+[*stl_input_iterator]
+
+So far, we have seen how to expose C++ iterators and ranges to Python.
+Sometimes we wish to go the other way, though: we'd like to pass a
+Python sequence to an STL algorithm or use it to initialize an STL
+container. We need to make a Python iterator look like an STL iterator.
+For that, we use `stl_input_iterator<>`. Consider how we might 
+implement a function that exposes `std::list<int>::assign()` to
+Python:
+
+[c++]
+
+    template<typename T>
+    void list_assign(std::list<T>& l, object o) {
+        // Turn a Python sequence into an STL input range
+        stl_input_iterator<T> begin(o), end;
+        l.assign(begin, end);
+    }
+
+    // Part of the wrapper for list<int>
+    class_<std::list<int> >("list_int")
+        .def("assign", &list_assign<int>)
+        // ...
+        ;
+
+Now in Python, we can assign any integer sequence to `list_int` objects:
+
+[python]
+
+    x = list_int();
+    x.assign([1,2,3,4,5])
+
 [endsect]
 [section:exception Exception Translation]
 

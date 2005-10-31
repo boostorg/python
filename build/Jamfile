@@ -51,6 +51,7 @@ if [ check-python-config ]
     converter/builtin_converters.cpp
     converter/arg_to_python_base.cpp
     object/iterator.cpp
+    object/stl_iterator.cpp
     object_protocol.cpp
     object_operators.cpp
     wrapper.cpp

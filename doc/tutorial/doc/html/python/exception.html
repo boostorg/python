@@ -26,25 +26,32 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.exception"></a> Exception Translation</h2></div></div></div>
 <p>
-All C++ exceptions must be caught at the boundary with Python code. This
-boundary is the point where C++ meets Python. Boost.Python provides a
-default exception handler that translates selected standard exceptions,
-then gives up:</p>
-<pre class="programlisting"><tt class="literal"><span class="identifier">raise</span><span class="identifier"> RuntimeError</span><span class="special">,</span><span class="char"> 'unidentifiable C++ Exception'</span></tt></pre>
+      Exception TranslationAll C++ exceptions must be caught at the boundary with
+      Python code. This boundary is the point where C++ meets Python. Boost.Python
+      provides a default exception handler that translates selected standard exceptions,
+      then gives up:
+    </p>
+<pre class="programlisting">
+<span class="keyword">raise</span> <span class="identifier">RuntimeError</span><span class="special">,</span> <span class="string">'unidentifiable C++ Exception'</span>
+</pre>
 <p>
-Users may provide custom translation. Here's an example:</p>
-<pre class="programlisting"><tt class="literal"><span class="keyword">struct</span><span class="identifier"> PodBayDoorException</span><span class="special">;</span><span class="keyword">
-void</span><span class="identifier"> translator</span><span class="special">(</span><span class="identifier">PodBayDoorException</span><span class="keyword"> const</span><span class="special">&amp;</span><span class="identifier"> x</span><span class="special">)</span><span class="special"> {</span><span class="identifier">
-    PyErr_SetString</span><span class="special">(</span><span class="identifier">PyExc_UserWarning</span><span class="special">,</span><span class="string"> "I'm sorry Dave..."</span><span class="special">);</span><span class="special">
-}</span><span class="identifier">
-BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">kubrick</span><span class="special">)</span><span class="special"> {</span><span class="identifier">
-     register_exception_translator</span><span class="special">&lt;</span><span class="identifier">
-          PodBayDoorException</span><span class="special">&gt;(</span><span class="identifier">translator</span><span class="special">);</span><span class="special">
-     ...</span></tt></pre>
+      Users may provide custom translation. Here's an example:
+    </p>
+<pre class="programlisting">
+<span class="identifier">struct</span> <span class="identifier">PodBayDoorException</span><span class="special">;</span>
+<span class="identifier">void</span> <span class="identifier">translator</span><span class="special">(</span><span class="identifier">PodBayDoorException</span> <span class="identifier">const</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span>
+    <span class="identifier">PyErr_SetString</span><span class="special">(</span><span class="identifier">PyExc_UserWarning</span><span class="special">,</span> <span class="string">"I'm sorry Dave..."</span><span class="special">);</span>
+<span class="special">}</span>
+<span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">kubrick</span><span class="special">)</span> <span class="special">{</span>
+     <span class="identifier">register_exception_translator</span><span class="special">&lt;</span>
+          <span class="identifier">PodBayDoorException</span><span class="special">&gt;(</span><span class="identifier">translator</span><span class="special">);</span>
+     <span class="special">...</span>
+</pre>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2002-2005 Joel de Guzman, David Abrahams</small></td>
+<td align="right"><small>Copyright © 2002-2005 Joel
+      de Guzman, David Abrahams</small></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

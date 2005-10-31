@@ -152,6 +152,8 @@ bpl-test crossmod_exception
 
 [ bpl-test iterator : iterator.py iterator.cpp input_iterator.cpp ]
 
+[ bpl-test stl_iterator : stl_iterator.py stl_iterator.cpp ]
+
 [ bpl-test extract ]
 
 [ bpl-test opaque ]

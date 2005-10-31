@@ -179,6 +179,10 @@ SOURCE=..\..\src\slice.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\object\stl_iterator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\str.cpp
 # End Source File
 # Begin Source File
@@ -602,6 +606,10 @@ SOURCE=..\..\..\..\boost\python\object\select_holder.hpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\..\boost\python\object\stl_iterator_core.hpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\..\boost\python\object\value_holder.hpp
 # End Source File
 # Begin Source File
@@ -856,6 +864,10 @@ SOURCE=..\..\..\..\boost\python\signature.hpp
 # Begin Source File
 
 SOURCE=..\..\..\..\boost\python\slice_nil.hpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\..\boost\python\stl_iterator.hpp
 # End Source File
 # Begin Source File
 
