@@ -38,6 +38,7 @@
           <dt><a href="#import-spec"><code>import</code></a></dt>
         </dl>
       </dd>
+      <dt><a href="#examples">Examples</a></dt>
     </dl>
     <hr>
 
@@ -57,6 +58,30 @@ object import(str name);
        which holds a reference to the imported module.</dt>
     </dl>
 
+    <h2><a name="examples"></a>Examples</h2>
+
+    <para>The following example demonstrates the use of <function>import</function>
+      to access a function in python, and later call it from within C++.</para>
+
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using namespace boost::python;
+
+void print_python_version()
+{ 
+  // Load the sys module.
+  object sys = import("sys");
+
+  // Extract the python version.
+  std::string version = extract&lt;std::string&gt;(sys.attr("version"));
+  std::cout &lt;&lt; version &lt;&lt; std::endl;
+}
+</pre>
+    <p>Revised 01 November, 2005</p>
+
+    <p><i>&copy; Copyright Stefan Seefeld 2005.</i></p>
   </body>
 </html>
 

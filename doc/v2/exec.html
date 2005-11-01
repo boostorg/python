@@ -39,6 +39,7 @@
           <dt><a href="#exec_file-spec"><code>exec_file</code></a></dt>
         </dl>
       </dd>
+      <dt><a href="#examples">Examples</a></dt>
     </dl>
     <hr>
 
@@ -83,6 +84,59 @@ object exec_file(str filename,
       </dt>
     </dl>
 
+    <h2><a name="examples"></a>Examples</h2>
+
+    <para>The following example demonstrates the use of <function>import</function>
+      and <function>exec</function> to define a function in python, and later call
+      it from within C++.</para>
+
+<pre>
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using namespace boost::python;
+
+void greet()
+{ 
+  // Retrieve the main module.
+  object main = import("__main__");
+  
+  // Retrieve the main module's namespace
+  object global(main.attr("__dict__"));
+
+  // Define greet function in Python.
+  object result = exec(
+    "def greet(self):               \n"
+    "   return 'Hello from Python!' \n",
+    global, global);
+
+  // Create a reference to it.
+  object greet = global["greet"];
+
+  // Call it.
+  std::string message = extract&lt;std::string&gt;(greet());
+  std::cout &lt;&lt; message &lt;&lt; std::endl;
+}
+</pre>
+
+    <para>Instead of embedding the python script into a string,
+      we could also store it in an a file...</para>
+
+<pre>
+def greet(self):
+   return 'Hello from Python!'
+</pre>
+    <para>... and execute that instead.</para>
+<pre>
+  // ...
+  // Load the greet function from a file.
+  object result = exec_file(script, global, global);
+  // ...
+}
+</pre>
+    <p>Revised 01 November, 2005</p>
+
+    <p><i>&copy; Copyright Stefan Seefeld 2005.</i></p>
   </body>
 </html>
 
