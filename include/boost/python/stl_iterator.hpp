@@ -36,7 +36,7 @@ struct stl_input_iterator
     }
 
 private:
-    friend class iterator_core_access;
+    friend class boost::iterator_core_access;
 
     void increment()
     {
