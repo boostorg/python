@@ -66,8 +66,8 @@
       </dt>
       <dt>
         <a href="#vector_indexing_suite_class">vector_indexing_suite
-        class</a>
-      </dt>
+        class<br>
+        </a><a href="#map_indexing_suite_class">map_indexing_suite class</a> </dt>
     </dl>
     <hr>
     <h2>
@@ -141,7 +141,7 @@
 <h3> <a name="indexing_suite"></a>indexing_suite [ Header &lt;boost/python/indexing/indexing_suite.hpp&gt; 
   ]</h3>
     <p>
-      The <tt>indexing_suite</tt> class is the base protocol class for the
+      The <tt>indexing_suite</tt> class is the base  class for the
       management of C++ containers intended to be integrated to Python. The
       objective is make a C++ container look and feel and behave exactly as
       we'd expect a Python container. The class automatically wraps these
@@ -275,8 +275,7 @@
       The <tt>vector_indexing_suite</tt> class is a predefined
       <tt>indexing_suite</tt> derived class designed to wrap
       <tt>std::vector</tt> (and <tt>std::vector</tt> like [i.e. a class with
-      std::vector interface]) classes (currently, this is the only predefined
-      suite available). It provides all the policies required by the
+      std::vector interface]) classes. It provides all the policies required by the
       <tt>indexing_suite</tt>.
   </p>
     <p>
@@ -295,22 +294,32 @@
          <a href="../../test/vector_indexing_suite.cpp">example in full</a>,
          along with its <a href="../../test/vector_indexing_suite.py">python
          test</a>).
-    </p>
+</p>
+    <h3><a name="map_indexing_suite" id="map_indexing_suite"></a>map_indexing_suite [ Header &lt;boost/python/indexing/map_indexing_suite.hpp&gt; ] </h3>
+    <p> The <tt>map_indexing_suite</tt> class is a predefined <tt>indexing_suite</tt> derived class designed to wrap <tt>std::map</tt> (and <tt>std::map</tt> like [i.e. a class with std::map interface]) classes. It provides all the policies required by the <tt>indexing_suite</tt>. </p>
+    <p> Example usage: </p>
+    <pre>
+    class X {...};
+    ...
+
+    class_&lt;std::map&lt;X&gt; &gt;("XMap")
+        .def(map_indexing_suite&lt;std::map&lt;X&gt; &gt;())
+    ;
+</pre>
+    <p> By default indexed elements are returned by proxy. This can be disabled by supplying <tt>true</tt> in the NoProxy template parameter. <tt>XMap</tt> is now a full-fledged Python container (see the <a href="../../test/map_indexing_suite.cpp">example in full</a>, along with its <a href="../../test/map_indexing_suite.py">python test</a>).</p>
     <hr>
     <h2>
-      <a name="indexing_suite_class"></a>indexing_suite class
-    </h2>
-  <h3>
-<br>
-      <tt>indexing_suite&lt;<br>
-      class Container<br>
+      <a name="indexing_suite_class"></a>indexing_suite class    </h2>
+    <h2>  <tt>indexing_suite&lt;<br>
+    </tt><tt>class Container<br>
        , class DerivedPolicies<font color="#007F00"><br>
        </font></tt> <tt>,
-      bool NoProxy<br>
-       , class Element<br>
-       , class Key<br>
-       , class Index</tt>
-    </h3>
+          bool NoProxy<br>
+       ,
+  bool NoSlice<br>
+       </tt><tt>, class Data<br>
+      , class Index<br>
+    </tt><tt>, class Key</tt></h2>
     <table width="100%" border="1">
       <tr>
         <td>
@@ -356,34 +365,43 @@
         </td>
       </tr>
       <tr>
+        <td> <font color="#007F00"><tt>NoProxy</tt></font> </td>
+        <td> A boolean </td>
+        <td> By default indexed elements have Python reference semantics and are returned by proxy. This can be disabled by supplying <strong>true</strong> in the <tt>NoProxy</tt> template parameter. </td>
+        <td> false </td>
+      </tr>
+      <tr>
         <td>
-          <font color="#007F00"><tt>NoProxy</tt></font>
+          <font color="#007F00"><tt>NoSlice</tt></font>
         </td>
         <td>
           A boolean
         </td>
         <td>
-          By default indexed elements have Python reference semantics and are
-          returned by proxy. This can be disabled by supplying
-          <strong>true</strong> in the <tt>NoProxy</tt> template parameter.
-        </td>
+          Do not allow slicing. </td>
         <td>
           false
         </td>
       </tr>
       <tr>
         <td>
-          <font color="#007F00"><tt>Element</tt></font>
+          <font color="#007F00"><tt>Data</tt></font>
         </td>
         <td>&nbsp;
           
         </td>
         <td>
-          The container's element type.
+          The container's data type.
         </td>
         <td>
           <tt>Container::value_type</tt>
         </td>
+      </tr>
+      <tr>
+        <td> <font color="#007F00"><tt>Index</tt></font> </td>
+        <td>&nbsp; </td>
+        <td> The container's index type. </td>
+        <td> <tt>Container::size_type</tt> </td>
       </tr>
       <tr>
         <td>
@@ -399,28 +417,14 @@
           <tt>Container::value_type</tt>
         </td>
       </tr>
-      <tr>
-        <td>
-          <font color="#007F00"><tt>Index</tt></font>
-        </td>
-        <td>&nbsp;
-          
-        </td>
-        <td>
-          The container's index type.
-        </td>
-        <td>
-          <tt>Container::size_type</tt>
-        </td>
-      </tr>
-    </table>
+  </table>
     <pre>
     template &lt;<br>          class Container
         , class DerivedPolicies
-        , bool NoProxy = false
-        , class Element = typename Container::value_type
-        , class Key = typename Container::value_type
+        , bool NoProxy = false<br>        , bool NoSlice = false
+        , class Data = typename Container::value_type
         , class Index = typename Container::size_type
+        , class Key = typename Container::value_type
     &gt;<br>    class indexing_suite
         : unspecified
     {
@@ -435,23 +439,22 @@
     <dl>
       <dd>
         Derived classes provide the hooks needed by
-        the<tt>indexing_suite:</tt>
+        the <tt>indexing_suite:</tt>
       </dd>
     </dl>
-    <pre>
-        static element_type&amp;
+    <pre>        data_type&amp;
         get_item(Container&amp; container, index_type i);
 
         static object
         get_slice(Container&amp; container, index_type from, index_type to);
 
         static void
-        set_item(Container&amp; container, index_type i, element_type const&amp; v);
+        set_item(Container&amp; container, index_type i, data_type const&amp; v);
 
         static void
         set_slice(
             Container&amp; container, index_type from,
-            index_type to, element_type const&amp; v
+            index_type to, data_type const&amp; v
         );
 
         template &lt;class Iter&gt;
@@ -593,16 +596,16 @@
         </tr>
       </table>
       <pre>
-    template &lt;<br>        class Container,<br>        bool NoProxy = false,<br>        class DerivedPolicies = unspecified_default<br>    class vector_indexing_suite<br>        : public indexing_suite&lt;Container, DerivedPolicies, NoProxy&gt;<br>    {<br>    public:<br><br>        typedef typename Container::value_type element_type;<br>        typedef typename Container::value_type key_type;<br>        typedef typename Container::size_type index_type;<br>        typedef typename Container::size_type size_type;<br>        typedef typename Container::difference_type difference_type;<br>    <br>        static element_type&amp;<br>        get_item(Container&amp; container, index_type i);
+    template &lt;<br>        class Container,<br>        bool NoProxy = false,<br>        class DerivedPolicies = unspecified_default<br>    class vector_indexing_suite : unspecified_base<br>    {<br>    public:<br><br>        typedef typename Container::value_type data_type;<br>        typedef typename Container::value_type key_type;<br>        typedef typename Container::size_type index_type;<br>        typedef typename Container::size_type size_type;<br>        typedef typename Container::difference_type difference_type;<br>    <br>        data_type&amp;<br>        get_item(Container&amp; container, index_type i);
 
         static object
         get_slice(Container&amp; container, index_type from, index_type to);
 
-        static void<br>        set_item(Container&amp; container, index_type i, element_type const&amp; v);
+        static void<br>        set_item(Container&amp; container, index_type i, data_type const&amp; v);
 
         static void
         set_slice(Container&amp; container, index_type from, 
-            index_type to, element_type const&amp; v);
+            index_type to, data_type const&amp; v);
 
         template &lt;class Iter&gt;<br>        static void<br>        set_slice(Container&amp; container, index_type from,<br>            index_type to, Iter first, Iter last);
 
@@ -624,7 +627,60 @@
         adjust_index(index_type current, index_type from, 
             index_type to, size_type len);
     };
-      </pre>
+
+</pre>
+      <h2><a name="vector_indexing_suite_class"></a>map_indexing_suite class </h2>
+      <h3> Class template <tt><br>
+  map_indexing_suite&lt;<br>
+  class <font color="#007F00">Container</font><br>
+  , bool <font color="#007F00">NoProxy</font><br>
+  , class <font color="#007F00">DerivedPolicies</font>&gt;</tt> </h3>
+      <table width="100%" border="1">
+        <tr>
+          <td> <strong>Template Parameter</strong><br>
+          </td>
+          <td> <strong>Requirements</strong> </td>
+          <td> <strong>Semantics</strong> </td>
+          <td> <strong>Default</strong> </td>
+        </tr>
+        <tr>
+          <td> <font color="#007F00"><tt>Container</tt></font> </td>
+          <td> A class type </td>
+          <td> The container type to be wrapped to Python. </td>
+          <td>&nbsp; </td>
+        </tr>
+        <tr>
+          <td> <font color="#007F00"><tt>NoProxy</tt></font> </td>
+          <td> A boolean </td>
+          <td> By default indexed elements have Python reference semantics and are returned by proxy. This can be disabled by supplying <strong>true</strong> in the <tt>NoProxy</tt> template parameter. </td>
+          <td> false </td>
+        </tr>
+        <tr>
+          <td> <font color="#007F00"><tt>DerivedPolicies</tt></font> </td>
+          <td> A subclass of indexing_suite </td>
+          <td> The <tt>vector_indexing_suite</tt> may still be derived to further tweak any of the predefined policies. Static polymorphism through CRTP (James Coplien. "Curiously Recurring Template Pattern". C++ Report, Feb. 1995) enables the base <tt>indexing_suite</tt> class to call policy function of the most derived class </td>
+          <td>&nbsp; </td>
+        </tr>
+      </table>
+      <pre>
+    template &lt;<br>        class Container,<br>        bool NoProxy = false,<br>        class DerivedPolicies = unspecified_default<br>    class map_indexing_suite : unspecified_base<br>    {<br>    public:<br><br>        typedef typename Container::value_type value_type;<br>        typedef typename Container::value_type::second_type data_type;<br>        typedef typename Container::key_type key_type;<br>        typedef typename Container::key_type index_type;<br>        typedef typename Container::size_type size_type;<br>        typedef typename Container::difference_type difference_type;<br><br>        static data_type&amp;<br>        get_item(Container&amp; container, index_type i);
+
+        static void<br>        set_item(Container&amp; container, index_type i, data_type const&amp; v);
+
+        static void 
+        delete_item(Container&amp; container, index_type i);<br>     
+        static size_t
+        size(Container&amp; container);
+     
+        static bool
+        contains(Container&amp; container, key_type const&amp; key);
+     
+        static bool<br>        compare_index(Container&amp; container, index_type a, index_type b);
+<br>        static index_type
+        convert_index(Container&amp; container, PyObject* i);
+    };
+
+</pre>
       <hr>
       &copy; Copyright Joel de Guzman 2003. Permission to copy, use, modify,
       sell and distribute this document is granted provided this copyright
