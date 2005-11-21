@@ -26,7 +26,7 @@ namespace boost { namespace python {
     }
 
     // The map_indexing_suite class is a predefined indexing_suite derived
-    // class for wrapping std::vector (and std::vector like) classes. It provides
+    // class for wrapping std::map (and std::map like) classes. It provides
     // all the policies required by the indexing_suite (see indexing_suite).
     // Example usage:
     //
