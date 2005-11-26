@@ -26,6 +26,26 @@ std::string x_value(X const& x)
     return "gotya " + x.s;
 }
 
+
+
+    struct domain
+    {};
+    
+    struct graph
+    {
+        typedef std::map <int, boost::shared_ptr <domain> > domains_t;
+        domains_t domains_;
+    };
+
+
+//  objects::class_value_wrapper <boost::shared_ptr<domain>,
+//     objects::make_ptr_instance <domain,
+//     objects::pointer_holder <boost::shared_ptr<domain>, domain> > > ();
+
+  
+  
+  
+
 BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 {
     class_<X>("X")
@@ -58,6 +78,16 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
     class_<std::map<std::string, boost::shared_ptr<X> > >("TestMap")
         .def(map_indexing_suite<std::map<std::string, boost::shared_ptr<X> > >())
     ;
+
+    // Some more...
+    class_<domain, boost::shared_ptr <domain> > ("domain");
+
+    class_<graph::domains_t> ("domains_map")
+        .def (map_indexing_suite<graph::domains_t, true> ());
+
+    class_<graph> ("graph")
+        .def_readonly ("domains", &graph::domains_);
+
 }
 
 #include "module_tail.cpp"
