@@ -191,10 +191,15 @@ kiwi
 # Some more...
 #####################################################################
 
->>> g = graph()
->>> for el in g.domains:
+>>> tm = TestMap()
+>>> tm["joel"] = X("aaa")
+>>> tm["kimpo"] = X("bbb")
+>>> print_xmap(tm)
+[ (joel, aaa) (kimpo, bbb) ]
+>>> for el in tm:
 ...     print el.key(),
 ...     dom = el.data()
+joel kimpo
 
 #####################################################################
 # END.... 

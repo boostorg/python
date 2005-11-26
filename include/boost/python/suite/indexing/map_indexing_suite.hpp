@@ -78,7 +78,7 @@ namespace boost { namespace python {
             elem_name += "_entry";
 
             typedef typename mpl::if_<
-                is_class<data_type>
+                mpl::and_<is_class<data_type>, mpl::bool_<!NoProxy> >
               , return_internal_reference<>
               , default_call_policies
             >::type get_data_return_policy;
@@ -98,7 +98,7 @@ namespace boost { namespace python {
 
         static
         typename mpl::if_<
-            is_class<data_type>
+            mpl::and_<is_class<data_type>, mpl::bool_<!NoProxy> >
           , data_type&
           , data_type
         >::type
