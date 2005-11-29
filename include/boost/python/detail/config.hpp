@@ -68,10 +68,10 @@
 
 #if defined(BOOST_PYTHON_DYNAMIC_LIB)
 
-#  if !defined(_WIN32) && !defined(__CYGWIN__)                  \
-    && defined(__GNUC__) && __GNUC__ >= 3 && __GNUC_MINOR__ >=5 \
-    && !defined(BOOST_PYTHON_GCC_SYMBOL_VISIBILITY)
-#    define BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
+#  if !defined(_WIN32) && !defined(__CYGWIN__)                                  \
+    && !defined(BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)                         \
+    && BOOST_WORKAROUND(__GNUC__, >= 3) && (__GNUC_MINOR__ >=5 || __GNUC__ > 3)
+#    define BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY 1
 #  endif 
 
 #  if defined(BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
