@@ -74,7 +74,7 @@
 #    define BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY 1
 #  endif 
 
-#  if defined(BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
+#  if BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
 #     if defined(BOOST_PYTHON_SOURCE)
 #        define BOOST_PYTHON_DECL __attribute__ ((visibility("default")))
 #        define BOOST_PYTHON_BUILD_DLL
