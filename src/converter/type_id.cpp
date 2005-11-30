@@ -25,7 +25,7 @@
 // http://lists.debian.org/debian-gcc/2003/09/msg00055.html notes
 // that, in cxxabi.h of gcc-3.x for x < 4, this type is used before it
 // is declared.
-#    if __GNUC__ == 3 && __GNUC_MINOR < 4
+#    if __GNUC__ == 3 && __GNUC_MINOR__ < 4
 class __class_type_info
 #    endif
 
