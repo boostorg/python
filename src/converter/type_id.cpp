@@ -26,7 +26,7 @@
 // that, in cxxabi.h of gcc-3.x for x < 4, this type is used before it
 // is declared.
 #    if __GNUC__ == 3 && __GNUC_MINOR__ < 4
-class __class_type_info
+class __class_type_info;
 #    endif
 
 #    include <cxxabi.h>
