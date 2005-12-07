@@ -55,7 +55,7 @@ namespace detail
       }
 #  endif 
       
-#  if defined(BOOST_MSVC) && BOOST_WORKAROUND(_MSC_FULL_VER, <= 140040607) || BOOST_WORKAROUND(BOOST_INTEL_WIN, >= 900)
+#  if BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1400)) || BOOST_WORKAROUND(BOOST_INTEL_WIN, >= 900)
       // No operator T&
 #  else
       
