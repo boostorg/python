@@ -84,7 +84,10 @@ struct with_custodian_and_ward_postcall : BasePolicy_
     static PyObject* postcall(ArgumentPackage const& args_, PyObject* result)
     {
         std::size_t arity_ = detail::arity(args_);
-        if ( custodian > arity_ || ward > arity_ )
+        // check if either custodian or ward exceeds the arity
+        // (this weird formulation avoids "always false" warnings
+        // for arity_ = 0)
+        if ( std::max(custodian, ward) > arity_ )
         {
             PyErr_SetString(
                 PyExc_IndexError

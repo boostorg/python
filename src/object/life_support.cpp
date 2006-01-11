@@ -24,7 +24,7 @@ extern "C"
     }
 
     static PyObject *
-    life_support_call(PyObject *self, PyObject *arg, PyObject *kw)
+    life_support_call(PyObject *self, PyObject *arg, PyObject * /*kw*/)
     {
         // Let the patient die now
         Py_XDECREF(((life_support*)self)->patient);
@@ -74,8 +74,17 @@ PyTypeObject life_support_type = {
     0, //offsetof(PyLife_SupportObject, func_dict),      /* tp_dictoffset */
     0,                                      /* tp_init */
     0,                                      /* tp_alloc */
-    0,
-    0                                       /* tp_new */
+    0,                                      /* tp_new */
+    0,                                      /* tp_free */
+    0,                                      /* tp_is_gc */
+    0,                                      /* tp_bases */
+    0,                                      /* tp_mro */
+    0,                                      /* tp_cache */
+    0,                                      /* tp_subclasses */
+    0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+    0                                       /* tp_del */
+#endif
 };
 
 PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)

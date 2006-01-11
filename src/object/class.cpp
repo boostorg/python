@@ -69,7 +69,7 @@ extern "C"
   } propertyobject;
 
   static PyObject *
-  static_data_descr_get(PyObject *self, PyObject *obj, PyObject * /*type*/)
+  static_data_descr_get(PyObject *self, PyObject * /*obj*/, PyObject * /*type*/)
   {
       propertyobject *gs = (propertyobject *)self;
 
@@ -77,7 +77,7 @@ extern "C"
   }
 
   static int
-  static_data_descr_set(PyObject *self, PyObject *obj, PyObject *value)
+  static_data_descr_set(PyObject *self, PyObject * /*obj*/, PyObject *value)
   {
       propertyobject *gs = (propertyobject *)self;
       PyObject *func, *res;
@@ -147,6 +147,14 @@ static PyTypeObject static_data_object = {
     0, // filled in with type_new           /* tp_new */
     0, // filled in with __PyObject_GC_Del  /* tp_free */
     (inquiry)type_is_gc,                    /* tp_is_gc */
+    0,                                      /* tp_bases */
+    0,                                      /* tp_mro */
+    0,                                      /* tp_cache */
+    0,                                      /* tp_subclasses */
+    0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+    0                                       /* tp_del */
+#endif
 };
 
 namespace objects
@@ -243,6 +251,14 @@ static PyTypeObject class_metatype_object = {
     0, // filled in with type_new           /* tp_new */
     0, // filled in with __PyObject_GC_Del  /* tp_free */
     (inquiry)type_is_gc,                    /* tp_is_gc */
+    0,                                      /* tp_bases */
+    0,                                      /* tp_mro */
+    0,                                      /* tp_cache */
+    0,                                      /* tp_subclasses */
+    0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+    0                                       /* tp_del */
+#endif
 };
 
 // Install the instance data for a C++ object into a Python instance
@@ -295,7 +311,7 @@ namespace objects
       }
 
       static PyObject *
-      instance_new(PyTypeObject* type_, PyObject* args, PyObject *kw)
+      instance_new(PyTypeObject* type_, PyObject* /*args*/, PyObject* /*kw*/)
       {
           // Attempt to find the __instance_size__ attribute. If not present, no problem.
           PyObject* d = type_->tp_dict;
@@ -340,14 +356,14 @@ namespace objects
 
 
   static PyGetSetDef instance_getsets[] = {
-      {"__dict__",  instance_get_dict,  instance_set_dict, NULL},
-      {0}
+      {"__dict__",  instance_get_dict,  instance_set_dict, NULL, 0},
+      {0, 0, 0, 0, 0}
   };
 
   
   static PyMemberDef instance_members[] = {
-      {"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0},
-      {0}
+      {"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0, 0},
+      {0, 0, 0, 0, 0}
   };
 
   static PyTypeObject class_type_object = {
@@ -390,7 +406,17 @@ namespace objects
       offsetof(instance<>,dict),              /* tp_dictoffset */
       0,                                      /* tp_init */
       PyType_GenericAlloc,                    /* tp_alloc */
-      instance_new                            /* tp_new */
+      instance_new,                           /* tp_new */
+      0,                                      /* tp_free */
+      0,                                      /* tp_is_gc */
+      0,                                      /* tp_bases */
+      0,                                      /* tp_mro */
+      0,                                      /* tp_cache */
+      0,                                      /* tp_subclasses */
+      0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+      0                                       /* tp_del */
+#endif
   };
 
   BOOST_PYTHON_DECL type_handle class_type()

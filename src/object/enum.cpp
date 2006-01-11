@@ -25,8 +25,8 @@ struct enum_object
 };
 
 static PyMemberDef enum_members[] = {
-    {"name", T_OBJECT_EX, offsetof(enum_object,name),READONLY},
-    {0}
+    {"name", T_OBJECT_EX, offsetof(enum_object,name),READONLY, 0},
+    {0, 0, 0, 0, 0}
 };
 
 
@@ -122,7 +122,17 @@ static PyTypeObject enum_type_object = {
     0,                                      /* tp_dictoffset */
     0,                                      /* tp_init */
     0,                                      /* tp_alloc */
-    0                                       /* tp_new */
+    0,                                      /* tp_new */
+    0,                                      /* tp_free */
+    0,                                      /* tp_is_gc */
+    0,                                      /* tp_bases */
+    0,                                      /* tp_mro */
+    0,                                      /* tp_cache */
+    0,                                      /* tp_subclasses */
+    0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+    0                                       /* tp_del */
+#endif
 };
 
 object module_prefix();

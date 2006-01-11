@@ -228,7 +228,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     return 0;
 }
 
-void function::argument_error(PyObject* args, PyObject* keywords) const
+void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 {
     static handle<> exception(
         PyErr_NewException("Boost.Python.ArgumentError", PyExc_TypeError, 0));
@@ -580,19 +580,19 @@ extern "C"
     // We add a dummy __class__ attribute in order to fool PyDoc into
     // treating these as built-in functions and scanning their
     // documentation
-    static PyObject* function_get_class(PyObject* op, void*)
+    static PyObject* function_get_class(PyObject* /*op*/, void*)
     {
         return python::incref(upcast<PyObject>(&PyCFunction_Type));
     }
 }
-    
+
 static PyGetSetDef function_getsetlist[] = {
-    {"__name__", (getter)function_get_name, 0 },
-    {"func_name", (getter)function_get_name, 0 },
-    {"__class__", (getter)function_get_class, 0 },    // see note above
-    {"__doc__", (getter)function_get_doc, (setter)function_set_doc},
-    {"func_doc", (getter)function_get_doc, (setter)function_set_doc},
-    {NULL} /* Sentinel */
+    {"__name__", (getter)function_get_name, 0, 0, 0 },
+    {"func_name", (getter)function_get_name, 0, 0, 0 },
+    {"__class__", (getter)function_get_class, 0, 0, 0 },    // see note above
+    {"__doc__", (getter)function_get_doc, (setter)function_set_doc, 0, 0},
+    {"func_doc", (getter)function_get_doc, (setter)function_set_doc, 0, 0},
+    {NULL, 0, 0, 0, 0} /* Sentinel */
 };
 
 PyTypeObject function_type = {
@@ -634,8 +634,17 @@ PyTypeObject function_type = {
     0, //offsetof(PyFunctionObject, func_dict),      /* tp_dictoffset */
     0,                                      /* tp_init */
     0,                                      /* tp_alloc */
-    0,
-    0                                       /* tp_new */
+    0,                                      /* tp_new */
+    0,                                      /* tp_free */
+    0,                                      /* tp_is_gc */
+    0,                                      /* tp_bases */
+    0,                                      /* tp_mro */
+    0,                                      /* tp_cache */
+    0,                                      /* tp_subclasses */
+    0,                                      /* tp_weaklist */
+#if PYTHON_API_VERSION >= 1012
+    0                                       /* tp_del */
+#endif
 };
 
 object function_object(

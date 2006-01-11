@@ -79,7 +79,7 @@ namespace detail
       w->m_self = self;
   }
 
-  inline void initialize_wrapper(PyObject* self, ...) {}
+  inline void initialize_wrapper(PyObject* /*self*/, ...) {}
 
   
   

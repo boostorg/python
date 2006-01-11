@@ -177,7 +177,7 @@ namespace detail
   inline object make_iterator_function(
       Accessor1 const& get_start
     , Accessor2 const& get_finish
-    , NextPolicies const& next_policies
+    , NextPolicies const& /*next_policies*/
     , Iterator const& (*)()
     , boost::type<Target>*
     , int
