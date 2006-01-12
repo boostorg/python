@@ -4,7 +4,7 @@
 '''
 >>> from stl_iterator_ext import *
 >>> x = list_int()
->>> x.assign([1,2,3,4,5])
+>>> x.assign(iter([1,2,3,4,5]))
 >>> for y in x:
 ...     print y
 1
