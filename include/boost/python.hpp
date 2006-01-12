@@ -22,6 +22,7 @@
 # include <boost/python/def.hpp>
 # include <boost/python/default_call_policies.hpp>
 # include <boost/python/dict.hpp>
+# include <boost/python/docstring_options.hpp>
 # include <boost/python/enum.hpp>
 # include <boost/python/errors.hpp>
 # include <boost/python/exception_translator.hpp>
