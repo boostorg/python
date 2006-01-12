@@ -20,6 +20,57 @@
 >>> selected_doc(fact, 0, 1)
 ['compute the factorial', 'C++ signature:']
 
+>>> len(fact_usr_off_1.__doc__.splitlines())
+2
+>>> selected_doc(fact_usr_off_1, 0)
+['C++ signature:']
+>>> len(fact_usr_on_1.__doc__.splitlines())
+3
+>>> selected_doc(fact_usr_on_1, 0, 1)
+['usr on 1', 'C++ signature:']
+>>> len(fact_usr_off_2.__doc__.splitlines())
+2
+>>> selected_doc(fact_usr_off_2, 0)
+['C++ signature:']
+>>> len(fact_usr_on_2.__doc__.splitlines())
+3
+>>> selected_doc(fact_usr_on_2, 0, 1)
+['usr on 2', 'C++ signature:']
+
+>>> len(fact_sig_off_1.__doc__.splitlines())
+1
+>>> selected_doc(fact_sig_off_1, 0)
+['sig off 1']
+>>> len(fact_sig_on_1.__doc__.splitlines())
+3
+>>> selected_doc(fact_sig_on_1, 0, 1)
+['sig on 1', 'C++ signature:']
+>>> len(fact_sig_off_2.__doc__.splitlines())
+1
+>>> selected_doc(fact_sig_off_2, 0)
+['sig off 2']
+>>> len(fact_sig_on_2.__doc__.splitlines())
+3
+>>> selected_doc(fact_sig_on_2, 0, 1)
+['sig on 2', 'C++ signature:']
+
+>>> print fact_usr_off_sig_off_1.__doc__
+None
+>>> len(fact_usr_on_sig_on_1.__doc__.splitlines())
+3
+>>> selected_doc(fact_usr_on_sig_on_1, 0, 1)
+['usr on sig on 1', 'C++ signature:']
+>>> len(fact_usr_on_sig_off_1.__doc__.splitlines())
+1
+>>> selected_doc(fact_usr_on_sig_off_1, 0)
+['usr on sig off 1']
+>>> len(fact_usr_on_sig_on_2.__doc__.splitlines())
+3
+>>> selected_doc(fact_usr_on_sig_on_2, 0, 1)
+['usr on sig on 2', 'C++ signature:']
+>>> print fact_usr_off_sig_off_2.__doc__
+None
+
 '''
 
 def run(args = None):

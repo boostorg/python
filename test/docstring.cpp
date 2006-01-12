@@ -6,6 +6,7 @@
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/docstring_options.hpp>
 #include <boost/python/scope.hpp>
 #include <boost/python/manage_new_object.hpp>
 #include "test_class.hpp"
@@ -55,6 +56,42 @@ BOOST_PYTHON_MODULE(docstring_ext)
         "creates a new X object");
 
     def("fact", fact, "compute the factorial");
+
+    {
+      docstring_options doc_options;
+      doc_options.disable_user_defined();
+      def("fact_usr_off_1", fact, "usr off 1");
+      doc_options.enable_user_defined();
+      def("fact_usr_on_1", fact, "usr on 1");
+      doc_options.disable_user_defined();
+      def("fact_usr_off_2", fact, "usr off 2");
+    }
+    def("fact_usr_on_2", fact, "usr on 2");
+
+    {
+      docstring_options doc_options(true, false);
+      def("fact_sig_off_1", fact, "sig off 1");
+      doc_options.enable_signatures();
+      def("fact_sig_on_1", fact, "sig on 1");
+      doc_options.disable_signatures();
+      def("fact_sig_off_2", fact, "sig off 2");
+    }
+    def("fact_sig_on_2", fact, "sig on 2");
+
+    {
+      docstring_options doc_options(false);
+      def("fact_usr_off_sig_off_1", fact, "usr off sig off 1");
+      {
+        docstring_options nested_doc_options;
+        def("fact_usr_on_sig_on_1", fact, "usr on sig on 1");
+        nested_doc_options.disable_all();
+        nested_doc_options.enable_user_defined();
+        def("fact_usr_on_sig_off_1", fact, "usr on sig off 1");
+        nested_doc_options.enable_all();
+        def("fact_usr_on_sig_on_2", fact, "usr on sig on 2");
+      }
+      def("fact_usr_off_sig_off_2", fact, "usr off sig off 2");
+    }
 }
 
 #include "module_tail.cpp"

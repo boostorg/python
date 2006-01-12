@@ -3,7 +3,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/python/object/function.hpp>
+#include <boost/python/docstring_options.hpp>
 #include <boost/python/object/function_object.hpp>
 #include <boost/python/object/function_handle.hpp>
 #include <boost/python/errors.hpp>
@@ -27,6 +27,11 @@
 #if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
 # include <cstdio>
 #endif
+
+namespace boost { namespace python {
+  volatile bool docstring_options::show_user_defined_ = true;
+  volatile bool docstring_options::show_signatures_ = true;
+}}
 
 namespace boost { namespace python { namespace objects { 
 
@@ -480,7 +485,7 @@ void function::add_to_namespace(
         throw_error_already_set();
 
     object mutable_attribute(attribute);
-    if (doc != 0)
+    if (doc != 0 && docstring_options::show_user_defined_)
     {
         // Accumulate documentation
         
@@ -496,6 +501,7 @@ void function::add_to_namespace(
         }
     }
 
+    if (docstring_options::show_signatures_)
     {
         if (   PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
             && mutable_attribute.attr("__doc__")) {
