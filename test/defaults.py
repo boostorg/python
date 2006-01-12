@@ -109,17 +109,18 @@
 >>> x.get_state()
 'Got exactly two arguments from constructor: string(Phoenix); bool(1); '
 
->>> def printdoc(x):
-...     print x.__doc__
+>>> def selected_doc(obj, *args):
+...   doc = obj.__doc__.splitlines()
+...   return [doc[i] for i in args]
 
->>> printdoc(X.__init__)
-doc of init
+>>> selected_doc(X.__init__, 0, 2, 4, 6, 8, 9, 10, 12)
+['C++ signature:', 'C++ signature:', 'C++ signature:', 'C++ signature:', '', 'doc of init', 'C++ signature:', 'C++ signature:']
 
->>> printdoc(Y.__init__)
-doc of Y init
+>>> selected_doc(Y.__init__, 0, 1)
+['doc of Y init', 'C++ signature:']
 
->>> printdoc(X.bar2)
-doc of X::bar2
+>>> selected_doc(X.bar2, 0, 2, 4, 6, 8, 9, 10)
+['C++ signature:', 'C++ signature:', 'C++ signature:', 'C++ signature:', '', 'doc of X::bar2', 'C++ signature:']
 
 """
 def run(args = None):
@@ -136,48 +137,3 @@ if __name__ == '__main__':
     status = run()[0]
     if (status == 0): print "Done."
     sys.exit(status)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -85,21 +85,21 @@
 >>> q.f1()
 (1, 4.25, 'wow')
 
->>> X.f.__doc__
-"This is X.f's docstring"
+>>> X.f.__doc__.splitlines()[:2]
+["This is X.f's docstring", 'C++ signature:']
 
 >>> xfuncs = (X.inner0, X.inner1, X.inner2, X.inner3, X.inner4, X.inner5)
 >>> for f in xfuncs:
 ...    print f(q,1).value(),
 ...    print f(q, n = 1).value(),
 ...    print f(q, n = 0).value(),
-...    print f.__doc__
-1 1 0 docstring
-1 1 0 docstring
-1 1 0 docstring
-1 1 0 docstring
-1 1 0 docstring
-1 1 0 docstring
+...    print f.__doc__.splitlines()[:2]
+1 1 0 ['docstring', 'C++ signature:']
+1 1 0 ['docstring', 'C++ signature:']
+1 1 0 ['docstring', 'C++ signature:']
+1 1 0 ['docstring', 'C++ signature:']
+1 1 0 ['docstring', 'C++ signature:']
+1 1 0 ['docstring', 'C++ signature:']
 
 >>> x = X(a1 = 44, a0 = 22)
 >>> x.inner0(0).value()

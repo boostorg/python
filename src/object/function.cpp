@@ -228,6 +228,58 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
     return 0;
 }
 
+object function::signature(bool show_return_type) const
+{
+    py_function const& impl = m_fn;
+    
+    python::detail::signature_element const* return_type = impl.signature();
+    python::detail::signature_element const* s = return_type + 1;
+    
+    list formal_params;
+    if (impl.max_arity() == 0)
+        formal_params.append("void");
+
+    for (unsigned n = 0; n < impl.max_arity(); ++n)
+    {
+        if (s[n].basename == 0)
+        {
+            formal_params.append("...");
+            break;
+        }
+
+        str param(s[n].basename);
+        if (s[n].lvalue)
+            param += " {lvalue}";
+        
+        if (m_arg_names) // None or empty tuple will test false
+        {
+            object kv(m_arg_names[n]);
+            if (kv)
+            {
+                char const* const fmt = len(kv) > 1 ? " %s=%r" : " %s";
+                param += fmt % kv;
+            }
+        }
+        
+        formal_params.append(param);
+    }
+
+    if (show_return_type)
+        return "%s(%s) -> %s" % make_tuple(
+            m_name, str(", ").join(formal_params), return_type->basename);
+    return "%s(%s)" % make_tuple(
+        m_name, str(", ").join(formal_params));
+}
+
+object function::signatures(bool show_return_type) const
+{
+    list result;
+    for (function const* f = this; f; f = f->m_overloads.get()) {
+        result.append(f->signature(show_return_type));
+    }
+    return result;
+}
+
 void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 {
     static handle<> exception(
@@ -244,50 +296,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
     }
     message += str(", ").join(actual_args);
     message += ")\ndid not match C++ signature:\n    ";
-
-    list signatures;
-    for (function const* f = this; f; f = f->m_overloads.get())
-    {
-        py_function const& impl = f->m_fn;
-        
-        python::detail::signature_element const* s
-            = impl.signature() + 1; // skip over return type
-        
-        list formal_params;
-        if (impl.max_arity() == 0)
-            formal_params.append("void");
-
-        for (unsigned n = 0; n < impl.max_arity(); ++n)
-        {
-            if (s[n].basename == 0)
-            {
-                formal_params.append("...");
-                break;
-            }
-
-            str param(s[n].basename);
-            if (s[n].lvalue)
-                param += " {lvalue}";
-            
-            if (f->m_arg_names) // None or empty tuple will test false
-            {
-                object kv(f->m_arg_names[n]);
-                if (kv)
-                {
-                    char const* const fmt = len(kv) > 1 ? " %s=%r" : " %s";
-                    param += fmt % kv;
-                }
-            }
-            
-            formal_params.append(param);
-        }
-
-        signatures.append(
-            "%s(%s)" % make_tuple(f->m_name, str(", ").join(formal_params))
-            );
-    }
-
-    message += str("\n    ").join(signatures);
+    message += str("\n    ").join(signatures());
 
 #if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
     std::printf("\n--------\n%s\n--------\n", extract<const char*>(message)());
@@ -392,6 +401,12 @@ namespace
 void function::add_to_namespace(
     object const& name_space, char const* name_, object const& attribute)
 {
+    add_to_namespace(name_space, name_, attribute, 0);
+}
+
+void function::add_to_namespace(
+    object const& name_space, char const* name_, object const& attribute, char const* doc)
+{
     str const name(name_);
     PyObject* const ns = name_space.ptr();
     
@@ -463,16 +478,11 @@ void function::add_to_namespace(
     PyErr_Clear();
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
         throw_error_already_set();
-}
 
-void function::add_to_namespace(
-    object const& name_space, char const* name_, object const& attribute, char const* doc)
-{
-    add_to_namespace(name_space, name_, attribute);
+    object mutable_attribute(attribute);
     if (doc != 0)
     {
         // Accumulate documentation
-        object mutable_attribute(attribute);
         
         if (
             PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
@@ -481,21 +491,35 @@ void function::add_to_namespace(
             mutable_attribute.attr("__doc__") += "\n\n";
             mutable_attribute.attr("__doc__") += doc;
         }
-        else
+        else {
             mutable_attribute.attr("__doc__") = doc;
+        }
+    }
+
+    {
+        if (   PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
+            && mutable_attribute.attr("__doc__")) {
+            mutable_attribute.attr("__doc__") += "\n";
+        }
+        else {
+            mutable_attribute.attr("__doc__") = "";
+        }
+        function* f = downcast<function>(attribute.ptr());
+        mutable_attribute.attr("__doc__") += str("\n    ").join(make_tuple(
+          "C++ signature:", f->signature(true)));
     }
 }
 
 BOOST_PYTHON_DECL void add_to_namespace(
     object const& name_space, char const* name, object const& attribute)
 {
-    function::add_to_namespace(name_space, name, attribute);
+    function::add_to_namespace(name_space, name, attribute, 0);
 }
 
 BOOST_PYTHON_DECL void add_to_namespace(
     object const& name_space, char const* name, object const& attribute, char const* doc)
 {
-    function::add_to_namespace(name_space, name, attribute, doc);    
+    function::add_to_namespace(name_space, name, attribute, doc);
 }
 
 

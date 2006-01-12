@@ -4,30 +4,23 @@
 '''
 >>> from docstring_ext import *
 
->>> def printdoc(x):
-...     print x.__doc__
+>>> def selected_doc(obj, *args):
+...   doc = obj.__doc__.splitlines()
+...   return [doc[i] for i in args]
 
->>> printdoc(X)
-A simple class wrapper around a C++ int
-includes some error-checking
+>>> selected_doc(X.__init__, 0, 1, 2)
+['this is the __init__ function', 'its documentation has two lines.', 'C++ signature:']
 
->>> printdoc(X.__init__)
-this is the __init__ function
-its documentation has two lines.
+>>> selected_doc(X.value, 0, 1, 3, 4, 5)
+['gets the value of the object', 'C++ signature:', '', 'also gets the value of the object', 'C++ signature:']
 
->>> printdoc(create)
-creates a new X object
+>>> selected_doc(create, 0, 1)
+['creates a new X object', 'C++ signature:']
 
->>> printdoc(fact)
-compute the factorial
+>>> selected_doc(fact, 0, 1)
+['compute the factorial', 'C++ signature:']
+
 '''
-
-def check_double_string():
-    """
-    >>> assert check_double_string() == True
-    """
-    from docstring_ext import X
-    return X.value.__doc__ == "gets the value of the object\n\nalso gets the value of the object"
 
 def run(args = None):
     import sys
