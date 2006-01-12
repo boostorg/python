@@ -27,7 +27,6 @@
 #include <boost/python/class.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/extract.hpp>
-#include <boost/python/detail/api_placeholder.hpp>
 
 namespace { // Avoid cluttering the global namespace.
 

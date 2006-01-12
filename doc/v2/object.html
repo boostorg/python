@@ -183,10 +183,15 @@
           <dt><a href="#binary-spec">binary operations</a></dt>
 
           <dt><a href="#assignment-spec">assignment operations</a></dt>
+
         </dl>
 
         <dl class="page-index">
           <dt><a href="#object_operators-spec">operators</a></dt>
+        </dl>
+
+        <dl class="page-index">
+          <dt><a href="#len-spec">len()</a></dt>
         </dl>
       </dd>
 
@@ -920,14 +925,34 @@ object sum_items(object seq)
 }
 </pre>
 
+<h4><a name="len-spec">len()</a></h4>
+<pre>
+inline long len(object const&amp; obj);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Effects:</b> PyObject_Length(obj.ptr()) </dt>
+      <dt><b>Returns:</b> len() of object.</dt>
+    </dl>
+
+    <h2><a name="examples"></a>Example</h2>
+    Python code: 
+<pre>
+len(obj)
+</pre>
+    C++ version: 
+<pre>
+len(obj);
+</pre>
+
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
+  12 January, 2006
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
-    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002.</i></p>
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2006.</i></p>
   </body>
 </html>
 

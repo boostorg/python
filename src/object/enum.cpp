@@ -12,7 +12,6 @@
 #include <boost/python/str.hpp>
 #include <boost/python/extract.hpp>
 #include <boost/python/object_protocol.hpp>
-#include <boost/python/detail/api_placeholder.hpp>
 #include <structmember.h>
 #include <cstdio>
 

@@ -8,7 +8,6 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/dict.hpp>
-#include <boost/python/detail/api_placeholder.hpp>
 
 namespace boost { namespace python {
 

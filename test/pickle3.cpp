@@ -23,7 +23,6 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/dict.hpp>
 #include <boost/python/extract.hpp>
-#include <boost/python/detail/api_placeholder.hpp>
 #include <boost/python/back_reference.hpp>
 
 namespace { // Avoid cluttering the global namespace.

@@ -15,7 +15,6 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 
-#include <boost/python/detail/api_placeholder.hpp>
 #include <boost/python/detail/signature.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 
