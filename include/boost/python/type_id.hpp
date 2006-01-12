@@ -35,6 +35,13 @@ namespace boost { namespace python {
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
 
+#ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
+// Runtime detection of broken cxxabi::__cxa_demangle versions,
+// to avoid #ifdef clutter.
+bool cxxabi_cxa_demangle_is_broken();
+#define BOOST_PYTHON_HAVE_CXXABI_CXA_DEMANGLE_IS_BROKEN
+#endif
+
 // type ids which represent the same information as std::type_info
 // (i.e. the top-level reference and cv-qualifiers are stripped), but
 // which works across shared libraries.
