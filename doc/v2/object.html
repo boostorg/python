@@ -905,7 +905,16 @@ template&lt;class R&gt; object&amp; operator|=(object&amp;l,R const&amp;r);
       <dt><b>Returns:</b> <code>l</code>.</dt>
     </dl>
 
-    <h2><a name="examples"></a>Example</h2>
+<pre>
+inline long len(object const&amp; obj);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Effects:</b> PyObject_Length(obj.ptr()) </dt>
+      <dt><b>Returns:</b> len() of object.</dt>
+    </dl>
+
+<h2><a name="examples"></a>Example</h2>
     Python code: 
 <pre>
 def sum_items(seq):
@@ -919,35 +928,14 @@ def sum_items(seq):
 object sum_items(object seq)
 {
    object result = object(0);
-   for (int i = 0; i &lt; seq.attr("__len__")(); ++i)
+   for (int i = 0; i &lt; len(seq); ++i)
       result += seq[i];
    return result;
 }
 </pre>
-
-<h4><a name="len-spec">len()</a></h4>
-<pre>
-inline long len(object const&amp; obj);
-</pre>
-
-    <dl class="function-semantics">
-      <dt><b>Effects:</b> PyObject_Length(obj.ptr()) </dt>
-      <dt><b>Returns:</b> len() of object.</dt>
-    </dl>
-
-    <h2><a name="examples"></a>Example</h2>
-    Python code: 
-<pre>
-len(obj)
-</pre>
-    C++ version: 
-<pre>
-len(obj);
-</pre>
-
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  12 January, 2006
+  13 January, 2006
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
@@ -955,4 +943,3 @@ len(obj);
     "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2006.</i></p>
   </body>
 </html>
-
