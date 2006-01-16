@@ -111,16 +111,30 @@
 
 >>> def selected_doc(obj, *args):
 ...   doc = obj.__doc__.splitlines()
-...   return [doc[i] for i in args]
+...   return "\\n".join(["|"+doc[i] for i in args])
 
->>> selected_doc(X.__init__, 0, 2, 4, 6, 8, 9, 10, 12)
-['C++ signature:', 'C++ signature:', 'C++ signature:', 'C++ signature:', '', 'doc of init', 'C++ signature:', 'C++ signature:']
+>>> print selected_doc(X.__init__, 0, 2, 4, 6, 8, 9, 10, 12)
+|C++ signature:
+|C++ signature:
+|C++ signature:
+|C++ signature:
+|
+|doc of init
+|C++ signature:
+|C++ signature:
 
->>> selected_doc(Y.__init__, 0, 1)
-['doc of Y init', 'C++ signature:']
+>>> print selected_doc(Y.__init__, 0, 1)
+|doc of Y init
+|C++ signature:
 
->>> selected_doc(X.bar2, 0, 2, 4, 6, 8, 9, 10)
-['C++ signature:', 'C++ signature:', 'C++ signature:', 'C++ signature:', '', 'doc of X::bar2', 'C++ signature:']
+>>> print selected_doc(X.bar2, 0, 2, 4, 6, 8, 9, 10)
+|C++ signature:
+|C++ signature:
+|C++ signature:
+|C++ signature:
+|
+|doc of X::bar2
+|C++ signature:
 
 """
 def run(args = None):
