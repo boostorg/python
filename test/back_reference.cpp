@@ -41,8 +41,8 @@ int X::counter;
 
 struct Y : X
 {
-    Y(PyObject* self, int x) : X(x) {};
-    Y(PyObject* self, Y const& rhs) : X(rhs), self(self) {};
+    Y(PyObject* self, int x) : X(x), self(self) {}
+    Y(PyObject* self, Y const& rhs) : X(rhs), self(self) {}
  private:
     Y(Y const&);
     PyObject* self;
@@ -50,8 +50,8 @@ struct Y : X
 
 struct Z : X
 {
-    Z(PyObject* self, int x) : X(x) {};
-    Z(PyObject* self, Z const& rhs) : X(rhs), self(self) {};
+    Z(PyObject* self, int x) : X(x), self(self) {}
+    Z(PyObject* self, Z const& rhs) : X(rhs), self(self) {}
  private:
     Z(Z const&);
     PyObject* self;

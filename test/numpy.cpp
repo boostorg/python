@@ -23,7 +23,7 @@ object new_array()
 }
 
 // test argument conversion
-void take_array(numeric::array x)
+void take_array(numeric::array /*x*/)
 {
 }
 

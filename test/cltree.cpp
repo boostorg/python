@@ -36,20 +36,20 @@ public:
 
 class symbol_wrapper: public symbol {
 public:
-  symbol_wrapper(PyObject* self): symbol() { 
+  symbol_wrapper(PyObject* /*self*/): symbol() { 
     name = "cltree.wrapped_symbol"; 
   }
 };
 
 class variable_wrapper: public variable {
 public:
-  variable_wrapper(PyObject* self): variable() { 
+  variable_wrapper(PyObject* /*self*/): variable() { 
     name = "cltree.wrapped_variable";
   }
 
   // This constructor is introduced only because cannot use
   // boost::noncopyable, see below.
-  variable_wrapper(PyObject* self,variable v): variable(v) {} 
+  variable_wrapper(PyObject* /*self*/,variable v): variable(v) {} 
 
 };
 

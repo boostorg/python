@@ -7,7 +7,7 @@
 
 struct error {};
 
-void translate(error const& e)
+void translate(error const& /*e*/)
 {
     PyErr_SetString(PyExc_RuntimeError, "!!!error!!!");
 }

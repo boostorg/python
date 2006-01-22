@@ -29,8 +29,9 @@ boost::python::list extract_list(object x)
     // Make sure we always have the right idea about whether it's a list
     bool is_list_1 = get_list.check();
     bool is_list_2 = PyObject_IsInstance(x.ptr(), (PyObject*)&PyList_Type);
-    assert(is_list_1 == is_list_2);
-    
+    if (is_list_1 != is_list_2) {
+        throw std::runtime_error("is_list_1 == is_list_2 failure.");
+    }
     return get_list();
 }
 
@@ -131,7 +132,9 @@ BOOST_PYTHON_MODULE(extract_ext)
 
     // Get the C++ object out of the Python object
     X const& x = extract<X&>(x_obj);
-    assert(x.value() == 3);
+    if (x.value() != 3) {
+        throw std::runtime_error("x.value() == 3 failure.");
+    }
 }
 
 
