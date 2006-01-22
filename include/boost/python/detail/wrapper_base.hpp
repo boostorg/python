@@ -21,7 +21,7 @@ namespace detail
     inline PyObject* get_owner(wrapper_base const volatile& w);
 
     inline PyObject*
-    owner_impl(void const volatile* x, mpl::false_)
+    owner_impl(void const volatile* /*x*/, mpl::false_)
     {
         return 0;
     }

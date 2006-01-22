@@ -156,7 +156,7 @@ namespace boost { namespace python {
         }
 
         static index_type
-        convert_index(Container& container, PyObject* i_)
+        convert_index(Container& /*container*/, PyObject* i_)
         {
             extract<key_type const&> i(i_);
             if (i.check())

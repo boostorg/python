@@ -490,20 +490,20 @@ namespace boost { namespace python { namespace detail {
 
         static void
         base_replace_indexes(
-            Container& container, Index from, 
-            Index to, Index n)
+            Container& /*container*/, Index /*from*/, 
+            Index /*to*/, Index /*n*/)
         {
         }
 
         template <class NoSlice>
         static void
         base_erase_index(
-            Container& container, Index i, NoSlice no_slice)
+            Container& /*container*/, Index /*i*/, NoSlice /*no_slice*/)
         {
         }
         
         static void
-        base_erase_indexes(Container& container, Index from, Index to)
+        base_erase_indexes(Container& /*container*/, Index /*from*/, Index /*to*/)
         {
         }
     };            
@@ -715,20 +715,20 @@ namespace boost { namespace python { namespace detail {
         }
         
         static object 
-        base_get_slice(Container& container, PySliceObject* slice)
+        base_get_slice(Container& /*container*/, PySliceObject* /*slice*/)
         { 
             slicing_not_suported();
             return object();
         }
    
         static void 
-        base_set_slice(Container& container, PySliceObject* slice, PyObject* v)
+        base_set_slice(Container& /*container*/, PySliceObject* /*slice*/, PyObject* /*v*/)
         {
             slicing_not_suported();
         }
         
         static void 
-        base_delete_slice(Container& container, PySliceObject* slice)
+        base_delete_slice(Container& /*container*/, PySliceObject* /*slice*/)
         { 
             slicing_not_suported();
         }  

@@ -54,8 +54,8 @@ namespace detail {
     register_(
       Class_& cl,
       tuple (*getinitargs_fn)(Tgetinitargs),
-      inaccessible* (*getstate_fn)(),
-      inaccessible* (*setstate_fn)(),
+      inaccessible* (* /*getstate_fn*/)(),
+      inaccessible* (* /*setstate_fn*/)(),
       bool)
     {
       cl.enable_pickling_(false);
@@ -69,7 +69,7 @@ namespace detail {
     void
     register_(
       Class_& cl,
-      inaccessible* (*getinitargs_fn)(),
+      inaccessible* (* /*getinitargs_fn*/)(),
       Rgetstate (*getstate_fn)(Tgetstate),
       void (*setstate_fn)(Tsetstate, Ttuple),
       bool getstate_manages_dict)
