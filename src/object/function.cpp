@@ -28,8 +28,8 @@
 #endif
 
 namespace boost { namespace python {
-  volatile bool docstring_options::show_user_defined_ = true;
-  volatile bool docstring_options::show_signatures_ = true;
+  BOOST_PYTHON_DECL volatile bool docstring_options::show_user_defined_ = true;
+  BOOST_PYTHON_DECL volatile bool docstring_options::show_signatures_ = true;
 }}
 
 namespace boost { namespace python { namespace objects { 
