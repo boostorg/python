@@ -11,7 +11,7 @@ namespace boost { namespace python {
 
 // Note: the static data members are defined in object/function.cpp
 
-class docstring_options : boost::noncopyable
+class BOOST_PYTHON_DECL docstring_options : boost::noncopyable
 {
   public:
       docstring_options(bool show_all=true)
@@ -65,8 +65,8 @@ class docstring_options : boost::noncopyable
       friend class objects::function;
 
   private:
-      BOOST_PYTHON_DECL static volatile bool show_user_defined_;
-      BOOST_PYTHON_DECL static volatile bool show_signatures_;
+      static volatile bool show_user_defined_;
+      static volatile bool show_signatures_;
       bool previous_show_user_defined_;
       bool previous_show_signatures_;
 };
