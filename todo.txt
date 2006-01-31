@@ -91,6 +91,13 @@ Converter Scoping
 
   __ Langbinding_
 
+
+``boost::tuple``
+----------------
+
+  Conversions to and from Python would be nice.  See
+  http://news.gmane.org/find-root.php?message_id=%3cuvewak97m.fsf%40boost%2dconsulting.com%3e
+
 ``FILE*`` conversions
 ---------------------
 
