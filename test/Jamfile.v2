@@ -61,8 +61,8 @@ bpl-test crossmod_exception
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
    
 
-[ python-extension builtin_converters : test_builtin_converters.cpp /boost/python//boost_python ]
-[ bpl-test builtin_converters_test : test_builtin_converters.py builtin_converters ]
+[ python-extension builtin_converters.ext : test_builtin_converters.cpp /boost/python//boost_python ]
+[ bpl-test builtin_converters : test_builtin_converters.py builtin_converters.ext ]
 
  [ bpl-test test_pointer_adoption ]
  [ bpl-test operators ]
@@ -131,7 +131,7 @@ bpl-test crossmod_exception
 
 # --- unit tests of library components ---
 
-[ run indirect_traits_test.cpp ]
+[ compile indirect_traits_test.cpp ]
 [ run destroy_test.cpp ]
 [ py-run pointer_type_id_test.cpp ]
 [ py-run bases.cpp ]
