@@ -28,7 +28,13 @@ rule py-compile-fail ( sources * )
 
 test-suite python
   :
-#   [ run ../test/embedding.cpp ../build//boost_python /python//python ]
+
+  [
+    run exec.cpp ../build//boost_python
+      : # program args
+      : exec.py
+      : # requirements
+  ]
 
 [
 bpl-test crossmod_exception
