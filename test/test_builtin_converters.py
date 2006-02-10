@@ -11,6 +11,14 @@ r"""
 ...     def rewrap_const_reference_long_long(x): return long(x)
 ...     def rewrap_const_reference_unsigned_long_long(x): return long(x)
 
+>>> try: bool_exists = bool
+... except: pass
+... else:
+...     rewrap_value_bool(True)
+...     rewrap_value_bool(False)
+True
+False
+
 >>> rewrap_value_bool(None)
 0
 >>> rewrap_value_bool(0)
