@@ -21,6 +21,7 @@ struct Y : test_class<1>
 {
     Y(int v) : test_class<1>(v) {}
     Y& operator=(Y const& rhs) { x = rhs.x; return *this; }
+    bool q;
 };
 
 double get_fair_value(X const& x) { return x.value(); }
@@ -96,6 +97,7 @@ BOOST_PYTHON_MODULE(data_members_ext)
         .def("value", &Y::value)
         .def("set", &Y::set)
         .def_readwrite("x", &Y::x)
+        .def_readwrite("q", &Y::q)
         ;
 
     class_<Var>("Var", init<std::string>())

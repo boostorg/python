@@ -42,6 +42,15 @@
 >>> v.rw2b.x
 777
 >>> Var.rw2b = Y(888)
+
+>>> y = Y(99)
+>>> y.q = True
+>>> y.q
+True
+>>> y.q = False
+>>> y.q
+False
+
 >>> Var.ro2a.x
 888
 >>> Var.ro2b.x
