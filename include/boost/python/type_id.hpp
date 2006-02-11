@@ -14,6 +14,7 @@
 # include <boost/static_assert.hpp>
 # include <boost/detail/workaround.hpp>
 # include <boost/type_traits/same_traits.hpp>
+# include <boost/type_traits/broken_compiler_spec.hpp>
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   if defined(__GNUC__)                                                \
@@ -167,6 +168,22 @@ inline char const* type_info::name() const
 
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_info const&);
+
+#  if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
+template<>
+inline type_info type_id<void>(BOOST_PYTHON_EXPLICIT_TT_DEF(void))
+{
+    return type_info (typeid (void *));
+}
+#   ifndef BOOST_NO_CV_VOID_SPECIALIZATIONS
+template<>
+inline type_info type_id<const volatile void>(BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile void))
+{
+    return type_info (typeid (void *));
+}
+#  endif
+
+# endif 
 
 }} // namespace boost::python
 

@@ -9,7 +9,10 @@
 # include <boost/python/converter/registrations.hpp>
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
+# include <boost/type_traits/is_void.hpp>
 # include <boost/detail/workaround.hpp>
+# include <boost/python/type_id.hpp>
+# include <boost/type.hpp>
 
 namespace boost {
 
@@ -77,15 +80,30 @@ namespace detail
   }
   
   template <class T>
-  registration const& 
-  registry_lookup(T&(*)())
+  inline registration const& 
+  registry_lookup2(T&(*)())
   {
       detail::register_shared_ptr1((T*)0);
       return registry::lookup(type_id<T&>());
   }
 
   template <class T>
-  registration const& registered_base<T>::converters = detail::registry_lookup((T(*)())0);
+  inline registration const& 
+  registry_lookup1(type<T>)
+  {
+      return registry_lookup2((T(*)())0);
+  }
+
+  inline registration const& 
+  registry_lookup1(type<const volatile void>)
+  {
+      detail::register_shared_ptr1((void*)0);
+      return registry::lookup(type_id<void>());
+  }
+
+  template <class T>
+  registration const& registered_base<T>::converters = detail::registry_lookup1(type<T>());
+
 }
 
 }}} // namespace boost::python::converter
