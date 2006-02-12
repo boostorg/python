@@ -157,6 +157,7 @@ bpl-test crossmod_exception
 [ bpl-test extract ]
 
 [ bpl-test opaque ]
+[ bpl-test voidptr ]
 
 [ bpl-test pickle1 ]
 [ bpl-test pickle2 ]

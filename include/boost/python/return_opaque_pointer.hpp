@@ -10,47 +10,38 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/opaque_pointer_converter.hpp>
-# include <boost/python/detail/indirect_traits.hpp>
-# include <boost/mpl/if.hpp>
+# include <boost/python/detail/force_instantiate.hpp>
+# include <boost/python/to_python_value.hpp>
+# include <boost/python/detail/value_arg.hpp>
+# include <boost/mpl/assert.hpp>
 
 namespace boost { namespace python {
 
 namespace detail
 {
-  template <class Pointer>
-  struct opaque_conversion_holder
+  template <class Pointee>
+  static void opaque_pointee(Pointee const volatile*)
   {
-      inline PyObject *operator()(Pointer p) const
-      {
-          static opaque_pointer_converter<Pointer> converter (
-              typeid (Pointer).name());
-
-          return converter.convert(p);
-      }
-  };
-
-  template <class R>
-  struct return_opaque_pointer_requires_a_pointer_type
-# if defined(__GNUC__) && __GNUC__ >= 3 || defined(__EDG__)
-  {}
-# endif
-  ;
+      force_instantiate(opaque<Pointee>::instance);
+  }
 }
-    
+
 struct return_opaque_pointer
 {
     template <class R>
     struct apply
     {
-        BOOST_STATIC_CONSTANT(
-            bool, ok = is_pointer<R>::value);
+        BOOST_MPL_ASSERT_MSG( is_pointer<R>::value, RETURN_OPAQUE_POINTER_EXPECTS_A_POINTER_TYPE, (R));
         
-        typedef typename mpl::if_c<
-            ok
-          , detail::opaque_conversion_holder<R>
-          , detail::return_opaque_pointer_requires_a_pointer_type<R>
-        >::type type;
+        struct type :  
+          boost::python::to_python_value<
+              typename detail::value_arg<R>::type
+          >
+        {
+            type() { detail::opaque_pointee(R()); }
+        };
     };
 };
+
 }} // namespace boost::python
 # endif // RETURN_OPAQUE_POINTER_HPP_
