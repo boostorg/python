@@ -11,7 +11,7 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
@@ -35,7 +35,7 @@
 <dt><span class="section"><a href="exposing.html#python.class_operators_special_functions">Class Operators/Special Functions</a></span></dt>
 </dl></div>
 <p>
-      Exposing ClassesNow let's expose a C++ class to Python.
+      Now let's expose a C++ class to Python.
     </p>
 <p>
       Consider a C++ class/struct that we want to expose to Python:
@@ -69,7 +69,8 @@
       we may use our class <tt class="literal">World</tt> in Python. Here's a sample Python
       session:
     </p>
-<p></p>
+<p>
+    </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">hello</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
@@ -81,10 +82,10 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.constructors"></a>Constructors</h3></div></div></div>
 <p>
-        ConstructorsOur previous example didn't have any explicit constructors. Since
-        <tt class="literal">World</tt> is declared as a plain struct, it has an implicit
-        default constructor. Boost.Python exposes the default constructor by default,
-        which is why we were able to write
+        Our previous example didn't have any explicit constructors. Since <tt class="literal">World</tt>
+        is declared as a plain struct, it has an implicit default constructor. Boost.Python
+        exposes the default constructor by default, which is why we were able to
+        write
       </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
@@ -93,7 +94,8 @@
         We may wish to wrap a class with a non-default constructor. Let us build
         on our previous example:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">struct</span> <span class="identifier">World</span>
 <span class="special">{</span>
@@ -121,7 +123,8 @@
     <span class="special">;</span>
 <span class="special">}</span>
 </pre>
-<p><tt class="literal">init&lt;std::string&gt;()</tt> exposes the constructor taking
+<p>
+        <tt class="literal">init&lt;std::string&gt;()</tt> exposes the constructor taking
         in a <tt class="literal">std::string</tt> (in Python, constructors are spelled
         "<tt class="literal">"<span class="underline">_init</span>_"</tt>").
       </p>
@@ -153,9 +156,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_data_members"></a>Class Data Members</h3></div></div></div>
 <p>
-        Class Data MembersData members may also be exposed to Python so that they
-        can be accessed as attributes of the corresponding Python class. Each data
-        member that we wish to be exposed may be regarded as <span class="bold"><b>read-only</b></span>
+        Data members may also be exposed to Python so that they can be accessed as
+        attributes of the corresponding Python class. Each data member that we wish
+        to be exposed may be regarded as <span class="bold"><b>read-only</b></span>
         or <span class="bold"><b>read-write</b></span>. Consider this class <tt class="literal">Var</tt>:
       </p>
 <pre class="programlisting">
@@ -179,7 +182,8 @@
         Then, in Python, assuming we have placed our Var class inside the namespace
         hello as we did before:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="string">'pi'</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
@@ -201,13 +205,13 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_properties"></a>Class Properties</h3></div></div></div>
 <p>
-        Class PropertiesIn C++, classes with public data members are usually frowned
-        upon. Well designed classes that take advantage of encapsulation hide the
-        class' data members. The only way to access the class' data is through access
-        (getter/setter) functions. Access functions expose class properties. Here's
-        an example:
+        In C++, classes with public data members are usually frowned upon. Well designed
+        classes that take advantage of encapsulation hide the class' data members.
+        The only way to access the class' data is through access (getter/setter)
+        functions. Access functions expose class properties. Here's an example:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">struct</span> <span class="identifier">Num</span>
 <span class="special">{</span>
@@ -231,7 +235,8 @@
 <p>
         And at last, in Python:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">Num</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
@@ -244,7 +249,8 @@
         <span class="bold"><b>read-only</b></span> since the <tt class="literal">rovalue</tt>
         setter member function is not passed in:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span>
 </pre>
@@ -253,7 +259,7 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.inheritance"></a>Inheritance</h3></div></div></div>
 <p>
-        InheritanceIn the previous examples, we dealt with classes that are not polymorphic.
+        In the previous examples, we dealt with classes that are not polymorphic.
         This is not often the case. Much of the time, we will be wrapping polymorphic
         classes and class hierarchies related by inheritance. We will often have
         to write Boost.Python wrappers for classes that are derived from abstract
@@ -335,9 +341,9 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_virtual_functions"></a>Class Virtual Functions</h3></div></div></div>
 <p>
-        Class Virtual FunctionsIn this section, we shall learn how to make functions
-        behave polymorphically through virtual functions. Continuing our example,
-        let us add a virtual function to our <tt class="literal">Base</tt> class:
+        In this section, we shall learn how to make functions behave polymorphically
+        through virtual functions. Continuing our example, let us add a virtual function
+        to our <tt class="literal">Base</tt> class:
       </p>
 <pre class="programlisting">
 <span class="keyword">struct</span> <span class="identifier">Base</span>
@@ -375,10 +381,10 @@
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/alert.png"></span> <span class="bold"><b>MSVC6/7 Workaround</b></span><br><br> If you are using
-              Microsoft Visual C++ 6 or 7, you have to write <tt class="computeroutput"><span class="identifier">f</span></tt>
-              as:<br><br><tt class="computeroutput"><span class="keyword">return</span> <span class="identifier">call</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">get_override</span><span class="special">(</span><span class="string">"f"</span><span class="special">).</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><b>MSVC6/7 Workaround</b></span><br>
+              <br> If you are using Microsoft Visual C++ 6 or 7, you have to write
+              <tt class="computeroutput"><span class="identifier">f</span></tt> as:<br> <br>
+              <tt class="computeroutput"><span class="keyword">return</span> <span class="identifier">call</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">get_override</span><span class="special">(</span><span class="string">"f"</span><span class="special">).</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
 </table></div>
 <p>
         BaseWrap's overridden virtual member function <tt class="computeroutput"><span class="identifier">f</span></tt>
@@ -392,16 +398,17 @@
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">pure_virtual</span><span class="special">(&amp;</span><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">))</span>
     <span class="special">;</span>
 </pre>
-<p><tt class="computeroutput"><span class="identifier">pure_virtual</span></tt> signals Boost.Python
+<p>
+        <tt class="computeroutput"><span class="identifier">pure_virtual</span></tt> signals Boost.Python
         that the function <tt class="computeroutput"><span class="identifier">f</span></tt> is a
         pure virtual function.
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span> <span class="bold"><b>member function and methods</b></span><br><br> Python,
-              like many object oriented languages uses the term <span class="bold"><b>methods</b></span>.
-              Methods correspond roughly to C++'s <span class="bold"><b>member functions</b></span>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>member function and
+              methods</b></span><br> <br> Python, like many object oriented languages
+              uses the term <span class="bold"><b>methods</b></span>. Methods correspond
+              roughly to C++'s <span class="bold"><b>member functions</b></span>
 </td></tr></tbody>
 </table></div>
 </div>
@@ -409,11 +416,10 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.virtual_functions_with_default_implementations"></a>Virtual Functions with Default Implementations</h3></div></div></div>
 <p>
-        Virtual Functions with Default ImplementationsWe've seen in the previous
-        section how classes with pure virtual functions are wrapped using Boost.Python's
-        <a href="../../../../v2/wrapper.html" target="_top">class wrapper</a> facilities. If
-        we wish to wrap <span class="bold"><b>non</b></span>-pure-virtual functions
-        instead, the mechanism is a bit different.
+        We've seen in the previous section how classes with pure virtual functions
+        are wrapped using Boost.Python's <a href="../../../../v2/wrapper.html" target="_top">class
+        wrapper</a> facilities. If we wish to wrap <span class="bold"><b>non</b></span>-pure-virtual
+        functions instead, the mechanism is a bit different.
       </p>
 <p>
         Recall that in the <a href="exposing.html#python.class_virtual_functions" title="Class Virtual Functions">previous
@@ -460,10 +466,9 @@
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/alert.png"></span> <span class="bold"><b>MSVC6/7 Workaround</b></span><br><br> If you are using
-              Microsoft Visual C++ 6 or 7, you have to rewrite the line with the
-              <tt class="computeroutput"><span class="special">*</span><span class="identifier">note</span><span class="special">*</span></tt> as:<br><br><tt class="computeroutput"><span class="keyword">return</span> <span class="identifier">call</span><span class="special">&lt;</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*&gt;(</span><span class="identifier">f</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><b>MSVC6/7 Workaround</b></span><br>
+              <br> If you are using Microsoft Visual C++ 6 or 7, you have to rewrite
+              the line with the <tt class="computeroutput"><span class="special">*</span><span class="identifier">note</span><span class="special">*</span></tt> as:<br> <br> <tt class="computeroutput"><span class="keyword">return</span> <span class="identifier">call</span><span class="special">&lt;</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*&gt;(</span><span class="identifier">f</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">());</span></tt>.</td></tr></tbody>
 </table></div>
 <p>
         Finally, exposing:
@@ -482,7 +487,8 @@
 <p>
         In Python, the results would be as expected:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span> <span class="special">=</span> <span class="identifier">Base</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span>
@@ -509,9 +515,9 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div></div>
-<a name="class_operators_special_functions.class_operators_special_functionspython_operators"></a><h2>
-<a name="id447955"></a>
-        Class Operators/Special FunctionsPython Operators
+<a name="class_operators_special_functions.python_operators"></a><h2>
+<a name="id448928"></a>
+        Python Operators
       </h2>
 <p>
         C is well known for the abundance of operators. C++ extends this to the extremes
@@ -522,7 +528,8 @@
         Consider a file position class <tt class="literal">FilePos</tt> and a set of operators
         that take on FilePos instances:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">class</span> <span class="identifier">FilePos</span> <span class="special">{</span> <span class="comment">/*...*/</span> <span class="special">};</span>
 
@@ -558,7 +565,7 @@
         expressions".
       </p>
 <a name="class_operators_special_functions.special_methods"></a><h2>
-<a name="id448698"></a>
+<a name="id449680"></a>
         Special Methods
       </h2>
 <p>
@@ -588,9 +595,7 @@
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span>
-              What is the business of <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt>? Well, the method <tt class="computeroutput"><span class="identifier">str</span></tt> requires the <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt> to do its work (i.e. <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> What is the business of <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt>? Well, the method <tt class="computeroutput"><span class="identifier">str</span></tt> requires the <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt> to do its work (i.e. <tt class="computeroutput"><span class="keyword">operator</span><span class="special">&lt;&lt;</span></tt>
               is used by the method defined by <tt class="computeroutput"><span class="identifier">def</span><span class="special">(</span><span class="identifier">str</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span></tt>.</td></tr></tbody>
 </table></div>
 </div>

@@ -252,9 +252,10 @@ if you are on Windows, and
 if you are on Unix.
 
 [^boost_python.dll] and [^hello.pyd] can be found somewhere in your project's
-[^bin] directory. After a successful build, you can just link in these DLLs with 
-the Python interpreter. In Windows for example, you can simply put these libraries 
-inside the directory where the Python executable is.
+[^bin] directory. After a successful build, you make it possible for the system 
+to find boost_python.dll or libboost_python.so (usually done with LD_LIBRARY_PATH, 
+DYLD_LIBRARY_PATH, or some other variable on *nix and with PATH on Windows) and 
+for Python to find the hello module (Done with PYTHONPATH on all systems.)
 
 You may now fire up Python and run our hello module:
 

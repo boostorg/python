@@ -11,7 +11,7 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
@@ -32,13 +32,15 @@
 <dt><span class="section"><a href="functions.html#python.auto_overloading">Auto-Overloading</a></span></dt>
 </dl></div>
 <p>
-      FunctionsIn this chapter, we'll look at Boost.Python powered functions in closer
-      detail. We shall see some facilities to make exposing C++ functions to Python
-      safe from potential pifalls such as dangling pointers and references. We shall
-      also see facilities that will make it even easier for us to expose C++ functions
+      In this chapter, we'll look at Boost.Python powered functions in closer detail.
+      We shall see some facilities to make exposing C++ functions to Python safe
+      from potential pifalls such as dangling pointers and references. We shall also
+      see facilities that will make it even easier for us to expose C++ functions
       that take advantage of C++ features such as overloading and default arguments.
     </p>
-<div class="blockquote"><blockquote class="blockquote"><p><span class="emphasis"><em>Read on...</em></span></p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+        <span class="emphasis"><em>Read on...</em></span>
+      </p></blockquote></div>
 <p>
       But before you do, you might want to fire up Python 2.2 or later and type
       <tt class="literal">&gt;&gt;&gt; import this</tt>.
@@ -69,15 +71,15 @@ Namespaces are one honking great idea -- let's do more of those!
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.call_policies"></a>Call Policies</h3></div></div></div>
 <p>
-        Call PoliciesIn C++, we often deal with arguments and return types such as
-        pointers and references. Such primitive types are rather, ummmm, low level
-        and they really don't tell us much. At the very least, we don't know the
-        owner of the pointer or the referenced object. No wonder languages such as
-        Java and Python never deal with such low level entities. In C++, it's usually
-        considered a good practice to use smart pointers which exactly describe ownership
-        semantics. Still, even good C++ interfaces use raw references and pointers
-        sometimes, so Boost.Python must deal with them. To do this, it may need your
-        help. Consider the following C++ function:
+        In C++, we often deal with arguments and return types such as pointers and
+        references. Such primitive types are rather, ummmm, low level and they really
+        don't tell us much. At the very least, we don't know the owner of the pointer
+        or the referenced object. No wonder languages such as Java and Python never
+        deal with such low level entities. In C++, it's usually considered a good
+        practice to use smart pointers which exactly describe ownership semantics.
+        Still, even good C++ interfaces use raw references and pointers sometimes,
+        so Boost.Python must deal with them. To do this, it may need your help. Consider
+        the following C++ function:
       </p>
 <pre class="programlisting">
 <span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">);</span>
@@ -135,7 +137,8 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         We could copy result into a new object:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> <span class="comment"># Result disappears
 </span><span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span>       <span class="comment"># No crash, but still bad
@@ -149,7 +152,8 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         Our problems do not end there. Suppose Y is implemented as follows:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">struct</span> <span class="identifier">Y</span>
 <span class="special">{</span>
@@ -202,7 +206,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id450599"></a>
+<a name="id451559"></a>
         Call Policies
       </h2>
 <p>
@@ -285,20 +289,19 @@ Namespaces are one honking great idea -- let's do more of those!
 </ul></div>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/smiley.png"></span> <span class="bold"><b>Remember the Zen, Luke:</b></span><br><br> "Explicit
-              is better than implicit"<br> "In the face of ambiguity,
-              refuse the temptation to guess"<br>
-</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><b>Remember the Zen, Luke:</b></span><br>
+              <br> "Explicit is better than implicit"<br> "In
+              the face of ambiguity, refuse the temptation to guess"<br>
+              </td></tr></tbody>
 </table></div>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.overloading"></a>Overloading</h3></div></div></div>
 <p>
-        OverloadingThe following illustrates a scheme for manually wrapping an overloaded
-        member functions. Of course, the same technique can be applied to wrapping
-        overloaded non-member functions.
+        The following illustrates a scheme for manually wrapping an overloaded member
+        functions. Of course, the same technique can be applied to wrapping overloaded
+        non-member functions.
       </p>
 <p>
         We have here our C++ class:
@@ -351,8 +354,8 @@ Namespaces are one honking great idea -- let's do more of those!
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.default_arguments"></a>Default Arguments</h3></div></div></div>
 <p>
-        Default ArgumentsBoost.Python wraps (member) function pointers. Unfortunately,
-        C++ function pointers carry no default argument info. Take a function <tt class="literal">f</tt>
+        Boost.Python wraps (member) function pointers. Unfortunately, C++ function
+        pointers carry no default argument info. Take a function <tt class="literal">f</tt>
         with default arguments:
       </p>
 <pre class="programlisting">
@@ -401,7 +404,7 @@ Namespaces are one honking great idea -- let's do more of those!
         </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id452559"></a>
+<a name="id453611"></a>
         BOOST_PYTHON_FUNCTION_OVERLOADS
       </h2>
 <p>
@@ -431,7 +434,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id452863"></a>
+<a name="id453927"></a>
         BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
       </h2>
 <p>
@@ -477,7 +480,7 @@ Namespaces are one honking great idea -- let's do more of those!
         reference</a> for details.
       </p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id453212"></a>
+<a name="id454288"></a>
         init and optional
       </h2>
 <p>
@@ -507,10 +510,10 @@ Namespaces are one honking great idea -- let's do more of those!
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.auto_overloading"></a>Auto-Overloading</h3></div></div></div>
 <p>
-        Auto-OverloadingIt was mentioned in passing in the previous section that
-        <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt> and <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt>
-        can also be used for overloaded functions and member functions with a common
-        sequence of initial arguments. Here is an example:
+        It was mentioned in passing in the previous section that <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>
+        and <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> can also be
+        used for overloaded functions and member functions with a common sequence
+        of initial arguments. Here is an example:
       </p>
 <pre class="programlisting">
 <span class="keyword">void</span> <span class="identifier">foo</span><span class="special">()</span>
@@ -551,7 +554,7 @@ Namespaces are one honking great idea -- let's do more of those!
         (0) arguments and a maximum of 3 arguments.
       </p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id453917"></a>
+<a name="id455013"></a>
         Manual Wrapping
       </h2>
 <p>

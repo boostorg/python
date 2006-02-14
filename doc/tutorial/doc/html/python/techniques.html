@@ -10,7 +10,7 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
@@ -30,16 +30,16 @@
 <dt><span class="section"><a href="techniques.html#python.reducing_compiling_time">Reducing Compiling Time</a></span></dt>
 </dl></div>
 <p>
-      General TechniquesHere are presented some useful techniques that you can use
-      while wrapping code with Boost.Python.
+      Here are presented some useful techniques that you can use while wrapping code
+      with Boost.Python.
     </p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.creating_packages"></a>Creating Packages</h3></div></div></div>
 <p>
-        Creating PackagesA Python package is a collection of modules that provide
-        to the user a certain functionality. If you're not familiar on how to create
-        packages, a good introduction to them is provided in the <a href="http://www.python.org/doc/current/tut/node8.html" target="_top">Python
+        A Python package is a collection of modules that provide to the user a certain
+        functionality. If you're not familiar on how to create packages, a good introduction
+        to them is provided in the <a href="http://www.python.org/doc/current/tut/node8.html" target="_top">Python
         Tutorial</a>.
       </p>
 <p>
@@ -98,12 +98,10 @@
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span>
-              The extension <tt class="literal">.pyd</tt> is used for python extension
-              modules, which are just shared libraries. Using the default for your
-              system, like <tt class="literal">.so</tt> for Unix and <tt class="literal">.dll</tt>
-              for Windows, works just as well.</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> The extension <tt class="literal">.pyd</tt> is used
+              for python extension modules, which are just shared libraries. Using
+              the default for your system, like <tt class="literal">.so</tt> for Unix and
+              <tt class="literal">.dll</tt> for Windows, works just as well.</td></tr></tbody>
 </table></div>
 <p>
         Now, we create this directory structure for our Python package:
@@ -124,7 +122,8 @@
         into his <a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a>
         and fire up the interpreter:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
@@ -146,7 +145,8 @@
         If we want this flexibility, we will have to complicate our package hierarchy
         a little. First, we will have to change the name of the extension modules:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="comment">/* file core.cpp */</span>
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_core</span><span class="special">)</span>
@@ -178,7 +178,8 @@
         to each one. But if we leave it that way, the user will have to access the
         functions in the core module with this syntax:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span>
@@ -237,8 +238,8 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.extending_wrapped_objects_in_python"></a>Extending Wrapped Objects in Python</h3></div></div></div>
 <p>
-        Extending Wrapped Objects in PythonThanks to Python's flexibility, you can
-        easily add new methods to a class, even after it was already created:
+        Thanks to Python's flexibility, you can easily add new methods to a class,
+        even after it was already created:
       </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span> <span class="keyword">pass</span>
@@ -256,12 +257,14 @@
 <span class="identifier">A</span> <span class="identifier">C</span> <span class="identifier">instance</span><span class="special">!</span>
 </pre>
 <p>
-        Yes, Python rox. <span class="inlinemediaobject"><img src="../images/smiley.png"></span></p>
+        Yes, Python rox. <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
+      </p>
 <p>
         We can do the same with classes that were wrapped with Boost.Python. Suppose
         we have a class <tt class="literal">point</tt> in C++:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">class</span> <span class="identifier">point</span> <span class="special">{...};</span>
 
@@ -274,7 +277,8 @@
         If we are using the technique from the previous session, <a href="techniques.html#python.creating_packages" title="Creating Packages">Creating
         Packages</a>, we can code directly into <tt class="literal">geom/__init__.py</tt>:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="keyword">from</span> <span class="identifier">_geom</span> <span class="keyword">import</span> <span class="special">*</span>
 
@@ -285,7 +289,8 @@
 <span class="comment"># now we turn it into a member function
 </span><span class="identifier">point</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">point_str</span>
 </pre>
-<p><span class="bold"><b>All</b></span> point instances created from C++ will
+<p>
+        <span class="bold"><b>All</b></span> point instances created from C++ will
         also have this member function! This technique has several advantages:
       </p>
 <div class="itemizedlist"><ul type="disc">
@@ -357,12 +362,13 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.reducing_compiling_time"></a>Reducing Compiling Time</h3></div></div></div>
 <p>
-        Reducing Compiling TimeIf you have ever exported a lot of classes, you know
-        that it takes quite a good time to compile the Boost.Python wrappers. Plus
-        the memory consumption can easily become too high. If this is causing you
-        problems, you can split the class_ definitions in multiple files:
+        If you have ever exported a lot of classes, you know that it takes quite
+        a good time to compile the Boost.Python wrappers. Plus the memory consumption
+        can easily become too high. If this is causing you problems, you can split
+        the class_ definitions in multiple files:
       </p>
-<p></p>
+<p>
+      </p>
 <pre class="programlisting">
 <span class="comment">/* file point.cpp */</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>
@@ -421,19 +427,16 @@
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span>
-              If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
               take a look at the <tt class="literal">--multiple</tt> option, that generates
               the wrappers in various files as demonstrated here.</td></tr></tbody>
 </table></div>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span>
-              This method is useful too if you are getting the error message <span class="emphasis"><em>"fatal
-              error C1204:Compiler limit:internal structure overflow"</em></span>
-              when compiling a large source file, as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> This method is useful too if you are getting the
+              error message <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal
+              structure overflow"</em></span> when compiling a large source file,
+              as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
 </table></div>
 </div>
 </div>

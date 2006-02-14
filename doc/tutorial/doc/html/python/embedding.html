@@ -11,7 +11,7 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
@@ -27,19 +27,20 @@
 <a name="python.embedding"></a>Embedding</h2></div></div></div>
 <div class="toc"><dl><dt><span class="section"><a href="embedding.html#python.using_the_interpreter">Using the interpreter</a></span></dt></dl></div>
 <p>
-      EmbeddingBy now you should know how to use Boost.Python to call your C++ code
-      from Python. However, sometimes you may need to do the reverse: call Python
-      code from the C++-side. This requires you to <span class="emphasis"><em>embed</em></span> the
-      Python interpreter into your C++ program.
+      By now you should know how to use Boost.Python to call your C++ code from Python.
+      However, sometimes you may need to do the reverse: call Python code from the
+      C++-side. This requires you to <span class="emphasis"><em>embed</em></span> the Python interpreter
+      into your C++ program.
     </p>
 <p>
       Currently, Boost.Python does not directly support everything you'll need when
       embedding. Therefore you'll need to use the <a href="http://www.python.org/doc/current/api/api.html" target="_top">Python/C
       API</a> to fill in the gaps. However, Boost.Python already makes embedding
       a lot easier and, in a future version, it may become unnecessary to touch the
-      Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png"></span></p>
+      Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
+    </p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id457321"></a>
+<a name="id458605"></a>
       Building embedded programs
     </h2>
 <p>
@@ -83,7 +84,7 @@ exe embedded_program # name of the executable
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id457409"></a>
+<a name="id458703"></a>
       Getting started
     </h2>
 <p>
@@ -92,7 +93,9 @@ exe embedded_program # name of the executable
     </p>
 <div class="orderedlist"><ol type="1">
 <li>
-        #include <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
+        
+#include
+         <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
 </li>
 <li>
         Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>()
@@ -110,24 +113,25 @@ exe embedded_program # name of the executable
 <p>
       (Of course, there can be other C++ code between all of these steps.)
     </p>
-<div class="blockquote"><blockquote class="blockquote"><p><span class="emphasis"><em><span class="bold"><b>Now that we can embed the interpreter in
-        our programs, lets see how to put it to use...</b></span></em></span></p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+        <span class="emphasis"><em><span class="bold"><b>Now that we can embed the interpreter in
+        our programs, lets see how to put it to use...</b></span></em></span>
+      </p></blockquote></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.using_the_interpreter"></a>Using the interpreter</h3></div></div></div>
 <p>
-        Using the interpreterAs you probably already know, objects in Python are
-        reference-counted. Naturally, the <tt class="literal">PyObject</tt>s of the Python/C
-        API are also reference-counted. There is a difference however. While the
-        reference-counting is fully automatic in Python, the Python/C API requires
-        you to do it <a href="http://www.python.org/doc/current/api/refcounts.html" target="_top">by
+        As you probably already know, objects in Python are reference-counted. Naturally,
+        the <tt class="literal">PyObject</tt>s of the Python/C API are also reference-counted.
+        There is a difference however. While the reference-counting is fully automatic
+        in Python, the Python/C API requires you to do it <a href="http://www.python.org/doc/current/api/refcounts.html" target="_top">by
         hand</a>. This is messy and especially hard to get right in the presence
         of C++ exceptions. Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a>
         and <a href="../../../../v2/object.html" target="_top">object</a> class templates to
         automate the process.
       </p>
 <a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id457544"></a>
+<a name="id458870"></a>
         Reference-counting handles and objects
       </h2>
 <p>
@@ -163,17 +167,18 @@ exe embedded_program # name of the executable
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span> <span class="bold"><b>Handle is a class <span class="emphasis"><em>template</em></span>, so why
-              haven't we been using any template parameters?</b></span><br><br><tt class="literal">handle</tt> has a single template parameter specifying
-              the type of the managed object. This type is <tt class="literal">PyObject</tt>
-              99% of the time, so the parameter was defaulted to <tt class="literal">PyObject</tt>
-              for convenience. Therefore we can use the shorthand <tt class="literal">handle&lt;&gt;</tt>
-              instead of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Handle is a class
+              <span class="emphasis"><em>template</em></span>, so why haven't we been using any template
+              parameters?</b></span><br> <br> <tt class="literal">handle</tt> has a
+              single template parameter specifying the type of the managed object.
+              This type is <tt class="literal">PyObject</tt> 99% of the time, so the parameter
+              was defaulted to <tt class="literal">PyObject</tt> for convenience. Therefore
+              we can use the shorthand <tt class="literal">handle&lt;&gt;</tt> instead
+              of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
               </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id457863"></a>
+<a name="id459217"></a>
         Running Python code
       </h2>
 <p>
@@ -184,7 +189,8 @@ exe embedded_program # name of the executable
 <pre class="programlisting">
 <span class="identifier">PyObject</span><span class="special">*</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="identifier">str</span><span class="special">,</span> <span class="keyword">int</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">PyObject</span> <span class="special">*</span><span class="identifier">globals</span><span class="special">,</span> <span class="identifier">PyObject</span> <span class="special">*</span><span class="identifier">locals</span><span class="special">)</span>
 </pre>
-<p><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
+<p>
+        <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
         takes the code to execute as a null-terminated (C-style) string in its <tt class="literal">str</tt>
         parameter. The function returns a new reference to a Python object. Which
         object is returned depends on the <tt class="literal">start</tt> paramater.
@@ -195,8 +201,9 @@ exe embedded_program # name of the executable
       </p>
 <div class="informaltable">
 <h4>
-<a name="id458033"></a><span class="table-title">Start symbols</span>
-</h4>
+<a name="id459396"></a>
+          <span class="table-title">Start symbols</span>
+        </h4>
 <table class="table">
 <colgroup>
 <col>
@@ -269,8 +276,8 @@ exe embedded_program # name of the executable
       </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span> <span class="bold"><b>Note</b></span> that we wrap the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that
+              we wrap the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
               in a (nameless) <tt class="literal">handle</tt> even though we are not interested
               in it. If we didn't do this, the the returned object would be kept
               alive unnecessarily. Unless you want to be a Dr. Frankenstein, always
@@ -278,7 +285,7 @@ exe embedded_program # name of the executable
               </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id458506"></a>
+<a name="id459921"></a>
         Beyond handles
       </h2>
 <p>
@@ -326,15 +333,15 @@ exe embedded_program # name of the executable
 </pre>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span> <span class="bold"><b>Note</b></span> that <tt class="literal">object</tt>'s member
-              function to return the wrapped <tt class="literal">PyObject*</tt> is called
-              <tt class="literal">ptr</tt> instead of <tt class="literal">get</tt>. This makes
-              sense if you take into account the different functions that <tt class="literal">object</tt>
-              and <tt class="literal">handle</tt> perform. </td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that
+              <tt class="literal">object</tt>'s member function to return the wrapped
+              <tt class="literal">PyObject*</tt> is called <tt class="literal">ptr</tt> instead
+              of <tt class="literal">get</tt>. This makes sense if you take into account
+              the different functions that <tt class="literal">object</tt> and <tt class="literal">handle</tt>
+              perform. </td></tr></tbody>
 </table></div>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id459120"></a>
+<a name="id460562"></a>
         Exception handling
       </h2>
 <p>

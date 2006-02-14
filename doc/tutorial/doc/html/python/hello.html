@@ -11,7 +11,7 @@
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
-<td valign="top"><img alt="boost.png (6897 bytes)" width="277" height="86" src="../../../../../../../boost.png"></td>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
 <td align="center"><a href="../../../../../../../index.htm">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
 <td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
@@ -25,9 +25,9 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.hello"></a> Building Hello World</h2></div></div></div>
-<a name="hello._building_hello_worldfrom_start_to_finish"></a><h2>
-<a name="id442456"></a>
-      Building Hello WorldFrom Start To Finish
+<a name="hello.from_start_to_finish"></a><h2>
+<a name="id373240"></a>
+      From Start To Finish
     </h2>
 <p>
       Now the first thing you'd want to do is to build the Hello World module and
@@ -37,11 +37,11 @@
     </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/note.png"></span> <span class="bold"><b>Building without bjam</b></span><br><br> Besides bjam,
-            there are of course other ways to get your module built. What's written
-            here should not be taken as "the one and only way". There are
-            of course other build tools apart from <tt class="literal">bjam</tt>.<br><br> Take note however that the preferred build tool for Boost.Python
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Building without bjam</b></span><br>
+            <br> Besides bjam, there are of course other ways to get your module
+            built. What's written here should not be taken as "the one and only
+            way". There are of course other build tools apart from <tt class="literal">bjam</tt>.<br>
+            <br> Take note however that the preferred build tool for Boost.Python
             is bjam. There are so many ways to set up the build incorrectly. Experience
             shows that 90% of the "I can't build Boost.Python" problems
             come from people who had to use a different tool. </td></tr></tbody>
@@ -99,10 +99,12 @@
       platforms. The complete list of Bjam executables can be found <a href="http://sourceforge.net/project/showfiles.php?group_id=7586" target="_top">here</a>.
     </p>
 <a name="hello.let_s_jam_"></a><h2>
-<a name="id373799"></a>
+<a name="id373448"></a>
       Let's Jam!
     </h2>
-<p><span class="inlinemediaobject"><img src="../images/jam.png"></span></p>
+<p>
+      <span class="inlinemediaobject"><img src="../images/jam.png" alt="jam"></span>
+    </p>
 <p>
       Here is our minimalist Jamfile:
     </p>
@@ -148,10 +150,11 @@ extension hello                     # Declare a Python extension called hello
       The last part tells BJam that we are depending on the Boost Python Library.
     </p>
 <a name="hello.running_bjam"></a><h2>
-<a name="id373910"></a>
+<a name="id373586"></a>
       Running bjam
     </h2>
-<p><span class="emphasis"><em>bjam</em></span> is run using your operating system's command line
+<p>
+      <span class="emphasis"><em>bjam</em></span> is run using your operating system's command line
       interpreter.
     </p>
 <div class="blockquote"><blockquote class="blockquote"><p>
@@ -177,10 +180,8 @@ set PYTHON_VERSION=2.2
     </p>
 <div class="informaltable"><table class="table">
 <colgroup><col></colgroup>
-<tbody><tr><td class="blurb">
-<span class="inlinemediaobject"><img src="../images/tip.png"></span>
-            Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span>
-            "2.2.1", even if that's the version you have.</td></tr></tbody>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span> "2.2.1", even if that's the version
+            you have.</td></tr></tbody>
 </table></div>
 <p>
       Take note that you may also do that through the Jamrules file we put in our
@@ -251,23 +252,29 @@ b and object bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.exp
 <p>
       if you are on Unix.
     </p>
-<p><tt class="literal">boost_python.dll</tt> and <tt class="literal">hello.pyd</tt> can be
+<p>
+      <tt class="literal">boost_python.dll</tt> and <tt class="literal">hello.pyd</tt> can be
       found somewhere in your project's <tt class="literal">bin</tt> directory. After a
-      successful build, you can just link in these DLLs with the Python interpreter.
-      In Windows for example, you can simply put these libraries inside the directory
-      where the Python executable is.
+      successful build, you make it possible for the system to find boost_python.dll
+      or libboost_python.so (usually done with LD_LIBRARY_PATH, DYLD_LIBRARY_PATH,
+      or some other variable on *nix and with PATH on Windows) and for Python to
+      find the hello module (Done with PYTHONPATH on all systems.)
     </p>
 <p>
       You may now fire up Python and run our hello module:
     </p>
-<p></p>
+<p>
+    </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">hello</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span>
 <span class="identifier">hello</span><span class="special">,</span> <span class="identifier">world</span>
 </pre>
-<p></p>
-<div class="blockquote"><blockquote class="blockquote"><p><span class="bold"><b>There you go... Have fun!</b></span></p></blockquote></div>
+<p>
+    </p>
+<div class="blockquote"><blockquote class="blockquote"><p>
+        <span class="bold"><b>There you go... Have fun!</b></span>
+      </p></blockquote></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
