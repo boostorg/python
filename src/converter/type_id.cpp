@@ -12,6 +12,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#if defined(__QNXNTO__)
+# include <ostream>
+#else 						/*	defined(__QNXNTO__)	*/
+
 #if !defined(__GNUC__) || __GNUC__ >= 3 || __SGI_STL_PORT || __EDG_VERSION__
 # include <ostream>
 #else 
@@ -31,27 +35,36 @@ class __class_type_info;
 #    include <cxxabi.h>
 #   endif
 #  endif 
+#endif 						/*	defined(__QNXNTO__)	*/
 
 namespace boost { namespace python {
 
 #  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
-#   ifdef __GNUC__
-#    if __GNUC__ < 3
+
+#   if defined(__QNXNTO__)
+namespace cxxabi {
+extern "C" char* __cxa_demangle(char const*, char*, std::size_t*, int*);
+}
+#   else 					/*	defined(__QNXNTO__)	*/
+
+#    ifdef __GNUC__
+#     if __GNUC__ < 3
 
 namespace cxxabi = :: ;
 extern "C" char* __cxa_demangle(char const*, char*, std::size_t*, int*);
-#    else
+#     else
 
 namespace cxxabi = ::abi;       // GCC 3.1 and later
 
-#     if __GNUC__ == 3 && __GNUC_MINOR__ == 0
+#      if __GNUC__ == 3 && __GNUC_MINOR__ == 0
 namespace abi
 {
   extern "C" char* __cxa_demangle(char const*, char*, std::size_t*, int*);
 }
-#     endif 
-#    endif
-#   endif 
+#      endif			/*	__GNUC__ == 3 && __GNUC_MINOR__ == 0	*/
+#     endif				/*	__GNUC__ < 3							*/
+#    endif 				/*	__GNUC__								*/ 
+#   endif 				/*	defined(__QNXNTO__)						*/ 
 
 namespace
 {
