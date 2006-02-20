@@ -2,6 +2,8 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
+#include <boost/assert.hpp>
+
 
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -118,10 +120,10 @@ void exercise(list x, object y, object print)
     w.append(5);
     w.append(6);
     w += "hi";
-    assert(w[0] == 5);
-    assert(w[1] == 6);
-    assert(w[2] == 'h');
-    assert(w[3] == 'i');
+    BOOST_ASSERT(w[0] == 5);
+    BOOST_ASSERT(w[1] == 6);
+    BOOST_ASSERT(w[2] == 'h');
+    BOOST_ASSERT(w[3] == 'i');
 }
 
 BOOST_PYTHON_MODULE(list_ext)

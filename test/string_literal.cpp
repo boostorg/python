@@ -3,7 +3,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/detail/string_literal.hpp>
 //#include <stdio.h>
-#include <cassert>
+
+#include <boost/detail/lightweight_test.hpp>
 #include <boost/static_assert.hpp>
 
 using namespace boost::python::detail;
@@ -37,5 +38,5 @@ int main()
     BOOST_STATIC_ASSERT(!is_string_literal<int[20]>::value);
     BOOST_STATIC_ASSERT(!is_string_literal<int const[20]>::value);
     BOOST_STATIC_ASSERT(!is_string_literal<int const[3]>::value);
-    return 0;
+    return boost::report_errors();
 }

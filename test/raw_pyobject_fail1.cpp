@@ -7,5 +7,5 @@
 int main()
 {
     boost::python::converter::arg_to_python<PyTypeObject*> x(0);
-    return 0;
+    return boost::report_errors();
 }

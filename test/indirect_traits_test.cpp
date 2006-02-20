@@ -2,7 +2,8 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //#include <stdio.h>
-#include <cassert>
+#define BOOST_ENABLE_ASSERT_HANDLER
+#include <boost/assert.hpp>
 #include <boost/type_traits/is_member_function_pointer.hpp>
 #include <boost/mpl/assert.hpp>
 #include <boost/python/detail/indirect_traits.hpp>

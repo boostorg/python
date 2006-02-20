@@ -2,6 +2,7 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
+#include <boost/detail/lightweight_test.hpp>
 #include <boost/python/cast.hpp>
 
 struct X { long x; };
@@ -11,8 +12,8 @@ int main()
 {
     PyTypeObject o;
     Y y;
-    assert(&boost::python::upcast<PyObject>(&o)->ob_refcnt == &o.ob_refcnt);
-    assert(&boost::python::upcast<PyObject>(&y)->ob_refcnt == &y.ob_refcnt);
-    return 0;
+    BOOST_TEST(&boost::python::upcast<PyObject>(&o)->ob_refcnt == &o.ob_refcnt);
+    BOOST_TEST(&boost::python::upcast<PyObject>(&y)->ob_refcnt == &y.ob_refcnt);
+    return boost::report_errors();
 }
 

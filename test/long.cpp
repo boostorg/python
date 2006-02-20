@@ -7,7 +7,8 @@
 #include <boost/python/def.hpp>
 #include <boost/python/long.hpp>
 #include <boost/python/class.hpp>
-#include <cassert>
+#define BOOST_ENABLE_ASSERT_HANDLER
+#include <boost/assert.hpp>
 
 using namespace boost::python;
 
@@ -30,7 +31,7 @@ char const* is_long1(long_& x)
 {
     long_ y = x;
     x += 50;
-    assert(x == y + 50);
+    BOOST_ASSERT(x == y + 50);
     return "yes";
 }
 
@@ -59,3 +60,4 @@ BOOST_PYTHON_MODULE(long_ext)
         ;
 }
 
+#include "module_tail.cpp"

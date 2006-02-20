@@ -9,5 +9,5 @@ struct X : PyObject {};
 int main()
 {
     boost::python::converter::arg_to_python<X*> x(0);
-    return 0;
+    return boost::report_errors();
 }

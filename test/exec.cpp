@@ -4,22 +4,10 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/python.hpp>
-#define BOOST_ENABLE_ASSERT_HANDLER 1
-#include <boost/assert.hpp>
+
+#include <boost/detail/lightweight_test.hpp>
 #include <iostream>
 
-namespace boost
-{
-
-void assertion_failed(char const * expr, char const * function,
-		      char const * file, long line)
-{
-  std::cerr << "assertion failed : " << expr << " in " << function
-	    << " at " << file << ':' << line << std::endl;
-  abort();
-}
-
-} // namespace boost
 
 namespace python = boost::python;
 
@@ -85,7 +73,7 @@ void exec_test()
 
   // Creating and using instances of the C++ class is as easy as always.
   CppDerived cpp;
-  BOOST_ASSERT(cpp.hello() == "Hello from C++!");
+  BOOST_TEST(cpp.hello() == "Hello from C++!");
 
   // But now creating and using instances of the Python class is almost
   // as easy!
@@ -93,7 +81,7 @@ void exec_test()
   Base& py = python::extract<Base&>(py_base) BOOST_EXTRACT_WORKAROUND;
 
   // Make sure the right 'hello' method is called.
-  BOOST_ASSERT(py.hello() == "Hello from Python!");
+  BOOST_TEST(py.hello() == "Hello from Python!");
 }
 
 void exec_file_test(std::string const &script)
@@ -103,7 +91,7 @@ void exec_file_test(std::string const &script)
   python::object result = python::exec_file(script.c_str(), global, global);
 
   // Extract an object the script stored in the global dictionary.
-  BOOST_ASSERT(python::extract<int>(global["number"]) ==  42);
+  BOOST_TEST(python::extract<int>(global["number"]) ==  42);
 }
 
 void exec_test_error()
@@ -115,9 +103,8 @@ void exec_test_error()
 
 int main(int argc, char **argv)
 {
-  assert(argc == 2);
+  BOOST_TEST(argc == 2);
   std::string script = argv[1];
-  bool success = true;
   // Initialize the interpreter
   Py_Initialize();
 
@@ -126,15 +113,16 @@ int main(int argc, char **argv)
   {
     if (PyErr_Occurred())
     {
+      BOOST_ERROR("Python Error detected");
       PyErr_Print();
     }
     else
     {
-      std::cerr << "A C++ exception was thrown  for which "
-		<< "there was no exception handler registered." << std::endl;
+        BOOST_ERROR("A C++ exception was thrown  for which "
+                    "there was no exception handler registered.");
     }
-    success = false;
   }
+  
   if (python::handle_exception(exec_test_error))
   {
     if (PyErr_Occurred())
@@ -143,18 +131,18 @@ int main(int argc, char **argv)
     }
     else
     {
-      std::cerr << "A C++ exception was thrown  for which "
-		<< "there was no exception handler registered." << std::endl;
-      success = false;
+        BOOST_ERROR("A C++ exception was thrown  for which "
+                    "there was no exception handler registered.");
     }
   }
   else
   {
-    success = false;
+      BOOST_ERROR("Python exception expected, but not seen.");
   }
+  
   // Boost.Python doesn't support Py_Finalize yet.
   // Py_Finalize();
-  return success ? 0 : 1;
+  return boost::report_errors();
 }
 
 // Including this file makes sure

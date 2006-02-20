@@ -13,7 +13,8 @@
 #include <boost/python/implicit.hpp>
 #include <string>
 #include <boost/lexical_cast.hpp>
-#include <cassert>
+#define BOOST_ENABLE_ASSERT_HANDLER
+#include <boost/assert.hpp>
 #include "test_class.hpp"
 
 using namespace boost::python;

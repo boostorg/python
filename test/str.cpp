@@ -2,6 +2,8 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/module.hpp>
+#include <boost/assert.hpp>
+
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/str.hpp>
@@ -25,8 +27,8 @@ void work_with_string(object print)
     print(data.encode("utf-8"));
     print(data.decode("utf-8"));
     
-    assert(!data.endswith("xx"));
-    assert(!data.startswith("test"));
+    BOOST_ASSERT(!data.endswith("xx"));
+    BOOST_ASSERT(!data.startswith("test"));
     
     print(data.splitlines());
     print(data.strip());
@@ -54,8 +56,8 @@ void work_with_string(object print)
     print(data.rfind("i",5));
     print(data.rindex("i",5));
 
-    assert(!data.startswith("asdf"));
-    assert(!data.endswith("asdf"));
+    BOOST_ASSERT(!data.startswith("asdf"));
+    BOOST_ASSERT(!data.endswith("asdf"));
     
     print(data.translate(str('a')*256));
 

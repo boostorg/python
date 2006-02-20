@@ -2,7 +2,8 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/detail/destroy.hpp>
-#include <cassert>
+
+#include <boost/detail/lightweight_test.hpp>
 
 int count;
 int marks[] = {
@@ -26,8 +27,8 @@ struct foo
 void assert_destructions(int n)
 {
     for (int i = 0; i < n; ++i)
-        assert(marks[i] == i);
-    assert(marks[n] == -1);
+        BOOST_TEST(marks[i] == i);
+    BOOST_TEST(marks[n] == -1);
 }
 
 int main()
@@ -50,5 +51,5 @@ int main()
     boost::python::detail::destroy_referent<y&>(f3);
     assert_destructions(7);
 
-    return 0;
+    return boost::report_errors();
 }
