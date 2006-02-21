@@ -18,6 +18,10 @@ rule py-compile-fail ( sources * )
 }
 
 
+project :
+     requirements <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
+     ;
+
 
 #template py-unit-test
 #  :
