@@ -26,7 +26,7 @@ project boost/python
     ;
 
 lib boost_python
-    : 
+    : # sources
     numeric.cpp
     list.cpp
     long.cpp
@@ -56,10 +56,15 @@ lib boost_python
     wrapper.cpp
     import.cpp
     exec.cpp
-    :   <link>static:<define>BOOST_PYTHON_STATIC_LIB 
+    :   # requirements
+        <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
-	<library>/python//python
-    : <link>shared
+     	<library>/python//python
+    :   # default build
+        <link>shared
+    :   # usage requirements
+        <link>static:<define>BOOST_PYTHON_STATIC_LIB 
+        <link>shared:<define>BOOST_PYTHON_DYNAMIC_LIB
     ;
 }
 else
