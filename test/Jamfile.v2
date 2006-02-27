@@ -126,7 +126,14 @@ bpl-test crossmod_exception
 [ bpl-test docstring ]
 
 [ bpl-test vector_indexing_suite ]
-[ bpl-test pointer_vector ]
+
+[ bpl-test pointer_vector
+  : # files
+  : # requirements
+    # Turn off this test on HP CXX, as the test hangs when executing.
+    # Whenever the cause for the failure of the polymorphism test is found
+    # and fixed, this should be retested.
+    <toolset>hp_cxx:<build>no ]
 
 [ python-extension map_indexing_suite_ext
     : map_indexing_suite.cpp int_map_indexing_suite.cpp
