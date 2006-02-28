@@ -38,7 +38,7 @@ struct test_failure : std::exception
 
     ~test_failure() throw() {}
     
-    char const* what() throw()
+    char const* what() const throw()
     {
         return boost::python::extract<char const*>(msg)();
     }
