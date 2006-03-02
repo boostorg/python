@@ -2,7 +2,6 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
-#include <boost/assert.hpp>
 
 #include <boost/python/class.hpp>
 #include <boost/python/module.hpp>
@@ -11,6 +10,8 @@
 #include <boost/python/call_method.hpp>
 #include <boost/ref.hpp>
 #include <boost/utility.hpp>
+
+#include <boost/assert.hpp>
 
 using namespace boost::python;
 
