@@ -34,10 +34,11 @@ test-suite python
   :
 
   [
-    run exec.cpp ../build//boost_python
+    run exec.cpp ../build//boost_python/<link>static
       : # program args
       : exec.py
       : # requirements
+        <define>BOOST_PYTHON_STATIC_MODULE
   ]
 
 [
