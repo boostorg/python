@@ -167,7 +167,11 @@ bpl-test crossmod_exception
   
 [ py-compile select_holder.cpp ]
   
-[ py-run select_from_python_test.cpp ../src/converter/type_id.cpp ]
+[ run select_from_python_test.cpp ../src/converter/type_id.cpp 
+  :
+  :
+  : <define>BOOST_PYTHON_STATIC_LIB
+]
 
  [ py-compile select_arg_to_python_test.cpp ]
 
