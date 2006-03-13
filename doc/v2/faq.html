@@ -566,7 +566,7 @@ handle&lt;&gt; f_wrap()
 ...
 
 def("f", f_wrap());
-class_&lt;X,X_wrap&gt;("X", init&lt;int&gt;())
+class_&lt;X,X_wrap,boost::noncopyable&gt;("X", init&lt;int&gt;())
    ...
    ;
 </pre>
@@ -848,11 +848,11 @@ BOOST_PYTHON_MODULE(custom_string)
 
     <p>Revised
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-     28 January, 2004
+     12 March, 2006
     <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
-    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002-2003.</i></p>
+    "../../../../people/dave_abrahams.htm">Dave Abrahams</a> 2002-2006.</i></p>
   </body>
 </html>
