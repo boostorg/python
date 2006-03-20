@@ -32,6 +32,7 @@ namespace boost { namespace python {
 # if (defined(__GNUC__) && __GNUC__ >= 3) \
  || defined(_AIX) \
  || (   defined(__sgi) && defined(__host_mips)) \
+ || (defined(__hpux) && defined(__HP_aCC)) \
  || (defined(linux) && defined(__INTEL_COMPILER) && defined(__ICC))
 #  define BOOST_PYTHON_TYPE_ID_NAME
 # endif 
