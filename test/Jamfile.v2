@@ -2,6 +2,8 @@
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
+project : requirements <threading>multi ;
+
 rule py-run ( sources * )
 {
     return [ run $(sources) /boost/python//boost_python ] ;
