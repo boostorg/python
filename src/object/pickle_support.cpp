@@ -23,7 +23,7 @@ namespace {
       if (!getattr(instance_obj, "__safe_for_unpickling__", none))
       {
           str type_name(getattr(instance_class, "__name__"));
-          str module_name(getattr(instance_class, "__module__", ""));
+          str module_name(getattr(instance_class, "__module__", str()));
           if (module_name)
               module_name += ".";
 
