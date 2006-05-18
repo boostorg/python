@@ -84,6 +84,8 @@
 (2, 4.25, 'wow')
 >>> q.f1()
 (1, 4.25, 'wow')
+>>> q.f2.__doc__.splitlines()[-3]
+"f2's docstring"
 
 >>> X.f.__doc__.splitlines()[:2]
 ["This is X.f's docstring", 'C++ signature:']
