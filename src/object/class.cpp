@@ -530,6 +530,10 @@ namespace objects
       if (scope().ptr() != Py_None)
           scope().attr(name) = result;
 
+      // For pickle. Will lead to informative error messages if pickling
+      // is not enabled.
+      result.attr("__reduce__") = object(make_instance_reduce_function());
+
       return result;
     }
   }
@@ -627,7 +631,6 @@ namespace objects
 
   void class_base::enable_pickling_(bool getstate_manages_dict)
   {
-      setattr("__reduce__", object(make_instance_reduce_function()));
       setattr("__safe_for_unpickling__", object(true));
       
       if (getstate_manages_dict)

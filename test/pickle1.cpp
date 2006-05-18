@@ -45,6 +45,8 @@ namespace {
     }
   };
 
+  // To support test of "pickling not enabled" error message.
+  struct noop {};
 }
 
 BOOST_PYTHON_MODULE(pickle1_ext)
@@ -54,4 +56,7 @@ BOOST_PYTHON_MODULE(pickle1_ext)
       .def("greet", &world::greet)
       .def_pickle(world_pickle_suite())
       ;
+
+  // To support test of "pickling not enabled" error message.
+  class_<noop>("noop");
 }
