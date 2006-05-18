@@ -141,6 +141,12 @@ typedef int pid_t;
 # include <Python.h>
 #endif
 
+#if PY_VERSION_HEX < 0x02050000
+typedef int Py_ssize_t;
+#define PY_SSIZE_T_MIN INT_MIN
+#define PY_SSIZE_T_MAX INT_MAX
+#endif
+
 #ifdef BOOST_PYTHON_ULONG_MAX_UNDEFINED
 # undef ULONG_MAX
 # undef BOOST_PYTHON_ULONG_MAX_UNDEFINED

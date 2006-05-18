@@ -106,7 +106,7 @@ namespace // slicing code copied directly out of the Python implementation
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {
-          int ilow = 0, ihigh = INT_MAX;
+          Py_ssize_t ilow = 0, ihigh = PY_SSIZE_T_MAX;
           if (!_PyEval_SliceIndex(v, &ilow))
               return NULL;
           if (!_PyEval_SliceIndex(w, &ihigh))
@@ -133,7 +133,7 @@ namespace // slicing code copied directly out of the Python implementation
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {
-          int ilow = 0, ihigh = INT_MAX;
+          Py_ssize_t ilow = 0, ihigh = PY_SSIZE_T_MAX;
           if (!_PyEval_SliceIndex(v, &ilow))
               return -1;
           if (!_PyEval_SliceIndex(w, &ihigh))

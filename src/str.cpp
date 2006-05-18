@@ -21,10 +21,25 @@ str_base::str_base(const char* s)
   : object(detail::new_reference(::PyString_FromString(s)))
 {}
 
+namespace {
+
+    Py_ssize_t str_size_as_py_ssize_t(std::size_t n)
+    {
+      if (n > PY_SSIZE_T_MAX)
+      {
+          throw std::range_error("str size > PY_SSIZE_T_MAX");
+      }
+      return static_cast<Py_ssize_t>(n);
+    }
+
+} // namespace <anonymous>
+
 str_base::str_base(char const* start, char const* finish)
     : object(
         detail::new_reference(
-            ::PyString_FromStringAndSize(start, finish - start)
+            ::PyString_FromStringAndSize(
+                start, str_size_as_py_ssize_t(finish - start)
+            )
         )
     )
 {}
@@ -32,7 +47,9 @@ str_base::str_base(char const* start, char const* finish)
 str_base::str_base(char const* start, std::size_t length) // new str
     : object(
         detail::new_reference(
-            ::PyString_FromStringAndSize(start, length)
+            ::PyString_FromStringAndSize(
+                start, str_size_as_py_ssize_t(length)
+            )
         )
     )
 {}

@@ -15,9 +15,9 @@
 
 namespace boost { namespace python {
 
-    inline long len(object const& obj)
+    inline Py_ssize_t len(object const& obj)
     {
-        long result = PyObject_Length(obj.ptr());
+        Py_ssize_t result = PyObject_Length(obj.ptr());
         if (PyErr_Occurred()) throw_error_already_set();
         return result;
     }

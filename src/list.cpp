@@ -53,7 +53,7 @@ long list_base::index(object_cref value) const
     return result;
 }
 
-void list_base::insert(int index, object_cref item)
+void list_base::insert(Py_ssize_t index, object_cref item)
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -79,7 +79,7 @@ object list_base::pop()
     return this->attr("pop")();
 }
 
-object list_base::pop(long index)
+object list_base::pop(Py_ssize_t index)
 {
     return this->pop(object(index));
 }
