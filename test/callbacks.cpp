@@ -2,7 +2,6 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
-#include <boost/assert.hpp>
 
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -13,6 +12,7 @@
 #include <boost/python/reference_existing_object.hpp>
 #include <boost/python/call.hpp>
 #include <boost/python/object.hpp>
+#include <boost/assert.hpp>
 
 using namespace boost::python;
 BOOST_STATIC_ASSERT(converter::is_object_manager<handle<> >::value);

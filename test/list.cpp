@@ -2,8 +2,6 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
-#include <boost/assert.hpp>
-
 
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -11,6 +9,7 @@
 #include <boost/python/list.hpp>
 #include <boost/python/make_function.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/assert.hpp>
 #include "test_class.hpp"
 
 using namespace boost::python;
