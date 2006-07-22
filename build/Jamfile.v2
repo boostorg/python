@@ -64,7 +64,7 @@ lib boost_python
 	# symbols are available in Python interpreter.
 	# If Boost.Python is used for extending, client
 	# is required to link to /python//python itself.
-	<use>/python//python_for_extensions
+	<library>/python//python_for_extensions
     :   # default build
         <link>shared
     :   # usage requirements
