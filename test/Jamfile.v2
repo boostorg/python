@@ -2,11 +2,9 @@
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
-project : requirements <threading>multi ;
-
 rule py-run ( sources * )
 {
-    return [ run $(sources) /boost/python//boost_python ] ;
+    return [ run $(sources) /boost/python//boost_python /python//python ] ;
 }
 
 rule py-compile ( sources * )
@@ -36,7 +34,7 @@ test-suite python
   :
 
   [
-    run exec.cpp ../build//boost_python/<link>static
+    run exec.cpp ../build//boost_python/<link>static /python//python
       : # program args
       : exec.py
       : # requirements
