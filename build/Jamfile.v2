@@ -59,7 +59,12 @@ lib boost_python
     :   # requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
-     	<library>/python//python
+	# We don't link to Python library itself. If
+	# Boost.Python is used for extension, all Python
+	# symbols are available in Python interpreter.
+	# If Boost.Python is used for extending, client
+	# is required to link to /python//python itself.
+	<use>/python//python_for_extensions
     :   # default build
         <link>shared
     :   # usage requirements
