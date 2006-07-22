@@ -9,7 +9,7 @@ if [ python.configured ] {
 project boost/python
     : source-location ../src
         : requirements 
-	#<include>$(PYTHON_PATH)/include
+        #<include>$(PYTHON_PATH)/include
         #  $(lib_condition)<library-path>$(PYTHON_PATH)/libs
         #    <link>shared:<library>$(PYTHON_LIB)
         #    <define>$(defines)
@@ -59,12 +59,16 @@ lib boost_python
     :   # requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
-	# We don't link to Python library itself. If
-	# Boost.Python is used for extension, all Python
-	# symbols are available in Python interpreter.
-	# If Boost.Python is used for extending, client
-	# is required to link to /python//python itself.
-	<library>/python//python_for_extensions
+        # On Linux, we don't link to Python library itself. If
+        # Boost.Python is used for extension, all Python
+        # symbols are available in Python interpreter.
+        # If Boost.Python is used for extending, client
+        # is required to link to /python//python itself.
+        # On Windows, all code using Python has to link
+        # to python import library. The 'python_for_extension'
+        # is the target that's setup to provide either just
+        # include paths, or import library.  
+        <library>/python//python_for_extensions
     :   # default build
         <link>shared
     :   # usage requirements
