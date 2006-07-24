@@ -34,9 +34,9 @@ object exec_file(str filename, object global, object local)
   if (!pyfile) throw std::invalid_argument(std::string(f) + " : no such file");
   python::handle<> file(pyfile);
   PyObject* result = PyRun_File(PyFile_AsFile(file.get()),
-				f,
-				Py_file_input,
-				global.ptr(), local.ptr());
+                f,
+                Py_file_input,
+                global.ptr(), local.ptr());
   if (!result) throw_error_already_set();
   return object(detail::new_reference(result));
 }
