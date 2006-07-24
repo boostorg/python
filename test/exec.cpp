@@ -54,7 +54,7 @@ void exec_test()
   // Register the module with the interpreter
   if (PyImport_AppendInittab("embedded_hello", initembedded_hello) == -1)
     throw std::runtime_error("Failed to add embedded_hello to the interpreter's "
-			     "builtin modules");
+                 "builtin modules");
   // Retrieve the main module
   python::object main = python::import("__main__");
   
