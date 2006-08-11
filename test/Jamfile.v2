@@ -170,7 +170,7 @@ bpl-test crossmod_exception
 [ run select_from_python_test.cpp ../src/converter/type_id.cpp 
   :   
   :
-  : <define>BOOST_PYTHON_STATIC_LIB
+  : # <define>BOOST_PYTHON_STATIC_LIB
     <use>/python//python
 
 ]
