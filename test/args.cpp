@@ -14,6 +14,10 @@
 
 using namespace boost::python;
 
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+using boost::python::make_tuple;
+#endif 
+
 tuple f(int x = 1, double y = 4.25, char const* z = "wow")
 {
     return make_tuple(x, y, z);
@@ -85,6 +89,7 @@ BOOST_PYTHON_MODULE(args_ext)
         .def("inner5", &X::inner, "docstring", args("n"), return_internal_reference<>())
 
         .def("f1", &X::f, X_f_overloads(args("x", "y", "z")))
+        .def("f2", &X::f, X_f_overloads(args("x", "y", "z"), "f2's docstring"))
         ;
 
     def("inner", &X::inner, "docstring", args("self", "n"), return_internal_reference<>());
