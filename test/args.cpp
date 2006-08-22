@@ -15,7 +15,7 @@
 using namespace boost::python;
 
 #if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
-using boost::python::make_tuple;
+# define make_tuple boost::python::make_tuple
 #endif 
 
 tuple f(int x = 1, double y = 4.25, char const* z = "wow")
