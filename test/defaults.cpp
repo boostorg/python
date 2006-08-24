@@ -17,6 +17,10 @@
 
 using namespace boost::python;
 
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+# define make_tuple boost::python::make_tuple
+#endif 
+
 char const* const format = "int(%s); char(%s); string(%s); double(%s); ";
 
 ///////////////////////////////////////////////////////////////////////////////
