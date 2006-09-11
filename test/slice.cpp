@@ -9,6 +9,10 @@
 
 using namespace boost::python;
 
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+# define make_tuple boost::python::make_tuple
+#endif 
+
 // These checks are only valid under Python 2.3
 // (rich slicing wasn't supported for builtins under Python 2.2)
 bool check_string_rich_slice()

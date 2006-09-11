@@ -10,6 +10,10 @@
 
 using namespace boost::python;
 
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+# define make_tuple boost::python::make_tuple
+#endif 
+
 // See if we can invoke array() from C++
 object new_array()
 {
