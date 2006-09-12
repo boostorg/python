@@ -4,7 +4,13 @@ project /boost/python/test ;
 
 rule py-run ( sources * )
 {
-    return [ run $(sources) /boost/python//boost_python /python//python ] ;
+    return [ run $(sources) /boost/python//boost_python /python//python
+      : # args
+      : # input files
+      : #requirements
+        <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
+ 
+    ] ;
 }
 
 rule py-compile ( sources * )
@@ -17,10 +23,6 @@ rule py-compile-fail ( sources * )
     return [ compile-fail $(sources) /boost/python//boost_python ] ;
 }
 
-
-project :
-     requirements <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
-     ;
 
 
 #template py-unit-test
