@@ -4,12 +4,13 @@
 # accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-print "running..."
+if __name__ == '__main__':
+  print "running..."
 
-import crossmod_opaque_a
-import crossmod_opaque_b
+  import crossmod_opaque_a
+  import crossmod_opaque_b
 
-crossmod_opaque_a.get()
-crossmod_opaque_b.get()
+  crossmod_opaque_a.get()
+  crossmod_opaque_b.get()
 
-print "Done."
+  print "Done."
