@@ -1,5 +1,6 @@
 #include <boost/python.hpp>
 #include <boost/python/slice.hpp>
+#include <boost/python/str.hpp>
 #include <vector>
 
 // Copyright (c) 2004 Jonathan Brandmeyer
@@ -8,6 +9,10 @@
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 using namespace boost::python;
+
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+# define make_tuple boost::python::make_tuple
+#endif 
 
 // These checks are only valid under Python 2.3
 // (rich slicing wasn't supported for builtins under Python 2.2)
@@ -39,8 +44,16 @@ bool check_string_rich_slice()
     return s[slice(2,-1)][slice(1,-1)]  == "lo, wor";
 }
 
+// Tried to get more info into the error message (actual array
+// contents) but Numeric complains that treating an array as a boolean
+// value doesn't make any sense.
+#define ASSERT_EQUAL( e1, e2 ) \
+if ((e1) != (e2)) \
+    return str("assertion failed: " #e1 " == " #e2 "\nLHS:\n") /*+ str(e1) + "\nRHS:\n" + str(e2)*/; \
+else
+
 // These tests work with Python 2.2, but you must have Numeric installed.
-bool check_numeric_array_rich_slice()
+object check_numeric_array_rich_slice()
 {
     using numeric::array;
     array original = array( make_tuple( make_tuple( 11, 12, 13, 14),
@@ -60,22 +73,21 @@ bool check_numeric_array_rich_slice()
     // The following comments represent equivalent Python expressions used
     // to validate the array behavior.
     // original[::] == original
-    if (original[slice()] != original)
-        return false;
+    ASSERT_EQUAL(original[slice()],original);
+        
     // original[:2,:2] == array( [[11, 12], [21, 22]])
-    if (original[make_tuple(slice(_,2), slice(_,2))] != upper_left_quadrant)
-        return false;
+    ASSERT_EQUAL(original[make_tuple(slice(_,2), slice(_,2))],upper_left_quadrant);
+        
     // original[::2,::2] == array( [[11, 13], [31, 33]])
-    if (original[make_tuple( slice(_,_,2), slice(_,_,2))] != odd_cells)
-        return false;
+    ASSERT_EQUAL(original[make_tuple( slice(_,_,2), slice(_,_,2))],odd_cells);
+    
     // original[1::2, 1::2] == array( [[22, 24], [42, 44]])
-    if (original[make_tuple( slice(1,_,2), slice(1,_,2))] != even_cells)
-        return false;
-    // original[:-3:-1, :-3,-1] == array( [[44, 43], [34, 33]])
-    if (original[make_tuple( slice(_,-3,-1), slice(_,-3,-1))] != lower_right_quadrant_reversed)
-        return false;
+    ASSERT_EQUAL(original[make_tuple( slice(1,_,2), slice(1,_,2))],even_cells);
 
-    return true;
+    // original[:-3:-1, :-3,-1] == array( [[44, 43], [34, 33]])
+    ASSERT_EQUAL(original[make_tuple( slice(_,-3,-1), slice(_,-3,-1))],lower_right_quadrant_reversed);
+
+    return str(1);
 }
 
 // Verify functions accepting a slice argument can be called
