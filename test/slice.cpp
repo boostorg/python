@@ -87,7 +87,7 @@ object check_numeric_array_rich_slice()
     // original[:-3:-1, :-3,-1] == array( [[44, 43], [34, 33]])
     ASSERT_EQUAL(original[make_tuple( slice(_,-3,-1), slice(_,-3,-1))],lower_right_quadrant_reversed);
 
-    return str(1);
+    return object(1);
 }
 
 // Verify functions accepting a slice argument can be called
