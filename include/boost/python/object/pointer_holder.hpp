@@ -179,7 +179,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t, bool
                 BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_UNFORWARD_LOCAL, nil)
             ))
     {
-        python::detail::initialize_wrapper(self, &*this->m_p);
+        python::detail::initialize_wrapper(self, get_pointer(this->m_p));
     }
 
 # undef N

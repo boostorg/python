@@ -1,4 +1,4 @@
-// Copyright Gottfried Ganﬂauge 2003.
+// Copyright Gottfried Ganﬂauge 2003..2006
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -11,6 +11,7 @@
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/lvalue_from_pytype.hpp>
 # include <boost/python/to_python_converter.hpp>
+# include <boost/python/converter/registrations.hpp>
 # include <boost/python/detail/dealloc.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/type_id.hpp>
@@ -44,9 +45,16 @@ struct opaque
 {
     opaque()
     {
-        type_object.tp_name = const_cast<char*>(type_id<Pointee*>().name());
-        converter::registry::insert(&extract, type_id<Pointee>());
-        converter::registry::insert(&wrap, type_id<Pointee*>());
+        if (type_object.tp_name == 0)
+        {
+            type_object.tp_name = const_cast<char*>(type_id<Pointee*>().name());
+            if (PyType_Ready (&type_object) < 0)
+            {
+                throw error_already_set();
+            }
+
+            register_self();
+        }
     }
     
     static opaque instance;
