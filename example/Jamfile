@@ -1,5 +1,6 @@
-# Copyright David Abrahams 2003. See accompanying LICENSE for terms
-# and conditions of use.
+# Copyright David Abrahams 2003-2006. Distributed under the Boost
+# Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 # This is the top of our own project tree
 project-root ;

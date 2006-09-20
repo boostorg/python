@@ -4,6 +4,8 @@
 //    Copyright (c) 2001, 2002 Python Software Foundation; All Rights
 //    Reserved
 //
+// boostinspect:nolicense (don't complain about the lack of a Boost license)
+//
 // Changes from the original:
 //  1. #includes <unistd.h> for Python 2.2.1
 //  2. Provides missing extern "C" wrapper for  "iterobject.h" and  "descrobject.h".
