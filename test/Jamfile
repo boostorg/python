@@ -1,6 +1,3 @@
-# Copyright David Abrahams 2006. Distributed under the Boost
-# Software License, Version 1.0. (See accompanying
-# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 # To run all tests quietly: jam test
 # To run all tests with verbose output: jam -sPYTHON_TEST_ARGS=-v test
@@ -173,10 +170,6 @@ bpl-test crossmod_exception
 
 [ bpl-test extract ]
 
-[
-bpl-test crossmod_opaque
-  : crossmod_opaque.py crossmod_opaque_a.cpp crossmod_opaque_b.cpp
-]
 [ bpl-test opaque ]
 [ bpl-test voidptr ]
 

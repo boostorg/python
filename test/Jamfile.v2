@@ -1,19 +1,10 @@
-# Copyright David Abrahams 2006. Distributed under the Boost
-# Software License, Version 1.0. (See accompanying
-# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
 rule py-run ( sources * )
 {
-    return [ run $(sources) /boost/python//boost_python /python//python
-      : # args
-      : # input files
-      : #requirements
-        <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
- 
-    ] ;
+    return [ run $(sources) /boost/python//boost_python /python//python ] ;
 }
 
 rule py-compile ( sources * )
@@ -26,6 +17,10 @@ rule py-compile-fail ( sources * )
     return [ compile-fail $(sources) /boost/python//boost_python ] ;
 }
 
+
+project :
+     requirements <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
+     ;
 
 
 #template py-unit-test
@@ -119,10 +114,6 @@ bpl-test crossmod_exception
 
 [ bpl-test extract ]
 
-[
-bpl-test crossmod_opaque
-  : crossmod_opaque.py crossmod_opaque_a.cpp crossmod_opaque_b.cpp
-]
 [ bpl-test opaque ]
 [ bpl-test voidptr ]
 

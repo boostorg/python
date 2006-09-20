@@ -39,33 +39,16 @@ void info(numeric::array const& z)
     z.info();
 }
 
-#define CHECK(expr)                                                         \
-{                                                                           \
-    object result;                                                          \
-    try { result = object(expr); }                                          \
-    catch(error_already_set)                                                \
-    {                                                                       \
-        PyObject* type, *value, *traceback;                                 \
-        PyErr_Fetch(&type, &value, &traceback);                             \
-        handle<> ty(type), v(value), tr(traceback);                         \
-        str format("exception type: %s\n");                                 \
-        format += "exception value: %s\n";                                  \
-        format += "traceback:\n%s" ;                                        \
-        result = format % boost::python::make_tuple(ty, v, tr);             \
-    }                                                                       \
-    check(result);                                                          \
-}
-
 // Tests which work on both Numeric and numarray array objects. Of
 // course all of the operators "just work" since numeric::array
 // inherits that behavior from object.
 void exercise(numeric::array& y, object check)
 {
     y[make_tuple(2,1)] = 3;
-    CHECK(y);
-    CHECK(y.astype('D'));
-    CHECK(y.copy());
-    CHECK(y.typecode());
+    check(y);
+    check(y.astype('D'));
+    check(y.copy());
+    check(y.typecode());
 }
 
 // numarray-specific tests.  check is a callable object which we can
@@ -73,43 +56,43 @@ void exercise(numeric::array& y, object check)
 // the results of corresponding python operations.
 void exercise_numarray(numeric::array& y, object check)
 {
-    CHECK(y.astype());
+    check(y.astype());
     
-    CHECK(y.argmax());
-    CHECK(y.argmax(0));
+    check(y.argmax());
+    check(y.argmax(0));
     
-    CHECK(y.argmin());
-    CHECK(y.argmin(0));
+    check(y.argmin());
+    check(y.argmin(0));
     
-    CHECK(y.argsort());
-    CHECK(y.argsort(1));
+    check(y.argsort());
+    check(y.argsort(1));
 
     y.byteswap();
-    CHECK(y);
+    check(y);
     
-    CHECK(y.diagonal());
-    CHECK(y.diagonal(1));
-    CHECK(y.diagonal(0, 1));
-    CHECK(y.diagonal(0, 1, 0));
+    check(y.diagonal());
+    check(y.diagonal(1));
+    check(y.diagonal(0, 1));
+    check(y.diagonal(0, 1, 0));
 
-    CHECK(y.is_c_array());
-    CHECK(y.isbyteswapped());
+    check(y.is_c_array());
+    check(y.isbyteswapped());
 
-    CHECK(y.trace());
-    CHECK(y.trace(1));
-    CHECK(y.trace(0, 1));
-    CHECK(y.trace(0, 1, 0));
+    check(y.trace());
+    check(y.trace(1));
+    check(y.trace(0, 1));
+    check(y.trace(0, 1, 0));
 
-    CHECK(y.new_('D'));
+    check(y.new_('D'));
     y.sort();
-    CHECK(y);
-    CHECK(y.type());
+    check(y);
+    check(y.type());
 
-    CHECK(y.factory(make_tuple(1.2, 3.4)));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double"));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(1,2,1)));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2,1,1), false));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2), true, true));
+    check(y.factory(make_tuple(1.2, 3.4)));
+    check(y.factory(make_tuple(1.2, 3.4), "Double"));
+    check(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(1,2,1)));
+    check(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2,1,1), false));
+    check(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2), true, true));
 }
 
 BOOST_PYTHON_MODULE(numpy_ext)

@@ -304,16 +304,13 @@ namespace
       static std::wstring extract(PyObject* intermediate)
       {
           std::wstring result(::PyObject_Length(intermediate), L' ');
-          if (!result.empty())
-          {
-              int err = PyUnicode_AsWideChar(
-                  (PyUnicodeObject *)intermediate
-                , &result[0]
-                , result.size());
+          int err = PyUnicode_AsWideChar(
+              (PyUnicodeObject *)intermediate
+            , result.size() ? &result[0] : 0
+            , result.size());
 
-              if (err == -1)
-                  throw_error_already_set();
-          }
+          if (err == -1)
+              throw_error_already_set();
           return result;
       }
   };

@@ -1,8 +1,9 @@
 # -*- coding: iso-latin-1 -*-
-# Copyright Gottfried Ganßauge 2003..2006.  Distributed under the Boost
-# Software License, Version 1.0. (See accompanying
-# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
+# Copyright Gottfried Ganßauge 2003. Permission to copy, use,
+# modify, sell and distribute this software is granted provided this
+# copyright notice appears in all copies. This software is provided
+# "as is" without express or implied warranty, and with no claim as
+# to its suitability for any purpose.
 
 """
 >>> from opaque_ext import *
@@ -65,11 +66,6 @@ RuntimeError: success
 >>> try: use2(get())
 ... except TypeError: pass
 ... else: print 'expected a TypeError'
-
-   This used to result in a segmentation violation
-
->>> type(get()) != type (get2())
-1
 """
 def run(args = None):
     import sys
