@@ -86,6 +86,17 @@ private:
         }
     }
 
+    void register_self() {
+        converter::registration const *existing =
+            converter::registry::query (type_id<Pointee*>());
+
+        if ((existing == 0) || (existing->m_to_python == 0))
+        {
+            converter::registry::insert(&extract, type_id<Pointee>());
+            converter::registry::insert(&wrap, type_id<Pointee*>());
+        }
+    }
+
     struct python_instance
     {
         PyObject_HEAD
