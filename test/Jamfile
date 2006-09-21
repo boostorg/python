@@ -173,6 +173,10 @@ bpl-test crossmod_exception
 
 [ bpl-test extract ]
 
+[
+bpl-test crossmod_opaque
+  : crossmod_opaque.py crossmod_opaque_a.cpp crossmod_opaque_b.cpp
+]
 [ bpl-test opaque ]
 [ bpl-test voidptr ]
 
