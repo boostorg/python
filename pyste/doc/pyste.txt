@@ -1,10 +1,9 @@
 [doc Pyste Documentation]
 
-[/
-  Distributed under
-  the Boost Software License, Version 1.0. (See accompanying file
-  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-]
+[/ Copyright 2003 Bruno da Silva de Oliveira and Joel de Guzman.
+Distributed under the Boost Software License, Version 1.0. (See
+accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt) ]
 
 [def GCCXML             [@http://www.gccxml.org GCCXML]]
 [def Boost.Python       [@../../index.html Boost.Python]]
