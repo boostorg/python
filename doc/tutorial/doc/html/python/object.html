@@ -179,12 +179,11 @@
         % x,y,z</tt> in Python, which is useful since there's no easy way to
         do that in std C++.
       </p>
-<div class="informaltable"><table class="table">
-<colgroup><col></colgroup>
-<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><b>Beware</b></span> the
-              common pitfall of forgetting that the constructors of most of Python's
-              mutable types make copies, just as in Python. </td></tr></tbody>
-</table></div>
+<p class="blurb">
+        <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><b>Beware</b></span> the common
+        pitfall of forgetting that the constructors of most of Python's mutable types
+        make copies, just as in Python.
+      </p>
 <p>
         Python:
       </p>
@@ -200,7 +199,7 @@
 </span><span class="identifier">d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span> <span class="special">=</span> <span class="number">3</span><span class="special">;</span>           <span class="comment">// modifies the copy
 </span></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id457004"></a>
+<a name="id461067"></a>
         class_&lt;T&gt; as objects
       </h2>
 <p>
@@ -298,14 +297,12 @@
         above creates a Python class derived from Python's <tt class="literal">int</tt>
         type which is associated with the C++ type passed as its first parameter.
       </p>
-<div class="informaltable"><table class="table">
-<colgroup><col></colgroup>
-<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>what is a scope?</b></span><br>
-              <br> The scope is a class that has an associated global Python object
-              which controls the Python namespace in which new extension classes
-              and wrapped functions will be defined as attributes. Details can be
-              found <a href="../../../../v2/scope.html" target="_top">here</a>.</td></tr></tbody>
-</table></div>
+<p class="blurb">
+        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>what is a scope?</b></span><br>
+        <br> The scope is a class that has an associated global Python object which
+        controls the Python namespace in which new extension classes and wrapped
+        functions will be defined as attributes. Details can be found <a href="../../../../v2/scope.html" target="_top">here</a>.
+      </p>
 <p>
         You can access those values in Python as
       </p>

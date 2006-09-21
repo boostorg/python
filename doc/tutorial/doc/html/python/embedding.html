@@ -43,7 +43,7 @@
       Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
     </p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id458605"></a>
+<a name="id462650"></a>
       Building embedded programs
     </h2>
 <p>
@@ -87,7 +87,7 @@ exe embedded_program # name of the executable
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id458703"></a>
+<a name="id462747"></a>
       Getting started
     </h2>
 <p>
@@ -96,9 +96,7 @@ exe embedded_program # name of the executable
     </p>
 <div class="orderedlist"><ol type="1">
 <li>
-        
-#include
-         <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
+        #include <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
 </li>
 <li>
         Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>()
@@ -134,7 +132,7 @@ exe embedded_program # name of the executable
         automate the process.
       </p>
 <a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id458870"></a>
+<a name="id462914"></a>
         Reference-counting handles and objects
       </h2>
 <p>
@@ -168,20 +166,17 @@ exe embedded_program # name of the executable
         a new reference is <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
         which we'll discuss in the next section.
       </p>
-<div class="informaltable"><table class="table">
-<colgroup><col></colgroup>
-<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Handle is a class
-              <span class="emphasis"><em>template</em></span>, so why haven't we been using any template
-              parameters?</b></span><br> <br> <tt class="literal">handle</tt> has a
-              single template parameter specifying the type of the managed object.
-              This type is <tt class="literal">PyObject</tt> 99% of the time, so the parameter
-              was defaulted to <tt class="literal">PyObject</tt> for convenience. Therefore
-              we can use the shorthand <tt class="literal">handle&lt;&gt;</tt> instead
-              of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
-              </td></tr></tbody>
-</table></div>
+<p class="blurb">
+        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Handle is a class <span class="emphasis"><em>template</em></span>,
+        so why haven't we been using any template parameters?</b></span><br> <br>
+        <tt class="literal">handle</tt> has a single template parameter specifying the
+        type of the managed object. This type is <tt class="literal">PyObject</tt> 99%
+        of the time, so the parameter was defaulted to <tt class="literal">PyObject</tt>
+        for convenience. Therefore we can use the shorthand <tt class="literal">handle&lt;&gt;</tt>
+        instead of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
+      </p>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id459217"></a>
+<a name="id463241"></a>
         Running Python code
       </h2>
 <p>
@@ -204,7 +199,7 @@ exe embedded_program # name of the executable
       </p>
 <div class="informaltable">
 <h4>
-<a name="id459396"></a>
+<a name="id463420"></a>
           <span class="table-title">Start symbols</span>
         </h4>
 <table class="table">
@@ -277,18 +272,16 @@ exe embedded_program # name of the executable
         This should create a file called 'hello.txt' in the current directory containing
         a phrase that is well-known in programming circles.
       </p>
-<div class="informaltable"><table class="table">
-<colgroup><col></colgroup>
-<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that
-              we wrap the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-              in a (nameless) <tt class="literal">handle</tt> even though we are not interested
-              in it. If we didn't do this, the the returned object would be kept
-              alive unnecessarily. Unless you want to be a Dr. Frankenstein, always
-              wrap <tt class="literal">PyObject*</tt>s in <tt class="literal">handle</tt>s.
-              </td></tr></tbody>
-</table></div>
+<p class="blurb">
+        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that we wrap
+        the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
+        in a (nameless) <tt class="literal">handle</tt> even though we are not interested
+        in it. If we didn't do this, the the returned object would be kept alive
+        unnecessarily. Unless you want to be a Dr. Frankenstein, always wrap <tt class="literal">PyObject*</tt>s
+        in <tt class="literal">handle</tt>s.
+      </p>
 <a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id459921"></a>
+<a name="id463926"></a>
         Beyond handles
       </h2>
 <p>
@@ -334,17 +327,15 @@ exe embedded_program # name of the executable
 
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 </pre>
-<div class="informaltable"><table class="table">
-<colgroup><col></colgroup>
-<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that
-              <tt class="literal">object</tt>'s member function to return the wrapped
-              <tt class="literal">PyObject*</tt> is called <tt class="literal">ptr</tt> instead
-              of <tt class="literal">get</tt>. This makes sense if you take into account
-              the different functions that <tt class="literal">object</tt> and <tt class="literal">handle</tt>
-              perform. </td></tr></tbody>
-</table></div>
+<p class="blurb">
+        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that <tt class="literal">object</tt>'s
+        member function to return the wrapped <tt class="literal">PyObject*</tt> is called
+        <tt class="literal">ptr</tt> instead of <tt class="literal">get</tt>. This makes sense
+        if you take into account the different functions that <tt class="literal">object</tt>
+        and <tt class="literal">handle</tt> perform.
+      </p>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id460562"></a>
+<a name="id464549"></a>
         Exception handling
       </h2>
 <p>
