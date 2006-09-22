@@ -53,7 +53,7 @@ struct opaque
                 throw error_already_set();
             }
 
-            register_self();
+            this->register_self();
         }
     }
     
@@ -86,7 +86,8 @@ private:
         }
     }
 
-    void register_self() {
+    void register_self()
+    {
         converter::registration const *existing =
             converter::registry::query (type_id<Pointee*>());
 
