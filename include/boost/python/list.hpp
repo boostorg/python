@@ -9,6 +9,7 @@
 
 # include <boost/python/object.hpp>
 # include <boost/python/converter/pytype_object_mgr_traits.hpp>
+# include <boost/python/ssize_t.hpp>
 
 namespace boost { namespace python { 
 
@@ -24,11 +25,11 @@ namespace detail
     
       long index(object_cref value) const; // return index of first occurrence of value
 
-      void insert(int index, object_cref); // insert object before index
+      void insert(ssize_t index, object_cref); // insert object before index
       void insert(object const& index, object_cref);
 
       object pop(); // remove and return item at index (default last)
-      object pop(long index);
+      object pop(ssize_t index);
       object pop(object const& index);
 
       void remove(object_cref value); // remove first occurrence of value
@@ -86,7 +87,7 @@ class list : public detail::list_base
     }
     
     template <class T>
-    void insert(int index, T const& x) // insert object before index
+    void insert(ssize_t index, T const& x) // insert object before index
     {
         base::insert(index, object(x));
     }
@@ -98,7 +99,7 @@ class list : public detail::list_base
     }
 
     object pop() { return base::pop(); }
-    object pop(long index) { return base::pop(index); }
+    object pop(ssize_t index) { return base::pop(index); }
     
     template <class T>
     object pop(T const& index)

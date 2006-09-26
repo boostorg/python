@@ -7,6 +7,7 @@
 # include <boost/python/detail/prefix.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/handle.hpp>
+# include <boost/python/ssize_t.hpp>
 # include <boost/implicit_cast.hpp>
 # include <string>
 # include <complex>
@@ -115,9 +116,9 @@ BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUn
 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x))
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),implicit_cast<int>(x.size())))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),implicit_cast<ssize_t>(x.size())))
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),implicit_cast<int>(x.size())))
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),implicit_cast<ssize_t>(x.size())))
 # endif 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, ::PyFloat_FromDouble(x))
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, ::PyFloat_FromDouble(x))
