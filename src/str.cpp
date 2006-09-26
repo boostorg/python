@@ -3,6 +3,7 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/str.hpp>
 #include <boost/python/extract.hpp>
+#include <boost/python/ssize_t.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -23,13 +24,13 @@ str_base::str_base(const char* s)
 
 namespace {
 
-    Py_ssize_t str_size_as_py_ssize_t(std::size_t n)
+    ssize_t str_size_as_py_ssize_t(std::size_t n)
     {
-      if (n > PY_SSIZE_T_MAX)
+      if (n > ssize_t_max)
       {
-          throw std::range_error("str size > PY_SSIZE_T_MAX");
+          throw std::range_error("str size > ssize_t_max");
       }
-      return static_cast<Py_ssize_t>(n);
+      return static_cast<ssize_t>(n);
     }
 
 } // namespace <anonymous>
