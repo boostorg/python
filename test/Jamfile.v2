@@ -82,6 +82,7 @@ bpl-test crossmod_exception
 
  [ bpl-test test_pointer_adoption ]
  [ bpl-test operators ]
+ [ bpl-test operators_wrapper ]
  [ bpl-test callbacks ]
  [ bpl-test defaults ]
 
