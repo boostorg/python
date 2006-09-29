@@ -205,7 +205,7 @@ namespace aux
         , bool savespace
         , object typecode)
   {
-      return attr("array")(buffer, type, shape, copy, savespace, typecode);
+      return attr("factory")(buffer, type, shape, copy, savespace, typecode);
   }
 
   object array_base::getflat() const

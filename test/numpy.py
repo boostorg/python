@@ -87,11 +87,11 @@ def _numarray_tests():
     >>> check(y);
     >>> check(y.type());
 
-    >>> check(y.array((1.2, 3.4)));
-    >>> check(y.array((1.2, 3.4), "Double"));
-    >>> check(y.array((1.2, 3.4), "Double", (1,2,1)));
-    >>> check(y.array((1.2, 3.4), "Double", (2,1,1), false));
-    >>> check(y.array((1.2, 3.4), "Double", (2,), true, true));
+    >>> check(y.factory((1.2, 3.4)));
+    >>> check(y.factory((1.2, 3.4), "Double"));
+    >>> check(y.factory((1.2, 3.4), "Double", (1,2,1)));
+    >>> check(y.factory((1.2, 3.4), "Double", (2,1,1), false));
+    >>> check(y.factory((1.2, 3.4), "Double", (2,), true, true));
     
     >>> p.results
     []
