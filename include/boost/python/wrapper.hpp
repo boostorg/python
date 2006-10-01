@@ -14,10 +14,10 @@ namespace boost { namespace python {
 template <class T>
 class wrapper : public detail::wrapper_base
 {
-#   if defined(BOOST_PYTHON_NO_SFINAE)
  public:
+    // Do not touch this implementation detail!
     typedef T _wrapper_wrapped_type_;
-#   endif 
+
  protected:
     override get_override(char const* name) const
     {
