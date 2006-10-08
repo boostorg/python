@@ -18,6 +18,7 @@
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/python/refcount.hpp>
+# include <boost/python/detail/unwrap_wrapper.hpp>
 # include <string>
 # include <complex>
 
