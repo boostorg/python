@@ -90,7 +90,12 @@ void array::set_module_and_type(char const* package_name, char const* type_attri
     module_name = package_name ? package_name : "" ;
     type_name = type_attribute_name ? type_attribute_name : "" ;
 }
-  
+
+std::string array::get_module_name()
+{
+    load(false);
+    return module_name;
+}
 
 namespace aux
 {
@@ -173,9 +178,9 @@ namespace aux
       return extract<bool>(attr("isbyteswapped")());
   }
   
-  object array_base::new_(object type) const
+  array array_base::new_(object type) const
   {
-      return attr("new")(type);
+      return extract<array>(attr("new")(type))();
   }
   
   void array_base::sort()
@@ -197,15 +202,17 @@ namespace aux
   {
       return extract<char>(attr("typecode")());
   }
-  
-  object array_base::factory(object const& buffer
-        , object const& type
-        , object const& shape
+
+  object array_base::factory(
+          object const& sequence
+        , object const& typecode
         , bool copy
         , bool savespace
-        , object typecode)
+        , object type
+        , object shape
+  )
   {
-      return attr("factory")(buffer, type, shape, copy, savespace, typecode);
+      return attr("factory")(sequence, typecode, copy, savespace, type, shape);
   }
 
   object array_base::getflat() const

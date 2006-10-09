@@ -7,6 +7,7 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/str.hpp>
 
 using namespace boost::python;
 
@@ -39,19 +40,28 @@ void info(numeric::array const& z)
     z.info();
 }
 
+namespace
+{
+  object handle_error()
+  {
+      PyObject* type, *value, *traceback;                                 
+      PyErr_Fetch(&type, &value, &traceback);                             
+      handle<> ty(type), v(value), tr(traceback);
+      return object("exception");
+      str format("exception type: %sn");                                 
+      format += "exception value: %sn";                                  
+      format += "traceback:n%s" ;                                        
+      object ret = format % boost::python::make_tuple(ty, v, tr);
+      return ret;
+  }
+}
 #define CHECK(expr)                                                         \
 {                                                                           \
     object result;                                                          \
     try { result = object(expr); }                                          \
     catch(error_already_set)                                                \
     {                                                                       \
-        PyObject* type, *value, *traceback;                                 \
-        PyErr_Fetch(&type, &value, &traceback);                             \
-        handle<> ty(type), v(value), tr(traceback);                         \
-        str format("exception type: %s\n");                                 \
-        format += "exception value: %s\n";                                  \
-        format += "traceback:\n%s" ;                                        \
-        result = format % boost::python::make_tuple(ty, v, tr);             \
+        result = handle_error();                                            \
     }                                                                       \
     check(result);                                                          \
 }
@@ -73,7 +83,7 @@ void exercise(numeric::array& y, object check)
 // the results of corresponding python operations.
 void exercise_numarray(numeric::array& y, object check)
 {
-    CHECK(y.astype());
+    CHECK(str(y));
     
     CHECK(y.argmax());
     CHECK(y.argmax(0));
@@ -89,7 +99,7 @@ void exercise_numarray(numeric::array& y, object check)
     
     CHECK(y.diagonal());
     CHECK(y.diagonal(1));
-    CHECK(y.diagonal(0, 1));
+    CHECK(y.diagonal(0, 0));
     CHECK(y.diagonal(0, 1, 0));
 
     CHECK(y.is_c_array());
@@ -97,19 +107,22 @@ void exercise_numarray(numeric::array& y, object check)
 
     CHECK(y.trace());
     CHECK(y.trace(1));
-    CHECK(y.trace(0, 1));
+    CHECK(y.trace(0, 0));
     CHECK(y.trace(0, 1, 0));
 
-    CHECK(y.new_('D'));
+    CHECK(y.new_("D").getshape());
+    CHECK(y.new_("D").type());
     y.sort();
     CHECK(y);
     CHECK(y.type());
 
     CHECK(y.factory(make_tuple(1.2, 3.4)));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double"));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(1,2,1)));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2,1,1), false));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "Double", make_tuple(2), true, true));
+    CHECK(y.factory(make_tuple(1.2, 3.4), "f8"));
+    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true));
+    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true, false));
+    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true, false, object()));
+    CHECK (y.factory(make_tuple(1.2, 3.4), "f8", true, false, object(), make_tuple(1,2,1)));
+
 }
 
 BOOST_PYTHON_MODULE(numpy_ext)
@@ -119,6 +132,7 @@ BOOST_PYTHON_MODULE(numpy_ext)
     def("exercise", exercise);
     def("exercise_numarray", exercise_numarray);
     def("set_module_and_type", &numeric::array::set_module_and_type);
+    def("get_module_name", &numeric::array::get_module_name);
     def("info", info);
 }
 
