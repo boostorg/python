@@ -120,9 +120,31 @@ class _printer(object):
             print '  Expected:\n %s\n  but the C++ interface gave:\n %s' % (x, self.results[0])
         del self.results[0]
 
+def _count_failures(test_names = ('numeric_tests',)):
+    '''Given a sequence of test function names, run all the doctests associated
+    with each function and return the total number of failures.  Works portably
+    across versions of doctest.'''
+    
+    import doctest
+    if hasattr(doctest, 'DocTestFinder'):
+        # Newer doctest fails to work with the old idiom, even though it's only
+        # marked "deprecated."
+        failures = 0
+        for n in test_names:
+            for t in doctest.DocTestFinder().find(eval(n)):
+                print 'test:', t
+                failures += doctest.DocTestRunner().run(t)[0]
+        return failures
+    
+    else:
+        global __test__
+        __test__ = {}
+        for t in test_names:
+            __test__[t] = eval(t)
+        return doctest.testmod(sys.modules.get(__name__))[0]
+    
 def _run(args = None):
     import sys
-    import doctest
 
     if args is not None:
         sys.argv = args
@@ -158,9 +180,6 @@ def _run(args = None):
 
     failures = 0
 
-    find = doctest.DocTestFinder().find
-    run = doctest.DocTestRunner().run
-    
     #
     # Run tests 4 different ways if both modules are installed, just
     # to show that set_module_and_type() is working properly
@@ -170,37 +189,29 @@ def _run(args = None):
     print 'testing default extension module:', \
           numpy_ext.get_module_name() or '[numeric support not installed]'
 
-    for test in find(numeric_tests):
-        failures += run(test)[0]
+    failures += _count_failures()
         
     # test against Numeric if installed
     if has_numeric:
         print 'testing Numeric module explicitly'
         numpy_ext.set_module_and_type('Numeric', 'ArrayType')
         
-        for test in find(numeric_tests):
-            failures += run(test)[0]
+        failures += _count_failures()
             
     global __test__
     if has_numarray:
-        # Add the _numarray_tests to the list of things to test in
-        # this case.
-        __test__ = { 'numarray_tests':_numarray_tests,
-                     'numeric_tests': numeric_tests }
         print 'testing numarray module explicitly'
         numpy_ext.set_module_and_type('numarray', 'NDArray')
-        
-        for test in find(numeric_tests) + find(_numarray_tests):
-            failures += run(test)[0]
-        del __test__
+        # Add the _numarray_tests to the list of things to test in
+        # this case.
+        failures += _count_failures(('_numarray_tests', 'numeric_tests'))
 
     # see that we can go back to the default
     numpy_ext.set_module_and_type('', '')
     print 'testing default module again:', \
           numpy_ext.get_module_name() or '[numeric support not installed]'
     
-    for test in find(numeric_tests):
-        failures += run(test)[0]
+    failures += _count_failures()
     
     return failures
     
