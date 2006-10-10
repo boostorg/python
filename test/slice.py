@@ -12,23 +12,20 @@
 ...     print "test passed"
 ...
 test passed
->>> have_numeric = 0
 >>> try:
 ...     from Numeric import array
-...     have_numeric = 1
 ... except:
-...     pass
-...
->>> try:
-...     from numarray import array
-...     have_numeric = 1
-... except:
-...     pass
-...
->>> if have_numeric:
-...     check_numeric_array_rich_slice()
-... else:
 ...     print 1
+... else:
+...     check_numeric_array_rich_slice('Numeric', 'ArrayType', lambda x:x)
+...
+1
+>>> try:
+...     from numarray import array, all
+... except:
+...     print 1
+... else:
+...     check_numeric_array_rich_slice('numarray', 'NDArray', all)
 ...
 1
 >>> import sys

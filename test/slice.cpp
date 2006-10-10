@@ -48,14 +48,17 @@ bool check_string_rich_slice()
 // contents) but Numeric complains that treating an array as a boolean
 // value doesn't make any sense.
 #define ASSERT_EQUAL( e1, e2 ) \
-if ((e1) != (e2)) \
-    return object("assertion failed: " #e1 " == " #e2 "\nLHS:\n") /*+ str(e1) + "\nRHS:\n" + str(e2)*/; \
+    if (!all((e1) == (e2)))                                                             \
+        return object("assertion failed: " #e1 " == " #e2 "\nLHS:\n") + str(e1) + "\nRHS:\n" + str(e2); \
 else
 
 // These tests work with Python 2.2, but you must have Numeric installed.
-object check_numeric_array_rich_slice()
+object check_numeric_array_rich_slice(
+    char const* module_name, char const* array_type_name, object all)
 {
     using numeric::array;
+    array::set_module_and_type(module_name, array_type_name);
+    
     array original = array( make_tuple( make_tuple( 11, 12, 13, 14),
                                         make_tuple( 21, 22, 23, 24),
                                         make_tuple( 31, 32, 33, 34),
