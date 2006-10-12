@@ -73,17 +73,11 @@ object_operators<U>::operator!() const
 
 # define BOOST_PYTHON_COMPARE_OP(op, opid)                              \
 template <class L, class R>                                             \
-BOOST_PYTHON_BINARY_RETURN(bool) operator op(L const& l, R const& r)    \
+BOOST_PYTHON_BINARY_RETURN(object) operator op(L const& l, R const& r)    \
 {                                                                       \
-    return PyObject_RichCompareBool(                                    \
+    return PyObject_RichCompare(                                    \
         object(l).ptr(), object(r).ptr(), opid);                        \
 }
-BOOST_PYTHON_COMPARE_OP(>, Py_GT)
-BOOST_PYTHON_COMPARE_OP(>=, Py_GE)
-BOOST_PYTHON_COMPARE_OP(<, Py_LT)
-BOOST_PYTHON_COMPARE_OP(<=, Py_LE)
-BOOST_PYTHON_COMPARE_OP(==, Py_EQ)
-BOOST_PYTHON_COMPARE_OP(!=, Py_NE)
 # undef BOOST_PYTHON_COMPARE_OP
     
 # define BOOST_PYTHON_BINARY_OPERATOR(op)                               \
@@ -93,6 +87,12 @@ BOOST_PYTHON_BINARY_RETURN(object) operator op(L const& l, R const& r)  \
 {                                                                       \
     return object(l) op object(r);                                      \
 }
+BOOST_PYTHON_BINARY_OPERATOR(>)
+BOOST_PYTHON_BINARY_OPERATOR(>=)
+BOOST_PYTHON_BINARY_OPERATOR(<)
+BOOST_PYTHON_BINARY_OPERATOR(<=)
+BOOST_PYTHON_BINARY_OPERATOR(==)
+BOOST_PYTHON_BINARY_OPERATOR(!=)
 BOOST_PYTHON_BINARY_OPERATOR(+)
 BOOST_PYTHON_BINARY_OPERATOR(-)
 BOOST_PYTHON_BINARY_OPERATOR(*)

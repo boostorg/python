@@ -1,3 +1,4 @@
+Warning: No xauth data; using fake authentication data for X11 forwarding.
 #include <boost/python.hpp>
 #include <boost/python/slice.hpp>
 #include <boost/python/str.hpp>

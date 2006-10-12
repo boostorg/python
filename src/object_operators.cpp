@@ -8,6 +8,24 @@
 
 namespace boost { namespace python { namespace api {
 
+# define BOOST_PYTHON_COMPARE_OP(op, opid)                              \
+BOOST_PYTHON_DECL object operator op(object const& l, object const& r)  \
+{                                                                       \
+    return object(                                                      \
+        detail::new_reference(                                          \
+            PyObject_RichCompare(                                       \
+                l.ptr(), r.ptr(), opid))                                \
+            );                                                          \
+}
+BOOST_PYTHON_COMPARE_OP(>, Py_GT)
+BOOST_PYTHON_COMPARE_OP(>=, Py_GE)
+BOOST_PYTHON_COMPARE_OP(<, Py_LT)
+BOOST_PYTHON_COMPARE_OP(<=, Py_LE)
+BOOST_PYTHON_COMPARE_OP(==, Py_EQ)
+BOOST_PYTHON_COMPARE_OP(!=, Py_NE)
+# undef BOOST_PYTHON_COMPARE_OP
+    
+
 #define BOOST_PYTHON_BINARY_OPERATOR(op, name)                          \
 BOOST_PYTHON_DECL object operator op(object const& l, object const& r)  \
 {                                                                       \
