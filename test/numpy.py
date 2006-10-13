@@ -151,22 +151,18 @@ def _run(args = None):
 
     # See which of the numeric modules are installed
     has_numeric = 0
-    try:
-        import Numeric
-        m = Numeric
+    try: import Numeric
+    except ImportError: pass
+    else:
         has_numeric = 1
-    except ImportError:
-      global numeric_tests
-      numeric_tests = None
+        m = Numeric
 
     has_numarray = 0
-    try:
-        import numarray
-        m = numarray
+    try: import numarray
+    except ImportError: pass
+    else:
         has_numarray = 1
-    except ImportError:
-      global _numarray_tests
-      _numarray_tests = None
+        m = numarray
     
     # Bail if neither one is installed
     if not (has_numeric or has_numarray):
