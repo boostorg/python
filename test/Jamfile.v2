@@ -68,7 +68,7 @@ bpl-test crossmod_exception
 [ bpl-test minimal ]
 [ bpl-test args ]
 [ bpl-test raw_ctor ]
-[ bpl-test numpy ]
+[ bpl-test numpy : printer.py numeric_tests.py numarray_tests.py numpy.py numpy.cpp ]
 [ bpl-test enum ]
 [ bpl-test exception_translator ]
 [ bpl-test pearu1 : test_cltree.py cltree.cpp ]
