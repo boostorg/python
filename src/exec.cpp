@@ -13,7 +13,7 @@ namespace boost
 namespace python 
 {
 
-object exec(str string, object global, object local)
+object BOOST_PYTHON_DECL exec(str string, object global, object local)
 {
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *s = python::extract<char *>(string);
@@ -25,7 +25,7 @@ object exec(str string, object global, object local)
 // Execute python source code from file filename.
 // global and local are the global and local scopes respectively,
 // used during execution.
-object exec_file(str filename, object global, object local)
+object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
 {
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *f = python::extract<char *>(filename);
