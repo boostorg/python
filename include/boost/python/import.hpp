@@ -14,7 +14,7 @@ namespace python
 {
 
 // Import the named module and return a reference to it.
-object import(str name);
+object BOOST_PYTHON_DECL import(str name);
 
 }
 }

@@ -13,7 +13,7 @@ namespace boost
 namespace python 
 {
 
-object import(str name)
+object BOOST_PYTHON_DECL import(str name)
 {
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *n = python::extract<char *>(name);
