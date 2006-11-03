@@ -23,6 +23,7 @@
 # include <boost/mpl/int.hpp>
 # include <boost/mpl/push_front.hpp>
 # include <boost/mpl/pop_front.hpp>
+# include <boost/mpl/assert.hpp>
 
 namespace boost { namespace python {
 
@@ -103,12 +104,14 @@ namespace detail
       
       // If the BasePolicy_ supplied a result converter it would be
       // ignored; issue an error if it's not the default.
-      BOOST_STATIC_ASSERT((
-          is_same<
+      BOOST_MPL_ASSERT_MSG(
+         (is_same<
               typename BasePolicy_::result_converter
             , default_result_converter
-          >::value
-      ));
+          >::value)
+        , MAKE_CONSTRUCTOR_SUPPLIES_ITS_OWN_RESULT_CONVERTER_THAT_WOULD_OVERRIDE_YOURS
+        , (typename BasePolicy_::result_converter)
+      );
       
       typedef constructor_result_converter result_converter;
       typedef offset_args<typename BasePolicy_::argument_package, mpl::int_<1> > argument_package;
