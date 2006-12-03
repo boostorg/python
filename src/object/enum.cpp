@@ -32,10 +32,11 @@ extern "C"
 {
     static PyObject* enum_repr(PyObject* self_)
     {
+        const char *mod = PyString_AsString(PyObject_GetAttrString( self_, "__module__"));
         enum_object* self = downcast<enum_object>(self_);
         if (!self->name)
         {
-            return PyString_FromFormat("%s(%ld)", self_->ob_type->tp_name, PyInt_AS_LONG(self_));
+            return PyString_FromFormat("%s.%s(%ld)", mod, self_->ob_type->tp_name, PyInt_AS_LONG(self_));
         }
         else
         {
@@ -43,7 +44,7 @@ extern "C"
             if (name == 0)
                 return 0;
             
-            return PyString_FromFormat("%s.%s", self_->ob_type->tp_name, name);
+            return PyString_FromFormat("%s.%s.%s", mod, self_->ob_type->tp_name, name);
         }
     }
 
@@ -141,10 +142,9 @@ namespace
 
       object module_name = module_prefix();
       if (module_name)
-          module_name += '.';
+         d["__module__"] = module_name;
       
-      object result = (object(metatype))(
-          module_name + name, make_tuple(base), d);
+      object result = (object(metatype))(name, make_tuple(base), d);
       
       scope().attr(name) = result;
 
