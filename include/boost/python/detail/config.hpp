@@ -125,7 +125,7 @@
 //
 // If we're importing code from a dll, then tell auto_link.hpp about it:
 //
-#if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_PYTHON_DYN_LINK)
+#ifdef BOOST_PYTHON_DYNAMIC_LIB
 #  define BOOST_DYN_LINK
 #endif
 //
