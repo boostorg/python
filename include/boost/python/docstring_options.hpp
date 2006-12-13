@@ -62,7 +62,7 @@ class BOOST_PYTHON_DECL docstring_options : boost::noncopyable
         show_signatures_ = true;
       }
 
-      friend class objects::function;
+      friend struct objects::function;
 
   private:
       static volatile bool show_user_defined_;
