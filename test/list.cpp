@@ -9,6 +9,7 @@
 #include <boost/python/list.hpp>
 #include <boost/python/make_function.hpp>
 #include <boost/lexical_cast.hpp>
+#define BOOST_ENABLE_ASSERT_HANDLER
 #include <boost/assert.hpp>
 #include "test_class.hpp"
 
@@ -143,3 +144,4 @@ BOOST_PYTHON_MODULE(list_ext)
         ;
 }
 
+#include "module_tail.cpp"

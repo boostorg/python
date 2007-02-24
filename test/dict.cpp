@@ -2,6 +2,7 @@
 // Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/module.hpp>
+#define BOOST_ENABLE_ASSERT_HANDLER
 #include <boost/assert.hpp>
 
 #include <boost/python/def.hpp>
@@ -86,3 +87,5 @@ BOOST_PYTHON_MODULE(dict_ext)
     def("work_with_dict", work_with_dict);
     def("test_templates", test_templates);
 }
+
+#include "module_tail.cpp"
