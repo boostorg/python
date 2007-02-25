@@ -7,6 +7,8 @@
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/str.hpp>
+#define BOOST_ENABLE_ASSERT_HANDLER
+#include <boost/assert.hpp>
 
 using namespace boost::python;
 
@@ -74,3 +76,4 @@ BOOST_PYTHON_MODULE(str_ext)
     def("work_with_string",work_with_string);
 }
 
+#include "module_tail.cpp"
