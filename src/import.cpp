@@ -17,7 +17,7 @@ object BOOST_PYTHON_DECL import(str name)
 {
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *n = python::extract<char *>(name);
-  python::handle<> module(python::borrowed(PyImport_AddModule(n)));
+  python::handle<> module(python::borrowed(PyImport_ImportModule(n)));
   return python::object(module);
 }
 

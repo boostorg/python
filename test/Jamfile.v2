@@ -151,6 +151,7 @@ bpl-test crossmod_opaque
     /boost/python//boost_python ]
 [ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
+[ py-run import_.cpp ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
 # {
