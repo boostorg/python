@@ -7,7 +7,7 @@
 
 #include <boost/detail/lightweight_test.hpp>
 #include <iostream>
-
+#include <sstream>
 
 namespace bpl = boost::python;
 
@@ -22,9 +22,23 @@ void import_test()
 
 int main(int argc, char **argv)
 {
+  BOOST_TEST(argc == 2);
+
   // Initialize the interpreter
   Py_Initialize();
+  
+  // Retrieve the main module
+  bpl::object main = bpl::import("__main__");
+  
+  // Retrieve the main module's namespace
+  bpl::object global(main.attr("__dict__"));
 
+  // Inject search path for import_ module
+  std::ostringstream script;
+  script << "import sys, os.path\n"
+         << "path = os.path.dirname('" << argv[1] << "')\n"
+         << "sys.path.insert(0, path)\n";
+  bpl::object result = bpl::exec(bpl::str(script.str()), global, global);
   if (bpl::handle_exception(import_test))
   {
     if (PyErr_Occurred())
