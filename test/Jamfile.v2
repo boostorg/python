@@ -5,11 +5,11 @@
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
-rule py-run ( sources * )
+rule py-run ( sources * : input-file ? )
 {
     return [ run $(sources) /boost/python//boost_python /python//python
       : # args
-      : # input files
+      : $(input-file)
       : #requirements
         <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
  
@@ -151,7 +151,7 @@ bpl-test crossmod_opaque
     /boost/python//boost_python ]
 [ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
-[ py-run import_.cpp ]
+[ py-run import_.cpp : import_.py ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
 # {
