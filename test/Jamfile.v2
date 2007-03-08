@@ -45,7 +45,13 @@ test-suite python
       : # requirements
         <define>BOOST_PYTHON_STATIC_MODULE
   ]
-
+[
+    run exec.cpp ../build//boost_python/<link>shared /python//python
+      : # program args
+      : exec.py
+      : # requirements
+      : shared-exec
+  ]
 [
 bpl-test crossmod_exception
   : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
