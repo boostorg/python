@@ -66,8 +66,7 @@ lib boost_python
     :   # default build
         <link>shared
     :   # usage requirements
-        <link>static:<define>BOOST_PYTHON_STATIC_LIB 
-        <link>shared:<define>BOOST_PYTHON_DYNAMIC_LIB
+        <link>static:<define>BOOST_PYTHON_STATIC_LIB
     ;
 }
 else
