@@ -46,6 +46,14 @@ test-suite python
       : exec-dynamic # target-name
   ]
 
+#   [
+#     run import_.cpp ../build//boost_python /python//python
+#       : # program args
+#       : import_.py # input files
+#       : # requirements
+#       : # target-name
+#   ]
+
 [
 bpl-test crossmod_exception
   : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
