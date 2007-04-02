@@ -8,7 +8,7 @@
 // The rule is that <Python.h> must be included before any system
 // headers (so it can get control over some awful macros).
 // Unfortunately, Boost.Python needs to #include <limits.h> first, at
-// least... but this gets us as close as possible. 
+// least... but this gets us as close as possible.
 
 # include <boost/python/detail/wrap_python.hpp>
 # include <boost/python/detail/config.hpp>
