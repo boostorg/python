@@ -63,10 +63,13 @@ lib boost_python
         # import library, as usage requirements.
         <library>/python//python_for_extensions
       
+        <python-debugging>on:<define>BOOST_DEBUG_PYTHON
+      
     :   # default build
         <link>shared
     :   # usage requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB
+        <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
 }
 else
