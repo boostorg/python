@@ -141,7 +141,7 @@ Configuring Boost.Build
 
 As described in the `Boost.Build reference manual`__, a file called
 ``user-config.jam`` in your home
-directory (``%HOMEDRIVE%%HOMEPATH%`` on Windows) is used to
+directory [#home-dir]_ is used to
 describe the build resources available to the build system.  You'll
 need to tell it about your Python installation.
 
@@ -161,14 +161,14 @@ The Basics
 
 If you have a fairly “standard” python installation for your
 platform, there's very little you need to do to describe it.
-Simply adding ::
+Simply having ::
 
   
-  import toolset : using ;
+  import toolset : using ; 
   using python ;
 
-to a ``user-config.jam`` file in your home directory [#home-dir]_ 
-should be enough.
+in a ``user-config.jam`` file in your home directory [#home-dir]_ 
+should be enough. [#user-config.jam]_
 
 Advanced Configuration
 ----------------------
@@ -254,7 +254,7 @@ significant.
          ;
 
 - You can set up your user-config.jam so a bjam built under Windows 
-  can build/test both windows and cygwin python extensions.  Just pass
+  can build/test both Windows and Cygwin_ python extensions.  Just pass
   ``<target-os>cygwin`` in the ``condition`` parameter
   for the cygwin python installation::
 
@@ -270,7 +270,7 @@ significant.
     bjam target-os=cygwin toolset=gcc 
 
   This is supposed to work the other way, too (targeting windows
-  python with a cygwin bjam) but it seems as though the support in
+  python with a Cygwin_ bjam) but it seems as though the support in
   Boost.Build's toolsets for building that way is broken at the
   time of this writing.
 
@@ -288,6 +288,8 @@ significant.
   will yield an error.  Instead, you'll need to write::
 
     bjam target-os=cygwin/python=2.4
+
+.. _Cygwin: http://cygwin.com
 
 __ http://zigzag.cs.msu.su/boost.build/wiki/AlternativeSelection
 
@@ -335,8 +337,10 @@ __ http://zigzag.cs.msu.su/boost.build/wiki/AlternativeSelection
    toolset, and you might need handle both explicitly if you also
    have a MinGW GCC installed.
 
-.. [#home-dir] Create the ``user-config.jam`` file if you don't
-   already have one.  Windows users, your home directory can be
+.. [#user-config.jam] Create the ``user-config.jam`` file if you don't
+   already have one.  
+
+.. [#home-dir] Windows users, your home directory can be
    found by typing::
 
      ECHO %HOMEDRIVE%%HOMEPATH%

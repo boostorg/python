@@ -35,6 +35,6 @@ run-test test3 : std_pair_ext test_std_pair.py ;
 # A target that runs all the tests
 alias test : test1 test2 test3 ;
 
-# Don't run tests by default
+# Only run tests when explicitly requested
 explicit test test1 test2 test3 ;
 
