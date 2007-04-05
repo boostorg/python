@@ -18,28 +18,35 @@
 <div class="contents sidebar small topic">
 <p class="topic-title first"><a id="contents" name="contents">Contents</a></p>
 <ul class="auto-toc simple">
-<li><a class="reference" href="#requirements" id="id19" name="id19">1&nbsp;&nbsp;&nbsp;Requirements</a></li>
-<li><a class="reference" href="#background" id="id20" name="id20">2&nbsp;&nbsp;&nbsp;Background</a></li>
-<li><a class="reference" href="#getting-boost-python-binaries" id="id21" name="id21">3&nbsp;&nbsp;&nbsp;Getting Boost.Python Binaries</a></li>
-<li><a class="reference" href="#choosing-a-boost-python-library-binary" id="id22" name="id22">4&nbsp;&nbsp;&nbsp;Choosing a Boost.Python Library Binary</a><ul class="auto-toc">
-<li><a class="reference" href="#the-dynamic-binary" id="id23" name="id23">4.1&nbsp;&nbsp;&nbsp;The Dynamic Binary</a></li>
-<li><a class="reference" href="#the-static-binary" id="id24" name="id24">4.2&nbsp;&nbsp;&nbsp;The Static Binary</a></li>
+<li><a class="reference" href="#requirements" id="id20" name="id20">1&nbsp;&nbsp;&nbsp;Requirements</a></li>
+<li><a class="reference" href="#background" id="id21" name="id21">2&nbsp;&nbsp;&nbsp;Background</a></li>
+<li><a class="reference" href="#getting-boost-python-binaries" id="id22" name="id22">3&nbsp;&nbsp;&nbsp;Getting Boost.Python Binaries</a><ul class="auto-toc">
+<li><a class="reference" href="#no-install-quickstart" id="id23" name="id23">3.1&nbsp;&nbsp;&nbsp;No-Install Quickstart</a></li>
+<li><a class="reference" href="#installing-boost-python-on-your-system" id="id24" name="id24">3.2&nbsp;&nbsp;&nbsp;Installing Boost.Python on your System</a></li>
 </ul>
 </li>
-<li><a class="reference" href="#configuring-boost-build" id="id25" name="id25">5&nbsp;&nbsp;&nbsp;Configuring Boost.Build</a><ul class="auto-toc">
-<li><a class="reference" href="#the-basics" id="id26" name="id26">5.1&nbsp;&nbsp;&nbsp;The Basics</a></li>
-<li><a class="reference" href="#advanced-configuration" id="id27" name="id27">5.2&nbsp;&nbsp;&nbsp;Advanced Configuration</a></li>
-<li><a class="reference" href="#advanced-configuration-examples" id="id28" name="id28">5.3&nbsp;&nbsp;&nbsp;Advanced Configuration Examples</a></li>
+<li><a class="reference" href="#configuring-boost-build" id="id25" name="id25">4&nbsp;&nbsp;&nbsp;Configuring Boost.Build</a></li>
+<li><a class="reference" href="#building-an-extension-module" id="id26" name="id26">5&nbsp;&nbsp;&nbsp;Building an Extension Module</a></li>
+<li><a class="reference" href="#testing" id="id27" name="id27">6&nbsp;&nbsp;&nbsp;Testing</a></li>
+<li><a class="reference" href="#advanced-configuration" id="id28" name="id28">7&nbsp;&nbsp;&nbsp;Advanced Configuration</a><ul class="auto-toc">
+<li><a class="reference" href="#python-configuration-parameters" id="id29" name="id29">7.1&nbsp;&nbsp;&nbsp;Python Configuration Parameters</a></li>
+<li><a class="reference" href="#examples" id="id30" name="id30">7.2&nbsp;&nbsp;&nbsp;Examples</a></li>
 </ul>
 </li>
+<li><a class="reference" href="#choosing-a-boost-python-library-binary" id="id31" name="id31">8&nbsp;&nbsp;&nbsp;Choosing a Boost.Python Library Binary</a><ul class="auto-toc">
+<li><a class="reference" href="#the-dynamic-binary" id="id32" name="id32">8.1&nbsp;&nbsp;&nbsp;The Dynamic Binary</a></li>
+<li><a class="reference" href="#the-static-binary" id="id33" name="id33">8.2&nbsp;&nbsp;&nbsp;The Static Binary</a></li>
+</ul>
+</li>
+<li><a class="reference" href="#notes-for-mingw-and-cygwin-with-mno-cygwin-gcc-users" id="id34" name="id34">9&nbsp;&nbsp;&nbsp;Notes for MinGW (and Cygwin with -mno-cygwin) GCC Users</a></li>
 </ul>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id19" id="requirements" name="requirements">1&nbsp;&nbsp;&nbsp;Requirements</a></h1>
-<p>Boost.Python requires <a class="reference" href="http://www.python.org/2.2">Python 2.2</a><a class="footnote-reference" href="#id15" id="id2" name="id2"><sup>1</sup></a> <em>or</em> <a class="reference" href="http://www.python.org"><em>newer</em></a>.</p>
+<h1><a class="toc-backref" href="#id20" id="requirements" name="requirements">1&nbsp;&nbsp;&nbsp;Requirements</a></h1>
+<p>Boost.Python requires <a class="reference" href="http://www.python.org/2.2">Python 2.2</a><a class="footnote-reference" href="#id16" id="id2" name="id2"><sup>1</sup></a> <em>or</em> <a class="reference" href="http://www.python.org"><em>newer</em></a>.</p>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id20" id="background" name="background">2&nbsp;&nbsp;&nbsp;Background</a></h1>
+<h1><a class="toc-backref" href="#id21" id="background" name="background">2&nbsp;&nbsp;&nbsp;Background</a></h1>
 <p>There are two basic models for combining C++ and Python:</p>
 <ul class="simple">
 <li><a class="reference" href="http://www.python.org/doc/current/ext/intro.html">extending</a>, in which the end-user launches the Python interpreter
@@ -65,16 +72,21 @@ you can change them without rebuilding either the other extension
 modules or the executable containing <tt class="docutils literal"><span class="pre">main()</span></tt>.</p>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id21" id="getting-boost-python-binaries" name="getting-boost-python-binaries">3&nbsp;&nbsp;&nbsp;Getting Boost.Python Binaries</a></h1>
+<h1><a class="toc-backref" href="#id22" id="getting-boost-python-binaries" name="getting-boost-python-binaries">3&nbsp;&nbsp;&nbsp;Getting Boost.Python Binaries</a></h1>
 <p>Since Boost.Python is a separately-compiled (as opposed to
 <a class="reference" href="../../../more/getting_started/windows.html#header-only-libraries">header-only</a>) library, its user relies on the services of a
-Boost.Python library binary.  The Boost <a class="reference" href="../../../more/getting_started/index.html">Getting Started Guide</a>
-will walk you through the steps of installing one.  If building
-binaries from source, you might want to supply the
-<tt class="docutils literal"><span class="pre">--with-python</span></tt> argument to <tt class="docutils literal"><span class="pre">bjam</span></tt> (or the
-<tt class="docutils literal"><span class="pre">--with-libraries=python</span></tt> argument to <tt class="docutils literal"><span class="pre">configure</span></tt>), so only the
-Boost.Python binary will be built, rather than all the Boost
-binaries.</p>
+Boost.Python library binary.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id23" id="no-install-quickstart" name="no-install-quickstart">3.1&nbsp;&nbsp;&nbsp;No-Install Quickstart</a></h2>
+<p>If you just want to get started quickly building and testing
+Boost.Python extension modules, or embedding Python in an
+executable, you don't need to worry about installing Boost.Python
+binaries explicitly.  These instructions use <a class="reference" href="../../../tools/build">Boost.Build</a> projects,
+which will build those binaries as soon as they're needed.  Your
+first tests may take a little longer while you wait for
+Boost.Python to build, but doing things this way will save you from
+worrying about build intricacies like which library binaries to use
+for a specific compiler configuration.</p>
 <div class="note">
 <p class="first admonition-title">Note</p>
 <p>Of course it's possible to use other build systems to
@@ -84,67 +96,36 @@ Boost.Python” problems come from trying to use another build
 system</strong>.</p>
 <p class="last">If you want to use another system anyway, we suggest that you
 follow these instructions, and then invoke <tt class="docutils literal"><span class="pre">bjam</span></tt> with the
-<tt class="docutils literal"><span class="pre">-o</span></tt><em>filename</em> option to dump the build commands it executes
+<tt class="docutils literal"><span class="pre">-a</span> <span class="pre">-o</span></tt><em>filename</em> option to dump the build commands it executes
 to a file, so you can see what your build system needs to do.</p>
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id22" id="choosing-a-boost-python-library-binary" name="choosing-a-boost-python-library-binary">4&nbsp;&nbsp;&nbsp;Choosing a Boost.Python Library Binary</a></h1>
-<p>The Boost.Python binary comes in both static and dynamic flavors.
-Take care to choose the right flavor for your
-application.<a class="footnote-reference" href="#naming" id="id5" name="id5"><sup>2</sup></a></p>
-<div class="section">
-<h2><a class="toc-backref" href="#id23" id="the-dynamic-binary" name="the-dynamic-binary">4.1&nbsp;&nbsp;&nbsp;The Dynamic Binary</a></h2>
-<p>The dynamic library is the safest and most-versatile choice:</p>
-<ul class="simple">
-<li>A single copy of the library code is used by all extension
-modules built with a given toolset.<a class="footnote-reference" href="#toolset-specific" id="id6" name="id6"><sup>3</sup></a></li>
-<li>The library contains a type conversion registry.  Because one
-registry is shared among all extension modules, instances of a
-class exposed to Python in one dynamically-loaded extension
-module can be passed to functions exposed in another such module.</li>
-</ul>
-</div>
-<div class="section">
-<h2><a class="toc-backref" href="#id24" id="the-static-binary" name="the-static-binary">4.2&nbsp;&nbsp;&nbsp;The Static Binary</a></h2>
-<p>It might be appropriate to use the static Boost.Python library in
-any of the following cases:</p>
-<ul class="simple">
-<li>You are <a class="reference" href="http://www.python.org/doc/current/ext/intro.html">extending</a> python and the types exposed in your
-dynamically-loaded extension module don't need to be used by any
-other Boost.Python extension modules, and you don't care if the
-core library code is duplicated among them.</li>
-<li>You are <a class="reference" href="http://www.python.org/doc/current/ext/embedding.html">embedding</a> python in your application and either:<ul>
-<li>You are targeting a Unix variant OS other than MacOS or AIX,
-where the dynamically-loaded extension modules can “see” the
-Boost.Python library symbols that are part of the executable.</li>
-<li>Or, you have statically linked some Boost.Python extension
-modules into your application and you don't care if any
-dynamically-loaded Boost.Python extension modules are able to
-use the types exposed by your statically-linked extension
-modules (and vice-versa).</li>
-</ul>
-</li>
-</ul>
+<h2><a class="toc-backref" href="#id24" id="installing-boost-python-on-your-system" name="installing-boost-python-on-your-system">3.2&nbsp;&nbsp;&nbsp;Installing Boost.Python on your System</a></h2>
+<p>If you need a regular, installation of the Boost.Python library
+binaries on your system, the Boost <a class="reference" href="../../../more/getting_started/index.html">Getting Started Guide</a> will
+walk you through the steps of installing one.  If building binaries
+from source, you might want to supply the <tt class="docutils literal"><span class="pre">--with-python</span></tt>
+argument to <tt class="docutils literal"><span class="pre">bjam</span></tt> (or the <tt class="docutils literal"><span class="pre">--with-libraries=python</span></tt> argument
+to <tt class="docutils literal"><span class="pre">configure</span></tt>), so only the Boost.Python binary will be built,
+rather than all the Boost binaries.</p>
 </div>
 </div>
 <div class="section">
-<h1><a class="toc-backref" href="#id25" id="configuring-boost-build" name="configuring-boost-build">5&nbsp;&nbsp;&nbsp;Configuring Boost.Build</a></h1>
+<h1><a class="toc-backref" href="#id25" id="configuring-boost-build" name="configuring-boost-build">4&nbsp;&nbsp;&nbsp;Configuring Boost.Build</a></h1>
 <p>As described in the <a class="reference" href="http://www.boost.orgdoc/html/bbv2/advanced.html#bbv2.advanced.configuration">Boost.Build reference manual</a>, a file called
 <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> in your home
-directory<a class="footnote-reference" href="#home-dir" id="id7" name="id7"><sup>7</sup></a> is used to
+directory<a class="footnote-reference" href="#home-dir" id="id5" name="id5"><sup>7</sup></a> is used to
 describe the build resources available to the build system.  You'll
 need to tell it about your Python installation.</p>
 <div class="admonition-users-of-unix-variant-oses admonition">
 <p class="first admonition-title">Users of Unix-Variant OSes</p>
 <p class="last">If you are using a unix-variant OS and you ran Boost's
 <tt class="docutils literal"><span class="pre">configure</span></tt> script, it may have generated a
-<tt class="docutils literal"><span class="pre">user-config.jam</span></tt> for you.<a class="footnote-reference" href="#overwrite" id="id9" name="id9"><sup>4</sup></a> If your <tt class="docutils literal"><span class="pre">configure</span></tt>/<tt class="docutils literal"><span class="pre">make</span></tt> sequence was successful and Boost.Python binaries
+<tt class="docutils literal"><span class="pre">user-config.jam</span></tt> for you.<a class="footnote-reference" href="#overwrite" id="id7" name="id7"><sup>4</sup></a> If your <tt class="docutils literal"><span class="pre">configure</span></tt>/<tt class="docutils literal"><span class="pre">make</span></tt> sequence was successful and Boost.Python binaries
 were built, your <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file is probably already
 correct.</p>
 </div>
-<div class="section">
-<h2><a class="toc-backref" href="#id26" id="the-basics" name="the-basics">5.1&nbsp;&nbsp;&nbsp;The Basics</a></h2>
 <p>If you have a fairly “standard” python installation for your
 platform, there's very little you need to do to describe it.
 Simply having</p>
@@ -152,15 +133,31 @@ Simply having</p>
 import toolset : using ;
 using python ;
 </pre>
-<p>in a <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file in your home directory<a class="footnote-reference" href="#home-dir" id="id10" name="id10"><sup>7</sup></a>
-should be enough.<a class="footnote-reference" href="#user-config-jam" id="id11" name="id11"><sup>6</sup></a></p>
+<p>in a <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file in your home directory<a class="footnote-reference" href="#home-dir" id="id8" name="id8"><sup>7</sup></a>
+should be enough.<a class="footnote-reference" href="#user-config-jam" id="id9" name="id9"><sup>6</sup></a>  For more complicated setups,
+see <a class="reference" href="#advanced-configuration">Advanced Configuration</a>.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">You might want to pass the <tt class="docutils literal"><span class="pre">--debug-configuration</span></tt>
+option to <tt class="docutils literal"><span class="pre">bjam</span></tt> the first few times you invoke it, to make
+sure that Boost.Build is correctly locating all the parts of
+your Python installation.  If it isn't, consider passing some of
+the optional <a class="reference" href="#python-configuration-parameters">Python configuration parameters</a> detailed below.</p>
+</div>
 </div>
 <div class="section">
-<h2><a class="toc-backref" href="#id27" id="advanced-configuration" name="advanced-configuration">5.2&nbsp;&nbsp;&nbsp;Advanced Configuration</a></h2>
-<p>On the other hand, if you have several versions of Python
-installed, or Python is installed in an unusual way, you may want
-to supply any or all of the following optional parameters to
-<tt class="docutils literal"><span class="pre">using</span> <span class="pre">python</span></tt>:</p>
+<h1><a class="toc-backref" href="#id26" id="building-an-extension-module" name="building-an-extension-module">5&nbsp;&nbsp;&nbsp;Building an Extension Module</a></h1>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id27" id="testing" name="testing">6&nbsp;&nbsp;&nbsp;Testing</a></h1>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id28" id="advanced-configuration" name="advanced-configuration">7&nbsp;&nbsp;&nbsp;Advanced Configuration</a></h1>
+<p>If you have several versions of Python installed, or Python is
+installed in an unusual way, you may want to supply any or all of
+the following optional parameters to <tt class="docutils literal"><span class="pre">using</span> <span class="pre">python</span></tt>.</p>
+<div class="section">
+<h2><a class="toc-backref" href="#id29" id="python-configuration-parameters" name="python-configuration-parameters">7.1&nbsp;&nbsp;&nbsp;Python Configuration Parameters</a></h2>
 <dl class="docutils">
 <dt>version</dt>
 <dd>the version of Python to use.  Should be in Major.Minor
@@ -194,7 +191,7 @@ distribution (Ubuntu Feisty Fawn) has a specially configured
 </dl>
 </div>
 <div class="section">
-<h2><a class="toc-backref" href="#id28" id="advanced-configuration-examples" name="advanced-configuration-examples">5.3&nbsp;&nbsp;&nbsp;Advanced Configuration Examples</a></h2>
+<h2><a class="toc-backref" href="#id30" id="examples" name="examples">7.2&nbsp;&nbsp;&nbsp;Examples</a></h2>
 <p>Note that in the examples below, case and <em>especially whitespace</em> are
 significant.</p>
 <ul>
@@ -244,7 +241,7 @@ using python ;
 using python : : c:\\cygwin\\bin\\python2.5 : : : &lt;target-os&gt;cygwin ;
 </pre>
 <p>when you put target-os=cygwin in your build request, it should build
-with the cygwin version of python:<a class="footnote-reference" href="#flavor" id="id13" name="id13"><sup>5</sup></a></p>
+with the cygwin version of python:<a class="footnote-reference" href="#flavor" id="id11" name="id11"><sup>5</sup></a></p>
 <blockquote>
 <p>bjam target-os=cygwin toolset=gcc</p>
 </blockquote>
@@ -270,11 +267,66 @@ bjam target-os=cygwin/python=2.4
 </pre>
 </li>
 </ul>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id31" id="choosing-a-boost-python-library-binary" name="choosing-a-boost-python-library-binary">8&nbsp;&nbsp;&nbsp;Choosing a Boost.Python Library Binary</a></h1>
+<p>If—instead of letting Boost.Build construct and link withthe right
+libraries automatically—you choose to use a pre-built Boost.Python
+library, you'll need to think about which one to link with.  The
+Boost.Python binary comes in both static and dynamic flavors.  Take
+care to choose the right flavor for your application.<a class="footnote-reference" href="#naming" id="id13" name="id13"><sup>2</sup></a></p>
+<div class="section">
+<h2><a class="toc-backref" href="#id32" id="the-dynamic-binary" name="the-dynamic-binary">8.1&nbsp;&nbsp;&nbsp;The Dynamic Binary</a></h2>
+<p>The dynamic library is the safest and most-versatile choice:</p>
+<ul class="simple">
+<li>A single copy of the library code is used by all extension
+modules built with a given toolset.<a class="footnote-reference" href="#toolset-specific" id="id14" name="id14"><sup>3</sup></a></li>
+<li>The library contains a type conversion registry.  Because one
+registry is shared among all extension modules, instances of a
+class exposed to Python in one dynamically-loaded extension
+module can be passed to functions exposed in another such module.</li>
+</ul>
+</div>
+<div class="section">
+<h2><a class="toc-backref" href="#id33" id="the-static-binary" name="the-static-binary">8.2&nbsp;&nbsp;&nbsp;The Static Binary</a></h2>
+<p>It might be appropriate to use the static Boost.Python library in
+any of the following cases:</p>
+<ul class="simple">
+<li>You are <a class="reference" href="http://www.python.org/doc/current/ext/intro.html">extending</a> python and the types exposed in your
+dynamically-loaded extension module don't need to be used by any
+other Boost.Python extension modules, and you don't care if the
+core library code is duplicated among them.</li>
+<li>You are <a class="reference" href="http://www.python.org/doc/current/ext/embedding.html">embedding</a> python in your application and either:<ul>
+<li>You are targeting a Unix variant OS other than MacOS or AIX,
+where the dynamically-loaded extension modules can “see” the
+Boost.Python library symbols that are part of the executable.</li>
+<li>Or, you have statically linked some Boost.Python extension
+modules into your application and you don't care if any
+dynamically-loaded Boost.Python extension modules are able to
+use the types exposed by your statically-linked extension
+modules (and vice-versa).</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section">
+<h1><a class="toc-backref" href="#id34" id="notes-for-mingw-and-cygwin-with-mno-cygwin-gcc-users" name="notes-for-mingw-and-cygwin-with-mno-cygwin-gcc-users">9&nbsp;&nbsp;&nbsp;Notes for MinGW (and Cygwin with -mno-cygwin) GCC Users</a></h1>
+<p>If you are using a version of Python prior to 2.4.1 with a MinGW
+prior to 3.0.0 (with binutils-2.13.90-20030111-1), you will need to
+create a MinGW-compatible version of the Python library; the one
+shipped with Python will only work with a Microsoft-compatible
+linker. Follow the instructions in the “Non-Microsoft” section of
+the “Building Extensions: Tips And Tricks” chapter in <a class="reference" href="http://www.python.org/doc/current/inst/index.html">Installing
+Python Modules</a> to create <tt class="docutils literal"><span class="pre">libpythonXX.a</span></tt>, where <tt class="docutils literal"><span class="pre">XX</span></tt>
+corresponds to the major and minor version numbers of your Python
+installation.</p>
 <hr class="docutils" />
-<table class="docutils footnote" frame="void" id="id15" rules="none">
+<table class="docutils footnote" frame="void" id="id16" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2" name="id15">[1]</a></td><td>Note that although we tested earlier versions of
+<tr><td class="label"><a class="fn-backref" href="#id2" name="id16">[1]</a></td><td>Note that although we tested earlier versions of
 Boost.Python with Python 2.2, and we don't <em>think</em> we've done
 anything to break compatibility, this release of Boost.Python
 may not have been tested with versions of Python earlier than
@@ -285,7 +337,7 @@ supported.</td></tr>
 <table class="docutils footnote" frame="void" id="naming" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id5" name="naming">[2]</a></td><td><p class="first">Information about how to identify the
+<tr><td class="label"><a class="fn-backref" href="#id13" name="naming">[2]</a></td><td><p class="first">Information about how to identify the
 static and dynamic builds of Boost.Python:</p>
 <ul class="simple">
 <li><a class="reference" href="../../../more/getting_started/windows.html#library-naming">on Windows</a></li>
@@ -300,7 +352,7 @@ that feature.</p>
 <table class="docutils footnote" frame="void" id="toolset-specific" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id6" name="toolset-specific">[3]</a></td><td>Because of the way most *nix platforms
+<tr><td class="label"><a class="fn-backref" href="#id14" name="toolset-specific">[3]</a></td><td>Because of the way most *nix platforms
 share symbols among dynamically-loaded objects, I'm not
 certainextension modules built with different compiler toolsets
 will always use different copies of the Boost.Python library
@@ -317,7 +369,7 @@ happens.</td></tr>
 <table class="docutils footnote" frame="void" id="overwrite" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id9" name="overwrite">[4]</a></td><td><tt class="docutils literal"><span class="pre">configure</span></tt> overwrites the existing
+<tr><td class="label"><a class="fn-backref" href="#id7" name="overwrite">[4]</a></td><td><tt class="docutils literal"><span class="pre">configure</span></tt> overwrites the existing
 <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> in your home directory
 (if any) after making a backup of the old version.</td></tr>
 </tbody>
@@ -325,7 +377,7 @@ happens.</td></tr>
 <table class="docutils footnote" frame="void" id="flavor" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id13" name="flavor">[5]</a></td><td>Note that the <tt class="docutils literal"><span class="pre">&lt;target-os&gt;cygwin</span></tt> feature is
+<tr><td class="label"><a class="fn-backref" href="#id11" name="flavor">[5]</a></td><td>Note that the <tt class="docutils literal"><span class="pre">&lt;target-os&gt;cygwin</span></tt> feature is
 different from the <tt class="docutils literal"><span class="pre">&lt;flavor&gt;cygwin</span></tt> subfeature of the <tt class="docutils literal"><span class="pre">gcc</span></tt>
 toolset, and you might need handle both explicitly if you also
 have a MinGW GCC installed.</td></tr>
@@ -334,14 +386,14 @@ have a MinGW GCC installed.</td></tr>
 <table class="docutils footnote" frame="void" id="user-config-jam" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id11" name="user-config-jam">[6]</a></td><td>Create the <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file if you don't
+<tr><td class="label"><a class="fn-backref" href="#id9" name="user-config-jam">[6]</a></td><td>Create the <tt class="docutils literal"><span class="pre">user-config.jam</span></tt> file if you don't
 already have one.</td></tr>
 </tbody>
 </table>
 <table class="docutils footnote" frame="void" id="home-dir" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a name="home-dir">[7]</a></td><td><em>(<a class="fn-backref" href="#id7">1</a>, <a class="fn-backref" href="#id10">2</a>)</em> <p>Windows users, your home directory can be
+<tr><td class="label"><a name="home-dir">[7]</a></td><td><em>(<a class="fn-backref" href="#id5">1</a>, <a class="fn-backref" href="#id8">2</a>)</em> <p>Windows users, your home directory can be
 found by typing:</p>
 <pre class="literal-block">
 ECHO %HOMEDRIVE%%HOMEPATH%
@@ -352,11 +404,10 @@ ECHO %HOMEDRIVE%%HOMEPATH%
 </table>
 </div>
 </div>
-</div>
 <div class="footer">
 <hr class="footer" />
 <a class="reference" href="./building.rst">View document source</a>.
-Generated on: 2007-04-02 16:27 UTC.
+Generated on: 2007-04-05 20:04 UTC.
 Generated by <a class="reference" href="http://docutils.sourceforge.net/">Docutils</a> from <a class="reference" href="http://docutils.sourceforge.net/rst.html">reStructuredText</a> source.
 
 </div>

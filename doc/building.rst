@@ -70,15 +70,22 @@ Getting Boost.Python Binaries
 
 Since Boost.Python is a separately-compiled (as opposed to
 `header-only`_) library, its user relies on the services of a
-Boost.Python library binary.  The Boost `Getting Started Guide`_
-will walk you through the steps of installing one.  If building
-binaries from source, you might want to supply the
-``--with-python`` argument to ``bjam`` (or the
-``--with-libraries=python`` argument to ``configure``), so only the
-Boost.Python binary will be built, rather than all the Boost
-binaries.
+Boost.Python library binary.  
 
-.. _`Getting Started Guide`: ../../../more/getting_started/index.html
+.. _header-only: ../../../more/getting_started/windows.html#header-only-libraries
+
+No-Install Quickstart
+---------------------
+
+If you just want to get started quickly building and testing
+Boost.Python extension modules, or embedding Python in an
+executable, you don't need to worry about installing Boost.Python
+binaries explicitly.  These instructions use Boost.Build_ projects,
+which will build those binaries as soon as they're needed.  Your
+first tests may take a little longer while you wait for
+Boost.Python to build, but doing things this way will save you from
+worrying about build intricacies like which library binaries to use
+for a specific compiler configuration.
 
 .. Note:: Of course it's possible to use other build systems to
    build Boost.Python and its extensions, but they are not
@@ -88,53 +95,23 @@ binaries.
 
    If you want to use another system anyway, we suggest that you
    follow these instructions, and then invoke ``bjam`` with the
-   ``-o``\ *filename* option to dump the build commands it executes
+   ``-a -o``\ *filename* option to dump the build commands it executes
    to a file, so you can see what your build system needs to do.
 
-Choosing a Boost.Python Library Binary
-======================================
+.. _Boost.Build: ../../../tools/build
 
-The Boost.Python binary comes in both static and dynamic flavors.
-Take care to choose the right flavor for your
-application. [#naming]_
+Installing Boost.Python on your System
+--------------------------------------
 
-The Dynamic Binary
-------------------
+If you need a regular, installation of the Boost.Python library
+binaries on your system, the Boost `Getting Started Guide`_ will
+walk you through the steps of installing one.  If building binaries
+from source, you might want to supply the ``--with-python``
+argument to ``bjam`` (or the ``--with-libraries=python`` argument
+to ``configure``), so only the Boost.Python binary will be built,
+rather than all the Boost binaries.
 
-The dynamic library is the safest and most-versatile choice:
-
-- A single copy of the library code is used by all extension
-  modules built with a given toolset. [#toolset-specific]_
-
-- The library contains a type conversion registry.  Because one
-  registry is shared among all extension modules, instances of a
-  class exposed to Python in one dynamically-loaded extension
-  module can be passed to functions exposed in another such module.
-
-The Static Binary
------------------
-
-It might be appropriate to use the static Boost.Python library in
-any of the following cases:
-
-- You are extending_ python and the types exposed in your
-  dynamically-loaded extension module don't need to be used by any
-  other Boost.Python extension modules, and you don't care if the
-  core library code is duplicated among them.
-
-- You are embedding_ python in your application and either:
-
-  - You are targeting a Unix variant OS other than MacOS or AIX,
-    where the dynamically-loaded extension modules can “see” the
-    Boost.Python library symbols that are part of the executable.
-
-  - Or, you have statically linked some Boost.Python extension
-    modules into your application and you don't care if any
-    dynamically-loaded Boost.Python extension modules are able to
-    use the types exposed by your statically-linked extension
-    modules (and vice-versa).
-
-.. _header-only: ../../../more/getting_started/windows.html#header-only-libraries
+.. _`Getting Started Guide`: ../../../more/getting_started/index.html
 
 Configuring Boost.Build
 =======================
@@ -156,9 +133,6 @@ __ http://www.boost.orgdoc/html/bbv2/advanced.html#bbv2.advanced.configuration
    were built, your ``user-config.jam`` file is probably already
    correct.
 
-The Basics
-----------
-
 If you have a fairly “standard” python installation for your
 platform, there's very little you need to do to describe it.
 Simply having ::
@@ -168,15 +142,32 @@ Simply having ::
   using python ;
 
 in a ``user-config.jam`` file in your home directory [#home-dir]_ 
-should be enough. [#user-config.jam]_
+should be enough. [#user-config.jam]_  For more complicated setups,
+see `Advanced Configuration`_.
+
+.. Note:: You might want to pass the ``--debug-configuration``
+   option to ``bjam`` the first few times you invoke it, to make
+   sure that Boost.Build is correctly locating all the parts of
+   your Python installation.  If it isn't, consider passing some of
+   the optional `Python configuration parameters`_ detailed below.
+
+Building an Extension Module
+============================
+
+
+Testing
+=======
+
 
 Advanced Configuration
-----------------------
+======================
 
-On the other hand, if you have several versions of Python
-installed, or Python is installed in an unusual way, you may want
-to supply any or all of the following optional parameters to
-``using python``:
+If you have several versions of Python installed, or Python is
+installed in an unusual way, you may want to supply any or all of
+the following optional parameters to ``using python``.
+
+Python Configuration Parameters
+-------------------------------
 
 version
   the version of Python to use.  Should be in Major.Minor
@@ -215,8 +206,9 @@ extension-suffix
 
 __ https://wiki.ubuntu.com/PyDbgBuilds
 
-Advanced Configuration Examples
--------------------------------
+
+Examples
+--------
 
 Note that in the examples below, case and *especially whitespace* are
 significant.
@@ -292,6 +284,66 @@ significant.
 .. _Cygwin: http://cygwin.com
 
 __ http://zigzag.cs.msu.su/boost.build/wiki/AlternativeSelection
+
+Choosing a Boost.Python Library Binary
+======================================
+
+If—instead of letting Boost.Build construct and link withthe right
+libraries automatically—you choose to use a pre-built Boost.Python
+library, you'll need to think about which one to link with.  The
+Boost.Python binary comes in both static and dynamic flavors.  Take
+care to choose the right flavor for your application. [#naming]_
+
+The Dynamic Binary
+------------------
+
+The dynamic library is the safest and most-versatile choice:
+
+- A single copy of the library code is used by all extension
+  modules built with a given toolset. [#toolset-specific]_
+
+- The library contains a type conversion registry.  Because one
+  registry is shared among all extension modules, instances of a
+  class exposed to Python in one dynamically-loaded extension
+  module can be passed to functions exposed in another such module.
+
+The Static Binary
+-----------------
+
+It might be appropriate to use the static Boost.Python library in
+any of the following cases:
+
+- You are extending_ python and the types exposed in your
+  dynamically-loaded extension module don't need to be used by any
+  other Boost.Python extension modules, and you don't care if the
+  core library code is duplicated among them.
+
+- You are embedding_ python in your application and either:
+
+  - You are targeting a Unix variant OS other than MacOS or AIX,
+    where the dynamically-loaded extension modules can “see” the
+    Boost.Python library symbols that are part of the executable.
+
+  - Or, you have statically linked some Boost.Python extension
+    modules into your application and you don't care if any
+    dynamically-loaded Boost.Python extension modules are able to
+    use the types exposed by your statically-linked extension
+    modules (and vice-versa).
+
+Notes for MinGW (and Cygwin with -mno-cygwin) GCC Users
+=======================================================
+
+If you are using a version of Python prior to 2.4.1 with a MinGW
+prior to 3.0.0 (with binutils-2.13.90-20030111-1), you will need to
+create a MinGW-compatible version of the Python library; the one
+shipped with Python will only work with a Microsoft-compatible
+linker. Follow the instructions in the “Non-Microsoft” section of
+the “Building Extensions: Tips And Tricks” chapter in `Installing
+Python Modules`__ to create ``libpythonXX.a``, where ``XX``
+corresponds to the major and minor version numbers of your Python
+installation.
+
+__ http://www.python.org/doc/current/inst/index.html
 
 -----------------------------
 
