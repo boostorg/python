@@ -31,6 +31,36 @@ Boost.Python requires `Python 2.2`_ [#2.2]_ *or* |newer|__.
 .. _Python 2.2: http://www.python.org/2.2
 __ http://www.python.org
 
+No-Install Quickstart
+=====================
+
+There is no need to install Boost in order to get started using
+Boost.Python.  These instructions use Boost.Build_ projects,
+which will build those binaries as soon as they're needed.  Your
+first tests may take a little longer while you wait for
+Boost.Python to build, but doing things this way will save you from
+worrying about build intricacies like which library binaries to use
+for a specific compiler configuration.
+
+.. Note:: Of course it's possible to use other build systems to
+   build Boost.Python and its extensions, but they are not
+   officially supported by Boost.  Moreover **99% of all “I can't
+   build Boost.Python” problems come from trying to use another
+   build system**.
+
+   If you want to use another system anyway, we suggest that you
+   follow these instructions, and then invoke ``bjam`` with the
+   ``-a -o``\ *filename* option to dump the build commands it executes
+   to a file, so you can see what your build system needs to do.
+
+1. Get Boost; see sections 1 and 2 of the Boost `Getting Started Guide`_.
+2. Get the ``bjam`` build driver.  See sections 5.2.1-5.2.3 of the
+   Boost `Getting Started Guide`_.
+3. cd into the ``libs/python/test/example`` directory.   
+
+.. _Getting Started Guide: ../../../more/getting_started/index.html
+
+
 Background
 ==========
 
@@ -74,32 +104,6 @@ Boost.Python library binary.
 
 .. _header-only: ../../../more/getting_started/windows.html#header-only-libraries
 
-No-Install Quickstart
----------------------
-
-If you just want to get started quickly building and testing
-Boost.Python extension modules, or embedding Python in an
-executable, you don't need to worry about installing Boost.Python
-binaries explicitly.  These instructions use Boost.Build_ projects,
-which will build those binaries as soon as they're needed.  Your
-first tests may take a little longer while you wait for
-Boost.Python to build, but doing things this way will save you from
-worrying about build intricacies like which library binaries to use
-for a specific compiler configuration.
-
-.. Note:: Of course it's possible to use other build systems to
-   build Boost.Python and its extensions, but they are not
-   officially supported by Boost and **99% of all “I can't build
-   Boost.Python” problems come from trying to use another build
-   system**.
-
-   If you want to use another system anyway, we suggest that you
-   follow these instructions, and then invoke ``bjam`` with the
-   ``-a -o``\ *filename* option to dump the build commands it executes
-   to a file, so you can see what your build system needs to do.
-
-.. _Boost.Build: ../../../tools/build
-
 Installing Boost.Python on your System
 --------------------------------------
 
@@ -110,8 +114,6 @@ from source, you might want to supply the ``--with-python``
 argument to ``bjam`` (or the ``--with-libraries=python`` argument
 to ``configure``), so only the Boost.Python binary will be built,
 rather than all the Boost binaries.
-
-.. _`Getting Started Guide`: ../../../more/getting_started/index.html
 
 Configuring Boost.Build
 =======================
