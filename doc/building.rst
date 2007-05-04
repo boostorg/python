@@ -169,6 +169,15 @@ you invoke it, to make sure that Boost.Build is correctly locating
 all the parts of your Python installation.  If it isn't, consider
 `Configuring Boost.Build`_ as detailed below.
 
+If you're still having trouble, Someone on one of the following
+mailing lists may be able to help:
+
+* The `Boost.Build mailing list`__ for issues related to Boost.Build
+* The Python `C++ Sig`__ for issues specifically related to Boost.Python
+
+__ ../../../more/mailing_lists.htm#jamboost
+__ ../../../more/mailing_lists.htm#cplussig
+
 In Case Everything Seemed to Work
 ---------------------------------
 
@@ -409,9 +418,11 @@ extension-suffix
   don't need to use this.  Usually this suffix is only used when
   targeting a Windows debug build of Python, and will be set
   automatically for you based on the value of the
-  ``<python-debugging>`` feature.  However, at least one Linux
+  |python-debugging|_ feature.  However, at least one Linux
   distribution (Ubuntu Feisty Fawn) has a specially configured
   `python-dbg`__ package that claims to use such a suffix.
+
+.. |python-debugging| replace:: ``<python-debugging>``
 
 __ https://wiki.ubuntu.com/PyDbgBuilds
 
@@ -453,6 +464,17 @@ significant.
          : # libraries
          : <toolset>intel # condition
          ;
+
+
+- If you have downloaded the Python sources and built both the
+  normal and the “\ `python debugging`_\ ” builds from source on
+  Windows, you might see::
+
+    using python : 2.5 : C:\\src\\Python-2.5\\PCBuild\\python ;
+    using python : 2.5 : C:\\src\\Python-2.5\\PCBuild\\python_d
+      : # includes
+      : # libs
+      : <python-debugging>on ;
 
 - You can set up your user-config.jam so a bjam built under Windows 
   can build/test both Windows and Cygwin_ python extensions.  Just pass
@@ -539,14 +561,63 @@ any of the following cases:
     use the types exposed by your statically-linked extension
     modules (and vice-versa).
 
+``#include`` Issues
+===================
+
+1. If you should ever have occasion to ``#include "python.h"``
+   directly in a translation unit of a program using Boost.Python,
+   use ``#include "boost/python/detail/wrap_python.hpp"`` instead.
+   It handles several issues necessary for use with Boost.Python,
+   one of which is mentioned in the next section.
+
+2. Be sure not to ``#include`` any system headers before
+   ``wrap_python.hpp``.  This restriction is actually imposed by
+   Python, or more properly, by Python's interaction with your
+   operating system.  See
+   http://docs.python.org/ext/simpleExample.html for details.
+
+.. _python-debugging:
+.. _python debugging:
+
+Python Debugging Builds
+=======================
+
+Python can be built in a special “python debugging” configuration
+that adds extra checks and instrumentation that can be very useful
+for developers of extension modules.  The data structures used by
+the debugging configuration contain additional members, so **a
+Python executable built with python debugging enabled cannot be
+used with an extension module or library compiled without it, and
+vice-versa.**
+
+Since pre-built “python debugging” versions of the Python
+executable and libraries are not supplied with most distributions
+of Python, [#get-debug-build] and we didn't want to force our users
+to build them, Boost.Build does not automatically enable python
+debugging in its ``debug`` build variant (which is the default).
+Instead there is a special build property called
+``python-debugging`` that, when used as a build property, will
+define the right preprocessor symbols and select the right
+libraries to link with.
+
+On unix-variant platforms, the debugging versions of Python's data
+structures will only be used if the symbol ``Py_DEBUG`` is defined.
+On many windows compilers, when extension modules are built with
+the preprocessor symbol ``_DEBUG``, Python defaults to force
+linking with a special debugging version of the Python DLL.  Since
+that symbol is very commonly used even when Python is not present,
+Boost.Python temporarily undefines _DEBUG when Python.h
+is #included from ``boost/python/detail/wrap_python.hpp`` - unless
+``BOOST_DEBUG_PYTHON`` is defined.  The upshot is that if you want
+“python debugging”and you aren't using Boost.Build, you should make
+sure ``BOOST_DEBUG_PYTHON`` is defined, or python debugging will be
+suppressed.
+
 Testing Boost.Python
 ====================
 
-
-Python Debug Builds
-===================
-
-
+To run the full test suite for Boost.Python, invoke ``bjam`` in the
+``libs/python/test`` subdirectory of your Boost distribution.
 
 Notes for MinGW (and Cygwin with -mno-cygwin) GCC Users
 =======================================================
@@ -586,8 +657,8 @@ __ http://www.python.org/doc/current/inst/index.html
    that feature.
 
 .. [#toolset-specific] Because of the way most \*nix platforms
-   share symbols among dynamically-loaded objects, I'm not
-   certainextension modules built with different compiler toolsets
+   share symbols among dynamically-loaded objects, I'm not certain
+   that extension modules built with different compiler toolsets
    will always use different copies of the Boost.Python library
    when loaded into the same Python instance.  Not using different
    libraries could be a good thing if the compilers have compatible
@@ -614,3 +685,10 @@ __ http://www.python.org/doc/current/inst/index.html
 
    into a `command prompt`_ window.
 
+.. [#get-debug-build] On Unix and similar platforms, a debugging
+   python and associated libraries are built by adding
+   ``--with-pydebug`` when configuring the Python build. On
+   Windows, the debugging version of Python is generated by
+   the "Win32 Debug" target of the Visual Studio project in the
+   PCBuild subdirectory of a full Python source code distribution.
+   You may also find
