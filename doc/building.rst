@@ -592,7 +592,7 @@ vice-versa.**
 
 Since pre-built “python debugging” versions of the Python
 executable and libraries are not supplied with most distributions
-of Python, [#get-debug-build] and we didn't want to force our users
+of Python, [#get-debug-build]_ and we didn't want to force our users
 to build them, Boost.Build does not automatically enable python
 debugging in its ``debug`` build variant (which is the default).
 Instead there is a special build property called

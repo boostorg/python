@@ -19,7 +19,5 @@ for local b in $(bases)
   ;
 }
 
-exe tst : tst.cpp ;
-
 alias htmls : $(bases) ;
 stage . : $(bases) ;
