@@ -49,6 +49,13 @@ BOOST_PYTHON_MODULE(embedded_hello)
 }
 
 
+void eval_test()
+{
+  python::object result = python::eval("'abcdefg'.upper()");
+  std::string value = python::extract<std::string>(result) BOOST_EXTRACT_WORKAROUND;
+  BOOST_TEST(value == "ABCDEFG");
+}
+
 void exec_test()
 {
   // Register the module with the interpreter
@@ -108,7 +115,8 @@ int main(int argc, char **argv)
   // Initialize the interpreter
   Py_Initialize();
 
-  if (python::handle_exception(exec_test) ||
+  if (python::handle_exception(eval_test) ||
+      python::handle_exception(exec_test) ||
       python::handle_exception(boost::bind(exec_file_test, script)))
   {
     if (PyErr_Occurred())

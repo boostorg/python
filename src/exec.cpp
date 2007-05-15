@@ -13,6 +13,15 @@ namespace boost
 namespace python 
 {
 
+object BOOST_PYTHON_DECL eval(str string, object global, object local)
+{
+  // should be 'char const *' but older python versions don't use 'const' yet.
+  char *s = python::extract<char *>(string);
+  PyObject* result = PyRun_String(s, Py_eval_input, global.ptr(), local.ptr());
+  if (!result) throw_error_already_set();
+  return object(detail::new_reference(result));
+}
+
 object BOOST_PYTHON_DECL exec(str string, object global, object local)
 {
   // should be 'char const *' but older python versions don't use 'const' yet.

@@ -13,18 +13,25 @@ namespace boost
 namespace python 
 {
 
+// Evaluate python expression from str.
+// global and local are the global and local scopes respectively,
+// used during evaluation.
+object 
+BOOST_PYTHON_DECL
+eval(str string, object global = object(), object local = object());
+
 // Execute python source code from str.
 // global and local are the global and local scopes respectively,
 // used during execution.
 object 
-BOOST_PYTHON_DECL 
+BOOST_PYTHON_DECL
 exec(str string, object global = object(), object local = object());
 
 // Execute python source code from file filename.
 // global and local are the global and local scopes respectively,
 // used during execution.
 object 
-BOOST_PYTHON_DECL 
+BOOST_PYTHON_DECL
 exec_file(str filename, object global = object(), object local = object());
 
 }
