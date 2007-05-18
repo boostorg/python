@@ -1520,11 +1520,8 @@ which returns the result directly:
 
 [h2 Exception handling]
 
-If an exception occurs in the execution of some Python code, the PyRun_String
-function returns a null pointer. Constructing a [^handle] out of this null
-pointer throws [@../../../v2/errors.html#error_already_set-spec error_already_set],
-so basically, the Python exception is automatically translated into a
-C++ exception when using [^handle]:
+If an exception occurs in the evaluation of the python expression,
+[@../../../v2/errors.html#error_already_set-spec error_already_set] is thrown:
 
     try
     {
@@ -1532,7 +1529,7 @@ C++ exception when using [^handle]:
         // execution will never get here:
         int five_divided_by_zero = extract<int>(result);
     }
-    catch(error_already_set)
+    catch(error_already_set const &)
     {
         // handle the exception in some way
     }
@@ -1546,7 +1543,7 @@ print the exception's traceback to the console, or comparing the type of the
 exception with those of the [@http://www.python.org/doc/api/standardExceptions.html
 standard exceptions]:
 
-    catch(error_already_set)
+    catch(error_already_set const &)
     {
         if (PyErr_ExceptionMatches(PyExc_ZeroDivisionError))
         {
@@ -1561,21 +1558,6 @@ standard exceptions]:
 
 (To retrieve even more information from the exception you can use some of the other
 exception handling functions listed [@http://www.python.org/doc/api/exceptionHandling.html here].)
-
-If you'd rather not have [^handle] throw a C++ exception when it is constructed, you
-can use the [@../../../v2/handle.html#allow_null-spec allow_null] function in the same
-way you'd use borrowed:
-
-    handle<> result((allow_null(PyRun_String(
-        "5/0"
-       , Py_eval_input
-       , main_namespace.ptr()
-       , main_namespace.ptr()))));
-
-    if (!result)
-        // Python exception occurred
-    else
-        // everything went okay, it's safe to use the result
 
 [endsect]
 [endsect] [/ Embedding]

@@ -40,7 +40,7 @@
       Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
     </p>
 <a name="embedding.building_embedded_programs"></a><h3>
-<a name="id2637711"></a>
+<a name="id2654982"></a>
       Building embedded programs
     </h3>
 <p>
@@ -82,7 +82,7 @@ exe embedded_program # name of the executable
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
 <a name="embedding.getting_started"></a><h3>
-<a name="id2637805"></a>
+<a name="id2655076"></a>
       Getting started
     </h3>
 <p>
@@ -137,7 +137,7 @@ exe embedded_program # name of the executable
         automate the process.
       </p>
 <a name="using_the_interpreter.running_python_code"></a><h3>
-<a name="id2637984"></a>
+<a name="id2655255"></a>
         Running Python code
       </h3>
 <p>
@@ -188,7 +188,7 @@ exe embedded_program # name of the executable
         a phrase that is well-known in programming circles.
       </p>
 <a name="using_the_interpreter.manipulating_python_objects"></a><h3>
-<a name="id2638511"></a>
+<a name="id2655783"></a>
         Manipulating Python objects
       </h3>
 <p>
@@ -215,15 +215,12 @@ exe embedded_program # name of the executable
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 </pre>
 <a name="using_the_interpreter.exception_handling"></a><h3>
-<a name="id2638845"></a>
+<a name="id2656116"></a>
         Exception handling
       </h3>
 <p>
-        If an exception occurs in the execution of some Python code, the PyRun_String
-        function returns a null pointer. Constructing a <code class="literal">handle</code>
-        out of this null pointer throws <a href="../../../../v2/errors.html#error_already_set-spec" target="_top">error_already_set</a>,
-        so basically, the Python exception is automatically translated into a C++
-        exception when using <code class="literal">handle</code>:
+        If an exception occurs in the evaluation of the python expression, <a href="../../../../v2/errors.html#error_already_set-spec" target="_top">error_already_set</a>
+        is thrown:
       </p>
 <pre class="programlisting">
 <span class="keyword">try</span>
@@ -232,7 +229,7 @@ exe embedded_program # name of the executable
     <span class="comment">// execution will never get here:
 </span>    <span class="keyword">int</span> <span class="identifier">five_divided_by_zero</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 <span class="special">}</span>
-<span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span><span class="special">)</span>
+<span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span> <span class="keyword">const</span> <span class="special">&amp;)</span>
 <span class="special">{</span>
     <span class="comment">// handle the exception in some way
 </span><span class="special">}</span>
@@ -248,7 +245,7 @@ exe embedded_program # name of the executable
         exceptions</a>:
       </p>
 <pre class="programlisting">
-<span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span><span class="special">)</span>
+<span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span> <span class="keyword">const</span> <span class="special">&amp;)</span>
 <span class="special">{</span>
     <span class="keyword">if</span> <span class="special">(</span><span class="identifier">PyErr_ExceptionMatches</span><span class="special">(</span><span class="identifier">PyExc_ZeroDivisionError</span><span class="special">))</span>
     <span class="special">{</span>
@@ -265,23 +262,6 @@ exe embedded_program # name of the executable
         (To retrieve even more information from the exception you can use some of
         the other exception handling functions listed <a href="http://www.python.org/doc/api/exceptionHandling.html" target="_top">here</a>.)
       </p>
-<p>
-        If you'd rather not have <code class="literal">handle</code> throw a C++ exception
-        when it is constructed, you can use the <a href="../../../../v2/handle.html#allow_null-spec" target="_top">allow_null</a>
-        function in the same way you'd use borrowed:
-      </p>
-<pre class="programlisting">
-<span class="identifier">handle</span><span class="special">&lt;&gt;</span> <span class="identifier">result</span><span class="special">((</span><span class="identifier">allow_null</span><span class="special">(</span><span class="identifier">PyRun_String</span><span class="special">(</span>
-    <span class="string">"5/0"</span>
-   <span class="special">,</span> <span class="identifier">Py_eval_input</span>
-   <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
-   <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()))));</span>
-
-<span class="keyword">if</span> <span class="special">(!</span><span class="identifier">result</span><span class="special">)</span>
-    <span class="comment">// Python exception occurred
-</span><span class="keyword">else</span>
-    <span class="comment">// everything went okay, it's safe to use the result
-</span></pre>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
