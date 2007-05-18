@@ -1,15 +1,12 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Embedding</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
 <link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="prev" href="object.html" title=" Object Interface">
+<link rel="prev" href="object.html" title="Object Interface">
 <link rel="next" href="iterators.html" title="Iterators">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
@@ -42,30 +39,28 @@
       a lot easier and, in a future version, it may become unnecessary to touch the
       Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
     </p>
-<a name="embedding.building_embedded_programs"></a><h2>
-<a name="id462650"></a>
+<a name="embedding.building_embedded_programs"></a><h3>
+<a name="id2637711"></a>
       Building embedded programs
-    </h2>
+    </h3>
 <p>
-      To be able to use embedding in your programs, they have to be linked to both
-      Boost.Python's and Python's static link library.
+      To be able to embed python into your programs, you have to link to both Boost.Python's
+      as well as Python's own runtime library.
     </p>
 <p>
-      Boost.Python's static link library comes in two variants. Both are located
-      in Boost's <tt class="literal">/libs/python/build/bin-stage</tt> subdirectory. On
-      Windows, the variants are called <tt class="literal">boost_python.lib</tt> (for release
-      builds) and <tt class="literal">boost_python_debug.lib</tt> (for debugging). If you
-      can't find the libraries, you probably haven't built Boost.Python yet. See
-      <a href="../../../../building.html" target="_top">Building and Testing</a> on how to
-      do this.
+      Boost.Python's library comes in two variants. Both are located in Boost's
+      <code class="literal">/libs/python/build/bin-stage</code> subdirectory. On Windows, the
+      variants are called <code class="literal">boost_python.lib</code> (for release builds)
+      and <code class="literal">boost_python_debug.lib</code> (for debugging). If you can't
+      find the libraries, you probably haven't built Boost.Python yet. See <a href="../../../../building.html" target="_top">Building and Testing</a> on how to do this.
     </p>
 <p>
-      Python's static link library can be found in the <tt class="literal">/libs</tt> subdirectory
+      Python's library can be found in the <code class="literal">/libs</code> subdirectory
       of your Python directory. On Windows it is called pythonXY.lib where X.Y is
       your major Python version number.
     </p>
 <p>
-      Additionally, Python's <tt class="literal">/include</tt> subdirectory has to be added
+      Additionally, Python's <code class="literal">/include</code> subdirectory has to be added
       to your include path.
     </p>
 <p>
@@ -86,275 +81,154 @@ exe embedded_program # name of the executable
     &lt;library-path&gt;$(PYTHON_LIB_PATH)
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
-<a name="embedding.getting_started"></a><h2>
-<a name="id462747"></a>
+<a name="embedding.getting_started"></a><h3>
+<a name="id2637805"></a>
       Getting started
-    </h2>
+    </h3>
 <p>
       Being able to build is nice, but there is nothing to build yet. Embedding the
       Python interpreter into one of your C++ programs requires these 4 steps:
     </p>
 <div class="orderedlist"><ol type="1">
 <li>
-        #include <tt class="literal">&lt;boost/python.hpp&gt;</tt><br><br>
+        #include <code class="literal">&lt;boost/python.hpp&gt;</code><br><br>
 </li>
 <li>
         Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>()
-        to start the interpreter and create the <tt class="literal"><span class="underline">_main</span>_</tt>
+        to start the interpreter and create the <code class="literal"><span class="underline">_main</span>_</code>
         module.<br><br>
 </li>
 <li>
         Call other Python C API routines to use the interpreter.<br><br>
 </li>
-<li>
-        Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-656" target="_top">Py_Finalize</a>()
-        to stop the interpreter and release its resources.
-      </li>
 </ol></div>
+<div class="sidebar">
+<p class="title"><b></b></p>
+<p>
+      <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><strong>Note that at this time you must
+      not call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-656" target="_top">Py_Finalize</a>()
+      to stop the interpreter. This may be fixed in a future version of boost.python.</strong></span>
+    </p>
+</div>
 <p>
       (Of course, there can be other C++ code between all of these steps.)
     </p>
-<div class="blockquote"><blockquote class="blockquote"><p>
-        <span class="emphasis"><em><span class="bold"><b>Now that we can embed the interpreter in
-        our programs, lets see how to put it to use...</b></span></em></span>
-      </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote">
+<p>
+        </p>
+<p>
+          <span class="emphasis"><em><span class="bold"><strong>Now that we can embed the interpreter in
+          our programs, lets see how to put it to use...</strong></span></em></span>
+        </p>
+<p>
+      </p>
+</blockquote></div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.using_the_interpreter"></a>Using the interpreter</h3></div></div></div>
 <p>
         As you probably already know, objects in Python are reference-counted. Naturally,
-        the <tt class="literal">PyObject</tt>s of the Python/C API are also reference-counted.
+        the <code class="literal">PyObject</code>s of the Python/C API are also reference-counted.
         There is a difference however. While the reference-counting is fully automatic
-        in Python, the Python/C API requires you to do it <a href="http://www.python.org/doc/current/api/refcounts.html" target="_top">by
-        hand</a>. This is messy and especially hard to get right in the presence
+        in Python, the Python<span class="emphasis"><em>C API requires you to do it [@http:</em></span>/www.python.org/doc/current/api/refcounts.html
+        by hand]. This is messy and especially hard to get right in the presence
         of C++ exceptions. Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a>
         and <a href="../../../../v2/object.html" target="_top">object</a> class templates to
         automate the process.
       </p>
-<a name="using_the_interpreter.reference_counting_handles_and_objects"></a><h2>
-<a name="id462914"></a>
-        Reference-counting handles and objects
-      </h2>
-<p>
-        There are two ways in which a function in the Python/C API can return a
-        <tt class="literal">PyObject*</tt>: as a <span class="emphasis"><em>borrowed reference</em></span>
-        or as a <span class="emphasis"><em>new reference</em></span>. Which of these a function uses,
-        is listed in that function's documentation. The two require slightely different
-        approaches to reference-counting but both can be 'handled' by Boost.Python.
-      </p>
-<p>
-        For a function returning a <span class="emphasis"><em>borrowed reference</em></span> we'll
-        have to tell the <tt class="literal">handle</tt> that the <tt class="literal">PyObject*</tt>
-        is borrowed with the aptly named <a href="../../../../v2/handle.html#borrowed-spec" target="_top">borrowed</a>
-        function. Two functions returning borrowed references are <a href="http://www.python.org/doc/current/api/importing.html#l2h-125" target="_top">PyImport_AddModule</a>
-        and <a href="http://www.python.org/doc/current/api/moduleObjects.html#l2h-594" target="_top">PyModule_GetDict</a>.
-        The former returns a reference to an already imported module, the latter
-        retrieves a module's namespace dictionary. Let's use them to retrieve the
-        namespace of the <tt class="literal"><span class="underline">_main</span>_</tt>
-        module:
-      </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">main_module</span><span class="special">((</span>
-    <span class="identifier">handle</span><span class="special">&lt;&gt;(</span><span class="identifier">borrowed</span><span class="special">(</span><a href="http://www.python.org/doc/current/api/importing.html#l2h-125" target="_top">PyImport_AddModule</a><span class="special">(</span><span class="string">"__main__"</span><span class="special">)))));</span>
-
-<span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
-</pre>
-<p>
-        For a function returning a <span class="emphasis"><em>new reference</em></span> we can just
-        create a <tt class="literal">handle</tt> out of the raw <tt class="literal">PyObject*</tt>
-        without wrapping it in a call to borrowed. One such function that returns
-        a new reference is <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-        which we'll discuss in the next section.
-      </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Handle is a class <span class="emphasis"><em>template</em></span>,
-        so why haven't we been using any template parameters?</b></span><br> <br>
-        <tt class="literal">handle</tt> has a single template parameter specifying the
-        type of the managed object. This type is <tt class="literal">PyObject</tt> 99%
-        of the time, so the parameter was defaulted to <tt class="literal">PyObject</tt>
-        for convenience. Therefore we can use the shorthand <tt class="literal">handle&lt;&gt;</tt>
-        instead of the longer, but equivalent, <tt class="literal">handle&lt;PyObject&gt;</tt>.
-      </p>
-<a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id463241"></a>
+<a name="using_the_interpreter.running_python_code"></a><h3>
+<a name="id2637984"></a>
         Running Python code
-      </h2>
+      </h3>
 <p>
-        To run Python code from C++ there is a family of functions in the API starting
-        with the PyRun prefix. You can find the full list of these functions <a href="http://www.python.org/doc/current/api/veryhigh.html" target="_top">here</a>. They
-        all work similarly so we will look at only one of them, namely:
+        Boost.python provides three related functions to run Python code from C++.
       </p>
 <pre class="programlisting">
-<span class="identifier">PyObject</span><span class="special">*</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span><span class="keyword">char</span> <span class="special">*</span><span class="identifier">str</span><span class="special">,</span> <span class="keyword">int</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">PyObject</span> <span class="special">*</span><span class="identifier">globals</span><span class="special">,</span> <span class="identifier">PyObject</span> <span class="special">*</span><span class="identifier">locals</span><span class="special">)</span>
+<span class="identifier">object</span> <span class="identifier">eval</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">expression</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
+<span class="identifier">object</span> <span class="identifier">exec</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">code</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
+<span class="identifier">object</span> <span class="identifier">exec_file</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">filename</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
 </pre>
 <p>
-        <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-        takes the code to execute as a null-terminated (C-style) string in its <tt class="literal">str</tt>
-        parameter. The function returns a new reference to a Python object. Which
-        object is returned depends on the <tt class="literal">start</tt> paramater.
+        eval evaluates the given expression and returns the resulting value. exec
+        executes the given code (typically a set of statements) returning the result,
+        and exec_file executes the code contained in the given file.
       </p>
 <p>
-        The <tt class="literal">start</tt> parameter is the start symbol from the Python
-        grammar to use for interpreting the code. The possible values are:
-      </p>
-<div class="informaltable">
-<h4>
-<a name="id463420"></a>
-          <span class="table-title">Start symbols</span>
-        </h4>
-<table class="table">
-<colgroup>
-<col>
-<col>
-</colgroup>
-<thead><tr>
-<th><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a></th>
-<th>for
-              interpreting isolated expressions</th>
-</tr></thead>
-<tbody>
-<tr>
-<td><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-59" target="_top">Py_file_input</a></td>
-<td>for
-              interpreting sequences of statements</td>
-</tr>
-<tr>
-<td><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-60" target="_top">Py_single_input</a></td>
-<td>for
-              interpreting a single statement</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>
-        When using <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a>,
-        the input string must contain a single expression and its result is returned.
-        When using <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-59" target="_top">Py_file_input</a>,
-        the string can contain an abitrary number of statements and None is returned.
-        <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-60" target="_top">Py_single_input</a>
-        works in the same way as <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-59" target="_top">Py_file_input</a>
-        but only accepts a single statement.
-      </p>
-<p>
-        Lastly, the <tt class="literal">globals</tt> and <tt class="literal">locals</tt> parameters
-        are Python dictionaries containing the globals and locals of the context
-        in which to run the code. For most intents and purposes you can use the namespace
-        dictionary of the <tt class="literal"><span class="underline">_main</span>_</tt>
+        The <code class="literal">globals</code> and <code class="literal">locals</code> parameters are
+        Python dictionaries containing the globals and locals of the context in which
+        to run the code. For most intents and purposes you can use the namespace
+        dictionary of the <code class="literal"><span class="underline">_main</span>_</code>
         module for both parameters.
       </p>
 <p>
-        We have already seen how to get the <tt class="literal"><span class="underline">_main</span>_</tt>
-        module's namespace so let's run some Python code in it:
+        Boost.python provides a function to import a module:
       </p>
 <pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">main_module</span><span class="special">((</span>
-    <span class="identifier">handle</span><span class="special">&lt;&gt;(</span><span class="identifier">borrowed</span><span class="special">(</span><a href="http://www.python.org/doc/current/api/importing.html#l2h-125" target="_top">PyImport_AddModule</a><span class="special">(</span><span class="string">"__main__"</span><span class="special">)))));</span>
-
-<span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
-
-<span class="identifier">handle</span><span class="special">&lt;&gt;</span> <span class="identifier">ignored</span><span class="special">((</span><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span>
-
-    <span class="string">"hello = file('hello.txt', 'w')\n"</span>
-    <span class="string">"hello.write('Hello world!')\n"</span>
-    <span class="string">"hello.close()"</span>
-
-  <span class="special">,</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-59" target="_top">Py_file_input</a>
-  <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
-  <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">())</span>
-<span class="special">));</span>
+<span class="identifier">object</span> <span class="identifier">import</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">name</span><span class="special">)</span>
 </pre>
 <p>
-        Because the Python/C API doesn't know anything about <tt class="literal">object</tt>s,
-        we used the object's <tt class="literal">ptr</tt> member function to retrieve the
-        <tt class="literal">PyObject*</tt>.
+        import imports a python module (potentially loading it into the running process
+        first), and returns it.
       </p>
+<p>
+        Let's import the <code class="literal"><span class="underline">_main</span>_</code>
+        module and run some Python code in its namespace:
+      </p>
+<pre class="programlisting">
+<span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
+<span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
+
+<span class="identifier">object</span> <span class="identifier">ignored</span> <span class="special">=</span> <span class="identifier">exec</span><span class="special">(</span><span class="string">"hello = file('hello.txt', 'w')\n"</span>
+                      <span class="string">"hello.write('Hello world!')\n"</span>
+                      <span class="string">"hello.close()"</span><span class="special">,</span>
+                      <span class="identifier">main_namespace</span><span class="special">);</span>
+</pre>
 <p>
         This should create a file called 'hello.txt' in the current directory containing
         a phrase that is well-known in programming circles.
       </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that we wrap
-        the return value of <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-        in a (nameless) <tt class="literal">handle</tt> even though we are not interested
-        in it. If we didn't do this, the the returned object would be kept alive
-        unnecessarily. Unless you want to be a Dr. Frankenstein, always wrap <tt class="literal">PyObject*</tt>s
-        in <tt class="literal">handle</tt>s.
-      </p>
-<a name="using_the_interpreter.beyond_handles"></a><h2>
-<a name="id463926"></a>
-        Beyond handles
-      </h2>
+<a name="using_the_interpreter.manipulating_python_objects"></a><h3>
+<a name="id2638511"></a>
+        Manipulating Python objects
+      </h3>
 <p>
-        It's nice that <tt class="literal">handle</tt> manages the reference counting details
-        for us, but other than that it doesn't do much. Often we'd like to have a
-        more useful class to manipulate Python objects. But we have already seen
-        such a class above, and in the <a href="object.html" target="_top">previous section</a>:
-        the aptly named <tt class="literal">object</tt> class and it's derivatives. We've
-        already seen that they can be constructed from a <tt class="literal">handle</tt>.
+        Often we'd like to have a class to manipulate Python objects. But we have
+        already seen such a class above, and in the <a href="object.html" target="_top">previous
+        section</a>: the aptly named <code class="literal">object</code> class and its
+        derivatives. We've already seen that they can be constructed from a <code class="literal">handle</code>.
         The following examples should further illustrate this fact:
       </p>
 <pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">main_module</span><span class="special">((</span>
-     <span class="identifier">handle</span><span class="special">&lt;&gt;(</span><span class="identifier">borrowed</span><span class="special">(</span><a href="http://www.python.org/doc/current/api/importing.html#l2h-125" target="_top">PyImport_AddModule</a><span class="special">(</span><span class="string">"__main__"</span><span class="special">)))));</span>
-
+<span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
-
-<span class="identifier">handle</span><span class="special">&lt;&gt;</span> <span class="identifier">ignored</span><span class="special">((</span><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span>
-
-    <span class="string">"result = 5 ** 2"</span>
-
-    <span class="special">,</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-59" target="_top">Py_file_input</a>
-    <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
-    <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">())</span>
-<span class="special">));</span>
-
+<span class="identifier">object</span> <span class="identifier">ignored</span> <span class="special">=</span> <span class="identifier">exec</span><span class="special">(</span><span class="string">"result = 5 ** 2"</span><span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">);</span>
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">main_namespace</span><span class="special">[</span><span class="string">"result"</span><span class="special">]);</span>
 </pre>
 <p>
-        Here we create a dictionary object for the <tt class="literal"><span class="underline">_main</span>_</tt>
+        Here we create a dictionary object for the <code class="literal"><span class="underline">_main</span>_</code>
         module's namespace. Then we assign 5 squared to the result variable and read
         this variable from the dictionary. Another way to achieve the same result
-        is to let <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-        return the result directly with <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a>:
+        is to use eval instead, which returns the result directly:
       </p>
 <pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">result</span><span class="special">((</span><span class="identifier">handle</span><span class="special">&lt;&gt;(</span>
-    <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span><span class="string">"5 ** 2"</span>
-        <span class="special">,</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a>
-        <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
-        <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()))</span>
-<span class="special">));</span>
-
+<span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5 ** 2"</span><span class="special">);</span>
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 </pre>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Note</b></span> that <tt class="literal">object</tt>'s
-        member function to return the wrapped <tt class="literal">PyObject*</tt> is called
-        <tt class="literal">ptr</tt> instead of <tt class="literal">get</tt>. This makes sense
-        if you take into account the different functions that <tt class="literal">object</tt>
-        and <tt class="literal">handle</tt> perform.
-      </p>
-<a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id464549"></a>
+<a name="using_the_interpreter.exception_handling"></a><h3>
+<a name="id2638845"></a>
         Exception handling
-      </h2>
+      </h3>
 <p>
-        If an exception occurs in the execution of some Python code, the <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a>
-        function returns a null pointer. Constructing a <tt class="literal">handle</tt>
+        If an exception occurs in the execution of some Python code, the PyRun_String
+        function returns a null pointer. Constructing a <code class="literal">handle</code>
         out of this null pointer throws <a href="../../../../v2/errors.html#error_already_set-spec" target="_top">error_already_set</a>,
         so basically, the Python exception is automatically translated into a C++
-        exception when using <tt class="literal">handle</tt>:
+        exception when using <code class="literal">handle</code>:
       </p>
 <pre class="programlisting">
 <span class="keyword">try</span>
 <span class="special">{</span>
-    <span class="identifier">object</span> <span class="identifier">result</span><span class="special">((</span><span class="identifier">handle</span><span class="special">&lt;&gt;(</span><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span>
-        <span class="string">"5/0"</span>
-      <span class="special">,</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a>
-      <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
-      <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()))</span>
-    <span class="special">));</span>
-
+    <span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5/0"</span><span class="special">);</span>
     <span class="comment">// execution will never get here:
 </span>    <span class="keyword">int</span> <span class="identifier">five_divided_by_zero</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 <span class="special">}</span>
@@ -364,13 +238,13 @@ exe embedded_program # name of the executable
 </span><span class="special">}</span>
 </pre>
 <p>
-        The <tt class="literal">error_already_set</tt> exception class doesn't carry any
+        The <code class="literal">error_already_set</code> exception class doesn't carry any
         information in itself. To find out more about the Python exception that occurred,
         you need to use the <a href="http://www.python.org/doc/api/exceptionHandling.html" target="_top">exception
-        handling functions</a> of the Python/C API in your catch-statement. This
-        can be as simple as calling <a href="http://www.python.org/doc/api/exceptionHandling.html#l2h-70" target="_top">PyErr_Print()</a>
-        to print the exception's traceback to the console, or comparing the type
-        of the exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html" target="_top">standard
+        handling functions</a> of the Python<span class="emphasis"><em>C API in your catch-statement.
+        This can be as simple as calling [@http:</em></span>/www.python.org/doc/api/exceptionHandling.html#l2h-70
+        PyErr_Print()] to print the exception's traceback to the console, or comparing
+        the type of the exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html" target="_top">standard
         exceptions</a>:
       </p>
 <pre class="programlisting">
@@ -392,14 +266,14 @@ exe embedded_program # name of the executable
         the other exception handling functions listed <a href="http://www.python.org/doc/api/exceptionHandling.html" target="_top">here</a>.)
       </p>
 <p>
-        If you'd rather not have <tt class="literal">handle</tt> throw a C++ exception
+        If you'd rather not have <code class="literal">handle</code> throw a C++ exception
         when it is constructed, you can use the <a href="../../../../v2/handle.html#allow_null-spec" target="_top">allow_null</a>
         function in the same way you'd use borrowed:
       </p>
 <pre class="programlisting">
-<span class="identifier">handle</span><span class="special">&lt;&gt;</span> <span class="identifier">result</span><span class="special">((</span><span class="identifier">allow_null</span><span class="special">(</span><a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-55" target="_top">PyRun_String</a><span class="special">(</span>
+<span class="identifier">handle</span><span class="special">&lt;&gt;</span> <span class="identifier">result</span><span class="special">((</span><span class="identifier">allow_null</span><span class="special">(</span><span class="identifier">PyRun_String</span><span class="special">(</span>
     <span class="string">"5/0"</span>
-   <span class="special">,</span> <a href="http://www.python.org/doc/current/api/veryhigh.html#l2h-58" target="_top">Py_eval_input</a>
+   <span class="special">,</span> <span class="identifier">Py_eval_input</span>
    <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()</span>
    <span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">.</span><span class="identifier">ptr</span><span class="special">()))));</span>
 

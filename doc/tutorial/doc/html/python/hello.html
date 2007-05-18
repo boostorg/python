@@ -1,16 +1,13 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title> Building Hello World</title>
+<title>Building Hello World</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
 <link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="prev" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="next" href="exposing.html" title=" Exposing Classes">
+<link rel="next" href="exposing.html" title="Exposing Classes">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
@@ -28,26 +25,29 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.hello"></a> Building Hello World</h2></div></div></div>
-<a name="hello.from_start_to_finish"></a><h2>
-<a name="id377427"></a>
+<a name="hello.from_start_to_finish"></a><h3>
+<a name="id2578164"></a>
       From Start To Finish
-    </h2>
+    </h3>
 <p>
       Now the first thing you'd want to do is to build the Hello World module and
       try it for yourself in Python. In this section, we shall outline the steps
       necessary to achieve that. We shall use the build tool that comes bundled with
-      every boost distribution: <span class="bold"><b>bjam</b></span>.
+      every boost distribution: <span class="bold"><strong>bjam</strong></span>.
     </p>
-<p class="blurb">
-      <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Building without bjam</b></span><br>
+<div class="sidebar">
+<p class="title"><b></b></p>
+<p>
+      <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><strong>Building without bjam</strong></span><br>
       <br> Besides bjam, there are of course other ways to get your module built.
       What's written here should not be taken as "the one and only way".
-      There are of course other build tools apart from <tt class="literal">bjam</tt>.<br>
+      There are of course other build tools apart from <code class="literal">bjam</code>.<br>
       <br> Take note however that the preferred build tool for Boost.Python is
       bjam. There are so many ways to set up the build incorrectly. Experience shows
       that 90% of the "I can't build Boost.Python" problems come from people
       who had to use a different tool.
     </p>
+</div>
 <p>
       We shall skip over the details. Our objective will be to simply create the
       hello world module and run it in Python. For a complete reference to building
@@ -78,7 +78,7 @@
       if you are on Unix.
     </p>
 <p>
-      The tutorial example can be found in the directory: <tt class="literal">libs/python/example/tutorial</tt>.
+      The tutorial example can be found in the directory: <code class="literal">libs/python/example/tutorial</code>.
       There, you can find:
     </p>
 <div class="itemizedlist"><ul type="disc">
@@ -90,20 +90,20 @@
       </li>
 </ul></div>
 <p>
-      The <tt class="literal">hello.cpp</tt> file is our C++ hello world example. The
-      <tt class="literal">Jamfile</tt> is a minimalist <span class="emphasis"><em>bjam</em></span> script
+      The <code class="literal">hello.cpp</code> file is our C++ hello world example. The
+      <code class="literal">Jamfile</code> is a minimalist <span class="emphasis"><em>bjam</em></span> script
       that builds the DLLs for us.
     </p>
 <p>
       Before anything else, you should have the bjam executable in your boost directory
-      or somewhere in your path such that <tt class="literal">bjam</tt> can be executed
+      or somewhere in your path such that <code class="literal">bjam</code> can be executed
       in the command line. Pre-built Boost.Jam executables are available for most
       platforms. The complete list of Bjam executables can be found <a href="http://sourceforge.net/project/showfiles.php?group_id=7586" target="_top">here</a>.
     </p>
-<a name="hello.let_s_jam_"></a><h2>
-<a name="id377613"></a>
+<a name="hello.let_s_jam_"></a><h3>
+<a name="id2578351"></a>
       Let's Jam!
-    </h2>
+    </h3>
 <p>
       <span class="inlinemediaobject"><img src="../images/jam.png" alt="jam"></span>
     </p>
@@ -123,13 +123,13 @@ extension hello                     # Declare a Python extension called hello
 </pre>
 <p>
       First, we need to specify our location. You may place your project anywhere.
-      <tt class="literal">project-root</tt> allows you to do that.
+      <code class="literal">project-root</code> allows you to do that.
     </p>
 <pre class="programlisting">project-root ;
 </pre>
 <p>
       By doing so, you'll need a Jamrules file. Simply copy the one in the <a href="../../../../../example/tutorial/Jamrules" target="_top">example/tutorial directory</a>
-      and tweak the <tt class="literal">path-global BOOST_ROOT</tt> to where your boost
+      and tweak the <code class="literal">path-global BOOST_ROOT</code> to where your boost
       root directory is. The file has <a href="../../../../../example/tutorial/Jamrules" target="_top">detailed
       instructions</a> you can follow.
     </p>
@@ -139,7 +139,7 @@ extension hello                     # Declare a Python extension called hello
 <pre class="programlisting">import python ;
 </pre>
 <p>
-      Finally we declare our <tt class="literal">hello</tt> extension:
+      Finally we declare our <code class="literal">hello</code> extension:
     </p>
 <pre class="programlisting">extension hello                     # Declare a Python extension called hello
 :   hello.cpp                       # source
@@ -151,20 +151,26 @@ extension hello                     # Declare a Python extension called hello
 <p>
       The last part tells BJam that we are depending on the Boost Python Library.
     </p>
-<a name="hello.running_bjam"></a><h2>
-<a name="id377751"></a>
+<a name="hello.running_bjam"></a><h3>
+<a name="id2578480"></a>
       Running bjam
-    </h2>
+    </h3>
 <p>
       <span class="emphasis"><em>bjam</em></span> is run using your operating system's command line
       interpreter.
     </p>
-<div class="blockquote"><blockquote class="blockquote"><p>
-        Start it up.
-      </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote">
+<p>
+        </p>
+<p>
+          Start it up.
+        </p>
+<p>
+      </p>
+</blockquote></div>
 <p>
       Make sure that the environment is set so that we can invoke the C++ compiler.
-      With MSVC, that would mean running the <tt class="literal">Vcvars32.bat</tt> batch
+      With MSVC, that would mean running the <code class="literal">Vcvars32.bat</code> batch
       file. For instance:
     </p>
 <pre class="programlisting">C:\Program Files\Microsoft Visual Studio .NET 2003\Common7\Tools\vsvars32.bat
@@ -177,21 +183,24 @@ extension hello                     # Declare a Python extension called hello
 set PYTHON_VERSION=2.2
 </pre>
 <p>
-      The above assumes that the Python installation is in <tt class="literal">c:/dev/tools/python</tt>
+      The above assumes that the Python installation is in <code class="literal">c:/dev/tools/python</code>
       and that we are using Python version 2.2. You'll have to tweak these appropriately.
     </p>
-<p class="blurb">
-      <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span> "2.2.1", even if that's the version you
+<div class="sidebar">
+<p class="title"><b></b></p>
+<p>
+      <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> Be sure not to include a third number, e.g. <span class="bold"><strong>not</strong></span> "2.2.1", even if that's the version you
       have.
     </p>
+</div>
 <p>
       Take note that you may also do that through the Jamrules file we put in our
       project as detailed above. The file has <a href="../../../../../example/tutorial/Jamrules" target="_top">detailed
       instructions</a> you can follow.
     </p>
 <p>
-      Now we are ready... Be sure to <tt class="literal">cd</tt> to <tt class="literal">libs/python/example/tutorial</tt>
-      where the tutorial <tt class="literal">"hello.cpp"</tt> and the <tt class="literal">"Jamfile"</tt>
+      Now we are ready... Be sure to <code class="literal">cd</code> to <code class="literal">libs/python/example/tutorial</code>
+      where the tutorial <code class="literal">"hello.cpp"</code> and the <code class="literal">"Jamfile"</code>
       is situated.
     </p>
 <p>
@@ -254,8 +263,8 @@ b and object bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.exp
       if you are on Unix.
     </p>
 <p>
-      <tt class="literal">boost_python.dll</tt> and <tt class="literal">hello.pyd</tt> can be
-      found somewhere in your project's <tt class="literal">bin</tt> directory. After a
+      <code class="literal">boost_python.dll</code> and <code class="literal">hello.pyd</code> can be
+      found somewhere in your project's <code class="literal">bin</code> directory. After a
       successful build, you make it possible for the system to find boost_python.dll
       or libboost_python.so (usually done with LD_LIBRARY_PATH, DYLD_LIBRARY_PATH,
       or some other variable on *nix and with PATH on Windows) and for Python to
@@ -273,9 +282,15 @@ b and object bin\tutorial\hello.pyd\vc-7_1\debug\threading-multi\hello.exp
 </pre>
 <p>
     </p>
-<div class="blockquote"><blockquote class="blockquote"><p>
-        <span class="bold"><b>There you go... Have fun!</b></span>
-      </p></blockquote></div>
+<div class="blockquote"><blockquote class="blockquote">
+<p>
+        </p>
+<p>
+          <span class="bold"><strong>There you go... Have fun!</strong></span>
+        </p>
+<p>
+      </p>
+</blockquote></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>

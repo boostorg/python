@@ -1365,11 +1365,6 @@ create a new scope around a class:
 
 [def Py_Initialize          [@http://www.python.org/doc/current/api/initialization.html#l2h-652  Py_Initialize]]
 [def Py_Finalize            [@http://www.python.org/doc/current/api/initialization.html#l2h-656  Py_Finalize]]
-[def PyRun_String           [@http://www.python.org/doc/current/api/veryhigh.html#l2h-55         PyRun_String]]
-[def PyRun_File             [@http://www.python.org/doc/current/api/veryhigh.html#l2h-56         PyRun_File]]
-[def Py_eval_input          [@http://www.python.org/doc/current/api/veryhigh.html#l2h-58         Py_eval_input]]
-[def Py_file_input          [@http://www.python.org/doc/current/api/veryhigh.html#l2h-59         Py_file_input]]
-[def Py_single_input        [@http://www.python.org/doc/current/api/veryhigh.html#l2h-60         Py_single_input]]
 [def Py_XINCREF             [@http://www.python.org/doc/current/api/countingRefs.html#l2h-65     Py_XINCREF]]
 [def Py_XDECREF             [@http://www.python.org/doc/current/api/countingRefs.html#l2h-67     Py_XDECREF]]
 [def PyImport_AppendInittab [@http://www.python.org/doc/current/api/importing.html#l2h-137       PyImport_AppendInittab]]
@@ -1396,17 +1391,17 @@ all. So stay tuned... :-)
 
 [h2 Building embedded programs]
 
-To be able to use embedding in your programs, they have to be linked to
-both Boost.Python's and Python's static link library.
+To be able to embed python into your programs, you have to link to
+both Boost.Python's as well as Python's own runtime library.
 
-Boost.Python's static link library comes in two variants. Both are located
+Boost.Python's library comes in two variants. Both are located
 in Boost's [^/libs/python/build/bin-stage] subdirectory. On Windows, the
 variants are called [^boost_python.lib] (for release builds) and
 [^boost_python_debug.lib] (for debugging). If you can't find the libraries,
 you probably haven't built Boost.Python yet. See
 [@../../../building.html Building and Testing] on how to do this.
 
-Python's static link library can be found in the [^/libs] subdirectory of
+Python's library can be found in the [^/libs] subdirectory of
 your Python directory. On Windows it is called pythonXY.lib where X.Y is
 your major Python version number.
 
@@ -1444,7 +1439,11 @@ steps:
 
 # Call other Python C API routines to use the interpreter.\n\n
 
-# Call Py_Finalize() to stop the interpreter and release its resources.
+[/ # Call Py_Finalize() to stop the interpreter and release its resources.]
+
+[blurb __note__ [*Note that at this time you must not call Py_Finalize() to stop the
+interpreter. This may be fixed in a future version of boost.python.]
+]
 
 (Of course, there can be other C++ code between all of these steps.)
 
@@ -1461,149 +1460,63 @@ messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the [@../../../v2/handle.html handle] and
 [@../../../v2/object.html object] class templates to automate the process.
 
-[h2 Reference-counting handles and objects]
-
-There are two ways in which a function in the Python/C API can return a
-[^PyObject*]: as a ['borrowed reference] or as a ['new reference]. Which of
-these a function uses, is listed in that function's documentation. The two
-require slightely different approaches to reference-counting but both can
-be 'handled' by Boost.Python.
-
-For a function returning a ['borrowed reference] we'll have to tell the
-[^handle] that the [^PyObject*] is borrowed with the aptly named
-[@../../../v2/handle.html#borrowed-spec borrowed] function. Two functions
-returning borrowed references are PyImport_AddModule and PyModule_GetDict.
-The former returns a reference to an already imported module, the latter
-retrieves a module's namespace dictionary. Let's use them to retrieve the
-namespace of the [^__main__] module:
-
-    object main_module((
-        handle<>(borrowed(PyImport_AddModule("__main__")))));
-
-    object main_namespace = main_module.attr("__dict__");
-
-For a function returning a ['new reference] we can just create a [^handle]
-out of the raw [^PyObject*] without wrapping it in a call to borrowed. One
-such function that returns a new reference is PyRun_String which we'll
-discuss in the next section.
-
-[blurb __note__ [*Handle is a class ['template], so why haven't we been using any template parameters?]\n
-\n
-[^handle] has a single template parameter specifying the type of the managed object. This type is [^PyObject] 99% of the time, so the parameter was defaulted to [^PyObject] for convenience. Therefore we can use the shorthand [^handle<>] instead of the longer, but equivalent, [^handle<PyObject>].
-]
-
 [h2 Running Python code]
 
-To run Python code from C++ there is a family of functions in the API
-starting with the PyRun prefix. You can find the full list of these
-functions [@http://www.python.org/doc/current/api/veryhigh.html here]. They
-all work similarly so we will look at only one of them, namely:
+Boost.python provides three related functions to run Python code from C++.
 
-    PyObject* PyRun_String(char *str, int start, PyObject *globals, PyObject *locals)
+    object eval(str expression, object globals = object(), object locals = object())
+    object exec(str code, object globals = object(), object locals = object())
+    object exec_file(str filename, object globals = object(), object locals = object())
 
-PyRun_String takes the code to execute as a null-terminated (C-style)
-string in its [^str] parameter. The function returns a new reference to a
-Python object. Which object is returned depends on the [^start] paramater.
+eval evaluates the given expression and returns the resulting value.
+exec executes the given code (typically a set of statements) returning the result,
+and exec_file executes the code contained in the given file.
 
-The [^start] parameter is the start symbol from the Python grammar to use
-for interpreting the code. The possible values are:
-
-[table Start symbols
-
-    [[Py_eval_input]   [for interpreting isolated expressions]]
-    [[Py_file_input]   [for interpreting sequences of statements]]
-    [[Py_single_input] [for interpreting a single statement]]
-]
-
-When using Py_eval_input, the input string must contain a single expression
-and its result is returned. When using Py_file_input, the string can
-contain an abitrary number of statements and None is returned.
-Py_single_input works in the same way as Py_file_input but only accepts a
-single statement.
-
-Lastly, the [^globals] and [^locals] parameters are Python dictionaries
+The [^globals] and [^locals] parameters are Python dictionaries
 containing the globals and locals of the context in which to run the code.
 For most intents and purposes you can use the namespace dictionary of the
 [^__main__] module for both parameters.
 
-We have already seen how to get the [^__main__] module's namespace so let's
-run some Python code in it:
+Boost.python provides a function to import a module:
 
-    object main_module((
-        handle<>(borrowed(PyImport_AddModule("__main__")))));
+    object import(str name)
 
+import imports a python module (potentially loading it into the running process
+first), and returns it.
+
+Let's import the [^__main__] module and run some Python code in its namespace:
+
+    object main_module = import("__main__");
     object main_namespace = main_module.attr("__dict__");
 
-    handle<> ignored((PyRun_String(
-
-        "hello = file('hello.txt', 'w')\n"
-        "hello.write('Hello world!')\n"
-        "hello.close()"
-
-      , Py_file_input
-      , main_namespace.ptr()
-      , main_namespace.ptr())
-    ));
-
-Because the Python/C API doesn't know anything about [^object]s, we used
-the object's [^ptr] member function to retrieve the [^PyObject*].
+    object ignored = exec("hello = file('hello.txt', 'w')\n"
+                          "hello.write('Hello world!')\n"
+                          "hello.close()",
+                          main_namespace);
 
 This should create a file called 'hello.txt' in the current directory
 containing a phrase that is well-known in programming circles.
 
-[blurb
-    __note__ [*Note] that we wrap the return value of PyRun_String in a
-    (nameless) [^handle] even though we are not interested in it. If we didn't
-    do this, the the returned object would be kept alive unnecessarily. Unless
-    you want to be a Dr. Frankenstein, always wrap [^PyObject*]s in [^handle]s.
-]
+[h2 Manipulating Python objects]
 
-[h2 Beyond handles]
+Often we'd like to have a class to manipulate Python objects. 
+But we have already seen such a class above, and in the 
+[@python/object.html previous section]: the aptly named [^object] class 
+and its derivatives. We've already seen that they can be constructed from 
+a [^handle]. The following examples should further illustrate this fact:
 
-It's nice that [^handle] manages the reference counting details for us, but
-other than that it doesn't do much. Often we'd like to have a more useful
-class to manipulate Python objects. But we have already seen such a class
-above, and in the [@python/object.html previous section]: the aptly
-named [^object] class and it's derivatives. We've already seen that they
-can be constructed from a [^handle]. The following examples should further
-illustrate this fact:
-
-    object main_module((
-         handle<>(borrowed(PyImport_AddModule("__main__")))));
-
+    object main_module = import("__main__");
     object main_namespace = main_module.attr("__dict__");
-
-    handle<> ignored((PyRun_String(
-
-        "result = 5 ** 2"
-
-        , Py_file_input
-        , main_namespace.ptr()
-        , main_namespace.ptr())
-    ));
-
+    object ignored = exec("result = 5 ** 2", main_namespace);
     int five_squared = extract<int>(main_namespace["result"]);
 
 Here we create a dictionary object for the [^__main__] module's namespace.
 Then we assign 5 squared to the result variable and read this variable from
-the dictionary. Another way to achieve the same result is to let
-PyRun_String return the result directly with Py_eval_input:
+the dictionary. Another way to achieve the same result is to use eval instead,
+which returns the result directly:
 
-    object result((handle<>(
-        PyRun_String("5 ** 2"
-            , Py_eval_input
-            , main_namespace.ptr()
-            , main_namespace.ptr()))
-    ));
-
+    object result = eval("5 ** 2");
     int five_squared = extract<int>(result);
-
-[blurb
-    __note__ [*Note] that [^object]'s member function to return the wrapped
-    [^PyObject*] is called [^ptr] instead of [^get]. This makes sense if you
-    take into account the different functions that [^object] and [^handle]
-    perform.
-]
 
 [h2 Exception handling]
 
@@ -1615,13 +1528,7 @@ C++ exception when using [^handle]:
 
     try
     {
-        object result((handle<>(PyRun_String(
-            "5/0"
-          , Py_eval_input
-          , main_namespace.ptr()
-          , main_namespace.ptr()))
-        ));
-
+        object result = eval("5/0");
         // execution will never get here:
         int five_divided_by_zero = extract<int>(result);
     }
