@@ -1,15 +1,12 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title> General Techniques</title>
+<title>General Techniques</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.72.0">
 <link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="prev" href="exception.html" title=" Exception Translation">
+<link rel="prev" href="exception.html" title="Exception Translation">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%">
@@ -53,7 +50,7 @@
 <p>
         We have a C++ library that works with sounds: reading and writing various
         formats, applying filters to the sound data, etc. It is named (conveniently)
-        <tt class="literal">sounds</tt>. Our library already has a neat C++ namespace hierarchy,
+        <code class="literal">sounds</code>. Our library already has a neat C++ namespace hierarchy,
         like so:
       </p>
 <pre class="programlisting">
@@ -96,15 +93,16 @@
 <span class="special">}</span>
 </pre>
 <p>
-        Compiling these files will generate the following Python extensions: <tt class="literal">core.pyd</tt>,
-        <tt class="literal">io.pyd</tt> and <tt class="literal">filters.pyd</tt>.
+        Compiling these files will generate the following Python extensions: <code class="literal">core.pyd</code>,
+        <code class="literal">io.pyd</code> and <code class="literal">filters.pyd</code>.
       </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> The extension <tt class="literal">.pyd</tt> is used for python
-        extension modules, which are just shared libraries. Using the default for
-        your system, like <tt class="literal">.so</tt> for Unix and <tt class="literal">.dll</tt>
-        for Windows, works just as well.
-      </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> The extension <code class="literal">.pyd</code> is used
+              for python extension modules, which are just shared libraries. Using
+              the default for your system, like <code class="literal">.so</code> for Unix and
+              <code class="literal">.dll</code> for Windows, works just as well.</td></tr></tbody>
+</table></div>
 <p>
         Now, we create this directory structure for our Python package:
       </p>
@@ -115,12 +113,12 @@
     io.pyd
 </pre>
 <p>
-        The file <tt class="literal">__init__.py</tt> is what tells Python that the directory
-        <tt class="literal">sounds/</tt> is actually a Python package. It can be a empty
+        The file <code class="literal">__init__.py</code> is what tells Python that the directory
+        <code class="literal">sounds/</code> is actually a Python package. It can be a empty
         file, but can also perform some magic, that will be shown later.
       </p>
 <p>
-        Now our package is ready. All the user has to do is put <tt class="literal">sounds</tt>
+        Now our package is ready. All the user has to do is put <code class="literal">sounds</code>
         into his <a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a>
         and fire up the interpreter:
       </p>
@@ -159,7 +157,7 @@
 </pre>
 <p>
         Note that we added an underscore to the module name. The filename will have
-        to be changed to <tt class="literal">_core.pyd</tt> as well, and we do the same
+        to be changed to <code class="literal">_core.pyd</code> as well, and we do the same
         to the other extension modules. Now, we change our package hierarchy like
         so:
       </p>
@@ -187,11 +185,11 @@
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span>
 </pre>
 <p>
-        which is not what we want. But here enters the <tt class="literal">__init__.py</tt>
-        magic: everything that is brought to the <tt class="literal">__init__.py</tt> namespace
+        which is not what we want. But here enters the <code class="literal">__init__.py</code>
+        magic: everything that is brought to the <code class="literal">__init__.py</code> namespace
         can be accessed directly by the user. So, all we have to do is bring the
-        entire namespace from <tt class="literal">_core.pyd</tt> to <tt class="literal">core/__init__.py</tt>.
-        So add this line of code to <tt class="literal">sounds<span class="emphasis"><em>core</em></span>__init__.py</tt>:
+        entire namespace from <code class="literal">_core.pyd</code> to <code class="literal">core/__init__.py</code>.
+        So add this line of code to <code class="literal">sounds<span class="emphasis"><em>core</em></span>__init__.py</code>:
       </p>
 <pre class="programlisting">
 <span class="keyword">from</span> <span class="identifier">_core</span> <span class="keyword">import</span> <span class="special">*</span>
@@ -208,10 +206,10 @@
         with the additional benefit that we can easily add pure Python functions
         to any module, in a way that the user can't tell the difference between a
         C++ function and a Python function. Let's add a <span class="emphasis"><em>pure</em></span>
-        Python function, <tt class="literal">echo_noise</tt>, to the <tt class="literal">filters</tt>
-        package. This function applies both the <tt class="literal">echo</tt> and <tt class="literal">noise</tt>
-        filters in sequence in the given <tt class="literal">sound</tt> object. We create
-        a file named <tt class="literal">sounds/filters/echo_noise.py</tt> and code our
+        Python function, <code class="literal">echo_noise</code>, to the <code class="literal">filters</code>
+        package. This function applies both the <code class="literal">echo</code> and <code class="literal">noise</code>
+        filters in sequence in the given <code class="literal">sound</code> object. We create
+        a file named <code class="literal">sounds/filters/echo_noise.py</code> and code our
         function:
       </p>
 <pre class="programlisting">
@@ -222,14 +220,14 @@
     <span class="keyword">return</span> <span class="identifier">s</span>
 </pre>
 <p>
-        Next, we add this line to <tt class="literal">sounds<span class="emphasis"><em>filters</em></span>__init__.py</tt>:
+        Next, we add this line to <code class="literal">sounds<span class="emphasis"><em>filters</em></span>__init__.py</code>:
       </p>
 <pre class="programlisting">
 <span class="keyword">from</span> <span class="identifier">echo_noise</span> <span class="keyword">import</span> <span class="identifier">echo_noise</span>
 </pre>
 <p>
         And that's it. The user now accesses this function like any other function
-        from the <tt class="literal">filters</tt> package:
+        from the <code class="literal">filters</code> package:
       </p>
 <pre class="programlisting">
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
@@ -263,7 +261,7 @@
       </p>
 <p>
         We can do the same with classes that were wrapped with Boost.Python. Suppose
-        we have a class <tt class="literal">point</tt> in C++:
+        we have a class <code class="literal">point</code> in C++:
       </p>
 <p>
       </p>
@@ -277,7 +275,7 @@
 </pre>
 <p>
         If we are using the technique from the previous session, <a href="techniques.html#python.creating_packages" title="Creating Packages">Creating
-        Packages</a>, we can code directly into <tt class="literal">geom/__init__.py</tt>:
+        Packages</a>, we can code directly into <code class="literal">geom/__init__.py</code>:
       </p>
 <p>
       </p>
@@ -292,7 +290,7 @@
 </span><span class="identifier">point</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">point_str</span>
 </pre>
 <p>
-        <span class="bold"><b>All</b></span> point instances created from C++ will
+        <span class="bold"><strong>All</strong></span> point instances created from C++ will
         also have this member function! This technique has several advantages:
       </p>
 <div class="itemizedlist"><ul type="disc">
@@ -391,7 +389,7 @@
 <span class="special">}</span>
 </pre>
 <p>
-        Now you create a file <tt class="literal">main.cpp</tt>, which contains the <tt class="literal">BOOST_PYTHON_MODULE</tt>
+        Now you create a file <code class="literal">main.cpp</code>, which contains the <code class="literal">BOOST_PYTHON_MODULE</code>
         macro, and call the various export functions inside it.
       </p>
 <pre class="programlisting">
@@ -427,17 +425,19 @@
         exporting it to Python at the same time: changes in a class will only demand
         the compilation of a single cpp, instead of the entire wrapper code.
       </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
-        take a look at the <tt class="literal">--multiple</tt> option, that generates the
-        wrappers in various files as demonstrated here.
-      </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> This method is useful too if you are getting the error
-        message <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal structure
-        overflow"</em></span> when compiling a large source file, as explained
-        in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.
-      </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
+              take a look at the <code class="literal">--multiple</code> option, that generates
+              the wrappers in various files as demonstrated here.</td></tr></tbody>
+</table></div>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> This method is useful too if you are getting the
+              error message <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal
+              structure overflow"</em></span> when compiling a large source file,
+              as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
+</table></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>

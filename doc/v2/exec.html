@@ -38,6 +38,7 @@
 
       <dd>
         <dl class="page-index">
+          <dt><a href="#eval-spec"><code>eval</code></a></dt>
           <dt><a href="#exec-spec"><code>exec</code></a></dt>
           <dt><a href="#exec_file-spec"><code>exec_file</code></a></dt>
         </dl>
@@ -51,6 +52,23 @@
     <p>Exposes a mechanism for embedding the python interpreter into C++ code.</p>
 
     <h2><a name="functions"></a>Functions</h2>
+
+    <h3><a name="eval-spec"></a><code>eval</code></h3>
+    <pre>
+object eval(str expression,
+            object globals = object(),
+            object locals = object());
+    </pre>
+    <dl class="function-semantics">
+      <dt><b>Effects:</b>
+        Evaluate Python expression from <code>expression</code> in the context 
+        specified by the dictionaries <code>globals</code> and <code>locals</code>.
+      </dt>
+      <dt><b>Returns:</b>
+        An instance of <a href="object.html#object-spec">object</a> 
+        which holds the value of the expression.
+      </dt>
+    </dl>
 
     <h3><a name="exec-spec"></a><code>exec</code></h3>
     <pre>
