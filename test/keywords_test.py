@@ -80,7 +80,7 @@
 >>> f.set(1,1.0,"1")
 >>> f.a(), f.b(), f.n()
 (1, 1.0, '1')
->>> f.set2.__doc__.splitlines()[-3]
+>>> f.set2.__doc__.splitlines()[-4]
 "set2's docstring"
 '''
 

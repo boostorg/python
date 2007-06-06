@@ -113,7 +113,7 @@
 ...   doc = obj.__doc__.splitlines()
 ...   return "\\n".join(["|"+doc[i] for i in args])
 
->>> print selected_doc(X.__init__, 0, 2, 4, 6, 8, 9, 10, 12)
+>>> print selected_doc(X.__init__, 0, 3, 6, 9, 11, 12, 14, 17)
 |C++ signature:
 |C++ signature:
 |C++ signature:
@@ -123,11 +123,11 @@
 |C++ signature:
 |C++ signature:
 
->>> print selected_doc(Y.__init__, 0, 1)
+>>> print selected_doc(Y.__init__, 0, 2)
 |doc of Y init
 |C++ signature:
 
->>> print selected_doc(X.bar2, 0, 2, 4, 6, 8, 9, 10)
+>>> print selected_doc(X.bar2, 0, 3, 6, 9, 11, 12, 14)
 |C++ signature:
 |C++ signature:
 |C++ signature:

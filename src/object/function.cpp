@@ -507,7 +507,8 @@ void function::add_to_namespace(
     {
         if (   PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
             && mutable_attribute.attr("__doc__")) {
-            mutable_attribute.attr("__doc__") += "\n";
+            mutable_attribute.attr("__doc__") += (
+              mutable_attribute.attr("__doc__")[-1] != "\n" ? "\n\n" : "\n");
         }
         else {
             mutable_attribute.attr("__doc__") = "";
