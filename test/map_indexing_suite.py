@@ -11,7 +11,6 @@
 >>> assert "map_indexing_suite_IntMap_entry" in dir()
 >>> assert "map_indexing_suite_TestMap_entry" in dir()
 >>> assert "map_indexing_suite_XMap_entry" in dir()
->>> assert "map_indexing_suite_AMap_entry" in dir()
 >>> x = X('hi')
 >>> x
 hi
@@ -201,18 +200,6 @@ kiwi
 ...     print el.key(),
 ...     dom = el.data()
 joel kimpo
-
-#####################################################################
-# Test custom converter...
-#####################################################################
-
->>> am = AMap()
->>> am[3] = 4
->>> am[3]
-4
->>> for i in am:
-...     i.data()
-4
 
 #####################################################################
 # END.... 

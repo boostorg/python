@@ -12,23 +12,23 @@ static void *test=(void *) 78;
 
 void *get()
 {
-    return test;
+	return test;
 }
 
 void *getnull()
 {
-    return 0;
+	return 0;
 }
 
 void use(void *a)
 {
-    if(a!=test)
+	if(a!=test)
         throw std::runtime_error(std::string("failed"));
 }
 
 int useany(void *a)
 {
-    return a ? 1 : 0;
+	return a ? 1 : 0;
 }
 
 
@@ -36,8 +36,8 @@ namespace bpl = boost::python;
 
 BOOST_PYTHON_MODULE(voidptr_ext)
 {
-    bpl::def("get", &::get, bpl::return_value_policy<bpl::return_opaque_pointer>());
-    bpl::def("getnull", &::getnull, bpl::return_value_policy<bpl::return_opaque_pointer>());
-    bpl::def("use", &::use);
-    bpl::def("useany", &::useany);
+	bpl::def("get", &::get, bpl::return_value_policy<bpl::return_opaque_pointer>());
+	bpl::def("getnull", &::getnull, bpl::return_value_policy<bpl::return_opaque_pointer>());
+	bpl::def("use", &::use);
+	bpl::def("useany", &::useany);
 }

@@ -47,8 +47,7 @@ enum operator_id
     op_ixor,
     op_ior,
     op_complex,
-    op_nonzero,
-    op_repr
+    op_nonzero
 };
 
 }}} // namespace boost::python::detail

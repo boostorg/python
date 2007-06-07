@@ -29,12 +29,8 @@ struct implicit
     static void construct(PyObject* obj, rvalue_from_python_stage1_data* data)
     {
         void* storage = ((rvalue_from_python_storage<Target>*)data)->storage.bytes;
-
-        arg_from_python<Source> get_source(obj);
-        bool convertible = get_source.convertible();
-        BOOST_ASSERT(convertible);
         
-        new (storage) Target(get_source());
+        new (storage) Target(extract<Source>(obj)());
         
         // record successful construction
         data->convertible = storage;

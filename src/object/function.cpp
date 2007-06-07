@@ -14,7 +14,6 @@
 #include <boost/python/extract.hpp>
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
-#include <boost/python/ssize_t.hpp>
 
 #include <boost/python/detail/signature.hpp>
 #include <boost/mpl/vector/vector10.hpp>
@@ -65,7 +64,7 @@ function::function(
             = max_arity > num_keywords ? max_arity - num_keywords : 0;
 
 
-        ssize_t tuple_size = num_keywords ? max_arity : 0;
+        unsigned tuple_size = num_keywords ? max_arity : 0;
         m_arg_names = object(handle<>(PyTuple_New(tuple_size)));
 
         if (num_keywords != 0)
@@ -159,9 +158,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                     else
                     {
                         // build a new arg tuple, will adjust its size later
-                        assert(max_arity <= ssize_t_max);
-                        inner_args = handle<>(
-                            PyTuple_New(static_cast<ssize_t>(max_arity)));
+                        inner_args = handle<>(PyTuple_New(max_arity));
 
                         // Fill in the positional arguments
                         for (std::size_t i = 0; i < n_unnamed_actual; ++i)
@@ -296,7 +293,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
         % make_tuple(this->m_namespace, this->m_name);
     
     list actual_args;
-    for (ssize_t i = 0; i < PyTuple_Size(args); ++i)
+    for (int i = 0; i < PyTuple_Size(args); ++i)
     {
         char const* name = PyTuple_GetItem(args, i)->ob_type->tp_name;
         actual_args.append(str(name));

@@ -34,7 +34,6 @@ struct BOOST_PYTHON_DECL registration
 {
  public: // member functions
     explicit registration(type_info target, bool is_shared_ptr = false);
-   ~registration();
     
     // Convert the appropriately-typed data to Python
     PyObject* to_python(void const volatile*) const;

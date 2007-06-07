@@ -3,7 +3,6 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/list.hpp>
-#include <boost/python/ssize_t.hpp>
 
 namespace boost { namespace python { namespace detail {
 
@@ -54,7 +53,7 @@ long list_base::index(object_cref value) const
     return result;
 }
 
-void list_base::insert(ssize_t index, object_cref item)
+void list_base::insert(int index, object_cref item)
 {
     if (PyList_CheckExact(this->ptr()))
     {
@@ -80,7 +79,7 @@ object list_base::pop()
     return this->attr("pop")();
 }
 
-object list_base::pop(ssize_t index)
+object list_base::pop(long index)
 {
     return this->pop(object(index));
 }

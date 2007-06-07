@@ -6,7 +6,6 @@
 #include <boost/python/object_protocol.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/object.hpp>
-#include <boost/python/ssize_t.hpp>
 
 namespace boost { namespace python { namespace api {
 
@@ -107,7 +106,7 @@ namespace // slicing code copied directly out of the Python implementation
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {
-          ssize_t ilow = 0, ihigh = ssize_t_max;
+          int ilow = 0, ihigh = INT_MAX;
           if (!_PyEval_SliceIndex(v, &ilow))
               return NULL;
           if (!_PyEval_SliceIndex(w, &ihigh))
@@ -134,7 +133,7 @@ namespace // slicing code copied directly out of the Python implementation
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {
-          ssize_t ilow = 0, ihigh = ssize_t_max;
+          int ilow = 0, ihigh = INT_MAX;
           if (!_PyEval_SliceIndex(v, &ilow))
               return -1;
           if (!_PyEval_SliceIndex(w, &ihigh))

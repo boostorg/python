@@ -32,7 +32,7 @@ extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
 #include <boost/python/str.hpp>
 struct test_failure : std::exception
 {
-    test_failure(char const* expr, char const* /*function*/, char const* file, unsigned line)
+    test_failure(char const* expr, char const* function, char const* file, unsigned line)
       : msg(file + boost::python::str(":%s:") % line + ": Boost.Python assertion failure: " + expr)
     {}
 

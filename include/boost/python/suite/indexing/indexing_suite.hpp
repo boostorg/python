@@ -18,7 +18,7 @@
 
 namespace boost { namespace python {
                    
-    // indexing_suite class. This class is the facade class for
+    // indexing_suite class. This class is the protocol class for
     // the management of C++ containers intended to be integrated
     // to Python. The objective is make a C++ container look and
     // feel and behave exactly as we'd expect a Python container.

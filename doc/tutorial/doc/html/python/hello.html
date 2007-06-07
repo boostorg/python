@@ -1,6 +1,3 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -29,7 +26,7 @@
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.hello"></a> Building Hello World</h2></div></div></div>
 <a name="hello.from_start_to_finish"></a><h2>
-<a name="id377427"></a>
+<a name="id373240"></a>
       From Start To Finish
     </h2>
 <p>
@@ -38,16 +35,17 @@
       necessary to achieve that. We shall use the build tool that comes bundled with
       every boost distribution: <span class="bold"><b>bjam</b></span>.
     </p>
-<p class="blurb">
-      <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Building without bjam</b></span><br>
-      <br> Besides bjam, there are of course other ways to get your module built.
-      What's written here should not be taken as "the one and only way".
-      There are of course other build tools apart from <tt class="literal">bjam</tt>.<br>
-      <br> Take note however that the preferred build tool for Boost.Python is
-      bjam. There are so many ways to set up the build incorrectly. Experience shows
-      that 90% of the "I can't build Boost.Python" problems come from people
-      who had to use a different tool.
-    </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> <span class="bold"><b>Building without bjam</b></span><br>
+            <br> Besides bjam, there are of course other ways to get your module
+            built. What's written here should not be taken as "the one and only
+            way". There are of course other build tools apart from <tt class="literal">bjam</tt>.<br>
+            <br> Take note however that the preferred build tool for Boost.Python
+            is bjam. There are so many ways to set up the build incorrectly. Experience
+            shows that 90% of the "I can't build Boost.Python" problems
+            come from people who had to use a different tool. </td></tr></tbody>
+</table></div>
 <p>
       We shall skip over the details. Our objective will be to simply create the
       hello world module and run it in Python. For a complete reference to building
@@ -101,7 +99,7 @@
       platforms. The complete list of Bjam executables can be found <a href="http://sourceforge.net/project/showfiles.php?group_id=7586" target="_top">here</a>.
     </p>
 <a name="hello.let_s_jam_"></a><h2>
-<a name="id377613"></a>
+<a name="id373448"></a>
       Let's Jam!
     </h2>
 <p>
@@ -152,7 +150,7 @@ extension hello                     # Declare a Python extension called hello
       The last part tells BJam that we are depending on the Boost Python Library.
     </p>
 <a name="hello.running_bjam"></a><h2>
-<a name="id377751"></a>
+<a name="id373586"></a>
       Running bjam
     </h2>
 <p>
@@ -180,10 +178,11 @@ set PYTHON_VERSION=2.2
       The above assumes that the Python installation is in <tt class="literal">c:/dev/tools/python</tt>
       and that we are using Python version 2.2. You'll have to tweak these appropriately.
     </p>
-<p class="blurb">
-      <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span> "2.2.1", even if that's the version you
-      have.
-    </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> Be sure not to include a third number, e.g. <span class="bold"><b>not</b></span> "2.2.1", even if that's the version
+            you have.</td></tr></tbody>
+</table></div>
 <p>
       Take note that you may also do that through the Jamrules file we put in our
       project as detailed above. The file has <a href="../../../../../example/tutorial/Jamrules" target="_top">detailed

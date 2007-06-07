@@ -17,7 +17,7 @@
 
 namespace boost { namespace python { namespace numeric {
 
-class array;
+struct array;
 
 namespace aux
 {

@@ -1,6 +1,3 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -209,7 +206,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id455614"></a>
+<a name="id451559"></a>
         Call Policies
       </h2>
 <p>
@@ -290,11 +287,13 @@ Namespaces are one honking great idea -- let's do more of those!
           and hold the instance
         </li>
 </ul></div>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><b>Remember the Zen, Luke:</b></span><br>
-        <br> "Explicit is better than implicit"<br> "In the face
-        of ambiguity, refuse the temptation to guess"<br>
-      </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><b>Remember the Zen, Luke:</b></span><br>
+              <br> "Explicit is better than implicit"<br> "In
+              the face of ambiguity, refuse the temptation to guess"<br>
+              </td></tr></tbody>
+</table></div>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -405,7 +404,7 @@ Namespaces are one honking great idea -- let's do more of those!
         </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id457647"></a>
+<a name="id453611"></a>
         BOOST_PYTHON_FUNCTION_OVERLOADS
       </h2>
 <p>
@@ -435,7 +434,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id457963"></a>
+<a name="id453927"></a>
         BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
       </h2>
 <p>
@@ -481,7 +480,7 @@ Namespaces are one honking great idea -- let's do more of those!
         reference</a> for details.
       </p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id458323"></a>
+<a name="id454288"></a>
         init and optional
       </h2>
 <p>
@@ -548,14 +547,14 @@ Namespaces are one honking great idea -- let's do more of those!
         Then...
       </p>
 <pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="special">(</span><span class="keyword">void</span><span class="special">(*)(</span><span class="keyword">bool</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">char</span><span class="special">))</span><span class="number">0</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
+<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
 <p>
         Notice though that we have a situation now where we have a minimum of zero
         (0) arguments and a maximum of 3 arguments.
       </p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id459095"></a>
+<a name="id455013"></a>
         Manual Wrapping
       </h2>
 <p>

@@ -18,7 +18,6 @@
 # include <boost/python/other.hpp>
 # include <boost/lexical_cast.hpp>
 # include <boost/python/refcount.hpp>
-# include <boost/python/detail/unwrap_wrapper.hpp>
 # include <string>
 # include <complex>
 
@@ -170,9 +169,7 @@ namespace detail                                            \
       template <class L, class R>                           \
       struct apply                                          \
       {                                                     \
-          typedef typename unwrap_wrapper_<L>::type lhs;    \
-          typedef typename unwrap_wrapper_<R>::type rhs;    \
-          static PyObject* execute(lhs& l, rhs const& r)    \
+          static inline PyObject* execute(L& l, R const& r) \
           {                                                 \
               return detail::convert_result(expr);          \
           }                                                 \
@@ -186,9 +183,7 @@ namespace detail                                            \
       template <class L, class R>                           \
       struct apply                                          \
       {                                                     \
-          typedef typename unwrap_wrapper_<L>::type lhs;    \
-          typedef typename unwrap_wrapper_<R>::type rhs;    \
-          static PyObject* execute(rhs& r, lhs const& l)    \
+          static inline PyObject* execute(R& r, L const& l) \
           {                                                 \
               return detail::convert_result(expr);          \
           }                                                 \
@@ -276,10 +271,8 @@ namespace detail                                                \
       template <class L, class R>                               \
       struct apply                                              \
       {                                                         \
-          typedef typename unwrap_wrapper_<L>::type lhs;        \
-          typedef typename unwrap_wrapper_<R>::type rhs;        \
-          static PyObject*                                      \
-          execute(back_reference<lhs&> l, rhs const& r)         \
+          static inline PyObject*                               \
+          execute(back_reference<L&> l, R const& r)             \
           {                                                     \
               l.get() op r;                                     \
               return python::incref(l.source().ptr());          \
@@ -318,8 +311,7 @@ namespace detail                                                \
       template <class T>                                        \
       struct apply                                              \
       {                                                         \
-          typedef typename unwrap_wrapper_<T>::type self_t;     \
-          static PyObject* execute(self_t& x)                   \
+          static PyObject* execute(T& x)                        \
           {                                                     \
               return detail::convert_result(op(x));             \
           }                                                     \
@@ -347,7 +339,6 @@ BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)
 BOOST_PYTHON_UNARY_OPERATOR(complex, std::complex<double>, complex_)
 BOOST_PYTHON_UNARY_OPERATOR(str, lexical_cast<std::string>, str)
-BOOST_PYTHON_UNARY_OPERATOR(repr, lexical_cast<std::string>, repr)
 # undef BOOST_PYTHON_UNARY_OPERATOR
 
 }} // namespace boost::python
@@ -359,7 +350,6 @@ using boost::python::self_ns::long_;
 using boost::python::self_ns::float_;
 using boost::python::self_ns::complex_;
 using boost::python::self_ns::str;
-using boost::python::self_ns::repr;
 using boost::python::self_ns::pow;
 # endif
 

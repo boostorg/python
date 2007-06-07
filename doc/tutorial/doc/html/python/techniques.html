@@ -1,6 +1,3 @@
-<!-- Copyright David Abrahams 2006. Distributed under the Boost -->
-<!-- Software License, Version 1.0. (See accompanying -->
-<!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -99,12 +96,13 @@
         Compiling these files will generate the following Python extensions: <tt class="literal">core.pyd</tt>,
         <tt class="literal">io.pyd</tt> and <tt class="literal">filters.pyd</tt>.
       </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> The extension <tt class="literal">.pyd</tt> is used for python
-        extension modules, which are just shared libraries. Using the default for
-        your system, like <tt class="literal">.so</tt> for Unix and <tt class="literal">.dll</tt>
-        for Windows, works just as well.
-      </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> The extension <tt class="literal">.pyd</tt> is used
+              for python extension modules, which are just shared libraries. Using
+              the default for your system, like <tt class="literal">.so</tt> for Unix and
+              <tt class="literal">.dll</tt> for Windows, works just as well.</td></tr></tbody>
+</table></div>
 <p>
         Now, we create this directory structure for our Python package:
       </p>
@@ -427,17 +425,19 @@
         exporting it to Python at the same time: changes in a class will only demand
         the compilation of a single cpp, instead of the entire wrapper code.
       </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
-        take a look at the <tt class="literal">--multiple</tt> option, that generates the
-        wrappers in various files as demonstrated here.
-      </p>
-<p class="blurb">
-        <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> This method is useful too if you are getting the error
-        message <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal structure
-        overflow"</em></span> when compiling a large source file, as explained
-        in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.
-      </p>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> If you're exporting your classes with <a href="../../../../../pyste/index.html" target="_top">Pyste</a>,
+              take a look at the <tt class="literal">--multiple</tt> option, that generates
+              the wrappers in various files as demonstrated here.</td></tr></tbody>
+</table></div>
+<div class="informaltable"><table class="table">
+<colgroup><col></colgroup>
+<tbody><tr><td class="blurb"> <span class="inlinemediaobject"><img src="../images/note.png" alt="note"></span> This method is useful too if you are getting the
+              error message <span class="emphasis"><em>"fatal error C1204:Compiler limit:internal
+              structure overflow"</em></span> when compiling a large source file,
+              as explained in the <a href="../../../../v2/faq.html#c1204" target="_top">FAQ</a>.</td></tr></tbody>
+</table></div>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>

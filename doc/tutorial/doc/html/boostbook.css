@@ -23,24 +23,23 @@
 
     p 
     {
-        text-align: left;
-        font-size: 10pt; 
-        line-height: 1.15;
+        text-align: justify;
+        font-size: 11pt; 
+        line-height: 1.2;
     }
 
 /*=============================================================================
     Program listings
 =============================================================================*/
 
-    /* Code on paragraphs */
-    p tt.computeroutput
+    tt.computeroutput
     {
-        font-size: 9pt;
+        font-size: 10pt;
     }
 
     pre.synopsis
     {
-        font-size: 90%;
+        font-size: 10pt;
         margin: 1pc 4% 0pc 4%;
         padding: 0.5pc 0.5pc 0.5pc 0.5pc;
     }
@@ -48,36 +47,32 @@
     .programlisting, 
     .screen
     {
-        font-size: 9pt;
+        font-size: 10pt;
         display: block;
         margin: 1pc 4% 0pc 4%;
         padding: 0.5pc 0.5pc 0.5pc 0.5pc;
-    }
-
-    /* Program listings in tables don't get borders */
-    td .programlisting, 
-    td .screen
-    {
-        margin: 0pc 0pc 0pc 0pc;
-        padding:  0pc 0pc 0pc 0pc;
     }
 
 /*=============================================================================
     Headings
 =============================================================================*/
 
-    h1, h2, h3, h4, h5, h6 
+    h1, 
+    h2, 
+    h3, 
+    h4, 
+    h5, 
+    h6 
     { 
         text-align: left; 
-        margin: 1em 0em 0.5em 0em;
-        font-weight: bold;
+        margin-top: 2pc; 
     }
 
-    h1 { font: 140% }
+    h1 { font: 170% }
     h2 { font: bold 140% }
-    h3 { font: bold 130% }
-    h4 { font: bold 120% }
-    h5 { font: italic 110% }
+    h3 { font: bold 120% }
+    h4 { font: bold 100% }
+    h5 { font: italic 100% }
     h6 { font: italic 100% }
 
     /* Top page titles */
@@ -94,41 +89,12 @@
         margin-bottom: 1pc;
     }
 
-    h1.title { font-size: 140% }
-    h2.title { font-size: 140% }
-    h3.title { font-size: 130% }
-    h4.title { font-size: 120% }
-    h5.title { font-size: 110% }
-    h6.title { font-size: 100% }
-
-    .section h1 
-    {
-        margin: 0em 0em 0.5em 0em;
-        font-size: 140%;
-    }
-
-    .section h2 { font-size: 140% }
-    .section h3 { font-size: 130% }
-    .section h4 { font-size: 120% }
-    .section h5 { font-size: 110% }
-    .section h6 { font-size: 100% }
-
-    /* Code on titles */
-    h1 tt.computeroutput { font-size: 140% }
-    h2 tt.computeroutput { font-size: 140% }
-    h3 tt.computeroutput { font-size: 130% }
-    h4 tt.computeroutput { font-size: 120% }
-    h5 tt.computeroutput { font-size: 110% }
-    h6 tt.computeroutput { font-size: 100% }
-
-/*=============================================================================
-    Author
-=============================================================================*/
-
-    h3.author 
-    { 
-        font-size: 100% 
-    }
+    h1.title { font-size: 220% }
+    h2.title { font-size: 220% }
+    h3.title { font-size: 170% }
+    h4.title { font-size: 140% }
+    h5.title { font-size: 120% }
+    h6.title { font-size: 120% }
 
 /*=============================================================================
     Lists
@@ -136,20 +102,20 @@
 
     li
     {
-        font-size: 10pt;
+        font-size: 11pt;
         line-height: 1.3;
     }
     
     /* Unordered lists */
     ul 
     {
-        text-align: left;
+        text-align: justify;
     }
     
     /* Ordered lists */
     ol 
     {
-        text-align: left;
+        text-align: justify;
     }
 
 /*=============================================================================
@@ -193,9 +159,9 @@
     .toc
     {
        margin: 1pc 4% 0pc 4%;
-       padding: 0.1pc 1pc 0.1pc 1pc;
-       font-size: 80%; 
-       line-height: 1.15;
+       padding: 0.5pc;
+       font-size: 11pt; 
+       line-height: 1.3;
     }
     
     .boost-toc
@@ -214,6 +180,7 @@
         margin-left: 4%;
         padding-right: 0.5em; 
         padding-left: 0.5em;
+        font-size: 120%;
     }
     
     .informaltable table, 
@@ -235,8 +202,8 @@
     div.table table tr td
     {
         padding: 0.5em;
-        text-align: left;
-        font-size: 9pt;
+        text-align: justify;
+        font-size: 11pt;
     }
 
     div.informaltable table tr th, 
@@ -244,75 +211,50 @@
     {
         padding: 0.5em 0.5em 0.5em 0.5em;
         border: 1pt solid white;
-        font-size: 80%;
     }
 
 /*=============================================================================
     Blurbs
 =============================================================================*/
 
-    div.note,
-    div.tip,
-    div.important,
-    div.caution,
-    div.warning,
-    p.blurb
+    div.informaltable table tr td.blurb
     {
-        font-size: 9pt; /* A little bit smaller than the main text */
+        font-size: 10pt; /* A little bit smaller than the main text */
         line-height: 1.2;
-        display: block;
-        margin: 1pc 4% 0pc 4%;
-        padding: 0.5pc 0.5pc 0.5pc 0.5pc;
     }
     
-    p.blurb img
+    td.blurb img
     {
         padding: 1pt;
     }
 
 /*=============================================================================
-    Variable Lists
-=============================================================================*/
-
-    /* Make the terms in definition lists bold */
-    div.variablelist dl dt,
-    span.term
-    {
-        font-weight: bold;
-        font-size: 10pt;
-    }
-
-    div.variablelist table tbody tr td
-    {
-        text-align: left;
-        vertical-align: top;
-        padding: 0em 2em 0em 0em;
-        font-size: 10pt;
-        margin: 0em 0em 0.5em 0em;
-        line-height: 1;
-    }
-
-    div.variablelist dl dt
-    {
-        margin-bottom: 0.2em;
-    }
-
-    div.variablelist dl dd
-    {
-        margin: 0em 0em 0.5em 2em;
-        font-size: 10pt;
-    }
-
-    div.variablelist table tbody tr td p,
-    div.variablelist dl dd p
-    {
-        margin: 0em 0em 0.5em 0em;
-        line-height: 1;
-    }
-
-/*=============================================================================
     Misc
 =============================================================================*/
+
+    /* Tone down the title of Parameter lists */
+    div.variablelist p.title
+    {
+        font-weight: bold;
+        font-size: 100%;
+        text-align: left;
+    }
+    
+    /* Tabularize parameter lists */
+    div.variablelist dl dt
+    {
+        float: left;
+        clear: left;
+        display: block;
+        font-style: italic;
+    }
+    
+    div.variablelist dl dd
+    {
+        display: block;
+        clear:   right;
+        padding-left: 8pc;
+    }
 
     /* Title of books and articles in bibliographies */
     span.title
@@ -352,14 +294,6 @@
         {
             color: #9c5a9c;
         }
-
-        h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
-        h1 a:hover, h2 a:hover, h3 a:hover, h4 a:hover, h5 a:hover, h6 a:hover,
-        h1 a:visited, h2 a:visited, h3 a:visited, h4 a:visited, h5 a:visited, h6 a:visited
-        {
-            text-decoration: none; /* no underline */
-            color: #000000;
-        }
     
     /* Syntax Highlighting */
         .keyword        { color: #0000AA; }
@@ -388,50 +322,41 @@
     /* Program listing */
         pre.synopsis
         {
-            border: 1px solid #DCDCDC;
+            background-color: #F3F3F3;
+            border: 1pt solid #C0C0C0;
         }
     
         .programlisting, 
         .screen
         {
-            border: 1px solid #DCDCDC;
-        }
-    
-        td .programlisting, 
-        td .screen
-        {
-            border: 0px solid #DCDCDC;
+            background-color: #F3F3F3;
+            border: 1pt solid #C0C0C0;
         }
     
     /* Blurbs */
-        div.note,
-        div.tip,
-        div.important,
-        div.caution,
-        div.warning,
-        p.blurb
+        div.informaltable table tr td.blurb
         {
-            border: 1px solid #DCDCDC;
+            background-color: #FFFFF0;
+            border: 1pt solid #707070;
         }
     
     /* Table of contents */
         .toc
         {
-            border: 1px solid #DCDCDC;
+            background-color: #F3F3F3;
         }
     
     /* Tables */
         div.informaltable table tr td, 
         div.table table tr td
         {
-            border: 1px solid #DCDCDC;
+            background-color: #F0F0F0;
         }
     
         div.informaltable table tr th, 
         div.table table tr th
         {
-            background-color: #F0F0F0;
-            border: 1px solid #DCDCDC;
+            background-color: #E4E4E4;
         }
     
     /* Misc */
@@ -469,12 +394,6 @@
         .screen
         {
             border: 1px solid gray;
-        }
-    
-        td .programlisting, 
-        td .screen
-        {
-            border: 0px solid #DCDCDC;
         }
     
     /* Table of contents */

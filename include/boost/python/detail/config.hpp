@@ -114,4 +114,24 @@
 # define BOOST_PYTHON_OFFSETOF offsetof
 #endif
 
+//  enable automatic library variant selection  ------------------------------// 
+
+#if !defined(BOOST_PYTHON_SOURCE) && !defined(BOOST_ALL_NO_LIB) && !defined(BOOST_PYTHON_NO_LIB)
+//
+// Set the name of our library, this will get undef'ed by auto_link.hpp
+// once it's done with it:
+//
+#define BOOST_LIB_NAME boost_python
+//
+// If we're importing code from a dll, then tell auto_link.hpp about it:
+//
+#ifdef BOOST_PYTHON_DYNAMIC_LIB
+#  define BOOST_DYN_LINK
+#endif
+//
+// And include the header that does the work:
+//
+#include <boost/config/auto_link.hpp>
+#endif  // auto-linking disabled
+
 #endif // CONFIG_DWA052200_H_

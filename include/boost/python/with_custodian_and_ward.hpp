@@ -90,7 +90,7 @@ struct with_custodian_and_ward_postcall : BasePolicy_
         // check if either custodian or ward exceeds the arity
         // (this weird formulation avoids "always false" warnings
         // for arity_ = 0)
-        if ( (std::max)(custodian, ward) > arity_ )
+        if ( std::max(custodian, ward) > arity_ )
 #endif
         {
             PyErr_SetString(

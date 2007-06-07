@@ -5,7 +5,7 @@
 #ifndef OBJECT_DWA2002612_HPP
 # define OBJECT_DWA2002612_HPP
 
-# include <boost/python/ssize_t.hpp>
+# include <boost/python/detail/prefix.hpp>
 # include <boost/python/object_core.hpp>
 # include <boost/python/object_attributes.hpp>
 # include <boost/python/object_items.hpp>
@@ -15,9 +15,9 @@
 
 namespace boost { namespace python {
 
-    inline ssize_t len(object const& obj)
+    inline long len(object const& obj)
     {
-        ssize_t result = PyObject_Length(obj.ptr());
+        long result = PyObject_Length(obj.ptr());
         if (PyErr_Occurred()) throw_error_already_set();
         return result;
     }

@@ -103,7 +103,6 @@ BOOST_PYTHON_MODULE(keywords)
                , init<optional<int, double, const std::string &> >()
    )
       .def("set", &Bar::set, bar_set())
-      .def("set2", &Bar::set, bar_set("set2's docstring"))
       .def("seta", &Bar::seta, arg("a"))
        
       .def("a", &Bar::geta)

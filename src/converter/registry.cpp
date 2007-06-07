@@ -57,24 +57,6 @@ BOOST_PYTHON_DECL PyObject* registration::to_python(void const volatile* source)
         : this->m_to_python(const_cast<void*>(source));
 }
 
-namespace
-{
-  template< typename T >
-  void delete_node( T* node )
-  {
-      if( !!node && !!node->next )
-          delete_node( node->next );
-      delete node;
-  }
-}
-
-registration::~registration()
-{
-  delete_node(lvalue_chain);
-  delete_node(rvalue_chain);
-}
-
-
 namespace // <unnamed>
 {
   typedef registration entry;

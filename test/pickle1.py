@@ -18,11 +18,6 @@ r'''>>> import pickle1_ext
     Hello from California!
     >>> print wl.greet()
     Hello from California!
-
-    >>> noop = pickle1_ext.noop()
-    >>> try: pickle.dumps(noop)
-    ... except RuntimeError, e: print str(e)[:55]
-    Pickling of "pickle1_ext.noop" instances is not enabled
 '''
 
 def run(args = None):

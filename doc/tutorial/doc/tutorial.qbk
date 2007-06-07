@@ -1100,7 +1100,7 @@ overloaded functions in one-shot:
 
 Then...
 
-    .def("foo", (void(*)(bool, int, char))0, foo_overloads());
+    .def("foo", foo, foo_overloads());
 
 Notice though that we have a situation now where we have a minimum of zero
 (0) arguments and a maximum of 3 arguments.
