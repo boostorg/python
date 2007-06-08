@@ -38,7 +38,6 @@ lib boost_python
     str.cpp
     slice.cpp
 
-    aix_init_module.cpp
     converter/from_python.cpp
     converter/registry.cpp
     converter/type_id.cpp
