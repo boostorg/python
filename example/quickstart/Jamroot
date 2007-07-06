@@ -35,3 +35,9 @@ testing.run embedding
   :              # requirements
   : test_embed ; # name of test
 
+# Create a "test" target that runs all the tests
+alias test : test_ext test_embed ;
+
+# make sure the tests don't run by default
+explicit test_ext test_embed test ;
+

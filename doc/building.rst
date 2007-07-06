@@ -65,6 +65,8 @@ dynamically-loaded libraries with a single entry point, which means
 you can change them without rebuilding either the other extension
 modules or the executable containing ``main()``.
 
+.. _quickstart:
+
 No-Install Quickstart
 =====================
 
@@ -326,17 +328,6 @@ argument to ``bjam`` (or the ``--with-libraries=python`` argument
 to ``configure``), so only the Boost.Python binary will be built,
 rather than all the Boost binaries.
 
-.. Admonition:: Windows Users: No Auto-Link Support
-
-  Boost.Python does not yet support the `auto-link`_ feature, so if
-  you're not using the quickstart_ method, you'll have to pay
-  attention to the names of generated libraries and add extra link
-  arguments not shown in the `Getting Started Guide`_ to select the
-  right library.
-
-.. _auto-link: ../../../more/getting_started/windows.html#link-your-program-to-a-boost-library
-
-.. _quickstart: `no-install quickstart`_
 
 Configuring Boost.Build
 =======================
@@ -651,10 +642,6 @@ __ http://www.python.org/doc/current/inst/index.html
 
    __ ../../../more/getting_started/windows.html#library-naming
    __ ../../../more/getting_started/unix-variants.html#library-naming
-
-   Be sure to read this section even if your compiler supports
-   auto-linking, as Boost.Python does not yet take advantage of
-   that feature.
 
 .. [#toolset-specific] Because of the way most \*nix platforms
    share symbols among dynamically-loaded objects, I'm not certain
