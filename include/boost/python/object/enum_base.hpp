@@ -21,7 +21,9 @@ struct BOOST_PYTHON_DECL enum_base : python::api::object
         , converter::to_python_function_t
         , converter::convertible_function
         , converter::constructor_function
-        , type_info);
+        , type_info
+        , const char *doc = 0
+        );
 
     void add_value(char const* name, long value);
     void export_values();

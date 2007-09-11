@@ -45,6 +45,7 @@ lib boost_python
     wrapper.cpp
     import.cpp
     exec.cpp
+    object/function_doc_signature.cpp
     :   # requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE

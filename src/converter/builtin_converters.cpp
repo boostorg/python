@@ -16,6 +16,7 @@
 #include <boost/python/converter/registry.hpp>
 #include <boost/python/converter/registrations.hpp>
 #include <boost/python/converter/shared_ptr_deleter.hpp>
+#include <boost/python/converter/pytype_function.hpp>
 
 #include <boost/cast.hpp>
 #include <string>
@@ -56,6 +57,7 @@ namespace
               &slot_rvalue_from_python<T,SlotPolicy>::convertible
               , &slot_rvalue_from_python<T,SlotPolicy>::construct
               , type_id<T>()
+              , &SlotPolicy::get_pytype
               );
       }
       
@@ -100,6 +102,7 @@ namespace
           return (PyInt_Check(obj) || PyLong_Check(obj))
               ? &number_methods->nb_int : 0;
       }
+      static PyTypeObject const* get_pytype() { return &PyInt_Type;}
   };
 
   template <class T>
@@ -135,6 +138,7 @@ namespace
           return (PyInt_Check(obj) || PyLong_Check(obj))
               ? &py_object_identity : 0;
       }
+      static PyTypeObject const* get_pytype() { return &PyInt_Type;}
   };
 
   template <class T>
@@ -173,6 +177,7 @@ namespace
           else
               return 0;
       }
+      static PyTypeObject const* get_pytype() { return &PyInt_Type;}
   };
   
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
@@ -228,6 +233,15 @@ namespace
       {
           return PyObject_IsTrue(intermediate);
       }
+
+      static PyTypeObject const* get_pytype()
+      {
+#if PY_VERSION_HEX >= 0x02030000
+        return &PyBool_Type;
+#else
+        return &PyInt_Type;
+#endif
+      }
   };
 
   // A SlotPolicy for extracting floating types from Python objects.
@@ -259,6 +273,7 @@ namespace
               return PyFloat_AS_DOUBLE(intermediate);
           }
       }
+      static PyTypeObject const* get_pytype() { return &PyFloat_Type;}
   };
 
   // A SlotPolicy for extracting C++ strings from Python objects.
@@ -276,6 +291,7 @@ namespace
       {
           return std::string(PyString_AsString(intermediate),PyString_Size(intermediate));
       }
+      static PyTypeObject const* get_pytype() { return &PyString_Type;}
   };
 
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
@@ -316,6 +332,7 @@ namespace
           }
           return result;
       }
+      static PyTypeObject const* get_pytype() { return &PyUnicode_Type;}
   };
 #endif 
 
@@ -346,6 +363,7 @@ namespace
               return PyFloat_AS_DOUBLE(intermediate);
           }
       }
+      static PyTypeObject const* get_pytype() { return &PyComplex_Type;}
   };
 } 
 
@@ -411,7 +429,7 @@ void initialize_builtin_converters()
     slot_rvalue_from_python<std::complex<long double>,complex_rvalue_from_python>();
     
     // Add an lvalue converter for char which gets us char const*
-    registry::insert(convert_to_cstring,type_id<char>());
+    registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyString_Type>::get_pytype);
 
     // Register by-value converters to std::string, std::wstring
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)

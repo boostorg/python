@@ -89,7 +89,7 @@ namespace boost { namespace python
   template &lt;class T&gt;
   class enum_ : public <a href="object.html#object-spec">object</a>
   {
-    enum_(char const* name);
+    enum_(char const* name, char const* doc = 0);
     enum_&lt;T&gt;&amp; value(char const* name, T);
     enum_&lt;T&gt;&amp; export_values();
   };
@@ -99,7 +99,7 @@ namespace boost { namespace python
     <h4><a name="enum_-spec-ctors"></a>Class template <code>enum_</code>
     constructors</h4>
 <pre>
-enum_(char const* name);
+enum_(char const* name, char const* doc=0);
 </pre>
 
     <dl class="function-semantics">
@@ -131,7 +131,7 @@ inline enum_&lt;T&gt;&amp; value(char const* name, T x);
 
       <dt><b>Effects:</b> adds an instance of the wrapped enumeration
       type with value <code>x</code> to the type's dictionary as the
-      <code>name</code>d attribute</dt>.
+      <code>name</code>d attribute.</dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 
@@ -146,7 +146,7 @@ inline enum_&lt;T&gt;&amp; export_values();
       <dt><b>Effects:</b> sets attributes in the current <a
         href="scope.html#scope-spec"><code>scope</code></a> with the
         same names and values as all enumeration values exposed so far
-        by calling <code>value()</code></dt>.
+        by calling <code>value()</code>.</dt>
 
       <dt><b>Returns:</b> <code>*this</code></dt>
 

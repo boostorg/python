@@ -14,7 +14,7 @@ BOOST_PYTHON_DECL PyObject* checked_downcast_impl(PyObject*, PyTypeObject*);
 // Used as a base class for specializations which need to provide
 // Python type checking capability.
 template <class Object, PyTypeObject* pytype>
-struct pyobject_type
+struct pyobject_type 
 {
     static bool check(PyObject* x)
     {
@@ -27,6 +27,9 @@ struct pyobject_type
             (checked_downcast_impl)(x, pytype)
             );
     }
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+    static PyTypeObject const* get_pytype() { return pytype; }
+#endif
 };
 
 }}} // namespace boost::python::converter

@@ -27,6 +27,7 @@ struct rvalue_from_python_chain
 {
     convertible_function convertible;
     constructor_function construct;
+    PyTypeObject const* (*expected_pytype)();
     rvalue_from_python_chain* next;
 };
 
@@ -43,6 +44,11 @@ struct BOOST_PYTHON_DECL registration
     // exception if no class has been registered.
     PyTypeObject* get_class_object() const;
 
+    // Return common denominator of the python class objects, 
+    // convertable to target. Inspects the m_class_object and the value_chains.
+    PyTypeObject const* expected_from_python_type() const;
+    PyTypeObject const* to_python_target_type() const;
+
  public: // data members. So sue me.
     const python::type_info target_type;
 
@@ -57,6 +63,8 @@ struct BOOST_PYTHON_DECL registration
 
     // The unique to_python converter for the associated C++ type.
     to_python_function_t m_to_python;
+    PyTypeObject const* (*m_to_python_target_type)();
+
 
     // True iff this type is a shared_ptr.  Needed for special rvalue
     // from_python handling.
@@ -77,6 +85,7 @@ inline registration::registration(type_info target_type, bool is_shared_ptr)
       , rvalue_chain(0)
       , m_class_object(0)
       , m_to_python(0)
+      , m_to_python_target_type(0)
       , is_shared_ptr(is_shared_ptr)
 {}
 

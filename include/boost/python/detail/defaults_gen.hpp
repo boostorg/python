@@ -248,7 +248,7 @@ namespace detail
         BOOST_PYTHON_GEN_MEM_FUNCTION(                                                  \
             fname, void_return_type, n_args, n_dflts, ;)                                \
                                                                                         \
-        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
+        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args + 1, n_dflts)            \
     };
 
 # else // !defined(BOOST_NO_VOID_RETURNS)
@@ -273,7 +273,7 @@ namespace detail
             fname, non_void_return_type, n_args, n_dflts, return)                       \
                                                                                         \
         typedef non_void_return_type void_return_type;                                  \
-        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args, n_dflts)                \
+        BOOST_PYTHON_OVERLOAD_CONSTRUCTORS(fstubs_name, n_args + 1, n_dflts)            \
     };
 
 # endif // !defined(BOOST_NO_VOID_RETURNS)

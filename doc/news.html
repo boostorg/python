@@ -32,7 +32,43 @@
   <hr>
 
   <dl class="page-index">
-    <dt>Current CVS</dt>
+    <dt>Current SVN</dt>
+
+    <dd>
+      <ul>
+        <li>Pythonic signatures are now automatically appended to the
+        docstrings.
+
+        <li>Use <a href="v2/docstring_options.html"
+        ><code>docstring_options.hpp</code></a> header 
+        control the content of docstrings.
+	
+	<li>This new feature increases the size of the modules by about 14%.
+        If this is not acceptable it can be turned off by defining the macro
+        BOOST_PYTHON_NO_PY_SIGNATURES. Modules compiled with and without the macro
+        defined are compatible.
+        </li>
+	<li> If BOOST_PYTHON_NO_PY_SIGNATURES is undefined, this version defines the 
+        macro BOOST_PYTHON_SUPPORTS_PY_SIGNATURES. This allows writing code that will compile
+        with older version of Boost.Python (see <a href="v2/pytype_function.html#examples">here</a>).
+        </li>
+	<li>By defining BOOST_PYTHON_PY_SIGNATURES_PROPER_INIT_SELF_TYPE, and at a cost
+        of another 14% size increase, proper pythonic type is generated for the "self"
+        parameter of the __init__ methods.
+        </li>
+        
+        <li> To support this new feature changes were made to the 
+        <a href="v2/to_python_converter.html"><code>to_python_converter.hpp</code></a>, 
+        <a href="v2/default_call_policies.html"><code>default_call_policies</code></a>,
+        <a href="v2/ResultConverter.html"><code>ResultConverter</code></a>,
+        <a href="v2/CallPolicies.html"><code>CallPolicies</code></a> and some others.
+        Efforts were made not to have interface breaking changes. 
+        </li>
+
+      </ul>
+    </dd>
+
+    <dt>12 May 2007 - 1.34.0 release</dt>
 
     <dd>
       <ul>

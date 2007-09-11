@@ -64,6 +64,24 @@
 ...     except TypeError: pass
 ...     else: print 'expected a TypeError exception'
 
+>>> print look.__doc__.splitlines()[0]
+look( (X)arg1) -> int : 
+
+>>> print steal.__doc__.splitlines()[0]
+steal( (X)arg1) -> int : 
+
+>>> print maybe_steal.__doc__.splitlines()[0]
+maybe_steal( (X)arg1, (bool)arg2) -> int : 
+
+>>> print make.__doc__.splitlines()[0]
+make() -> X : 
+
+>>> print callback.__doc__.splitlines()[0]
+callback( (object)arg1) -> X : 
+
+>>> print extract.__doc__.splitlines()[0]
+extract( (object)arg1) -> X : 
+
 '''
 
 def run(args = None):
