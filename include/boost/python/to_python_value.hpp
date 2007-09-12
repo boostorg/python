@@ -106,7 +106,7 @@ struct object_manager_get_pytype<true>
     
       PyObject* operator()(argument_type) const;
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-      PyTypeObject const* get_pytype() const {return get_pytype((boost::type<T>*)0);}
+      PyTypeObject const* get_pytype() const {return get_pytype((boost::type<argument_type>*)0);}
 #endif 
       // This information helps make_getter() decide whether to try to
       // return an internal reference or not. I don't like it much,
@@ -114,6 +114,8 @@ struct object_manager_get_pytype<true>
       BOOST_STATIC_CONSTANT(bool, uses_registry = false);
   private:
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+      template <class U>
+      PyTypeObject const* get_pytype(boost::type<shared_ptr<U> &> *) const {return converter::registered<U>::converters.to_python_target_type();}
       template <class U>
       PyTypeObject const* get_pytype(boost::type<const shared_ptr<U> &> *) const {return converter::registered<U>::converters.to_python_target_type();}
 #endif
