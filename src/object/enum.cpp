@@ -121,7 +121,7 @@ object module_prefix();
 
 namespace
 {
-  object new_enum_type(char const* name)
+  object new_enum_type(char const* name, char const *doc)
   {
       if (enum_type_object.tp_dict == 0)
       {
@@ -143,6 +143,8 @@ namespace
       object module_name = module_prefix();
       if (module_name)
          d["__module__"] = module_name;
+      if (doc)
+         d["__doc__"] = doc;
       
       object result = (object(metatype))(name, make_tuple(base), d);
       
@@ -158,8 +160,9 @@ enum_base::enum_base(
     , converter::convertible_function convertible
     , converter::constructor_function construct
     , type_info id
+    , char const *doc
     )
-    : object(new_enum_type(name))
+    : object(new_enum_type(name, doc))
 {
     converter::registration& converters
         = const_cast<converter::registration&>(

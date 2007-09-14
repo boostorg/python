@@ -13,6 +13,7 @@
 # include <boost/type_traits/is_pointer.hpp>
 # include <boost/type_traits/is_reference.hpp>
 # include <boost/mpl/or.hpp>
+# include <boost/mpl/front.hpp>
 
 namespace boost { namespace python { 
 
@@ -49,6 +50,12 @@ struct default_call_policies
 
     typedef default_result_converter result_converter;
     typedef PyObject* argument_package;
+
+    template <class Sig> 
+    struct extract_return_type : mpl::front<Sig>
+    {
+    };
+
 };
 
 struct default_result_converter

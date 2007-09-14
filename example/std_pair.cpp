@@ -18,6 +18,7 @@ namespace { // Avoid cluttering the global namespace.
       return boost::python::incref(
         boost::python::make_tuple(p.first, p.second).ptr());
     }
+    static PyTypeObject const *get_pytype () {return &PyTuple_Type; }
   };
 
   // Helper for convenience.
@@ -28,7 +29,9 @@ namespace { // Avoid cluttering the global namespace.
     {
       boost::python::to_python_converter<
         std::pair<T1, T2>,
-        std_pair_to_tuple<T1, T2> >();
+        std_pair_to_tuple<T1, T2>,
+        true //std_pair_to_tuple has get_pytype
+        >();
     }
   };
 

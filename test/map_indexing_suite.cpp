@@ -26,61 +26,6 @@ std::string x_value(X const& x)
     return "gotya " + x.s;
 }
 
-struct A
-{
-  int value;
-  A() : value(0){};
-  A(int v) : value(v) {};
-};
-
-bool operator==(const A& v1, const A& v2)
-{
-  return (v1.value == v2.value);
-}
-
-struct B
-{
-  A a;
-};
-
-// Converter from A to python int
-struct AToPython
-{
-  static PyObject* convert(const A& s)
-  {
-    return boost::python::incref(boost::python::object((int)s.value).ptr());
-  }
-};
-
-// Conversion from python int to A
-struct AFromPython
-{
-  AFromPython()
-  {
-    boost::python::converter::registry::push_back(
-        &convertible,
-        &construct,
-        boost::python::type_id< A >());
-  }
-
-  static void* convertible(PyObject* obj_ptr)
-  {
-    if (!PyInt_Check(obj_ptr)) return 0;
-    return obj_ptr;
-  }
-
-  static void construct(
-      PyObject* obj_ptr,
-      boost::python::converter::rvalue_from_python_stage1_data* data)
-  {
-    void* storage = (
-        (boost::python::converter::rvalue_from_python_storage< A >*)
-        data)-> storage.bytes;
-
-    new (storage) A((int)PyInt_AsLong(obj_ptr));
-    data->convertible = storage;
-  }
-};
 
 BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 {
@@ -115,17 +60,9 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
         .def(map_indexing_suite<std::map<std::string, boost::shared_ptr<X> >, true>())
     ;
 
-  to_python_converter< A , AToPython >();
-  AFromPython();
-
-  class_< std::map<int, A> >("AMap")
-    .def(map_indexing_suite<std::map<int, A>, true >())
-    ;
-
-  class_< B >("B")
-    .add_property("a", make_getter(&B::a, return_value_policy<return_by_value>()),
-        make_setter(&B::a, return_value_policy<return_by_value>()))
-    ;
+    void a_map_indexing_suite(); // moved to a_map_indexing_suite.cpp to 
+    a_map_indexing_suite();      // avoid MSVC 6/7 internal structure overflow
+	
 }
 
 #include "module_tail.cpp"

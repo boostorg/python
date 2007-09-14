@@ -1,10 +1,12 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <!-- Copyright David Abrahams 2006. Distributed under the Boost -->
 <!-- Software License, Version 1.0. (See accompanying -->
 <!-- file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) -->
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<link rel="stylesheet" type="text/css" href=../../../../boost.css>
+<link rel="stylesheet" type="text/css" href="../../../../boost.css">
 <title>Boost.Python - ResultConverter Concept</title>
 </head>
 <body link="#0000ff" vlink="#800080">
@@ -24,10 +26,12 @@
 <dl class="page-index"> 
   <dt><a href="#introduction">Introduction</a></dt>
   <dt><a href="#concept-requirements">Concept Requirements</a></dt>
-  <dl class="page-index"> 
-    <dt><a href="#ResultConverter-concept">ResultConverter Concept</a></dt>
-    <dt><a href="#ResultConverterGenerator-concept">ResultConverterGenerator Concept</a></dt>
-  </dl>
+  <dd>
+    <dl class="page-index"> 
+      <dt><a href="#ResultConverter-concept">ResultConverter Concept</a></dt>
+      <dt><a href="#ResultConverterGenerator-concept">ResultConverterGenerator Concept</a></dt>
+    </dl>
+  </dd>
 </dl>
 
 <h2><a name="introduction"></a>Introduction</h2>
@@ -78,6 +82,13 @@ denotes an object of type <code><b>R</b></code>.
     <code>to_python</code>, in which case <a
     href="http://www.python.org/doc/current/api/exceptionHandling.html#l2h-71">PyErr_Occurred</a>
     should return non-zero.</td>
+  </tr>
+  <tr> 
+    <td valign="top"><code>c.get_pytype()</code></td>
+    <td><code>PyTypeObject const*</code></td>
+    <td>A pointer to a Python Type object corresponding to result of the conversion,
+    or <code>0</code>. Used for documentation generation. If <code>0</code> is returned
+    the generated type in the documentation will be <b>object</b> .</td>
   </tr>
 </table>
 

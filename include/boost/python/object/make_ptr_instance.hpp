@@ -29,7 +29,12 @@ struct make_ptr_instance
     {
         return get_class_object_impl(get_pointer(x));
     }
-
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+    static inline PyTypeObject const* get_pytype()
+    {
+        return converter::registered<T>::converters.get_class_object();
+    }
+#endif
  private:
     template <class U>
     static inline PyTypeObject* get_class_object_impl(U const volatile* p)

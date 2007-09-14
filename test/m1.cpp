@@ -13,6 +13,7 @@
 #include <boost/python/to_python_converter.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/manage_new_object.hpp>
+#include <boost/python/converter/pytype_function.hpp>
 #include <string.h>
 #include "simple_type.hpp"
 #include "complicated.hpp"
@@ -170,7 +171,8 @@ using boost::python::to_python_converter;
 
 // Wrap a simple by copying it into a Simple
 struct simple_to_python
-    : to_python_converter<simple, simple_to_python>
+    : to_python_converter<simple, simple_to_python, true>
+    //, boost::python::converter::wrap_pytype<&SimpleType>
 {
     static PyObject* convert(simple const& x)
     {
@@ -178,6 +180,7 @@ struct simple_to_python
         p->x = x;
         return (PyObject*)p;
     }
+    static PyTypeObject const *get_pytype(){return &SimpleType; }
 };
 
 struct int_from_noddy

@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace {
+namespace boost_python_test {
 
   // A friendly class.
   class world
@@ -52,6 +52,7 @@ namespace {
 BOOST_PYTHON_MODULE(pickle1_ext)
 {
   using namespace boost::python;
+  using namespace boost_python_test;
   class_<world>("world", init<const std::string&>())
       .def("greet", &world::greet)
       .def_pickle(world_pickle_suite())

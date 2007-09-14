@@ -135,6 +135,7 @@ bpl-test crossmod_opaque
 [ bpl-test nested ]
 
 [ bpl-test docstring ]
+[ bpl-test pytype_function ]
 
 [ bpl-test vector_indexing_suite ]
 
@@ -147,7 +148,7 @@ bpl-test crossmod_opaque
     <toolset>hp_cxx:<build>no ]
 
 [ python-extension map_indexing_suite_ext
-    : map_indexing_suite.cpp int_map_indexing_suite.cpp
+    : map_indexing_suite.cpp int_map_indexing_suite.cpp a_map_indexing_suite.cpp
     /boost/python//boost_python ]
 [ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]

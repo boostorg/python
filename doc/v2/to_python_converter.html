@@ -108,6 +108,23 @@
         <td>A class type whose static member function <code>convert</code>
         does the real work of the conversion.</td>
       </tr>
+      <tr>
+        <td><code>bool has_get_pytype = false</code></td>
+
+        <td>
+            <code>PyTypeObject const * p = Conversion::get_pytype() </code>.</td>
+
+        <td><b>Optional member</b> - if <code>Conversion</code> has <code>get_pytype</code> member supply 
+            <code>true</code> for this parameters.
+            If present <code>get_pytype</code> is used to document the return type 
+            of functions using this conversion. The <code>get_pytype</code> may be implemented 
+            using the classes and functions 
+            from <a href="pytype_function.html"><code>pytype_function.hpp</code></a>
+            <b>NOTE :</b> For backward compatibility this parameter may be passed after 
+            checking if <code>BOOST_PYTHON_SUPPORTS_PY_SIGNATURES</code> is defined (see 
+            <a href="pytype_function.html#examples">here</a>).
+       </td>
+      </tr>
     </table>
 
     <h4><a name="to_python_converter-spec-synopsis"></a>Class template
@@ -115,7 +132,7 @@
 <pre>
 namespace boost { namespace python
 {
-  template &lt;class T, class Conversion&gt;
+  template &lt;class T, class Conversion, bool convertion_has_get_pytype_member=false&gt;
   struct to_python_converter
   {
       to_python_converter();
@@ -160,12 +177,16 @@ struct tag_to_noddy
     {
         return PyObject_New(noddy_NoddyObject, &amp;noddy_NoddyType);
     }
+    static PyTypeObject const* get_pytype()
+    {
+        return &amp;noddy_NoddyType;
+    }
 };
 
 BOOST_PYTHON_MODULE(to_python_converter)
 {
     def("make_tag", make_tag);
-    to_python_converter&lt;tag, tag_to_noddy&gt;();
+    to_python_converter&lt;tag, tag_to_noddy, true&gt;(); //"true" because tag_to_noddy has member get_pytype
 }
 </pre>
 
@@ -195,7 +216,7 @@ BOOST_PYTHON_MODULE(to_python_converter)
 
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 November, 2002
+  11 June, 2007
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
