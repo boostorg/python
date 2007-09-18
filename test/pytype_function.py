@@ -4,8 +4,8 @@
 """
 >>> from pytype_function_ext import *
 
->>> print (' ').join(func.__doc__.splitlines())
- func( (A)arg1) -> A :      C++ signature :         struct B func(struct B)
+>>> print func.__doc__.splitlines()[1]
+func( (A)arg1) -> A :
 
 """
 def run(args = None):
