@@ -628,7 +628,7 @@ extern "C"
     {
         function* f = downcast<function>(op);
         list signatures = function_doc_signature_generator::function_doc_signatures(f);
-	if(!signatures) return python::detail::none();
+        if(!signatures) return python::detail::none();
         signatures.reverse();
         return python::incref( str("\n").join(signatures).ptr());
     }
