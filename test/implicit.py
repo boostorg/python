@@ -14,17 +14,17 @@
 ... except TypeError: pass
 ... else: print 'no error'
 
->>> print x_value.__doc__.splitlines()[0]
-x_value( (X)arg1) -> int : 
+>>> print x_value.__doc__.splitlines()[1]
+x_value( (X)arg1) -> int :
 
->>> print make_x.__doc__.splitlines()[0]
-make_x( (object)arg1) -> X : 
+>>> print make_x.__doc__.splitlines()[1]
+make_x( (object)arg1) -> X :
 
->>> print X.value.__doc__.splitlines()[0]
-value( (X)arg1) -> int : 
+>>> print X.value.__doc__.splitlines()[1]
+value( (X)arg1) -> int :
 
->>> print X.set.__doc__.splitlines()[0]
-set( (X)arg1, (object)arg2) -> None : 
+>>> print X.set.__doc__.splitlines()[1]
+set( (X)arg1, (object)arg2) -> None :
 
 '''
 

@@ -5,7 +5,7 @@
 >>> from pytype_function_ext import *
 
 >>> print (' ').join(func.__doc__.splitlines())
-func( (A)arg1) -> A :      C++ signature:         struct B func(struct B)
+ func( (A)arg1) -> A :      C++ signature :         struct B func(struct B)
 
 """
 def run(args = None):

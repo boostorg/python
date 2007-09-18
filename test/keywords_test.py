@@ -80,8 +80,10 @@
 >>> f.set(1,1.0,"1")
 >>> f.a(), f.b(), f.n()
 (1, 1.0, '1')
->>> f.set2.__doc__.splitlines()[-3]
-"set2( (Bar)arg1 [, (int)arg2 [, (float)arg3 [, (str)arg4]]]) -> None : set2's docstring"
+>>> f.set2.__doc__.splitlines()[1]
+'set2( (Bar)arg1 [, (int)arg2 [, (float)arg3 [, (str)arg4]]]) -> None :'
+>>> f.set2.__doc__.splitlines()[2]
+"    set2's docstring"
 '''
 
 
