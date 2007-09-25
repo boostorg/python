@@ -17,8 +17,8 @@
 >>> y_equality(y, y)
 1
 
->>> print y_identity.__doc__.splitlines()[0]
-y_identity( (Y)arg1) -> object : 
+>>> print y_identity.__doc__.splitlines()[1]
+y_identity( (Y)arg1) -> object :
 '''
 
 def run(args = None):
