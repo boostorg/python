@@ -155,7 +155,7 @@ namespace detail
           , T3 const&
           , T4 const&
           , default_call_policies
-          , keywords<0>
+          , detail::keywords<0>
           , char const*
           , void(not_specified::*)()   // A function pointer type which is never an
                                        // appropriate default implementation

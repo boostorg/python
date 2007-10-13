@@ -7,8 +7,6 @@ import modules ;
 
 import python ;
 
-if [ python.configured ] {
-    
 
 project boost/python
   : source-location ../src
@@ -70,9 +68,3 @@ lib boost_python
         <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <link>shared:<define>BOOST_PYTHON_DYNAMIC_LIB
     ;
-}
-else
-{
-    ECHO "warning: Python location is not configured" ;
-    ECHO "warning: the Boost.Python library won't be built" ;
-}

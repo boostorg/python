@@ -543,10 +543,10 @@ void function::add_to_namespace(
 
     if (docstring_options::show_cpp_signatures_)
     {
-        if(len(_doc))
-            _doc += "\n    "+str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
-        else
-            _doc += "    "+str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
+//        if(len(_doc))
+//            _doc += "\n"+str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
+//        else
+            _doc += str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
     }
     if(_doc)
     {    
@@ -628,9 +628,9 @@ extern "C"
     {
         function* f = downcast<function>(op);
         list signatures = function_doc_signature_generator::function_doc_signatures(f);
-	if(!signatures) return python::detail::none();
+        if(!signatures) return python::detail::none();
         signatures.reverse();
-        return python::incref( str("\n   ").join(signatures).ptr());
+        return python::incref( str("\n").join(signatures).ptr());
     }
     
     static int function_set_doc(PyObject* op, PyObject* doc, void*)
