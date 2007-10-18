@@ -12,6 +12,9 @@ project boost/python
   : source-location ../src
   ;
 
+rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
+rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }
+
 lib boost_python
     : # sources
     numeric.cpp
@@ -60,7 +63,12 @@ lib boost_python
         # python_for_extensions is a target defined by Boost.Build to
         # provide the Python include paths, and on Windows, the Python
         # import library, as usage requirements.
-        <library>/python//python_for_extensions
+        [ cond [ python.configured ] : <library>/python//python_for_extensions ]
+        
+        # we prevent building when there is no python available
+        # as it's not possible anyway, and to cause dependents to
+        # fail to build
+        [ unless [ python.configured ] : <build>no ]
       
     :   # default build
         <link>shared
