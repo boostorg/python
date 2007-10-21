@@ -2,12 +2,20 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+import python ;
+
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
+local PY = ;
+if [ python.configured ]
+{
+  PY = /python//python ;
+}
+
 rule py-run ( sources * : input-file ? )
 {
-    return [ run $(sources) /boost/python//boost_python /python//python
+    return [ run $(sources) /boost/python//boost_python $(PY)
       : # args
       : $(input-file)
       : #requirements
@@ -39,7 +47,7 @@ test-suite python
   :
 
   [
-    run exec.cpp ../build//boost_python/<link>static /python//python
+    run exec.cpp ../build//boost_python/<link>static $(PY)
       : # program args
       : exec.py
       : # requirements
@@ -183,7 +191,7 @@ bpl-test crossmod_opaque
   :   
   :
   : <define>BOOST_PYTHON_STATIC_LIB
-    <use>/python//python
+    <use>$(PY)
 
 ]
 
