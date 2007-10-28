@@ -26,8 +26,7 @@ void import_test(char const *py_file_path)
   bpl::str script(
       "import sys, os.path\n"
       "path = os.path.dirname(%r)\n" 
-      "sys.path.insert(0, path)\n"
-      "print 'sys.path=',sys.path"
+      "sys.path.insert(0, path)"
       % bpl::str(py_file_path));
   
   bpl::object result = bpl::exec(script, global, global);
