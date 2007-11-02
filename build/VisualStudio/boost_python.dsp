@@ -95,10 +95,6 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\src\aix_init_module.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\converter\arg_to_python_base.cpp
 # End Source File
 # Begin Source File
@@ -212,10 +208,6 @@ SOURCE=..\..\src\exec.cpp
 # Begin Group "detail"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\..\..\boost\python\detail\aix_init_module.hpp
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\..\..\boost\python\detail\api_placeholder.hpp
