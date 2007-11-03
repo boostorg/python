@@ -5,9 +5,10 @@
 #include <boost/python/type_id.hpp>
 #include <iostream>
 
-// gcc 2.95.x and MIPSpro 7.3.1.3 linker seem to demand this definition
-#if ((defined(__GNUC__) && __GNUC__ < 3)) \
- || (defined(__sgi) && defined(__EDG_VERSION__) && (__EDG_VERSION__ == 238))
+// gcc 2.95.x, MIPSpro 7.3.1.3 and IBM XL for Linux linker seem to demand this definition
+#if (defined(__GNUC__) && (__GNUC__ < 3)) \
+ || (defined(__sgi) && defined(__EDG_VERSION__) && (__EDG_VERSION__ == 238)) \
+ || (defined(__IBMCPP__) && defined(__linux__))
 namespace boost { namespace python {
 BOOST_PYTHON_DECL bool handle_exception_impl(function0<void>)
 {

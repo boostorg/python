@@ -9,7 +9,6 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <sstream>
-#include <stdlib.h>
 
 namespace bpl = boost::python;
 

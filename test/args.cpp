@@ -90,6 +90,7 @@ BOOST_PYTHON_MODULE(args_ext)
 
         .def("f1", &X::f, X_f_overloads(args("self", "x", "y", "z")))
         .def("f2", &X::f, X_f_overloads(args("self", "x", "y", "z"), "f2's docstring"))
+        .def("f2", &X::f, X_f_overloads(args("x", "y", "z"), "f2's docstring"))
         ;
 
     def("inner", &X::inner, "docstring", args("self", "n"), return_internal_reference<>());
