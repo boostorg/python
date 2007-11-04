@@ -536,17 +536,14 @@ void function::add_to_namespace(
 
     if (docstring_options::show_py_signatures_)
     {
-        _doc += str(reinterpret_cast<const char*>(detail::py_signature_tag));
+        _doc += str(const_cast<const char*>(detail::py_signature_tag));
     }
     if (doc != 0 && docstring_options::show_user_defined_)
         _doc += doc;
 
     if (docstring_options::show_cpp_signatures_)
     {
-//        if(len(_doc))
-//            _doc += "\n"+str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
-//        else
-            _doc += str(reinterpret_cast<const char*>(detail::cpp_signature_tag));
+        _doc += str(const_cast<const char*>(detail::cpp_signature_tag));
     }
     if(_doc)
     {    
