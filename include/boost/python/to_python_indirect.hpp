@@ -12,6 +12,10 @@
 
 # include <boost/python/detail/none.hpp>
 
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+# include <boost/python/converter/pytype_function.hpp>
+#endif
+
 # include <boost/python/refcount.hpp>
 
 # include <boost/type_traits/is_pointer.hpp>
@@ -36,7 +40,13 @@ struct to_python_indirect
     {
         return this->execute(const_cast<U&>(ref), is_pointer<U>());
     }
-
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+    inline PyTypeObject const*
+    get_pytype()const
+    {
+        return converter::registered_pytype<T>::get_pytype();
+    }
+#endif
  private:
     template <class U>
     inline PyObject* execute(U* ptr, mpl::true_) const

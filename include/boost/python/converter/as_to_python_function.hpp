@@ -39,6 +39,9 @@ struct as_to_python_function
         // but c'est la vie.
         return ToPython::convert(*const_cast<T*>(static_cast<T const*>(x)));
     }
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+    static PyTypeObject const * get_pytype() { return ToPython::get_pytype(); }
+#endif
 };
 
 }}} // namespace boost::python::converter

@@ -2,12 +2,20 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+import python ;
+
 use-project /boost/python : ../build ;
 project /boost/python/test ;
 
+local PY = ;
+if [ python.configured ]
+{
+  PY = /python//python ;
+}
+
 rule py-run ( sources * : input-file ? )
 {
-    return [ run $(sources) /boost/python//boost_python /python//python
+    return [ run $(sources) /boost/python//boost_python $(PY)
       : # args
       : $(input-file)
       : #requirements
@@ -27,24 +35,32 @@ rule py-compile-fail ( sources * )
 }
 
 
-
-#template py-unit-test
-#  :
-#  : $(PYTHON_PROPERTIES) <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
-#    [ difference $(PYTHON_PROPERTIES) : <define>BOOST_PYTHON_DYNAMIC_LIB ] <define>BOOST_PYTHON_STATIC_LIB
-#      ;
-  
-
 test-suite python
   :
 
   [
-    run exec.cpp ../build//boost_python/<link>static /python//python
+    run exec.cpp ../build//boost_python/<link>static $(PY)
+      : # program args
+      : exec.py # input files
+      : # requirements
+      : # target-name
+  ]
+
+  [
+    run exec.cpp ../build//boost_python/<link>shared /python//python
       : # program args
       : exec.py
       : # requirements
-        <define>BOOST_PYTHON_STATIC_MODULE
+      : exec-dynamic # target-name
   ]
+
+#   [
+#     run import_.cpp ../build//boost_python /python//python
+#       : # program args
+#       : import_.py # input files
+#       : # requirements
+#       : # target-name
+#   ]
 
 [
 bpl-test crossmod_exception
@@ -77,8 +93,8 @@ bpl-test crossmod_exception
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
    
 
-[ python-extension builtin_converters.ext : test_builtin_converters.cpp /boost/python//boost_python ]
-[ bpl-test builtin_converters : test_builtin_converters.py builtin_converters.ext ]
+[ python-extension builtin_converters_ext : test_builtin_converters.cpp /boost/python//boost_python ]
+[ bpl-test builtin_converters : test_builtin_converters.py builtin_converters_ext ]
 
  [ bpl-test test_pointer_adoption ]
  [ bpl-test operators ]
@@ -135,6 +151,7 @@ bpl-test crossmod_opaque
 [ bpl-test nested ]
 
 [ bpl-test docstring ]
+[ bpl-test pytype_function ]
 
 [ bpl-test vector_indexing_suite ]
 
@@ -145,9 +162,9 @@ bpl-test crossmod_opaque
     # Whenever the cause for the failure of the polymorphism test is found
     # and fixed, this should be retested.
     <toolset>hp_cxx:<build>no ]
-
+      
 [ python-extension map_indexing_suite_ext
-    : map_indexing_suite.cpp int_map_indexing_suite.cpp
+    : map_indexing_suite.cpp int_map_indexing_suite.cpp a_map_indexing_suite.cpp
     /boost/python//boost_python ]
 [ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
@@ -182,7 +199,7 @@ bpl-test crossmod_opaque
   :   
   :
   : <define>BOOST_PYTHON_STATIC_LIB
-    <use>/python//python
+    <use>$(PY)
 
 ]
 

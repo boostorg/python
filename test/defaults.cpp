@@ -159,10 +159,10 @@ BOOST_PYTHON_MODULE(defaults_ext)
         .def("get_state", &Y::get_state)
         ;
 
-    class_<X>("X")
+    class_<X>("X",no_init)
 
-        .def(init<int, optional<char, std::string, double> >("doc of init"))
-        .def(init<std::string, bool>()[default_call_policies()]) // what's a good policy here?
+        .def(init<optional<int, char, std::string, double> >("doc of init", args("self", "a", "b", "c", "d")))
+        .def(init<std::string, bool>(args("self", "s", "b"))[default_call_policies()]) // what's a good policy here?
         .def("get_state", &X::get_state)
         .def("bar", &X::bar, X_bar_stubs())
         .def("bar2", &X::bar2, X_bar_stubs2("doc of X::bar2")[return_internal_reference<>()])

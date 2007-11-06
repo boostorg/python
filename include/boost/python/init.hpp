@@ -245,7 +245,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
         : base(doc_, kw.range())
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
-            N, n_arguments::value
+            N, n_arguments::value + 1
             >::too_many_keywords assertion;
     }
 
@@ -254,7 +254,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
         : base(doc_, kw.range())
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
-            N, n_arguments::value
+            N, n_arguments::value + 1
             >::too_many_keywords assertion;
     }
 
@@ -363,7 +363,7 @@ namespace detail
           , char const* doc
           , detail::keyword_range keywords)
       {
-          detail::def_init_aux(cl, args, NArgs(), policies, 0, keywords);
+          detail::def_init_aux(cl, args, NArgs(), policies, doc, keywords);
 
           if (keywords.second > keywords.first)
               --keywords.second;

@@ -183,6 +183,8 @@ are a complicated constructor and member function, respectively.
 >>> dd = take_d(d_as_a)
 >>> dd.name()
 'D'
+>>> print g.__doc__.splitlines()[1]
+g( (Simple)arg1) -> Simple :
 
 """
 

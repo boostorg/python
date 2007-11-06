@@ -11,12 +11,15 @@
 #  include <boost/python/type_id.hpp>
 #  include <boost/python/handle.hpp>
 
+#  include <boost/detail/indirect_traits.hpp>
+
 #  include <boost/python/detail/invoke.hpp>
 #  include <boost/python/detail/signature.hpp>
 #  include <boost/python/detail/preprocessor.hpp>
 
 #  include <boost/python/arg_from_python.hpp>
 #  include <boost/python/converter/context_result_converter.hpp>
+#  include <boost/python/converter/builtin_converters.hpp>
 
 #  include <boost/preprocessor/iterate.hpp>
 #  include <boost/preprocessor/cat.hpp>
@@ -89,6 +92,27 @@ inline ResultConverter create_result_converter(
 {
     return ResultConverter();
 }
+
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+template <class ResultConverter>
+struct converter_target_type 
+{
+    static PyTypeObject const *get_pytype()
+    {
+        return create_result_converter((PyObject*)0, (ResultConverter *)0, (ResultConverter *)0).get_pytype();
+    }
+};
+
+template < >
+struct converter_target_type <void_result_to_python >
+{
+    static PyTypeObject const *get_pytype()
+    {
+        return 0;
+    }
+};
+#endif
+
     
 template <unsigned> struct caller_arity;
 
@@ -203,11 +227,26 @@ struct caller_arity<N>
 
         static unsigned min_arity() { return N; }
         
-        static signature_element const* signature()
+        static py_func_sig_info  signature()
         {
-            return detail::signature<Sig>::elements();
+            const signature_element * sig = detail::signature<Sig>::elements();
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+
+            typedef BOOST_DEDUCED_TYPENAME Policies::template extract_return_type<Sig>::type rtype;
+            typedef typename select_result_converter<Policies, rtype>::type result_converter;
+
+            static const signature_element ret = {
+                (boost::is_void<rtype>::value ? "void" : type_id<rtype>().name())
+                , &detail::converter_target_type<result_converter>::get_pytype
+                , boost::detail::indirect_traits::is_reference_to_non_const<rtype>::value 
+            };
+            py_func_sig_info res = {sig, &ret };
+#else
+            py_func_sig_info res = {sig, sig };
+#endif
+
+            return  res;
         }
-        
      private:
         compressed_pair<F,Policies> m_data;
     };

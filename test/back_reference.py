@@ -16,6 +16,9 @@
 >>> assert y_identity(y) is y
 >>> y_equality(y, y)
 1
+
+>>> print y_identity.__doc__.splitlines()[1]
+y_identity( (Y)arg1) -> object :
 '''
 
 def run(args = None):

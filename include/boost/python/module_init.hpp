@@ -26,23 +26,7 @@ extern "C" __declspec(dllexport) void init##name()      \
 }                                                       \
 void init_module_##name()
 
-#  elif defined(_AIX) && !defined(BOOST_PYTHON_STATIC_MODULE)
-
-#   include <boost/python/detail/aix_init_module.hpp>
-#   define BOOST_PYTHON_MODULE_INIT(name)                               \
-void init_module_##name();                                              \
-extern "C"                                                              \
-{                                                                       \
-    extern PyObject* _PyImport_LoadDynamicModule(char*, char*, FILE *); \
-    void init##name()                                                   \
-    {                                                                   \
-        boost::python::detail::aix_init_module(                         \
-            _PyImport_LoadDynamicModule, #name, &init_module_##name);   \
-    }                                                                   \
-}                                                                       \
-void init_module_##name()
-
-# elif BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
+#  elif BOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY
 
 #   define BOOST_PYTHON_MODULE_INIT(name)                               \
 void init_module_##name();                                              \
@@ -52,7 +36,7 @@ extern "C" __attribute__ ((visibility("default"))) void init##name()    \
 }                                                                       \
 void init_module_##name()
 
-# else
+#  else
 
 #   define BOOST_PYTHON_MODULE_INIT(name)                               \
 void init_module_##name();                                              \

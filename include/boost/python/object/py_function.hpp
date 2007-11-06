@@ -23,7 +23,7 @@ struct BOOST_PYTHON_DECL py_function_impl_base
     virtual PyObject* operator()(PyObject*, PyObject*) = 0;
     virtual unsigned min_arity() const = 0;
     virtual unsigned max_arity() const;
-    virtual python::detail::signature_element const* signature() const = 0;
+    virtual python::detail::py_func_sig_info signature() const = 0;
 };
 
 template <class Caller>
@@ -43,7 +43,7 @@ struct caller_py_function_impl : py_function_impl_base
         return m_caller.min_arity();
     }
     
-    virtual python::detail::signature_element const* signature() const
+    virtual python::detail::py_func_sig_info signature() const
     {
         return m_caller.signature();
     }
@@ -69,9 +69,11 @@ struct signature_py_function_impl : py_function_impl_base
         return mpl::size<Sig>::value - 1;
     }
     
-    virtual python::detail::signature_element const* signature() const
+    virtual python::detail::py_func_sig_info signature() const
     {
-        return python::detail::signature<Sig>::elements();
+        python::detail::signature_element const* sig = python::detail::signature<Sig>::elements();
+        python::detail::py_func_sig_info res = {sig, sig};
+        return  res;
     }
 
  private:
@@ -102,9 +104,11 @@ struct full_py_function_impl : py_function_impl_base
         return m_max_arity;
     }
     
-    virtual python::detail::signature_element const* signature() const
+    virtual python::detail::py_func_sig_info signature() const
     {
-        return python::detail::signature<Sig>::elements();
+        python::detail::signature_element const* sig = python::detail::signature<Sig>::elements();
+        python::detail::py_func_sig_info res = {sig, sig};
+        return  res;
     }
 
  private:
@@ -151,7 +155,12 @@ struct py_function
 
     python::detail::signature_element const* signature() const
     {
-        return m_impl->signature();
+        return m_impl->signature().signature;
+    }
+
+    python::detail::signature_element const& get_return_type() const
+    {
+        return *m_impl->signature().ret;
     }
     
  private:
