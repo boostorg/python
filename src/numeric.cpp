@@ -118,7 +118,7 @@ namespace aux
   {
       load(false);
       if(!array_type) return 0;
-      return handle<PyTypeObject>(array_type).get();
+      return downcast<PyTypeObject>(array_type.get());
   }
 
 # define BOOST_PYTHON_AS_OBJECT(z, n, _) object(x##n)
