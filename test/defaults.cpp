@@ -16,10 +16,7 @@
 #endif
 
 using namespace boost::python;
-
-#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
-# define make_tuple boost::python::make_tuple
-#endif 
+namespace bpl = boost::python;
 
 char const* const format = "int(%s); char(%s); string(%s); double(%s); ";
 
@@ -31,25 +28,25 @@ char const* const format = "int(%s); char(%s); string(%s); double(%s); ";
 object
 bar(int a, char b, std::string c, double d)
 {
-    return format % make_tuple(a, b, c, d);
+    return format % bpl::make_tuple(a, b, c, d);
 }
 
 object
 bar(int a, char b, std::string c)
 {
-    return format % make_tuple(a, b, c, 0.0);
+    return format % bpl::make_tuple(a, b, c, 0.0);
 }
 
 object
 bar(int a, char b)
 {
-    return format % make_tuple(a, b, "default", 0.0);
+    return format % bpl::make_tuple(a, b, "default", 0.0);
 }
 
 object
 bar(int a)
 {
-    return format % make_tuple(a, 'D', "default", 0.0);
+    return format % bpl::make_tuple(a, 'D', "default", 0.0);
 }
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(bar_stubs, bar, 1, 4)
@@ -62,7 +59,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(bar_stubs, bar, 1, 4)
 object
 foo(int a, char b = 'D', std::string c = "default", double d = 0.0)
 {
-    return format % make_tuple(a, b, c, d);
+    return format % bpl::make_tuple(a, b, c, d);
 }
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(foo_stubs, foo, 1, 4)
@@ -79,7 +76,7 @@ struct Y {
     object
     get_state() const
     {
-        return format % make_tuple(a, b, c, d);
+        return format % bpl::make_tuple(a, b, c, d);
     }
 
     int a; char b; std::string c; double d;
@@ -91,17 +88,17 @@ struct X {
     X() {}
 
     X(int a, char b = 'D', std::string c = "constructor", double d = 0.0)
-    : state(format % make_tuple(a, b, c, d))
+    : state(format % bpl::make_tuple(a, b, c, d))
     {}
 
     X(std::string s, bool b)
-    : state("Got exactly two arguments from constructor: string(%s); bool(%s); " % make_tuple(s, b*1))
+    : state("Got exactly two arguments from constructor: string(%s); bool(%s); " % bpl::make_tuple(s, b*1))
     {}
 
     object
     bar(int a, char b = 'D', std::string c = "default", double d = 0.0) const
     {
-        return format % make_tuple(a, b, c, d);
+        return format % bpl::make_tuple(a, b, c, d);
     }
 
     Y const&
@@ -118,19 +115,19 @@ struct X {
     object
     foo(int a, bool b=false) const
     {
-        return "int(%s); bool(%s); " % make_tuple(a, b*1);
+        return "int(%s); bool(%s); " % bpl::make_tuple(a, b*1);
     }
 
     object
     foo(std::string a, bool b=false) const
     {
-        return "string(%s); bool(%s); " % make_tuple(a, b*1);
+        return "string(%s); bool(%s); " % bpl::make_tuple(a, b*1);
     }
 
     object
     foo(list a, list b, bool c=false) const
     {
-        return "list(%s); list(%s); bool(%s); " % make_tuple(a, b, c*1);
+        return "list(%s); list(%s); bool(%s); " % bpl::make_tuple(a, b, c*1);
     }
 
     object
