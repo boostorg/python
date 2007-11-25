@@ -29,7 +29,6 @@ object getattr(Target const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(ke
 
 template <class Target, class Key, class Default>
 object getattr(Target const& target, Key const& key, Default const& default_ BOOST_PYTHON_NO_ARRAY_ARG(key))
-)
 {
     return getattr(object(target), object(key), object(default_));
 }
