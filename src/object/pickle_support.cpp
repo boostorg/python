@@ -8,6 +8,7 @@
 #include <boost/python/tuple.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/dict.hpp>
+#include <boost/python/str.hpp>
 
 namespace boost { namespace python {
 
@@ -19,6 +20,22 @@ namespace {
       object instance_class(instance_obj.attr("__class__"));
       result.append(instance_class);
       object none;
+      if (!getattr(instance_obj, "__safe_for_unpickling__", none))
+      {
+          str type_name(getattr(instance_class, "__name__"));
+          str module_name(getattr(instance_class, "__module__", object("")));
+          if (module_name)
+              module_name += ".";
+
+          PyErr_SetObject(
+               PyExc_RuntimeError,
+               ( "Pickling of \"%s\" instances is not enabled"
+                 " (http://www.boost.org/libs/python/doc/v2/pickle.html)"
+                  % (module_name+type_name)).ptr()
+          );
+
+          throw_error_already_set();
+      }
       object getinitargs = getattr(instance_obj, "__getinitargs__", none);
       tuple initargs;
       if (getinitargs.ptr() != none.ptr()) {

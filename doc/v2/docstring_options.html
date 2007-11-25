@@ -103,6 +103,8 @@ namespace boost { namespace python {
 
           docstring_options(bool show_user_defined, bool show_signatures);
 
+          docstring_options(bool show_user_defined, bool show_py_signatures, bool show_cpp_signatures);
+
           ~docstring_options();
 
           void
@@ -116,6 +118,18 @@ namespace boost { namespace python {
 
           void
           enable_signatures();
+
+          void
+          disable_py_signatures();
+
+          void
+          enable_py_signatures();
+
+          void
+          disable_cpp_signatures();
+
+          void
+          enable_cpp_signatures();
 
           void
           disable_all();
@@ -139,7 +153,7 @@ docstring_options(bool show_all=true);
     object which controls the appearance of function and
     member-function docstrings defined in the code that follows. If
     <code>show_all</code> is <code>true</code>, both the
-    user-defined docstrings and the automatically generated C++
+    user-defined docstrings and the automatically generated Python and C++
     signatures are shown. If <code>show_all</code> is
     <code>false</code> the <code>__doc__</code> attributes are
     <code>None</code>.</dt>
@@ -154,10 +168,27 @@ docstring_options(bool show_user_defined, bool show_signatures);
     member-function docstrings defined in the code that follows.
     Iff <code>show_user_defined</code> is <code>true</code>, the
     user-defined docstrings are shown. Iff
-    <code>show_signatures</code> is <code>true</code>, C++
+    <code>show_signatures</code> is <code>true</code>, Python and C++
     signatures are automatically added. If both
     <code>show_user_defined</code> and <code>show_signatures</code>
     are <code>false</code>, the <code>__doc__</code> attributes are
+    <code>None</code>.</dt>
+  </dl>
+  <pre>
+docstring_options(bool show_user_defined, bool show_py_signatures, bool show_cpp_signatures);
+</pre>
+
+  <dl class="function-semantics">
+    <dt><b>Effects:</b> Constructs a <code>docstring_options</code>
+    object which controls the appearance of function and
+    member-function docstrings defined in the code that follows.
+    Iff <code>show_user_defined</code> is <code>true</code>, the
+    user-defined docstrings are shown. Iff
+    <code>show_py_signatures</code> is <code>true</code>, Python 
+    signatures are automatically added. Iff 
+    <code>show_cpp_signatures</code> is <code>true</code>, C++ 
+    signatures are automatically added. If all parameters are
+    <code>false</code>, the <code>__doc__</code> attributes are
     <code>None</code>.</dt>
   </dl>
 
@@ -186,6 +217,10 @@ void disable_user_defined();
 void enable_user_defined();
 void disable_signatures();
 void enable_signatures();
+void disable_py_signatures();
+void enable_py_signatures();
+void disable_cpp_signatures();
+void enable_cpp_signatures();
 void disable_all();
 void enable_all();
 </pre>
@@ -196,7 +231,7 @@ void enable_all();
     <code>*_user_defined()</code> and <code>*_signatures()</code>
     member functions are provided for fine-grained control. The
     <code>*_all()</code> member functions are convenient shortcuts
-    to manipulate both settings simultaneously.</dt>
+    to manipulate all settings simultaneously.</dt>
   </dl>
 
   <h2><a name="examples" id="examples"></a>Examples</h2>
@@ -219,7 +254,7 @@ BOOST_PYTHON_MODULE(demo)
   <pre>
 &gt;&gt;&gt; import demo
 &gt;&gt;&gt; print demo.foo.__doc__
-foo doc
+foo() -&gt; None : foo doc
 C++ signature:
     foo(void) -&gt; void
 </pre>If compiled with
@@ -253,21 +288,33 @@ BOOST_PYTHON_MODULE(demo)
     def("foo3", foo3, arg("f"), "foo3 doc");
     doc_options.enable_user_defined();
     def("foo4", foo4, arg("d"), "foo4 doc");
+    doc_options.enable_py_signatures();
+    def("foo5", foo4, arg("d"), "foo5 doc");
+    doc_options.disable_py_signatures();
+    doc_options.enable_cpp_signatures();
+    def("foo6", foo4, arg("d"), "foo6 doc");
 }
 </pre>Python code:
   <pre>
 &gt;&gt;&gt; import demo
 &gt;&gt;&gt; print demo.foo1.__doc__
-foo1 doc
+foo1( (int)i) -&gt; int : foo1 doc
 C++ signature:
     foo1(int i) -&gt; int
 &gt;&gt;&gt; print demo.foo2.__doc__
+foo2( (int)l) -&gt; int : 
 C++ signature:
     foo2(long l) -&gt; int
 &gt;&gt;&gt; print demo.foo3.__doc__
 None
 &gt;&gt;&gt; print demo.foo4.__doc__
 foo4 doc
+&gt;&gt;&gt; print demo.foo5.__doc__
+foo5( (float)d) -&gt; int : foo5 doc
+&gt;&gt;&gt; print demo.foo6.__doc__
+foo6 doc
+C++ signature:
+    foo6(double d) -&gt; int
 </pre>
 
   <h4>Wrapping from multiple C++ scopes</h4>

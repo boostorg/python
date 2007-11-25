@@ -51,7 +51,7 @@ tuple raw_func(tuple args, dict kw)
 
 BOOST_PYTHON_MODULE(args_ext)
 {
-    def("f", f, args("x", "y", "z")
+    def("f", f, (arg("x")=1, arg("y")=4.25, arg("z")="wow")
         , "This is f's docstring"
         );
 
@@ -72,23 +72,24 @@ BOOST_PYTHON_MODULE(args_ext)
         .def("raw", raw_function(raw_func))
         ;
             
-    class_<X>("X", "This is X's docstring")
-        .def(init<int, optional<int> >(args("a0", "a1")))
+    class_<X>("X", "This is X's docstring", init<>(args("self")))
+        .def(init<int, optional<int> >(args("self", "a0", "a1")))
         .def("f", &X::f
              , "This is X.f's docstring"
-             , args("x", "y", "z"))
+             , args("self","x", "y", "z"))
 
         // Just to prove that all the different argument combinations work
-        .def("inner0", &X::inner, return_internal_reference<>(), args("n"), "docstring")
-        .def("inner1", &X::inner, return_internal_reference<>(), "docstring", args("n"))
+        .def("inner0", &X::inner, return_internal_reference<>(), args("self", "n"), "docstring")
+        .def("inner1", &X::inner, return_internal_reference<>(), "docstring", args("self", "n"))
 
-        .def("inner2", &X::inner, args("n"), return_internal_reference<>(), "docstring")
-        .def("inner3", &X::inner, "docstring", return_internal_reference<>(), args("n"))
+        .def("inner2", &X::inner, args("self", "n"), return_internal_reference<>(), "docstring")
+        .def("inner3", &X::inner, "docstring", return_internal_reference<>(), args("self", "n"))
 
-        .def("inner4", &X::inner, args("n"), "docstring", return_internal_reference<>())
-        .def("inner5", &X::inner, "docstring", args("n"), return_internal_reference<>())
+        .def("inner4", &X::inner, args("self", "n"), "docstring", return_internal_reference<>())
+        .def("inner5", &X::inner, "docstring", args("self", "n"), return_internal_reference<>())
 
-        .def("f1", &X::f, X_f_overloads(args("x", "y", "z")))
+        .def("f1", &X::f, X_f_overloads(args("self", "x", "y", "z")))
+        .def("f2", &X::f, X_f_overloads(args("self", "x", "y", "z"), "f2's docstring"))
         .def("f2", &X::f, X_f_overloads(args("x", "y", "z"), "f2's docstring"))
         ;
 

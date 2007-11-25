@@ -53,5 +53,10 @@ BOOST_PYTHON_MODULE(vector_indexing_suite_ext)
     class_<std::vector<bool> >("BoolVec")
         .def(vector_indexing_suite<std::vector<bool> >())
     ;
+    
+    // vector of strings
+    class_<std::vector<std::string> >("StringVec")
+        .def(vector_indexing_suite<std::vector<std::string> >())
+    ;
 }
 

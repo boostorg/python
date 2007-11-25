@@ -125,6 +125,8 @@ namespace boost { namespace python
    {
       static PyObject* postcall(PyObject*, PyObject* result);
       struct result_converter{ template &lt;class T&gt; struct apply; };
+      template &lt;class Sig&gt; struct extract_return_type : mpl::at_c&lt;Sig, arg_pos&gt;{};
+
    };
 }}
 </pre>

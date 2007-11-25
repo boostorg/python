@@ -139,6 +139,41 @@
         compares <code>typeid(T).name()</code> instead of using and comparing
         the <code>std::type_info</code> objects directly.</td>
       </tr>
+      <tr>
+        <td valign="top"><code>BOOST_PYTHON_NO_PY_SIGNATURES</code></td>
+
+        <td valign="top" align="center"><i>not&nbsp;defined</i></td>
+
+        <td valign="top">If defined for a module no pythonic signatures are generated 
+        for the docstrings of the module functions, and no python type is associated with any
+        of the converters registered by the module. This also reduces the binary size of the 
+        module by about 14% (gcc compiled).<br>
+        If defined for the boost_python runtime library, the default for the 
+        <code>docstring_options.enable_py_signatures()</code> is set to <code>false</code>.
+        </td>
+
+      </tr>
+      <tr>
+        <td valign="top"><code>BOOST_PYTHON_SUPPORTS_PY_SIGNATURES</code></td>
+
+        <td valign="top" align="center"><i>defined if <code>BOOST_PYTHON_NO_PY_SIGNATURES</code> is undefined</i></td>
+
+        <td valign="top">This macro is defined to enable a smooth transition from older Boost.Python versions
+        which do not support pythonic signatures. For example usage see 
+        <a href="pytype_function.html#examples">here</a>.
+        </td>
+
+      </tr>
+      <tr>
+        <td valign="top"><code>BOOST_PYTHON_PY_SIGNATURES_PROPER_INIT_SELF_TYPE</code></td>
+
+        <td valign="top" align="center"><i>not&nbsp;defined</i></td>
+
+        <td valign="top">If defined the python type of <code>__init__</code> method "self" parameters
+        is properly generated, otherwise <code><b>object</b></code> is used. It is undefined
+        by default because it increases the binary size of the module by about 14% (gcc compiled).</td>
+
+      </tr>
     </table>
     <hr>
 

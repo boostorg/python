@@ -214,6 +214,9 @@ namespace boost { namespace python { namespace self_ns {
    <a href=
 "#operator_-spec">operator_</a>&lt;<i>unspecified</i>&gt; str(self_t);
 
+   <a href=
+"#operator_-spec">operator_</a>&lt;<i>unspecified</i>&gt; repr(self_t);
+
 }}};
 </pre>
     The tables below describe the methods generated when the results of the
@@ -761,6 +764,15 @@ namespace boost { namespace python { namespace self_ns {
         <td><code>str</code></td>
 
         <td><code>__str__</code></td>
+
+        <td><code><a href=
+        "../../../conversion/lexical_cast.htm#lexical_cast">lexical_cast</a>&lt;std::string&gt;(x)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>repr</code></td>
+
+        <td><code>__repr__</code></td>
 
         <td><code><a href=
         "../../../conversion/lexical_cast.htm#lexical_cast">lexical_cast</a>&lt;std::string&gt;(x)</code></td>

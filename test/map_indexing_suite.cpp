@@ -26,6 +26,7 @@ std::string x_value(X const& x)
     return "gotya " + x.s;
 }
 
+
 BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 {
     class_<X>("X")
@@ -58,6 +59,10 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
     class_<std::map<std::string, boost::shared_ptr<X> > >("TestMap")
         .def(map_indexing_suite<std::map<std::string, boost::shared_ptr<X> >, true>())
     ;
+
+    void a_map_indexing_suite(); // moved to a_map_indexing_suite.cpp to 
+    a_map_indexing_suite();      // avoid MSVC 6/7 internal structure overflow
+	
 }
 
 #include "module_tail.cpp"

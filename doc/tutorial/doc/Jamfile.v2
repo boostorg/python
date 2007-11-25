@@ -12,4 +12,5 @@ boostbook tutorial
     :
         <xsl:param>boost.root=../../../../../..
         <xsl:param>boost.libraries=../../../../../../libs/libraries.htm
+        <xsl:param>html.stylesheet=../../../../../../doc/html/boostbook.css
     ;

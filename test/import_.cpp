@@ -4,14 +4,15 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/python.hpp>
-#include <boost/bind.hpp>
+
 #include <boost/detail/lightweight_test.hpp>
+#include <boost/bind.hpp>
 #include <iostream>
 #include <sstream>
 
 namespace bpl = boost::python;
 
-void import_test( char** argv )
+void import_test(char const *py_file_path)
 {
   // Retrieve the main module
   bpl::object main = bpl::import("__main__");
@@ -20,11 +21,14 @@ void import_test( char** argv )
   bpl::object global(main.attr("__dict__"));
 
   // Inject search path for import_ module
-  std::ostringstream script;
-  script << "import sys, os\n"
-         << "path = os.path.dirname('" << argv[1] << "')\n"
-         << "sys.path.insert(0, path)\n";
-  bpl::exec(bpl::str(script.str()), global, global);
+
+  bpl::str script(
+      "import sys, os.path\n"
+      "path = os.path.dirname(%r)\n" 
+      "sys.path.insert(0, path)"
+      % bpl::str(py_file_path));
+  
+  bpl::object result = bpl::exec(script, global, global);
   
   // Retrieve the main module
   bpl::object import_ = bpl::import("import_");
@@ -40,7 +44,7 @@ int main(int argc, char **argv)
   // Initialize the interpreter
   Py_Initialize();
   
-  if (bpl::handle_exception(boost::bind(import_test, argv)))
+  if (bpl::handle_exception(boost::bind(import_test,argv[1])))
   {
     if (PyErr_Occurred())
     {

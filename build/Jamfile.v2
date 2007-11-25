@@ -22,11 +22,12 @@ if ! [ python.configured ] && ! ( --without-python in  [ modules.peek : ARGV ] )
     }
 }
 
-if [ python.configured ] {
-
 project boost/python
-    : source-location ../src
-    ;
+  : source-location ../src
+  ;
+
+rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
+rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }
 
 lib boost_python
     : # sources
@@ -58,6 +59,7 @@ lib boost_python
     wrapper.cpp
     import.cpp
     exec.cpp
+    object/function_doc_signature.cpp
     :   # requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB 
         <define>BOOST_PYTHON_SOURCE
@@ -74,19 +76,19 @@ lib boost_python
         # python_for_extensions is a target defined by Boost.Build to
         # provide the Python include paths, and on Windows, the Python
         # import library, as usage requirements.
-        <library>/python//python_for_extensions
-      
+        [ cond [ python.configured ] : <library>/python//python_for_extensions ]
+        
+        # we prevent building when there is no python available
+        # as it's not possible anyway, and to cause dependents to
+        # fail to build
+        [ unless [ python.configured ] : <build>no ]
+
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
-      
     :   # default build
         <link>shared
     :   # usage requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
-}
-else
-{
-    ECHO "warning: Python location is not configured" ;
-    ECHO "warning: the Boost.Python library won't be built" ;
-}
+
+boost-install boost_python ;

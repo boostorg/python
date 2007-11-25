@@ -29,7 +29,7 @@
 # define make_tuple boost::python::make_tuple
 #endif 
 
-namespace { // Avoid cluttering the global namespace.
+namespace boost_python_test {
 
   // A friendly class.
   class world
@@ -100,6 +100,7 @@ namespace { // Avoid cluttering the global namespace.
 
 BOOST_PYTHON_MODULE(pickle3_ext)
 {
+    using namespace boost_python_test;
     boost::python::class_<world>(
         "world", boost::python::init<const std::string&>())
         .def("greet", &world::greet)

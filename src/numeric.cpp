@@ -114,6 +114,12 @@ namespace aux
           pytype_check(downcast<PyTypeObject>(array_type.get()), obj));
   }
 
+  PyTypeObject const* array_object_manager_traits::get_pytype()
+  {
+      load(false);
+      if(!array_type) return 0;
+      return downcast<PyTypeObject>(array_type.get());
+  }
 
 # define BOOST_PYTHON_AS_OBJECT(z, n, _) object(x##n)
 # define BOOST_PP_LOCAL_MACRO(n)                                        \

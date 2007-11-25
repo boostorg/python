@@ -84,22 +84,27 @@
 (2, 4.25, 'wow')
 >>> q.f1()
 (1, 4.25, 'wow')
+>>> q.f2.__doc__.splitlines()[1]
+'f2( (X)self [, (int)x [, (float)y [, (str)z]]]) -> tuple :'
 
->>> X.f.__doc__.splitlines()[:2]
-["This is X.f's docstring", 'C++ signature:']
+>>> q.f2.__doc__.splitlines()[2]
+"    f2's docstring"
+
+>>> X.f.__doc__.splitlines()[1:5]
+['f( (X)self, (int)x, (float)y, (str)z) -> tuple :', "    This is X.f's docstring", '', '    C++ signature :']
 
 >>> xfuncs = (X.inner0, X.inner1, X.inner2, X.inner3, X.inner4, X.inner5)
 >>> for f in xfuncs:
 ...    print f(q,1).value(),
 ...    print f(q, n = 1).value(),
 ...    print f(q, n = 0).value(),
-...    print f.__doc__.splitlines()[:2]
-1 1 0 ['docstring', 'C++ signature:']
-1 1 0 ['docstring', 'C++ signature:']
-1 1 0 ['docstring', 'C++ signature:']
-1 1 0 ['docstring', 'C++ signature:']
-1 1 0 ['docstring', 'C++ signature:']
-1 1 0 ['docstring', 'C++ signature:']
+...    print f.__doc__.splitlines()[1:5]
+1 1 0 ['inner0( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
+1 1 0 ['inner1( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
+1 1 0 ['inner2( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
+1 1 0 ['inner3( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
+1 1 0 ['inner4( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
+1 1 0 ['inner5( (X)self, (bool)n) -> Y :', '    docstring', '', '    C++ signature :']
 
 >>> x = X(a1 = 44, a0 = 22)
 >>> x.inner0(0).value()
@@ -134,49 +139,9 @@ if __name__ == '__main__':
     import sys
     status = run()[0]
     if (status == 0): print "Done."
+    import args_ext
+    help(args_ext)
     sys.exit(status)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

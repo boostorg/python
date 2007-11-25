@@ -48,14 +48,27 @@ enum_ext.color.red
 enum_ext.color.green
 '''
 
+# pickling of enums only works with Python 2.3 or higher
+exercise_pickling = '''
+>>> import pickle
+>>> p = pickle.dumps(color.green, pickle.HIGHEST_PROTOCOL)
+>>> l = pickle.loads(p)
+>>> identity(l)
+enum_ext.color.green
+'''
+
 def run(args = None):
     import sys
     import doctest
+    import pickle
 
     if args is not None:
         sys.argv = args
-    return doctest.testmod(sys.modules.get(__name__))
-    
+    self = sys.modules.get(__name__)
+    if (hasattr(pickle, "HIGHEST_PROTOCOL")):
+      self.__doc__ += exercise_pickling
+    return doctest.testmod(self)
+
 if __name__ == '__main__':
     print "running..."
     import sys

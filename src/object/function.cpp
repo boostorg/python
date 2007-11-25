@@ -6,6 +6,7 @@
 #include <boost/python/docstring_options.hpp>
 #include <boost/python/object/function_object.hpp>
 #include <boost/python/object/function_handle.hpp>
+#include <boost/python/object/function_doc_signature.hpp>
 #include <boost/python/errors.hpp>
 #include <boost/python/str.hpp>
 #include <boost/python/object_attributes.hpp>
@@ -17,6 +18,7 @@
 #include <boost/python/ssize_t.hpp>
 
 #include <boost/python/detail/signature.hpp>
+#include <boost/python/detail/none.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 
 #include <boost/bind.hpp>
@@ -30,7 +32,12 @@
 
 namespace boost { namespace python {
   volatile bool docstring_options::show_user_defined_ = true;
-  volatile bool docstring_options::show_signatures_ = true;
+  volatile bool docstring_options::show_cpp_signatures_ = true;
+#ifndef BOOST_PYTHON_NO_PY_SIGNATURES
+  volatile bool docstring_options::show_py_signatures_ = true;
+#else
+  volatile bool docstring_options::show_py_signatures_ = false;
+#endif
 }}
 
 namespace boost { namespace python { namespace objects { 
@@ -411,6 +418,12 @@ void function::add_to_namespace(
     add_to_namespace(name_space, name_, attribute, 0);
 }
 
+namespace detail
+{
+    extern char py_signature_tag[];
+    extern char cpp_signature_tag[];
+}
+
 void function::add_to_namespace(
     object const& name_space, char const* name_, object const& attribute, char const* doc)
 {
@@ -487,6 +500,7 @@ void function::add_to_namespace(
         throw_error_already_set();
 
     object mutable_attribute(attribute);
+/*
     if (doc != 0 && docstring_options::show_user_defined_)
     {
         // Accumulate documentation
@@ -507,7 +521,8 @@ void function::add_to_namespace(
     {
         if (   PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
             && mutable_attribute.attr("__doc__")) {
-            mutable_attribute.attr("__doc__") += "\n";
+            mutable_attribute.attr("__doc__") += (
+              mutable_attribute.attr("__doc__")[-1] != "\n" ? "\n\n" : "\n");
         }
         else {
             mutable_attribute.attr("__doc__") = "";
@@ -515,6 +530,25 @@ void function::add_to_namespace(
         function* f = downcast<function>(attribute.ptr());
         mutable_attribute.attr("__doc__") += str("\n    ").join(make_tuple(
           "C++ signature:", f->signature(true)));
+    }
+    */
+    str _doc;
+
+    if (docstring_options::show_py_signatures_)
+    {
+        _doc += str(const_cast<const char*>(detail::py_signature_tag));
+    }
+    if (doc != 0 && docstring_options::show_user_defined_)
+        _doc += doc;
+
+    if (docstring_options::show_cpp_signatures_)
+    {
+        _doc += str(const_cast<const char*>(detail::cpp_signature_tag));
+    }
+    if(_doc)
+    {    
+        object mutable_attribute(attribute);
+        mutable_attribute.attr("__doc__")= _doc;
     }
 }
 
@@ -590,7 +624,10 @@ extern "C"
     static PyObject* function_get_doc(PyObject* op, void*)
     {
         function* f = downcast<function>(op);
-        return python::incref(f->doc().ptr());
+        list signatures = function_doc_signature_generator::function_doc_signatures(f);
+        if(!signatures) return python::detail::none();
+        signatures.reverse();
+        return python::incref( str("\n").join(signatures).ptr());
     }
     
     static int function_set_doc(PyObject* op, PyObject* doc, void*)
