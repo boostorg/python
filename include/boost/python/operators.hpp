@@ -347,6 +347,7 @@ BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)
 BOOST_PYTHON_UNARY_OPERATOR(complex, std::complex<double>, complex_)
 BOOST_PYTHON_UNARY_OPERATOR(str, lexical_cast<std::string>, str)
+BOOST_PYTHON_UNARY_OPERATOR(repr, lexical_cast<std::string>, repr)
 # undef BOOST_PYTHON_UNARY_OPERATOR
 
 }} // namespace boost::python
@@ -358,6 +359,7 @@ using boost::python::self_ns::long_;
 using boost::python::self_ns::float_;
 using boost::python::self_ns::complex_;
 using boost::python::self_ns::str;
+using boost::python::self_ns::repr;
 using boost::python::self_ns::pow;
 # endif
 

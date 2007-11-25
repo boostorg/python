@@ -17,73 +17,73 @@
 # include <boost/type_traits/is_same.hpp>
 
 namespace boost { namespace python {
-                   
+
     // indexing_suite class. This class is the facade class for
     // the management of C++ containers intended to be integrated
     // to Python. The objective is make a C++ container look and
     // feel and behave exactly as we'd expect a Python container.
     // By default indexed elements are returned by proxy. This can be
     // disabled by supplying *true* in the NoProxy template parameter.
-    // 
+    //
     // Derived classes provide the hooks needed by the indexing_suite
     // to do its job:
     //
-    //      static data_type& 
+    //      static data_type&
     //      get_item(Container& container, index_type i);
     //
-    //      static object 
+    //      static object
     //      get_slice(Container& container, index_type from, index_type to);
     //
-    //      static void 
+    //      static void
     //      set_item(Container& container, index_type i, data_type const& v);
     //
-    //      static void 
+    //      static void
     //      set_slice(
-    //         Container& container, index_type from, 
+    //         Container& container, index_type from,
     //         index_type to, data_type const& v
     //      );
     //
     //      template <class Iter>
-    //      static void 
-    //      set_slice(Container& container, index_type from, 
+    //      static void
+    //      set_slice(Container& container, index_type from,
     //          index_type to, Iter first, Iter last
     //      );
     //
-    //      static void 
+    //      static void
     //      delete_item(Container& container, index_type i);
-    //        
-    //      static void 
+    //
+    //      static void
     //      delete_slice(Container& container, index_type from, index_type to);
-    //        
+    //
     //      static size_t
     //      size(Container& container);
     //
     //      template <class T>
     //      static bool
     //      contains(Container& container, T const& val);
-    //        
+    //
     //      static index_type
     //      convert_index(Container& container, PyObject* i);
-    //        
+    //
     //      static index_type
-    //      adjust_index(index_type current, index_type from, 
+    //      adjust_index(index_type current, index_type from,
     //          index_type to, size_type len
     //      );
     //
-    // Most of these policies are self explanatory. convert_index and 
-    // adjust_index, however, deserves some explanation. 
+    // Most of these policies are self explanatory. convert_index and
+    // adjust_index, however, deserves some explanation.
     //
-    // convert_index converts an Python index into a C++ index that the 
-    // container can handle. For instance, negative indexes in Python, by 
-    // convention, indexes from the right (e.g. C[-1] indexes the rightmost 
-    // element in C). convert_index should handle the necessary conversion 
+    // convert_index converts an Python index into a C++ index that the
+    // container can handle. For instance, negative indexes in Python, by
+    // convention, indexes from the right (e.g. C[-1] indexes the rightmost
+    // element in C). convert_index should handle the necessary conversion
     // for the C++ container (e.g. convert -1 to C.size()-1). convert_index
     // should also be able to convert the type of the index (A dynamic Python
     // type) to the actual type that the C++ container expects.
     //
     // When a container expands or contracts, held indexes to its elements
     // must be adjusted to follow the movement of data. For instance, if
-    // we erase 3 elements, starting from index 0 from a 5 element vector, 
+    // we erase 3 elements, starting from index 0 from a 5 element vector,
     // what used to be at index 4 will now be at index 1:
     //
     //      [a][b][c][d][e] ---> [d][e]
@@ -104,7 +104,7 @@ namespace boost { namespace python {
         , class Index = typename Container::size_type
         , class Key = typename Container::value_type
     >
-    class indexing_suite 
+    class indexing_suite
         : public def_visitor<
             indexing_suite<
               Container
@@ -117,7 +117,7 @@ namespace boost { namespace python {
         > >
     {
     private:
-        
+
         typedef mpl::or_<
             mpl::bool_<NoProxy>
           , mpl::not_<is_class<Data> >
@@ -127,10 +127,10 @@ namespace boost { namespace python {
               , is_same<Data, std::complex<double> >
               , is_same<Data, std::complex<long double> > >::type>
         no_proxy;
-                    
+
         typedef detail::container_element<Container, Index, DerivedPolicies>
             container_element_t;
-       
+
 #if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
         struct return_policy : return_internal_reference<> {};
 #else
@@ -142,7 +142,7 @@ namespace boost { namespace python {
           , iterator<Container>
           , iterator<Container, return_policy> >::type
         def_iterator;
-        
+
         typedef typename mpl::if_<
             no_proxy
           , detail::no_proxy_helper<
@@ -172,15 +172,15 @@ namespace boost { namespace python {
               , Data
               , Index> >::type
         slice_handler;
-  
+
     public:
-      
+
         template <class Class>
         void visit(Class& cl) const
         {
             // Hook into the class_ generic visitation .def function
             proxy_handler::register_container_element();
-            
+
             cl
                 .def("__len__", base_size)
                 .def("__setitem__", &base_set_item)
@@ -189,12 +189,12 @@ namespace boost { namespace python {
                 .def("__contains__", &base_contains)
                 .def("__iter__", def_iterator())
             ;
-            
+
             DerivedPolicies::extension_def(cl);
-        }        
-        
+        }
+
         template <class Class>
-        static void 
+        static void
         extension_def(Class& cl)
         {
             // default.
@@ -202,24 +202,24 @@ namespace boost { namespace python {
         }
 
     private:
-      
+
         static object
         base_get_item(back_reference<Container&> container, PyObject* i)
-        { 
+        {
             if (PySlice_Check(i))
                 return slice_handler::base_get_slice(
-                    container.get(), reinterpret_cast<PySliceObject*>(i));
-            
+                    container.get(), static_cast<PySliceObject*>(static_cast<void*>(i)));
+
             return proxy_handler::base_get_item_(container, i);
         }
-        
-        static void 
+
+        static void
         base_set_item(Container& container, PyObject* i, PyObject* v)
         {
             if (PySlice_Check(i))
             {
-                 slice_handler::base_set_slice(container, 
-                     reinterpret_cast<PySliceObject*>(i), v);
+                 slice_handler::base_set_slice(container,
+                     static_cast<PySliceObject*>(static_cast<void*>(i)), v);
             }
             else
             {
@@ -228,7 +228,7 @@ namespace boost { namespace python {
                 if (elem.check())
                 {
                     DerivedPolicies::
-                        set_item(container, 
+                        set_item(container,
                             DerivedPolicies::
                                 convert_index(container, i), elem());
                 }
@@ -239,7 +239,7 @@ namespace boost { namespace python {
                     if (elem.check())
                     {
                         DerivedPolicies::
-                            set_item(container, 
+                            set_item(container,
                                 DerivedPolicies::
                                     convert_index(container, i), elem());
                     }
@@ -252,20 +252,20 @@ namespace boost { namespace python {
             }
         }
 
-        static void 
+        static void
         base_delete_item(Container& container, PyObject* i)
         {
             if (PySlice_Check(i))
             {
                 slice_handler::base_delete_slice(
-                    container, reinterpret_cast<PySliceObject*>(i));
+                    container, static_cast<PySliceObject*>(static_cast<void*>(i)));
                 return;
             }
-            
+
             Index index = DerivedPolicies::convert_index(container, i);
             proxy_handler::base_erase_index(container, index, mpl::bool_<NoSlice>());
             DerivedPolicies::delete_item(container, index);
-        } 
+        }
 
         static size_t
         base_size(Container& container)
@@ -290,10 +290,10 @@ namespace boost { namespace python {
                     return DerivedPolicies::contains(container, x());
                 else
                     return false;
-            }            
+            }
         }
     };
-    
-}} // namespace boost::python 
+
+}} // namespace boost::python
 
 #endif // INDEXING_SUITE_JDG20036_HPP
