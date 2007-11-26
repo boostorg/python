@@ -565,7 +565,11 @@ BOOST_PYTHON_DECL void add_to_namespace(
 }
 
 
-namespace
+namespace detail
+/* Cannot be anonymous namespace:
+     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34094
+     http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34229
+ */
 {
   struct bind_return
   {
@@ -610,7 +614,8 @@ extern "C"
     function_call(PyObject *func, PyObject *args, PyObject *kw)
     {
         PyObject* result = 0;
-        handle_exception(bind_return(result, static_cast<function*>(func), args, kw));
+        handle_exception(
+          detail::bind_return(result, static_cast<function*>(func), args, kw));
         return result;
     }
 
