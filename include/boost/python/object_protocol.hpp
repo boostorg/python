@@ -10,9 +10,11 @@
 # include <boost/python/object_protocol_core.hpp>
 # include <boost/python/object_core.hpp>
 
+# include <boost/detail/workaround.hpp>
+
 namespace boost { namespace python { namespace api {
 
-# if BOOST_WORKAROUND(__SUNPRO_CC, <= 0x580)
+# if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
 // attempt to use SFINAE to prevent functions accepting T const& from
 // coming up as ambiguous with the one taking a char const* when a
 // string literal is passed
