@@ -11,7 +11,7 @@ struct A {};
 
 struct V 
 {
-
+ virtual ~V() {}; // silence compiler warningsa
  virtual void f() = 0;
 
  const A* inside() {return &a;}
