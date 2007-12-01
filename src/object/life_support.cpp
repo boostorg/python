@@ -38,7 +38,7 @@ extern "C"
 PyTypeObject life_support_type = {
     PyObject_HEAD_INIT(0)//(&PyType_Type)
     0,
-    "Boost.Python.life_support",
+    const_cast<char*>("Boost.Python.life_support"),
     sizeof(life_support),
     0,
     life_support_dealloc,               /* tp_dealloc */

@@ -13,7 +13,7 @@ detail::new_non_null_reference list_base::call(object const& arg_)
     return (detail::new_non_null_reference)
         (expect_non_null)(
             PyObject_CallFunction(
-                (PyObject*)&PyList_Type, "(O)", 
+                (PyObject*)&PyList_Type, const_cast<char*>("(O)"), 
                 arg_.ptr()));
 }
 

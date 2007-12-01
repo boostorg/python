@@ -65,7 +65,7 @@ struct B
     B() : x(0) {}
     B(A* x_) : x(x_) {}
 
-    inner const* adopt(A* x) { this->x = x; return &x->get_inner(); }
+    inner const* adopt(A* _x) { this->x = _x; return &_x->get_inner(); }
 
     std::string a_content()
     {

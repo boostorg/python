@@ -39,7 +39,7 @@ test-suite python
   :
 
   [
-    run exec.cpp ../build//boost_python/<link>static $(PY)
+    run exec.cpp /boost/python//boost_python/<link>static $(PY)
       : # program args
       : exec.py # input files
       : # requirements
@@ -168,7 +168,8 @@ bpl-test crossmod_opaque
     /boost/python//boost_python ]
 [ bpl-test  
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
-[ py-run import_.cpp : import_.py ]
+      
+[ run import_.cpp /boost/python//boost_python $(PY) : : import_.py ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
 # {

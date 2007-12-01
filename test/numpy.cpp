@@ -12,7 +12,7 @@
 using namespace boost::python;
 
 #if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
-# define make_tuple boost::python::make_tuple
+# define make_tuple ::boost::python::make_tuple
 #endif 
 
 // See if we can invoke array() from C++
@@ -51,7 +51,7 @@ namespace
       str format("exception type: %sn");                                 
       format += "exception value: %sn";                                  
       format += "traceback:n%s" ;                                        
-      object ret = format % boost::python::make_tuple(ty, v, tr);
+      object ret = format % make_tuple(ty, v, tr);
       return ret;
   }
 }
