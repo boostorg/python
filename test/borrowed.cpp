@@ -9,13 +9,13 @@
 using namespace boost::python;
 
 template <class T>
-void assert_borrowed_ptr(T const& x)
+void assert_borrowed_ptr(T const&)
 {
     BOOST_STATIC_ASSERT(boost::python::detail::is_borrowed_ptr<T>::value);
 }
     
 template <class T>
-void assert_not_borrowed_ptr(T const& x)
+void assert_not_borrowed_ptr(T const&)
 {
     BOOST_STATIC_ASSERT(!boost::python::detail::is_borrowed_ptr<T>::value);
 }

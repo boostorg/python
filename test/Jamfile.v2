@@ -5,7 +5,10 @@
 import python ;
 
 use-project /boost/python : ../build ;
-project /boost/python/test ;
+project /boost/python/test 
+  : requirements
+    <toolset>gcc:<cxxflags>-Wextra
+  ;
 
 local PY = ;
 if [ python.configured ]
