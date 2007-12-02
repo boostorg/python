@@ -74,7 +74,7 @@ extern "C"
   {
       propertyobject *gs = (propertyobject *)self;
 
-      return PyObject_CallFunction(gs->prop_get, "()");
+      return PyObject_CallFunction(gs->prop_get, const_cast<char*>("()"));
   }
 
   static int
@@ -95,9 +95,9 @@ extern "C"
           return -1;
       }
       if (value == NULL)
-          res = PyObject_CallFunction(func, "()");
+          res = PyObject_CallFunction(func, const_cast<char*>("()"));
       else
-          res = PyObject_CallFunction(func, "(O)", value);
+          res = PyObject_CallFunction(func, const_cast<char*>("(O)"), value);
       if (res == NULL)
           return -1;
       Py_DECREF(res);
@@ -108,7 +108,7 @@ extern "C"
 static PyTypeObject static_data_object = {
     PyObject_HEAD_INIT(0)//&PyType_Type)
     0,
-    "Boost.Python.StaticProperty",
+    const_cast<char*>("Boost.Python.StaticProperty"),
     PyType_Type.tp_basicsize,
     0,
     0,                                      /* tp_dealloc */
@@ -212,7 +212,7 @@ extern "C"
 static PyTypeObject class_metatype_object = {
     PyObject_HEAD_INIT(0)//&PyType_Type)
     0,
-    "Boost.Python.class",
+    const_cast<char*>("Boost.Python.class"),
     PyType_Type.tp_basicsize,
     0,
     0,                                      /* tp_dealloc */
@@ -316,7 +316,7 @@ namespace objects
       {
           // Attempt to find the __instance_size__ attribute. If not present, no problem.
           PyObject* d = type_->tp_dict;
-          PyObject* instance_size_obj = PyObject_GetAttrString(d, "__instance_size__");
+          PyObject* instance_size_obj = PyObject_GetAttrString(d, const_cast<char*>("__instance_size__"));
 
           long instance_size = instance_size_obj ? PyInt_AsLong(instance_size_obj) : 0;
           
@@ -357,20 +357,20 @@ namespace objects
 
 
   static PyGetSetDef instance_getsets[] = {
-      {"__dict__",  instance_get_dict,  instance_set_dict, NULL, 0},
+      {const_cast<char*>("__dict__"),  instance_get_dict,  instance_set_dict, NULL, 0},
       {0, 0, 0, 0, 0}
   };
 
   
   static PyMemberDef instance_members[] = {
-      {"__weakref__", T_OBJECT, offsetof(instance<>, weakrefs), 0, 0},
+      {const_cast<char*>("__weakref__"), T_OBJECT, offsetof(instance<>, weakrefs), 0, 0},
       {0, 0, 0, 0, 0}
   };
 
   static PyTypeObject class_type_object = {
       PyObject_HEAD_INIT(0) //&class_metatype_object)
       0,
-      "Boost.Python.instance",
+      const_cast<char*>("Boost.Python.instance"),
       offsetof(instance<>,storage),           /* tp_basicsize */
       1,                                      /* tp_itemsize */
       instance_dealloc,                       /* tp_dealloc */
@@ -572,7 +572,7 @@ namespace objects
   {
       object property(
           (python::detail::new_reference)
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "Osss", fget.ptr(), 0, 0, docstr));
+          PyObject_CallFunction((PyObject*)&PyProperty_Type, const_cast<char*>("Osss"), fget.ptr(), 0, 0, docstr));
       
       this->setattr(name, property);
   }
@@ -582,7 +582,7 @@ namespace objects
   {
       object property(
           (python::detail::new_reference)
-              PyObject_CallFunction((PyObject*)&PyProperty_Type, "OOss", fget.ptr(), fset.ptr(), 0, docstr));
+          PyObject_CallFunction((PyObject*)&PyProperty_Type, const_cast<char*>("OOss"), fget.ptr(), fset.ptr(), 0, docstr));
       
       this->setattr(name, property);
   }
@@ -591,7 +591,7 @@ namespace objects
   {
       object property(
           (python::detail::new_reference)
-          PyObject_CallFunction(static_data(), "O", fget.ptr()));
+          PyObject_CallFunction(static_data(), const_cast<char*>("O"), fget.ptr()));
       
       this->setattr(name, property);
   }
@@ -600,7 +600,7 @@ namespace objects
   {
       object property(
           (python::detail::new_reference)
-          PyObject_CallFunction(static_data(), "OO", fget.ptr(), fset.ptr()));
+          PyObject_CallFunction(static_data(), const_cast<char*>("OO"), fget.ptr(), fset.ptr()));
       
       this->setattr(name, property);
   }
@@ -615,13 +615,13 @@ namespace objects
   {
     extern "C" PyObject* no_init(PyObject*, PyObject*)
     {
-        ::PyErr_SetString(::PyExc_RuntimeError, "This class cannot be instantiated from Python");
+        ::PyErr_SetString(::PyExc_RuntimeError, const_cast<char*>("This class cannot be instantiated from Python"));
         return NULL;
     }
     static ::PyMethodDef no_init_def = {
-        "__init__", no_init, METH_VARARGS,
-        "Raises an exception\n"
-        "This class cannot be instantiated from Python\n"
+        const_cast<char*>("__init__"), no_init, METH_VARARGS,
+        const_cast<char*>("Raises an exception\n"
+                          "This class cannot be instantiated from Python\n")
     };
   }
   
@@ -650,7 +650,7 @@ namespace objects
 
         ::PyErr_Format(
             PyExc_TypeError
-            , "staticmethod expects callable object; got an object of type %s, which is not callable"
+          , const_cast<char*>("staticmethod expects callable object; got an object of type %s, which is not callable")
             , callable->ob_type->tp_name
             );
         

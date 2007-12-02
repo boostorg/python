@@ -127,7 +127,14 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t, bool null_ptr_only)
     )
         return &this->m_p;
 
-    Value* p = get_pointer(this->m_p);
+    Value* p
+#  if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
+        = static_cast<Value*>( get_pointer(this->m_p) )
+#  else 
+        = get_pointer(this->m_p)
+#  endif
+        ;
+    
     if (p == 0)
         return 0;
     
