@@ -13,7 +13,6 @@
 
 struct data
 {
-    virtual ~data() {}; // silence compiler warnings
     virtual int id() const
     {
         return 42;

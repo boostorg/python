@@ -24,7 +24,6 @@ X make_x(int n) { return X(n); }
 struct bar {};
 struct foo
 {
-    virtual ~foo() {}; // silence compiler warnings
     virtual void f() = 0;
     operator bar() const { return bar(); }
 };

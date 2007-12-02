@@ -129,7 +129,6 @@ shared_ptr<Y> factory(int n)
 // regressions from Nicodemus
     struct A
     {
-        virtual ~A() {}; // silence compiler warnings
         virtual int f() = 0;
         static int call_f(shared_ptr<A>& a) { return a->f(); }
     };

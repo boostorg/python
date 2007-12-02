@@ -7,7 +7,6 @@
 
 struct V 
 {
- virtual ~V() {}; // silence compiler warningsa
  virtual void f() = 0;
 };
 
