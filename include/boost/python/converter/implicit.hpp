@@ -32,7 +32,7 @@ struct implicit
 
         arg_from_python<Source> get_source(obj);
         bool convertible = get_source.convertible();
-        BOOST_ASSERT(convertible);
+        BOOST_VERIFY(convertible);
         
         new (storage) Target(get_source());
         
