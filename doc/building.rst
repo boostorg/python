@@ -177,8 +177,8 @@ mailing lists may be able to help:
 * The `Boost.Build mailing list`__ for issues related to Boost.Build
 * The Python `C++ Sig`__ for issues specifically related to Boost.Python
 
-__ ../../../more/mailing_lists.htm#jamboost
-__ ../../../more/mailing_lists.htm#cplussig
+__ http://beta.boost.org/community/groups.html#jamboost
+__ http://beta.boost.org/community/groups.html#cplussig
 
 In Case Everything Seemed to Work
 ---------------------------------
