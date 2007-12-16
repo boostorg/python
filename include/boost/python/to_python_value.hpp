@@ -36,7 +36,7 @@ template <bool is_const_ref>
 struct object_manager_get_pytype
 {
    template <class U>
-   static PyTypeObject const* get( U& (*p)() =0)
+   static PyTypeObject const* get( U& (*)() =0)
    {
       return converter::object_manager_traits<U>::get_pytype();
    }
@@ -46,7 +46,7 @@ template <>
 struct object_manager_get_pytype<true>
 {
    template <class U>
-   static PyTypeObject const* get( U const& (*p)() =0)
+   static PyTypeObject const* get( U const& (*)() =0)
    {
       return converter::object_manager_traits<U>::get_pytype();
    }

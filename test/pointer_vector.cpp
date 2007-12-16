@@ -10,6 +10,7 @@ using namespace boost::python;
 class Abstract
 {
 public:   
+    virtual ~Abstract() {}; // silence compiler warningsa
     virtual std::string    f() =0;
 };
 
