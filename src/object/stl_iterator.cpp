@@ -2,6 +2,10 @@
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
+//
+// Credits:
+//   Andreas Kl\:ockner for fixing increment() to handle
+//   error conditions.
 
 #include <boost/python/object.hpp>
 #include <boost/python/handle.hpp>
@@ -27,6 +31,8 @@ void stl_input_iterator_impl::increment()
 {
     this->ob_ = boost::python::handle<>(
         boost::python::allow_null(PyIter_Next(this->it_.ptr())));
+    if (PyErr_Occurred())
+        throw boost::python::error_already_set();
 }
 
 bool stl_input_iterator_impl::equal(stl_input_iterator_impl const &that) const
