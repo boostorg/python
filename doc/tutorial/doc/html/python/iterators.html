@@ -3,19 +3,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Iterators</title>
 <link rel="stylesheet" href="../../../../../../../doc/html/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.73.2">
 <link rel="start" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="up" href="../index.html" title="Chapter 1. python 1.0">
 <link rel="prev" href="embedding.html" title="Embedding">
-<link rel="next" href="exception.html" title=" Exception Translation">
+<link rel="next" href="exception.html" title="Exception Translation">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/people/people.htm">People</a></td>
+<td align="center"><a href="http://www.boost.org/more/faq.htm">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -30,7 +30,7 @@
       iterators, but these are two very different beasts.
     </p>
 <p>
-      <span class="bold"><b>C++ iterators:</b></span>
+      <span class="bold"><strong>C++ iterators:</strong></span>
     </p>
 <div class="itemizedlist"><ul type="disc">
 <li>
@@ -45,7 +45,7 @@
       </li>
 </ul></div>
 <p>
-      <span class="bold"><b>Python Iterators:</b></span>
+      <span class="bold"><strong>Python Iterators:</strong></span>
     </p>
 <div class="itemizedlist"><ul type="disc">
 <li>
@@ -59,8 +59,8 @@
       </li>
 </ul></div>
 <p>
-      The typical Python iteration protocol: <tt class="literal"><span class="bold"><b>for y
-      in x...</b></span></tt> is as follows:
+      The typical Python iteration protocol: <code class="literal"><span class="bold"><strong>for y
+      in x...</strong></span></code> is as follows:
     </p>
 <p>
     </p>
@@ -74,7 +74,7 @@
 </span></pre>
 <p>
       Boost.Python provides some mechanisms to make C++ iterators play along nicely
-      as Python iterators. What we need to do is to produce appropriate <tt class="computeroutput"><span class="identifier">__iter__</span></tt> function from C++ iterators that
+      as Python iterators. What we need to do is to produce appropriate <code class="computeroutput"><span class="identifier">__iter__</span></code> function from C++ iterators that
       is compatible with the Python iteration protocol. For example:
     </p>
 <p>
@@ -91,7 +91,7 @@
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"__iter__"</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
 </pre>
 <p>
-      <span class="bold"><b>range</b></span>
+      <span class="bold"><strong>range</strong></span>
     </p>
 <p>
       We can create a Python savvy iterator using the range function:
@@ -119,14 +119,14 @@
       </li>
 </ul></div>
 <p>
-      <span class="bold"><b>iterator</b></span>
+      <span class="bold"><strong>iterator</strong></span>
     </p>
 <div class="itemizedlist"><ul type="disc"><li>
         iterator&lt;T, Policies&gt;()
       </li></ul></div>
 <p>
-      Given a container <tt class="literal">T</tt>, iterator is a shortcut that simply
-      calls <tt class="literal">range</tt> with &amp;T::begin, &amp;T::end.
+      Given a container <code class="literal">T</code>, iterator is a shortcut that simply
+      calls <code class="literal">range</code> with &amp;T::begin, &amp;T::end.
     </p>
 <p>
       Let's put this into action... Here's an example from some hypothetical bogon
@@ -152,14 +152,14 @@
     <span class="special">.</span><span class="identifier">property</span><span class="special">(</span><span class="string">"bogons"</span><span class="special">,</span> <span class="identifier">range</span><span class="special">(&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">b_begin</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">b_end</span><span class="special">));</span>
 </pre>
 <p>
-      <span class="bold"><b>stl_input_iterator</b></span>
+      <span class="bold"><strong>stl_input_iterator</strong></span>
     </p>
 <p>
       So far, we have seen how to expose C++ iterators and ranges to Python. Sometimes
       we wish to go the other way, though: we'd like to pass a Python sequence to
       an STL algorithm or use it to initialize an STL container. We need to make
-      a Python iterator look like an STL iterator. For that, we use <tt class="computeroutput"><span class="identifier">stl_input_iterator</span><span class="special">&lt;&gt;</span></tt>.
-      Consider how we might implement a function that exposes <tt class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">assign</span><span class="special">()</span></tt> to Python:
+      a Python iterator look like an STL iterator. For that, we use <code class="computeroutput"><span class="identifier">stl_input_iterator</span><span class="special">&lt;&gt;</span></code>.
+      Consider how we might implement a function that exposes <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">assign</span><span class="special">()</span></code> to Python:
     </p>
 <p>
     </p>
@@ -178,7 +178,7 @@
 </span>    <span class="special">;</span>
 </pre>
 <p>
-      Now in Python, we can assign any integer sequence to <tt class="computeroutput"><span class="identifier">list_int</span></tt>
+      Now in Python, we can assign any integer sequence to <code class="computeroutput"><span class="identifier">list_int</span></code>
       objects:
     </p>
 <p>
