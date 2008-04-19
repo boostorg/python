@@ -11,7 +11,7 @@
    :alt: Boost C++ Libraries:
    :class: boost-logo
 
-__ ../index.htm
+__ ../index.html
 
 
 .. section-numbering::
