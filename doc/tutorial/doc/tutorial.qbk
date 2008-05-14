@@ -93,7 +93,7 @@ who had to use a different tool.
 
 We will skip over the details. Our objective will be to simply create
 the hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: [@../../../building.html
+building Boost.Python, check out: [@/libs/python/doc/building.html
 building.html]. After this brief ['bjam] tutorial, we should have built
 the DLLs and run a python program using the extension.
 
@@ -118,7 +118,7 @@ platforms. The complete list of Bjam executables can be found
 [h2 Let's Jam!]
 __jam__
 
-[@../../../../example/tutorial/Jamroot Here] is our minimalist Jamroot
+[@/libs/python/example/tutorial/Jamroot Here] is our minimalist Jamroot
 file. Simply copy the file and tweak [^use-project boost] to where your
 boost root directory is and your OK.
 
@@ -463,7 +463,7 @@ functions so that a Python override may be called:
     };
 
 Notice too that in addition to inheriting from `Base`, we also multiply-
-inherited `wrapper<Base>` (See [@../../../v2/wrapper.html Wrapper]). The
+inherited `wrapper<Base>` (See [@/libs/python/doc/v2/wrapper.html Wrapper]). The
 `wrapper` template makes the job of wrapping classes that are meant to
 overridden in Python, easier.
 
@@ -495,7 +495,7 @@ Methods correspond roughly to C++'s [*member functions]]
 [section Virtual Functions with Default Implementations]
 
 We've seen in the previous section how classes with pure virtual functions are
-wrapped using Boost.Python's [@../../../v2/wrapper.html class wrapper]
+wrapped using Boost.Python's [@/libs/python/doc/v2/wrapper.html class wrapper]
 facilities. If we wish to wrap [*non]-pure-virtual functions instead, the
 mechanism is a bit different.
 
@@ -812,7 +812,7 @@ or more policies can be composed by chaining. Here's the general syntax:
             policy3<args...> > >
 
 Here is the list of predefined call policies. A complete reference detailing
-these can be found [@../../../v2/reference.html#models_of_call_policies here].
+these can be found [@/libs/python/doc/v2/reference.html#models_of_call_policies here].
 
 * [*with_custodian_and_ward]:  Ties lifetimes of the arguments
 * [*with_custodian_and_ward_postcall]:  Ties lifetimes of the arguments and results
@@ -970,7 +970,7 @@ fourth macro argument). The thin wrappers are all enclosed in a class named
 
     .def("wack_em", &george::wack_em, george_overloads());
 
-See the [@../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
+See the [@/libs/python/doc/v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec overloads reference]
 for details.
 
 [h2 init and optional]
@@ -1267,7 +1267,7 @@ associated with the C++ type passed as its first parameter.
 The scope is a class that has an associated global Python object which
 controls the Python namespace in which new extension classes and wrapped
 functions will be defined as attributes. Details can be found
-[@../../../v2/scope.html here].]
+[@/libs/python/doc/v2/scope.html here].]
 
 You can access those values in Python as
 
@@ -1328,7 +1328,7 @@ in Boost's [^/libs/python/build/bin-stage] subdirectory. On Windows, the
 variants are called [^boost_python.lib] (for release builds) and
 [^boost_python_debug.lib] (for debugging). If you can't find the libraries,
 you probably haven't built Boost.Python yet. See
-[@../../../building.html Building and Testing] on how to do this.
+[@/libs/python/doc/building.html Building and Testing] on how to do this.
 
 Python's library can be found in the [^/libs] subdirectory of
 your Python directory. On Windows it is called pythonXY.lib where X.Y is
@@ -1386,8 +1386,8 @@ There is a difference however. While the reference-counting is fully
 automatic in Python, the Python\/C API requires you to do it
 [@http://www.python.org/doc/current/api/refcounts.html by hand]. This is
 messy and especially hard to get right in the presence of C++ exceptions.
-Fortunately Boost.Python provides the [@../../../v2/handle.html handle] and
-[@../../../v2/object.html object] class templates to automate the process.
+Fortunately Boost.Python provides the [@/libs/python/doc/v2/handle.html handle] and
+[@/libs/python/doc/v2/object.html object] class templates to automate the process.
 
 [h2 Running Python code]
 
@@ -1450,7 +1450,7 @@ which returns the result directly:
 [h2 Exception handling]
 
 If an exception occurs in the evaluation of the python expression,
-[@../../../v2/errors.html#error_already_set-spec error_already_set] is thrown:
+[@/libs/python/doc/v2/errors.html#error_already_set-spec error_already_set] is thrown:
 
     try
     {
@@ -1954,13 +1954,13 @@ This method is recommended too if you are developing the C++ library and
 exporting it to Python at the same time: changes in a class will only demand
 the compilation of a single cpp, instead of the entire wrapper code.
 
-[note If you're exporting your classes with [@../../../../pyste/index.html Pyste],
+[note If you're exporting your classes with [@/libs/python/doc/pyste/index.html Pyste],
 take a look at the [^--multiple] option, that generates the wrappers in
 various files as demonstrated here.]
 
 [note This method is useful too if you are getting the error message
 ['"fatal error C1204:Compiler limit:internal structure overflow"] when compiling
-a large source file, as explained in the [@../../../v2/faq.html#c1204 FAQ].]
+a large source file, as explained in the [@/libs/python/doc/v2/faq.html#c1204 FAQ].]
 
 [endsect]
 [endsect] [/ General Techniques]
