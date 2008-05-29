@@ -34,29 +34,68 @@
 >>> try: obj_getattr(x, 'foo')
 ... except AttributeError: pass
 ... else: print 'expected an exception'
+>>> try: obj_objgetattr(x, 'objfoo')
+... except AttributeError: pass
+... else: print 'expected an exception'
 
 >>> obj_setattr(x, 'foo', 1)
 >>> x.foo
 1
+>>> obj_objsetattr(x, 'objfoo', 1)
+>>> try:obj_objsetattr(x, 1)
+... except TypeError: pass
+... else: print 'expected an exception'
+>>> x.objfoo
+1
 >>> obj_getattr(x, 'foo')
 1
+>>> obj_objgetattr(x, 'objfoo')
+1
+>>> try:obj_objgetattr(x, 1)
+... except TypeError: pass
+... else: print 'expected an exception'
 >>> obj_const_getattr(x, 'foo')
+1
+>>> obj_const_objgetattr(x, 'objfoo')
 1
 >>> obj_setattr42(x, 'foo')
 >>> x.foo
 42
+>>> obj_objsetattr42(x, 'objfoo')
+>>> x.objfoo
+42
 >>> obj_moveattr(x, 'foo', 'bar')
 >>> x.bar
 42
+>>> obj_objmoveattr(x, 'objfoo', 'objbar')
+>>> x.objbar
+42
 >>> test_attr(x, 'foo')
 1
+>>> test_objattr(x, 'objfoo')
+1
 >>> test_not_attr(x, 'foo')
+0
+>>> test_not_objattr(x, 'objfoo')
 0
 >>> x.foo = None
 >>> test_attr(x, 'foo')
 0
+>>> x.objfoo = None
+>>> test_objattr(x, 'objfoo')
+0
 >>> test_not_attr(x, 'foo')
 1
+>>> test_not_objattr(x, 'objfoo')
+1
+>>> obj_delattr(x, 'foo')
+>>> obj_objdelattr(x, 'objfoo')
+>>> try:obj_delattr(x, 'foo')
+... except AttributeError: pass
+... else: print 'expected an exception'
+>>> try:obj_objdelattr(x, 'objfoo')
+... except AttributeError: pass
+... else: print 'expected an exception'
 
         Items
 
