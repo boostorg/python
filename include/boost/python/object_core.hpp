@@ -59,6 +59,8 @@ namespace api
   
   struct const_attribute_policies;
   struct attribute_policies;
+  struct const_objattribute_policies;
+  struct objattribute_policies;
   struct const_item_policies;
   struct item_policies;
   struct const_slice_policies;
@@ -67,6 +69,8 @@ namespace api
 
   typedef proxy<const_attribute_policies> const_object_attribute;
   typedef proxy<attribute_policies> object_attribute;
+  typedef proxy<const_objattribute_policies> const_object_objattribute;
+  typedef proxy<objattribute_policies> object_objattribute;
   typedef proxy<const_item_policies> const_object_item;
   typedef proxy<item_policies> object_item;
   typedef proxy<const_slice_policies> const_object_slice;
@@ -108,6 +112,8 @@ namespace api
       //
       const_object_attribute attr(char const*) const;
       object_attribute attr(char const*);
+      const_object_objattribute attr(object const&) const;
+      object_objattribute attr(object const&);
 
       // item access
       //
