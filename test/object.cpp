@@ -38,7 +38,17 @@ object obj_getattr(object x, char const* name)
     return x.attr(name);
 }
 
+object obj_objgetattr(object x, object const& name)
+{
+    return x.attr(name);
+}
+
 object obj_const_getattr(object const& x, char const* name)
+{
+    return x.attr(name);
+}
+
+object obj_const_objgetattr(object const& x, object const& name)
 {
     return x.attr(name);
 }
@@ -48,7 +58,17 @@ void obj_setattr(object x, char const* name, object value)
     x.attr(name) = value;
 }
 
+void obj_objsetattr(object x, object const& name, object value)
+{
+    x.attr(name) = value;
+}
+
 void obj_setattr42(object x, char const* name)
+{
+    x.attr(name) = 42;
+}
+
+void obj_objsetattr42(object x, object const& name)
 {
     x.attr(name) = 42;
 }
@@ -56,6 +76,21 @@ void obj_setattr42(object x, char const* name)
 void obj_moveattr(object& x, char const* src, char const* dst)
 {
     x.attr(dst) = x.attr(src);
+}
+
+void obj_objmoveattr(object& x, object const& src, object const& dst)
+{
+    x.attr(dst) = x.attr(src);
+}
+
+void obj_delattr(object x, char const* name)
+{
+    x.attr(name).del();
+}
+
+void obj_objdelattr(object x, object const& name)
+{
+    x.attr(name).del();
 }
 
 object obj_getitem(object x, object key)
@@ -108,7 +143,17 @@ bool test_attr(object y, char* name)
     return y.attr(name);
 }
 
+bool test_objattr(object y, object& name)
+{
+    return y.attr(name);
+}
+
 bool test_not_attr(object y, char* name)
+{
+    return !y.attr(name);
+}
+
+bool test_not_objattr(object y, object& name)
 {
     return !y.attr(name);
 }
@@ -301,11 +346,17 @@ BOOST_PYTHON_MODULE(object_ext)
     def("number", number);
 
     def("obj_getattr", obj_getattr);
+    def("obj_objgetattr", obj_objgetattr);
     def("obj_const_getattr", obj_const_getattr);
+    def("obj_const_objgetattr", obj_const_objgetattr);
     def("obj_setattr", obj_setattr);
+    def("obj_objsetattr", obj_objsetattr);
     def("obj_setattr42", obj_setattr42);
+    def("obj_objsetattr42", obj_objsetattr42);
     def("obj_moveattr", obj_moveattr);
-
+    def("obj_objmoveattr", obj_objmoveattr);
+    def("obj_delattr", obj_delattr);
+    def("obj_objdelattr", obj_objdelattr);
 
     def("obj_getitem", obj_getitem);
     def("obj_getitem3", obj_getitem);
@@ -319,7 +370,9 @@ BOOST_PYTHON_MODULE(object_ext)
     def("test_not", test_not);
 
     def("test_attr", test_attr);
+    def("test_objattr", test_objattr);
     def("test_not_attr", test_not_attr);
+    def("test_not_objattr", test_not_objattr);
 
     def("test_item", test_item);
     def("test_not_item", test_not_item);

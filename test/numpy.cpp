@@ -10,19 +10,16 @@
 #include <boost/python/str.hpp>
 
 using namespace boost::python;
-
-#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
-# define make_tuple boost::python::make_tuple
-#endif 
+namespace py = boost::python;
 
 // See if we can invoke array() from C++
 numeric::array new_array()
 {
     return numeric::array(
-        make_tuple(
-            make_tuple(1,2,3)
-          , make_tuple(4,5,6)
-          , make_tuple(7,8,9)
+        py::make_tuple(
+            py::make_tuple(1,2,3)
+          , py::make_tuple(4,5,6)
+          , py::make_tuple(7,8,9)
             )
         );
 }
@@ -51,7 +48,7 @@ namespace
       str format("exception type: %sn");                                 
       format += "exception value: %sn";                                  
       format += "traceback:n%s" ;                                        
-      object ret = format % boost::python::make_tuple(ty, v, tr);
+      object ret = format % py::make_tuple(ty, v, tr);
       return ret;
   }
 }
@@ -71,7 +68,7 @@ namespace
 // inherits that behavior from object.
 void exercise(numeric::array& y, object check)
 {
-    y[make_tuple(2,1)] = 3;
+    y[py::make_tuple(2,1)] = 3;
     CHECK(y);
     CHECK(y.astype('D'));
     CHECK(y.copy());
@@ -116,12 +113,12 @@ void exercise_numarray(numeric::array& y, object check)
     CHECK(y);
     CHECK(y.type());
 
-    CHECK(y.factory(make_tuple(1.2, 3.4)));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "f8"));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true, false));
-    CHECK(y.factory(make_tuple(1.2, 3.4), "f8", true, false, object()));
-    CHECK (y.factory(make_tuple(1.2, 3.4), "f8", true, false, object(), make_tuple(1,2,1)));
+    CHECK(y.factory(py::make_tuple(1.2, 3.4)));
+    CHECK(y.factory(py::make_tuple(1.2, 3.4), "f8"));
+    CHECK(y.factory(py::make_tuple(1.2, 3.4), "f8", true));
+    CHECK(y.factory(py::make_tuple(1.2, 3.4), "f8", true, false));
+    CHECK(y.factory(py::make_tuple(1.2, 3.4), "f8", true, false, object()));
+    CHECK (y.factory(py::make_tuple(1.2, 3.4), "f8", true, false, object(), py::make_tuple(1,2,1)));
 
 }
 

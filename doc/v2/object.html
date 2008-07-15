@@ -74,6 +74,32 @@
             </dl>
           </dd>
 
+          <dt><a href="#const_objattribute_policies-spec">Class
+          <code>const_objattribute_policies</code></a></dt>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#const_objattribute_policies-spec-synopsis">Class
+              <code>const_objattribute_policies</code> synopsis</a></dt>
+
+              <dt><a href="#const_objattribute_policies-spec-statics">Class
+              <code>const_objattribute_policies</code> static functions</a></dt>
+            </dl>
+          </dd>
+
+          <dt><a href="#objattribute_policies-spec">Class
+          <code>objattribute_policies</code></a></dt>
+
+          <dd>
+            <dl class="page-index">
+              <dt><a href="#objattribute_policies-spec-synopsis">Class
+              <code>objattribute_policies</code> synopsis</a></dt>
+
+              <dt><a href="#objattribute_policies-spec-statics">Class
+              <code>objattribute_policies</code> static functions</a></dt>
+            </dl>
+          </dd>
+
           <dt><a href="#const_item_policies-spec">Class
           <code>const_item_policies</code></a></dt>
 
@@ -328,6 +354,102 @@ static void del(object const&amp;target, char const* key);
     <!-- end -->
     <!-- begin -->
 
+    <h3><a name="const_objattribute_policies-spec"></a>Class
+    <code>const_objattribute_policies</code></h3>
+
+    <p>The policies which are used for proxies representing an attribute
+    access to a <code>const&nbsp;object</code> when the attribute name is
+    given as a <code>const&nbsp;object</code>.</p>
+
+    <h4><a name="const_objattribute_policies-spec-synopsis"></a>Class
+    <code>const_objattribute_policies</code> synopsis</h4>
+<pre>
+namespace boost { namespace python { namespace api
+{
+  struct const_objattribute_policies
+  {
+      typedef object const& key_type;
+      static object get(object const&amp; target, object const& key);
+  };
+}}}
+</pre>
+
+    <h4><a name="const_objattribute_policies-spec-statics"></a>Class
+    <code>const_objattribute_policies</code> static functions</h4>
+<pre>
+static object get(object const&amp; target, object const& key);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>key</code> is an <code>object</code>
+      holding a string.</dt>
+
+      <dt><b>Effects:</b> accesses the attribute of <code>target</code> named
+      by <code>key</code>.</dt>
+
+      <dt><b>Returns:</b> An <code>object</code> managing the result of the
+      attribute access.</dt>
+
+      <dt><b>Throws:</b> <code><a href=
+      "errors.html#error_already_set-spec">error_already_set</a></code> if a
+      Python exception is raised.</dt>
+    </dl>
+
+    <h3><a name="objattribute_policies-spec"></a>Class
+    <code>objattribute_policies</code></h3>
+
+    <p>The policies which are used for proxies representing an attribute
+    access to a mutable <code>object</code> when the attribute name is
+    given as a <code>const&nbsp;object</code>.</p>
+
+    <h4><a name="objattribute_policies-spec-synopsis"></a>Class
+    <code>objattribute_policies</code> synopsis</h4>
+<pre>
+namespace boost { namespace python { namespace api
+{
+  struct objattribute_policies : const_objattribute_policies
+  {
+      static object const&amp; set(object const&amp; target, object const& key, object const&amp; value);
+      static void del(object const&amp;target, object const& key);
+  };
+}}}
+</pre>
+
+    <h4><a name="objattribute_policies-spec-statics"></a>Class
+    <code>objattribute_policies</code> static functions</h4>
+<pre>
+static object const&amp; set(object const&amp; target, object const& key, object const&amp; value);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>key</code> is an <code>object</code>
+      holding a string.</dt>
+
+      <dt><b>Effects:</b> sets the attribute of <code>target</code> named by
+      <code>key</code> to <code>value</code>.</dt>
+
+      <dt><b>Throws:</b> <code><a href=
+      "errors.html#error_already_set-spec">error_already_set</a></code> if a
+      Python exception is raised.</dt>
+    </dl>
+<pre>
+static void del(object const&amp;target, object const& key);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> <code>key</code> is an <code>object</code>
+      holding a string.</dt>
+
+      <dt><b>Effects:</b> deletes the attribute of <code>target</code> named
+      by <code>key</code>.</dt>
+
+      <dt><b>Throws:</b> <code><a href=
+      "errors.html#error_already_set-spec">error_already_set</a></code> if a
+      Python exception is raised.</dt>
+    </dl>
+    <!-- end -->
+    <!-- begin -->
+
     <h3><a name="const_item_policies-spec"></a>Class
     <code>const_item_policies</code></h3>
 
@@ -542,6 +664,8 @@ namespace boost { namespace python { namespace api
       //
       proxy&lt;const_object_attribute&gt; attr(char const*) const;
       proxy&lt;object_attribute&gt; attr(char const*);
+      proxy&lt;const_object_objattribute&gt; attr(object const&) const;
+      proxy&lt;object_objattribute&gt; attr(object const&);
 
       // item access
       //
@@ -599,6 +723,21 @@ proxy&lt;object_attribute&gt; attr(char const* name);
     <dl class="function-semantics">
       <dt><b>Requires:</b> name is an <a href=
       "definitions.html#ntbs">ntbs</a>.</dt>
+
+      <dt><b>Effects:</b> accesses the named attribute of
+      <code>*this</code>.</dt>
+
+      <dt><b>Returns:</b> a proxy object which binds
+      <code>object(*static_cast&lt;U*&gt;(this))</code> as its target, and
+      <code>name</code> as its key.</dt>
+    </dl>
+<pre>
+proxy&lt;const_object_objattribute&gt; attr(const object& name) const;
+proxy&lt;object_objattribute&gt; attr(const object& name);
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Requires:</b> name is a <code>object</code> holding a string.</dt>
 
       <dt><b>Effects:</b> accesses the named attribute of
       <code>*this</code>.</dt>
@@ -938,11 +1077,11 @@ object sum_items(object seq)
 </pre>
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  13 January, 2006
+  27 May, 2008
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
     <p><i>&copy; Copyright <a href=
-    "http://www.boost.org/people/dave_abrahams.htm">Dave Abrahams</a> 2006.</i></p>
+    "http://www.boost.org/people/dave_abrahams.htm">Dave Abrahams</a> 2008.</i></p>
   </body>
 </html>
