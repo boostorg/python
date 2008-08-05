@@ -187,6 +187,11 @@ bool check_string_slice()
     return s.slice(2,-1).slice(1,-1)  == "lo, wor";
 }
 
+object test_call(object c, object args, object kwds) 
+{ 
+    return c(*args, **kwds); 
+} 
+
 bool check_binary_operators()
 {
     int y;
@@ -377,6 +382,7 @@ BOOST_PYTHON_MODULE(object_ext)
     def("test_item", test_item);
     def("test_not_item", test_not_item);
 
+    def("test_call", test_call);
     def("check_binary_operators", check_binary_operators);
     def("check_inplace", check_inplace);
     def("check_string_slice", check_string_slice);

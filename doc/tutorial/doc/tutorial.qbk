@@ -186,6 +186,10 @@ And so on... Finally:
 Or something similar. If all is well, you should now have built the DLLs and
 run the Python program.
 
+[note Starting from Boost 1.35, bjam erases the generated executables
+(e.g. pyd file) after the test has concluded to conserve disk space.
+To keep bjam from doing that, pass --preserve-test-targets to bjam.]
+
 [:[*There you go... Have fun!]]
 
 [endsect]
