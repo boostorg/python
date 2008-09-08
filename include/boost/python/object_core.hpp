@@ -230,11 +230,11 @@ namespace api
       inline object_base(object_base const&);
       inline object_base(PyObject* ptr);
       
-      object_base& operator=(object_base const& rhs);
-      ~object_base();
+      inline object_base& operator=(object_base const& rhs);
+      inline ~object_base();
         
       // Underlying object access -- returns a borrowed reference
-      PyObject* ptr() const;
+      inline PyObject* ptr() const;
       
    private:
       PyObject* m_ptr;
