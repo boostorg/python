@@ -230,11 +230,11 @@ namespace api
       inline object_base(object_base const&);
       inline object_base(PyObject* ptr);
       
-      object_base& operator=(object_base const& rhs);
-      ~object_base();
+      inline object_base& operator=(object_base const& rhs);
+      inline ~object_base();
         
       // Underlying object access -- returns a borrowed reference
-      PyObject* ptr() const;
+      inline PyObject* ptr() const;
       
    private:
       PyObject* m_ptr;
@@ -404,7 +404,7 @@ namespace api
       static PyObject*
       get(T const& x, U)
       {
-          return python::incref(get_managed_object(x, tag));
+          return python::incref(get_managed_object(x, boost::python::tag));
       }
   };
 
@@ -457,17 +457,17 @@ template <typename U>
 detail::args_proxy api::object_operators<U>::operator* () const 
 { 
   object_cref2 x = *static_cast<U const*>(this); 
-  return detail::args_proxy(x); 
+  return boost::python::detail::args_proxy(x); 
 } 
  
 template <typename U> 
 object api::object_operators<U>::operator()(detail::args_proxy const &args) const 
 { 
   U const& self = *static_cast<U const*>(this); 
-  PyObject *result = PyObject_Call(get_managed_object(self, tag), 
+  PyObject *result = PyObject_Call(get_managed_object(self, boost::python::tag), 
                                    args.operator object().ptr(), 
                                    0); 
-  return object(detail::new_reference(result)); 
+  return object(boost::python::detail::new_reference(result)); 
  
 } 
  
@@ -476,10 +476,10 @@ object api::object_operators<U>::operator()(detail::args_proxy const &args,
                                             detail::kwds_proxy const &kwds) const 
 { 
   U const& self = *static_cast<U const*>(this); 
-  PyObject *result = PyObject_Call(get_managed_object(self, tag), 
+  PyObject *result = PyObject_Call(get_managed_object(self, boost::python::tag), 
                                    args.operator object().ptr(), 
                                    kwds.operator object().ptr()); 
-  return object(detail::new_reference(result)); 
+  return object(boost::python::detail::new_reference(result)); 
  
 }  
 
