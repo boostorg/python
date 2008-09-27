@@ -57,7 +57,7 @@ char const* rewrap_value_mutable_cstring(char* x) { return x; }
 
 object identity_(object x) { return x; }
 
-BOOST_PYTHON_MODULE(builtin_converters)
+BOOST_PYTHON_MODULE(builtin_converters_ext)
 {    
     def("get_type", get_type);
     def("return_null_handle", return_null_handle);

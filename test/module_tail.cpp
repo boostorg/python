@@ -13,6 +13,7 @@
 # endif
 
 # ifdef _MSC_VER
+#  include <eh.h> // for _set_se_translator()
 #  pragma warning(push)
 #  pragma warning(disable:4297)
 #  pragma warning(disable:4535)

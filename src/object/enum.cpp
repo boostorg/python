@@ -23,7 +23,7 @@ struct enum_object
 };
 
 static PyMemberDef enum_members[] = {
-    {"name", T_OBJECT_EX, offsetof(enum_object,name),READONLY, 0},
+    {const_cast<char*>("name"), T_OBJECT_EX, offsetof(enum_object,name),READONLY, 0},
     {0, 0, 0, 0, 0}
 };
 
@@ -32,7 +32,7 @@ extern "C"
 {
     static PyObject* enum_repr(PyObject* self_)
     {
-        const char *mod = PyString_AsString(PyObject_GetAttrString( self_, "__module__"));
+        const char *mod = PyString_AsString(PyObject_GetAttrString( self_, const_cast<char*>("__module__")));
         enum_object* self = downcast<enum_object>(self_);
         if (!self->name)
         {
@@ -65,7 +65,7 @@ extern "C"
 static PyTypeObject enum_type_object = {
     PyObject_HEAD_INIT(0) // &PyType_Type
     0,
-    "Boost.Python.enum",
+    const_cast<char*>("Boost.Python.enum"),
     sizeof(enum_object),                    /* tp_basicsize */
     0,                                      /* tp_itemsize */
     0,                                      /* tp_dealloc */

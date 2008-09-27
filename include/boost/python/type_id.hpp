@@ -11,6 +11,7 @@
 # include <boost/operators.hpp>
 # include <typeinfo>
 # include <cstring>
+# include <ostream>
 # include <boost/static_assert.hpp>
 # include <boost/detail/workaround.hpp>
 # include <boost/type_traits/same_traits.hpp>

@@ -7,9 +7,12 @@
 #ifndef PY_CONTAINER_UTILS_JDG20038_HPP
 # define PY_CONTAINER_UTILS_JDG20038_HPP
 
+# include <utility>
+# include <boost/foreach.hpp>
 # include <boost/python/object.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/python/extract.hpp>
+# include <boost/python/stl_iterator.hpp>
 
 namespace boost { namespace python { namespace container_utils {
         
@@ -19,11 +22,13 @@ namespace boost { namespace python { namespace container_utils {
     {
         typedef typename Container::value_type data_type;
         
-        //  l must be a list or some container
-
-        for (int i = 0; i < l.attr("__len__")(); i++)
+        //  l must be iterable
+        BOOST_FOREACH(object elem,
+            std::make_pair(
+              boost::python::stl_input_iterator<object>(l),
+              boost::python::stl_input_iterator<object>()
+              ))
         {
-            object elem(l[i]);
             extract<data_type const&> x(elem);
             //  try if elem is an exact data_type type
             if (x.check())

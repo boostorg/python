@@ -14,7 +14,7 @@
 
 using namespace boost::python;
 
-#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580)) || BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1500))
 # define make_tuple boost::python::make_tuple
 #endif 
 
@@ -90,6 +90,7 @@ BOOST_PYTHON_MODULE(args_ext)
 
         .def("f1", &X::f, X_f_overloads(args("self", "x", "y", "z")))
         .def("f2", &X::f, X_f_overloads(args("self", "x", "y", "z"), "f2's docstring"))
+        .def("f2", &X::f, X_f_overloads(args("x", "y", "z"), "f2's docstring"))
         ;
 
     def("inner", &X::inner, "docstring", args("self", "n"), return_internal_reference<>());

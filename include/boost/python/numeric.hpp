@@ -92,6 +92,7 @@ namespace aux
   {
       static bool check(PyObject* obj);
       static detail::new_non_null_reference adopt(PyObject* obj);
+      static PyTypeObject const* get_pytype() ;
   };
 } // namespace aux
 

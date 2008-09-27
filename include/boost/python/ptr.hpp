@@ -8,7 +8,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 // Based on boost/ref.hpp, thus:
-//  Copyright (C) 1999, 2000 Jaakko Järvi (jaakko.jarvi@cs.utu.fi)
+//  Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
 //  Copyright (C) 2001 Peter Dimov
 
 # if _MSC_VER+0 >= 1020

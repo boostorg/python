@@ -5,10 +5,10 @@ struct vector
 {
     virtual ~vector() {}
     
-    vector operator+( const vector& x ) const
+    vector operator+( const vector& ) const
     { return vector(); }
 
-    vector& operator+=( const vector& x )
+    vector& operator+=( const vector& )
     { return *this; }
     
     vector operator-() const

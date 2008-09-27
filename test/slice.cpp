@@ -10,7 +10,7 @@
 
 using namespace boost::python;
 
-#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580))
+#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580)) || BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1500))
 # define make_tuple boost::python::make_tuple
 #endif 
 
@@ -100,7 +100,11 @@ bool accept_slice( slice) { return true; }
     || BOOST_WORKAROUND( BOOST_INTEL_WIN, == 710)
 int check_slice_get_indicies(slice index);
 #endif
-int check_slice_get_indicies(const slice index)
+int check_slice_get_indicies(
+#if !BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
+    const
+#endif 
+    slice index)
 {
     // A vector of integers from [-5, 5].
     std::vector<int> coll(11);
