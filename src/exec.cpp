@@ -39,7 +39,7 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *f = python::extract<char *>(filename);
   // Let python open the file to avoid potential binary incompatibilities.
-  PyObject *pyfile = PyFile_FromString(f, const_cast<char*>("r"));
+  PyObject *pyfile = PyFile_FromString(f, "r");
   if (!pyfile) throw std::invalid_argument(std::string(f) + " : no such file");
   python::handle<> file(pyfile);
   PyObject* result = PyRun_File(PyFile_AsFile(file.get()),

@@ -236,7 +236,7 @@ struct class_metadata
     //
     // Support for converting smart pointers to python
     //
-    inline static void maybe_register_pointer_to_python(...) {}
+    inline static void maybe_register_pointer_to_python(void*,void*,void*) {}
 
 #ifndef BOOST_PYTHON_NO_PY_SYGNATURES
     inline static void maybe_register_pointer_to_python(void*,void*,mpl::true_*) 

@@ -27,7 +27,7 @@ struct X
     X(X const& rhs) : x(rhs.x), magic(7654321) { ++counter; }
     virtual ~X() { BOOST_ASSERT(magic == 7654321); magic = 6666666; x = 9999; --counter; }
 
-    void set(int _x) { BOOST_ASSERT(magic == 7654321); this->x = _x; }
+    void set(int x) { BOOST_ASSERT(magic == 7654321); this->x = x; }
     int value() const { BOOST_ASSERT(magic == 7654321); return x; }
     static int count() { return counter; }
  private:

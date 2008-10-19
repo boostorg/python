@@ -117,10 +117,7 @@ void* value_holder_back_reference<Value,Held>::holds(
 
 // --------------- value_holder ---------------
 
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
 # if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
         && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
 #  line BOOST_PP_LINE(__LINE__, value_holder.hpp(value_holder))
@@ -166,5 +163,4 @@ void* value_holder_back_reference<Value,Held>::holds(
 
 # undef N
 
-#endif // BOOST_PP_ITERATION_DEPTH()
 #endif

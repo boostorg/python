@@ -10,7 +10,7 @@ namespace boost { namespace python { namespace detail {
 detail::new_reference str_base::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
-        (PyObject*)&PyString_Type, const_cast<char*>("(O)"), 
+        (PyObject*)&PyString_Type, "(O)", 
         arg_.ptr());
 } 
 
@@ -68,9 +68,8 @@ str str_base:: name ( BOOST_PP_ENUM_PARAMS(arity, object_cref x) ) const        
     return str(new_reference(                                                   \
        expect_non_null(                                                         \
            PyObject_CallMethod(                                                 \
-               this->ptr(), const_cast<char*>( #name ),                         \
-               const_cast<char*>(                                               \
-                 "(" BOOST_PP_REPEAT(arity, BOOST_PYTHON_FORMAT_OBJECT, _) ")") \
+               this->ptr(), #name,                                              \
+              "(" BOOST_PP_REPEAT(arity, BOOST_PYTHON_FORMAT_OBJECT, _) ")"     \
                BOOST_PP_REPEAT_1(arity, BOOST_PYTHON_OBJECT_PTR, _)))));        \
 }
 

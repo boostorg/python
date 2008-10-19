@@ -134,12 +134,7 @@
 
         Operators
 
->>> def print_args(*args, **kwds): 
-...     print args, kwds 
->>> test_call(print_args, (0, 1, 2, 3), {'a':'A'}) 
-(0, 1, 2, 3) {'a': 'A'}
-
-
+        
 >>> assert check_binary_operators()
 
 >>> class X: pass

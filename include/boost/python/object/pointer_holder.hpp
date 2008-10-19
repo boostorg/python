@@ -127,14 +127,7 @@ void* pointer_holder<Pointer, Value>::holds(type_info dst_t, bool null_ptr_only)
     )
         return &this->m_p;
 
-    Value* p
-#  if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
-        = static_cast<Value*>( get_pointer(this->m_p) )
-#  else 
-        = get_pointer(this->m_p)
-#  endif
-        ;
-    
+    Value* p = get_pointer(this->m_p);
     if (p == 0)
         return 0;
     
@@ -170,10 +163,7 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t, bool
 # endif // POINTER_HOLDER_DWA20011215_HPP
 
 /* --------------- pointer_holder --------------- */
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
+#elif BOOST_PP_ITERATION_DEPTH() == 1 && BOOST_PP_ITERATION_FLAGS() == 1
 # if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
         && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
 #  line BOOST_PP_LINE(__LINE__, pointer_holder.hpp)
@@ -215,5 +205,4 @@ void* pointer_holder_back_reference<Pointer, Value>::holds(type_info dst_t, bool
 
 # undef N
 
-#endif // BOOST_PP_ITERATION_DEPTH()
 #endif

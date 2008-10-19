@@ -19,10 +19,10 @@ struct complicated
     int n;
 };
 
-inline complicated::complicated(simple const&s, int _n)
-    : s(s.s), n(_n)
+inline complicated::complicated(simple const&s, int n)
+    : s(s.s), n(n)
 {
-    std::cout << "constructing complicated: " << this->s << ", " << _n << std::endl;
+    std::cout << "constructing complicated: " << this->s << ", " << n << std::endl;
 }
 
 inline complicated::~complicated()

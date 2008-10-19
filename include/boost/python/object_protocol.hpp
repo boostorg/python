@@ -10,11 +10,9 @@
 # include <boost/python/object_protocol_core.hpp>
 # include <boost/python/object_core.hpp>
 
-# include <boost/detail/workaround.hpp>
-
 namespace boost { namespace python { namespace api {
 
-# if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
+# if BOOST_WORKAROUND(__SUNPRO_CC, <= 0x580)
 // attempt to use SFINAE to prevent functions accepting T const& from
 // coming up as ambiguous with the one taking a char const* when a
 // string literal is passed
@@ -24,45 +22,45 @@ namespace boost { namespace python { namespace api {
 # endif
 
 template <class Target, class Key>
-object getattr(Target const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(Key))
+object getattr(Target const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     return getattr(object(target), object(key));
 }
 
 template <class Target, class Key, class Default>
-object getattr(Target const& target, Key const& key, Default const& default_ BOOST_PYTHON_NO_ARRAY_ARG(Key))
+object getattr(Target const& target, Key const& key, Default const& default_ BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     return getattr(object(target), object(key), object(default_));
 }
 
 
 template <class Key, class Value>
-void setattr(object const& target, Key const& key, Value const& value BOOST_PYTHON_NO_ARRAY_ARG(Key))
+void setattr(object const& target, Key const& key, Value const& value BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     setattr(target, object(key), object(value));
 }
 
 template <class Key>
-void delattr(object const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(Key))
+void delattr(object const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     delattr(target, object(key));
 }
 
 template <class Target, class Key>
-object getitem(Target const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(Key))
+object getitem(Target const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     return getitem(object(target), object(key));
 }
 
 
 template <class Key, class Value>
-void setitem(object const& target, Key const& key, Value const& value BOOST_PYTHON_NO_ARRAY_ARG(Key))
+void setitem(object const& target, Key const& key, Value const& value BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     setitem(target, object(key), object(value));
 }
 
 template <class Key>
-void delitem(object const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(Key))
+void delitem(object const& target, Key const& key BOOST_PYTHON_NO_ARRAY_ARG(key))
 {
     delitem(target, object(key));
 }

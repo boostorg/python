@@ -12,16 +12,6 @@
 3
 4
 5
->>> def generator():
-...   yield 1
-...   yield 2
-...   raise RuntimeError, "oops"
->>> try:
-...   x.assign(iter(generator()))
-...   print "NOT OK"
-... except RuntimeError:
-...   print "OK"
-OK
 '''
 def run(args = None):
     import sys

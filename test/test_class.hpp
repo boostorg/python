@@ -13,7 +13,7 @@ struct test_class
     test_class(test_class const& rhs) : x(rhs.x), magic(7654321 + n) { ++counter; }
     virtual ~test_class() { BOOST_TEST(magic == 7654321 + n); magic = 6666666; x = 9999; --counter; }
 
-    void set(int _x) { BOOST_TEST(magic == 7654321 + n); this->x = _x; }
+    void set(int x) { BOOST_TEST(magic == 7654321 + n); this->x = x; }
     int value() const { BOOST_TEST(magic == 7654321 + n); return x; }
     operator int() const { return x; }
     static int count() { return counter; }

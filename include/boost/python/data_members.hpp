@@ -265,8 +265,7 @@ inline object make_getter(D const& d, Policies const& policies)
 template <class D>
 inline object make_getter(D& x)
 {
-    detail::not_specified policy
-        = detail::not_specified(); // suppress a SunPro warning
+    detail::not_specified policy;
     return detail::make_getter(x, policy, is_member_pointer<D>(), 0L);
 }
 
@@ -274,8 +273,7 @@ inline object make_getter(D& x)
 template <class D>
 inline object make_getter(D const& d)
 {
-    detail::not_specified policy
-        = detail::not_specified(); // Suppress a SunPro warning
+    detail::not_specified policy;
     return detail::make_getter(d, policy, is_member_pointer<D>(), 0L);
 }
 #  endif
