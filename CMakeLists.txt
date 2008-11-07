@@ -32,25 +32,41 @@ if (PYTHON_LIBRARIES)
     endif(CMAKE_COMPILER_IS_GNUCXX)    
   endif(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
 
-  # Macro for building Boost.Python extension modules
+################################################################################
+#-- Macro for building Boost.Python extension modules
   macro(boost_python_extension MODULE_NAME)
     parse_arguments(BPL_EXT 
       "" 
       "" 
       ${ARGN})
+      
+    #TODO: The target properties are NOT being set correctly for the test libraries  
+    if (FALSE)
+        # Create the library target itself
+        add_library(${MODULE_NAME} MODULE ${BPL_EXT_DEFAULT_ARGS} )
+    
+        # Miscellaneous target properties
+        set_target_properties(${MODULE_NAME} PROPERTIES PREFIX "")
+    
+        # Link against Boost.Python library
+        target_link_libraries(${MODULE_NAME} boost_python-static)
+    
+        # Link against Python libraries
+        target_link_libraries(${MODULE_NAME} ${PYTHON_LIBRARIES})
+    endif(FALSE)
 
-    # Create the library target itself
-    add_library(${MODULE_NAME} MODULE ${BPL_EXT_DEFAULT_ARGS} )
-
-    # Miscellaneous target properties
-    set_target_properties(${MODULE_NAME} PROPERTIES PREFIX "")
-
-    # Link against Boost.Python library
-    target_link_libraries(${MODULE_NAME} boost_python-shared)
-
-    # Link against Python libraries
-    target_link_libraries(${MODULE_NAME} ${PYTHON_LIBRARIES})
+    boost_add_library(
+      ${MODULE_NAME}
+      ${BPL_EXT_DEFAULT_ARGS}
+      MODULE
+      LINK_LIBS ${PYTHON_LIBRARIES}
+      DEPENDS boost_python
+    )
+       
   endmacro(boost_python_extension)
+#--
+################################################################################
+
 
   boost_library_project(
     Python
