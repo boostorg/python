@@ -11,10 +11,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -53,8 +53,7 @@
         <tt class="literal">sounds</tt>. Our library already has a neat C++ namespace hierarchy,
         like so:
       </p>
-<pre class="programlisting">
-<span class="identifier">sounds</span><span class="special">::</span><span class="identifier">core</span>
+<pre class="programlisting"><span class="identifier">sounds</span><span class="special">::</span><span class="identifier">core</span>
 <span class="identifier">sounds</span><span class="special">::</span><span class="identifier">io</span>
 <span class="identifier">sounds</span><span class="special">::</span><span class="identifier">filters</span>
 </pre>
@@ -62,16 +61,14 @@
         We would like to present this same hierarchy to the Python user, allowing
         him to write code like this:
       </p>
-<pre class="programlisting">
-<span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
+<pre class="programlisting"><span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
 <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(...)</span> <span class="comment"># echo is a C++ function
 </span></pre>
 <p>
         The first step is to write the wrapping code. We have to export each module
         separately with Boost.Python, like this:
       </p>
-<pre class="programlisting">
-<span class="special">/*</span> <span class="identifier">file</span> <span class="identifier">core</span><span class="special">.</span><span class="identifier">cpp</span> <span class="special">*/</span>
+<pre class="programlisting"><span class="special">/*</span> <span class="identifier">file</span> <span class="identifier">core</span><span class="special">.</span><span class="identifier">cpp</span> <span class="special">*/</span>
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">core</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="special">/*</span> <span class="identifier">export</span> <span class="identifier">everything</span> <span class="keyword">in</span> <span class="identifier">the</span> <span class="identifier">sounds</span><span class="special">::</span><span class="identifier">core</span> <span class="identifier">namespace</span> <span class="special">*/</span>
@@ -129,8 +126,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sound</span> <span class="special">=</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">open</span><span class="special">(</span><span class="string">'file.mp3'</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">new_sound</span> <span class="special">=</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(</span><span class="identifier">sound</span><span class="special">,</span> <span class="number">1.0</span><span class="special">)</span>
@@ -152,8 +148,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="comment">/* file core.cpp */</span>
+<pre class="programlisting"><span class="comment">/* file core.cpp */</span>
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_core</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="special">...</span>
@@ -185,8 +180,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span>
 </pre>
 <p>
@@ -196,15 +190,13 @@
         entire namespace from <tt class="literal">_core.pyd</tt> to <tt class="literal">core/__init__.py</tt>.
         So add this line of code to <tt class="literal">sounds<span class="emphasis"><em>core</em></span>__init__.py</tt>:
       </p>
-<pre class="programlisting">
-<span class="keyword">from</span> <span class="identifier">_core</span> <span class="keyword">import</span> <span class="special">*</span>
+<pre class="programlisting"><span class="keyword">from</span> <span class="identifier">_core</span> <span class="keyword">import</span> <span class="special">*</span>
 </pre>
 <p>
         We do the same for the other packages. Now the user accesses the functions
         and classes in the extension modules like before:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(...)</span>
 </pre>
 <p>
@@ -217,8 +209,7 @@
         a file named <tt class="literal">sounds/filters/echo_noise.py</tt> and code our
         function:
       </p>
-<pre class="programlisting">
-<span class="keyword">import</span> <span class="identifier">_filters</span>
+<pre class="programlisting"><span class="keyword">import</span> <span class="identifier">_filters</span>
 <span class="keyword">def</span> <span class="identifier">echo_noise</span><span class="special">(</span><span class="identifier">sound</span><span class="special">):</span>
     <span class="identifier">s</span> <span class="special">=</span> <span class="identifier">_filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(</span><span class="identifier">sound</span><span class="special">)</span>
     <span class="identifier">s</span> <span class="special">=</span> <span class="identifier">_filters</span><span class="special">.</span><span class="identifier">noise</span><span class="special">(</span><span class="identifier">sound</span><span class="special">)</span>
@@ -227,15 +218,13 @@
 <p>
         Next, we add this line to <tt class="literal">sounds<span class="emphasis"><em>filters</em></span>__init__.py</tt>:
       </p>
-<pre class="programlisting">
-<span class="keyword">from</span> <span class="identifier">echo_noise</span> <span class="keyword">import</span> <span class="identifier">echo_noise</span>
+<pre class="programlisting"><span class="keyword">from</span> <span class="identifier">echo_noise</span> <span class="keyword">import</span> <span class="identifier">echo_noise</span>
 </pre>
 <p>
         And that's it. The user now accesses this function like any other function
         from the <tt class="literal">filters</tt> package:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo_noise</span><span class="special">(...)</span>
 </pre>
 </div>
@@ -246,8 +235,7 @@
         Thanks to Python's flexibility, you can easily add new methods to a class,
         even after it was already created:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span> <span class="keyword">pass</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span> <span class="keyword">pass</span>
 <span class="special">&gt;&gt;&gt;</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="comment"># a regular function
 </span><span class="special">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="identifier">C_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span> <span class="keyword">return</span> <span class="string">'A C instance!'</span>
@@ -270,8 +258,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">class</span> <span class="identifier">point</span> <span class="special">{...};</span>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">point</span> <span class="special">{...};</span>
 
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_geom</span><span class="special">)</span>
 <span class="special">{</span>
@@ -284,8 +271,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">from</span> <span class="identifier">_geom</span> <span class="keyword">import</span> <span class="special">*</span>
+<pre class="programlisting"><span class="keyword">from</span> <span class="identifier">_geom</span> <span class="keyword">import</span> <span class="special">*</span>
 
 <span class="comment"># a regular function
 </span><span class="keyword">def</span> <span class="identifier">point_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
@@ -317,8 +303,7 @@
         You can even add a little syntactic sugar with the use of metaclasses. Let's
         create a special metaclass that "injects" methods in other classes.
       </p>
-<pre class="programlisting">
-<span class="comment"># The one Boost.Python uses for all wrapped classes.
+<pre class="programlisting"><span class="comment"># The one Boost.Python uses for all wrapped classes.
 </span><span class="comment"># You can use here any class exported by Boost instead of "point"
 </span><span class="identifier">BoostPythonMetaclass</span> <span class="special">=</span> <span class="identifier">point</span><span class="special">.</span><span class="identifier">__class__</span>
 
@@ -341,8 +326,7 @@
 <p>
         Now let's see how it got:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">point</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">point</span><span class="special">()</span>
 <span class="identifier">Point</span><span class="special">(</span><span class="identifier">x</span><span class="special">=</span><span class="number">10</span><span class="special">,</span> <span class="identifier">y</span><span class="special">=</span><span class="number">10</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">point</span><span class="special">().</span><span class="identifier">foo</span><span class="special">()</span>
 <span class="identifier">foo</span><span class="special">!</span>
@@ -350,8 +334,7 @@
 <p>
         Another useful idea is to replace constructors with factory functions:
       </p>
-<pre class="programlisting">
-<span class="identifier">_point</span> <span class="special">=</span> <span class="identifier">point</span>
+<pre class="programlisting"><span class="identifier">_point</span> <span class="special">=</span> <span class="identifier">point</span>
 
 <span class="keyword">def</span> <span class="identifier">point</span><span class="special">(</span><span class="identifier">x</span><span class="special">=</span><span class="number">0</span><span class="special">,</span> <span class="identifier">y</span><span class="special">=</span><span class="number">0</span><span class="special">):</span>
     <span class="keyword">return</span> <span class="identifier">_point</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">y</span><span class="special">)</span>
@@ -374,8 +357,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="comment">/* file point.cpp */</span>
+<pre class="programlisting"><span class="comment">/* file point.cpp */</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
@@ -397,8 +379,7 @@
         Now you create a file <tt class="literal">main.cpp</tt>, which contains the <tt class="literal">BOOST_PYTHON_MODULE</tt>
         macro, and call the various export functions inside it.
       </p>
-<pre class="programlisting">
-<span class="keyword">void</span> <span class="identifier">export_point</span><span class="special">();</span>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">export_point</span><span class="special">();</span>
 <span class="keyword">void</span> <span class="identifier">export_triangle</span><span class="special">();</span>
 
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_geom</span><span class="special">)</span>
@@ -411,8 +392,7 @@
         Compiling and linking together all this files produces the same result as
         the usual approach:
       </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">triangle</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>
 

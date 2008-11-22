@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -87,16 +87,14 @@ Namespaces are one honking great idea -- let's do more of those!
         so Boost.Python must deal with them. To do this, it may need your help. Consider
         the following C++ function:
       </p>
-<pre class="programlisting">
-<span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">);</span>
 </pre>
 <p>
         How should the library wrap this function? A naive approach builds a Python
         X object around result reference. This strategy might or might not work out.
         Here's an example where it didn't
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">)</span> <span class="preprocessor"># x</span> <span class="identifier">refers</span> <span class="identifier">to</span> <span class="identifier">some</span> <span class="identifier">C</span><span class="special">++</span> <span class="identifier">X</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">)</span> <span class="preprocessor"># x</span> <span class="identifier">refers</span> <span class="identifier">to</span> <span class="identifier">some</span> <span class="identifier">C</span><span class="special">++</span> <span class="identifier">X</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">del</span> <span class="identifier">y</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">some_method</span><span class="special">()</span> <span class="preprocessor"># CRASH</span><span class="special">!</span>
 </pre>
@@ -106,8 +104,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         Well, what if f() was implemented as shown below:
       </p>
-<pre class="programlisting">
-<span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="identifier">y</span><span class="special">.</span><span class="identifier">z</span> <span class="special">=</span> <span class="identifier">z</span><span class="special">;</span>
     <span class="keyword">return</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">;</span>
@@ -145,8 +142,7 @@ Namespaces are one honking great idea -- let's do more of those!
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> <span class="comment"># Result disappears
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> <span class="comment"># Result disappears
 </span><span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span>       <span class="comment"># No crash, but still bad
 </span><span class="number">3.14</span>
 </pre>
@@ -160,8 +156,7 @@ Namespaces are one honking great idea -- let's do more of those!
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Y</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Y</span>
 <span class="special">{</span>
     <span class="identifier">X</span> <span class="identifier">x</span><span class="special">;</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">;</span>
     <span class="keyword">int</span> <span class="identifier">z_value</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">z</span><span class="special">-&gt;</span><span class="identifier">value</span><span class="special">();</span> <span class="special">}</span>
@@ -171,16 +166,14 @@ Namespaces are one honking great idea -- let's do more of those!
         Notice that the data member <tt class="literal">z</tt> is held by class Y using
         a raw pointer. Now we have a potential dangling pointer problem inside Y:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">)</span> <span class="preprocessor"># y</span> <span class="identifier">refers</span> <span class="identifier">to</span> <span class="identifier">z</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">)</span> <span class="preprocessor"># y</span> <span class="identifier">refers</span> <span class="identifier">to</span> <span class="identifier">z</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">del</span> <span class="identifier">z</span>       <span class="preprocessor"># Kill</span> <span class="identifier">the</span> <span class="identifier">z</span> <span class="identifier">object</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">z_value</span><span class="special">()</span> <span class="preprocessor"># CRASH</span><span class="special">!</span>
 </pre>
 <p>
         For reference, here's the implementation of <tt class="literal">f</tt> again:
       </p>
-<pre class="programlisting">
-<span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="identifier">y</span><span class="special">.</span><span class="identifier">z</span> <span class="special">=</span> <span class="identifier">z</span><span class="special">;</span>
     <span class="keyword">return</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">;</span>
@@ -212,7 +205,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <li><span class="bold"><b>BOOM!</b></span></li>
 </ol></div>
 <a name="call_policies.call_policies"></a><h2>
-<a name="id464076"></a>
+<a name="id465291"></a>
         Call Policies
       </h2>
 <p>
@@ -220,8 +213,7 @@ Namespaces are one honking great idea -- let's do more of those!
         In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
         are our friends:
       </p>
-<pre class="programlisting">
-<span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span>
+<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span>
     <span class="identifier">return_internal_reference</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span>
         <span class="identifier">with_custodian_and_ward</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span> <span class="special">&gt;());</span>
 </pre>
@@ -229,8 +221,7 @@ Namespaces are one honking great idea -- let's do more of those!
         What are the <tt class="literal">1</tt> and <tt class="literal">2</tt> parameters, you
         ask?
       </p>
-<pre class="programlisting">
-<span class="identifier">return_internal_reference</span><span class="special">&lt;</span><span class="number">1</span>
+<pre class="programlisting"><span class="identifier">return_internal_reference</span><span class="special">&lt;</span><span class="number">1</span>
 </pre>
 <p>
         Informs Boost.Python that the first argument, in our case <tt class="literal">Y&amp;
@@ -239,8 +230,7 @@ Namespaces are one honking great idea -- let's do more of those!
         In short: "return an internal reference <tt class="literal">X&amp;</tt> owned
         by the 1st argument <tt class="literal">Y&amp; y</tt>".
       </p>
-<pre class="programlisting">
-<span class="identifier">with_custodian_and_ward</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="identifier">with_custodian_and_ward</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span>
 </pre>
 <p>
         Informs Boost.Python that the lifetime of the argument indicated by ward
@@ -252,8 +242,7 @@ Namespaces are one honking great idea -- let's do more of those!
         It is also important to note that we have defined two policies above. Two
         or more policies can be composed by chaining. Here's the general syntax:
       </p>
-<pre class="programlisting">
-<span class="identifier">policy1</span><span class="special">&lt;</span><span class="identifier">args</span><span class="special">...,</span>
+<pre class="programlisting"><span class="identifier">policy1</span><span class="special">&lt;</span><span class="identifier">args</span><span class="special">...,</span>
     <span class="identifier">policy2</span><span class="special">&lt;</span><span class="identifier">args</span><span class="special">...,</span>
         <span class="identifier">policy3</span><span class="special">&lt;</span><span class="identifier">args</span><span class="special">...&gt;</span> <span class="special">&gt;</span> <span class="special">&gt;</span>
 </pre>
@@ -317,8 +306,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         We have here our C++ class:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">X</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">X</span>
 <span class="special">{</span>
     <span class="keyword">bool</span> <span class="identifier">f</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">a</span><span class="special">)</span>
     <span class="special">{</span>
@@ -345,8 +333,7 @@ Namespaces are one honking great idea -- let's do more of those!
         Class X has 4 overloaded functions. We will start by introducing some member
         function pointer variables:
       </p>
-<pre class="programlisting">
-<span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx1</span><span class="special">)(</span><span class="keyword">int</span><span class="special">)</span>              <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx1</span><span class="special">)(</span><span class="keyword">int</span><span class="special">)</span>              <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
 <span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx2</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span><span class="special">)</span>      <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
 <span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx3</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span><span class="special">,</span> <span class="keyword">char</span><span class="special">)=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
 <span class="keyword">int</span>     <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx4</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span><span class="special">)</span>    <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
@@ -354,8 +341,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         With these in hand, we can proceed to define and wrap this for Python:
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx1</span><span class="special">)</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx1</span><span class="special">)</span>
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx2</span><span class="special">)</span>
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx3</span><span class="special">)</span>
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx4</span><span class="special">)</span>
@@ -369,30 +355,26 @@ Namespaces are one honking great idea -- let's do more of those!
         pointers carry no default argument info. Take a function <tt class="literal">f</tt>
         with default arguments:
       </p>
-<pre class="programlisting">
-<span class="keyword">int</span> <span class="identifier">f</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span> <span class="special">=</span> <span class="number">3.14</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="special">=</span> <span class="string">"hello"</span><span class="special">);</span>
+<pre class="programlisting"><span class="keyword">int</span> <span class="identifier">f</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span> <span class="special">=</span> <span class="number">3.14</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="special">=</span> <span class="string">"hello"</span><span class="special">);</span>
 </pre>
 <p>
         But the type of a pointer to the function <tt class="literal">f</tt> has no information
         about its default arguments:
       </p>
-<pre class="programlisting">
-<span class="keyword">int</span><span class="special">(*</span><span class="identifier">g</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">;</span>    <span class="comment">// defaults lost!
+<pre class="programlisting"><span class="keyword">int</span><span class="special">(*</span><span class="identifier">g</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">;</span>    <span class="comment">// defaults lost!
 </span></pre>
 <p>
         When we pass this function pointer to the <tt class="literal">def</tt> function,
         there is no way to retrieve the default arguments:
       </p>
-<pre class="programlisting">
-<span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>                            <span class="comment">// defaults lost!
+<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>                            <span class="comment">// defaults lost!
 </span></pre>
 <p>
         Because of this, when wrapping C++ code, we had to resort to manual wrapping
         as outlined in the <a href="functions.html#python.overloading" title="Overloading">previous section</a>,
         or writing thin wrappers:
       </p>
-<pre class="programlisting">
-<span class="comment">// write "thin wrappers"
+<pre class="programlisting"><span class="comment">// write "thin wrappers"
 </span><span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
 <span class="keyword">int</span> <span class="identifier">f2</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier">y</span><span class="special">);</span> <span class="special">}</span>
 
@@ -415,14 +397,13 @@ Namespaces are one honking great idea -- let's do more of those!
         </li>
 </ul></div>
 <a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id466117"></a>
+<a name="id467317"></a>
         BOOST_PYTHON_FUNCTION_OVERLOADS
       </h2>
 <p>
         Boost.Python now has a way to make it easier. For instance, given a function:
       </p>
-<pre class="programlisting">
-<span class="keyword">int</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">a</span><span class="special">,</span> <span class="keyword">char</span> <span class="identifier">b</span> <span class="special">=</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">c</span> <span class="special">=</span> <span class="number">2</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">d</span> <span class="special">=</span> <span class="number">3</span><span class="special">)</span>
+<pre class="programlisting"><span class="keyword">int</span> <span class="identifier">foo</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">a</span><span class="special">,</span> <span class="keyword">char</span> <span class="identifier">b</span> <span class="special">=</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">unsigned</span> <span class="identifier">c</span> <span class="special">=</span> <span class="number">2</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">d</span> <span class="special">=</span> <span class="number">3</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="comment">/*...*/</span>
 <span class="special">}</span>
@@ -430,8 +411,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         The macro invocation:
       </p>
-<pre class="programlisting">
-<span class="identifier">BOOST_PYTHON_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">foo_overloads</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">foo_overloads</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span>
 </pre>
 <p>
         will automatically create the thin wrappers for us. This macro will create
@@ -441,11 +421,10 @@ Namespaces are one honking great idea -- let's do more of those!
         number of arguments is 1 and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt>
         function will automatically add all the foo variants for us:
       </p>
-<pre class="programlisting">
-<span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
+<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
 <a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id466436"></a>
+<a name="id467632"></a>
         BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
       </h2>
 <p>
@@ -460,8 +439,7 @@ Namespaces are one honking great idea -- let's do more of those!
         may be used to automatically create the thin wrappers for wrapping member
         functions. Let's have an example:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">george</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">george</span>
 <span class="special">{</span>
     <span class="keyword">void</span>
     <span class="identifier">wack_em</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">a</span><span class="special">,</span> <span class="keyword">int</span> <span class="identifier">b</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="keyword">char</span> <span class="identifier">c</span> <span class="special">=</span> <span class="char">'x'</span><span class="special">)</span>
@@ -473,8 +451,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         The macro invocation:
       </p>
-<pre class="programlisting">
-<span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">george_overloads</span><span class="special">,</span> <span class="identifier">wack_em</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">3</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">george_overloads</span><span class="special">,</span> <span class="identifier">wack_em</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">3</span><span class="special">)</span>
 </pre>
 <p>
         will generate a set of thin wrappers for george's <tt class="literal">wack_em</tt>
@@ -483,15 +460,14 @@ Namespaces are one honking great idea -- let's do more of those!
         in a class named <tt class="literal">george_overloads</tt> that can then be used
         as an argument to <tt class="literal">def(...)</tt>:
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"wack_em"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">george</span><span class="special">::</span><span class="identifier">wack_em</span><span class="special">,</span> <span class="identifier">george_overloads</span><span class="special">());</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"wack_em"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">george</span><span class="special">::</span><span class="identifier">wack_em</span><span class="special">,</span> <span class="identifier">george_overloads</span><span class="special">());</span>
 </pre>
 <p>
         See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads
         reference</a> for details.
       </p>
 <a name="default_arguments.init_and_optional"></a><h2>
-<a name="id466799"></a>
+<a name="id467992"></a>
         init and optional
       </h2>
 <p>
@@ -499,8 +475,7 @@ Namespaces are one honking great idea -- let's do more of those!
         arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>?
         For example, given a class X with a constructor:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">X</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">X</span>
 <span class="special">{</span>
     <span class="identifier">X</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">a</span><span class="special">,</span> <span class="keyword">char</span> <span class="identifier">b</span> <span class="special">=</span> <span class="char">'D'</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">c</span> <span class="special">=</span> <span class="string">"constructor"</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">d</span> <span class="special">=</span> <span class="number">0.0</span><span class="special">);</span>
     <span class="comment">/*...*/</span>
@@ -509,8 +484,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         You can easily add this constructor to Boost.Python in one shot:
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">optional</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">optional</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
 </pre>
 <p>
         Notice the use of <tt class="literal">init&lt;...&gt;</tt> and <tt class="literal">optional&lt;...&gt;</tt>
@@ -526,8 +500,7 @@ Namespaces are one honking great idea -- let's do more of those!
         used for overloaded functions and member functions with a common sequence
         of initial arguments. Here is an example:
       </p>
-<pre class="programlisting">
-<span class="keyword">void</span> <span class="identifier">foo</span><span class="special">()</span>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">foo</span><span class="special">()</span>
 <span class="special">{</span>
    <span class="comment">/*...*/</span>
 <span class="special">}</span>
@@ -551,21 +524,19 @@ Namespaces are one honking great idea -- let's do more of those!
         Like in the previous section, we can generate thin wrappers for these overloaded
         functions in one-shot:
       </p>
-<pre class="programlisting">
-<span class="identifier">BOOST_PYTHON_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">foo_overloads</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="number">3</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">foo_overloads</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="number">0</span><span class="special">,</span> <span class="number">3</span><span class="special">)</span>
 </pre>
 <p>
         Then...
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="special">(</span><span class="keyword">void</span><span class="special">(*)(</span><span class="keyword">bool</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">char</span><span class="special">))</span><span class="number">0</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="special">(</span><span class="keyword">void</span><span class="special">(*)(</span><span class="keyword">bool</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">char</span><span class="special">))</span><span class="number">0</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
 <p>
         Notice though that we have a situation now where we have a minimum of zero
         (0) arguments and a maximum of 3 arguments.
       </p>
 <a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id467581"></a>
+<a name="id468767"></a>
         Manual Wrapping
       </h2>
 <p>
@@ -584,21 +555,18 @@ Namespaces are one honking great idea -- let's do more of those!
         to automatically wrap the first three of the <tt class="literal">def</tt>s and
         manually wrap just the last. Here's how we'll do this:
       </p>
-<pre class="programlisting">
-<span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">xf_overloads</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">xf_overloads</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span>
 </pre>
 <p>
         Create a member function pointers as above for both X::f overloads:
       </p>
-<pre class="programlisting">
-<span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx1</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span><span class="special">,</span> <span class="keyword">char</span><span class="special">)</span>    <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">bool</span>    <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx1</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span><span class="special">,</span> <span class="keyword">char</span><span class="special">)</span>    <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
 <span class="keyword">int</span>     <span class="special">(</span><span class="identifier">X</span><span class="special">::*</span><span class="identifier">fx2</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span><span class="special">,</span> <span class="keyword">int</span><span class="special">)</span>        <span class="special">=</span> <span class="special">&amp;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">f</span><span class="special">;</span>
 </pre>
 <p>
         Then...
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx1</span><span class="special">,</span> <span class="identifier">xf_overloads</span><span class="special">());</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx1</span><span class="special">,</span> <span class="identifier">xf_overloads</span><span class="special">());</span>
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx2</span><span class="special">)</span>
 </pre>
 </div>

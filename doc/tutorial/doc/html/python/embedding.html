@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -40,7 +40,7 @@
       Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
     </p>
 <a name="embedding.building_embedded_programs"></a><h2>
-<a name="id471171"></a>
+<a name="id472330"></a>
       Building embedded programs
     </h2>
 <p>
@@ -82,7 +82,7 @@ exe embedded_program # name of the executable
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
 <a name="embedding.getting_started"></a><h2>
-<a name="id471276"></a>
+<a name="id472435"></a>
       Getting started
     </h2>
 <p>
@@ -130,23 +130,22 @@ exe embedded_program # name of the executable
 <a name="python.using_the_interpreter"></a>Using the interpreter</h3></div></div></div>
 <p>
         As you probably already know, objects in Python are reference-counted. Naturally,
-        the <tt class="literal">PyObject</tt>s of the Python/C API are also reference-counted.
+        the <tt class="literal">PyObject</tt>s of the Python C API are also reference-counted.
         There is a difference however. While the reference-counting is fully automatic
-        in Python, the Python<span class="emphasis"><em>C API requires you to do it [@http:</em></span>/www.python.org/doc/current/api/refcounts.html
-        by hand]. This is messy and especially hard to get right in the presence
+        in Python, the Python C API requires you to do it <a href="http://www.python.org/doc/current/c-api/refcounting.html" target="_top">by
+        hand</a>. This is messy and especially hard to get right in the presence
         of C++ exceptions. Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a>
         and <a href="../../../../v2/object.html" target="_top">object</a> class templates to
         automate the process.
       </p>
 <a name="using_the_interpreter.running_python_code"></a><h2>
-<a name="id471439"></a>
+<a name="id472601"></a>
         Running Python code
       </h2>
 <p>
         Boost.python provides three related functions to run Python code from C++.
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">eval</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">expression</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">eval</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">expression</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
 <span class="identifier">object</span> <span class="identifier">exec</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">code</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
 <span class="identifier">object</span> <span class="identifier">exec_file</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">filename</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">globals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">(),</span> <span class="identifier">object</span> <span class="identifier">locals</span> <span class="special">=</span> <span class="identifier">object</span><span class="special">())</span>
 </pre>
@@ -165,8 +164,7 @@ exe embedded_program # name of the executable
 <p>
         Boost.python provides a function to import a module:
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">import</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">name</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">import</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">name</span><span class="special">)</span>
 </pre>
 <p>
         import imports a python module (potentially loading it into the running process
@@ -176,8 +174,7 @@ exe embedded_program # name of the executable
         Let's import the <tt class="literal"><span class="underline">_main</span>_</tt>
         module and run some Python code in its namespace:
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
 
 <span class="identifier">object</span> <span class="identifier">ignored</span> <span class="special">=</span> <span class="identifier">exec</span><span class="special">(</span><span class="string">"hello = file('hello.txt', 'w')\n"</span>
@@ -190,7 +187,7 @@ exe embedded_program # name of the executable
         a phrase that is well-known in programming circles.
       </p>
 <a name="using_the_interpreter.manipulating_python_objects"></a><h2>
-<a name="id472027"></a>
+<a name="id473185"></a>
         Manipulating Python objects
       </h2>
 <p>
@@ -200,8 +197,7 @@ exe embedded_program # name of the executable
         derivatives. We've already seen that they can be constructed from a <tt class="literal">handle</tt>.
         The following examples should further illustrate this fact:
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">ignored</span> <span class="special">=</span> <span class="identifier">exec</span><span class="special">(</span><span class="string">"result = 5 ** 2"</span><span class="special">,</span> <span class="identifier">main_namespace</span><span class="special">);</span>
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">main_namespace</span><span class="special">[</span><span class="string">"result"</span><span class="special">]);</span>
@@ -212,20 +208,18 @@ exe embedded_program # name of the executable
         this variable from the dictionary. Another way to achieve the same result
         is to use eval instead, which returns the result directly:
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5 ** 2"</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5 ** 2"</span><span class="special">);</span>
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 </pre>
 <a name="using_the_interpreter.exception_handling"></a><h2>
-<a name="id472399"></a>
+<a name="id473554"></a>
         Exception handling
       </h2>
 <p>
         If an exception occurs in the evaluation of the python expression, <a href="../../../../v2/errors.html#error_already_set-spec" target="_top">error_already_set</a>
         is thrown:
       </p>
-<pre class="programlisting">
-<span class="keyword">try</span>
+<pre class="programlisting"><span class="keyword">try</span>
 <span class="special">{</span>
     <span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5/0"</span><span class="special">);</span>
     <span class="comment">// execution will never get here:
@@ -240,14 +234,13 @@ exe embedded_program # name of the executable
         The <tt class="literal">error_already_set</tt> exception class doesn't carry any
         information in itself. To find out more about the Python exception that occurred,
         you need to use the <a href="http://www.python.org/doc/api/exceptionHandling.html" target="_top">exception
-        handling functions</a> of the Python<span class="emphasis"><em>C API in your catch-statement.
-        This can be as simple as calling [@http:</em></span>/www.python.org/doc/api/exceptionHandling.html#l2h-70
-        PyErr_Print()] to print the exception's traceback to the console, or comparing
-        the type of the exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html" target="_top">standard
+        handling functions</a> of the Python C API in your catch-statement. This
+        can be as simple as calling <a href="http://www.python.org/doc/api/exceptionHandling.html#l2h-70" target="_top">PyErr_Print()</a>
+        to print the exception's traceback to the console, or comparing the type
+        of the exception with those of the <a href="http://www.python.org/doc/api/standardExceptions.html" target="_top">standard
         exceptions</a>:
       </p>
-<pre class="programlisting">
-<span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span> <span class="keyword">const</span> <span class="special">&amp;)</span>
+<pre class="programlisting"><span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span> <span class="keyword">const</span> <span class="special">&amp;)</span>
 <span class="special">{</span>
     <span class="keyword">if</span> <span class="special">(</span><span class="identifier">PyErr_ExceptionMatches</span><span class="special">(</span><span class="identifier">PyExc_ZeroDivisionError</span><span class="special">))</span>
     <span class="special">{</span>

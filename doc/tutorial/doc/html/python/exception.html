@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -30,14 +30,12 @@
       is the point where C++ meets Python. Boost.Python provides a default exception
       handler that translates selected standard exceptions, then gives up:
     </p>
-<pre class="programlisting">
-<span class="keyword">raise</span> <span class="identifier">RuntimeError</span><span class="special">,</span> <span class="string">'unidentifiable C++ Exception'</span>
+<pre class="programlisting"><span class="keyword">raise</span> <span class="identifier">RuntimeError</span><span class="special">,</span> <span class="string">'unidentifiable C++ Exception'</span>
 </pre>
 <p>
       Users may provide custom translation. Here's an example:
     </p>
-<pre class="programlisting">
-<span class="identifier">struct</span> <span class="identifier">PodBayDoorException</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">struct</span> <span class="identifier">PodBayDoorException</span><span class="special">;</span>
 <span class="identifier">void</span> <span class="identifier">translator</span><span class="special">(</span><span class="identifier">PodBayDoorException</span> <span class="identifier">const</span><span class="special">&amp;</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span>
     <span class="identifier">PyErr_SetString</span><span class="special">(</span><span class="identifier">PyExc_UserWarning</span><span class="special">,</span> <span class="string">"I'm sorry Dave..."</span><span class="special">);</span>
 <span class="special">}</span>

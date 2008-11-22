@@ -1385,10 +1385,10 @@ interpreter. This may be fixed in a future version of boost.python.]
 [section Using the interpreter]
 
 As you probably already know, objects in Python are reference-counted.
-Naturally, the [^PyObject]s of the Python\/C API are also reference-counted.
+Naturally, the [^PyObject]s of the Python C API are also reference-counted.
 There is a difference however. While the reference-counting is fully
-automatic in Python, the Python\/C API requires you to do it
-[@http://www.python.org/doc/current/api/refcounts.html by hand]. This is
+automatic in Python, the Python C API requires you to do it
+[@http://www.python.org/doc/current/c-api/refcounting.html by hand]. This is
 messy and especially hard to get right in the presence of C++ exceptions.
 Fortunately Boost.Python provides the [@../../../v2/handle.html handle] and
 [@../../../v2/object.html object] class templates to automate the process.
@@ -1470,7 +1470,7 @@ If an exception occurs in the evaluation of the python expression,
 The [^error_already_set] exception class doesn't carry any information in itself.
 To find out more about the Python exception that occurred, you need to use the
 [@http://www.python.org/doc/api/exceptionHandling.html exception handling functions]
-of the Python/C API in your catch-statement. This can be as simple as calling
+of the Python C API in your catch-statement. This can be as simple as calling
 [@http://www.python.org/doc/api/exceptionHandling.html#l2h-70 PyErr_Print()] to
 print the exception's traceback to the console, or comparing the type of the
 exception with those of the [@http://www.python.org/doc/api/standardExceptions.html

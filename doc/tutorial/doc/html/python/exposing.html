@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -40,8 +40,7 @@
 <p>
       Consider a C++ class/struct that we want to expose to Python:
     </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">World</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">World</span>
 <span class="special">{</span>
     <span class="keyword">void</span> <span class="identifier">set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">msg</span> <span class="special">=</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">greet</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
@@ -51,8 +50,7 @@
 <p>
       We can expose this to Python by writing a corresponding Boost.Python C++ Wrapper:
     </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
 
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">hello</span><span class="special">)</span>
@@ -71,8 +69,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">hello</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">hello</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span><span class="special">.</span><span class="identifier">set</span><span class="special">(</span><span class="string">'howdy'</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span><span class="special">.</span><span class="identifier">greet</span><span class="special">()</span>
@@ -87,8 +84,7 @@
         exposes the default constructor by default, which is why we were able to
         write
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
 </pre>
 <p>
         We may wish to wrap a class with a non-default constructor. Let us build
@@ -96,8 +92,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">World</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">World</span>
 <span class="special">{</span>
     <span class="identifier">World</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">):</span> <span class="identifier">msg</span><span class="special">(</span><span class="identifier">msg</span><span class="special">)</span> <span class="special">{}</span> <span class="comment">// added constructor
 </span>    <span class="keyword">void</span> <span class="identifier">set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">msg</span> <span class="special">=</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
@@ -111,8 +106,7 @@
         We have to tell <tt class="literal">class_&lt;World&gt;</tt> about the constructor
         we want to expose instead.
       </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
 
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">hello</span><span class="special">)</span>
@@ -133,8 +127,7 @@
         to the <tt class="literal">def()</tt> member function. Say for example we have
         another World constructor taking in two doubles:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">World</span><span class="special">&gt;(</span><span class="string">"World"</span><span class="special">,</span> <span class="identifier">init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">World</span><span class="special">&gt;(</span><span class="string">"World"</span><span class="special">,</span> <span class="identifier">init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="keyword">double</span><span class="special">&gt;())</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"greet"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">greet</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"set"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">World</span><span class="special">::</span><span class="identifier">set</span><span class="special">)</span>
@@ -144,8 +137,7 @@
         On the other hand, if we do not wish to expose any constructors at all, we
         may use <tt class="literal">no_init</tt> instead:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Abstract</span><span class="special">&gt;(</span><span class="string">"Abstract"</span><span class="special">,</span> <span class="identifier">no_init</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Abstract</span><span class="special">&gt;(</span><span class="string">"Abstract"</span><span class="special">,</span> <span class="identifier">no_init</span><span class="special">)</span>
 </pre>
 <p>
         This actually adds an <tt class="literal"><span class="underline">_init</span>_</tt>
@@ -161,8 +153,7 @@
         to be exposed may be regarded as <span class="bold"><b>read-only</b></span>
         or <span class="bold"><b>read-write</b></span>. Consider this class <tt class="literal">Var</tt>:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Var</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Var</span>
 <span class="special">{</span>
     <span class="identifier">Var</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">name</span><span class="special">)</span> <span class="special">:</span> <span class="identifier">name</span><span class="special">(</span><span class="identifier">name</span><span class="special">),</span> <span class="identifier">value</span><span class="special">()</span> <span class="special">{}</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="keyword">const</span> <span class="identifier">name</span><span class="special">;</span>
@@ -173,8 +164,7 @@
         Our C++ <tt class="literal">Var</tt> class and its data members can be exposed
         to Python:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Var</span><span class="special">&gt;(</span><span class="string">"Var"</span><span class="special">,</span> <span class="identifier">init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Var</span><span class="special">&gt;(</span><span class="string">"Var"</span><span class="special">,</span> <span class="identifier">init</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">&gt;())</span>
     <span class="special">.</span><span class="identifier">def_readonly</span><span class="special">(</span><span class="string">"name"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Var</span><span class="special">::</span><span class="identifier">name</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def_readwrite</span><span class="special">(</span><span class="string">"value"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Var</span><span class="special">::</span><span class="identifier">value</span><span class="special">);</span>
 </pre>
@@ -184,8 +174,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="string">'pi'</span><span class="special">)</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="string">'pi'</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span><span class="special">,</span> <span class="string">'is around'</span><span class="special">,</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span>
 <span class="identifier">pi</span> <span class="keyword">is</span> <span class="identifier">around</span> <span class="number">3.14</span>
@@ -194,8 +183,7 @@
         Note that <tt class="literal">name</tt> is exposed as <span class="bold"><b>read-only</b></span>
         while <tt class="literal">value</tt> is exposed as <span class="bold"><b>read-write</b></span>.
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span> <span class="special">=</span> <span class="string">'e'</span> <span class="comment"># can't change name
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span> <span class="special">=</span> <span class="string">'e'</span> <span class="comment"># can't change name
 </span><span class="identifier">Traceback</span> <span class="special">(</span><span class="identifier">most</span> <span class="identifier">recent</span> <span class="identifier">call</span> <span class="identifier">last</span><span class="special">):</span>
   <span class="identifier">File</span> <span class="string">"&lt;stdin&gt;"</span><span class="special">,</span> <span class="identifier">line</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">in</span> #
 <span class="identifier">AttributeError</span><span class="special">:</span> <span class="identifier">can</span>#<span class="identifier">t</span> <span class="identifier">set</span> <span class="identifier">attribute</span>
@@ -212,8 +200,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Num</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Num</span>
 <span class="special">{</span>
     <span class="identifier">Num</span><span class="special">();</span>
     <span class="keyword">float</span> <span class="identifier">get</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span>
@@ -227,8 +214,7 @@
         can just be a different syntax for a method call. Wrapping our <tt class="literal">Num</tt>
         class using Boost.Python:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Num</span><span class="special">&gt;(</span><span class="string">"Num"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Num</span><span class="special">&gt;(</span><span class="string">"Num"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"value"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">set</span><span class="special">);</span>
 </pre>
@@ -237,8 +223,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">Num</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">Num</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span><span class="special">,</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">rovalue</span>
 <span class="special">(</span><span class="number">3.14</span><span class="special">,</span> <span class="number">3.14</span><span class="special">)</span>
@@ -251,8 +236,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span>
 </pre>
 </div>
 <div class="section" lang="en">
@@ -268,24 +252,21 @@
 <p>
         Consider this trivial inheritance structure:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Base</span> <span class="special">{</span> <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">();</span> <span class="special">};</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Base</span> <span class="special">{</span> <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">();</span> <span class="special">};</span>
 <span class="keyword">struct</span> <span class="identifier">Derived</span> <span class="special">:</span> <span class="identifier">Base</span> <span class="special">{};</span>
 </pre>
 <p>
         And a set of C++ functions operating on <tt class="literal">Base</tt> and <tt class="literal">Derived</tt>
         object instances:
       </p>
-<pre class="programlisting">
-<span class="keyword">void</span> <span class="identifier">b</span><span class="special">(</span><span class="identifier">Base</span><span class="special">*);</span>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">b</span><span class="special">(</span><span class="identifier">Base</span><span class="special">*);</span>
 <span class="keyword">void</span> <span class="identifier">d</span><span class="special">(</span><span class="identifier">Derived</span><span class="special">*);</span>
 <span class="identifier">Base</span><span class="special">*</span> <span class="identifier">factory</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="keyword">new</span> <span class="identifier">Derived</span><span class="special">;</span> <span class="special">}</span>
 </pre>
 <p>
         We've seen how we can wrap the base class <tt class="literal">Base</tt>:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
     <span class="comment">/*...*/</span>
     <span class="special">;</span>
 </pre>
@@ -293,8 +274,7 @@
         Now we can inform Boost.Python of the inheritance relationship between <tt class="literal">Derived</tt>
         and its base class <tt class="literal">Base</tt>. Thus:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Derived</span><span class="special">,</span> <span class="identifier">bases</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span> <span class="special">&gt;(</span><span class="string">"Derived"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Derived</span><span class="special">,</span> <span class="identifier">bases</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span> <span class="special">&gt;(</span><span class="string">"Derived"</span><span class="special">)</span>
     <span class="comment">/*...*/</span>
     <span class="special">;</span>
 </pre>
@@ -317,8 +297,7 @@
         Now, we will expose the C++ free functions <tt class="literal">b</tt> and <tt class="literal">d</tt>
         and <tt class="literal">factory</tt>:
       </p>
-<pre class="programlisting">
-<span class="identifier">def</span><span class="special">(</span><span class="string">"b"</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"b"</span><span class="special">,</span> <span class="identifier">b</span><span class="special">);</span>
 <span class="identifier">def</span><span class="special">(</span><span class="string">"d"</span><span class="special">,</span> <span class="identifier">d</span><span class="special">);</span>
 <span class="identifier">def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span> <span class="identifier">factory</span><span class="special">);</span>
 </pre>
@@ -331,8 +310,7 @@
         is destroyed. We will see more of Boost.Python <a href="functions.html#python.call_policies" title="Call Policies">call
         policies</a> later.
       </p>
-<pre class="programlisting">
-<span class="comment">// Tell Python to take ownership of factory's result
+<pre class="programlisting"><span class="comment">// Tell Python to take ownership of factory's result
 </span><span class="identifier">def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span> <span class="identifier">factory</span><span class="special">,</span>
     <span class="identifier">return_value_policy</span><span class="special">&lt;</span><span class="identifier">manage_new_object</span><span class="special">&gt;());</span>
 </pre>
@@ -345,8 +323,7 @@
         through virtual functions. Continuing our example, let us add a virtual function
         to our <tt class="literal">Base</tt> class:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Base</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Base</span>
 <span class="special">{</span>
     <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">()</span> <span class="special">{}</span>
     <span class="keyword">virtual</span> <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
@@ -364,8 +341,7 @@
         that will unintrusively hook into the virtual functions so that a Python
         override may be called:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">BaseWrap</span> <span class="special">:</span> <span class="identifier">Base</span><span class="special">,</span> <span class="identifier">wrapper</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">BaseWrap</span> <span class="special">:</span> <span class="identifier">Base</span><span class="special">,</span> <span class="identifier">wrapper</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span>
 <span class="special">{</span>
     <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span>
     <span class="special">{</span>
@@ -397,8 +373,7 @@
 <p>
         Finally, exposing <tt class="computeroutput"><span class="identifier">Base</span></tt>:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">BaseWrap</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">BaseWrap</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">pure_virtual</span><span class="special">(&amp;</span><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">))</span>
     <span class="special">;</span>
 </pre>
@@ -437,8 +412,7 @@
         section</a>, we wrapped a class with a pure virtual function that we then
         implemented in C++, or Python classes derived from it. Our base class:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Base</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Base</span>
 <span class="special">{</span>
     <span class="keyword">virtual</span> <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span> <span class="special">=</span> <span class="number">0</span><span class="special">;</span>
 <span class="special">};</span>
@@ -447,8 +421,7 @@
         had a pure virtual function <tt class="literal">f</tt>. If, however, its member
         function <tt class="literal">f</tt> was not declared as pure virtual:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">Base</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Base</span>
 <span class="special">{</span>
     <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">()</span> <span class="special">{}</span>
     <span class="keyword">virtual</span> <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="number">0</span><span class="special">;</span> <span class="special">}</span>
@@ -457,8 +430,7 @@
 <p>
         We wrap it this way:
       </p>
-<pre class="programlisting">
-<span class="keyword">struct</span> <span class="identifier">BaseWrap</span> <span class="special">:</span> <span class="identifier">Base</span><span class="special">,</span> <span class="identifier">wrapper</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">BaseWrap</span> <span class="special">:</span> <span class="identifier">Base</span><span class="special">,</span> <span class="identifier">wrapper</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">&gt;</span>
 <span class="special">{</span>
     <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span>
     <span class="special">{</span>
@@ -490,8 +462,7 @@
 <p>
         Finally, exposing:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">BaseWrap</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">BaseWrap</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">BaseWrap</span><span class="special">::</span><span class="identifier">default_f</span><span class="special">)</span>
     <span class="special">;</span>
 </pre>
@@ -506,8 +477,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span> <span class="special">=</span> <span class="identifier">Base</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span> <span class="special">=</span> <span class="identifier">Base</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span>
 <span class="special">...</span>     <span class="keyword">def</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
 <span class="special">...</span>         <span class="keyword">return</span> <span class="number">42</span>
@@ -517,15 +487,13 @@
 <p>
         Calling <tt class="literal">base.f()</tt>:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span>
 <span class="number">0</span>
 </pre>
 <p>
         Calling <tt class="literal">derived.f()</tt>:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">derived</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">derived</span><span class="special">.</span><span class="identifier">f</span><span class="special">()</span>
 <span class="number">42</span>
 </pre>
 </div>
@@ -533,7 +501,7 @@
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div></div>
 <a name="class_operators_special_functions.python_operators"></a><h2>
-<a name="id461460"></a>
+<a name="id462548"></a>
         Python Operators
       </h2>
 <p>
@@ -547,8 +515,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">class</span> <span class="identifier">FilePos</span> <span class="special">{</span> <span class="comment">/*...*/</span> <span class="special">};</span>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">FilePos</span> <span class="special">{</span> <span class="comment">/*...*/</span> <span class="special">};</span>
 
 <span class="identifier">FilePos</span>     <span class="keyword">operator</span><span class="special">+(</span><span class="identifier">FilePos</span><span class="special">,</span> <span class="keyword">int</span><span class="special">);</span>
 <span class="identifier">FilePos</span>     <span class="keyword">operator</span><span class="special">+(</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">FilePos</span><span class="special">);</span>
@@ -562,8 +529,7 @@
         The class and the various operators can be mapped to Python rather easily
         and intuitively:
       </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">FilePos</span><span class="special">&gt;(</span><span class="string">"FilePos"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">FilePos</span><span class="special">&gt;(</span><span class="string">"FilePos"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">+</span> <span class="keyword">int</span><span class="special">())</span>          <span class="comment">// __add__
 </span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="keyword">int</span><span class="special">()</span> <span class="special">+</span> <span class="identifier">self</span><span class="special">)</span>          <span class="comment">// __radd__
 </span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-</span> <span class="identifier">self</span><span class="special">)</span>           <span class="comment">// __sub__
@@ -582,7 +548,7 @@
         expressions".
       </p>
 <a name="class_operators_special_functions.special_methods"></a><h2>
-<a name="id462216"></a>
+<a name="id463302"></a>
         Special Methods
       </h2>
 <p>
@@ -592,8 +558,7 @@
         wrap C++ functions that correspond to these Python <span class="emphasis"><em>special functions</em></span>.
         Example:
       </p>
-<pre class="programlisting">
-<span class="keyword">class</span> <span class="identifier">Rational</span>
+<pre class="programlisting"><span class="keyword">class</span> <span class="identifier">Rational</span>
 <span class="special">{</span> <span class="keyword">public</span><span class="special">:</span> <span class="keyword">operator</span> <span class="keyword">double</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span> <span class="special">};</span>
 
 <span class="identifier">Rational</span> <span class="identifier">pow</span><span class="special">(</span><span class="identifier">Rational</span><span class="special">,</span> <span class="identifier">Rational</span><span class="special">);</span>

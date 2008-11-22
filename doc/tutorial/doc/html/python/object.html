@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -62,8 +62,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">def</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">y</span><span class="special">):</span>
+<pre class="programlisting"><span class="keyword">def</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">y</span><span class="special">):</span>
      <span class="keyword">if</span> <span class="special">(</span><span class="identifier">y</span> <span class="special">==</span> <span class="string">'foo'</span><span class="special">):</span>
          <span class="identifier">x</span><span class="special">[</span><span class="number">3</span><span class="special">:</span><span class="number">7</span><span class="special">]</span> <span class="special">=</span> <span class="string">'bar'</span>
      <span class="keyword">else</span><span class="special">:</span>
@@ -78,8 +77,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">object</span> <span class="identifier">x</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">object</span> <span class="identifier">x</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span>
      <span class="keyword">if</span> <span class="special">(</span><span class="identifier">y</span> <span class="special">==</span> <span class="string">"foo"</span><span class="special">)</span>
          <span class="identifier">x</span><span class="special">.</span><span class="identifier">slice</span><span class="special">(</span><span class="number">3</span><span class="special">,</span><span class="number">7</span><span class="special">)</span> <span class="special">=</span> <span class="string">"bar"</span><span class="special">;</span>
      <span class="keyword">else</span>
@@ -126,23 +124,20 @@
         These derived <tt class="literal">object</tt> types act like real Python types.
         For instance:
       </p>
-<pre class="programlisting">
-<span class="identifier">str</span><span class="special">(</span><span class="number">1</span><span class="special">)</span> <span class="special">==&gt;</span> <span class="string">"1"</span>
+<pre class="programlisting"><span class="identifier">str</span><span class="special">(</span><span class="number">1</span><span class="special">)</span> <span class="special">==&gt;</span> <span class="string">"1"</span>
 </pre>
 <p>
         Wherever appropriate, a particular derived <tt class="literal">object</tt> has
         corresponding Python type's methods. For instance, <tt class="literal">dict</tt>
         has a <tt class="literal">keys()</tt> method:
       </p>
-<pre class="programlisting">
-<span class="identifier">d</span><span class="special">.</span><span class="identifier">keys</span><span class="special">()</span>
+<pre class="programlisting"><span class="identifier">d</span><span class="special">.</span><span class="identifier">keys</span><span class="special">()</span>
 </pre>
 <p>
         <tt class="literal">make_tuple</tt> is provided for declaring <span class="emphasis"><em>tuple literals</em></span>.
         Example:
       </p>
-<pre class="programlisting">
-<span class="identifier">make_tuple</span><span class="special">(</span><span class="number">123</span><span class="special">,</span> <span class="char">'D'</span><span class="special">,</span> <span class="string">"Hello, World"</span><span class="special">,</span> <span class="number">0.0</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">make_tuple</span><span class="special">(</span><span class="number">123</span><span class="special">,</span> <span class="char">'D'</span><span class="special">,</span> <span class="string">"Hello, World"</span><span class="special">,</span> <span class="number">0.0</span><span class="special">);</span>
 </pre>
 <p>
         In C++, when Boost.Python <tt class="literal">object</tt>s are used as arguments
@@ -150,8 +145,7 @@
         <tt class="literal">f</tt>, as declared below, is wrapped, it will only accept
         instances of Python's <tt class="literal">str</tt> type and subtypes.
       </p>
-<pre class="programlisting">
-<span class="keyword">void</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">name</span><span class="special">)</span>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">str</span> <span class="identifier">name</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="identifier">object</span> <span class="identifier">n2</span> <span class="special">=</span> <span class="identifier">name</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"upper"</span><span class="special">)();</span>   <span class="comment">// NAME = name.upper()
 </span>    <span class="identifier">str</span> <span class="identifier">NAME</span> <span class="special">=</span> <span class="identifier">name</span><span class="special">.</span><span class="identifier">upper</span><span class="special">();</span>            <span class="comment">// better
@@ -161,15 +155,13 @@
 <p>
         In finer detail:
       </p>
-<pre class="programlisting">
-<span class="identifier">str</span> <span class="identifier">NAME</span> <span class="special">=</span> <span class="identifier">name</span><span class="special">.</span><span class="identifier">upper</span><span class="special">();</span>
+<pre class="programlisting"><span class="identifier">str</span> <span class="identifier">NAME</span> <span class="special">=</span> <span class="identifier">name</span><span class="special">.</span><span class="identifier">upper</span><span class="special">();</span>
 </pre>
 <p>
         Illustrates that we provide versions of the str type's methods as C++ member
         functions.
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">msg</span> <span class="special">=</span> <span class="string">"%s is bigger than %s"</span> <span class="special">%</span> <span class="identifier">make_tuple</span><span class="special">(</span><span class="identifier">NAME</span><span class="special">,</span><span class="identifier">name</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">msg</span> <span class="special">=</span> <span class="string">"%s is bigger than %s"</span> <span class="special">%</span> <span class="identifier">make_tuple</span><span class="special">(</span><span class="identifier">NAME</span><span class="special">,</span><span class="identifier">name</span><span class="special">);</span>
 </pre>
 <p>
         Demonstrates that you can write the C++ equivalent of <tt class="literal">"format"
@@ -184,19 +176,17 @@
 <p>
         Python:
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">d</span> <span class="special">=</span> <span class="identifier">dict</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special">)</span>     <span class="comment"># copies x.__dict__
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">d</span> <span class="special">=</span> <span class="identifier">dict</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">__dict__</span><span class="special">)</span>     <span class="comment"># copies x.__dict__
 </span><span class="special">&gt;&gt;&gt;</span> <span class="identifier">d</span><span class="special">[</span><span class="string">'whatever'</span><span class="special">]</span> <span class="special">=</span> <span class="number">3</span>        <span class="comment"># modifies the copy
 </span></pre>
 <p>
         C++:
       </p>
-<pre class="programlisting">
-<span class="identifier">dict</span> <span class="identifier">d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>  <span class="comment">// copies x.__dict__
+<pre class="programlisting"><span class="identifier">dict</span> <span class="identifier">d</span><span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>  <span class="comment">// copies x.__dict__
 </span><span class="identifier">d</span><span class="special">[</span><span class="char">'whatever'</span><span class="special">]</span> <span class="special">=</span> <span class="number">3</span><span class="special">;</span>           <span class="comment">// modifies the copy
 </span></pre>
 <a name="derived_object_types.class__lt_t_gt__as_objects"></a><h2>
-<a name="id469586"></a>
+<a name="id470756"></a>
         class_&lt;T&gt; as objects
       </h2>
 <p>
@@ -207,8 +197,7 @@
 <p>
         We can use this to create wrapped instances. Example:
       </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">vec345</span> <span class="special">=</span> <span class="special">(</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">vec345</span> <span class="special">=</span> <span class="special">(</span>
     <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&gt;(</span><span class="string">"Vec2"</span><span class="special">,</span> <span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">,</span> <span class="keyword">double</span><span class="special">&gt;())</span>
         <span class="special">.</span><span class="identifier">def_readonly</span><span class="special">(</span><span class="string">"length"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Point</span><span class="special">::</span><span class="identifier">length</span><span class="special">)</span>
         <span class="special">.</span><span class="identifier">def_readonly</span><span class="special">(</span><span class="string">"angle"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Point</span><span class="special">::</span><span class="identifier">angle</span><span class="special">)</span>
@@ -225,16 +214,14 @@
         can be achieved with the <tt class="literal">extract&lt;T&gt;</tt> function. Consider
         the following:
       </p>
-<pre class="programlisting">
-<span class="keyword">double</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">o</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"length"</span><span class="special">);</span> <span class="comment">// compile error
+<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">o</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"length"</span><span class="special">);</span> <span class="comment">// compile error
 </span></pre>
 <p>
         In the code above, we got a compiler error because Boost.Python <tt class="literal">object</tt>
         can't be implicitly converted to <tt class="literal">double</tt>s. Instead, what
         we wanted to do above can be achieved by writing:
       </p>
-<pre class="programlisting">
-<span class="keyword">double</span> <span class="identifier">l</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;(</span><span class="identifier">o</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"length"</span><span class="special">));</span>
+<pre class="programlisting"><span class="keyword">double</span> <span class="identifier">l</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;(</span><span class="identifier">o</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"length"</span><span class="special">));</span>
 <span class="identifier">Vec2</span><span class="special">&amp;</span> <span class="identifier">v</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&amp;&gt;(</span><span class="identifier">o</span><span class="special">);</span>
 <span class="identifier">assert</span><span class="special">(</span><span class="identifier">l</span> <span class="special">==</span> <span class="identifier">v</span><span class="special">.</span><span class="identifier">length</span><span class="special">());</span>
 </pre>
@@ -251,8 +238,7 @@
         be extracted, an appropriate exception is thrown. To avoid an exception,
         we need to test for extractibility:
       </p>
-<pre class="programlisting">
-<span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&amp;&gt;</span> <span class="identifier">x</span><span class="special">(</span><span class="identifier">o</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">Vec2</span><span class="special">&amp;&gt;</span> <span class="identifier">x</span><span class="special">(</span><span class="identifier">o</span><span class="special">);</span>
 <span class="keyword">if</span> <span class="special">(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">check</span><span class="special">())</span> <span class="special">{</span>
     <span class="identifier">Vec2</span><span class="special">&amp;</span> <span class="identifier">v</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">();</span> <span class="special">...</span>
 </pre>
@@ -260,8 +246,7 @@
         <span class="inlinemediaobject"><img src="../images/tip.png" alt="tip"></span> The astute reader might have noticed that the <tt class="literal">extract&lt;T&gt;</tt>
         facility in fact solves the mutable copying problem:
       </p>
-<pre class="programlisting">
-<span class="identifier">dict</span> <span class="identifier">d</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">dict</span><span class="special">&gt;(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>
+<pre class="programlisting"><span class="identifier">dict</span> <span class="identifier">d</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="identifier">dict</span><span class="special">&gt;(</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">));</span>
 <span class="identifier">d</span><span class="special">[</span><span class="string">"whatever"</span><span class="special">]</span> <span class="special">=</span> <span class="number">3</span><span class="special">;</span>          <span class="comment">// modifies x.__dict__ !
 </span></pre>
 </div>
@@ -276,14 +261,12 @@
         typing to C++'s strong static typing (in C++, ints cannot be implicitly converted
         to enums). To illustrate, given a C++ enum:
       </p>
-<pre class="programlisting">
-<span class="keyword">enum</span> <span class="identifier">choice</span> <span class="special">{</span> <span class="identifier">red</span><span class="special">,</span> <span class="identifier">blue</span> <span class="special">};</span>
+<pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">choice</span> <span class="special">{</span> <span class="identifier">red</span><span class="special">,</span> <span class="identifier">blue</span> <span class="special">};</span>
 </pre>
 <p>
         the construct:
       </p>
-<pre class="programlisting">
-<span class="identifier">enum_</span><span class="special">&lt;</span><span class="identifier">choice</span><span class="special">&gt;(</span><span class="string">"choice"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">enum_</span><span class="special">&lt;</span><span class="identifier">choice</span><span class="special">&gt;(</span><span class="string">"choice"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"red"</span><span class="special">,</span> <span class="identifier">red</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"blue"</span><span class="special">,</span> <span class="identifier">blue</span><span class="special">)</span>
     <span class="special">;</span>
@@ -315,8 +298,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span>
 <span class="identifier">my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span>
 </pre>
 <p>
@@ -325,8 +307,7 @@
       </p>
 <p>
       </p>
-<pre class="programlisting">
-<span class="identifier">scope</span> <span class="identifier">in_X</span> <span class="special">=</span> <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;(</span><span class="string">"X"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">scope</span> <span class="identifier">in_X</span> <span class="special">=</span> <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;(</span><span class="string">"X"</span><span class="special">)</span>
                 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span> <span class="special">...</span> <span class="special">)</span>
                 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span> <span class="special">...</span> <span class="special">)</span>
             <span class="special">;</span>
