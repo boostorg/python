@@ -75,6 +75,7 @@ bpl-test crossmod_exception
 [ bpl-test return_arg ]
 [ bpl-test staticmethod ]
 [ bpl-test shared_ptr ]
+[ bpl-test enable_shared_from_this ]
 [ bpl-test andreas_beyer ]
 [ bpl-test polymorphism ]
 [ bpl-test polymorphism2 ]
