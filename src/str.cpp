@@ -10,16 +10,33 @@ namespace boost { namespace python { namespace detail {
 detail::new_reference str_base::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
-        (PyObject*)&PyString_Type, const_cast<char*>("(O)"), 
+#if PY_VERSION_HEX >= 0x03000000
+        (PyObject*)&PyUnicode_Type,
+#else
+        (PyObject*)&PyString_Type, 
+#endif
+        const_cast<char*>("(O)"), 
         arg_.ptr());
 } 
 
 str_base::str_base()
-  : object(detail::new_reference(::PyString_FromString("")))
+  : object(detail::new_reference(
+#if PY_VERSION_HEX >= 0x03000000
+              ::PyUnicode_FromString("")
+#else
+              ::PyString_FromString("")
+#endif
+            ))
 {}
 
 str_base::str_base(const char* s)
-  : object(detail::new_reference(::PyString_FromString(s)))
+  : object(detail::new_reference(
+#if PY_VERSION_HEX >= 0x03000000
+              ::PyUnicode_FromString(s)
+#else
+              ::PyString_FromString(s)
+#endif
+            ))
 {}
 
 namespace {
@@ -38,9 +55,12 @@ namespace {
 str_base::str_base(char const* start, char const* finish)
     : object(
         detail::new_reference(
-            ::PyString_FromStringAndSize(
-                start, str_size_as_py_ssize_t(finish - start)
-            )
+#if PY_VERSION_HEX >= 0x03000000
+            ::PyUnicode_FromStringAndSize
+#else
+            ::PyString_FromStringAndSize
+#endif
+                (start, str_size_as_py_ssize_t(finish - start))
         )
     )
 {}
@@ -48,9 +68,12 @@ str_base::str_base(char const* start, char const* finish)
 str_base::str_base(char const* start, std::size_t length) // new str
     : object(
         detail::new_reference(
-            ::PyString_FromStringAndSize(
-                start, str_size_as_py_ssize_t(length)
-            )
+#if PY_VERSION_HEX >= 0x03000000
+            ::PyUnicode_FromStringAndSize
+#else
+            ::PyString_FromStringAndSize
+#endif
+            ( start, str_size_as_py_ssize_t(length) )
         )
     )
 {}
@@ -122,9 +145,17 @@ object str_base::encode(object_cref encoding, object_cref errors) const
     return this->attr("encode")(encoding,errors);
 }
 
+
+// XXX(bhy) Why not use extract<long> instead of Python C-API?
+#if PY_VERSION_HEX >= 0x03000000
+    #define _BOOST_PYTHON_ASLONG PyLong_AsLong
+#else
+    #define _BOOST_PYTHON_ASLONG PyInt_AsLong
+#endif
+
 bool str_base::endswith(object_cref suffix) const
 {
-    bool result = PyInt_AsLong(this->attr("endswith")(suffix).ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("endswith")(suffix).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -135,7 +166,7 @@ BOOST_PYTHON_DEFINE_STR_METHOD(expandtabs, 1)
 
 long str_base::find(object_cref sub) const
 {
-    long result = PyInt_AsLong(this->attr("find")(sub).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("find")(sub).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -143,7 +174,7 @@ long str_base::find(object_cref sub) const
 
 long str_base::find(object_cref sub, object_cref start) const
 {
-    long result = PyInt_AsLong(this->attr("find")(sub,start).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("find")(sub,start).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -151,7 +182,7 @@ long str_base::find(object_cref sub, object_cref start) const
 
 long str_base::find(object_cref sub, object_cref start, object_cref end) const
 {
-    long result = PyInt_AsLong(this->attr("find")(sub,start,end).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("find")(sub,start,end).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -159,7 +190,7 @@ long str_base::find(object_cref sub, object_cref start, object_cref end) const
 
 long str_base::index(object_cref sub) const
 {
-    long result = PyInt_AsLong(this->attr("index")(sub).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("index")(sub).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -167,7 +198,7 @@ long str_base::index(object_cref sub) const
 
 long str_base::index(object_cref sub, object_cref start) const
 {
-    long result = PyInt_AsLong(this->attr("index")(sub,start).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("index")(sub,start).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -175,7 +206,7 @@ long str_base::index(object_cref sub, object_cref start) const
 
 long str_base::index(object_cref sub, object_cref start, object_cref end) const
 {
-    long result = PyInt_AsLong(this->attr("index")(sub,start,end).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("index")(sub,start,end).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -183,7 +214,7 @@ long str_base::index(object_cref sub, object_cref start, object_cref end) const
 
 bool str_base::isalnum() const
 {
-    bool result = PyInt_AsLong(this->attr("isalnum")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("isalnum")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -191,7 +222,7 @@ bool str_base::isalnum() const
 
 bool str_base::isalpha() const
 {
-    bool result = PyInt_AsLong(this->attr("isalpha")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("isalpha")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -199,7 +230,7 @@ bool str_base::isalpha() const
 
 bool str_base::isdigit() const
 {
-    bool result = PyInt_AsLong(this->attr("isdigit")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("isdigit")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -207,7 +238,7 @@ bool str_base::isdigit() const
 
 bool str_base::islower() const
 {
-    bool result = PyInt_AsLong(this->attr("islower")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("islower")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -215,7 +246,7 @@ bool str_base::islower() const
 
 bool str_base::isspace() const
 {
-    bool result = PyInt_AsLong(this->attr("isspace")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("isspace")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -223,7 +254,7 @@ bool str_base::isspace() const
 
 bool str_base::istitle() const
 {
-    bool result = PyInt_AsLong(this->attr("istitle")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("istitle")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -231,7 +262,7 @@ bool str_base::istitle() const
 
 bool str_base::isupper() const
 {
-    bool result = PyInt_AsLong(this->attr("isupper")().ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("isupper")().ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -246,7 +277,7 @@ BOOST_PYTHON_DEFINE_STR_METHOD(replace, 3)
 
 long str_base::rfind(object_cref sub) const
 {
-    long result = PyInt_AsLong(this->attr("rfind")(sub).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rfind")(sub).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -254,7 +285,7 @@ long str_base::rfind(object_cref sub) const
 
 long str_base::rfind(object_cref sub, object_cref start) const
 {
-    long result = PyInt_AsLong(this->attr("rfind")(sub,start).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rfind")(sub,start).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -262,7 +293,7 @@ long str_base::rfind(object_cref sub, object_cref start) const
 
 long str_base::rfind(object_cref sub, object_cref start, object_cref end) const
 {
-    long result = PyInt_AsLong(this->attr("rfind")(sub,start,end).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rfind")(sub,start,end).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -270,7 +301,7 @@ long str_base::rfind(object_cref sub, object_cref start, object_cref end) const
 
 long str_base::rindex(object_cref sub) const
 {
-    long result = PyInt_AsLong(this->attr("rindex")(sub).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rindex")(sub).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -278,7 +309,7 @@ long str_base::rindex(object_cref sub) const
 
 long str_base::rindex(object_cref sub, object_cref start) const
 {
-    long result = PyInt_AsLong(this->attr("rindex")(sub,start).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rindex")(sub,start).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -286,7 +317,7 @@ long str_base::rindex(object_cref sub, object_cref start) const
 
 long str_base::rindex(object_cref sub, object_cref start, object_cref end) const
 {
-    long result = PyInt_AsLong(this->attr("rindex")(sub,start,end).ptr());
+    long result = _BOOST_PYTHON_ASLONG(this->attr("rindex")(sub,start,end).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -322,7 +353,7 @@ list str_base::splitlines(object_cref keepends) const
 
 bool str_base::startswith(object_cref prefix) const
 {
-    bool result = PyInt_AsLong(this->attr("startswith")(prefix).ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("startswith")(prefix).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -330,7 +361,7 @@ bool str_base::startswith(object_cref prefix) const
 
 bool str_base::startswith(object_cref prefix, object_cref start) const
 {
-    bool result = PyInt_AsLong(this->attr("startswith")(prefix,start).ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("startswith")(prefix,start).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
@@ -338,11 +369,13 @@ bool str_base::startswith(object_cref prefix, object_cref start) const
 
 bool str_base::startswith(object_cref prefix, object_cref start, object_cref end) const
 {
-    bool result = PyInt_AsLong(this->attr("startswith")(prefix,start,end).ptr());
+    bool result = _BOOST_PYTHON_ASLONG(this->attr("startswith")(prefix,start,end).ptr());
     if (PyErr_Occurred())
         throw_error_already_set();
     return result;
 }
+
+#undef _BOOST_PYTHON_ASLONG
 
 BOOST_PYTHON_DEFINE_STR_METHOD(strip, 0)
 BOOST_PYTHON_DEFINE_STR_METHOD(swapcase, 0)
@@ -357,7 +390,12 @@ static struct register_str_pytype_ptr
     {
         const_cast<converter::registration &>(
             converter::registry::lookup(boost::python::type_id<boost::python::str>())
-            ).m_class_object = &PyString_Type;
+            )
+#if PY_VERSION_HEX >= 0x03000000
+            .m_class_object = &PyUnicode_Type;
+#else
+            .m_class_object = &PyString_Type;
+#endif
     }
 }register_str_pytype_ptr_;
     

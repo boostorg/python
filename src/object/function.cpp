@@ -105,9 +105,9 @@ function::function(
     }
     
     PyObject* p = this;
-    if (function_type.ob_type == 0)
+    if (Py_TYPE(&function_type) == 0)
     {
-        function_type.ob_type = &PyType_Type;
+        Py_TYPE(&function_type) = &PyType_Type;
         ::PyType_Ready(&function_type);
     }
     
@@ -435,9 +435,13 @@ void function::add_to_namespace(
         function* new_func = downcast<function>(attribute.ptr());
         PyObject* dict = 0;
         
+#if PY_VERSION_HEX < 0x03000000
+        // Old-style class gone in Python 3
         if (PyClass_Check(ns))
             dict = ((PyClassObject*)ns)->cl_dict;
-        else if (PyType_Check(ns))
+        else
+#endif        
+        if (PyType_Check(ns))
             dict = ((PyTypeObject*)ns)->tp_dict;
         else    
             dict = PyObject_GetAttrString(ns, const_cast<char*>("__dict__"));
@@ -595,9 +599,18 @@ extern "C"
     static PyObject *
     function_descr_get(PyObject *func, PyObject *obj, PyObject *type_)
     {
+#if PY_VERSION_HEX >= 0x03000000
+        // The implement is different in Python 3 because of the removal of unbound method
+        if (obj == Py_None || obj == NULL) {
+            Py_INCREF(func);
+            return func;
+        }
+        return PyMethod_New(func, obj);
+#else
         if (obj == Py_None)
             obj = NULL;
         return PyMethod_New(func, obj, type_);
+#endif
     }
 
     static void
@@ -641,7 +654,11 @@ extern "C"
     {
         function* f = downcast<function>(op);
         if (f->name().ptr() == Py_None)
+#if PY_VERSION_HEX >= 0x03000000
+            return PyUnicode_InternFromString("<unnamed Boost.Python function>");
+#else
             return PyString_InternFromString("<unnamed Boost.Python function>");
+#endif
         else
             return python::incref(f->name().ptr());
     }
@@ -665,8 +682,7 @@ static PyGetSetDef function_getsetlist[] = {
 };
 
 PyTypeObject function_type = {
-    PyObject_HEAD_INIT(0)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     const_cast<char*>("Boost.Python.function"),
     sizeof(function),
     0,

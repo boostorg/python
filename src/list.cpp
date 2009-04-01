@@ -48,7 +48,14 @@ void list_base::extend(object_cref sequence)
 long list_base::index(object_cref value) const
 {
     object result_obj(this->attr("index")(value));
+    // TODO(bhy) In Python 2.5, PyInt_AsSsize_t did the same thing as PyLong_AsSsize_t,
+    // i.e., it can accepts both int and long. So we may have a better way to do this,
+    // so we can support ssize_t with Python 2.x.
+#if PY_VERSION_HEX >= 0x03000000
+    ssize_t result = PyLong_AsSsize_t(result_obj.ptr());
+#else
     long result = PyInt_AsLong(result_obj.ptr());
+#endif
     if (result == -1)
         throw_error_already_set();
     return result;
@@ -69,7 +76,11 @@ void list_base::insert(ssize_t index, object_cref item)
 
 void list_base::insert(object const& index, object_cref x)
 {
+#if PY_VERSION_HEX >= 0x03000000
+    ssize_t index_ = PyLong_AsSsize_t(index.ptr());
+#else
     long index_ = PyInt_AsLong(index.ptr());
+#endif
     if (index_ == -1 && PyErr_Occurred())
         throw_error_already_set();
     this->insert(index_, x);
@@ -128,10 +139,14 @@ void list_base::sort(object_cref cmpfunc)
 
 // For some reason, moving this to the end of the TU suppresses an ICE
 // with vc6.
-long list_base::count(object_cref value) const
+Py_ssize_t list_base::count(object_cref value) const
 {
     object result_obj(this->attr("count")(value));
+#if PY_VERSION_HEX >= 0x03000000
+    Py_ssize_t result = PyLong_AsSsize_t(result_obj.ptr());
+#else
     long result = PyInt_AsLong(result_obj.ptr());
+#endif
     if (result == -1)
         throw_error_already_set();
     return result;

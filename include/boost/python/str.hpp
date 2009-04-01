@@ -404,7 +404,11 @@ namespace converter
 {
   template <>
   struct object_manager_traits<str>
+#if PY_VERSION_HEX >= 0x03000000
+      : pytype_object_manager_traits<&PyUnicode_Type,str>
+#else
       : pytype_object_manager_traits<&PyString_Type,str>
+#endif
   {
   };
 }
