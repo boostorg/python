@@ -46,7 +46,7 @@ extern "C"
 #if PY_VERSION_HEX >= 0x03000000
                 PyUnicode_FromFormat("%S.%s(%ld)", mod, self_->ob_type->tp_name, PyLong_AsLong(self_));
 #else
-                PyString_FromFormat("%S.%s(%ld)", mod, self_->ob_type->tp_name, PyInt_AS_LONG(self_));
+                PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), self_->ob_type->tp_name, PyInt_AS_LONG(self_));
 #endif
         }
         else
@@ -58,11 +58,11 @@ extern "C"
 
             return
 #if PY_VERSION_HEX >= 0x03000000
-                PyUnicode_FromFormat
+                PyUnicode_FromFormat("%S.%s.%S", mod, self_->ob_type->tp_name, name);
 #else
-                PyString_FromFormat
+                PyString_FromFormat("%s.%s.%s", 
+                        PyString_AsString(mod), self_->ob_type->tp_name, PyString_AsString(name));
 #endif
-                ("%S.%s.%S", mod, self_->ob_type->tp_name, name);
         }
     }
 
@@ -105,7 +105,7 @@ static PyTypeObject enum_type_object = {
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT
-#if PY_VERSION_HEX <= 0x03000000
+#if PY_VERSION_HEX < 0x03000000
     | Py_TPFLAGS_CHECKTYPES
 #endif
     | Py_TPFLAGS_HAVE_GC
@@ -149,7 +149,7 @@ namespace
       if (enum_type_object.tp_dict == 0)
       {
           Py_TYPE(&enum_type_object) = incref(&PyType_Type);
-#if PY_VERSION_HEX >= 0x02060000
+#if PY_VERSION_HEX >= 0x03000000
           enum_type_object.tp_base = &PyLong_Type;
 #else
           enum_type_object.tp_base = &PyInt_Type;
