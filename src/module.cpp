@@ -24,11 +24,25 @@ namespace
   PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } };
 }
 
-BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
+BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*init_function)())
 {
-    
+#if PY_VERSION_HEX >= 0x03000000
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        name,
+        0, /* m_doc */
+        -1, /* m_size */
+        initial_methods,
+        0,  /* m_reload */
+        0, /* m_traverse */
+        0, /* m_clear */
+        0,  /* m_free */
+    };
+    PyObject* m = PyModule_Create(&moduledef);
+#else
     PyObject* m
         = Py_InitModule(const_cast<char*>(name), initial_methods);
+#endif
 
     if (m != 0)
     {
@@ -38,6 +52,7 @@ BOOST_PYTHON_DECL void init_module(char const* name, void(*init_function)())
         
         handle_exception(init_function);
     }
+    return m;
 }
 
 }}} // namespace boost::python::detail

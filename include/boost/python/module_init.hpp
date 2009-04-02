@@ -11,9 +11,12 @@
 
 namespace boost { namespace python { namespace detail {
 
-BOOST_PYTHON_DECL void init_module(char const* name, void(*)());
+BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 
 }}}
+
+// TODO(bhy) Take care of this later.
+// But any reseaon we don't use BOOST_PYTHON_DECL here?
 
 #  if (defined(_WIN32) || defined(__CYGWIN__)) && !defined(BOOST_PYTHON_STATIC_MODULE)
 
