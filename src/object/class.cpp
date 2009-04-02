@@ -717,7 +717,7 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
 
 void instance_holder::deallocate(PyObject* self_, void* storage) throw()
 {
-    assert(Py_TYPE((self_)) == &class_metatype_object);
+    assert(Py_TYPE(Py_TYPE(self_)) == &class_metatype_object);
     objects::instance<>* self = (objects::instance<>*)self_;
     if (storage != (char*)self + Py_SIZE(self))
     {
