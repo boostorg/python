@@ -61,8 +61,16 @@ if (PYTHON_LIBRARIES)
       MODULE
       LINK_LIBS ${PYTHON_LIBRARIES}
       DEPENDS boost_python
+      NO_STATIC
+      NO_SINGLE_THREADED
     )
-       
+  
+  set_target_properties(${MODULE_NAME}-mt-shared
+    PROPERTIES
+    PREFIX ""
+    OUTPUT_NAME ${MODULE_NAME}
+    )
+
   endmacro(boost_python_extension)
 #--
 ################################################################################
