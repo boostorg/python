@@ -95,6 +95,13 @@ bpl_test(keywords keywords_test.py keywords.cpp)
 boost_python_extension(builtin_converters_ext test_builtin_converters.cpp)
 bpl_test(builtin_converters test_builtin_converters.py builtin_converters_ext)
 
+#
+#   See the contents of this file for more details on an existing
+#   overload resoluton bug.
+#
+#   boost_python_extension(overload_resolution test_overload_resolution.cpp)
+#
+
 bpl_test(test_pointer_adoption)
 bpl_test(operators)
 bpl_test(callbacks)
