@@ -99,8 +99,13 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          return (PyInt_Check(obj) || PyLong_Check(obj))
-              ? &number_methods->nb_int : 0;
+          return (
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          !PyBool_Check(obj) &&
+#endif
+          (PyInt_Check(obj) || PyLong_Check(obj)))
+
+        ? &number_methods->nb_int : 0;
       }
       static PyTypeObject const* get_pytype() { return &PyInt_Type;}
   };
@@ -135,7 +140,11 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          return (PyInt_Check(obj) || PyLong_Check(obj))
+          return (
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          !PyBool_Check(obj) &&
+#endif
+          (PyInt_Check(obj) || PyLong_Check(obj)))
               ? &py_object_identity : 0;
       }
       static PyTypeObject const* get_pytype() { return &PyInt_Type;}
@@ -226,7 +235,11 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          return obj == Py_None || PyBool_Check(obj) ? &py_object_identity : 0;
+#else
           return obj == Py_None || PyInt_Check(obj) ? &py_object_identity : 0;
+#endif
       }
       
       static bool extract(PyObject* intermediate)
