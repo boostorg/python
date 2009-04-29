@@ -1,5 +1,5 @@
 [library python
-    [version 1.0]
+    [version 2.0]
     [authors [de Guzman, Joel], [Abrahams, David]]
     [copyright 2002 2003 2004 2005 Joel de Guzman, David Abrahams]
     [category inter-language support]
