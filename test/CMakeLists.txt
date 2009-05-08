@@ -36,15 +36,21 @@ macro(bpl_test TESTNAME)
   set(BPL_TEST_PYSOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${BPL_TEST_PYSOURCE})
     
   # Run the test itself
-  file(TO_NATIVE_PATH "${LIBRARY_OUTPUT_PATH}" PYTHONPATH)
+  file(TO_NATIVE_PATH "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" PYTHONPATH)
   if(WIN32 AND NOT UNIX)
     string(REPLACE "\\" "\\\\" PYTHONPATH "${PYTHONPATH}")
   endif(WIN32 AND NOT UNIX)
-  add_test("${PROJECT_NAME}::${TESTNAME}"
+  set(FULL_TESTNAME ${PROJECT_NAME}-${TESTNAME})
+  add_test(${FULL_TESTNAME}
     ${PYTHON_EXECUTABLE} 
     "${CMAKE_CURRENT_SOURCE_DIR}/pyrun.py" 
     "${PYTHONPATH}"
     ${BPL_TEST_PYSOURCE} ${BPL_TEST_ARGS})
+
+  set_tests_properties(${FULL_TESTNAME}
+    PROPERTIES
+    LABELS "${PROJECT_NAME}"
+    )
 endmacro(bpl_test)
 
 macro(py_run TESTNAME)
