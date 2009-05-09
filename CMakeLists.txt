@@ -40,32 +40,15 @@ if (PYTHON_LIBRARIES)
       "" 
       ${ARGN})
       
-    # Create the library target itself
-    add_library(${MODULE_NAME} MODULE ${BPL_EXT_DEFAULT_ARGS})
-    
-    # Link against Boost.Python library
-    target_link_libraries(${MODULE_NAME} boost_python-mt-shared)
-    
-    # Link against Python libraries
-    target_link_libraries(${MODULE_NAME} ${PYTHON_LIBRARIES})
-
-    #    boost_add_library(
-    #      ${MODULE_NAME}
-    #      ${BPL_EXT_DEFAULT_ARGS}
-    #      MODULE
-    #      LINK_LIBS ${PYTHON_LIBRARIES}
-    #      DEPENDS boost_python
-    #      NO_STATIC
-    #      NO_SINGLE_THREADED
-    #    )
-    
-    set_target_properties(${MODULE_NAME}
-      PROPERTIES
-      PREFIX ""
-      OUTPUT_NAME ${MODULE_NAME}
-      LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/test
-      )
-
+    boost_add_single_library(
+      ${MODULE_NAME}
+      ${BPL_EXT_DEFAULT_ARGS}
+      MODULE
+      LINK_LIBS ${PYTHON_LIBRARIES}
+      DEPENDS boost_python
+      SHARED
+    )
+       
   endmacro(boost_python_extension)
 #--
 ################################################################################
