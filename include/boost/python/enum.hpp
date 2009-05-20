@@ -41,7 +41,7 @@ inline enum_<T>::enum_(char const* name, char const* doc )
         , &enum_<T>::convertible_from_python
         , &enum_<T>::construct
         , type_id<T>()
-		, doc
+        , doc
         )
 {
 }
