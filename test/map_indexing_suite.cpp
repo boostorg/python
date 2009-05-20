@@ -62,7 +62,7 @@ BOOST_PYTHON_MODULE(map_indexing_suite_ext)
 
     void a_map_indexing_suite(); // moved to a_map_indexing_suite.cpp to 
     a_map_indexing_suite();      // avoid MSVC 6/7 internal structure overflow
-	
+
 }
 
 #include "module_tail.cpp"
