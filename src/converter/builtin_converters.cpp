@@ -40,7 +40,8 @@ namespace
 
   // An lvalue conversion function which extracts a char const* from a
   // Python String.
-  // Cannot have this lvalue conversion in Python 3.
+  // Cannot have this lvalue conversion in Python 3, instead, we have
+  // char_rvalue_from_python.
 #if PY_VERSION_HEX < 0x03000000
   void* convert_to_cstring(PyObject* obj)
   {
@@ -366,6 +367,24 @@ namespace
 #endif
   };
 
+#if PY_VERSION_HEX >= 0x03000000
+  // A SlotPolicy for extracting C char* string from Python 3 unicode string.
+  struct char_rvalue_from_python
+  {
+      static unaryfunc* get_slot(PyObject *obj)
+      {
+          printf("*********CALLED*************\n");
+          return PyUnicode_Check(obj) ? &py_unicode_as_string_unaryfunc : 0;
+      }
+
+      static const char* extract(PyObject* intermediate)
+      {
+          return PyBytes_AsString(intermediate);
+      }
+      static PyTypeObject const* get_pytype() { return &PyUnicode_Type;}
+  };
+#endif
+
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
   // encode_string_unaryfunc/py_encode_string -- manufacture a unaryfunc
   // "slot" which encodes a Python string using the default encoding
@@ -517,6 +536,11 @@ void initialize_builtin_converters()
     // Add an lvalue converter for char which gets us char const*
 #if PY_VERSION_HEX < 0x03000000
     registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyString_Type>::get_pytype);
+#else
+    //TODO(bhy) This doesn't work because for const char* a lvalue converter is
+    // always expected. (See select_extract in extract.hpp for detail)
+    // So we should figure out a workaround.
+    slot_rvalue_from_python<const char*, char_rvalue_from_python>();
 #endif
 
     // Register by-value converters to std::string, std::wstring
@@ -524,6 +548,7 @@ void initialize_builtin_converters()
     slot_rvalue_from_python<std::wstring, wstring_rvalue_from_python>();
 # endif 
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();
+
 }
 
 }}} // namespace boost::python::converter
