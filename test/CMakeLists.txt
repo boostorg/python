@@ -30,6 +30,7 @@ macro(bpl_test TESTNAME)
 
     # Build a Python extension module from this source file
     boost_python_extension(${TESTNAME}_ext "${TESTNAME}.cpp")
+    add_dependencies(${PROJECT_NAME}-test ${TESTNAME}_ext ${BPL_TEST_PYSOURCE})
   endif(BPL_TEST_DEFAULT_ARGS)
 
   # We'll need the full patch to run the Python test
