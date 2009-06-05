@@ -506,13 +506,12 @@ namespace objects
       // Build a tuple of the base Python type objects. If no bases
       // were declared, we'll use our class_type() as the single base
       // class.
-      std::size_t const num_bases = (std::max)(num_types - 1, static_cast<std::size_t>(1));
-      assert(num_bases <= ssize_t_max);
-      handle<> bases(PyTuple_New(static_cast<ssize_t>(num_bases)));
+      ssize_t const num_bases = (std::max)(num_types - 1, static_cast<std::size_t>(1));
+      handle<> bases(PyTuple_New(num_bases));
 
-      for (std::size_t i = 1; i <= num_bases; ++i)
+      for (ssize_t i = 1; i <= num_bases; ++i)
       {
-          type_handle c = (i >= num_types) ? class_type() : get_class(types[i]);
+          type_handle c = (i >= static_cast<ssize_t>(num_types)) ? class_type() : get_class(types[i]);
           // PyTuple_SET_ITEM steals this reference
           PyTuple_SET_ITEM(bases.get(), static_cast<ssize_t>(i - 1), upcast<PyObject>(c.release()));
       }

@@ -26,7 +26,7 @@ namespace {
 
     ssize_t str_size_as_py_ssize_t(std::size_t n)
     {
-      if (n > ssize_t_max)
+      if (n > static_cast<std::size_t>(ssize_t_max))
       {
           throw std::range_error("str size > ssize_t_max");
       }
