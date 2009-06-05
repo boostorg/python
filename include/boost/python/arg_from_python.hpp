@@ -62,6 +62,35 @@ struct arg_from_python<PyObject* const&>
     PyObject* m_source;
 };
 
+#if PY_VERSION_HEX >= 0x03000000
+// specialization for const char *, experimenting
+template <>
+struct arg_from_python<const char*>
+{
+    typedef const char* result_type;
+
+    arg_from_python(PyObject* p) : m_source(p), intermediate(0) {}
+    bool convertible() const
+    {
+        return PyUnicode_Check(m_source);
+    }
+    const char* operator()()
+    {
+        const char* result;
+        intermediate = PyUnicode_AsUTF8String(m_source);
+        result = PyBytes_AsString(intermediate);
+        return result;        
+    }
+    ~arg_from_python()
+    {
+        Py_DECREF(intermediate);
+    }
+ private:
+    PyObject* m_source;
+    PyObject* intermediate;
+};
+#endif
+
 //
 // implementations
 //
