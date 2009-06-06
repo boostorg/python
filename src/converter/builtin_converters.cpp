@@ -40,12 +40,15 @@ namespace
 
   // An lvalue conversion function which extracts a char const* from a
   // Python String.
-  // Cannot have this lvalue conversion in Python 3, instead, we have
-  // char_rvalue_from_python.
 #if PY_VERSION_HEX < 0x03000000
   void* convert_to_cstring(PyObject* obj)
   {
       return PyString_Check(obj) ? PyString_AsString(obj) : 0;
+  }
+#else
+  void* convert_to_cstring(PyObject* obj)
+  {
+      return PyUnicode_Check(obj) ? _PyUnicode_AsString(obj) : 0;
   }
 #endif
 
@@ -537,10 +540,11 @@ void initialize_builtin_converters()
 #if PY_VERSION_HEX < 0x03000000
     registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyString_Type>::get_pytype);
 #else
+    registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyUnicode_Type>::get_pytype);
     //TODO(bhy) This doesn't work because for const char* a lvalue converter is
     // always expected. (See select_extract in extract.hpp for detail)
     // So we should figure out a workaround.
-    slot_rvalue_from_python<const char*, char_rvalue_from_python>();
+    //slot_rvalue_from_python<const char*, char_rvalue_from_python>();
 #endif
 
     // Register by-value converters to std::string, std::wstring
