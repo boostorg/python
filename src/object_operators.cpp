@@ -39,7 +39,9 @@ BOOST_PYTHON_BINARY_OPERATOR(+, Add)
 BOOST_PYTHON_BINARY_OPERATOR(-, Subtract)
 BOOST_PYTHON_BINARY_OPERATOR(*, Multiply)
 #if PY_VERSION_HEX >= 0x03000000
-BOOST_PYTHON_BINARY_OPERATOR(/, TrueDivide)
+// We choose FloorDivide instead of TrueDivide to keep the semantic
+// conform with C/C++'s '/' operator
+BOOST_PYTHON_BINARY_OPERATOR(/, FloorDivide)
 #else
 BOOST_PYTHON_BINARY_OPERATOR(/, Divide)
 #endif
@@ -63,7 +65,8 @@ BOOST_PYTHON_INPLACE_OPERATOR(+, Add)
 BOOST_PYTHON_INPLACE_OPERATOR(-, Subtract)
 BOOST_PYTHON_INPLACE_OPERATOR(*, Multiply)
 #if PY_VERSION_HEX >= 0x03000000
-BOOST_PYTHON_INPLACE_OPERATOR(/, TrueDivide)
+// Same reason as above for choosing FloorDivide instead of TrueDivide
+BOOST_PYTHON_INPLACE_OPERATOR(/, FloorDivide)
 #else
 BOOST_PYTHON_INPLACE_OPERATOR(/, Divide)
 #endif
