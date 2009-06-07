@@ -67,8 +67,44 @@ extern "C"
       PyObject *prop_set;
       PyObject *prop_del;
       PyObject *prop_doc;
+      int getter_doc;
   } propertyobject;
 
+  // Copied from Python source and removed the part for setting docstring,
+  // since we don't have a setter for __doc__ and trying to set it will
+  // cause the init fail.
+  static int property_init(PyObject *self, PyObject *args, PyObject *kwds)
+  {
+      PyObject *get = NULL, *set = NULL, *del = NULL, *doc = NULL;
+      static char *kwlist[] = {"fget", "fset", "fdel", "doc", 0};
+      propertyobject *prop = (propertyobject *)self;
+
+      if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOO:property",
+                  kwlist, &get, &set, &del, &doc))
+          return -1;
+
+      if (get == Py_None)
+          get = NULL;
+      if (set == Py_None)
+          set = NULL;
+      if (del == Py_None)
+          del = NULL;
+
+      Py_XINCREF(get);
+      Py_XINCREF(set);
+      Py_XINCREF(del);
+      Py_XINCREF(doc);
+
+      prop->prop_get = get;
+      prop->prop_set = set;
+      prop->prop_del = del;
+      prop->prop_doc = doc;
+      prop->getter_doc = 0;
+
+      return 0;
+  }
+
+ 
   static PyObject *
   static_data_descr_get(PyObject *self, PyObject * /*obj*/, PyObject * /*type*/)
   {
@@ -108,7 +144,7 @@ extern "C"
 static PyTypeObject static_data_object = {
     PyVarObject_HEAD_INIT(NULL, 0)
     const_cast<char*>("Boost.Python.StaticProperty"),
-    PyType_Type.tp_basicsize,
+    sizeof(propertyobject),
     0,
     0,                                      /* tp_dealloc */
     0,                                      /* tp_print */
@@ -142,7 +178,7 @@ static PyTypeObject static_data_object = {
     static_data_descr_get,                                      /* tp_descr_get */
     static_data_descr_set,                                      /* tp_descr_set */
     0,                                      /* tp_dictoffset */
-    0,                                      /* tp_init */
+    property_init,                                      /* tp_init */
     0,                                      /* tp_alloc */
     0, // filled in with type_new           /* tp_new */
     0, // filled in with __PyObject_GC_Del  /* tp_free */
@@ -601,8 +637,9 @@ namespace objects
   void class_base::add_static_property(char const* name, object const& fget)
   {
       object property(
-          (python::detail::new_reference)
-          PyObject_CallFunction(static_data(), const_cast<char*>("O"), fget.ptr()));
+          (python::detail::new_reference) 
+          PyObject_CallFunction(static_data(), const_cast<char*>("O"), fget.ptr())
+          );
       
       this->setattr(name, property);
   }
