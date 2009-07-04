@@ -137,7 +137,7 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          long x = PyLong_AsUnsignedLong(intermediate);
+          unsigned long x = PyLong_AsUnsignedLong(intermediate);
           if (PyErr_Occurred())
               throw_error_already_set();
           return numeric_cast<T>(x);
