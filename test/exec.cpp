@@ -59,7 +59,13 @@ void eval_test()
 void exec_test()
 {
   // Register the module with the interpreter
-  if (PyImport_AppendInittab(const_cast<char*>("embedded_hello"), initembedded_hello) == -1)
+  if (PyImport_AppendInittab(const_cast<char*>("embedded_hello"), 
+#if PY_VERSION_HEX >= 0x03000000
+              PyInit_embedded_hello
+#else
+              initembedded_hello
+#endif
+              ) == -1)
     throw std::runtime_error("Failed to add embedded_hello to the interpreter's "
                  "builtin modules");
   // Retrieve the main module
@@ -105,7 +111,7 @@ void exec_test_error()
 {
   // Execute a statement that raises a python exception.
   python::dict global;
-  python::object result = python::exec("print unknown \n", global, global);
+  python::object result = python::exec("print(unknown) \n", global, global);
 }
 
 int main(int argc, char **argv)
@@ -115,9 +121,10 @@ int main(int argc, char **argv)
   // Initialize the interpreter
   Py_Initialize();
 
-  if (python::handle_exception(eval_test) ||
-      python::handle_exception(exec_test) ||
-      python::handle_exception(boost::bind(exec_file_test, script)))
+  if (python::handle_exception(eval_test)
+      || python::handle_exception(exec_test)
+      || python::handle_exception(boost::bind(exec_file_test, script))
+      )
   {
     if (PyErr_Occurred())
     {
@@ -149,7 +156,7 @@ int main(int argc, char **argv)
   }
   
   // Boost.Python doesn't support Py_Finalize yet.
-  // Py_Finalize();
+  //Py_Finalize();
   return boost::report_errors();
 }
 
