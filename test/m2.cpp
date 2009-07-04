@@ -13,6 +13,11 @@
 #include <boost/python/return_value_policy.hpp>
 #include "simple_type.hpp"
 
+#if PY_VERSION_HEX >= 0x03000000
+# define PyString_FromString PyUnicode_FromString
+# define PyInt_FromLong PyLong_FromLong
+#endif
+
 // Get a simple (by value) from the argument, and return the
 // string it holds.
 PyObject* unwrap_simple(simple x)
@@ -51,6 +56,11 @@ PyObject* unwrap_int_const_ref(int const& x)
 {
     return PyInt_FromLong(x);
 }
+
+#if PY_VERSION_HEX >= 0x03000000
+# undef PyString_FromString
+# undef PyInt_FromLong
+#endif
 
 // rewrap<T> extracts a T from the argument, then converts the T back
 // to a PyObject* and returns it.
