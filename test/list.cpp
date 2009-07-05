@@ -109,6 +109,7 @@ void exercise(list x, object y, object print)
 
     print("sorted:");
     x.pop(2); // make sorting predictable
+    x.pop(2); // remove [1,2] so the list is sortable in py3k
     x.sort();
     print(x);
 

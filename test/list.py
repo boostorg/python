@@ -97,9 +97,9 @@ removing 666
 reversing...
 ['y', 'x', X(3), [1, 2], '.', 'o', 'l', 'l', 'e', 'h']
 sorted:
-[[1, 2], '.', 'e', 'h', 'l', 'l', 'o', 'x', 'y']
+['.', 'e', 'h', 'l', 'l', 'o', 'x', 'y']
 reverse sorted:
-['y', 'x', 'o', 'l', 'l', 'h', 'e', '.', [1, 2]]
+['y', 'x', 'o', 'l', 'l', 'h', 'e', '.']
 '''
 
 def run(args = None):
