@@ -84,7 +84,7 @@ object dict_base::get(object_cref k, object_cref d) const
 
 bool dict_base::has_key(object_cref k) const
 {
-    return extract<bool>(this->attr("has_key")(k)); 
+    return extract<bool>(this->contains(k)); 
 }
 
 list dict_base::items() const
