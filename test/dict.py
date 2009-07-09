@@ -20,7 +20,7 @@
 [(1, {'key2': 'value2'}), ('key1', 'value1')]
 >>> print dict_from_sequence([(1,1),(2,2),(3,3)])
 {1: 1, 2: 2, 3: 3}
->>> test_templates(printer)
+>>> test_templates(printer) #doctest: +NORMALIZE_WHITESPACE
 a test string
 13
 None
