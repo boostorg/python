@@ -29,7 +29,7 @@ r'''>>> import pickle2_ext
     >>> wd.__dict__
     {'x': 1}
     >>> try: pstr = pickle.dumps(wd)
-    ... except RuntimeError, err: print err[0]
+    ... except RuntimeError, err: print err
     ...
     Incomplete pickle support (__getstate_manages_dict__ not set)
 '''
