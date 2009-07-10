@@ -53,7 +53,7 @@
 >>> ll.push_back(x)
 >>> x.push_back(7)
 >>> ll.push_back(x)
->>> for a in ll:
+>>> for a in ll: #doctest: +NORMALIZE_WHITESPACE
 ...     for b in a:
 ...         print b,
 ...     print
