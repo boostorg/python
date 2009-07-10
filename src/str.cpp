@@ -115,6 +115,7 @@ long str_base::count(object_cref sub, object_cref start, object_cref end) const
     return extract<long>(this->attr("count")(sub,start,end));
 }
 
+#if PY_VERSION_HEX < 0x03000000
 object str_base::decode() const
 {
     return this->attr("decode")();
@@ -129,6 +130,7 @@ object str_base::decode(object_cref encoding, object_cref errors) const
 {
     return this->attr("decode")(encoding,errors);
 }
+#endif
 
 object str_base::encode() const
 {
