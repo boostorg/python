@@ -197,7 +197,7 @@ kiwi
 >>> tm["kimpo"] = X("bbb")
 >>> print_xmap(tm)
 [ (joel, aaa) (kimpo, bbb) ]
->>> for el in tm:
+>>> for el in tm: #doctest: +NORMALIZE_WHITESPACE
 ...     print el.key(),
 ...     dom = el.data()
 joel kimpo
