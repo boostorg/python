@@ -155,10 +155,27 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          return numeric_cast<T>(
-              PyLong_Check(intermediate)
-              ? PyLong_AsUnsignedLong(intermediate)
-              : PyInt_AS_LONG(intermediate));
+          if (PyLong_Check(intermediate)) {
+              // PyLong_AsUnsignedLong() checks for negative overflow, so no
+              // need to check it here.
+              unsigned long result = PyLong_AsUnsignedLong(intermediate);
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+              return numeric_cast<T>(result);
+          } else {
+              // None of PyInt_AsUnsigned*() functions check for negative
+              // overflow, so use PyInt_AS_LONG instead and check if number is
+              // negative, issuing the exception appropriately.
+              long result = PyInt_AS_LONG(intermediate);
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+              if (result < 0) {
+                  PyErr_SetString(PyExc_OverflowError, "can't convert negative"
+                                  " value to unsigned");
+                  throw_error_already_set();
+              }
+              return numeric_cast<T>(result);
+          }
       }
   };
 

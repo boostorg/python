@@ -4,6 +4,24 @@
 r"""
 >>> from builtin_converters_ext import *
 
+# Use ctypes to get native C type sizes
+>>> from ctypes import sizeof, c_char, c_short, c_int, c_long, c_longlong
+>>> def test_values_signed(t):
+...     base = 2 ** (8 * sizeof(t) - 1)
+...     return [[-base, -1, 1, base - 1], [-base - 1, base]]
+>>> def test_values_unsigned(t):
+...     base = 2 ** (8 * sizeof(t))
+...     return [[1, base - 1], [-1L, -1, base]]
+>>> def should_pass(method, values):
+...     result = map(method, values)
+...     if result != values:
+...         print "Got %s but expected %s" % (result, values)
+>>> def test_overflow(method, values):
+...     for v in values:
+...         try: method(v)
+...         except OverflowError: pass
+...         else: print "OverflowError expected"
+
 # Synthesize idendity functions in case long long not supported
 >>> if not 'rewrap_value_long_long' in dir():
 ...     def rewrap_value_long_long(x): return long(x)
@@ -62,15 +80,37 @@ False
 42L
 
    show that we have range checking. 
- 
->>> try: rewrap_value_unsigned_short(-42)
-... except OverflowError: pass
-... else: print 'expected an OverflowError!'
 
->>> try: rewrap_value_int(sys.maxint * 2)
-... except OverflowError: pass
-... else: print 'expected an OverflowError!'
+>>> should_pass(rewrap_value_signed_char, test_values_signed(c_char)[0])
+>>> should_pass(rewrap_value_short, test_values_signed(c_short)[0])
+>>> should_pass(rewrap_value_int, test_values_signed(c_int)[0])
+>>> should_pass(rewrap_value_long, test_values_signed(c_long)[0])
+>>> should_pass(rewrap_value_long_long, test_values_signed(c_longlong)[0])
 
+>>> should_pass(rewrap_value_unsigned_char, test_values_unsigned(c_char)[0])
+>>> should_pass(rewrap_value_unsigned_short, test_values_unsigned(c_short)[0])
+>>> should_pass(rewrap_value_unsigned_int, test_values_unsigned(c_int)[0])
+>>> should_pass(rewrap_value_unsigned_long, test_values_unsigned(c_long)[0])
+>>> should_pass(rewrap_value_unsigned_long_long,
+...     test_values_unsigned(c_longlong)[0])
+
+>>> test_overflow(rewrap_value_signed_char, test_values_signed(c_char)[1])
+>>> test_overflow(rewrap_value_short, test_values_signed(c_short)[1])
+>>> test_overflow(rewrap_value_int, test_values_signed(c_int)[1])
+>>> test_overflow(rewrap_value_long, test_values_signed(c_long)[1])
+>>> test_overflow(rewrap_value_long_long, test_values_signed(c_longlong)[1])
+
+>>> test_overflow(rewrap_value_unsigned_char, test_values_unsigned(c_char)[1])
+>>> test_overflow(rewrap_value_unsigned_short, test_values_unsigned(c_short)[1])
+>>> test_overflow(rewrap_value_unsigned_int, test_values_unsigned(c_int)[1])
+>>> test_overflow(rewrap_value_unsigned_long, test_values_unsigned(c_long)[1])
+
+# Exceptionally for PyLong_AsUnsignedLongLong(), a negative value raises
+# TypeError on Python versions prior to 2.7
+>>> for v in test_values_unsigned(c_longlong)[1]:
+...     try: rewrap_value_unsigned_long_long(v)
+...     except (OverflowError, TypeError): pass
+...     else: print "OverflowError or TypeError expected"
 
 >>> assert abs(rewrap_value_float(4.2) - 4.2) < .000001
 >>> rewrap_value_double(4.2) - 4.2
