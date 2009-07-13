@@ -4,20 +4,21 @@
 r"""
 >>> from builtin_converters_ext import *
 
-# Use ctypes to get native C type sizes
->>> from ctypes import sizeof, c_char, c_short, c_int, c_long, c_longlong
->>> def test_values_signed(t):
-...     base = 2 ** (8 * sizeof(t) - 1)
+# Provide values for integer converter tests
+>>> def _signed_values(s):
+...     base = 2 ** (8 * s - 1)
 ...     return [[-base, -1, 1, base - 1], [-base - 1, base]]
->>> def test_values_unsigned(t):
-...     base = 2 ** (8 * sizeof(t))
+>>> def _unsigned_values(s):
+...     base = 2 ** (8 * s)
 ...     return [[1, base - 1], [-1L, -1, base]]
+
+# Wrappers to simplify tests
 >>> def should_pass(method, values):
-...     result = map(method, values)
-...     if result != values:
-...         print "Got %s but expected %s" % (result, values)
+...     result = map(method, values[0])
+...     if result != values[0]:
+...         print "Got %s but expected %s" % (result, values[0])
 >>> def test_overflow(method, values):
-...     for v in values:
+...     for v in values[1]:
 ...         try: method(v)
 ...         except OverflowError: pass
 ...         else: print "OverflowError expected"
@@ -28,6 +29,8 @@ r"""
 ...     def rewrap_value_unsigned_long_long(x): return long(x)
 ...     def rewrap_const_reference_long_long(x): return long(x)
 ...     def rewrap_const_reference_unsigned_long_long(x): return long(x)
+>>> if not 'long_long_size' in dir():
+...     def long_long_size(): return long_size()
 
 >>> try: bool_exists = bool
 ... except: pass
@@ -81,33 +84,33 @@ False
 
    show that we have range checking. 
 
->>> should_pass(rewrap_value_signed_char, test_values_signed(c_char)[0])
->>> should_pass(rewrap_value_short, test_values_signed(c_short)[0])
->>> should_pass(rewrap_value_int, test_values_signed(c_int)[0])
->>> should_pass(rewrap_value_long, test_values_signed(c_long)[0])
->>> should_pass(rewrap_value_long_long, test_values_signed(c_longlong)[0])
+>>> should_pass(rewrap_value_signed_char, _signed_values(char_size()))
+>>> should_pass(rewrap_value_short, _signed_values(short_size()))
+>>> should_pass(rewrap_value_int, _signed_values(int_size()))
+>>> should_pass(rewrap_value_long, _signed_values(long_size()))
+>>> should_pass(rewrap_value_long_long, _signed_values(long_long_size()))
 
->>> should_pass(rewrap_value_unsigned_char, test_values_unsigned(c_char)[0])
->>> should_pass(rewrap_value_unsigned_short, test_values_unsigned(c_short)[0])
->>> should_pass(rewrap_value_unsigned_int, test_values_unsigned(c_int)[0])
->>> should_pass(rewrap_value_unsigned_long, test_values_unsigned(c_long)[0])
+>>> should_pass(rewrap_value_unsigned_char, _unsigned_values(char_size()))
+>>> should_pass(rewrap_value_unsigned_short, _unsigned_values(short_size()))
+>>> should_pass(rewrap_value_unsigned_int, _unsigned_values(int_size()))
+>>> should_pass(rewrap_value_unsigned_long, _unsigned_values(long_size()))
 >>> should_pass(rewrap_value_unsigned_long_long,
-...     test_values_unsigned(c_longlong)[0])
+...     _unsigned_values(long_long_size()))
 
->>> test_overflow(rewrap_value_signed_char, test_values_signed(c_char)[1])
->>> test_overflow(rewrap_value_short, test_values_signed(c_short)[1])
->>> test_overflow(rewrap_value_int, test_values_signed(c_int)[1])
->>> test_overflow(rewrap_value_long, test_values_signed(c_long)[1])
->>> test_overflow(rewrap_value_long_long, test_values_signed(c_longlong)[1])
+>>> test_overflow(rewrap_value_signed_char, _signed_values(char_size()))
+>>> test_overflow(rewrap_value_short, _signed_values(short_size()))
+>>> test_overflow(rewrap_value_int, _signed_values(int_size()))
+>>> test_overflow(rewrap_value_long, _signed_values(long_size()))
+>>> test_overflow(rewrap_value_long_long, _signed_values(long_long_size()))
 
->>> test_overflow(rewrap_value_unsigned_char, test_values_unsigned(c_char)[1])
->>> test_overflow(rewrap_value_unsigned_short, test_values_unsigned(c_short)[1])
->>> test_overflow(rewrap_value_unsigned_int, test_values_unsigned(c_int)[1])
->>> test_overflow(rewrap_value_unsigned_long, test_values_unsigned(c_long)[1])
+>>> test_overflow(rewrap_value_unsigned_char, _unsigned_values(char_size()))
+>>> test_overflow(rewrap_value_unsigned_short, _unsigned_values(short_size()))
+>>> test_overflow(rewrap_value_unsigned_int, _unsigned_values(int_size()))
+>>> test_overflow(rewrap_value_unsigned_long, _unsigned_values(long_size()))
 
 # Exceptionally for PyLong_AsUnsignedLongLong(), a negative value raises
 # TypeError on Python versions prior to 2.7
->>> for v in test_values_unsigned(c_longlong)[1]:
+>>> for v in _unsigned_values(long_long_size())[1]:
 ...     try: rewrap_value_unsigned_long_long(v)
 ...     except (OverflowError, TypeError): pass
 ...     else: print "OverflowError or TypeError expected"

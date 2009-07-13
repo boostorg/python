@@ -17,6 +17,10 @@ struct by_value
     {
         return x;
     }
+    static int size(void)
+    {
+        return sizeof(T);
+    }
 };
 
 template <class T>
@@ -61,7 +65,17 @@ BOOST_PYTHON_MODULE(builtin_converters_ext)
 {    
     def("get_type", get_type);
     def("return_null_handle", return_null_handle);
-        
+
+// These methods are used solely for getting some C++ type sizes
+    def("bool_size", by_value<bool>::size);
+    def("char_size", by_value<char>::size);
+    def("int_size", by_value<int>::size);
+    def("short_size", by_value<short>::size);
+    def("long_size", by_value<long>::size);
+#ifdef HAVE_LONG_LONG
+    def("long_long_size", by_value<BOOST_PYTHON_LONG_LONG>::size);
+#endif
+
     def("rewrap_value_bool", by_value<bool>::rewrap);
     def("rewrap_value_char", by_value<char>::rewrap);
     def("rewrap_value_signed_char", by_value<signed char>::rewrap);
