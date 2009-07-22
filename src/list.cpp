@@ -132,10 +132,18 @@ void list_base::sort()
     }
 }
 
+#if PY_VERSION_HEX >= 0x03000000
+void list_base::sort(args_proxy const &args, 
+                     kwds_proxy const &kwds)
+{
+    this->attr("sort")(args, kwds);
+}
+#else
 void list_base::sort(object_cref cmpfunc)
 {
     this->attr("sort")(cmpfunc);
 }
+#endif
 
 // For some reason, moving this to the end of the TU suppresses an ICE
 // with vc6.

@@ -73,7 +73,7 @@ X(22)
 ...
 
 >>> y = X(42)
->>> exercise(letters, y, printer)
+>>> exercise(letters, y, printer) #doctest: +NORMALIZE_WHITESPACE
 after append:
 ['h', 'e', 'l', 'l', 'o', '.', [1, 2], X(42), 5, X(3)]
 number of X(42) instances: 1

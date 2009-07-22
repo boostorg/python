@@ -7,6 +7,8 @@
 #include <boost/python/def.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/list.hpp>
+#include <boost/python/tuple.hpp>
+#include <boost/python/dict.hpp>
 #include <boost/python/make_function.hpp>
 #include <boost/lexical_cast.hpp>
 #define BOOST_ENABLE_ASSERT_HANDLER
@@ -114,7 +116,11 @@ void exercise(list x, object y, object print)
     print(x);
 
     print("reverse sorted:");
+#if PY_VERSION_HEX >= 0x03000000
+    x.sort(*tuple(), **dict(make_tuple(make_tuple("reverse", true))));
+#else
     x.sort(&notcmp);
+#endif
     print(x);
 
     list w;
