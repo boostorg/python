@@ -1,3 +1,9 @@
+#
+# Copyright Troy D. Straszheim
+#
+# Distributed under the Boost Software License, Version 1.0.
+# See http://www.boost.org/LICENSE_1_0.txt
+#
 if (PYTHON_DEBUG_LIBRARIES AND BUILD_BOOST_PYTHON)
   # We have detected that there might be Python debug libraries
   # available, but check for ourselves whether this is true by trying
