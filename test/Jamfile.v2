@@ -82,7 +82,7 @@ bpl-test crossmod_exception
 
 [ bpl-test wrapper_held_type ]
 [ bpl-test polymorphism2_auto_ptr 
-  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp 
+  : polymorphism2_auto_ptr.py enum.py polymorphism2.py polymorphism2_auto_ptr.cpp 
 ]
 
 [ bpl-test auto_ptr ]
