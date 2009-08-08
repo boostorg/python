@@ -15,9 +15,6 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 
 }}}
 
-// TODO(bhy) Take care of this later.
-// But any reseaon we don't use BOOST_PYTHON_DECL here?
-
 #  if PY_VERSION_HEX >= 0x03000000
 
 #   define _BOOST_PYTHON_MODULE_INIT(name)              \

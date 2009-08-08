@@ -124,8 +124,6 @@ BOOST_PYTHON_TO_INT(long)
 
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
-// XXX(bhy) It was PyInt_Type instead of PyLong_Type here.
-// But why PyInt_Type? PyLong_From* converter is used here!
 # ifdef HAVE_LONG_LONG 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed BOOST_PYTHON_LONG_LONG, ::PyLong_FromLongLong(x), &PyLong_Type)
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUnsignedLongLong(x), &PyLong_Type)
@@ -144,7 +142,6 @@ BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data
 #endif
 
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
-// XXX(bhy) Here, similar to the above, PyString_Type -> PyUnicode_Type
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),implicit_cast<ssize_t>(x.size())), &PyUnicode_Type)
 # endif 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, ::PyFloat_FromDouble(x), &PyFloat_Type)

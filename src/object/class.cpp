@@ -355,7 +355,6 @@ namespace objects
           PyObject* d = type_->tp_dict;
           PyObject* instance_size_obj = PyObject_GetAttrString(d, const_cast<char*>("__instance_size__"));
 
-          // TODO(bhy) ssize_t for Python 2.x
           Py_ssize_t instance_size = instance_size_obj ? 
 #if PY_VERSION_HEX >= 0x03000000
               PyLong_AsSsize_t(instance_size_obj) : 0;
