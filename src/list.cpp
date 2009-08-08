@@ -48,9 +48,6 @@ void list_base::extend(object_cref sequence)
 long list_base::index(object_cref value) const
 {
     object result_obj(this->attr("index")(value));
-    // TODO(bhy) In Python 2.5, PyInt_AsSsize_t did the same thing as PyLong_AsSsize_t,
-    // i.e., it can accepts both int and long. So we may have a better way to do this,
-    // so we can support ssize_t with Python 2.x.
 #if PY_VERSION_HEX >= 0x03000000
     ssize_t result = PyLong_AsSsize_t(result_obj.ptr());
 #else
