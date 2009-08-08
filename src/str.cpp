@@ -148,7 +148,6 @@ object str_base::encode(object_cref encoding, object_cref errors) const
 }
 
 
-// XXX(bhy) Why not use extract<long> instead of Python C-API?
 #if PY_VERSION_HEX >= 0x03000000
     #define _BOOST_PYTHON_ASLONG PyLong_AsLong
 #else
