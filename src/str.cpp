@@ -10,7 +10,7 @@ namespace boost { namespace python { namespace detail {
 detail::new_reference str_base::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
-        (PyObject*)&PyString_Type, "(O)", 
+        (PyObject*)&PyString_Type, const_cast<char*>("(O)"), 
         arg_.ptr());
 } 
 
@@ -26,7 +26,7 @@ namespace {
 
     ssize_t str_size_as_py_ssize_t(std::size_t n)
     {
-      if (n > ssize_t_max)
+      if (n > static_cast<std::size_t>(ssize_t_max))
       {
           throw std::range_error("str size > ssize_t_max");
       }
@@ -68,8 +68,9 @@ str str_base:: name ( BOOST_PP_ENUM_PARAMS(arity, object_cref x) ) const        
     return str(new_reference(                                                   \
        expect_non_null(                                                         \
            PyObject_CallMethod(                                                 \
-               this->ptr(), #name,                                              \
-              "(" BOOST_PP_REPEAT(arity, BOOST_PYTHON_FORMAT_OBJECT, _) ")"     \
+               this->ptr(), const_cast<char*>( #name ),                         \
+               const_cast<char*>(                                               \
+                 "(" BOOST_PP_REPEAT(arity, BOOST_PYTHON_FORMAT_OBJECT, _) ")") \
                BOOST_PP_REPEAT_1(arity, BOOST_PYTHON_OBJECT_PTR, _)))));        \
 }
 

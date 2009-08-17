@@ -99,8 +99,13 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          return (PyInt_Check(obj) || PyLong_Check(obj))
-              ? &number_methods->nb_int : 0;
+          return (
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          !PyBool_Check(obj) &&
+#endif
+          (PyInt_Check(obj) || PyLong_Check(obj)))
+
+        ? &number_methods->nb_int : 0;
       }
       static PyTypeObject const* get_pytype() { return &PyInt_Type;}
   };
@@ -135,7 +140,11 @@ namespace
           if (number_methods == 0)
               return 0;
 
-          return (PyInt_Check(obj) || PyLong_Check(obj))
+          return (
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          !PyBool_Check(obj) &&
+#endif
+          (PyInt_Check(obj) || PyLong_Check(obj)))
               ? &py_object_identity : 0;
       }
       static PyTypeObject const* get_pytype() { return &PyInt_Type;}
@@ -146,10 +155,27 @@ namespace
   {
       static T extract(PyObject* intermediate)
       {
-          return numeric_cast<T>(
-              PyLong_Check(intermediate)
-              ? PyLong_AsUnsignedLong(intermediate)
-              : PyInt_AS_LONG(intermediate));
+          if (PyLong_Check(intermediate)) {
+              // PyLong_AsUnsignedLong() checks for negative overflow, so no
+              // need to check it here.
+              unsigned long result = PyLong_AsUnsignedLong(intermediate);
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+              return numeric_cast<T>(result);
+          } else {
+              // None of PyInt_AsUnsigned*() functions check for negative
+              // overflow, so use PyInt_AS_LONG instead and check if number is
+              // negative, issuing the exception appropriately.
+              long result = PyInt_AS_LONG(intermediate);
+              if (PyErr_Occurred())
+                  throw_error_already_set();
+              if (result < 0) {
+                  PyErr_SetString(PyExc_OverflowError, "can't convert negative"
+                                  " value to unsigned");
+                  throw_error_already_set();
+              }
+              return numeric_cast<T>(result);
+          }
       }
   };
 
@@ -226,7 +252,11 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
+#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+          return obj == Py_None || PyBool_Check(obj) ? &py_object_identity : 0;
+#else
           return obj == Py_None || PyInt_Check(obj) ? &py_object_identity : 0;
+#endif
       }
       
       static bool extract(PyObject* intermediate)

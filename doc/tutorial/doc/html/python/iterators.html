@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -64,8 +64,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">__iter__</span><span class="special">()</span>         <span class="comment"># get iterator
+<pre class="programlisting"><span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">__iter__</span><span class="special">()</span>         <span class="comment"># get iterator
 </span><span class="keyword">try</span><span class="special">:</span>
     <span class="keyword">while</span> <span class="number">1</span><span class="special">:</span>
     <span class="identifier">y</span> <span class="special">=</span> <span class="identifier">iter</span><span class="special">.</span><span class="identifier">next</span><span class="special">()</span>         <span class="comment"># get each item
@@ -79,16 +78,14 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="identifier">object</span> <span class="identifier">get_iterator</span> <span class="special">=</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;();</span>
+<pre class="programlisting"><span class="identifier">object</span> <span class="identifier">get_iterator</span> <span class="special">=</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;();</span>
 <span class="identifier">object</span> <span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">get_iterator</span><span class="special">(</span><span class="identifier">v</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">first</span> <span class="special">=</span> <span class="identifier">iter</span><span class="special">.</span><span class="identifier">next</span><span class="special">();</span>
 </pre>
 <p>
       Or for use in class_&lt;&gt;:
     </p>
-<pre class="programlisting">
-<span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"__iter__"</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
+<pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"__iter__"</span><span class="special">,</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
 </pre>
 <p>
       <span class="bold"><b>range</b></span>
@@ -134,8 +131,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="identifier">f</span> <span class="special">=</span> <span class="identifier">Field</span><span class="special">()</span>
+<pre class="programlisting"><span class="identifier">f</span> <span class="special">=</span> <span class="identifier">Field</span><span class="special">()</span>
 <span class="keyword">for</span> <span class="identifier">x</span> <span class="keyword">in</span> <span class="identifier">f</span><span class="special">.</span><span class="identifier">pions</span><span class="special">:</span>
     <span class="identifier">smash</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span>
 <span class="keyword">for</span> <span class="identifier">y</span> <span class="keyword">in</span> <span class="identifier">f</span><span class="special">.</span><span class="identifier">bogons</span><span class="special">:</span>
@@ -146,8 +142,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">F</span><span class="special">&gt;(</span><span class="string">"Field"</span><span class="special">)</span>
+<pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">F</span><span class="special">&gt;(</span><span class="string">"Field"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">property</span><span class="special">(</span><span class="string">"pions"</span><span class="special">,</span> <span class="identifier">range</span><span class="special">(&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">p_begin</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">p_end</span><span class="special">))</span>
     <span class="special">.</span><span class="identifier">property</span><span class="special">(</span><span class="string">"bogons"</span><span class="special">,</span> <span class="identifier">range</span><span class="special">(&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">b_begin</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">b_end</span><span class="special">));</span>
 </pre>
@@ -163,8 +158,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">void</span> <span class="identifier">list_assign</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;&amp;</span> <span class="identifier">l</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">o</span><span class="special">)</span> <span class="special">{</span>
     <span class="comment">// Turn a Python sequence into an STL input range
 </span>    <span class="identifier">stl_input_iterator</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">begin</span><span class="special">(</span><span class="identifier">o</span><span class="special">),</span> <span class="identifier">end</span><span class="special">;</span>
@@ -183,8 +177,7 @@
     </p>
 <p>
     </p>
-<pre class="programlisting">
-<span class="identifier">x</span> <span class="special">=</span> <span class="identifier">list_int</span><span class="special">();</span>
+<pre class="programlisting"><span class="identifier">x</span> <span class="special">=</span> <span class="identifier">list_int</span><span class="special">();</span>
 <span class="identifier">x</span><span class="special">.</span><span class="identifier">assign</span><span class="special">([</span><span class="number">1</span><span class="special">,</span><span class="number">2</span><span class="special">,</span><span class="number">3</span><span class="special">,</span><span class="number">4</span><span class="special">,</span><span class="number">5</span><span class="special">])</span>
 </pre>
 </div>

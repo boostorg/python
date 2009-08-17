@@ -29,7 +29,7 @@ namespace
 detail::new_reference dict_base::call(object const& arg_)
 {
     return (detail::new_reference)PyObject_CallFunction(
-        (PyObject*)&PyDict_Type, "(O)", 
+        (PyObject*)&PyDict_Type, const_cast<char*>("(O)"), 
         arg_.ptr());
 }
 

@@ -12,7 +12,7 @@
 #endif 
 using namespace boost::python;
 
-enum color { red = 1, green = 2, blue = 4 };
+enum color { red = 1, green = 2, blue = 4, blood = 1 };
 
 #if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
 namespace boost  // Pro7 has a hard time detecting enums
@@ -34,6 +34,7 @@ BOOST_PYTHON_MODULE(enum_ext)
         .value("red", red)
         .value("green", green)
         .value("blue", blue)
+        .value("blood", blood)
         .export_values()
         ;
     

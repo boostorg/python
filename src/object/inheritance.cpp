@@ -10,7 +10,7 @@
 #endif 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/reverse_graph.hpp>
-#include <boost/property_map.hpp>
+#include <boost/property_map/property_map.hpp>
 #include <boost/bind.hpp>
 #include <boost/integer_traits.hpp>
 #include <boost/tuple/tuple.hpp>

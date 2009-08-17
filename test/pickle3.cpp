@@ -35,8 +35,8 @@ namespace boost_python_test {
   class world
   {
     public:
-      world(const std::string& country) : secret_number(0) {
-        this->country = country;
+      world(const std::string& _country) : secret_number(0) {
+        this->country = _country;
       }
       std::string greet() const { return "Hello from " + country + "!"; }
       std::string get_country() const { return country; }

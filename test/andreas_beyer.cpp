@@ -25,8 +25,8 @@ class B {
     B() {
        a = A::A_ptr(new A());
     }
-    void set(A::A_ptr a) {
-      this->a = a;
+    void set(A::A_ptr _a) {
+      this->a = _a;
     }
     A::A_ptr get() {
        return a;

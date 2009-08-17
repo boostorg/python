@@ -166,7 +166,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                     else
                     {
                         // build a new arg tuple, will adjust its size later
-                        assert(max_arity <= ssize_t_max);
+                        assert(max_arity <= static_cast<std::size_t>(ssize_t_max));
                         inner_args = handle<>(
                             PyTuple_New(static_cast<ssize_t>(max_arity)));
 
@@ -297,7 +297,7 @@ object function::signatures(bool show_return_type) const
 void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 {
     static handle<> exception(
-        PyErr_NewException("Boost.Python.ArgumentError", PyExc_TypeError, 0));
+        PyErr_NewException(const_cast<char*>("Boost.Python.ArgumentError"), PyExc_TypeError, 0));
 
     object message = "Python argument types in\n    %s.%s("
         % make_tuple(this->m_namespace, this->m_name);
@@ -440,7 +440,7 @@ void function::add_to_namespace(
         else if (PyType_Check(ns))
             dict = ((PyTypeObject*)ns)->tp_dict;
         else    
-            dict = PyObject_GetAttrString(ns, "__dict__");
+            dict = PyObject_GetAttrString(ns, const_cast<char*>("__dict__"));
 
         if (dict == 0)
             throw_error_already_set();
@@ -487,7 +487,7 @@ void function::add_to_namespace(
             new_func->m_name = name;
 
         handle<> name_space_name(
-            allow_null(::PyObject_GetAttrString(name_space.ptr(), "__name__")));
+            allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>("__name__"))));
         
         if (name_space_name)
             new_func->m_namespace = object(name_space_name);
@@ -656,18 +656,18 @@ extern "C"
 }
 
 static PyGetSetDef function_getsetlist[] = {
-    {"__name__", (getter)function_get_name, 0, 0, 0 },
-    {"func_name", (getter)function_get_name, 0, 0, 0 },
-    {"__class__", (getter)function_get_class, 0, 0, 0 },    // see note above
-    {"__doc__", (getter)function_get_doc, (setter)function_set_doc, 0, 0},
-    {"func_doc", (getter)function_get_doc, (setter)function_set_doc, 0, 0},
+    {const_cast<char*>("__name__"), (getter)function_get_name, 0, 0, 0 },
+    {const_cast<char*>("func_name"), (getter)function_get_name, 0, 0, 0 },
+    {const_cast<char*>("__class__"), (getter)function_get_class, 0, 0, 0 },    // see note above
+    {const_cast<char*>("__doc__"), (getter)function_get_doc, (setter)function_set_doc, 0, 0},
+    {const_cast<char*>("func_doc"), (getter)function_get_doc, (setter)function_set_doc, 0, 0},
     {NULL, 0, 0, 0, 0} /* Sentinel */
 };
 
 PyTypeObject function_type = {
     PyObject_HEAD_INIT(0)
     0,
-    "Boost.Python.function",
+    const_cast<char*>("Boost.Python.function"),
     sizeof(function),
     0,
     (destructor)function_dealloc,               /* tp_dealloc */
@@ -753,7 +753,8 @@ namespace detail
   }
   void BOOST_PYTHON_DECL pure_virtual_called()
   {
-      PyErr_SetString(PyExc_RuntimeError, "Pure virtual function called");
+      PyErr_SetString(
+          PyExc_RuntimeError, const_cast<char*>("Pure virtual function called"));
       throw_error_already_set();
   }
 }

@@ -47,7 +47,10 @@ template <int nargs> struct make_holder;
 
 # endif // MAKE_HOLDER_DWA20011215_HPP
 
-#elif BOOST_PP_ITERATION_DEPTH() == 1
+// For gcc 4.4 compatability, we must include the
+// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
+#else // BOOST_PP_IS_ITERATING
+#if BOOST_PP_ITERATION_DEPTH() == 1
 # if !(BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
         && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
 #  line BOOST_PP_LINE(__LINE__, make_holder.hpp)
@@ -102,4 +105,5 @@ struct make_holder<N>
 
 # undef N
 
+#endif // BOOST_PP_ITERATION_DEPTH()
 #endif

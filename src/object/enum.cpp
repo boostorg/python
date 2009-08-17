@@ -14,7 +14,7 @@
 #include <boost/python/object_protocol.hpp>
 #include <structmember.h>
 
-namespace boost { namespace python { namespace objects { 
+namespace boost { namespace python { namespace objects {
 
 struct enum_object
 {
@@ -23,7 +23,7 @@ struct enum_object
 };
 
 static PyMemberDef enum_members[] = {
-    {"name", T_OBJECT_EX, offsetof(enum_object,name),READONLY, 0},
+    {const_cast<char*>("name"), T_OBJECT_EX, offsetof(enum_object,name),READONLY, 0},
     {0, 0, 0, 0, 0}
 };
 
@@ -32,7 +32,7 @@ extern "C"
 {
     static PyObject* enum_repr(PyObject* self_)
     {
-        const char *mod = PyString_AsString(PyObject_GetAttrString( self_, "__module__"));
+        const char *mod = PyString_AsString(PyObject_GetAttrString( self_, const_cast<char*>("__module__")));
         enum_object* self = downcast<enum_object>(self_);
         if (!self->name)
         {
@@ -43,7 +43,7 @@ extern "C"
             char* name = PyString_AsString(self->name);
             if (name == 0)
                 return 0;
-            
+
             return PyString_FromFormat("%s.%s.%s", mod, self_->ob_type->tp_name, name);
         }
     }
@@ -65,7 +65,7 @@ extern "C"
 static PyTypeObject enum_type_object = {
     PyObject_HEAD_INIT(0) // &PyType_Type
     0,
-    "Boost.Python.enum",
+    const_cast<char*>("Boost.Python.enum"),
     sizeof(enum_object),                    /* tp_basicsize */
     0,                                      /* tp_itemsize */
     0,                                      /* tp_dealloc */
@@ -139,15 +139,16 @@ namespace
       dict d;
       d["__slots__"] = tuple();
       d["values"] = dict();
+      d["names"] = dict();
 
       object module_name = module_prefix();
       if (module_name)
          d["__module__"] = module_name;
       if (doc)
          d["__doc__"] = doc;
-      
+
       object result = (object(metatype))(name, make_tuple(base), d);
-      
+
       scope().attr(name) = result;
 
       return result;
@@ -167,7 +168,7 @@ enum_base::enum_base(
     converter::registration& converters
         = const_cast<converter::registration&>(
             converter::registry::lookup(id));
-            
+
     converters.m_class_object = downcast<PyTypeObject>(this->ptr());
     converter::registry::insert(to_python, id);
     converter::registry::insert(convertible, construct, id);
@@ -186,23 +187,24 @@ void enum_base::add_value(char const* name_, long value)
 
     dict d = extract<dict>(this->attr("values"))();
     d[value] = x;
-    
+
     // Set the name field in the new enum instanec
     enum_object* p = downcast<enum_object>(x.ptr());
     Py_XDECREF(p->name);
     p->name = incref(name.ptr());
+
+    dict names_dict = extract<dict>(this->attr("names"))();
+    names_dict[x.attr("name")] = x;
 }
 
 void enum_base::export_values()
 {
-    dict d = extract<dict>(this->attr("values"))();
-    list values = d.values();
+    dict d = extract<dict>(this->attr("names"))();
+    list items = d.items();
     scope current;
-    
-    for (unsigned i = 0, max = len(values); i < max; ++i)
-    {
-        api::setattr(current, object(values[i].attr("name")), values[i]);
-    }
+
+    for (unsigned i = 0, max = len(items); i < max; ++i)
+        api::setattr(current, items[i][0], items[i][1]);
  }
 
 PyObject* enum_base::to_python(PyTypeObject* type_, long x)

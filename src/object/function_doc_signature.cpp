@@ -52,9 +52,9 @@ namespace boost { namespace python { namespace objects {
             //check if the argument default values are the same
             bool f1_has_names = bool(f1->m_arg_names);
             bool f2_has_names = bool(f2->m_arg_names);
-            if ( f1_has_names && f2_has_names && f2->m_arg_names[i-1]!=f1->m_arg_names[i-1]
-                || f1_has_names && !f2_has_names
-                || !f1_has_names && f2_has_names && f2->m_arg_names[i-1]!=python::object()
+            if ( (f1_has_names && f2_has_names && f2->m_arg_names[i-1]!=f1->m_arg_names[i-1])
+                 || (f1_has_names && !f2_has_names)
+                 || (!f1_has_names && f2_has_names && f2->m_arg_names[i-1]!=python::object())
                 )
                 return false;
         }

@@ -4,8 +4,8 @@
 '''
 >>> from enum_ext import *
 
->>> identity(color.red)
-enum_ext.color.red
+>>> identity(color.red) # in case of duplicated enums it always take the last enum
+enum_ext.color.blood
 
 >>> identity(color.green)
 enum_ext.color.green
@@ -13,8 +13,8 @@ enum_ext.color.green
 >>> identity(color.blue)
 enum_ext.color.blue
 
->>> identity(color(1))
-enum_ext.color.red
+>>> identity(color(1)) # in case of duplicated enums it always take the last enum
+enum_ext.color.blood
 
 >>> identity(color(2))
 enum_ext.color.green
@@ -28,7 +28,7 @@ enum_ext.color.blue
   --- check export to scope ---
 
 >>> identity(red)
-enum_ext.color.red
+enum_ext.color.blood
 
 >>> identity(green)
 enum_ext.color.green
@@ -42,10 +42,18 @@ enum_ext.color.blue
 
 >>> c = colorized()
 >>> c.x
-enum_ext.color.red
+enum_ext.color.blood
 >>> c.x = green
 >>> c.x
 enum_ext.color.green
+>>> red == blood
+True
+>>> red == green
+False
+>>> hash(red) == hash(blood)
+True
+>>> hash(red) == hash(green)
+False
 '''
 
 # pickling of enums only works with Python 2.3 or higher

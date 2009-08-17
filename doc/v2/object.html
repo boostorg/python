@@ -655,6 +655,11 @@ namespace boost { namespace python { namespace api
       template &lt;class A0, class A1,...class An&gt;
       object operator()(A0 const&amp;, A1 const&amp;,...An const&amp;) const;
 
+      detail::args_proxy operator* () const; 
+      object operator()(detail::args_proxy const &amp;args) const; 
+      object operator()(detail::args_proxy const &amp;args, 
+                        detail::kwds_proxy const &amp;kwds) const; 
+
       // truth value testing
       //
       typedef unspecified bool_type;
@@ -704,6 +709,25 @@ object operator()(A0 const&amp; a1, A1 const&amp; a2,...An const&amp; aN) const;
       call&lt;object&gt;(object(*static_cast&lt;U*&gt;(this)).ptr(), a1,
       a2,...aN)</dt>
     </dl>
+
+<pre>
+object operator()(detail::args_proxy const &amp;args) const; 
+</pre>
+<dl class="function-semantics">
+  <dt><b>Effects:</b>
+  call object with arguments given by the tuple <varname>args</varname></dt>
+</dl>
+<pre>
+object operator()(detail::args_proxy const &amp;args, 
+                  detail::kwds_proxy const &amp;kwds) const; 
+</pre>
+<dl class="function-semantics">
+  <dt><b>Effects:</b>
+  call object with arguments given by the tuple <varname>args</varname>, and named
+  arguments given by the dictionary <varname>kwds</varname></dt>
+</dl>
+
+
 <pre>
 operator bool_type() const;
 </pre>
