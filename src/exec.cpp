@@ -17,14 +17,15 @@ namespace python
 object BOOST_PYTHON_DECL eval(str string, object global, object local)
 {
   // Set suitable default values for global and local dicts.
-  if (!global)
+  object none;
+  if (global.ptr() == none.ptr())
   {
     if (PyObject *g = PyEval_GetGlobals())
       global = object(detail::borrowed_reference(g));
     else
       global = dict();
   }
-  if (!local) local = global;
+  if (local.ptr() == none.ptr()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *s = python::extract<char *>(string);
   PyObject* result = PyRun_String(s, Py_eval_input, global.ptr(), local.ptr());
@@ -35,14 +36,15 @@ object BOOST_PYTHON_DECL eval(str string, object global, object local)
 object BOOST_PYTHON_DECL exec(str string, object global, object local)
 {
   // Set suitable default values for global and local dicts.
-  if (!global)
+  object none;
+  if (global.ptr() == none.ptr())
   {
     if (PyObject *g = PyEval_GetGlobals())
       global = object(detail::borrowed_reference(g));
     else
       global = dict();
   }
-  if (!local) local = global;
+  if (local.ptr() == none.ptr()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *s = python::extract<char *>(string);
   PyObject* result = PyRun_String(s, Py_file_input, global.ptr(), local.ptr());
@@ -53,14 +55,15 @@ object BOOST_PYTHON_DECL exec(str string, object global, object local)
 object BOOST_PYTHON_DECL exec_statement(str string, object global, object local)
 {
   // Set suitable default values for global and local dicts.
-  if (!global)
+  object none;
+  if (global.ptr() == none.ptr())
   {
     if (PyObject *g = PyEval_GetGlobals())
       global = object(detail::borrowed_reference(g));
     else
       global = dict();
   }
-  if (!local) local = global;
+  if (local.ptr() == none.ptr()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *s = python::extract<char *>(string);
   PyObject* result = PyRun_String(s, Py_single_input, global.ptr(), local.ptr());
@@ -74,14 +77,15 @@ object BOOST_PYTHON_DECL exec_statement(str string, object global, object local)
 object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
 {
   // Set suitable default values for global and local dicts.
-  if (!global)
+  object none;
+  if (global.ptr() == none.ptr())
   {
     if (PyObject *g = PyEval_GetGlobals())
       global = object(detail::borrowed_reference(g));
     else
       global = dict();
   }
-  if (!local) local = global;
+  if (local.ptr() == none.ptr()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *f = python::extract<char *>(filename);
   // Let python open the file to avoid potential binary incompatibilities.
