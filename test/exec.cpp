@@ -108,6 +108,25 @@ void exec_test_error()
   python::object result = python::exec("print unknown \n", global, global);
 }
 
+void check_pyerr(bool pyerr_expected=false)
+{
+  if (PyErr_Occurred())
+  {
+    if (!pyerr_expected) {
+      BOOST_ERROR("Python Error detected");
+      PyErr_Print();
+    }
+    else {
+      PyErr_Clear();
+    }
+  }
+  else
+  {
+    BOOST_ERROR("A C++ exception was thrown  for which "
+                "there was no exception handler registered.");
+  }
+}
+
 int main(int argc, char **argv)
 {
   BOOST_TEST(argc == 2);
@@ -115,37 +134,23 @@ int main(int argc, char **argv)
   // Initialize the interpreter
   Py_Initialize();
 
-  if (python::handle_exception(eval_test) ||
-      python::handle_exception(exec_test) ||
-      python::handle_exception(boost::bind(exec_file_test, script)))
-  {
-    if (PyErr_Occurred())
-    {
-      BOOST_ERROR("Python Error detected");
-      PyErr_Print();
-    }
-    else
-    {
-        BOOST_ERROR("A C++ exception was thrown  for which "
-                    "there was no exception handler registered.");
-    }
+  if (python::handle_exception(eval_test)) {
+    check_pyerr();
+  }
+  else if(python::handle_exception(exec_test)) {
+    check_pyerr();
+  }
+  else if (python::handle_exception(boost::bind(exec_file_test, script))) {
+    check_pyerr();
   }
   
   if (python::handle_exception(exec_test_error))
   {
-    if (PyErr_Occurred())
-    {
-      PyErr_Print();
-    }
-    else
-    {
-        BOOST_ERROR("A C++ exception was thrown  for which "
-                    "there was no exception handler registered.");
-    }
+    check_pyerr(/*pyerr_expected*/ true);
   }
   else
   {
-      BOOST_ERROR("Python exception expected, but not seen.");
+    BOOST_ERROR("Python exception expected, but not seen.");
   }
   
   // Boost.Python doesn't support Py_Finalize yet.
