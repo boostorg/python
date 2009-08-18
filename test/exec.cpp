@@ -108,6 +108,21 @@ void exec_test_error()
   python::object result = python::exec("print unknown \n", global, global);
 }
 
+void exercise_embedding_html()
+{
+    using namespace boost::python;
+    /* code from: libs/python/doc/tutorial/doc/tutorial.qbk
+       (generates libs/python/doc/tutorial/doc/html/python/embedding.html)
+     */
+    object main_module = import("__main__");
+    object main_namespace = main_module.attr("__dict__");
+
+    object ignored = exec("hello = file('hello.txt', 'w')\n"
+                          "hello.write('Hello world!')\n"
+                          "hello.close()",
+                          main_namespace);
+}
+
 void check_pyerr(bool pyerr_expected=false)
 {
   if (PyErr_Occurred())
@@ -129,7 +144,7 @@ void check_pyerr(bool pyerr_expected=false)
 
 int main(int argc, char **argv)
 {
-  BOOST_TEST(argc == 2);
+  BOOST_TEST(argc == 2 || argc == 3);
   std::string script = argv[1];
   // Initialize the interpreter
   Py_Initialize();
@@ -152,7 +167,14 @@ int main(int argc, char **argv)
   {
     BOOST_ERROR("Python exception expected, but not seen.");
   }
-  
+
+  if (argc > 2) {
+    // The main purpose is to test compilation. Since this test generates
+    // a file and I (rwgk) am uncertain about the side-effects, run it only
+    // if explicitly requested.
+    exercise_embedding_html();
+  }
+
   // Boost.Python doesn't support Py_Finalize yet.
   // Py_Finalize();
   return boost::report_errors();
