@@ -65,6 +65,20 @@ test-suite python
 #       : # target-name
 #   ]
 
+[ run error_already_set.cpp /boost/python//boost_python/<link>static $(PY) 
+  : # no args
+  : # no input files
+  : # no requirements
+  : # target-name
+]
+
+[ run error_already_set.cpp ../build//boost_python/<link>shared /python//python 
+  : # no args
+  : # no input files
+  : # no requirements
+  : exec-dynamic # target-name
+]
+
 [
 bpl-test crossmod_exception
   : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
@@ -77,11 +91,14 @@ bpl-test crossmod_exception
 [ bpl-test shared_ptr ]
 [ bpl-test enable_shared_from_this ]
 [ bpl-test andreas_beyer ]
+[ bpl-test wrapper_held_type ]
+
+[ bpl-test polymorphism2_auto_ptr 
+  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp 
+]
+
 [ bpl-test polymorphism ]
 [ bpl-test polymorphism2 ]
-
-[ bpl-test wrapper_held_type ]
-[ bpl-test polymorphism2_auto_ptr ]
 
 [ bpl-test auto_ptr ]
 

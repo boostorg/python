@@ -341,7 +341,11 @@ BOOST_PYTHON_UNARY_OPERATOR(neg, -, operator-)
 BOOST_PYTHON_UNARY_OPERATOR(pos, +, operator+)
 BOOST_PYTHON_UNARY_OPERATOR(abs, abs, abs)
 BOOST_PYTHON_UNARY_OPERATOR(invert, ~, operator~)
+#if PY_VERSION_HEX >= 0x03000000
+BOOST_PYTHON_UNARY_OPERATOR(bool, !!, operator!)
+#else
 BOOST_PYTHON_UNARY_OPERATOR(nonzero, !!, operator!)
+#endif
 BOOST_PYTHON_UNARY_OPERATOR(int, long, int_)
 BOOST_PYTHON_UNARY_OPERATOR(long, PyLong_FromLong, long_)
 BOOST_PYTHON_UNARY_OPERATOR(float, double, float_)

@@ -26,8 +26,13 @@ void work_with_string(object print)
     print(data.capitalize());
     print('[' + data.center(30) + ']');
     print(data.count("t"));
+#if PY_VERSION_HEX < 0x03000000
     print(data.encode("utf-8"));
     print(data.decode("utf-8"));
+#else
+    print(data.encode("utf-8").attr("decode")("utf-8"));
+    print(data.encode("utf-8").attr("decode")("utf-8"));
+#endif
     
     BOOST_ASSERT(!data.endswith("xx"));
     BOOST_ASSERT(!data.startswith("test"));

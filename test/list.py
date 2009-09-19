@@ -73,7 +73,7 @@ X(22)
 ...
 
 >>> y = X(42)
->>> exercise(letters, y, printer)
+>>> exercise(letters, y, printer) #doctest: +NORMALIZE_WHITESPACE
 after append:
 ['h', 'e', 'l', 'l', 'o', '.', [1, 2], X(42), 5, X(3)]
 number of X(42) instances: 1
@@ -97,9 +97,9 @@ removing 666
 reversing...
 ['y', 'x', X(3), [1, 2], '.', 'o', 'l', 'l', 'e', 'h']
 sorted:
-[[1, 2], '.', 'e', 'h', 'l', 'l', 'o', 'x', 'y']
+['.', 'e', 'h', 'l', 'l', 'o', 'x', 'y']
 reverse sorted:
-['y', 'x', 'o', 'l', 'l', 'h', 'e', '.', [1, 2]]
+['y', 'x', 'o', 'l', 'l', 'h', 'e', '.']
 '''
 
 def run(args = None):

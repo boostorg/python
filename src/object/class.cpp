@@ -67,8 +67,44 @@ extern "C"
       PyObject *prop_set;
       PyObject *prop_del;
       PyObject *prop_doc;
+      int getter_doc;
   } propertyobject;
 
+  // Copied from Python source and removed the part for setting docstring,
+  // since we don't have a setter for __doc__ and trying to set it will
+  // cause the init fail.
+  static int property_init(PyObject *self, PyObject *args, PyObject *kwds)
+  {
+      PyObject *get = NULL, *set = NULL, *del = NULL, *doc = NULL;
+      static char *kwlist[] = {"fget", "fset", "fdel", "doc", 0};
+      propertyobject *prop = (propertyobject *)self;
+
+      if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOO:property",
+                  kwlist, &get, &set, &del, &doc))
+          return -1;
+
+      if (get == Py_None)
+          get = NULL;
+      if (set == Py_None)
+          set = NULL;
+      if (del == Py_None)
+          del = NULL;
+
+      Py_XINCREF(get);
+      Py_XINCREF(set);
+      Py_XINCREF(del);
+      Py_XINCREF(doc);
+
+      prop->prop_get = get;
+      prop->prop_set = set;
+      prop->prop_del = del;
+      prop->prop_doc = doc;
+      prop->getter_doc = 0;
+
+      return 0;
+  }
+
+ 
   static PyObject *
   static_data_descr_get(PyObject *self, PyObject * /*obj*/, PyObject * /*type*/)
   {
@@ -106,10 +142,9 @@ extern "C"
 }
 
 static PyTypeObject static_data_object = {
-    PyObject_HEAD_INIT(0)//&PyType_Type)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     const_cast<char*>("Boost.Python.StaticProperty"),
-    PyType_Type.tp_basicsize,
+    sizeof(propertyobject),
     0,
     0,                                      /* tp_dealloc */
     0,                                      /* tp_print */
@@ -143,7 +178,7 @@ static PyTypeObject static_data_object = {
     static_data_descr_get,                                      /* tp_descr_get */
     static_data_descr_set,                                      /* tp_descr_set */
     0,                                      /* tp_dictoffset */
-    0,                                      /* tp_init */
+    property_init,                                      /* tp_init */
     0,                                      /* tp_alloc */
     0, // filled in with type_new           /* tp_new */
     0, // filled in with __PyObject_GC_Del  /* tp_free */
@@ -160,17 +195,20 @@ static PyTypeObject static_data_object = {
 
 namespace objects
 {
+#if PY_VERSION_HEX < 0x03000000
+  // XXX Not sure why this run into compiling error in Python 3
   extern "C"
   {
       // This declaration needed due to broken Python 2.2 headers
       extern DL_IMPORT(PyTypeObject) PyProperty_Type;
   }
+#endif
 
   BOOST_PYTHON_DECL PyObject* static_data()
   {
       if (static_data_object.tp_dict == 0)
       {
-          static_data_object.ob_type = &PyType_Type;
+          Py_TYPE(&static_data_object) = &PyType_Type;
           static_data_object.tp_base = &PyProperty_Type;
           if (PyType_Ready(&static_data_object))
               return 0;
@@ -203,15 +241,14 @@ extern "C"
         // If we found a static data descriptor, call it directly to
         // force it to set the static data member
         if (a != 0 && PyObject_IsInstance(a, objects::static_data()))
-            return a->ob_type->tp_descr_set(a, obj, value);
+            return Py_TYPE(a)->tp_descr_set(a, obj, value);
         else
             return PyType_Type.tp_setattro(obj, name, value);
     }
 }
 
 static PyTypeObject class_metatype_object = {
-    PyObject_HEAD_INIT(0)//&PyType_Type)
-    0,
+    PyVarObject_HEAD_INIT(NULL, 0)
     const_cast<char*>("Boost.Python.class"),
     PyType_Type.tp_basicsize,
     0,
@@ -266,7 +303,7 @@ static PyTypeObject class_metatype_object = {
 // object.
 void instance_holder::install(PyObject* self) throw()
 {
-    assert(self->ob_type->ob_type == &class_metatype_object);
+    assert(Py_TYPE(Py_TYPE(self)) == &class_metatype_object);
     m_next = ((objects::instance<>*)self)->objects;
     ((objects::instance<>*)self)->objects = this;
 }
@@ -279,7 +316,7 @@ namespace objects
   {
       if (class_metatype_object.tp_dict == 0)
       {
-          class_metatype_object.ob_type = &PyType_Type;
+          Py_TYPE(&class_metatype_object) = &PyType_Type;
           class_metatype_object.tp_base = &PyType_Type;
           if (PyType_Ready(&class_metatype_object))
               return type_handle();
@@ -308,7 +345,7 @@ namespace objects
 
           Py_XDECREF(kill_me->dict);
           
-          inst->ob_type->tp_free(inst);
+          Py_TYPE(inst)->tp_free(inst);
       }
 
       static PyObject *
@@ -318,7 +355,12 @@ namespace objects
           PyObject* d = type_->tp_dict;
           PyObject* instance_size_obj = PyObject_GetAttrString(d, const_cast<char*>("__instance_size__"));
 
-          long instance_size = instance_size_obj ? PyInt_AsLong(instance_size_obj) : 0;
+          Py_ssize_t instance_size = instance_size_obj ? 
+#if PY_VERSION_HEX >= 0x03000000
+              PyLong_AsSsize_t(instance_size_obj) : 0;
+#else
+              PyInt_AsLong(instance_size_obj) : 0;
+#endif
           
           if (instance_size < 0)
               instance_size = 0;
@@ -332,7 +374,12 @@ namespace objects
               // like, so we'll store the total size of the object
               // there. A negative number indicates that the extra
               // instance memory is not yet allocated to any holders.
-              result->ob_size = -(static_cast<int>(offsetof(instance<>,storage) + instance_size));
+#if PY_VERSION_HEX >= 0x02060000
+              Py_SIZE(result) =
+#else
+              result->ob_size =
+#endif
+                  -(static_cast<int>(offsetof(instance<>,storage) + instance_size));
           }
           return (PyObject*)result;
       }
@@ -368,8 +415,7 @@ namespace objects
   };
 
   static PyTypeObject class_type_object = {
-      PyObject_HEAD_INIT(0) //&class_metatype_object)
-      0,
+      PyVarObject_HEAD_INIT(NULL, 0)
       const_cast<char*>("Boost.Python.instance"),
       offsetof(instance<>,storage),           /* tp_basicsize */
       1,                                      /* tp_itemsize */
@@ -424,7 +470,7 @@ namespace objects
   {
       if (class_type_object.tp_dict == 0)
       {
-          class_type_object.ob_type = incref(class_metatype().get());
+          Py_TYPE(&class_type_object) = incref(class_metatype().get());
           class_type_object.tp_base = &PyBaseObject_Type;
           if (PyType_Ready(&class_type_object))
               return type_handle();
@@ -436,7 +482,7 @@ namespace objects
   BOOST_PYTHON_DECL void*
   find_instance_impl(PyObject* inst, type_info type, bool null_shared_ptr_only)
   {
-      if (inst->ob_type->ob_type != &class_metatype_object)
+      if (Py_TYPE(Py_TYPE(inst)) != &class_metatype_object)
           return 0;
     
       instance<>* self = reinterpret_cast<instance<>*>(inst);
@@ -526,7 +572,7 @@ namespace objects
           d["__doc__"] = doc;
       
       object result = object(class_metatype())(name, bases, d);
-      assert(PyType_IsSubtype(result.ptr()->ob_type, &PyType_Type));
+      assert(PyType_IsSubtype(Py_TYPE(result.ptr()), &PyType_Type));
       
       if (scope().ptr() != Py_None)
           scope().attr(name) = result;
@@ -589,8 +635,9 @@ namespace objects
   void class_base::add_static_property(char const* name, object const& fget)
   {
       object property(
-          (python::detail::new_reference)
-          PyObject_CallFunction(static_data(), const_cast<char*>("O"), fget.ptr()));
+          (python::detail::new_reference) 
+          PyObject_CallFunction(static_data(), const_cast<char*>("O"), fget.ptr())
+          );
       
       this->setattr(name, property);
   }
@@ -650,7 +697,7 @@ namespace objects
         ::PyErr_Format(
             PyExc_TypeError
           , const_cast<char*>("staticmethod expects callable object; got an object of type %s, which is not callable")
-            , callable->ob_type->tp_name
+            , Py_TYPE(callable)->tp_name
             );
         
         throw_error_already_set();
@@ -680,18 +727,18 @@ namespace objects
 
 void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std::size_t holder_size)
 {
-    assert(self_->ob_type->ob_type == &class_metatype_object);
+    assert(Py_TYPE(Py_TYPE(self_)) == &class_metatype_object);
     objects::instance<>* self = (objects::instance<>*)self_;
     
     int total_size_needed = holder_offset + holder_size;
     
-    if (-self->ob_size >= total_size_needed)
+    if (-Py_SIZE(self) >= total_size_needed)
     {
         // holder_offset should at least point into the variable-sized part
         assert(holder_offset >= offsetof(objects::instance<>,storage));
 
         // Record the fact that the storage is occupied, noting where it starts
-        self->ob_size = holder_offset;
+        Py_SIZE(self) = holder_offset;
         return (char*)self + holder_offset;
     }
     else
@@ -705,9 +752,9 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
 
 void instance_holder::deallocate(PyObject* self_, void* storage) throw()
 {
-    assert(self_->ob_type->ob_type == &class_metatype_object);
+    assert(Py_TYPE(Py_TYPE(self_)) == &class_metatype_object);
     objects::instance<>* self = (objects::instance<>*)self_;
-    if (storage != (char*)self + self->ob_size)
+    if (storage != (char*)self + Py_SIZE(self))
     {
         PyMem_Free(storage);
     }

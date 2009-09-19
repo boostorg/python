@@ -48,7 +48,11 @@ struct AFromPython
 
   static void* convertible(PyObject* obj_ptr)
   {
+#if PY_VERSION_HEX >= 0x03000000
+    if (!PyLong_Check(obj_ptr)) return 0;
+#else
     if (!PyInt_Check(obj_ptr)) return 0;
+#endif
     return obj_ptr;
   }
 
@@ -60,7 +64,11 @@ struct AFromPython
         (boost::python::converter::rvalue_from_python_storage< A >*)
         data)-> storage.bytes;
 
+#if PY_VERSION_HEX >= 0x03000000
+    new (storage) A((int)PyLong_AsLong(obj_ptr));
+#else
     new (storage) A((int)PyInt_AsLong(obj_ptr));
+#endif
     data->convertible = storage;
   }
 };

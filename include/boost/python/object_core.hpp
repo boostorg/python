@@ -126,6 +126,10 @@ namespace api
       const_object_objattribute attr(object const&) const;
       object_objattribute attr(object const&);
 
+      // Wrap 'in' operator (aka. __contains__)
+      template <class T>
+      object contains(T const& key) const;
+      
       // item access
       //
       const_object_item operator[](object_cref) const;
@@ -482,6 +486,15 @@ object api::object_operators<U>::operator()(detail::args_proxy const &args,
   return object(boost::python::detail::new_reference(result)); 
  
 }  
+
+
+template <typename U>
+template <class T>
+object api::object_operators<U>::contains(T const& key) const
+{
+    return this->attr("__contains__")(object(key));
+}
+
 
 inline object::object()
     : object_base(python::incref(Py_None))

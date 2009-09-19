@@ -11,7 +11,7 @@
 ('t', 'h', 'i', 's', ' ', 'i', 's', ' ', 'a', ' ', 't', 'e', 's', 't', ' ', 's', 't', 'r', 'i', 'n', 'g')
 >>> t1 = convert_to_tuple("this is")
 >>> t2 = (1,2,3,4)
->>> test_operators(t1,t2,printer)
+>>> test_operators(t1,t2,printer) #doctest: +NORMALIZE_WHITESPACE
 ('t', 'h', 'i', 's', ' ', 'i', 's', 1, 2, 3, 4)
 >>> make_tuple()
 ()

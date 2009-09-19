@@ -77,10 +77,10 @@ False
 >>> hex(rewrap_value_unsigned_long(0x80000001L)).replace('L','')
 '0x80000001'
 
->>> rewrap_value_long_long(42)
-42L
->>> rewrap_value_unsigned_long_long(42)
-42L
+>>> rewrap_value_long_long(42) == 42
+True
+>>> rewrap_value_unsigned_long_long(42) == 42
+True
 
    show that we have range checking. 
 
@@ -130,23 +130,13 @@ False
 >>> rewrap_value_string('yo, wassup?')
 'yo, wassup?'
 
->>> try:
-...     if unicode: pass
-... except:
-...     print "u'yo, wassup?'"
-... else:
-...     eval("rewrap_value_wstring(u'yo, wassup?')")
-u'yo, wassup?'
-    
+>>> print rewrap_value_wstring(u'yo, wassup?')
+yo, wassup?
+
    test that overloading on unicode works:
 
->>> try:
-...     if unicode: pass
-... except:
-...     print "u'yo, wassup?'"
-... else:
-...     eval("rewrap_value_string(u'yo, wassup?')")
-u'yo, wassup?'
+>>> print rewrap_value_string(u'yo, wassup?')
+yo, wassup?
 
    wrap strings with embedded nulls:
    
@@ -198,10 +188,10 @@ u'yo, wassup?'
 42
 >>> rewrap_const_reference_unsigned_long(42)
 42
->>> rewrap_const_reference_long_long(42)
-42L
->>> rewrap_const_reference_unsigned_long_long(42)
-42L
+>>> rewrap_const_reference_long_long(42) == 42
+True
+>>> rewrap_const_reference_unsigned_long_long(42) == 42
+True
 
 
 >>> assert abs(rewrap_const_reference_float(4.2) - 4.2) < .000001
