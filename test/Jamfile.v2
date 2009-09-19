@@ -65,20 +65,6 @@ test-suite python
 #       : # target-name
 #   ]
 
-[ run error_already_set.cpp /boost/python//boost_python/<link>static $(PY) 
-  : # no args
-  : # no input files
-  : # no requirements
-  : # target-name
-]
-
-[ run error_already_set.cpp ../build//boost_python/<link>shared /python//python 
-  : # no args
-  : # no input files
-  : # no requirements
-  : exec-dynamic # target-name
-]
-
 [
 bpl-test crossmod_exception
   : crossmod_exception.py crossmod_exception_a.cpp crossmod_exception_b.cpp
