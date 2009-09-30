@@ -144,11 +144,11 @@ void list_base::sort(object_cref cmpfunc)
 
 // For some reason, moving this to the end of the TU suppresses an ICE
 // with vc6.
-Py_ssize_t list_base::count(object_cref value) const
+ssize_t list_base::count(object_cref value) const
 {
     object result_obj(this->attr("count")(value));
 #if PY_VERSION_HEX >= 0x03000000
-    Py_ssize_t result = PyLong_AsSsize_t(result_obj.ptr());
+    ssize_t result = PyLong_AsSsize_t(result_obj.ptr());
 #else
     long result = PyInt_AsLong(result_obj.ptr());
 #endif

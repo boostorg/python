@@ -19,7 +19,7 @@ namespace detail
   {
       void append(object_cref); // append object to end
 
-      Py_ssize_t count(object_cref value) const; // return number of occurrences of value
+      ssize_t count(object_cref value) const; // return number of occurrences of value
 
       void extend(object_cref sequence); // extend list by appending sequence elements
     
