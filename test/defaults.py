@@ -2,13 +2,6 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 """
-# Use builtin True/False when available:
->>> try:
-...     assert(True == 1)
-... except:
-...     True = 1
-...     False = 0
-
 >>> from defaults_ext import *
 >>> bar(1)
 'int(1); char(D); string(default); double(0.0); '

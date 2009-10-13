@@ -88,11 +88,19 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
   if (local.ptr() == none.ptr()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *f = python::extract<char *>(filename);
+#if PY_VERSION_HEX >= 0x03000000
+  // TODO(bhy) temporary workaround for Python 3.
+  // should figure out a way to avoid binary incompatibilities as the Python 2
+  // version did.
+  FILE *fs = fopen(f, "r");
+#else
   // Let python open the file to avoid potential binary incompatibilities.
   PyObject *pyfile = PyFile_FromString(f, const_cast<char*>("r"));
   if (!pyfile) throw std::invalid_argument(std::string(f) + " : no such file");
   python::handle<> file(pyfile);
-  PyObject* result = PyRun_File(PyFile_AsFile(file.get()),
+  FILE *fs = PyFile_AsFile(file.get());
+#endif
+  PyObject* result = PyRun_File(fs,
                 f,
                 Py_file_input,
                 global.ptr(), local.ptr());

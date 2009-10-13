@@ -32,7 +32,43 @@
   <hr>
 
   <dl class="page-index">
+
     <dt>Current SVN</dt>
+    <dd>
+      <ul>
+        <li>Python 3 support:</li>
+          <ul>
+              <li>All the current Boost.Python test cases passed. Extension modules using 
+                  Boost.Python expected to support Python 3 smoothly.</li>
+              <li>Introduced <code>object.contains</code> where <code>x.contains(y)</code>
+                   is equivalent to Python code <code>y in x</code>. 
+                  Now <code>dict.has_key</code> is just a wrapper of <code>object.contains</code>.
+              </li>
+              <li>When building against Python 3, <code>str.decode</code> will be removed.</li>
+              <li>When building against Python 3, the original signature of <code>list.sort</code>, which is:
+                  <pre>void sort(object_cref cmpfunc);</pre>
+                  will change to:
+                  <pre>void sort(args_proxy const &args, kwds_proxy const &kwds);</pre>
+
+                  This is because in Python 3 <code>list.sort</code> requires all its arguments be keyword arguments.
+                  So you should call it like this:
+                  <pre>x.sort(*tuple(), **dict(make_tuple(make_tuple("reverse", true))));</pre>
+
+              </li>
+              <li>According to <a href="http://www.python.org/dev/peps/pep-3123/">PEP 3123</a>, 
+                  when building Boost.Python against Python older than 2.6, the following macros will
+                  be defined in Boost.Python header:
+                <pre>
+# define Py_TYPE(o)    (((PyObject*)(o))->ob_type)
+# define Py_REFCNT(o)  (((PyObject*)(o))->ob_refcnt)
+# define Py_SIZE(o)    (((PyVarObject*)(o))->ob_size)</pre>
+                  So extension writers can use these macro directly, to make code clean and compatible with Python 3.
+              </li>
+          </ul> 
+      </ul>
+    </dd>
+
+    <dt>1.39.0 Release</dt>
 
     <dd>
       <ul>

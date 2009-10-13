@@ -38,7 +38,13 @@ BOOST_PYTHON_DECL object operator op(object const& l, object const& r)  \
 BOOST_PYTHON_BINARY_OPERATOR(+, Add)
 BOOST_PYTHON_BINARY_OPERATOR(-, Subtract)
 BOOST_PYTHON_BINARY_OPERATOR(*, Multiply)
+#if PY_VERSION_HEX >= 0x03000000
+// We choose FloorDivide instead of TrueDivide to keep the semantic
+// conform with C/C++'s '/' operator
+BOOST_PYTHON_BINARY_OPERATOR(/, FloorDivide)
+#else
 BOOST_PYTHON_BINARY_OPERATOR(/, Divide)
+#endif
 BOOST_PYTHON_BINARY_OPERATOR(%, Remainder)
 BOOST_PYTHON_BINARY_OPERATOR(<<, Lshift)
 BOOST_PYTHON_BINARY_OPERATOR(>>, Rshift)
@@ -58,7 +64,12 @@ BOOST_PYTHON_DECL object& operator op##=(object& l, object const& r)    \
 BOOST_PYTHON_INPLACE_OPERATOR(+, Add)
 BOOST_PYTHON_INPLACE_OPERATOR(-, Subtract)
 BOOST_PYTHON_INPLACE_OPERATOR(*, Multiply)
+#if PY_VERSION_HEX >= 0x03000000
+// Same reason as above for choosing FloorDivide instead of TrueDivide
+BOOST_PYTHON_INPLACE_OPERATOR(/, FloorDivide)
+#else
 BOOST_PYTHON_INPLACE_OPERATOR(/, Divide)
+#endif
 BOOST_PYTHON_INPLACE_OPERATOR(%, Remainder)
 BOOST_PYTHON_INPLACE_OPERATOR(<<, Lshift)
 BOOST_PYTHON_INPLACE_OPERATOR(>>, Rshift)

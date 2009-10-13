@@ -37,12 +37,20 @@ void shared_ptr_deleter::operator()(void const*)
 
 namespace
 {
+
   // An lvalue conversion function which extracts a char const* from a
   // Python String.
+#if PY_VERSION_HEX < 0x03000000
   void* convert_to_cstring(PyObject* obj)
   {
       return PyString_Check(obj) ? PyString_AsString(obj) : 0;
   }
+#else
+  void* convert_to_cstring(PyObject* obj)
+  {
+      return PyUnicode_Check(obj) ? _PyUnicode_AsString(obj) : 0;
+  }
+#endif
 
   // Given a target type and a SlotPolicy describing how to perform a
   // given conversion, registers from_python converters which use the
@@ -90,6 +98,52 @@ namespace
       }
   };
 
+  // identity_unaryfunc/py_object_identity -- manufacture a unaryfunc
+  // "slot" which just returns its argument. 
+  extern "C" PyObject* identity_unaryfunc(PyObject* x)
+  {
+      Py_INCREF(x);
+      return x;
+  }
+  unaryfunc py_object_identity = identity_unaryfunc;
+
+#if PY_VERSION_HEX >= 0x03000000
+  // As in Python 3 there is only one integer type, we can have much
+  // simplified logic.
+  // XXX(bhy) maybe the code will work with 2.6 or even 2.5?
+  struct int_rvalue_from_python_base
+  {
+      static unaryfunc* get_slot(PyObject* obj)
+      {
+          return PyLong_Check(obj) ? &py_object_identity : 0;
+      }
+      static PyTypeObject const* get_pytype() {return &PyLong_Type;}
+  };
+
+  template <class T>
+  struct signed_int_rvalue_from_python : int_rvalue_from_python_base
+  {
+      static T extract(PyObject* intermediate)
+      {
+          long x = PyLong_AsLong(intermediate);
+          if (PyErr_Occurred())
+              throw_error_already_set();
+          return numeric_cast<T>(x);
+      }
+  };
+
+  template <class T>
+  struct unsigned_int_rvalue_from_python : int_rvalue_from_python_base
+  {
+      static T extract(PyObject* intermediate)
+      {
+          unsigned long x = PyLong_AsUnsignedLong(intermediate);
+          if (PyErr_Occurred())
+              throw_error_already_set();
+          return numeric_cast<T>(x);
+      }
+  };
+#else // PY_VERSION_HEX >= 0x03000000
   // A SlotPolicy for extracting signed integer types from Python objects
   struct signed_int_rvalue_from_python_base
   {
@@ -121,16 +175,7 @@ namespace
           return numeric_cast<T>(x);
       }
   };
-
-  // identity_unaryfunc/py_object_identity -- manufacture a unaryfunc
-  // "slot" which just returns its argument. 
-  extern "C" PyObject* identity_unaryfunc(PyObject* x)
-  {
-      Py_INCREF(x);
-      return x;
-  }
-  unaryfunc py_object_identity = identity_unaryfunc;
-
+  
   // A SlotPolicy for extracting unsigned integer types from Python objects
   struct unsigned_int_rvalue_from_python_base
   {
@@ -178,6 +223,7 @@ namespace
           }
       }
   };
+#endif // PY_VERSION_HEX >= 0x03000000
 
 // Checking Python's macro instead of Boost's - we don't seem to get
 // the config right all the time. Furthermore, Python's is defined
@@ -190,6 +236,9 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
+#if PY_VERSION_HEX >= 0x03000000
+          return PyLong_Check(obj) ? &py_object_identity : 0;
+#else
           PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
           if (number_methods == 0)
               return 0;
@@ -202,19 +251,22 @@ namespace
               return &number_methods->nb_long;
           else
               return 0;
+#endif
       }
-      static PyTypeObject const* get_pytype() { return &PyInt_Type;}
+      static PyTypeObject const* get_pytype() { return &PyLong_Type;}
   };
   
   struct long_long_rvalue_from_python : long_long_rvalue_from_python_base
   {
       static BOOST_PYTHON_LONG_LONG extract(PyObject* intermediate)
       {
+#if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
           }
           else
+#endif
           {
               BOOST_PYTHON_LONG_LONG result = PyLong_AsLongLong(intermediate);
               
@@ -230,11 +282,13 @@ namespace
   {
       static unsigned BOOST_PYTHON_LONG_LONG extract(PyObject* intermediate)
       {
+#if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
               return numeric_cast<unsigned BOOST_PYTHON_LONG_LONG>(PyInt_AS_LONG(intermediate));
           }
           else
+#endif
           {
               unsigned BOOST_PYTHON_LONG_LONG result = PyLong_AsUnsignedLongLong(intermediate);
               
@@ -252,7 +306,9 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
-#if PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
+#if PY_VERSION_HEX >= 0x03000000
+          return obj == Py_None || PyLong_Check(obj) ? &py_object_identity : 0;
+#elif PY_VERSION_HEX >= 0x02040000 && defined(BOOST_PYTHON_BOOL_INT_STRICT)
           return obj == Py_None || PyBool_Check(obj) ? &py_object_identity : 0;
 #else
           return obj == Py_None || PyInt_Check(obj) ? &py_object_identity : 0;
@@ -285,8 +341,10 @@ namespace
 
           // For integer types, return the tp_int conversion slot to avoid
           // creating a new object. We'll handle that below
+#if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(obj))
               return &number_methods->nb_int;
+#endif
 
           return (PyLong_Check(obj) || PyFloat_Check(obj))
               ? &number_methods->nb_float : 0;
@@ -294,11 +352,13 @@ namespace
       
       static double extract(PyObject* intermediate)
       {
+#if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
           }
           else
+#endif
           {
               return PyFloat_AS_DOUBLE(intermediate);
           }
@@ -306,22 +366,36 @@ namespace
       static PyTypeObject const* get_pytype() { return &PyFloat_Type;}
   };
 
+  unaryfunc py_unicode_as_string_unaryfunc = PyUnicode_AsUTF8String;
+
   // A SlotPolicy for extracting C++ strings from Python objects.
   struct string_rvalue_from_python
   {
       // If the underlying object is "string-able" this will succeed
       static unaryfunc* get_slot(PyObject* obj)
       {
-          return (PyString_Check(obj))
-              ? &obj->ob_type->tp_str : 0;
+#if PY_VERSION_HEX >= 0x03000000
+          return (PyUnicode_Check(obj)) ? &py_unicode_as_string_unaryfunc : 0;
+#else
+          return (PyString_Check(obj)) ? &obj->ob_type->tp_str : 0;
+
+#endif
       };
 
       // Remember that this will be used to construct the result object 
+#if PY_VERSION_HEX >= 0x03000000
+      static std::string extract(PyObject* intermediate)
+      {
+          return std::string(PyBytes_AsString(intermediate),PyBytes_Size(intermediate));
+      }
+      static PyTypeObject const* get_pytype() { return &PyUnicode_Type;}
+#else
       static std::string extract(PyObject* intermediate)
       {
           return std::string(PyString_AsString(intermediate),PyString_Size(intermediate));
       }
       static PyTypeObject const* get_pytype() { return &PyString_Type;}
+#endif
   };
 
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
@@ -341,7 +415,11 @@ namespace
       {
           return PyUnicode_Check(obj)
               ? &py_object_identity
+#if PY_VERSION_HEX >= 0x03000000
+            : PyBytes_Check(obj)
+#else
             : PyString_Check(obj)
+#endif
               ? &py_encode_string
             : 0;
       };
@@ -384,10 +462,12 @@ namespace
                   PyComplex_RealAsDouble(intermediate)
                   , PyComplex_ImagAsDouble(intermediate));
           }
+#if PY_VERSION_HEX < 0x03000000
           else if (PyInt_Check(intermediate))
           {
               return PyInt_AS_LONG(intermediate);
           }
+#endif
           else
           {
               return PyFloat_AS_DOUBLE(intermediate);
@@ -399,12 +479,20 @@ namespace
 
 BOOST_PYTHON_DECL PyObject* do_return_to_python(char x)
 {
+#if PY_VERSION_HEX >= 0x03000000
+    return PyUnicode_FromStringAndSize(&x, 1);
+#else
     return PyString_FromStringAndSize(&x, 1);
+#endif
 }
   
 BOOST_PYTHON_DECL PyObject* do_return_to_python(char const* x)
 {
+#if PY_VERSION_HEX >= 0x03000000
+    return x ? PyUnicode_FromString(x) : boost::python::detail::none();
+#else
     return x ? PyString_FromString(x) : boost::python::detail::none();
+#endif
 }
   
 BOOST_PYTHON_DECL PyObject* do_return_to_python(PyObject* x)
@@ -459,13 +547,18 @@ void initialize_builtin_converters()
     slot_rvalue_from_python<std::complex<long double>,complex_rvalue_from_python>();
     
     // Add an lvalue converter for char which gets us char const*
+#if PY_VERSION_HEX < 0x03000000
     registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyString_Type>::get_pytype);
+#else
+    registry::insert(convert_to_cstring,type_id<char>(),&converter::wrap_pytype<&PyUnicode_Type>::get_pytype);
+#endif
 
     // Register by-value converters to std::string, std::wstring
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
     slot_rvalue_from_python<std::wstring, wstring_rvalue_from_python>();
 # endif 
     slot_rvalue_from_python<std::string, string_rvalue_from_python>();
+
 }
 
 }}} // namespace boost::python::converter

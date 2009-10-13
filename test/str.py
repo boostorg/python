@@ -7,7 +7,7 @@
 ...     for x in args: print x,
 ...     print
 ...
->>> work_with_string(printer)
+>>> work_with_string(printer) #doctest: +NORMALIZE_WHITESPACE
 ['this', 'is', 'a', 'demo', 'string']
 ['this', 'is', 'a', 'demo string']
 this<->is<->a<->demo<->string

@@ -3,12 +3,12 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
 >>> from long_ext import *
->>> new_long()
-0L
->>> longify(42)
-42L
->>> longify_string('300')
-300L
+>>> print new_long()
+0
+>>> print longify(42)
+42
+>>> print longify_string('300')
+300
 >>> is_long(20L)
 'yes'
 >>> is_long('20')

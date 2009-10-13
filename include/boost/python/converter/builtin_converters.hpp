@@ -90,6 +90,14 @@ namespace detail
         BOOST_PYTHON_ARG_TO_PYTHON_BY_VALUE(T,expr)
 
 // Specialize converters for signed and unsigned T to Python Int
+#if PY_VERSION_HEX >= 0x03000000
+
+# define BOOST_PYTHON_TO_INT(T)                                         \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, ::PyLong_FromLong(x), &PyLong_Type)      \
+    BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned T, ::PyLong_FromUnsignedLong(x), &PyLong_Type)
+
+#else
+
 # define BOOST_PYTHON_TO_INT(T)                                         \
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed T, ::PyInt_FromLong(x), &PyInt_Type)      \
     BOOST_PYTHON_TO_PYTHON_BY_VALUE(                                    \
@@ -98,6 +106,7 @@ namespace detail
                 (std::numeric_limits<long>::max)())                     \
         ? ::PyLong_FromUnsignedLong(x)                                  \
         : ::PyInt_FromLong(x), &PyInt_Type)
+#endif
 
 // Bool is not signed.
 #if PY_VERSION_HEX >= 0x02030000
@@ -116,17 +125,24 @@ BOOST_PYTHON_TO_INT(long)
 // using Python's macro instead of Boost's - we don't seem to get the
 // config right all the time.
 # ifdef HAVE_LONG_LONG 
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed BOOST_PYTHON_LONG_LONG, ::PyLong_FromLongLong(x), &PyInt_Type)
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUnsignedLongLong(x), &PyInt_Type)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(signed BOOST_PYTHON_LONG_LONG, ::PyLong_FromLongLong(x), &PyLong_Type)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(unsigned BOOST_PYTHON_LONG_LONG, ::PyLong_FromUnsignedLongLong(x), &PyLong_Type)
 # endif
     
 # undef BOOST_TO_PYTHON_INT
 
+#if PY_VERSION_HEX >= 0x03000000
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x), &PyUnicode_Type)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x), &PyUnicode_Type)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyUnicode_FromStringAndSize(x.data(),implicit_cast<ssize_t>(x.size())), &PyUnicode_Type)
+#else
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char, converter::do_return_to_python(x), &PyString_Type)
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(char const*, converter::do_return_to_python(x), &PyString_Type)
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::string, ::PyString_FromStringAndSize(x.data(),implicit_cast<ssize_t>(x.size())), &PyString_Type)
+#endif
+
 #if defined(Py_USING_UNICODE) && !defined(BOOST_NO_STD_WSTRING)
-BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),implicit_cast<ssize_t>(x.size())), &PyString_Type)
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::wstring, ::PyUnicode_FromWideChar(x.data(),implicit_cast<ssize_t>(x.size())), &PyUnicode_Type)
 # endif 
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(float, ::PyFloat_FromDouble(x), &PyFloat_Type)
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(double, ::PyFloat_FromDouble(x), &PyFloat_Type)

@@ -103,6 +103,7 @@ namespace // slicing code copied directly out of the Python implementation
   static PyObject *
   apply_slice(PyObject *u, PyObject *v, PyObject *w) /* return u[v:w] */
   {
+#if PY_VERSION_HEX < 0x03000000
       PyTypeObject *tp = u->ob_type;
       PySequenceMethods *sq = tp->tp_as_sequence;
 
@@ -114,7 +115,9 @@ namespace // slicing code copied directly out of the Python implementation
               return NULL;
           return PySequence_GetSlice(u, ilow, ihigh);
       }
-      else {
+      else 
+#endif
+      {
           PyObject *slice = PySlice_New(v, w, NULL);
           if (slice != NULL) {
               PyObject *res = PyObject_GetItem(u, slice);
@@ -130,6 +133,7 @@ namespace // slicing code copied directly out of the Python implementation
   assign_slice(PyObject *u, PyObject *v, PyObject *w, PyObject *x)
       /* u[v:w] = x */
   {
+#if PY_VERSION_HEX < 0x03000000
       PyTypeObject *tp = u->ob_type;
       PySequenceMethods *sq = tp->tp_as_sequence;
 
@@ -144,7 +148,9 @@ namespace // slicing code copied directly out of the Python implementation
           else
               return PySequence_SetSlice(u, ilow, ihigh, x);
       }
-      else {
+      else 
+#endif
+      {
           PyObject *slice = PySlice_New(v, w, NULL);
           if (slice != NULL) {
               int res;
