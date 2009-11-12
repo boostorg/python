@@ -182,7 +182,7 @@ static PyTypeObject static_data_object = {
     0,                                      /* tp_alloc */
     0, // filled in with type_new           /* tp_new */
     0, // filled in with __PyObject_GC_Del  /* tp_free */
-    (inquiry)type_is_gc,                    /* tp_is_gc */
+    0,                                      /* tp_is_gc */
     0,                                      /* tp_bases */
     0,                                      /* tp_mro */
     0,                                      /* tp_cache */
