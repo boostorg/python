@@ -25,10 +25,6 @@
 #include <boost/python/extract.hpp>
 #include <boost/python/back_reference.hpp>
 
-#if BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x580)) || BOOST_WORKAROUND(BOOST_MSVC, BOOST_TESTED_AT(1500))
-# define make_tuple boost::python::make_tuple
-#endif 
-
 namespace boost_python_test {
 
   // A friendly class.
@@ -53,18 +49,18 @@ namespace boost_python_test {
     boost::python::tuple
     getinitargs(const world& w)
     {
-        using namespace boost::python;
-        return make_tuple(w.get_country());
+        return boost::python::make_tuple(w.get_country());
     }
 
     static
     boost::python::tuple
     getstate(boost::python::object w_obj)
     {
-        using namespace boost::python;
-        world const& w = extract<world const&>(w_obj)();
+        world const& w = boost::python::extract<world const&>(w_obj)();
 
-        return make_tuple(w_obj.attr("__dict__"), w.get_secret_number());
+        return boost::python::make_tuple(
+            w_obj.attr("__dict__"),
+            w.get_secret_number());
     }
 
     static
@@ -73,7 +69,7 @@ namespace boost_python_test {
     {
         using namespace boost::python;
         world& w = extract<world&>(w_obj)();
-        
+
         if (len(state) != 2)
         {
           PyErr_SetObject(PyExc_ValueError,
@@ -82,11 +78,11 @@ namespace boost_python_test {
               );
           throw_error_already_set();
         }
-        
+
         // restore the object's __dict__
         dict d = extract<dict>(w_obj.attr("__dict__"))();
         d.update(state[0]);
-        
+
         // restore the internal state of the C++ object
         long number = extract<long>(state[1]);
         if (number != 42)

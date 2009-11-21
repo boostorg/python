@@ -52,16 +52,14 @@ namespace boost_python_test {
     boost::python::tuple
     getinitargs(const world& w)
     {
-        using namespace boost::python;
-        return make_tuple(w.get_country());
+        return boost::python::make_tuple(w.get_country());
     }
 
     static
     boost::python::tuple
     getstate(const world& w)
     {
-        using namespace boost::python;
-        return make_tuple(w.get_secret_number());
+        return boost::python::make_tuple(w.get_secret_number());
     }
 
     static
@@ -77,7 +75,7 @@ namespace boost_python_test {
               );
           throw_error_already_set();
         }
-        
+
         long number = extract<long>(state[0]);
         if (number != 42)
             w.set_secret_number(number);

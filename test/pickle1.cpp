@@ -40,8 +40,7 @@ namespace boost_python_test {
     boost::python::tuple
     getinitargs(const world& w)
     {
-        using namespace boost::python;
-        return make_tuple(w.get_country());
+        return boost::python::make_tuple(w.get_country());
     }
   };
 
