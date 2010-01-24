@@ -10,6 +10,7 @@
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/detail/decref_guard.hpp>
 # include <boost/python/detail/none.hpp>
+# include <boost/type_traits/is_union.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
