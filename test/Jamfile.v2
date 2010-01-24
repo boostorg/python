@@ -184,6 +184,9 @@ bpl-test crossmod_opaque
 #     bpl-test bienstman5 ;
 # }
 
+[ bpl-test calling_conventions ]
+[ bpl-test calling_conventions_mf ]
+
 # --- unit tests of library components ---
 
 [ compile indirect_traits_test.cpp ]
@@ -196,6 +199,7 @@ bpl-test crossmod_opaque
 
 [ compile string_literal.cpp ]
 [ py-compile borrowed.cpp ]
+[ py-compile union.cpp ]
 [ py-compile object_manager.cpp ]
 [ py-compile copy_ctor_mutates_rhs.cpp ]
 

@@ -21,7 +21,7 @@ struct make_instance_impl
     template <class Arg>
     static inline PyObject* execute(Arg& x)
     {
-        BOOST_STATIC_ASSERT(is_class<T>::value);
+        BOOST_MPL_ASSERT((mpl::or_<is_class<T>, is_union<T> >));
 
         PyTypeObject* type = Derived::get_class_object(x);
 
