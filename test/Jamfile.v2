@@ -184,6 +184,9 @@ bpl-test crossmod_opaque
 #     bpl-test bienstman5 ;
 # }
 
+[ bpl-test calling_conventions ]
+[ bpl-test calling_conventions_mf ]
+
 # --- unit tests of library components ---
 
 [ compile indirect_traits_test.cpp ]

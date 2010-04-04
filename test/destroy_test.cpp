@@ -22,6 +22,10 @@ struct foo
         *kills++ = n;
     }
     int n;
+
+    // This used to cause compiler errors with MSVC 9.0.
+    foo& operator~();
+    foo& T();
 };
 
 void assert_destructions(int n)

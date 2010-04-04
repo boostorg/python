@@ -3,6 +3,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 import os ;
+import indirect ;
 import modules ;
 import feature ;
 
@@ -41,7 +42,26 @@ py3-version = [ find-py3-version ] ;
 
 project boost/python
   : source-location ../src
+  : requirements
+    -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
+    <tag>@$(__name__).tag
   ;
+
+rule tag ( name : type ? : property-set )
+{
+    local result = $(name) ;
+    if $(type) in STATIC_LIB SHARED_LIB IMPORT_LIB
+    {
+        if $(name) = boost_python && $(PYTHON_ID)
+        {
+            result = $(result)-$(PYTHON_ID) ;
+        }
+    }
+    
+    # forward to the boost tagging rule
+    return  [ indirect.call $(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag 
+                $(result) : $(type) : $(property-set) ] ;
+}
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
 rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }

@@ -835,6 +835,8 @@ namespace boost { namespace python { namespace api
       object&amp; operator=(object const&amp;); 
 
       PyObject* ptr() const;
+
+      bool is_none() const;
   };
 }}}
 </pre>
@@ -894,6 +896,14 @@ PyObject* ptr() const;
     <dl class="function-semantics">
       <dt><b>Returns:</b> a pointer to the internally-held Python
       object.</dt>
+    </dl>
+
+<pre>
+bool is_none() const;
+</pre>
+
+    <dl class="function-semantics">
+      <dt><b>Returns:</b> result of (ptr() == Py_None)</dt>
     </dl>
     <!-- -->
 
@@ -1101,7 +1111,7 @@ object sum_items(object seq)
 </pre>
     <p>Revised 
     <!--webbot bot="Timestamp" S-Type="EDITED" S-Format="%d %B, %Y" startspan -->
-  27 May, 2008
+  15 March, 2010
   <!--webbot bot="Timestamp" endspan i-checksum="39359" -->
     </p>
 
