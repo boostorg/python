@@ -184,8 +184,16 @@ bpl-test crossmod_opaque
 #     bpl-test bienstman5 ;
 # }
 
-[ bpl-test calling_conventions ]
-[ bpl-test calling_conventions_mf ]
+rule require-windows ( properties * )
+{
+    if ! <target-os>windows in $(properties)
+    {
+        return <build>no ;
+    }
+}
+
+[ bpl-test calling_conventions : : <conditional>@require-windows ]
+[ bpl-test calling_conventions_mf : : <conditional>@require-windows ]
 
 # --- unit tests of library components ---
 
