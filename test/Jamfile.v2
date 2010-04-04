@@ -184,8 +184,10 @@ bpl-test crossmod_opaque
 #     bpl-test bienstman5 ;
 # }
 
-[ bpl-test calling_conventions ]
-[ bpl-test calling_conventions_mf ]
+# XXX disabled on release branch only,
+# XXX to avoid failures on platforms other than Windows
+# [ bpl-test calling_conventions ]
+# [ bpl-test calling_conventions_mf ]
 
 # --- unit tests of library components ---
 
