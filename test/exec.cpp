@@ -61,11 +61,11 @@ void exec_test()
   // Register the module with the interpreter
   if (PyImport_AppendInittab(const_cast<char*>("embedded_hello"),
 #if PY_VERSION_HEX >= 0x03000000 
-			     PyInit_embedded_hello 
+                             PyInit_embedded_hello 
 #else 
-			     initembedded_hello 
+                             initembedded_hello 
 #endif 
-			     ) == -1) 
+                             ) == -1) 
     throw std::runtime_error("Failed to add embedded_hello to the interpreter's "
                  "builtin modules");
   // Retrieve the main module
