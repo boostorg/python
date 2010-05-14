@@ -1,0 +1,17 @@
+Import("env")
+import os
+
+test_env = env.Clone()
+test_env.Append(LIBS="boost_python_numpy")
+
+tests = ("ufunc",)
+test_mods = [test_env.SharedLibrary("%s_mod" % k, "%s_mod.cpp" % k, SHLIBPREFIX="") 
+             for k in tests]
+os.path.abspath(".")
+test_runs = [test_env.Command(".%s" % name, [mod,"%s.py" % name],
+                              "cd %s; python %s.py" % (os.path.abspath("."), name))
+             for name, mod in zip(tests, test_mods)]
+
+test = Alias("test",[test_runs])
+
+Return("test")

@@ -1,0 +1,5 @@
+Import("env")
+
+lib = env.SharedLibrary("boost_python_numpy", Glob("*.cpp"))
+
+Return("lib")
