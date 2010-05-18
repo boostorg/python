@@ -1,17 +1,8 @@
-Import("env")
-import os
+Import("bp_numpy_env")
 
-test_env = env.Clone()
-test_env.Append(LIBS="boost_python_numpy")
+ufunc_mod = bp_numpy_env.SharedLibrary("ufunc_mod", "ufunc_mod.cpp", SHLIBPREFIX="", 
+                                       LIBS="boost_python_numpy")
+ufunc_test = bp_numpy_env.PythonUnitTest("ufunc.py", ufunc_mod)
 
-tests = ("ufunc",)
-test_mods = [test_env.SharedLibrary("%s_mod" % k, "%s_mod.cpp" % k, SHLIBPREFIX="") 
-             for k in tests]
-os.path.abspath(".")
-test_runs = [test_env.Command(".%s" % name, [mod,"%s.py" % name],
-                              "cd %s; python %s.py" % (os.path.abspath("."), name))
-             for name, mod in zip(tests, test_mods)]
-
-test = Alias("test",[test_runs])
-
+test = ufunc_test
 Return("test")

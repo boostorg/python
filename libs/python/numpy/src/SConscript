@@ -1,5 +1,5 @@
-Import("env")
+Import("bp_numpy_env")
 
-lib = env.SharedLibrary("boost_python_numpy", Glob("*.cpp"))
+lib = bp_numpy_env.SharedLibrary("boost_python_numpy", Glob("*.cpp"))
 
 Return("lib")
