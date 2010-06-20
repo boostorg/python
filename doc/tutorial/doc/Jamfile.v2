@@ -13,8 +13,6 @@ boostbook tutorial
         tutorial.qbk
     :
         <xsl:param>boost.root=../../../../../..
-        <xsl:param>boost.libraries=../../../../../../libs/libraries.htm
-        <xsl:param>html.stylesheet=../../../../../../doc/html/boostbook.css
         <format>pdf:<xsl:param>img.src.path=$(images)/
         <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/python/doc/tutorial/doc/html
     ;
