@@ -1,8 +1,12 @@
 Import("bp_numpy_env")
 
-ufunc_mod = bp_numpy_env.SharedLibrary("ufunc_mod", "ufunc_mod.cpp", SHLIBPREFIX="", 
-                                       LIBS="boost_python_numpy")
-ufunc_test = bp_numpy_env.PythonUnitTest("ufunc.py", ufunc_mod)
+test = []
 
-test = ufunc_test
+for name in ("ufunc", "templates"):
+    mod = bp_numpy_env.SharedLibrary("%s_mod" % name, "%s_mod.cpp" % name, SHLIBPREFIX="", 
+                                     LIBS="boost_python_numpy")
+    test.extend(
+        bp_numpy_env.PythonUnitTest("%s.py" % name, mod)
+        )
+
 Return("test")
