@@ -115,6 +115,9 @@ public:
     /// @brief Eliminate any unit-sized dimensions.
     ndarray squeeze() const;
 
+    /// @brief Equivalent to self.reshape(*shape) in Python.
+    ndarray reshape(tuple const & shape) const;
+
     /**
      *  @brief If the array contains only a single element, return it as an array scalar; otherwise return
      *         the array.

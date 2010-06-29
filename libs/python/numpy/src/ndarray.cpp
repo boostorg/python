@@ -185,6 +185,14 @@ ndarray ndarray::squeeze() const {
     );
 }
 
+ndarray ndarray::reshape(tuple const & shape) const {
+    return ndarray(
+        python::detail::new_reference(
+            PyArray_Reshape(reinterpret_cast<PyArrayObject*>(this->ptr()), shape.ptr())
+        )
+    );
+}
+
 object ndarray::scalarize() const {
     Py_INCREF(ptr());
     return object(python::detail::new_reference(PyArray_Return(reinterpret_cast<PyArrayObject*>(ptr()))));
