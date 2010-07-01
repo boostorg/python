@@ -1,13 +1,13 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Functions</title>
-<link rel="stylesheet" href="../../../../../../../doc/html/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.66.1">
-<link rel="start" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="up" href="../index.html" title="Chapter 1. python 1.0">
-<link rel="prev" href="exposing.html" title=" Exposing Classes">
-<link rel="next" href="object.html" title=" Object Interface">
+<link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
+<link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
+<link rel="prev" href="exposing.html" title="Exposing Classes">
+<link rel="next" href="object.html" title="Object Interface">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
@@ -20,9 +20,9 @@
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="exposing.html"><img src="../../../../../../../doc/html/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../../../doc/html/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../../../doc/html/images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../../../../../../../doc/html/images/next.png" alt="Next"></a>
+<a accesskey="p" href="exposing.html"><img src="../../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
-<div class="section" lang="en">
+<div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="python.functions"></a>Functions</h2></div></div></div>
 <div class="toc"><dl>
@@ -38,18 +38,12 @@
       facilities that will make it even easier for us to expose C++ functions that
       take advantage of C++ features such as overloading and default arguments.
     </p>
-<div class="blockquote"><blockquote class="blockquote">
-<p>
-        </p>
-<p>
-          <span class="emphasis"><em>Read on...</em></span>
-        </p>
-<p>
-      </p>
-</blockquote></div>
+<div class="blockquote"><blockquote class="blockquote"><p>
+        <span class="emphasis"><em>Read on...</em></span>
+      </p></blockquote></div>
 <p>
       But before you do, you might want to fire up Python 2.2 or later and type
-      <tt class="literal">&gt;&gt;&gt; import this</tt>.
+      <code class="literal">&gt;&gt;&gt; import this</code>.
     </p>
 <pre class="programlisting">&gt;&gt;&gt; import this
 The Zen of Python, by Tim Peters
@@ -68,12 +62,12 @@ In the face of ambiguity, refuse the temptation to guess.
 There should be one-- and preferably only one --obvious way to do it
 Although that way may not be obvious at first unless you're Dutch.
 Now is better than never.
-Although never is often better than <span class="bold"><b>right</b></span> now.
+Although never is often better than <span class="bold"><strong>right</strong></span> now.
 If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 </pre>
-<div class="section" lang="en">
+<div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.call_policies"></a>Call Policies</h3></div></div></div>
 <p>
@@ -121,21 +115,23 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         Here's what's happening:
       </p>
-<div class="orderedlist"><ol type="1">
-<li>
-<tt class="literal">f</tt> is called passing in a reference to <tt class="literal">y</tt>
-          and a pointer to <tt class="literal">z</tt>
-</li>
-<li>
-          A reference to <tt class="literal">y.x</tt> is returned
-        </li>
-<li>
-<tt class="literal">y</tt> is deleted. <tt class="literal">x</tt> is a dangling reference
-        </li>
-<li>
-<tt class="literal">x.some_method()</tt> is called
-        </li>
-<li><span class="bold"><b>BOOM!</b></span></li>
+<div class="orderedlist"><ol class="orderedlist" type="1">
+<li class="listitem">
+            <code class="literal">f</code> is called passing in a reference to <code class="literal">y</code>
+            and a pointer to <code class="literal">z</code>
+          </li>
+<li class="listitem">
+            A reference to <code class="literal">y.x</code> is returned
+          </li>
+<li class="listitem">
+            <code class="literal">y</code> is deleted. <code class="literal">x</code> is a dangling reference
+          </li>
+<li class="listitem">
+            <code class="literal">x.some_method()</code> is called
+          </li>
+<li class="listitem">
+            <span class="bold"><strong>BOOM!</strong></span>
+          </li>
 </ol></div>
 <p>
         We could copy result into a new object:
@@ -163,7 +159,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <span class="special">};</span>
 </pre>
 <p>
-        Notice that the data member <tt class="literal">z</tt> is held by class Y using
+        Notice that the data member <code class="literal">z</code> is held by class Y using
         a raw pointer. Now we have a potential dangling pointer problem inside Y:
       </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">)</span> <span class="preprocessor"># y</span> <span class="identifier">refers</span> <span class="identifier">to</span> <span class="identifier">z</span>
@@ -171,7 +167,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">z_value</span><span class="special">()</span> <span class="preprocessor"># CRASH</span><span class="special">!</span>
 </pre>
 <p>
-        For reference, here's the implementation of <tt class="literal">f</tt> again:
+        For reference, here's the implementation of <code class="literal">f</code> again:
       </p>
 <pre class="programlisting"><span class="identifier">X</span><span class="special">&amp;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">Y</span><span class="special">&amp;</span> <span class="identifier">y</span><span class="special">,</span> <span class="identifier">Z</span><span class="special">*</span> <span class="identifier">z</span><span class="special">)</span>
 <span class="special">{</span>
@@ -182,35 +178,38 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         Here's what's happening:
       </p>
-<div class="orderedlist"><ol type="1">
-<li>
-<tt class="literal">f</tt> is called passing in a reference to <tt class="literal">y</tt>
-          and a pointer to <tt class="literal">z</tt>
-</li>
-<li>
-          A pointer to <tt class="literal">z</tt> is held by <tt class="literal">y</tt>
-</li>
-<li>
-          A reference to <tt class="literal">y.x</tt> is returned
-        </li>
-<li>
-<tt class="literal">z</tt> is deleted. <tt class="literal">y.z</tt> is a dangling pointer
-        </li>
-<li>
-<tt class="literal">y.z_value()</tt> is called
-        </li>
-<li>
-<tt class="literal">z-&gt;value()</tt> is called
-        </li>
-<li><span class="bold"><b>BOOM!</b></span></li>
+<div class="orderedlist"><ol class="orderedlist" type="1">
+<li class="listitem">
+            <code class="literal">f</code> is called passing in a reference to <code class="literal">y</code>
+            and a pointer to <code class="literal">z</code>
+          </li>
+<li class="listitem">
+            A pointer to <code class="literal">z</code> is held by <code class="literal">y</code>
+          </li>
+<li class="listitem">
+            A reference to <code class="literal">y.x</code> is returned
+          </li>
+<li class="listitem">
+            <code class="literal">z</code> is deleted. <code class="literal">y.z</code> is a dangling
+            pointer
+          </li>
+<li class="listitem">
+            <code class="literal">y.z_value()</code> is called
+          </li>
+<li class="listitem">
+            <code class="literal">z-&gt;value()</code> is called
+          </li>
+<li class="listitem">
+            <span class="bold"><strong>BOOM!</strong></span>
+          </li>
 </ol></div>
-<a name="call_policies.call_policies"></a><h2>
-<a name="id465291"></a>
+<a name="call_policies.call_policies"></a><h3>
+<a name="id767074"></a>
         Call Policies
-      </h2>
+      </h3>
 <p>
         Call Policies may be used in situations such as the example detailed above.
-        In our example, <tt class="literal">return_internal_reference</tt> and <tt class="literal">with_custodian_and_ward</tt>
+        In our example, <code class="literal">return_internal_reference</code> and <code class="literal">with_custodian_and_ward</code>
         are our friends:
       </p>
 <pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span>
@@ -218,25 +217,25 @@ Namespaces are one honking great idea -- let's do more of those!
         <span class="identifier">with_custodian_and_ward</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span> <span class="special">&gt;());</span>
 </pre>
 <p>
-        What are the <tt class="literal">1</tt> and <tt class="literal">2</tt> parameters, you
+        What are the <code class="literal">1</code> and <code class="literal">2</code> parameters, you
         ask?
       </p>
 <pre class="programlisting"><span class="identifier">return_internal_reference</span><span class="special">&lt;</span><span class="number">1</span>
 </pre>
 <p>
-        Informs Boost.Python that the first argument, in our case <tt class="literal">Y&amp;
-        y</tt>, is the owner of the returned reference: <tt class="literal">X&amp;</tt>.
-        The "<tt class="literal">1</tt>" simply specifies the first argument.
-        In short: "return an internal reference <tt class="literal">X&amp;</tt> owned
-        by the 1st argument <tt class="literal">Y&amp; y</tt>".
+        Informs Boost.Python that the first argument, in our case <code class="literal">Y&amp;
+        y</code>, is the owner of the returned reference: <code class="literal">X&amp;</code>.
+        The "<code class="literal">1</code>" simply specifies the first argument.
+        In short: "return an internal reference <code class="literal">X&amp;</code> owned
+        by the 1st argument <code class="literal">Y&amp; y</code>".
       </p>
 <pre class="programlisting"><span class="identifier">with_custodian_and_ward</span><span class="special">&lt;</span><span class="number">1</span><span class="special">,</span> <span class="number">2</span><span class="special">&gt;</span>
 </pre>
 <p>
         Informs Boost.Python that the lifetime of the argument indicated by ward
-        (i.e. the 2nd argument: <tt class="literal">Z* z</tt>) is dependent on the lifetime
-        of the argument indicated by custodian (i.e. the 1st argument: <tt class="literal">Y&amp;
-        y</tt>).
+        (i.e. the 2nd argument: <code class="literal">Z* z</code>) is dependent on the lifetime
+        of the argument indicated by custodian (i.e. the 1st argument: <code class="literal">Y&amp;
+        y</code>).
       </p>
 <p>
         It is also important to note that we have defined two policies above. Two
@@ -250,42 +249,44 @@ Namespaces are one honking great idea -- let's do more of those!
         Here is the list of predefined call policies. A complete reference detailing
         these can be found <a href="../../../../v2/reference.html#models_of_call_policies" target="_top">here</a>.
       </p>
-<div class="itemizedlist"><ul type="disc">
-<li>
-<span class="bold"><b>with_custodian_and_ward</b></span>: Ties lifetimes
-          of the arguments
-        </li>
-<li>
-<span class="bold"><b>with_custodian_and_ward_postcall</b></span>: Ties
-          lifetimes of the arguments and results
-        </li>
-<li>
-<span class="bold"><b>return_internal_reference</b></span>: Ties lifetime
-          of one argument to that of result
-        </li>
-<li>
-<span class="bold"><b>return_value_policy&lt;T&gt; with T one of:</b></span><div class="itemizedlist"><ul type="circle">
-<li>
-<span class="bold"><b>reference_existing_object</b></span>: naive (dangerous)
-              approach
-            </li>
-<li>
-<span class="bold"><b>copy_const_reference</b></span>: Boost.Python
-              v1 approach
-            </li>
-<li>
-<span class="bold"><b>copy_non_const_reference</b></span>:
-            </li>
-<li>
-<span class="bold"><b>manage_new_object</b></span>: Adopt a pointer
-              and hold the instance
-            </li>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem">
+            <span class="bold"><strong>with_custodian_and_ward</strong></span>: Ties lifetimes
+            of the arguments
+          </li>
+<li class="listitem">
+            <span class="bold"><strong>with_custodian_and_ward_postcall</strong></span>: Ties
+            lifetimes of the arguments and results
+          </li>
+<li class="listitem">
+            <span class="bold"><strong>return_internal_reference</strong></span>: Ties lifetime
+            of one argument to that of result
+          </li>
+<li class="listitem">
+            <span class="bold"><strong>return_value_policy&lt;T&gt; with T one of:</strong></span>
+            <div class="itemizedlist"><ul class="itemizedlist" type="circle">
+<li class="listitem">
+                  <span class="bold"><strong>reference_existing_object</strong></span>: naive
+                  (dangerous) approach
+                </li>
+<li class="listitem">
+                  <span class="bold"><strong>copy_const_reference</strong></span>: Boost.Python
+                  v1 approach
+                </li>
+<li class="listitem">
+                  <span class="bold"><strong>copy_non_const_reference</strong></span>:
+                </li>
+<li class="listitem">
+                  <span class="bold"><strong>manage_new_object</strong></span>: Adopt a pointer
+                  and hold the instance
+                </li>
 </ul></div>
-</li>
+          </li>
 </ul></div>
 <div class="sidebar">
+<p class="title"><b></b></p>
 <p>
-        <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><b>Remember the Zen, Luke:</b></span>
+        <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><strong>Remember the Zen, Luke:</strong></span>
       </p>
 <p>
         "Explicit is better than implicit"
@@ -295,7 +296,7 @@ Namespaces are one honking great idea -- let's do more of those!
       </p>
 </div>
 </div>
-<div class="section" lang="en">
+<div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.overloading"></a>Overloading</h3></div></div></div>
 <p>
@@ -347,31 +348,31 @@ Namespaces are one honking great idea -- let's do more of those!
 <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">fx4</span><span class="special">)</span>
 </pre>
 </div>
-<div class="section" lang="en">
+<div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.default_arguments"></a>Default Arguments</h3></div></div></div>
 <p>
         Boost.Python wraps (member) function pointers. Unfortunately, C++ function
-        pointers carry no default argument info. Take a function <tt class="literal">f</tt>
+        pointers carry no default argument info. Take a function <code class="literal">f</code>
         with default arguments:
       </p>
 <pre class="programlisting"><span class="keyword">int</span> <span class="identifier">f</span><span class="special">(</span><span class="keyword">int</span><span class="special">,</span> <span class="keyword">double</span> <span class="special">=</span> <span class="number">3.14</span><span class="special">,</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="special">=</span> <span class="string">"hello"</span><span class="special">);</span>
 </pre>
 <p>
-        But the type of a pointer to the function <tt class="literal">f</tt> has no information
+        But the type of a pointer to the function <code class="literal">f</code> has no information
         about its default arguments:
       </p>
 <pre class="programlisting"><span class="keyword">int</span><span class="special">(*</span><span class="identifier">g</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">;</span>    <span class="comment">// defaults lost!
 </span></pre>
 <p>
-        When we pass this function pointer to the <tt class="literal">def</tt> function,
+        When we pass this function pointer to the <code class="literal">def</code> function,
         there is no way to retrieve the default arguments:
       </p>
 <pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>                            <span class="comment">// defaults lost!
 </span></pre>
 <p>
         Because of this, when wrapping C++ code, we had to resort to manual wrapping
-        as outlined in the <a href="functions.html#python.overloading" title="Overloading">previous section</a>,
+        as outlined in the <a class="link" href="functions.html#python.overloading" title="Overloading">previous section</a>,
         or writing thin wrappers:
       </p>
 <pre class="programlisting"><span class="comment">// write "thin wrappers"
@@ -388,18 +389,18 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         When you want to wrap functions (or member functions) that either:
       </p>
-<div class="itemizedlist"><ul type="disc">
-<li>
-          have default arguments, or
-        </li>
-<li>
-          are overloaded with a common sequence of initial arguments
-        </li>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem">
+            have default arguments, or
+          </li>
+<li class="listitem">
+            are overloaded with a common sequence of initial arguments
+          </li>
 </ul></div>
-<a name="default_arguments.boost_python_function_overloads"></a><h2>
-<a name="id467317"></a>
+<a name="default_arguments.boost_python_function_overloads"></a><h3>
+<a name="id769042"></a>
         BOOST_PYTHON_FUNCTION_OVERLOADS
-      </h2>
+      </h3>
 <p>
         Boost.Python now has a way to make it easier. For instance, given a function:
       </p>
@@ -415,18 +416,18 @@ Namespaces are one honking great idea -- let's do more of those!
 </pre>
 <p>
         will automatically create the thin wrappers for us. This macro will create
-        a class <tt class="literal">foo_overloads</tt> that can be passed on to <tt class="literal">def(...)</tt>.
+        a class <code class="literal">foo_overloads</code> that can be passed on to <code class="literal">def(...)</code>.
         The third and fourth macro argument are the minimum arguments and maximum
-        arguments, respectively. In our <tt class="literal">foo</tt> function the minimum
-        number of arguments is 1 and the maximum number of arguments is 4. The <tt class="literal">def(...)</tt>
+        arguments, respectively. In our <code class="literal">foo</code> function the minimum
+        number of arguments is 1 and the maximum number of arguments is 4. The <code class="literal">def(...)</code>
         function will automatically add all the foo variants for us:
       </p>
 <pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
-<a name="default_arguments.boost_python_member_function_overloads"></a><h2>
-<a name="id467632"></a>
+<a name="default_arguments.boost_python_member_function_overloads"></a><h3>
+<a name="id769301"></a>
         BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
-      </h2>
+      </h3>
 <p>
         Objects here, objects there, objects here there everywhere. More frequently
         than anything else, we need to expose member functions of our classes to
@@ -435,7 +436,7 @@ Namespaces are one honking great idea -- let's do more of those!
         play. Another macro is provided to make this a breeze.
       </p>
 <p>
-        Like <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>, <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt>
+        Like <code class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</code>, <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code>
         may be used to automatically create the thin wrappers for wrapping member
         functions. Let's have an example:
       </p>
@@ -454,11 +455,11 @@ Namespaces are one honking great idea -- let's do more of those!
 <pre class="programlisting"><span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">george_overloads</span><span class="special">,</span> <span class="identifier">wack_em</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">3</span><span class="special">)</span>
 </pre>
 <p>
-        will generate a set of thin wrappers for george's <tt class="literal">wack_em</tt>
+        will generate a set of thin wrappers for george's <code class="literal">wack_em</code>
         member function accepting a minimum of 1 and a maximum of 3 arguments (i.e.
         the third and fourth macro argument). The thin wrappers are all enclosed
-        in a class named <tt class="literal">george_overloads</tt> that can then be used
-        as an argument to <tt class="literal">def(...)</tt>:
+        in a class named <code class="literal">george_overloads</code> that can then be used
+        as an argument to <code class="literal">def(...)</code>:
       </p>
 <pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"wack_em"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">george</span><span class="special">::</span><span class="identifier">wack_em</span><span class="special">,</span> <span class="identifier">george_overloads</span><span class="special">());</span>
 </pre>
@@ -466,13 +467,13 @@ Namespaces are one honking great idea -- let's do more of those!
         See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads
         reference</a> for details.
       </p>
-<a name="default_arguments.init_and_optional"></a><h2>
-<a name="id467992"></a>
+<a name="default_arguments.init_and_optional"></a><h3>
+<a name="id769596"></a>
         init and optional
-      </h2>
+      </h3>
 <p>
         A similar facility is provided for class constructors, again, with default
-        arguments or a sequence of overloads. Remember <tt class="literal">init&lt;...&gt;</tt>?
+        arguments or a sequence of overloads. Remember <code class="literal">init&lt;...&gt;</code>?
         For example, given a class X with a constructor:
       </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">X</span>
@@ -487,16 +488,16 @@ Namespaces are one honking great idea -- let's do more of those!
 <pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">,</span> <span class="identifier">optional</span><span class="special">&lt;</span><span class="keyword">char</span><span class="special">,</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span><span class="special">,</span> <span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;())</span>
 </pre>
 <p>
-        Notice the use of <tt class="literal">init&lt;...&gt;</tt> and <tt class="literal">optional&lt;...&gt;</tt>
+        Notice the use of <code class="literal">init&lt;...&gt;</code> and <code class="literal">optional&lt;...&gt;</code>
         to signify the default (optional arguments).
       </p>
 </div>
-<div class="section" lang="en">
+<div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.auto_overloading"></a>Auto-Overloading</h3></div></div></div>
 <p>
-        It was mentioned in passing in the previous section that <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>
-        and <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt> can also be
+        It was mentioned in passing in the previous section that <code class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</code>
+        and <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code> can also be
         used for overloaded functions and member functions with a common sequence
         of initial arguments. Here is an example:
       </p>
@@ -535,24 +536,24 @@ Namespaces are one honking great idea -- let's do more of those!
         Notice though that we have a situation now where we have a minimum of zero
         (0) arguments and a maximum of 3 arguments.
       </p>
-<a name="auto_overloading.manual_wrapping"></a><h2>
-<a name="id468767"></a>
+<a name="auto_overloading.manual_wrapping"></a><h3>
+<a name="id770226"></a>
         Manual Wrapping
-      </h2>
+      </h3>
 <p>
-        It is important to emphasize however that <span class="bold"><b>the overloaded
-        functions must have a common sequence of initial arguments</b></span>. Otherwise,
+        It is important to emphasize however that <span class="bold"><strong>the overloaded
+        functions must have a common sequence of initial arguments</strong></span>. Otherwise,
         our scheme above will not work. If this is not the case, we have to wrap
-        our functions <a href="functions.html#python.overloading" title="Overloading">manually</a>.
+        our functions <a class="link" href="functions.html#python.overloading" title="Overloading">manually</a>.
       </p>
 <p>
         Actually, we can mix and match manual wrapping of overloaded functions and
-        automatic wrapping through <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt>
-        and its sister, <tt class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</tt>. Following
-        up on our example presented in the section <a href="functions.html#python.overloading" title="Overloading">on
+        automatic wrapping through <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code>
+        and its sister, <code class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</code>. Following
+        up on our example presented in the section <a class="link" href="functions.html#python.overloading" title="Overloading">on
         overloading</a>, since the first 4 overload functins have a common sequence
-        of initial arguments, we can use <tt class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</tt>
-        to automatically wrap the first three of the <tt class="literal">def</tt>s and
+        of initial arguments, we can use <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code>
+        to automatically wrap the first three of the <code class="literal">def</code>s and
         manually wrap just the last. Here's how we'll do this:
       </p>
 <pre class="programlisting"><span class="identifier">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</span><span class="special">(</span><span class="identifier">xf_overloads</span><span class="special">,</span> <span class="identifier">f</span><span class="special">,</span> <span class="number">1</span><span class="special">,</span> <span class="number">4</span><span class="special">)</span>
@@ -573,7 +574,7 @@ Namespaces are one honking great idea -- let's do more of those!
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><div class="copyright-footer">Copyright © 2002-2005 Joel
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005 Joel
       de Guzman, David Abrahams<p>
         Distributed under the Boost Software License, Version 1.0. (See accompanying
         file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">
@@ -583,7 +584,7 @@ Namespaces are one honking great idea -- let's do more of those!
 </tr></table>
 <hr>
 <div class="spirit-nav">
-<a accesskey="p" href="exposing.html"><img src="../../../../../../../doc/html/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../../../doc/html/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../../../doc/html/images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../../../../../../../doc/html/images/next.png" alt="Next"></a>
+<a accesskey="p" href="exposing.html"><img src="../../../../../../../doc/src/images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../../../../../../doc/src/images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../../../../../../doc/src/images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../../../../../../../doc/src/images/next.png" alt="Next"></a>
 </div>
 </body>
 </html>
