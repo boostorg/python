@@ -167,12 +167,13 @@ PyObject* postcall(PyObject* args, PyObject* result);
 
 class Bar
 {
+ public:
    Bar(int x) : x(x) {}
    int get_x() const { return x; }
    void set_x(int x) { this-&gt;x = x; }
  private:
    int x;
-}
+};
 
 class Foo
 {
@@ -189,7 +190,7 @@ class Foo
 using namespace boost::python;
 BOOST_PYTHON_MODULE(internal_refs)
 {
-   class_&lt;Bar&gt;("Bar")
+   class_&lt;Bar&gt;("Bar", init&lt;int&gt;())
       .def("get_x", &amp;Bar::get_x)
       .def("set_x", &amp;Bar::set_x)
       ;

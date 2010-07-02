@@ -101,7 +101,7 @@ namespace boost { namespace python
         struct arg 
         {
           template &lt;class T&gt;
-                  arg &amp;perator = (T const &amp;value);
+                  arg &amp;operator = (T const &amp;value);
           explicit arg (char const *name){elements[0].name = name;}
         };
 
