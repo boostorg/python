@@ -37,6 +37,13 @@ rule py-compile-fail ( sources * )
     return [ compile-fail $(sources) /boost/python//boost_python ] ;
 }
 
+rule require-windows ( properties * )
+{
+    if ! <target-os>windows in $(properties)
+    {
+        return <build>no ;
+    }
+}
 
 test-suite python
   :
@@ -184,10 +191,8 @@ bpl-test crossmod_opaque
 #     bpl-test bienstman5 ;
 # }
 
-# XXX disabled on release branch only,
-# XXX to avoid failures on platforms other than Windows
-# [ bpl-test calling_conventions ]
-# [ bpl-test calling_conventions_mf ]
+[ bpl-test calling_conventions : : <conditional>@require-windows ]
+[ bpl-test calling_conventions_mf : : <conditional>@require-windows ]
 
 # --- unit tests of library components ---
 
