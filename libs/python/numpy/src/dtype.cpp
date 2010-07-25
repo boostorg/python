@@ -30,6 +30,10 @@
     template dtype dtype::get_builtin< std::complex<creal> >()
 
 namespace boost { namespace python {
+namespace converter {
+NUMPY_OBJECT_MANAGER_TRAITS_IMPL(PyArrayDescr_Type, python::numpy::dtype)
+} // namespace boost::python::converter
+
 namespace numpy {
 
 template <typename T> struct dtype_traits;
@@ -61,6 +65,7 @@ NUMPY_DTYPE_TRAITS_BUILTIN(npy_uint, NPY_UINT);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_int, NPY_INT);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_ulong, NPY_ULONG);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_long, NPY_LONG);
+NUMPY_DTYPE_TRAITS_BUILTIN(npy_longlong, NPY_LONGLONG);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_float, NPY_FLOAT);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_double, NPY_DOUBLE);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_longdouble, NPY_LONGDOUBLE);

@@ -47,7 +47,7 @@ public:
     BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dtype, object);
 
     template <typename Sequence, typename Function>
-    void invoke_matching_template(Function f);
+    void invoke_matching_template(Function f) const;
 
 };
 
@@ -83,10 +83,29 @@ private:
     Function m_func;
 };
 
+template <typename Function>
+struct dtype_template_invoker< boost::reference_wrapper<Function> > {
+    
+    template <typename T>
+    void operator()(T * x) const {
+        if (dtype::get_builtin<T>() == m_dtype) {
+            m_func.template apply<T>();
+            throw dtype_template_match_found();
+        }
+    }
+
+    dtype_template_invoker(dtype const & dtype_, Function & func) :
+        m_dtype(dtype_), m_func(func) {}
+
+private:
+    dtype const & m_dtype;
+    Function & m_func;
+};
+
 } // namespace boost::python::numpy::detail
 
 template <typename Sequence, typename Function>
-void dtype::invoke_matching_template(Function f) {
+void dtype::invoke_matching_template(Function f) const {
     detail::dtype_template_invoker<Function> invoker(*this, f);
     try {
         boost::mpl::for_each< Sequence, detail::add_pointer_meta >(invoker);
