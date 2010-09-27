@@ -26,6 +26,14 @@ project
 # source files after the colon separated by spaces.
 python-extension hello_ext : hello.cpp ;
 
+# Put the extension and Boost.Python DLL in the current directory, so
+# that running script by hand works.
+install convenient_copy 
+  : hello_ext 
+  : <install-dependencies>on <install-type>SHARED_LIB <install-type>PYTHON_EXTENSION 
+    <location>. 
+  ;
+
 # A little "rule" (function) to clean up the syntax of declaring tests
 # of these extension modules.
 local rule run-test ( test-name : sources + )
