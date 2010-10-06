@@ -57,6 +57,7 @@ int dtype::get_itemsize() const {
 template <typename T>
 dtype dtype::get_builtin() { return dtype_traits<T>::get(); }
 
+NUMPY_DTYPE_TRAITS_BUILTIN(bool, NPY_BOOL);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_ubyte, NPY_UBYTE);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_byte, NPY_BYTE);
 NUMPY_DTYPE_TRAITS_BUILTIN(npy_ushort, NPY_USHORT);
@@ -76,14 +77,16 @@ NUMPY_DTYPE_TRAITS_COMPLEX(float, npy_cfloat, NPY_CFLOAT);
 NUMPY_DTYPE_TRAITS_COMPLEX(double, npy_cdouble, NPY_CDOUBLE);
 NUMPY_DTYPE_TRAITS_COMPLEX(long double, npy_clongdouble, NPY_CLONGDOUBLE);
 
+#if 0
 template <> struct dtype_traits<bool> {
     static dtype get() {
-	if (sizeof(bool) == sizeof(npy_bool)) return dtype_traits<npy_bool>::get();
 	if (sizeof(bool) == sizeof(npy_ubyte)) return dtype_traits<npy_ubyte>::get();
+	if (sizeof(bool) == sizeof(npy_bool)) return dtype_traits<npy_bool>::get();
 	PyErr_SetString(PyExc_TypeError, "Cannot determine numpy dtype corresponding to C++ bool.");
         throw_error_already_set();
     }
 };
 template dtype dtype::get_builtin<bool>();
+#endif
 
 }}} // namespace boost::python::numpy
