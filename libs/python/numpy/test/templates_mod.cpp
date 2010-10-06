@@ -9,19 +9,16 @@ struct ArrayFiller {
     typedef boost::mpl::vector< short, int, float, std::complex<double> > TypeSequence;
     typedef boost::mpl::vector_c< int, 1, 2 > DimSequence;
 
-    template <typename T>
-    struct nested {
-
-        void apply(boost::mpl::integral_c<int,1> * ) const {
+    template <typename T, int N>
+    void apply() const {
+        if (N == 1) {
             char * p = argument.get_data();
             int stride = argument.strides(0);
             int size = argument.shape(0);
             for (int n = 0; n != size; ++n, p += stride) {
                 *reinterpret_cast<T*>(p) = static_cast<T>(n);
             }
-        }
-
-        void apply(boost::mpl::integral_c<int,2> * ) const {
+        } else {
             char * row_p = argument.get_data();
             int row_stride = argument.strides(0);
             int col_stride = argument.strides(1);
@@ -35,14 +32,7 @@ struct ArrayFiller {
                 }
             }
         }
-
-        explicit nested(bp::numpy::ndarray const & arg) : argument(arg) {}
-
-        bp::numpy::ndarray argument;
-    };
-
-    template <typename T>
-    nested<T> nest(T *) const { return nested<T>(argument); }
+    }
 
     bp::numpy::ndarray argument;
 

@@ -9,6 +9,8 @@
 #include <boost/python/numpy/dtype.hpp>
 #include <boost/python/numpy/ndarray.hpp>
 
+#include <boost/mpl/integral_c.hpp>
+
 namespace boost { namespace python { namespace numpy {
 
 namespace detail {
@@ -29,9 +31,9 @@ template <typename Function>
 struct dtype_template_invoker {
     
     template <typename T>
-    void operator()(T * x) const {
+    void operator()(T *) const {
         if (dtype::get_builtin<T>() == m_dtype) {
-            m_func.apply(x);
+            m_func.template apply<T>();
             throw dtype_template_match_found();
         }
     }
@@ -48,9 +50,9 @@ template <typename Function>
 struct dtype_template_invoker< boost::reference_wrapper<Function> > {
     
     template <typename T>
-    void operator()(T * x) const {
+    void operator()(T *) const {
         if (dtype::get_builtin<T>() == m_dtype) {
-            m_func.apply(x);
+            m_func.template apply<T>();
             throw dtype_template_match_found();
         }
     }
@@ -66,10 +68,10 @@ private:
 template <typename Function>
 struct nd_template_invoker {
     
-    template <typename T>
-    void operator()(T * x) const {
-        if (m_nd == T::value) {
-            m_func.apply(x);
+    template <int N>
+    void operator()(boost::mpl::integral_c<int,N> *) const {
+        if (m_nd == N) {
+            m_func.template apply<N>();
             throw nd_template_match_found();
         }
     }
@@ -85,10 +87,10 @@ private:
 template <typename Function>
 struct nd_template_invoker< boost::reference_wrapper<Function> > {
     
-    template <typename T>
-    void operator()(T * x) const {
-        if (m_nd == T::value) {
-            m_func.apply(x);
+    template <int N>
+    void operator()(boost::mpl::integral_c<int,N> *) const {
+        if (m_nd == N) {
+            m_func.template apply<N>();
             throw nd_template_match_found();
         }
     }
@@ -129,31 +131,30 @@ void invoke_matching_dtype(dtype const & dtype_, Function f) {
 
 namespace detail {
 
-template <typename DimSequence, typename Function>
-struct array_template_invoker_wrapper {
+template <typename T, typename Function>
+struct array_template_invoker_wrapper_2 {
 
-    template <typename T>
-    void apply(T * x) const {
-        invoke_matching_nd<DimSequence>(m_nd, m_func.nest(x));
+    template <int N>
+    void apply() const {
+        m_func.template apply<T,N>();
     }
 
-    array_template_invoker_wrapper(int nd, Function func) :
-        m_nd(nd), m_func(func) {}
+    array_template_invoker_wrapper_2(Function & func) :
+        m_func(func) {}
 
 private:
-    int m_nd;
-    Function m_func;
+    Function & m_func;
 };
 
 template <typename DimSequence, typename Function>
-struct array_template_invoker_wrapper< DimSequence, boost::reference_wrapper<Function> > {
+struct array_template_invoker_wrapper_1 {
 
     template <typename T>
-    void apply(T * x) const {
-        invoke_matching_nd<DimSequence>(m_nd, m_func.nest(x));
+    void apply() const {
+        invoke_matching_nd<DimSequence>(m_nd, array_template_invoker_wrapper_2<T,Function>(m_func));
     }
 
-    array_template_invoker_wrapper(int nd, Function & func) :
+    array_template_invoker_wrapper_1(int nd, Function & func) :
         m_nd(nd), m_func(func) {}
 
 private:
@@ -161,11 +162,19 @@ private:
     Function & m_func;
 };
 
+template <typename DimSequence, typename Function>
+struct array_template_invoker_wrapper_1< DimSequence, boost::reference_wrapper<Function> >
+    : public array_template_invoker_wrapper_1< DimSequence, Function >
+{
+    array_template_invoker_wrapper_1(int nd, Function & func) :
+        array_template_invoker_wrapper_1< DimSequence, Function >(nd, func) {}
+};
+
 } // namespace boost::python::numpy::detail
 
 template <typename TypeSequence, typename DimSequence, typename Function>
 void invoke_matching_array(ndarray const & array_, Function f) {
-    detail::array_template_invoker_wrapper<DimSequence,Function> wrapper(array_.get_nd(), f);
+    detail::array_template_invoker_wrapper_1<DimSequence,Function> wrapper(array_.get_nd(), f);
     invoke_matching_dtype<TypeSequence>(array_.get_dtype(), wrapper);
 }
 
