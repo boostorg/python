@@ -275,7 +275,6 @@ inline ndarray::bitflag operator&(ndarray::bitflag a, ndarray::bitflag b) {
     return ndarray::bitflag(int(a) & int(b));
 }
 
-
 } // namespace boost::python::numpy
 
 namespace converter {

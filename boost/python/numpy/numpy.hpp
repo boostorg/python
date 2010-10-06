@@ -11,6 +11,7 @@
 #include <boost/python/numpy/scalars.hpp>
 #include <boost/python/numpy/matrix.hpp>
 #include <boost/python/numpy/ufunc.hpp>
+#include <boost/python/numpy/invoke_matching.hpp>
 
 namespace boost { namespace python {
 namespace numpy {
