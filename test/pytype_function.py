@@ -7,6 +7,11 @@
 >>> print func.__doc__.splitlines()[1]
 func( (A)arg1) -> A :
 
+>>> print func.__module__
+pytype_function_ext
+
+>>> print func.__name__
+func
 """
 def run(args = None):
     import sys
