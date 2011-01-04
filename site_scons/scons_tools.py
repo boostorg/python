@@ -1,5 +1,6 @@
 import SCons.Script as scons
 import re
+import sys
 import os
 
 database = {}
@@ -65,6 +66,12 @@ class Configuration(object):
         for dependency in self.dependencies:
             database[dependency].apply(environment)
 
+    def require(self):        
+        if not all(database[pkg].check() for pkg in self.dependencies):
+            print "Missing dependencies for required package '%s'." % self.name
+            scons.Exit(1)
+
+
 class FlagConfiguration(Configuration):
 
     def _apply(self, environment):
@@ -82,7 +89,6 @@ class PythonConfiguration(FlagConfiguration):
 
     def _check(self):
         env = MakeEnvironment()
-        context = scons.Configure(env)
         try:
             from distutils.sysconfig import get_config_vars, get_python_inc
         except ImportError:
@@ -98,7 +104,9 @@ class PythonConfiguration(FlagConfiguration):
         self._flags = [f for f in self._flags if not f.startswith("-O")]
         self._flags.append("-I%s" % get_python_inc())
         self._apply(env)
+        context = scons.Configure(env)
         if not context.CheckHeader(["Python.h"]):
+            context.Finish()
             return False
         context.Finish()
         return True
@@ -112,16 +120,17 @@ class NumPyConfiguration(VariableConfiguration):
 
     def _check(self):
         env = MakeEnvironment()
-        context = scons.Configure(env)
-        self._apply_dependencies(context.env)
+        self._apply_dependencies(env)
         try:
             import numpy.distutils.misc_util
             self._variables = {"CPPPATH": numpy.distutils.misc_util.get_numpy_include_dirs()}
         except ImportError:
-            context.Result(False)
+            print "numpy.distutils.misc_util not found"
             return False
-        self._apply(context.env)
+        self._apply(env)
+        context = scons.Configure(env)
         if not context.CheckHeader(["Python.h", "numpy/arrayobject.h"]):
+            context.Finish()
             return False
         context.Finish()
         return True
@@ -139,14 +148,16 @@ class LibraryConfiguration(VariableConfiguration):
 
     def _check(self):
         env = MakeEnvironment()
+        self._apply_dependencies(env)
+        self._apply(env)
         context = scons.Configure(env)
-        self._apply_dependencies(context.env)
-        self._apply(context.env)
         if self._headers:
             if not context.CheckHeader(self._headers, language="C++"):
+                context.Finish()
                 return False
         if self._libraries:
             if not context.CheckLib(self._libraries, language="C++"):
+                context.Finish()
                 return False
             self._variables = {"LIBS": self._libraries}
         context.Finish()
@@ -195,9 +206,12 @@ def RunProgramUnitTest(target, source, env):
         env.Execute(scons.Touch(target))
 
 def RunPythonUnitTest(target, source, env):
-    path, filename = os.path.split(source[0].abspath)
-    if not env.Execute("cd %s; python %s" % (path, filename)):
+    path, filename = os.path.split(target[0].abspath)
+    env["ENV"]["TESTPATH"] = path
+    env["ENV"]["PYTHONPATH"] = ":".join([path] + env["ENV"]["PYTHONPATH"].split(":"))
+    if not env.Execute('%s %s' % (sys.executable, source[0].abspath)):
         env.Execute(scons.Touch(target))
+    env["ENV"]["PYTHONPATH"] = ":".join(env["ENV"]["PYTHONPATH"].split(":")[1:])
 
 def BoostUnitTest(env, name, source):
     try:
@@ -205,12 +219,12 @@ def BoostUnitTest(env, name, source):
     except KeyError:
         libs = "boost_unit_test_framework"
     bin = env.Program(name, source, LIBS=libs)
-    run = env.Command(".%s.succeeded" % name, name, RunProgramUnitTest)
+    run = env.Command(".%s.succeeded" % str(name), name, RunProgramUnitTest)
     env.Depends(run, bin)
     return run
 
 def PythonUnitTest(env, script, dependencies):
-    run = env.Command(".%s.succeeded" % script, script, RunPythonUnitTest)
+    run = env.Command(".%s.succeeded" % str(script), script, RunPythonUnitTest)
     env.Depends(run, dependencies)
     return run
 
@@ -219,7 +233,9 @@ def SetupPackages(env, packages):
         database[package].apply(env)
 
 def MakeEnvironment():
-    env = scons.Environment()
+    env = scons.Environment(tools = ["default", "doxygen"])
+    env.Append(CPPPATH="#include")
+    env.Append(LIBPATH="#lib")
     env.AddMethod(RecursiveInstall, "RecursiveInstall")
     env.AddMethod(SetupPackages, "SetupPackages")
     env.AddMethod(BoostUnitTest, "BoostUnitTest")
@@ -227,10 +243,12 @@ def MakeEnvironment():
     for var in ("PATH", "LD_LIBRARY_PATH", "PYTHONPATH", "PKG_CONFIG_PATH"):
         if os.environ.has_key(var):
             env["ENV"][var] = os.environ[var]
+        else:
+            env["ENV"][var] = ""
     debug = scons.ARGUMENTS.get('debug', 0)
     if int(debug):
         env.Replace(CCFLAGS=["-Wall","-g","-O0"])
     else:
         env.Replace(CCFLAGS=["-Wall","-O2"])
-        env.Append(CPPDEFINES="NDEBUG")
+        env.Append(CPPDEFINES=["NDEBUG"])
     return env

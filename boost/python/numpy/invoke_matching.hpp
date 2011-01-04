@@ -2,8 +2,8 @@
 #define BOOST_PYTHON_NUMPY_INVOKE_MATCHING_HPP_INCLUDED
 
 /**
- *  @file boost/python/numpy/ndarray.hpp
- *  @brief Object manager and various utilities for numpy.ndarray.
+ *  @file boost/python/numpy/invoke_matching.hpp
+ *  @brief Template invocation based on dtype matching.
  */
 
 #include <boost/python/numpy/dtype.hpp>
