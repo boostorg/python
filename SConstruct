@@ -15,6 +15,7 @@ Export("bp_numpy_env")
 lib = SConscript("libs/python/numpy/src/SConscript", 
                  variant_dir="%s/python/numpy/src" % build_dir, duplicate=False)
 libpath = os.path.abspath("%s/python/numpy/src" % build_dir)
+bp_numpy_env.Append(LIBPATH=[libpath])
 if os.environ.has_key("LD_LIBRARY_PATH"):
     bp_numpy_env["ENV"]["LD_LIBRARY_PATH"] = "%s:%s" % (libpath, os.environ["LD_LIBRARY_PATH"])
 else:
