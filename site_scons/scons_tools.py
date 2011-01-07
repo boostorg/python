@@ -234,8 +234,14 @@ def SetupPackages(env, packages):
 
 def MakeEnvironment():
     env = scons.Environment(tools = ["default", "doxygen"])
-    env.Append(CPPPATH="#include")
-    env.Append(LIBPATH="#lib")
+    if scons.ARGUMENTS.has_key('LIBPATH'):
+        env.Append(LIBPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['LIBPATH'].split(":")])
+    if scons.ARGUMENTS.has_key('RPATH'):
+        env.Append(RPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['RPATH'].split(":")])
+    if scons.ARGUMENTS.has_key('CPPPATH'):
+        env.Append(CPPPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['CPPPATH'].split(":")])
+    env.Append(CPPPATH=["#include"])
+    env.Append(LIBPATH=["#lib"])
     env.AddMethod(RecursiveInstall, "RecursiveInstall")
     env.AddMethod(SetupPackages, "SetupPackages")
     env.AddMethod(BoostUnitTest, "BoostUnitTest")
