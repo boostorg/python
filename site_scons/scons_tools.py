@@ -1,9 +1,23 @@
 import SCons.Script as scons
 import re
+import distutils.sysconfig
 import sys
 import os
 
 database = {}
+
+_environment = None
+
+scons.AddOption("--prefix", dest="install_prefix", type="string", nargs=1, action="store", metavar="DIR",
+                help="installation prefix")
+scons.AddOption("--home", dest="install_home", type="string", nargs=1, action="store", metavar="DIR",
+                help="home directory to install under")
+scons.AddOption("--install-lib", dest="install_lib", type="string", nargs=1, action="store", metavar="DIR",
+                help="installation directory for libraries")
+scons.AddOption("--install-headers", dest="install_headers", type="string", nargs=1, 
+                action="store", metavar="DIR", help="installation directory for C++ header files")
+scons.AddOption("--install-python", dest="install_python", type="string", nargs=1, 
+                action="store", metavar="DIR", help="installation directory for Python modules")
 
 def ApplyFlags(env, flags):
     flags = env.ParseFlags(flags)
@@ -88,7 +102,7 @@ class PythonConfiguration(FlagConfiguration):
     dependencies = ()
 
     def _check(self):
-        env = MakeEnvironment()
+        env = GetEnvironment().Clone()
         try:
             from distutils.sysconfig import get_config_vars, get_python_inc
         except ImportError:
@@ -119,7 +133,7 @@ class NumPyConfiguration(VariableConfiguration):
     dependencies = ("python",)
 
     def _check(self):
-        env = MakeEnvironment()
+        env = GetEnvironment().Clone()
         self._apply_dependencies(env)
         try:
             import numpy.distutils.misc_util
@@ -147,7 +161,7 @@ class LibraryConfiguration(VariableConfiguration):
         return self
 
     def _check(self):
-        env = MakeEnvironment()
+        env = GetEnvironment().Clone()
         self._apply_dependencies(env)
         self._apply(env)
         context = scons.Configure(env)
@@ -232,29 +246,120 @@ def SetupPackages(env, packages):
     for package in packages:
         database[package].apply(env)
 
-def MakeEnvironment():
-    env = scons.Environment(tools = ["default", "doxygen"])
+def MakeAliases(targets):
+    env = GetEnvironment()
+    all_all = []
+    build_all = []
+    install_all = []
+    test_all = []
+    scons.Help("""
+To specify additional directories to add to the include or library paths, specify them
+with colon-separated lists on the command line.  For example:
+
+scons CPPPATH="/home/me/include:/opt/include" LIBPATH="/home/me/lib"
+
+Supported variables are CPPPATH, LIBPATH and RPATH.
+
+Global targets:   'all'     (builds everything)
+                  'build'   (builds headers, libraries, and python wrappers)
+                  'install' (copies files to global bin, include and lib directories)
+                  'test'    (runs unit tests; requires install)
+
+These targets can be built for individual packages with the syntax
+'[package]-[target]'.  Some packages support additional targets, given below.
+
+Packages:
+
+"""
+               )
+    for pkg_name in sorted(targets.keys()):
+        pkg_targets = targets[pkg_name]
+        extra_targets = tuple(k for k in pkg_targets.keys() if k not in
+                              ("all","build","install","test"))
+        if extra_targets:
+            scons.Help("%-25s   %s\n" % (pkg_name, ", ".join("'%s'" % k for k in extra_targets)))
+        else:
+            scons.Help("%-25s   (none)\n" % pkg_name)
+        pkg_all = pkg_targets.values()
+        pkg_build = [pkg_targets[k] for k in ("headers", "lib", "python") if k in pkg_targets]
+        env.Alias(pkg_name, pkg_all)
+        env.Alias("%s-all" % pkg_name, pkg_all)
+        env.Alias("%s-build" % pkg_name, pkg_build)
+        for target_name in pkg_targets:
+            env.Alias("%s-%s" % (pkg_name, target_name), pkg_targets[target_name])
+        all_all.extend(pkg_all)
+        build_all.extend(pkg_build)
+        install_all.extend(pkg_targets.get("install", pkg_build))
+        test_all.extend(pkg_targets.get("test", pkg_targets.get("install", pkg_build)))
+    env.Alias("all", all_all)
+    env.Alias("build", build_all)
+    env.Alias("install", install_all)
+    env.Alias("test", test_all)
+    env.Default("build")
+
+
+def MakeEnvironment(default_prefix="/usr/local", prefix_is_home=False):
+    global _environment
+    _environment = scons.Environment(tools = ["default", "doxygen"])
     if scons.ARGUMENTS.has_key('LIBPATH'):
-        env.Append(LIBPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['LIBPATH'].split(":")])
+        _environment.Append(LIBPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['LIBPATH'].split(":")])
     if scons.ARGUMENTS.has_key('RPATH'):
-        env.Append(RPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['RPATH'].split(":")])
+        _environment.Append(RPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['RPATH'].split(":")])
     if scons.ARGUMENTS.has_key('CPPPATH'):
-        env.Append(CPPPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['CPPPATH'].split(":")])
-    env.Append(CPPPATH=["#include"])
-    env.Append(LIBPATH=["#lib"])
-    env.AddMethod(RecursiveInstall, "RecursiveInstall")
-    env.AddMethod(SetupPackages, "SetupPackages")
-    env.AddMethod(BoostUnitTest, "BoostUnitTest")
-    env.AddMethod(PythonUnitTest, "PythonUnitTest")
+        _environment.Append(CPPPATH=[os.path.abspath(s) for s in scons.ARGUMENTS['CPPPATH'].split(":")])
+    prefix = scons.GetOption("install_prefix")
+    if prefix is None:
+        prefix = scons.GetOption("install_home")
+        if prefix is None:
+            prefix = default_prefix
+        else:
+            preefix_is_home = True
+    install_lib = scons.GetOption("install_lib")
+    if install_lib is None:
+        install_lib = os.path.join(prefix, "lib")
+    install_headers = scons.GetOption("install_headers")
+    if install_headers is None:
+        install_headers = os.path.join(prefix, "include")
+    install_python = scons.GetOption("install_python")
+    if install_python is None:
+        if prefix_is_home:
+            install_python = os.path.join(install_lib, "python")
+        else:
+            python_lib = distutils.sysconfig.get_python_lib()
+            if python_lib.startswith(distutils.sysconfig.PREFIX):
+                install_python = os.path.join(prefix, python_lib[len(distutils.sysconfig.PREFIX)+1:])
+            else:
+                print "Cannot determine default Python install directory."
+                print "Please specify --install-python on the command line."
+                scons.Exit(1)
+    _environment["INSTALL_LIB"] = install_lib
+    _environment["INSTALL_HEADERS"] = install_headers
+    _environment["INSTALL_PYTHON"] = install_python
+    _environment.AddMethod(RecursiveInstall, "RecursiveInstall")
+    _environment.AddMethod(SetupPackages, "SetupPackages")
+    _environment.AddMethod(BoostUnitTest, "BoostUnitTest")
+    _environment.AddMethod(PythonUnitTest, "PythonUnitTest")
     for var in ("PATH", "LD_LIBRARY_PATH", "PYTHONPATH", "PKG_CONFIG_PATH"):
         if os.environ.has_key(var):
-            env["ENV"][var] = os.environ[var]
+            _environment["ENV"][var] = os.environ[var]
         else:
-            env["ENV"][var] = ""
+            _environment["ENV"][var] = ""
     debug = scons.ARGUMENTS.get('debug', 0)
     if int(debug):
-        env.Replace(CCFLAGS=["-Wall","-g","-O0"])
+        _environment.Replace(CCFLAGS=["-Wall","-g","-O0"])
     else:
-        env.Replace(CCFLAGS=["-Wall","-O2"])
-        env.Append(CPPDEFINES=["NDEBUG"])
-    return env
+        _environment.Replace(CCFLAGS=["-Wall","-O2"])
+        _environment.Append(CPPDEFINES=["NDEBUG"])
+    return _environment
+
+def GetEnvironment():
+    if _environment is None:
+        raise LogicErrorException("scons_tools error: root environment not initialized")
+    return _environment
+
+def GetBuildDir():
+    if scons.ARGUMENTS.get("debug", 0):
+        return "build.debug"
+    else:
+        return "build"
+
