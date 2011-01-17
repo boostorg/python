@@ -19,11 +19,7 @@ bp_numpy_env.Append(LIBPATH=[libpath])
 bp_numpy_env.SetupPackages(["boost.python", "numpy"])
 Export("bp_numpy_env")
 
-targets["boost.python.numpy"]["lib"] = (
-    SConscript("libs/python/numpy/src/SConscript", 
-               variant_dir="%s/python/numpy/src" % scons_tools.GetBuildDir(),
-               duplicate=False)
-    )
+targets["boost.python.numpy"]["lib"] = SConscript("libs/python/numpy/src/SConscript")
 targets["boost.python.numpy"]["install"] = (
     bp_numpy_env.RecursiveInstall(
         os.path.join(bp_numpy_env["INSTALL_HEADERS"], "boost"), 
@@ -31,9 +27,7 @@ targets["boost.python.numpy"]["install"] = (
         regex="(.*\.hpp)")
     + bp_numpy_env.Install(bp_numpy_env["INSTALL_LIB"], targets["boost.python.numpy"]["lib"])
     )
-targets["boost.python.numpy"]["test"] = (
-    SConscript("libs/python/numpy/test/SConscript", 
-               variant_dir="%s/python/numpy/test" % scons_tools.GetBuildDir())
-    )
+targets["boost.python.numpy"]["test"] = SConscript("libs/python/numpy/test/SConscript")
+
 
 Return("targets")
