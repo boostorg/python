@@ -1,4 +1,4 @@
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 
 namespace bp = boost::python;
 

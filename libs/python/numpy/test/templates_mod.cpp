@@ -1,4 +1,4 @@
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/vector_c.hpp>
 

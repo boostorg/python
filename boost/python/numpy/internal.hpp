@@ -21,7 +21,7 @@ ERROR_internal_hpp_is_for_internal_use_only
 #define PY_UFUNC_UNIQUE_SYMBOL BOOST_UFUNC_ARRAY_API
 #include <numpy/arrayobject.h>
 #include <numpy/ufuncobject.h>
-#include <boost/python/numpy/numpy.hpp>
+#include <boost/python/numpy.hpp>
 
 #define NUMPY_OBJECT_MANAGER_TRAITS_IMPL(pytype,manager)                \
     PyTypeObject const * object_manager_traits<manager>::get_pytype() { return &pytype; }
