@@ -303,7 +303,7 @@ static PyTypeObject class_metatype_object = {
 // object.
 void instance_holder::install(PyObject* self) throw()
 {
-    assert(Py_TYPE(Py_TYPE(self)) == &class_metatype_object);
+    assert(PyType_IsSubtype(Py_TYPE(Py_TYPE(self)), &class_metatype_object));
     m_next = ((objects::instance<>*)self)->objects;
     ((objects::instance<>*)self)->objects = this;
 }
@@ -482,7 +482,8 @@ namespace objects
   BOOST_PYTHON_DECL void*
   find_instance_impl(PyObject* inst, type_info type, bool null_shared_ptr_only)
   {
-      if (Py_TYPE(Py_TYPE(inst)) != &class_metatype_object)
+      if (!Py_TYPE(Py_TYPE(inst)) ||
+              !PyType_IsSubtype(Py_TYPE(Py_TYPE(inst)), &class_metatype_object))
           return 0;
     
       instance<>* self = reinterpret_cast<instance<>*>(inst);
@@ -727,7 +728,7 @@ namespace objects
 
 void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std::size_t holder_size)
 {
-    assert(Py_TYPE(Py_TYPE(self_)) == &class_metatype_object);
+    assert(PyType_IsSubtype(Py_TYPE(Py_TYPE(self_)), &class_metatype_object));
     objects::instance<>* self = (objects::instance<>*)self_;
     
     int total_size_needed = holder_offset + holder_size;
@@ -752,7 +753,7 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
 
 void instance_holder::deallocate(PyObject* self_, void* storage) throw()
 {
-    assert(Py_TYPE(Py_TYPE(self_)) == &class_metatype_object);
+    assert(PyType_IsSubtype(Py_TYPE(Py_TYPE(self_)), &class_metatype_object));
     objects::instance<>* self = (objects::instance<>*)self_;
     if (storage != (char*)self + Py_SIZE(self))
     {
