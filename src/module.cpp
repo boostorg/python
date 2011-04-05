@@ -38,7 +38,7 @@ BOOST_PYTHON_DECL void scope_setattr_doc(char const* name, object const& x, char
 
 #if PY_VERSION_HEX >= 0x03000000
 
-PyObject* init_module(PyModuleDef& moduledef, void(*init_function)())
+BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef& moduledef, void(*init_function)())
 {
     return init_module_in_scope(
         PyModule_Create(&moduledef),
