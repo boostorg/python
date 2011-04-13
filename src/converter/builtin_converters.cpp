@@ -431,7 +431,10 @@ namespace
           if (!result.empty())
           {
               int err = PyUnicode_AsWideChar(
-                  (PyUnicodeObject *)intermediate
+#if PY_VERSION_HEX < 0x03020000
+                  (PyUnicodeObject *)
+#endif
+                    intermediate
                 , &result[0]
                 , result.size());
 
