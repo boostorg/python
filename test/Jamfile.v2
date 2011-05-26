@@ -5,16 +5,13 @@
 import python ;
 import os ;
 
-if [ os.name ] = QNXNTO
-{
-  lib socket ;
-}
+lib socket ;
 
 use-project /boost/python : ../build ;
 project /boost/python/test 
   : requirements
     <toolset>gcc:<cxxflags>-Wextra
-    <os>QNXNTO:<library>socket
+    <target-os>QNXNTO:<library>socket
   ;
 
 local PY = ;
