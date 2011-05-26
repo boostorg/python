@@ -11,7 +11,7 @@ use-project /boost/python : ../build ;
 project /boost/python/test 
   : requirements
     <toolset>gcc:<cxxflags>-Wextra
-    <target-os>QNXNTO:<library>socket
+    <target-os>qnxnto:<library>socket
   ;
 
 local PY = ;
