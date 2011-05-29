@@ -1,23 +1,11 @@
-import os ;
-import indirect ;
-import modules ;
-import feature ;
 import python ;
+import numpy ; 
 
 using python ;
 
 libraries = ;
 
-local rule probe ( python-cmd )
-{
-  local full-cmd =
-      $(python-cmd)" -c \"from numpy.distutils import misc_util; print misc_util.get_numpy_include_dirs()" ;
-
-  local output = [ shell-cmd $(full-cmd) ] ;
-  return $(output) ;
-}
-
-
+#How will the probe command be called ? 
 
 if [ python.configured ]
 {
