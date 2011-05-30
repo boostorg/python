@@ -3,11 +3,15 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 import python ;
+import os ;
+
+lib socket ;
 
 use-project /boost/python : ../build ;
 project /boost/python/test 
   : requirements
     <toolset>gcc:<cxxflags>-Wextra
+    <target-os>qnxnto:<library>socket
   ;
 
 local PY = ;

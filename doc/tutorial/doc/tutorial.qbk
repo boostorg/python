@@ -62,7 +62,7 @@ resulting DLL is now visible to Python. Here's a sample Python session:
 [python]
 
     >>> import hello_ext
-    >>> print hello.greet()
+    >>> print hello_ext.greet()
     hello, world
 
 [c++]
