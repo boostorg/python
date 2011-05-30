@@ -1,11 +1,9 @@
 import python ;
-import numpy ; 
-
+#import numpy ;
+import regex ;
 using python ;
 
 libraries = ;
-
-#How will the probe command be called ? 
 
 if [ python.configured ]
 {
@@ -16,6 +14,20 @@ project boost/numpy
   ;
 
 lib boost_python ;
+
+rule numpy-includes ( properties * )
+{
+  import feature ;
+  local python-interpreter = [ feature.get-values python.interpreter : $(properties) ] ;
+  if $(python-interpreter)
+  {
+    local full-cmd =
+      $(python-interpreter)" -c \"from numpy.distutils import misc_util; print ':'.join(misc_util.get_numpy_include_dirs())\" " ;
+    local output = [ SHELL $(full-cmd) ] ;
+    local includes = [ regex.split $(output) ":" ] ;
+    return <include>$(includes) ;
+  }
+}
 
 lib boost_numpy
   : # sources
@@ -29,8 +41,11 @@ lib boost_numpy
     <library>/python//python_for_extensions
     #<library>/boost/python//boost_python
     <library>boost_python
+    <conditional>@numpy-includes
   : # default build
     <link>shared
+  : # usage requirements
+    <conditional>@numpy-includes
   ;
 
 libraries += boost_numpy ;  
