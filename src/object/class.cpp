@@ -76,11 +76,11 @@ extern "C"
   static int property_init(PyObject *self, PyObject *args, PyObject *kwds)
   {
       PyObject *get = NULL, *set = NULL, *del = NULL, *doc = NULL;
-      static char *kwlist[] = {"fget", "fset", "fdel", "doc", 0};
+      static const char *kwlist[] = {"fget", "fset", "fdel", "doc", 0};
       propertyobject *prop = (propertyobject *)self;
 
       if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOO:property",
-                  kwlist, &get, &set, &del, &doc))
+                  const_cast<char **>(kwlist), &get, &set, &del, &doc))
           return -1;
 
       if (get == Py_None)
