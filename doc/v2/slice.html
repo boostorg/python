@@ -85,7 +85,7 @@ namespace boost { namespace python
       object stop();
       object step();
 
-      // The return type of slice::get_indicies()
+      // The return type of slice::get_indices()
       template &lt;typename RandomAccessIterator&gt;
       struct range
       {
@@ -96,7 +96,7 @@ namespace boost { namespace python
 
       template &lt;typename RandomAccessIterator&gt;
       range&lt;RandomAccessIterator&gt;
-      get_indicies(
+      get_indices(
           RandomAccessIterator const&amp; begin, 
           RandomAccessIterator const&amp; end);
   };
@@ -164,7 +164,7 @@ slice object, but in practice they are usually integers.</dt>
 <pre>
 template &lt;typename RandomAccessIterator&gt;
 slice::range&lt;RandomAccessIterator&gt;
-slice::get_indicies( 
+slice::get_indices( 
     RandomAccessIterator const&amp; begin, 
     RandomAccessIterator const&amp; end) const;
 </pre>
@@ -173,8 +173,8 @@ slice::get_indicies(
 Iterators that form a half-open range.</dt>
   <dt><b>Effects:</b> Create a RandomAccessIterator pair that defines a
 fully-closed range within the [begin,end) range of its arguments.&nbsp;
-This function translates this slice's indicies while accounting for the
-effects of any PyNone or negative indicies, and non-singular step sizes.</dt>
+This function translates this slice's indices while accounting for the
+effects of any PyNone or negative indices, and non-singular step sizes.</dt>
   <dt><b>Returns:</b> a slice::range
 that has been initialized with a non-zero value of step and a pair of
 RandomAccessIterators that point within the range of this functions
@@ -182,7 +182,7 @@ arguments and define a closed interval.</dt>
   <dt><b>Throws:</b> <a href="definitions.html#raise">Raises</a> a Python <code>TypeError</code> exception if any of this slice's arguments
 are neither references to <code>PyNone</code> nor convertible to <code>int</code>.&nbsp; Throws
 <code>std::invalid_argument</code> if the resulting range would be empty.&nbsp; You
-should always wrap calls to <code>slice::get_indicies()</code>
+should always wrap calls to <code>slice::get_indices()</code>
 within <code>try { ...; } catch (std::invalid_argument) {}</code> to
 handle this case and take appropriate action.</dt>
   <dt><b>Rationale</b>: closed-interval: If
@@ -221,7 +221,7 @@ double partial_sum(std::vector&lt;double&gt; const&amp; Foo, const slice index)
 {
     slice::range&lt;std::vector&lt;double&gt;::const_iterator&gt; bounds;
     try {
-        bounds = index.get_indicies&lt;&gt;(Foo.begin(), Foo.end());
+        bounds = index.get_indices&lt;&gt;(Foo.begin(), Foo.end());
     }
     catch (std::invalid_argument) {
         return 0.0;

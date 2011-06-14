@@ -98,9 +98,9 @@ bool accept_slice( slice) { return true; }
 
 #if BOOST_WORKAROUND( BOOST_MSVC, BOOST_TESTED_AT(1400)) \
     || BOOST_WORKAROUND( BOOST_INTEL_WIN, == 710)
-int check_slice_get_indicies(slice index);
+int check_slice_get_indices(slice index);
 #endif
-int check_slice_get_indicies(
+int check_slice_get_indices(
 #if !BOOST_WORKAROUND(__SUNPRO_CC, BOOST_TESTED_AT(0x590))
     const
 #endif 
@@ -116,7 +116,7 @@ int check_slice_get_indicies(
     
     slice::range<std::vector<int>::iterator> bounds;
     try {
-        bounds = index.get_indicies(coll.begin(), coll.end());
+        bounds = index.get_indices(coll.begin(), coll.end());
     }
     catch (std::invalid_argument) {
         return 0;
@@ -136,5 +136,5 @@ BOOST_PYTHON_MODULE(slice_ext)
     def( "accept_slice", accept_slice);
     def( "check_numeric_array_rich_slice", check_numeric_array_rich_slice);
     def( "check_string_rich_slice", check_string_rich_slice);
-    def( "check_slice_get_indicies", check_slice_get_indicies);
+    def( "check_slice_get_indices", check_slice_get_indices);
 }
