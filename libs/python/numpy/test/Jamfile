@@ -16,5 +16,6 @@ test-suite numpy
 
     [ numpy-test templates ]
     [ numpy-test ufunc ]
+	[ numpy-test shapes ]
 
   ;
