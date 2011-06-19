@@ -25,7 +25,9 @@ bp::numpy::ndarray c_empty(bp::tuple shape, bp::numpy::dtype dt) {
   Py_intptr_t *c_shape = new Py_intptr_t[len];
   for (unsigned i = 0; i != len; ++i)
     c_shape[i] = bp::extract<Py_intptr_t>(shape[i]);
-  return bp::numpy::empty(len, c_shape, dt);
+  bp::numpy::ndarray result = bp::numpy::empty(len, c_shape, dt);
+  delete [] c_shape;
+  return result;
 }
 
 BOOST_PYTHON_MODULE(ndarray_mod) {

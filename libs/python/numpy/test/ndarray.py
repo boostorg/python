@@ -38,7 +38,7 @@ class TestNdarray(unittest.TestCase):
 				self.assertEqual(shape,a1.shape)
 				#self.assert_(type(a1),dtp)
 				self.assertEqual(shape,a2.shape)
-				#self.assert_(dtp,type(a2))
+				#self.assert_(dt,type(a2))
 
 if __name__=="__main__":
 	unittest.main()
