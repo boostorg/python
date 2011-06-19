@@ -34,11 +34,11 @@ class TestNdarray(unittest.TestCase):
 			dt = numpy.dtype(dtp)
 			for shape in ((60,),(6,10),(4,3,5),(2,2,3,5)):
 				a1 = ndarray_mod.empty(shape,dt)
-				a2 = ndarray_mod.empty(len(shape),shape,dt)
-				self.assert_(shape,a1.shape)
-				self.assert_(type(a1),dtp)
-				self.assert_(shape,a2.shape)
-				self.assert_(dt,type(a2))
+				a2 = ndarray_mod.c_empty(shape,dt)
+				self.assertEqual(shape,a1.shape)
+				#self.assert_(type(a1),dtp)
+				self.assertEqual(shape,a2.shape)
+				#self.assert_(dtp,type(a2))
 
 if __name__=="__main__":
 	unittest.main()
