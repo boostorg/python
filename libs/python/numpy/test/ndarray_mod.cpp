@@ -30,6 +30,17 @@ bp::numpy::ndarray c_empty(bp::tuple shape, bp::numpy::dtype dt) {
   return result;
 }
 
+bp::numpy::ndarray transpose(bp::numpy::ndarray arr) {
+	return arr.transpose();
+}
+
+bp::numpy::ndarray squeeze(bp::numpy::ndarray arr) {
+	return arr.squeeze();
+}
+
+bp::numpy::ndarray reshape(bp::numpy::ndarray arr,bp::tuple tup) {
+	return arr.reshape(tup);
+}
 BOOST_PYTHON_MODULE(ndarray_mod) {
 	bp::numpy::initialize();
 	bp::def("zeros", &zeros);
@@ -37,4 +48,7 @@ BOOST_PYTHON_MODULE(ndarray_mod) {
 	bp::def("array",&array1);
 	bp::def("empty",&empty1);
 	bp::def("c_empty",&c_empty);
+	bp::def("transpose",&transpose);
+	bp::def("squeeze",&squeeze);
+	bp::def("reshape",&reshape);
 }
