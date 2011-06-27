@@ -17,5 +17,11 @@ class TestIndexing(unittest.TestCase):
 		b = [3,4,5,6,7]
 		indexing_mod.slice(x,sl,b)
 
+	def testStepSlice(self):
+		x = numpy.arange(0,10)
+		sl = slice(3,8,2)
+		b = [3,5,7]
+		indexing_mod.step_slice(x,sl,b)
+
 if __name__=="__main__":
 	unittest.main()
