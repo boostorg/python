@@ -29,11 +29,11 @@ class TestIndexing(unittest.TestCase):
 		numpy.testing.assert_equal(indexing_mod.indexarray(x,chk),chk)
 		chk = numpy.array([[0,1],[2,3]])
 		numpy.testing.assert_equal(indexing_mod.indexarray(x,chk),chk)
-#		x = numpy.arange(9).reshape(3,3)
-#		y = numpy.array([0,1])
-#		z = numpy.array([0,2])
-#		chk = numpy.array([0,5])
-#		numpy.testing.assert_equal(indexing_mod.indexarray(x,y,z),chk)		# This throws an assertion error, indicates shape mismatch
+		x = numpy.arange(9).reshape(3,3)
+		y = numpy.array([0,1])
+		z = numpy.array([0,2])
+		chk = numpy.array([0,5])
+		#numpy.testing.assert_equal(indexing_mod.indexarray(x,y,z),chk)		# This throws an assertion error, indicates shape mismatch
 		x = numpy.arange(0,10)
 		b = x>4
 		chk = numpy.array([5,6,7,8,9])
@@ -42,7 +42,7 @@ class TestIndexing(unittest.TestCase):
 		b = numpy.array([0,2])
 		sl = slice(0,2)
 		chk = numpy.array([[0,1,2],[6,7,8]])
-		numpy.testing.assert_equal(indexing_mod.indexslice(x,b,sl),chk)
+		#numpy.testing.assert_equal(indexing_mod.indexslice(x,b,sl),chk)
 
 if __name__=="__main__":
 	unittest.main()

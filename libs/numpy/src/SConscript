@@ -1,0 +1,4 @@
+Import("boost_numpy_env")
+lib = boost_numpy_env.SharedLibrary("boost_numpy", Glob("*.cpp"))
+
+Return("lib")

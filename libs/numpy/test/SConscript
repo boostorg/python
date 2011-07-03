@@ -1,0 +1,12 @@
+Import("boost_numpy_env")
+
+test = []
+
+for name in ("ufunc", "templates"):
+    mod = boost_numpy_env.SharedLibrary("%s_mod" % name, "%s_mod.cpp" % name, SHLIBPREFIX="", 
+                                     LIBS="boost_python_numpy")
+    test.extend(
+        boost_numpy_env.PythonUnitTest("%s.py" % name, mod)
+        )
+
+Return("test")
