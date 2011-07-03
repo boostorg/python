@@ -7,8 +7,8 @@ namespace np = boost::numpy;
 p::object single(np::ndarray ndarr, int i) { return ndarr[i];}
 p::object slice(np::ndarray ndarr, p::slice sl) { return ndarr[sl];}
 p::object indexarray(np::ndarray ndarr, np::ndarray d1) { return ndarr[d1];}
-//p::object indexarray_2d(np::ndarray ndarr, np::ndarray d1,np::ndarray d2) { return ndarr[d1,d2];}
-//p::object indexslice(np::ndarray ndarr, np::ndarray d1, p::slice sl) { return ndarr[d1][sl];}
+p::object indexarray_2d(np::ndarray ndarr, np::ndarray d1,np::ndarray d2) { return ndarr[p::make_tuple(d1,d2)];}
+p::object indexslice(np::ndarray ndarr, np::ndarray d1, p::slice sl) { return ndarr[p::make_tuple(d1, sl)];}
 
 BOOST_PYTHON_MODULE(indexing_mod) 
 {
@@ -16,7 +16,7 @@ BOOST_PYTHON_MODULE(indexing_mod)
   p::def("single", single);
   p::def("slice", slice);
   p::def("indexarray", indexarray);
-  //  p::def("indexarray", indexarray_2d);
-  //  p::def("indexslice", indexslice);
+  p::def("indexarray", indexarray_2d);
+  p::def("indexslice", indexslice);
 
 }
