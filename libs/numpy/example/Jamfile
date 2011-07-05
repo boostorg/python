@@ -1,0 +1,23 @@
+# Copyright 2011 Stefan Seefeld.
+# Distributed under the Boost Software License, Version 1.0. (See
+# accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import python ;
+
+use-project /boost/numpy : ../src ;
+project /boost/numpy/example ;
+
+lib boost_python ;
+
+
+#lib libxml2 : : <name>xml2 <search>/usr/lib/ ;
+
+#project : requirements
+#          <include>/usr/include/libxml2
+#          <include>../../..
+#          <library>libxml2
+#          <library>/boost/xml//boost_xml 
+#        ;
+
+exe simple : simple.cpp ../src//boost_numpy boost_python /python//python ;
