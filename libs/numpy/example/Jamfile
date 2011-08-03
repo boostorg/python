@@ -10,7 +10,6 @@ project /boost/numpy/example ;
 
 lib boost_python ;
 
-
 #lib libxml2 : : <name>xml2 <search>/usr/lib/ ;
 
 #project : requirements
@@ -21,3 +20,5 @@ lib boost_python ;
 #        ;
 
 exe simple : simple.cpp ../src//boost_numpy boost_python /python//python ;
+exe dtype : dtype.cpp ../src//boost_numpy boost_python /python//python ;
+exe ndarray : ndarray.cpp ../src//boost_numpy boost_python /python//python ;
