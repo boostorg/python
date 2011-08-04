@@ -21,6 +21,8 @@ int main(int argc, char **argv)
   np::dtype dtype = np::dtype::get_builtin<float>();
   // Construct an array with the above shape and type
   np::ndarray a = np::zeros(shape, dtype);
+  // Construct an empty array with the above shape and dtype as well
+  np::ndarray b = np::empty(shape,dtype);
   // Print the array
   std::cout << "Original array:\n" << p::extract<char const *>(p::str(a)) << std::endl;
   // Reshape the array into a 1D array
