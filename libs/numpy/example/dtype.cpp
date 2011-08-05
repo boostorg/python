@@ -4,7 +4,7 @@
  *
  *  @todo Add an example to show type conversion.
  *        Add an example to show use of user-defined types
- *        Doesn't work for char. Works for int, long int, short int, float, double
+ *        
  */
 
 #include <boost/numpy.hpp>
@@ -29,5 +29,12 @@ int main(int argc, char **argv)
   std::cout << "Original array:\n" << p::extract<char const *>(p::str(a)) << std::endl;
   // Print the datatype of the elements
   std::cout << "Datatype is:\n" << p::extract<char const *>(p::str(a.get_dtype())) << std::endl ;
-
+  // Roundabout way of creating a user defined dtype. Fix this if possible
+/*
+  p::tuple for_custom_dtype = p::make_tuple("ha",dtype) ;
+  p::list list_for_dtype ;
+  list_for_dtype.append(for_custom_dtype) ;
+  np::dtype custom_dtype = np::dtype(list_for_dtype) ;
+  np::ndarray new_array = np::zeros(shape,z);
+*/
 }
