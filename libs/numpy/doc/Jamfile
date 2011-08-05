@@ -6,7 +6,7 @@ project user-config : requirements <docutils-cmd>rst2html ;
 import docutils ;
 
 import path ;
-sources = tutorial.rst ndarray.rst ;
+sources = tutorial.rst dtype.rst ndarray.rst ;
 bases = $(sources:S=) ;
   
 # This is a path relative to the html/ subdirectory where the
