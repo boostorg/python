@@ -29,12 +29,16 @@ int main(int argc, char **argv)
   std::cout << "Original array:\n" << p::extract<char const *>(p::str(a)) << std::endl;
   // Print the datatype of the elements
   std::cout << "Datatype is:\n" << p::extract<char const *>(p::str(a.get_dtype())) << std::endl ;
-  // Roundabout way of creating a user defined dtype. Fix this if possible
-/*
+  // Using user defined dtypes to create dtype and an array of the custom dtype
+  // First create a tuple with a variable name and its dtype, double, to create a custom dtype
   p::tuple for_custom_dtype = p::make_tuple("ha",dtype) ;
+  // The list needs to be created, because the constructor to create the custom dtype
+  // takes a list of (variable,variable_type) as an argument
   p::list list_for_dtype ;
   list_for_dtype.append(for_custom_dtype) ;
+  // Create the custom dtype
   np::dtype custom_dtype = np::dtype(list_for_dtype) ;
-  np::ndarray new_array = np::zeros(shape,z);
-*/
+  // Create an ndarray with the custom dtype
+  np::ndarray new_array = np::zeros(shape,custom_dtype);
+
 }
