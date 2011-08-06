@@ -31,4 +31,25 @@ Here, we first convert the variable into a string, and then extract it as a C++ 
 We can also print the dtypes of the data members of the ndarray by using the get_dtype method for the ndarray ::
 
 	std::cout << "Datatype is:\n" << p::extract<char const *>(p::str(a.get_dtype())) << std::endl ;
+
+We can also create custom dtypes and build ndarrays with the custom dtypes
+
+We use the dtype constructor to create a custom dtype. This constructor takes a list as an argument.
+
+The list should contain one or more tuples of the format (variable name, variable type)
+
+So first create a tuple with a variable name and its dtype, double, to create a custom dtype ::
+
+  p::tuple for_custom_dtype = p::make_tuple("ha",dtype) ;
+
+Next, create a list, and add this tuple to the list. Then use the list to create the custom dtype ::
+
+  p::list list_for_dtype ;
+  list_for_dtype.append(for_custom_dtype) ;
+  np::dtype custom_dtype = np::dtype(list_for_dtype) ;
+
+We are now ready to create an ndarray with dimensions specified by \*shape\* and of custom dtpye ::
+
+  np::ndarray new_array = np::zeros(shape,custom_dtype);
+
 	}
