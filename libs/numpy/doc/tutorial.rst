@@ -25,6 +25,10 @@ Zero filled n-dimensional arrays can be created using the shape and data-type of
 	  np::dtype dtype = np::dtype::get_builtin<float>();
 	  np::ndarray a = np::zeros(shape, dtype);
 
+You can also create an empty array like this ::
+
+	np::ndarray b = np::empty(shape,dtype);
+	
 Print the original and reshaped array. The array a which is a list is first converted to a string, and each value in the list is extracted using extract< >::
 
 	  std::cout << "Original array:\n" << p::extract<char const *>(p::str(a)) << std::endl;
