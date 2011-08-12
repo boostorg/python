@@ -1,10 +1,10 @@
 /**
- *  @brief An example to show how to create ndarrays from C++ containers of (almost) arbitrary type.
+ *  @brief An example to show how to access data using raw pointers.This shows that you can use and manipulate data in either Python or C++ and have the changes
+ *         reflected in both 
  *
  */
 
 #include <boost/numpy.hpp>
-#include <vector>
 #include <iostream>
 
 namespace p = boost::python;
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
   int arr[] = {1,2,3,4} ; 
   // Create the ndarray in Python
   np::ndarray py_array = np::from_data(arr, np::dtype::get_builtin<int>() , p::make_tuple(4), p::make_tuple(4), p::object());
-  // Print the ndarray that we created, just to be sure
+  // Print the ndarray that we just created, and the source C++ array
   std::cout << "C++ array :" << std::endl ;
   for (int j=0;j<4;j++)
   {
@@ -41,6 +41,4 @@ int main(int argc, char **argv)
   // And see if the changes are reflected in the Python ndarray
   std::cout << std::endl << "Is the change reflected in the Python ndarray ?" << std::endl << p::extract<char const *>(p::str(py_array)) << std::endl;
 
-  // Now print it.
-//  std::cout << "Pixel array :" << p::extract<char const *>(p::str(py_array)) << std::endl;
 }
