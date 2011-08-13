@@ -1,10 +1,7 @@
 /**
  *  @brief An example to show how to create ndarrays using arbitrary Python sequences
  *         The Python sequence could be any object whose __array__ method returns an array, or any (nested) sequence.
- *
- *  @todo Find a way to create a list explicitly
  *	  
-
  *        
  */
 
