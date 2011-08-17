@@ -24,3 +24,4 @@ exe dtype : dtype.cpp ../src//boost_numpy boost_python /python//python ;
 exe ndarray : ndarray.cpp ../src//boost_numpy boost_python /python//python ;
 exe hybrid : hybrid.cpp ../src//boost_numpy boost_python /python//python ;
 exe fromdata : fromdata.cpp ../src//boost_numpy boost_python /python//python ;
+exe ufunc : ufunc.cpp ../src//boost_numpy boost_python /python//python ;
