@@ -37,17 +37,17 @@ test passed
 ...     print 1
 ...
 1
->>> check_slice_get_indicies( slice(None))
+>>> check_slice_get_indices( slice(None))
 0
->>> check_slice_get_indicies( slice(2,-2))
+>>> check_slice_get_indices( slice(2,-2))
 0
->>> check_slice_get_indicies( slice(2, None, 2))
+>>> check_slice_get_indices( slice(2, None, 2))
 5
->>> check_slice_get_indicies( slice(2, None, -1))
+>>> check_slice_get_indices( slice(2, None, -1))
 -12
->>> check_slice_get_indicies( slice( 20, None))
+>>> check_slice_get_indices( slice( 20, None))
 0
->>> check_slice_get_indicies( slice( -2, -5, -2))
+>>> check_slice_get_indices( slice( -2, -5, -2))
 6
 """
 
