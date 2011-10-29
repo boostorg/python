@@ -15,38 +15,39 @@ synopsis
 
 ::
 
-	namespace boost 
-	{
-	namespace numpy 
-	{
+  namespace boost 
+  {
+  namespace numpy 
+  {
 
-	class dtype : public python::object 
-	{
-	  static python::detail::new_reference convert(python::object::object_cref arg, bool align);
-	public:
+  class dtype : public python::object 
+  {
+    static python::detail::new_reference convert(python::object::object_cref arg, bool align);
+  public:
 
-	  // Convert an arbitrary Python object to a data-type descriptor object.
-	  template <typename T>
-	  explicit dtype(T arg, bool align=false);
+    // Convert an arbitrary Python object to a data-type descriptor object.
+    template <typename T>
+    explicit dtype(T arg, bool align=false);
 
- 	  // Get the built-in numpy dtype associated with the given scalar template type.
-	  template <typename T> static dtype get_builtin();
+    // Get the built-in numpy dtype associated with the given scalar template type.
+    template <typename T> static dtype get_builtin();
 
- 	  // Return the size of the data type in bytes.
-	  int get_itemsize() const;
-	};
+    // Return the size of the data type in bytes.
+    int get_itemsize() const;
+  };
 
-	} 
+  } 
 
 constructors
 ------------
 
 ::
 
-   template <typename T>
-   explicit dtype(T arg, bool align=false)
+  template <typename T>
+  explicit dtype(T arg, bool align=false)
 
-:Requirements: The typename supplied, ``T`` must be either :
+:Requirements: ``T`` must be either :
+
                * a built-in C++ typename convertible to object
                * a valid python object or convertible to object
 
@@ -57,7 +58,7 @@ constructors
 
 ::
 
-   template <typename T> static dtype get_builtin();
+  template <typename T> static dtype get_builtin();
   
 :Requirements: The typename supplied, ``T`` must be a builtin C++ type also supported by numpy
 
@@ -68,7 +69,7 @@ accessors
 
 ::
 
-    int get_itemsize() const;
+  int get_itemsize() const;
 
 :Returns: the size of the data type in bytes.
 
@@ -78,10 +79,8 @@ Example(s)
 
 ::
 
-	namespace np = boost::numpy ;
-
-	  np::dtype dtype = np::dtype::get_builtin<double>();
-
-	  p::tuple for_custom_dtype = p::make_tuple("ha",dtype) ;
-	  np::dtype custom_dtype = np::dtype(list_for_dtype) ;
+  namespace np = boost::numpy;
+  np::dtype dtype = np::dtype::get_builtin<double>();
+  p::tuple for_custom_dtype = p::make_tuple("ha",dtype);
+  np::dtype custom_dtype = np::dtype(list_for_dtype);
 

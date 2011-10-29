@@ -13,22 +13,26 @@ synopsis
 
 ::
 
-	namespace boost 
-	{
-	namespace numpy 
-	{
+  namespace boost 
+  {
+  namespace numpy 
+  {
 
-	template <typename TUnaryFunctor, typename TArgument=typename TUnaryFunctor::argument_type, typename TResult=typename TUnaryFunctor::result_type>
-	struct unary_ufunc 
-	{
+  template <typename TUnaryFunctor, 
+            typename TArgument=typename TUnaryFunctor::argument_type, 
+            typename TResult=typename TUnaryFunctor::result_type>
+  struct unary_ufunc 
+  {
 
-	  static python::object call(TUnaryFunctor & self, python::object const & input, python::object const & output) ;
+    static python::object call(TUnaryFunctor & self, 
+                               python::object const & input, 
+                               python::object const & output) ;
 
-	  static python::object make(); 
+    static python::object make(); 
 
-	}
-	}
-	}
+  };
+  }
+  }
 
 
 constructors
@@ -36,11 +40,11 @@ constructors
 
 ::
 
-	struct example_unary_ufunc
-	{
-	  typedef any_valid_type argument_type;
-	  typedef any_valid_type result_type;
-	};
+  struct example_unary_ufunc
+  {
+    typedef any_valid_type argument_type;
+    typedef any_valid_type result_type;
+  };
 
 :Requirements: The ``any_valid`` type must be defined using typedef as a valid C++ type in order to use the struct methods correctly
 
@@ -51,8 +55,12 @@ accessors
 
 ::
 
-	template <typename TUnaryFunctor, typename TArgument=typename TUnaryFunctor::argument_type,typename TResult=typename TUnaryFunctor::result_type>
-	static python::object call(TUnaryFunctor & self, python::object const & input, python::object const & output) ;
+  template <typename TUnaryFunctor, 
+            typename TArgument=typename TUnaryFunctor::argument_type,
+            typename TResult=typename TUnaryFunctor::result_type>
+  static python::object call(TUnaryFunctor & self, 
+                             python::object const & input, 
+                             python::object const & output);
 
 :Requires: Typenames ``TUnaryFunctor`` and optionally ``TArgument`` for argument type and ``TResult`` for result type
 
@@ -60,8 +68,10 @@ accessors
 
 ::
 
-	template <typename TUnaryFunctor, typename TArgument=typename TUnaryFunctor::argument_type,typename TResult=typename TUnaryFunctor::result_type>
-	static python::object make(); 
+  template <typename TUnaryFunctor, 
+            typename TArgument=typename TUnaryFunctor::argument_type,
+            typename TResult=typename TUnaryFunctor::result_type>
+  static python::object make(); 
 
 :Requires: Typenames ``TUnaryFunctor`` and optionally ``TArgument`` for argument type and ``TResult`` for result type
 
@@ -74,14 +84,14 @@ Example(s)
 
 ::
 
-	struct UnarySquare 
-	{
-	  typedef double argument_type;
-	  typedef double result_type;
-	  double operator()(double r) const { return r * r;}
-	};
+  struct UnarySquare 
+  {
+    typedef double argument_type;
+    typedef double result_type;
+    double operator()(double r) const { return r * r;}
+  };
 
-	p::object ud = p::class_<UnarySquare, boost::shared_ptr<UnarySquare> >("UnarySquare").def("__call__", np::unary_ufunc<UnarySquare>::make());
-	p::object inst = ud();
-	std::cout << "Square of unary scalar 1.0 is " << p::extract <char const * > (p::str(inst.attr("__call__")(1.0))) << std::endl ; 
+  p::object ud = p::class_<UnarySquare, boost::shared_ptr<UnarySquare> >("UnarySquare").def("__call__", np::unary_ufunc<UnarySquare>::make());
+  p::object inst = ud();
+  std::cout << "Square of unary scalar 1.0 is " << p::extract <char const * > (p::str(inst.attr("__call__")(1.0))) << std::endl ; 
 
