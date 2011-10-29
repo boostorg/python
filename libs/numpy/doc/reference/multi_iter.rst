@@ -21,19 +21,11 @@ synopsis
 	class multi_iter : public python::object 
 	{
 	public:
-
-	  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(multi_iter, python::object);
-
 	  void next();
-
 	  bool not_done() const;
-
 	  char * get_data(int n) const;
-
 	  int const get_nd() const;
-
 	  Py_intptr_t const * get_shape() const;
-
 	  Py_intptr_t const shape(int n) const;
 	    
 	};

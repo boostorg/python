@@ -36,29 +36,17 @@ synopsis
 	    UPDATE_ALL=0x1|0x2|0x4, VARRAY=0x1|0x2|0x8, ALL=0x1|0x2|0x4|0x8
 	  };
 
-	  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(ndarray, object);
-
 	  ndarray view(dtype const & dt) const;
-
 	  ndarray copy() const;
-
-	  int const shape(int n) const { return get_shape()[n]; }
-
-	  int const strides(int n) const { return get_strides()[n]; }
-	    
-	  char * get_data() const { return get_struct()->data; }
-
+	  int const shape(int n) const;
+	  int const strides(int n) const;
+	  char * get_data() const;
 	  dtype get_dtype() const;
-	  
 	  python::object get_base() const;
-	  
 	  void set_base(object const & base);
-	  
-	  Py_intptr_t const * get_shape() const { return get_struct()->shape; }
-	  
-	  Py_intptr_t const * get_strides() const { return get_struct()->strides; }
-	  
-	  int const get_nd() const { return get_struct()->nd; }
+	  Py_intptr_t const * get_shape() const;
+	  Py_intptr_t const * get_strides() const;
+	  int const get_nd() const;
 	  
 	  bitflag const get_flags() const;
 	  
@@ -81,28 +69,21 @@ synopsis
 	ndarray array(python::object const & obj, dtype const & dt);
 
 	template <typename Container>
-	inline ndarray from_data(void * data,dtype const & dt,Container shape,Container strides,python::object const & owner);
-
+	ndarray from_data(void * data,dtype const & dt,Container shape,Container strides,python::object const & owner);
 	template <typename Container>
-	inline ndarray from_data(void const * data, dtype const & dt, Container shape, Container strides, python::object const & owner);
+	ndarray from_data(void const * data, dtype const & dt, Container shape, Container strides, python::object const & owner);
 
 	ndarray from_object(python::object const & obj, dtype const & dt,int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
-
-	inline ndarray from_object(python::object const & obj, dtype const & dt,int nd, ndarray::bitflag flags=ndarray::NONE);
-
-	inline ndarray from_object(python::object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE);
-
+	ndarray from_object(python::object const & obj, dtype const & dt,int nd, ndarray::bitflag flags=ndarray::NONE);
+	ndarray from_object(python::object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE);
 	ndarray from_object(python::object const & obj, int nd_min, int nd_max,ndarray::bitflag flags=ndarray::NONE);
+	ndarray from_object(python::object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
+	ndarray from_object(python::object const & obj, ndarray::bitflag flags=ndarray::NONE)
 
-	inline ndarray from_object(python::object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
+	ndarray::bitflag operator|(ndarray::bitflag a, ndarray::bitflag b) ; 
+	ndarray::bitflag operator&(ndarray::bitflag a, ndarray::bitflag b);
 
-	inline ndarray from_object(python::object const & obj, ndarray::bitflag flags=ndarray::NONE)
-
-	inline ndarray::bitflag operator|(ndarray::bitflag a, ndarray::bitflag b) ; 
-
-	inline ndarray::bitflag operator&(ndarray::bitflag a, ndarray::bitflag b);
-
-	} // namespace boost::numpy
+	}
 
 
 constructors
@@ -274,19 +255,19 @@ accessors
 
 ::
 
-	int const shape(int n) const { return get_shape()[n]; }
+	int const shape(int n) const;
 
 :Returns: The size of the n-th dimension of the ndarray
 
 ::
 
-	int const strides(int n) const { return get_strides()[n]; }
+	int const strides(int n) const;
 
 :Returns: The stride of the nth dimension.
 
 ::
 
-	char * get_data() const { return get_struct()->data; }
+	char * get_data() const;
 
 :Returns: Array's raw data pointer as a char
 
@@ -315,21 +296,21 @@ accessors
 
 ::
 
-	Py_intptr_t const * get_shape() const { return get_struct()->shape; }
+	Py_intptr_t const * get_shape() const;
 
 :Returns: Shape of the array as an array of integers
 
 
 ::
 
-	Py_intptr_t const * get_strides() const { return get_struct()->strides; }
+	Py_intptr_t const * get_strides() const;
 
 :Returns: Stride of the array as an array of integers
 
 
 ::
 
-	int const get_nd() const { return get_struct()->nd; }
+	int const get_nd() const;
 
 :Returns: Number of array dimensions
 

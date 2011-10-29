@@ -27,14 +27,13 @@ synopsis
 
 	  // Convert an arbitrary Python object to a data-type descriptor object.
 	  template <typename T>
-	  explicit dtype(T arg, bool align=false) : python::object(convert(arg, align)) {}
+	  explicit dtype(T arg, bool align=false);
 
-	  template <typename T> static dtype get_builtin(); // Get the built-in numpy dtype associated with the given scalar template type.
+ 	  // Get the built-in numpy dtype associated with the given scalar template type.
+	  template <typename T> static dtype get_builtin();
 
-	  int get_itemsize() const; 	  // Return the size of the data type in bytes.
-
-	  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dtype, python::object);
-
+ 	  // Return the size of the data type in bytes.
+	  int get_itemsize() const;
 	};
 
 	} 
@@ -45,7 +44,7 @@ constructors
 ::
 
    template <typename T>
-   explicit dtype(T arg, bool align=false) : python::object(convert(arg, align)) {}
+   explicit dtype(T arg, bool align=false)
 
 :Requirements: The typename supplied, ``T`` must be either :
                * a built-in C++ typename convertible to object
