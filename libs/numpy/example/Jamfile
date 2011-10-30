@@ -10,18 +10,11 @@ project /boost/numpy/example ;
 
 lib boost_python ;
 
-#lib libxml2 : : <name>xml2 <search>/usr/lib/ ;
-
-#project : requirements
-#          <include>/usr/include/libxml2
-#          <include>../../..
-#          <library>libxml2
-#          <library>/boost/xml//boost_xml 
-#        ;
-
 exe simple : simple.cpp ../src//boost_numpy boost_python /python//python ;
 exe dtype : dtype.cpp ../src//boost_numpy boost_python /python//python ;
 exe ndarray : ndarray.cpp ../src//boost_numpy boost_python /python//python ;
 exe hybrid : hybrid.cpp ../src//boost_numpy boost_python /python//python ;
 exe fromdata : fromdata.cpp ../src//boost_numpy boost_python /python//python ;
 exe ufunc : ufunc.cpp ../src//boost_numpy boost_python /python//python ;
+
+python-extension gaussian : gaussian.cpp ../src//boost_numpy boost_python ;
