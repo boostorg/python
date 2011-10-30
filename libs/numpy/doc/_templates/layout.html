@@ -1,17 +1,17 @@
 {%- macro navbar() %}
-    <div class="navbar">
-      {%- if parents|count > 2 %}
-      {{ parents[1].title }}
+    <div class="navbar" style="text-align:right;">
+      {#%- if parents|count > 0 %#}
+      {#{ parents[1].title }#}
       {%- if prev %}
-      <a class="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}">prev</a>
+      <a class="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}"><img src="{{ pathto('_static/prev.png', 1) }}" alt="prev"/></a>
       {%- endif %}
       {%- if parents %}
-      <a class="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}">up</a>
+      <a class="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}"><img src="{{ pathto('_static/up.png', 1) }}" alt="up"/></a>
       {%- endif %}
       {%- if next %}
-      <a class="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}">next</a>
+      <a class="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}"><img src="{{ pathto('_static/next.png', 1) }}" alt="next"/></a>
       {%- endif %}
-      {%- endif %}
+      {#%- endif %#}
     </div>
 {%- endmacro %}
 
