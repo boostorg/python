@@ -251,6 +251,7 @@ def MakeAliases(targets):
     all_all = []
     build_all = []
     install_all = []
+    example_all = []
     test_all = []
     scons.Help("""
 To specify additional directories to add to the include or library paths, specify them
@@ -263,7 +264,8 @@ Supported variables are CPPPATH, LIBPATH and RPATH.
 Global targets:   'all'     (builds everything)
                   'build'   (builds headers, libraries, and python wrappers)
                   'install' (copies files to global bin, include and lib directories)
-                  'test'    (runs unit tests; requires install)
+                  'example' (builds examples; may require install)
+                  'test'    (runs unit tests; may require install)
 
 These targets can be built for individual packages with the syntax
 '[package]-[target]'.  Some packages support additional targets, given below.
@@ -275,7 +277,7 @@ Packages:
     for pkg_name in sorted(targets.keys()):
         pkg_targets = targets[pkg_name]
         extra_targets = tuple(k for k in pkg_targets.keys() if k not in
-                              ("all","build","install","test"))
+                              ("all","build","install","test","example"))
         if extra_targets:
             scons.Help("%-25s   %s\n" % (pkg_name, ", ".join("'%s'" % k for k in extra_targets)))
         else:
@@ -290,11 +292,13 @@ Packages:
         all_all.extend(pkg_all)
         build_all.extend(pkg_build)
         install_all.extend(pkg_targets.get("install", pkg_build))
+        example_all.extend(pkg_targets.get("example", pkg_targets.get("install", pkg_build)))
         test_all.extend(pkg_targets.get("test", pkg_targets.get("install", pkg_build)))
     env.Alias("all", all_all)
     env.Alias("build", build_all)
     env.Alias("install", install_all)
     env.Alias("test", test_all)
+    env.Alias("example", example_all)
     env.Default("build")
 
 

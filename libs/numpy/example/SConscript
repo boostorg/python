@@ -1,0 +1,11 @@
+Import("boost_numpy_env")
+
+example = []
+
+for name in ("ufunc", "dtype", "fromdata", "ndarray", "simple"):
+    example.extend(boost_numpy_env.Program(name, "%s.cpp" % name, LIBS="boost_numpy"))
+
+for name in ("gaussian",):
+    example.extend(boost_numpy_env.SharedLibrary(name, "%s.cpp" % name, SHLIBPREFIX="", LIBS="boost_numpy"))
+
+Return("example")

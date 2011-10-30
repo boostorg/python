@@ -10,7 +10,7 @@ scons_tools.LocalConfiguration(
     )
 boost_numpy_env = scons_tools.GetEnvironment().Clone()
 boost_numpy_env.Append(CPPPATH=[os.path.abspath(os.curdir)])
-libpath = os.path.abspath("%s/numpy/src" % scons_tools.GetBuildDir())
+libpath = os.path.abspath("libs/numpy/src")
 if os.environ.has_key("LD_LIBRARY_PATH"):
     boost_numpy_env["ENV"]["LD_LIBRARY_PATH"] = "%s:%s" % (libpath, os.environ["LD_LIBRARY_PATH"])
 else:
@@ -28,6 +28,7 @@ targets["boost.numpy"]["install"] = (
     + boost_numpy_env.Install(boost_numpy_env["INSTALL_LIB"], targets["boost.numpy"]["lib"])
     )
 targets["boost.numpy"]["test"] = SConscript("libs/numpy/test/SConscript")
+targets["boost.numpy"]["example"] = SConscript("libs/numpy/example/SConscript")
 
 
 Return("targets")
