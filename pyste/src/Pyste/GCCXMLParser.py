@@ -4,12 +4,16 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 from declarations import *
-# try to use cElementTree if avaiable
 try:
-    from cElementTree import ElementTree    
+    # try to use internal elementtree
+    from xml.etree.cElementTree import ElementTree
 except ImportError:
-    # fall back to the normal elementtree
-    from elementtree.ElementTree import ElementTree
+    # try to use cElementTree if avaiable
+    try:
+        from cElementTree import ElementTree    
+    except ImportError:
+        # fall back to the normal elementtree
+        from elementtree.ElementTree import ElementTree
 from xml.parsers.expat import ExpatError
 from copy import deepcopy
 from utils import enumerate
