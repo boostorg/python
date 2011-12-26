@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Exposing Classes</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="hello.html" title="Building Hello World">
@@ -24,7 +24,7 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="python.exposing"></a> Exposing Classes</h2></div></div></div>
+<a name="python.exposing"></a>Exposing Classes</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="exposing.html#python.constructors">Constructors</a></span></dt>
 <dt><span class="section"><a href="exposing.html#python.class_data_members">Class Data Members</a></span></dt>
@@ -67,8 +67,6 @@
       we may use our class <code class="literal">World</code> in Python. Here's a sample Python
       session:
     </p>
-<p>
-    </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">hello</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">World</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">planet</span><span class="special">.</span><span class="identifier">set</span><span class="special">(</span><span class="string">'howdy'</span><span class="special">)</span>
@@ -90,12 +88,10 @@
         We may wish to wrap a class with a non-default constructor. Let us build
         on our previous example:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">World</span>
 <span class="special">{</span>
-    <span class="identifier">World</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">):</span> <span class="identifier">msg</span><span class="special">(</span><span class="identifier">msg</span><span class="special">)</span> <span class="special">{}</span> <span class="comment">// added constructor
-</span>    <span class="keyword">void</span> <span class="identifier">set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">msg</span> <span class="special">=</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
+    <span class="identifier">World</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">):</span> <span class="identifier">msg</span><span class="special">(</span><span class="identifier">msg</span><span class="special">)</span> <span class="special">{}</span> <span class="comment">// added constructor</span>
+    <span class="keyword">void</span> <span class="identifier">set</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">msg</span> <span class="special">=</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">greet</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">msg</span><span class="special">;</span> <span class="special">}</span>
     <span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="identifier">msg</span><span class="special">;</span>
 <span class="special">};</span>
@@ -120,7 +116,7 @@
 <p>
         <code class="literal">init&lt;std::string&gt;()</code> exposes the constructor taking
         in a <code class="literal">std::string</code> (in Python, constructors are spelled
-        "<code class="literal">"<span class="underline">_init</span>_"</code>").
+        "<code class="literal">"__init__"</code>").
       </p>
 <p>
         We can expose additional constructors by passing more <code class="literal">init&lt;...&gt;</code>s
@@ -140,8 +136,8 @@
 <pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Abstract</span><span class="special">&gt;(</span><span class="string">"Abstract"</span><span class="special">,</span> <span class="identifier">no_init</span><span class="special">)</span>
 </pre>
 <p>
-        This actually adds an <code class="literal"><span class="underline">_init</span>_</code>
-        method which always raises a Python RuntimeError exception.
+        This actually adds an <code class="literal">__init__</code> method which always raises
+        a Python RuntimeError exception.
       </p>
 </div>
 <div class="section">
@@ -172,8 +168,6 @@
         Then, in Python, assuming we have placed our Var class inside the namespace
         hello as we did before:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">hello</span><span class="special">.</span><span class="identifier">Var</span><span class="special">(</span><span class="string">'pi'</span><span class="special">)</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span><span class="special">,</span> <span class="string">'is around'</span><span class="special">,</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span>
@@ -183,8 +177,8 @@
         Note that <code class="literal">name</code> is exposed as <span class="bold"><strong>read-only</strong></span>
         while <code class="literal">value</code> is exposed as <span class="bold"><strong>read-write</strong></span>.
       </p>
-<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span> <span class="special">=</span> <span class="string">'e'</span> <span class="comment"># can't change name
-</span><span class="identifier">Traceback</span> <span class="special">(</span><span class="identifier">most</span> <span class="identifier">recent</span> <span class="identifier">call</span> <span class="identifier">last</span><span class="special">):</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">name</span> <span class="special">=</span> <span class="string">'e'</span> <span class="comment"># can't change name</span>
+<span class="identifier">Traceback</span> <span class="special">(</span><span class="identifier">most</span> <span class="identifier">recent</span> <span class="identifier">call</span> <span class="identifier">last</span><span class="special">):</span>
   <span class="identifier">File</span> <span class="string">"&lt;stdin&gt;"</span><span class="special">,</span> <span class="identifier">line</span> <span class="number">1</span><span class="special">,</span> <span class="keyword">in</span> <span class="error">?</span>
 <span class="identifier">AttributeError</span><span class="special">:</span> <span class="identifier">can</span><span class="error">'</span><span class="identifier">t</span> <span class="identifier">set</span> <span class="identifier">attribute</span>
 </pre>
@@ -197,8 +191,6 @@
         classes that take advantage of encapsulation hide the class' data members.
         The only way to access the class' data is through access (getter/setter)
         functions. Access functions expose class properties. Here's an example:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Num</span>
 <span class="special">{</span>
@@ -221,20 +213,16 @@
 <p>
         And at last, in Python:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span> <span class="special">=</span> <span class="identifier">Num</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span> <span class="special">=</span> <span class="number">3.14</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">value</span><span class="special">,</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">rovalue</span>
 <span class="special">(</span><span class="number">3.14</span><span class="special">,</span> <span class="number">3.14</span><span class="special">)</span>
-<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">rovalue</span> <span class="special">=</span> <span class="number">2.17</span> <span class="comment"># error!
-</span></pre>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">rovalue</span> <span class="special">=</span> <span class="number">2.17</span> <span class="comment"># error!</span>
+</pre>
 <p>
         Take note that the class property <code class="literal">rovalue</code> is exposed as
         <span class="bold"><strong>read-only</strong></span> since the <code class="literal">rovalue</code>
         setter member function is not passed in:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="special">.</span><span class="identifier">add_property</span><span class="special">(</span><span class="string">"rovalue"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Num</span><span class="special">::</span><span class="identifier">get</span><span class="special">)</span>
 </pre>
@@ -310,8 +298,8 @@
         is destroyed. We will see more of Boost.Python <a class="link" href="functions.html#python.call_policies" title="Call Policies">call
         policies</a> later.
       </p>
-<pre class="programlisting"><span class="comment">// Tell Python to take ownership of factory's result
-</span><span class="identifier">def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span> <span class="identifier">factory</span><span class="special">,</span>
+<pre class="programlisting"><span class="comment">// Tell Python to take ownership of factory's result</span>
+<span class="identifier">def</span><span class="special">(</span><span class="string">"factory"</span><span class="special">,</span> <span class="identifier">factory</span><span class="special">,</span>
     <span class="identifier">return_value_policy</span><span class="special">&lt;</span><span class="identifier">manage_new_object</span><span class="special">&gt;());</span>
 </pre>
 </div>
@@ -356,7 +344,7 @@
         the job of wrapping classes that are meant to overridden in Python, easier.
       </p>
 <div class="sidebar">
-<p class="title"><b></b></p>
+<div class="titlepage"></div>
 <p>
         <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><strong>MSVC6/7 Workaround</strong></span>
       </p>
@@ -436,8 +424,8 @@
     <span class="keyword">int</span> <span class="identifier">f</span><span class="special">()</span>
     <span class="special">{</span>
         <span class="keyword">if</span> <span class="special">(</span><span class="identifier">override</span> <span class="identifier">f</span> <span class="special">=</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">get_override</span><span class="special">(</span><span class="string">"f"</span><span class="special">))</span>
-            <span class="keyword">return</span> <span class="identifier">f</span><span class="special">();</span> <span class="comment">// *note*
-</span>        <span class="keyword">return</span> <span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">();</span>
+            <span class="keyword">return</span> <span class="identifier">f</span><span class="special">();</span> <span class="comment">// *note*</span>
+        <span class="keyword">return</span> <span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">();</span>
     <span class="special">}</span>
 
     <span class="keyword">int</span> <span class="identifier">default_f</span><span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">();</span> <span class="special">}</span>
@@ -449,7 +437,7 @@
         If none, then we call <code class="computeroutput"><span class="identifier">Base</span><span class="special">::</span><span class="identifier">f</span><span class="special">()</span></code>.
       </p>
 <div class="sidebar">
-<p class="title"><b></b></p>
+<div class="titlepage"></div>
 <p>
         <span class="inlinemediaobject"><img src="../images/alert.png" alt="alert"></span> <span class="bold"><strong>MSVC6/7 Workaround</strong></span>
       </p>
@@ -477,8 +465,6 @@
 <p>
         In Python, the results would be as expected:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">base</span> <span class="special">=</span> <span class="identifier">Base</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">Derived</span><span class="special">(</span><span class="identifier">Base</span><span class="special">):</span>
 <span class="special">...</span>     <span class="keyword">def</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
@@ -502,8 +488,8 @@
 <div class="section">
 <div class="titlepage"><div><div><h3 class="title">
 <a name="python.class_operators_special_functions"></a>Class Operators/Special Functions</h3></div></div></div>
-<a name="class_operators_special_functions.python_operators"></a><h3>
-<a name="id764956"></a>
+<h3>
+<a name="class_operators_special_functions.python_operators"></a>
         Python Operators
       </h3>
 <p>
@@ -514,8 +500,6 @@
 <p>
         Consider a file position class <code class="literal">FilePos</code> and a set of operators
         that take on FilePos instances:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="keyword">class</span> <span class="identifier">FilePos</span> <span class="special">{</span> <span class="comment">/*...*/</span> <span class="special">};</span>
 
@@ -532,14 +516,14 @@
         and intuitively:
       </p>
 <pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">FilePos</span><span class="special">&gt;(</span><span class="string">"FilePos"</span><span class="special">)</span>
-    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">+</span> <span class="keyword">int</span><span class="special">())</span>          <span class="comment">// __add__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="keyword">int</span><span class="special">()</span> <span class="special">+</span> <span class="identifier">self</span><span class="special">)</span>          <span class="comment">// __radd__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-</span> <span class="identifier">self</span><span class="special">)</span>           <span class="comment">// __sub__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-</span> <span class="keyword">int</span><span class="special">())</span>          <span class="comment">// __sub__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">+=</span> <span class="keyword">int</span><span class="special">())</span>         <span class="comment">// __iadd__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-=</span> <span class="identifier">other</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;())</span>
-    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">&lt;</span> <span class="identifier">self</span><span class="special">);</span>          <span class="comment">// __lt__
-</span></pre>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">+</span> <span class="keyword">int</span><span class="special">())</span>          <span class="comment">// __add__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="keyword">int</span><span class="special">()</span> <span class="special">+</span> <span class="identifier">self</span><span class="special">)</span>          <span class="comment">// __radd__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-</span> <span class="identifier">self</span><span class="special">)</span>           <span class="comment">// __sub__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-</span> <span class="keyword">int</span><span class="special">())</span>          <span class="comment">// __sub__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">+=</span> <span class="keyword">int</span><span class="special">())</span>         <span class="comment">// __iadd__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">-=</span> <span class="identifier">other</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;())</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">self</span> <span class="special">&lt;</span> <span class="identifier">self</span><span class="special">);</span>          <span class="comment">// __lt__</span>
+</pre>
 <p>
         The code snippet above is very clear and needs almost no explanation at all.
         It is virtually the same as the operators' signatures. Just take note that
@@ -549,8 +533,8 @@
         in place of an actual <code class="literal">T</code> instance when writing "self
         expressions".
       </p>
-<a name="class_operators_special_functions.special_methods"></a><h3>
-<a name="id765570"></a>
+<h3>
+<a name="class_operators_special_functions.special_methods"></a>
         Special Methods
       </h3>
 <p>
@@ -568,11 +552,11 @@
 <span class="identifier">ostream</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">&lt;&lt;(</span><span class="identifier">ostream</span><span class="special">&amp;,</span><span class="identifier">Rational</span><span class="special">);</span>
 
 <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;(</span><span class="string">"Rational"</span><span class="special">)</span>
-    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">float_</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                  <span class="comment">// __float__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">pow</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span> <span class="identifier">other</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;))</span>    <span class="comment">// __pow__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">abs</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                     <span class="comment">// __abs__
-</span>    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">str</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                     <span class="comment">// __str__
-</span>    <span class="special">;</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">float_</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                  <span class="comment">// __float__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">pow</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span> <span class="identifier">other</span><span class="special">&lt;</span><span class="identifier">Rational</span><span class="special">&gt;))</span>    <span class="comment">// __pow__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">abs</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                     <span class="comment">// __abs__</span>
+    <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">str</span><span class="special">(</span><span class="identifier">self</span><span class="special">))</span>                     <span class="comment">// __str__</span>
+    <span class="special">;</span>
 </pre>
 <p>
         Need we say more?

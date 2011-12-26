@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Iterators</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="embedding.html" title="Embedding">
@@ -62,21 +62,17 @@
       The typical Python iteration protocol: <code class="literal"><span class="bold"><strong>for y
       in x...</strong></span></code> is as follows:
     </p>
-<p>
-    </p>
-<pre class="programlisting"><span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">__iter__</span><span class="special">()</span>         <span class="comment"># get iterator
-</span><span class="keyword">try</span><span class="special">:</span>
+<pre class="programlisting"><span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">x</span><span class="special">.</span><span class="identifier">__iter__</span><span class="special">()</span>         <span class="comment"># get iterator</span>
+<span class="keyword">try</span><span class="special">:</span>
     <span class="keyword">while</span> <span class="number">1</span><span class="special">:</span>
-    <span class="identifier">y</span> <span class="special">=</span> <span class="identifier">iter</span><span class="special">.</span><span class="identifier">next</span><span class="special">()</span>         <span class="comment"># get each item
-</span>    <span class="special">...</span>                     <span class="comment"># process y
-</span><span class="keyword">except</span> <span class="identifier">StopIteration</span><span class="special">:</span> <span class="keyword">pass</span>  <span class="comment"># iterator exhausted
-</span></pre>
+    <span class="identifier">y</span> <span class="special">=</span> <span class="identifier">iter</span><span class="special">.</span><span class="identifier">next</span><span class="special">()</span>         <span class="comment"># get each item</span>
+    <span class="special">...</span>                     <span class="comment"># process y</span>
+<span class="keyword">except</span> <span class="identifier">StopIteration</span><span class="special">:</span> <span class="keyword">pass</span>  <span class="comment"># iterator exhausted</span>
+</pre>
 <p>
       Boost.Python provides some mechanisms to make C++ iterators play along nicely
       as Python iterators. What we need to do is to produce appropriate <code class="computeroutput"><span class="identifier">__iter__</span></code> function from C++ iterators that
       is compatible with the Python iteration protocol. For example:
-    </p>
-<p>
     </p>
 <pre class="programlisting"><span class="identifier">object</span> <span class="identifier">get_iterator</span> <span class="special">=</span> <span class="identifier">iterator</span><span class="special">&lt;</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;();</span>
 <span class="identifier">object</span> <span class="identifier">iter</span> <span class="special">=</span> <span class="identifier">get_iterator</span><span class="special">(</span><span class="identifier">v</span><span class="special">);</span>
@@ -129,8 +125,6 @@
       Let's put this into action... Here's an example from some hypothetical bogon
       Particle accelerator code:
     </p>
-<p>
-    </p>
 <pre class="programlisting"><span class="identifier">f</span> <span class="special">=</span> <span class="identifier">Field</span><span class="special">()</span>
 <span class="keyword">for</span> <span class="identifier">x</span> <span class="keyword">in</span> <span class="identifier">f</span><span class="special">.</span><span class="identifier">pions</span><span class="special">:</span>
     <span class="identifier">smash</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span>
@@ -139,8 +133,6 @@
 </pre>
 <p>
       Now, our C++ Wrapper:
-    </p>
-<p>
     </p>
 <pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">F</span><span class="special">&gt;(</span><span class="string">"Field"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">property</span><span class="special">(</span><span class="string">"pions"</span><span class="special">,</span> <span class="identifier">range</span><span class="special">(&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">p_begin</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">F</span><span class="special">::</span><span class="identifier">p_end</span><span class="special">))</span>
@@ -156,26 +148,22 @@
       a Python iterator look like an STL iterator. For that, we use <code class="computeroutput"><span class="identifier">stl_input_iterator</span><span class="special">&lt;&gt;</span></code>.
       Consider how we might implement a function that exposes <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;::</span><span class="identifier">assign</span><span class="special">()</span></code> to Python:
     </p>
-<p>
-    </p>
 <pre class="programlisting"><span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="keyword">void</span> <span class="identifier">list_assign</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;&amp;</span> <span class="identifier">l</span><span class="special">,</span> <span class="identifier">object</span> <span class="identifier">o</span><span class="special">)</span> <span class="special">{</span>
-    <span class="comment">// Turn a Python sequence into an STL input range
-</span>    <span class="identifier">stl_input_iterator</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">begin</span><span class="special">(</span><span class="identifier">o</span><span class="special">),</span> <span class="identifier">end</span><span class="special">;</span>
+    <span class="comment">// Turn a Python sequence into an STL input range</span>
+    <span class="identifier">stl_input_iterator</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;</span> <span class="identifier">begin</span><span class="special">(</span><span class="identifier">o</span><span class="special">),</span> <span class="identifier">end</span><span class="special">;</span>
     <span class="identifier">l</span><span class="special">.</span><span class="identifier">assign</span><span class="special">(</span><span class="identifier">begin</span><span class="special">,</span> <span class="identifier">end</span><span class="special">);</span>
 <span class="special">}</span>
 
-<span class="comment">// Part of the wrapper for list&lt;int&gt;
-</span><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;(</span><span class="string">"list_int"</span><span class="special">)</span>
+<span class="comment">// Part of the wrapper for list&lt;int&gt;</span>
+<span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;</span> <span class="special">&gt;(</span><span class="string">"list_int"</span><span class="special">)</span>
     <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"assign"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">list_assign</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;)</span>
-    <span class="comment">// ...
-</span>    <span class="special">;</span>
+    <span class="comment">// ...</span>
+    <span class="special">;</span>
 </pre>
 <p>
       Now in Python, we can assign any integer sequence to <code class="computeroutput"><span class="identifier">list_int</span></code>
       objects:
-    </p>
-<p>
     </p>
 <pre class="programlisting"><span class="identifier">x</span> <span class="special">=</span> <span class="identifier">list_int</span><span class="special">();</span>
 <span class="identifier">x</span><span class="special">.</span><span class="identifier">assign</span><span class="special">([</span><span class="number">1</span><span class="special">,</span><span class="number">2</span><span class="special">,</span><span class="number">3</span><span class="special">,</span><span class="number">4</span><span class="special">,</span><span class="number">5</span><span class="special">])</span>
