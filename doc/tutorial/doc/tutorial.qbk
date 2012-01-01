@@ -1302,6 +1302,23 @@ create a new scope around a class:
 [def PyModule_GetDict       [@http://www.python.org/doc/current/api/moduleObjects.html#l2h-594   PyModule_GetDict]]
 
 [endsect]
+
+[section:creating_python_object Creating `boost::python::object` from `PyObject*`]
+
+When you want a `boost::python::object` to manage a pointer to `PyObject*` pyobj one does:
+
+    boost::python::object o(boost::python::handle<>(pyobj));
+
+In this case, the `o` object, manages the `pyobj`, it won’t increase the reference count on construction.
+
+Otherwise, to use a borrowed reference:
+
+    boost::python::object o(boost::python::handle<>(boost::python::borrowed(pyobj)));
+
+In this case, `Py_INCREF` is called, so `pyobj` is not destructed when object o goes out of scope.
+
+[endsect] [/ creating_python_object ]
+
 [endsect] [/ Object Interface]
 
 [section Embedding]
