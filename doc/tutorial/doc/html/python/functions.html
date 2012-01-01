@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Functions</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="exposing.html" title="Exposing Classes">
@@ -136,11 +136,9 @@ Namespaces are one honking great idea -- let's do more of those!
 <p>
         We could copy result into a new object:
       </p>
-<p>
-      </p>
-<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> <span class="comment"># Result disappears
-</span><span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span>       <span class="comment"># No crash, but still bad
-</span><span class="number">3.14</span>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">y</span><span class="special">,</span> <span class="identifier">z</span><span class="special">).</span><span class="identifier">set</span><span class="special">(</span><span class="number">42</span><span class="special">)</span> <span class="comment"># Result disappears</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">y</span><span class="special">.</span><span class="identifier">x</span><span class="special">.</span><span class="identifier">get</span><span class="special">()</span>       <span class="comment"># No crash, but still bad</span>
+<span class="number">3.14</span>
 </pre>
 <p>
         This is not really our intent of our C++ interface. We've broken our promise
@@ -149,8 +147,6 @@ Namespaces are one honking great idea -- let's do more of those!
       </p>
 <p>
         Our problems do not end there. Suppose Y is implemented as follows:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">Y</span>
 <span class="special">{</span>
@@ -203,8 +199,8 @@ Namespaces are one honking great idea -- let's do more of those!
             <span class="bold"><strong>BOOM!</strong></span>
           </li>
 </ol></div>
-<a name="call_policies.call_policies"></a><h3>
-<a name="id767074"></a>
+<h3>
+<a name="call_policies.call_policies"></a>
         Call Policies
       </h3>
 <p>
@@ -284,7 +280,7 @@ Namespaces are one honking great idea -- let's do more of those!
           </li>
 </ul></div>
 <div class="sidebar">
-<p class="title"><b></b></p>
+<div class="titlepage"></div>
 <p>
         <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span> <span class="bold"><strong>Remember the Zen, Luke:</strong></span>
       </p>
@@ -362,30 +358,30 @@ Namespaces are one honking great idea -- let's do more of those!
         But the type of a pointer to the function <code class="literal">f</code> has no information
         about its default arguments:
       </p>
-<pre class="programlisting"><span class="keyword">int</span><span class="special">(*</span><span class="identifier">g</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">;</span>    <span class="comment">// defaults lost!
-</span></pre>
+<pre class="programlisting"><span class="keyword">int</span><span class="special">(*</span><span class="identifier">g</span><span class="special">)(</span><span class="keyword">int</span><span class="special">,</span><span class="keyword">double</span><span class="special">,</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="special">=</span> <span class="identifier">f</span><span class="special">;</span>    <span class="comment">// defaults lost!</span>
+</pre>
 <p>
         When we pass this function pointer to the <code class="literal">def</code> function,
         there is no way to retrieve the default arguments:
       </p>
-<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>                            <span class="comment">// defaults lost!
-</span></pre>
+<pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>                            <span class="comment">// defaults lost!</span>
+</pre>
 <p>
         Because of this, when wrapping C++ code, we had to resort to manual wrapping
         as outlined in the <a class="link" href="functions.html#python.overloading" title="Overloading">previous section</a>,
         or writing thin wrappers:
       </p>
-<pre class="programlisting"><span class="comment">// write "thin wrappers"
-</span><span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
+<pre class="programlisting"><span class="comment">// write "thin wrappers"</span>
+<span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
 <span class="keyword">int</span> <span class="identifier">f2</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">,</span> <span class="keyword">double</span> <span class="identifier">y</span><span class="special">)</span> <span class="special">{</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">,</span><span class="identifier">y</span><span class="special">);</span> <span class="special">}</span>
 
 <span class="comment">/*...*/</span>
 
-    <span class="comment">// in module init
-</span>    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>  <span class="comment">// all arguments
-</span>    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f2</span><span class="special">);</span> <span class="comment">// two arguments
-</span>    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f1</span><span class="special">);</span> <span class="comment">// one argument
-</span></pre>
+    <span class="comment">// in module init</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f</span><span class="special">);</span>  <span class="comment">// all arguments</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f2</span><span class="special">);</span> <span class="comment">// two arguments</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"f"</span><span class="special">,</span> <span class="identifier">f1</span><span class="special">);</span> <span class="comment">// one argument</span>
+</pre>
 <p>
         When you want to wrap functions (or member functions) that either:
       </p>
@@ -397,8 +393,8 @@ Namespaces are one honking great idea -- let's do more of those!
             are overloaded with a common sequence of initial arguments
           </li>
 </ul></div>
-<a name="default_arguments.boost_python_function_overloads"></a><h3>
-<a name="id769042"></a>
+<h3>
+<a name="default_arguments.boost_python_function_overloads"></a>
         BOOST_PYTHON_FUNCTION_OVERLOADS
       </h3>
 <p>
@@ -424,8 +420,8 @@ Namespaces are one honking great idea -- let's do more of those!
       </p>
 <pre class="programlisting"><span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="identifier">foo_overloads</span><span class="special">());</span>
 </pre>
-<a name="default_arguments.boost_python_member_function_overloads"></a><h3>
-<a name="id769301"></a>
+<h3>
+<a name="default_arguments.boost_python_member_function_overloads"></a>
         BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS
       </h3>
 <p>
@@ -467,8 +463,8 @@ Namespaces are one honking great idea -- let's do more of those!
         See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads
         reference</a> for details.
       </p>
-<a name="default_arguments.init_and_optional"></a><h3>
-<a name="id769596"></a>
+<h3>
+<a name="default_arguments.init_and_optional"></a>
         init and optional
       </h3>
 <p>
@@ -536,8 +532,8 @@ Namespaces are one honking great idea -- let's do more of those!
         Notice though that we have a situation now where we have a minimum of zero
         (0) arguments and a maximum of 3 arguments.
       </p>
-<a name="auto_overloading.manual_wrapping"></a><h3>
-<a name="id770226"></a>
+<h3>
+<a name="auto_overloading.manual_wrapping"></a>
         Manual Wrapping
       </h3>
 <p>
