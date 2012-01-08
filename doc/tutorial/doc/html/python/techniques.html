@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>General Techniques</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="exception.html" title="Exception Translation">
@@ -23,7 +23,7 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="python.techniques"></a> General Techniques</h2></div></div></div>
+<a name="python.techniques"></a>General Techniques</h2></div></div></div>
 <div class="toc"><dl>
 <dt><span class="section"><a href="techniques.html#python.creating_packages">Creating Packages</a></span></dt>
 <dt><span class="section"><a href="techniques.html#python.extending_wrapped_objects_in_python">Extending Wrapped Objects in Python</a></span></dt>
@@ -62,8 +62,8 @@
         him to write code like this:
       </p>
 <pre class="programlisting"><span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
-<span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(...)</span> <span class="comment"># echo is a C++ function
-</span></pre>
+<span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span><span class="special">.</span><span class="identifier">echo</span><span class="special">(...)</span> <span class="comment"># echo is a C++ function</span>
+</pre>
 <p>
         The first step is to write the wrapping code. We have to export each module
         separately with Boost.Python, like this:
@@ -124,8 +124,6 @@
         into his <a href="http://www.python.org/doc/current/tut/node8.html#SECTION008110000000000000000" target="_top">PYTHONPATH</a>
         and fire up the interpreter:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">filters</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sound</span> <span class="special">=</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">io</span><span class="special">.</span><span class="identifier">open</span><span class="special">(</span><span class="string">'file.mp3'</span><span class="special">)</span>
@@ -145,8 +143,6 @@
 <p>
         If we want this flexibility, we will have to complicate our package hierarchy
         a little. First, we will have to change the name of the extension modules:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="comment">/* file core.cpp */</span>
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_core</span><span class="special">)</span>
@@ -178,8 +174,6 @@
         to each one. But if we leave it that way, the user will have to access the
         functions in the core module with this syntax:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">import</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">sounds</span><span class="special">.</span><span class="identifier">core</span><span class="special">.</span><span class="identifier">_core</span><span class="special">.</span><span class="identifier">foo</span><span class="special">(...)</span>
 </pre>
@@ -188,7 +182,7 @@
         magic: everything that is brought to the <code class="literal">__init__.py</code> namespace
         can be accessed directly by the user. So, all we have to do is bring the
         entire namespace from <code class="literal">_core.pyd</code> to <code class="literal">core/__init__.py</code>.
-        So add this line of code to <code class="literal">sounds<span class="emphasis"><em>core</em></span>__init__.py</code>:
+        So add this line of code to <code class="literal">sounds/core/__init__.py</code>:
       </p>
 <pre class="programlisting"><span class="keyword">from</span> <span class="identifier">_core</span> <span class="keyword">import</span> <span class="special">*</span>
 </pre>
@@ -216,7 +210,7 @@
     <span class="keyword">return</span> <span class="identifier">s</span>
 </pre>
 <p>
-        Next, we add this line to <code class="literal">sounds<span class="emphasis"><em>filters</em></span>__init__.py</code>:
+        Next, we add this line to <code class="literal">sounds/filters/__init__.py</code>:
       </p>
 <pre class="programlisting"><span class="keyword">from</span> <span class="identifier">echo_noise</span> <span class="keyword">import</span> <span class="identifier">echo_noise</span>
 </pre>
@@ -237,11 +231,11 @@
       </p>
 <pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="keyword">class</span> <span class="identifier">C</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span> <span class="keyword">pass</span>
 <span class="special">&gt;&gt;&gt;</span>
-<span class="special">&gt;&gt;&gt;</span> <span class="comment"># a regular function
-</span><span class="special">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="identifier">C_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span> <span class="keyword">return</span> <span class="string">'A C instance!'</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="comment"># a regular function</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="keyword">def</span> <span class="identifier">C_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span> <span class="keyword">return</span> <span class="string">'A C instance!'</span>
 <span class="special">&gt;&gt;&gt;</span>
-<span class="special">&gt;&gt;&gt;</span> <span class="comment"># now we turn it in a member function
-</span><span class="special">&gt;&gt;&gt;</span> <span class="identifier">C</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">C_str</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="comment"># now we turn it in a member function</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">C</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">C_str</span>
 <span class="special">&gt;&gt;&gt;</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="identifier">c</span> <span class="special">=</span> <span class="identifier">C</span><span class="special">()</span>
 <span class="special">&gt;&gt;&gt;</span> <span class="keyword">print</span> <span class="identifier">c</span>
@@ -256,8 +250,6 @@
         We can do the same with classes that were wrapped with Boost.Python. Suppose
         we have a class <code class="literal">point</code> in C++:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="keyword">class</span> <span class="identifier">point</span> <span class="special">{...};</span>
 
 <span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">_geom</span><span class="special">)</span>
@@ -269,16 +261,14 @@
         If we are using the technique from the previous session, <a class="link" href="techniques.html#python.creating_packages" title="Creating Packages">Creating
         Packages</a>, we can code directly into <code class="literal">geom/__init__.py</code>:
       </p>
-<p>
-      </p>
 <pre class="programlisting"><span class="keyword">from</span> <span class="identifier">_geom</span> <span class="keyword">import</span> <span class="special">*</span>
 
-<span class="comment"># a regular function
-</span><span class="keyword">def</span> <span class="identifier">point_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
+<span class="comment"># a regular function</span>
+<span class="keyword">def</span> <span class="identifier">point_str</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
     <span class="keyword">return</span> <span class="identifier">str</span><span class="special">((</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">self</span><span class="special">.</span><span class="identifier">y</span><span class="special">))</span>
 
-<span class="comment"># now we turn it into a member function
-</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">point_str</span>
+<span class="comment"># now we turn it into a member function</span>
+<span class="identifier">point</span><span class="special">.</span><span class="identifier">__str__</span> <span class="special">=</span> <span class="identifier">point_str</span>
 </pre>
 <p>
         <span class="bold"><strong>All</strong></span> point instances created from C++ will
@@ -303,9 +293,9 @@
         You can even add a little syntactic sugar with the use of metaclasses. Let's
         create a special metaclass that "injects" methods in other classes.
       </p>
-<pre class="programlisting"><span class="comment"># The one Boost.Python uses for all wrapped classes.
-</span><span class="comment"># You can use here any class exported by Boost instead of "point"
-</span><span class="identifier">BoostPythonMetaclass</span> <span class="special">=</span> <span class="identifier">point</span><span class="special">.</span><span class="identifier">__class__</span>
+<pre class="programlisting"><span class="comment"># The one Boost.Python uses for all wrapped classes.</span>
+<span class="comment"># You can use here any class exported by Boost instead of "point"</span>
+<span class="identifier">BoostPythonMetaclass</span> <span class="special">=</span> <span class="identifier">point</span><span class="special">.</span><span class="identifier">__class__</span>
 
 <span class="keyword">class</span> <span class="identifier">injector</span><span class="special">(</span><span class="identifier">object</span><span class="special">):</span>
     <span class="keyword">class</span> <span class="identifier">__metaclass__</span><span class="special">(</span><span class="identifier">BoostPythonMetaclass</span><span class="special">):</span>
@@ -316,8 +306,8 @@
                         <span class="identifier">setattr</span><span class="special">(</span><span class="identifier">b</span><span class="special">,</span><span class="identifier">k</span><span class="special">,</span><span class="identifier">v</span><span class="special">)</span>
             <span class="keyword">return</span> <span class="identifier">type</span><span class="special">.</span><span class="identifier">__init__</span><span class="special">(</span><span class="identifier">self</span><span class="special">,</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">bases</span><span class="special">,</span> <span class="identifier">dict</span><span class="special">)</span>
 
-<span class="comment"># inject some methods in the point foo
-</span><span class="keyword">class</span> <span class="identifier">more_point</span><span class="special">(</span><span class="identifier">injector</span><span class="special">,</span> <span class="identifier">point</span><span class="special">):</span>
+<span class="comment"># inject some methods in the point foo</span>
+<span class="keyword">class</span> <span class="identifier">more_point</span><span class="special">(</span><span class="identifier">injector</span><span class="special">,</span> <span class="identifier">point</span><span class="special">):</span>
     <span class="keyword">def</span> <span class="identifier">__repr__</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
         <span class="keyword">return</span> <span class="string">'Point(x=%s, y=%s)'</span> <span class="special">%</span> <span class="special">(</span><span class="identifier">self</span><span class="special">.</span><span class="identifier">x</span><span class="special">,</span> <span class="identifier">self</span><span class="special">.</span><span class="identifier">y</span><span class="special">)</span>
     <span class="keyword">def</span> <span class="identifier">foo</span><span class="special">(</span><span class="identifier">self</span><span class="special">):</span>
@@ -354,8 +344,6 @@
         a good time to compile the Boost.Python wrappers. Plus the memory consumption
         can easily become too high. If this is causing you problems, you can split
         the class_ definitions in multiple files:
-      </p>
-<p>
       </p>
 <pre class="programlisting"><span class="comment">/* file point.cpp */</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">point</span><span class="special">.</span><span class="identifier">h</span><span class="special">&gt;</span>

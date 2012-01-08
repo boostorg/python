@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Building Hello World</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
@@ -24,9 +24,9 @@
 </div>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a name="python.hello"></a> Building Hello World</h2></div></div></div>
-<a name="hello.from_start_to_finish"></a><h3>
-<a name="id760024"></a>
+<a name="python.hello"></a>Building Hello World</h2></div></div></div>
+<h3>
+<a name="hello.from_start_to_finish"></a>
       From Start To Finish
     </h3>
 <p>
@@ -91,8 +91,8 @@
       in the command line. Pre-built Boost.Jam executables are available for most
       platforms. The complete list of Bjam executables can be found <a href="http://sourceforge.net/project/showfiles.php?group_id=7586" target="_top">here</a>.
     </p>
-<a name="hello.let_s_jam_"></a><h3>
-<a name="id760177"></a>
+<h3>
+<a name="hello.let_s_jam_"></a>
       Let's Jam!
     </h3>
 <p>
@@ -107,8 +107,8 @@
       The comments contained in the Jamrules file above should be sufficient to get
       you going.
     </p>
-<a name="hello.running_bjam"></a><h3>
-<a name="id760225"></a>
+<h3>
+<a name="hello.running_bjam"></a>
       Running bjam
     </h3>
 <p>
@@ -133,12 +133,12 @@
 using msvc : 8.0 ;
 
 #  Python configuration
-using python : 2.4 : C:/dev/tools<span class="emphasis"><em>Python</em></span> ;
+using python : 2.4 : C:<span class="emphasis"><em>dev/tools/Python</em></span> ;
 </pre>
 <p>
       The first rule tells Bjam to use the MSVC 8.0 compiler and associated tools.
       The second rule provides information on Python, its version and where it is
-      located. The above assumes that the Python installation is in <code class="literal">C:/dev/tools/Python/</code>.
+      located. The above assumes that the Python installation is in <code class="literal">C:<span class="emphasis"><em>dev/tools\/Python</em></span></code>.
       If you have one fairly "standard" python installation for your platform,
       you might not need to do this.
     </p>
@@ -165,7 +165,7 @@ bjam
       And so on... Finally:
     </p>
 <pre class="programlisting">Creating library <span class="emphasis"><em>path-to-boost_python.dll</em></span>
-   Creating library <span class="emphasis"><em>path-to-'''hello_ext'''.exp</em></span>
+   Creating library /path-to-hello_ext.exp/
 **passed** ... hello.test
 ...updated 35 targets...
 </pre>

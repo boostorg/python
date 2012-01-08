@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Embedding</title>
 <link rel="stylesheet" href="../../../../../../../doc/src/boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="up" href="../index.html" title="Chapter&#160;1.&#160;python 2.0">
 <link rel="prev" href="object.html" title="Object Interface">
@@ -39,8 +39,8 @@
       a lot easier and, in a future version, it may become unnecessary to touch the
       Python/C API at all. So stay tuned... <span class="inlinemediaobject"><img src="../images/smiley.png" alt="smiley"></span>
     </p>
-<a name="embedding.building_embedded_programs"></a><h3>
-<a name="id773307"></a>
+<h3>
+<a name="embedding.building_embedded_programs"></a>
       Building embedded programs
     </h3>
 <p>
@@ -81,8 +81,8 @@ exe embedded_program # name of the executable
     &lt;library-path&gt;$(PYTHON_LIB_PATH)
     &lt;find-library&gt;$(PYTHON_EMBEDDED_LIBRARY) ;
 </pre>
-<a name="embedding.getting_started"></a><h3>
-<a name="id773391"></a>
+<h3>
+<a name="embedding.getting_started"></a>
       Getting started
     </h3>
 <p>
@@ -95,8 +95,7 @@ exe embedded_program # name of the executable
         </li>
 <li class="listitem">
           Call <a href="http://www.python.org/doc/current/api/initialization.html#l2h-652" target="_top">Py_Initialize</a>()
-          to start the interpreter and create the <code class="literal"><span class="underline">_main</span>_</code>
-          module.
+          to start the interpreter and create the <code class="literal">__main__</code> module.
         </li>
 <li class="listitem">
           Call other Python C API routines to use the interpreter.
@@ -132,8 +131,8 @@ exe embedded_program # name of the executable
         and <a href="../../../../v2/object.html" target="_top">object</a> class templates to
         automate the process.
       </p>
-<a name="using_the_interpreter.running_python_code"></a><h3>
-<a name="id773549"></a>
+<h3>
+<a name="using_the_interpreter.running_python_code"></a>
         Running Python code
       </h3>
 <p>
@@ -152,8 +151,7 @@ exe embedded_program # name of the executable
         The <code class="literal">globals</code> and <code class="literal">locals</code> parameters are
         Python dictionaries containing the globals and locals of the context in which
         to run the code. For most intents and purposes you can use the namespace
-        dictionary of the <code class="literal"><span class="underline">_main</span>_</code>
-        module for both parameters.
+        dictionary of the <code class="literal">__main__</code> module for both parameters.
       </p>
 <p>
         Boost.python provides a function to import a module:
@@ -165,8 +163,8 @@ exe embedded_program # name of the executable
         first), and returns it.
       </p>
 <p>
-        Let's import the <code class="literal"><span class="underline">_main</span>_</code>
-        module and run some Python code in its namespace:
+        Let's import the <code class="literal">__main__</code> module and run some Python code
+        in its namespace:
       </p>
 <pre class="programlisting"><span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
 <span class="identifier">object</span> <span class="identifier">main_namespace</span> <span class="special">=</span> <span class="identifier">main_module</span><span class="special">.</span><span class="identifier">attr</span><span class="special">(</span><span class="string">"__dict__"</span><span class="special">);</span>
@@ -180,8 +178,8 @@ exe embedded_program # name of the executable
         This should create a file called 'hello.txt' in the current directory containing
         a phrase that is well-known in programming circles.
       </p>
-<a name="using_the_interpreter.manipulating_python_objects"></a><h3>
-<a name="id774064"></a>
+<h3>
+<a name="using_the_interpreter.manipulating_python_objects"></a>
         Manipulating Python objects
       </h3>
 <p>
@@ -197,16 +195,16 @@ exe embedded_program # name of the executable
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">main_namespace</span><span class="special">[</span><span class="string">"result"</span><span class="special">]);</span>
 </pre>
 <p>
-        Here we create a dictionary object for the <code class="literal"><span class="underline">_main</span>_</code>
-        module's namespace. Then we assign 5 squared to the result variable and read
-        this variable from the dictionary. Another way to achieve the same result
-        is to use eval instead, which returns the result directly:
+        Here we create a dictionary object for the <code class="literal">__main__</code> module's
+        namespace. Then we assign 5 squared to the result variable and read this
+        variable from the dictionary. Another way to achieve the same result is to
+        use eval instead, which returns the result directly:
       </p>
 <pre class="programlisting"><span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5 ** 2"</span><span class="special">);</span>
 <span class="keyword">int</span> <span class="identifier">five_squared</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 </pre>
-<a name="using_the_interpreter.exception_handling"></a><h3>
-<a name="id774390"></a>
+<h3>
+<a name="using_the_interpreter.exception_handling"></a>
         Exception handling
       </h3>
 <p>
@@ -216,13 +214,13 @@ exe embedded_program # name of the executable
 <pre class="programlisting"><span class="keyword">try</span>
 <span class="special">{</span>
     <span class="identifier">object</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">eval</span><span class="special">(</span><span class="string">"5/0"</span><span class="special">);</span>
-    <span class="comment">// execution will never get here:
-</span>    <span class="keyword">int</span> <span class="identifier">five_divided_by_zero</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
+    <span class="comment">// execution will never get here:</span>
+    <span class="keyword">int</span> <span class="identifier">five_divided_by_zero</span> <span class="special">=</span> <span class="identifier">extract</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">result</span><span class="special">);</span>
 <span class="special">}</span>
 <span class="keyword">catch</span><span class="special">(</span><span class="identifier">error_already_set</span> <span class="keyword">const</span> <span class="special">&amp;)</span>
 <span class="special">{</span>
-    <span class="comment">// handle the exception in some way
-</span><span class="special">}</span>
+    <span class="comment">// handle the exception in some way</span>
+<span class="special">}</span>
 </pre>
 <p>
         The <code class="literal">error_already_set</code> exception class doesn't carry any
@@ -238,12 +236,12 @@ exe embedded_program # name of the executable
 <span class="special">{</span>
     <span class="keyword">if</span> <span class="special">(</span><span class="identifier">PyErr_ExceptionMatches</span><span class="special">(</span><span class="identifier">PyExc_ZeroDivisionError</span><span class="special">))</span>
     <span class="special">{</span>
-        <span class="comment">// handle ZeroDivisionError specially
-</span>    <span class="special">}</span>
+        <span class="comment">// handle ZeroDivisionError specially</span>
+    <span class="special">}</span>
     <span class="keyword">else</span>
     <span class="special">{</span>
-        <span class="comment">// print all other errors to stderr
-</span>        <span class="identifier">PyErr_Print</span><span class="special">();</span>
+        <span class="comment">// print all other errors to stderr</span>
+        <span class="identifier">PyErr_Print</span><span class="special">();</span>
     <span class="special">}</span>
 <span class="special">}</span>
 </pre>
