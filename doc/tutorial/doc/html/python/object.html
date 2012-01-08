@@ -30,7 +30,6 @@
 <dt><span class="section"><a href="object.html#python.derived_object_types">Derived Object types</a></span></dt>
 <dt><span class="section"><a href="object.html#python.extracting_c___objects">Extracting C++ objects</a></span></dt>
 <dt><span class="section"><a href="object.html#python.enums">Enums</a></span></dt>
-<dt><span class="section"><a href="object.html#python.creating_python_object">Creating <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">object</span></code> from <code class="computeroutput"><span class="identifier">PyObject</span><span class="special">*</span></code></a></span></dt>
 </dl></div>
 <p>
       Python is dynamically typed, unlike C++ which is statically typed. Python variables
@@ -314,32 +313,6 @@
     <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"blue"</span><span class="special">,</span> <span class="identifier">blue</span><span class="special">)</span>
     <span class="special">;</span>
 </pre>
-</div>
-<div class="section">
-<div class="titlepage"><div><div><h3 class="title">
-<a name="python.creating_python_object"></a>Creating <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">object</span></code> from <code class="computeroutput"><span class="identifier">PyObject</span><span class="special">*</span></code>
-</h3></div></div></div>
-<p>
-        When you want a <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">object</span></code> to manage a pointer to <code class="computeroutput"><span class="identifier">PyObject</span><span class="special">*</span></code>
-        pyobj one does:
-      </p>
-<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">object</span> <span class="identifier">o</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">handle</span><span class="special">&lt;&gt;(</span><span class="identifier">pyobj</span><span class="special">));</span>
-</pre>
-<p>
-        In this case, the <code class="computeroutput"><span class="identifier">o</span></code> object,
-        manages the <code class="computeroutput"><span class="identifier">pyobj</span></code>, it won&#8217;t
-        increase the reference count on construction.
-      </p>
-<p>
-        Otherwise, to use a borrowed reference:
-      </p>
-<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">object</span> <span class="identifier">o</span><span class="special">(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">handle</span><span class="special">&lt;&gt;(</span><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">borrowed</span><span class="special">(</span><span class="identifier">pyobj</span><span class="special">)));</span>
-</pre>
-<p>
-        In this case, <code class="computeroutput"><span class="identifier">Py_INCREF</span></code> is
-        called, so <code class="computeroutput"><span class="identifier">pyobj</span></code> is not destructed
-        when object o goes out of scope.
-      </p>
 </div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
