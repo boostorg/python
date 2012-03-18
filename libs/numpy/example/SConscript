@@ -1,11 +1,19 @@
-Import("boost_numpy_env")
+# -*- python -*-
+Import("env")
+
+import os
+
+example_env = env.Clone()
+lib_path = os.path.abspath(os.path.join("..", "src"))
+example_env.Append(LIBPATH=[lib_path])
+example_env.Append(LIBS=["boost_numpy"])
 
 example = []
 
 for name in ("ufunc", "dtype", "fromdata", "ndarray", "simple"):
-    example.extend(boost_numpy_env.Program(name, "%s.cpp" % name, LIBS="boost_numpy"))
+    example.extend(example_env.Program(name, "%s.cpp" % name))
 
 for name in ("gaussian",):
-    example.extend(boost_numpy_env.SharedLibrary(name, "%s.cpp" % name, SHLIBPREFIX="", LIBS="boost_numpy"))
+    example.extend(example_env.SharedLibrary(name, "%s.cpp" % name, SHLIBPREFIX=""))
 
 Return("example")
