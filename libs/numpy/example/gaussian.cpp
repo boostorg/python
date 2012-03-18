@@ -1,7 +1,7 @@
+#include <boost/numpy.hpp>
+
 #include <cmath>
 #include <memory>
-
-#include <boost/numpy.hpp>
 
 namespace bp = boost::python;
 namespace bn = boost::numpy;
