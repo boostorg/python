@@ -21,7 +21,7 @@ int main()
     except ImportError:
         context.Result(0)
         print 'Failed to import distutils.sysconfig.'
-        Exit(1)
+        return False
     context.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     libDir = distutils.sysconfig.get_config_var("LIBDIR")
     context.env.AppendUnique(LIBPATH=[libDir])
@@ -45,16 +45,16 @@ int main()
                     print (
                         "Expected to find Python in framework directory %s, but it isn't there"
                         % frameworkDir)
-                    Exit(1)
+                    return False
                 break
         context.env.AppendUnique(LDFLAGS="-F%s" % frameworkDir)
         result, output = context.TryRun(python_source_file,'.cpp')
     if not result:
         context.Result(0)
         print "Cannot run program built with Python."
-        Exit(1)
+        return False
     context.Result(1)
-    return 1
+    return True
 
 def CheckNumPy(context):
     numpy_source_file = """
@@ -97,20 +97,20 @@ int main()
         print '   Alternatively, you can reinstall SCons with your preferred python.'
         print '2) Check that if you open a python session from the command line,'
         print '   import numpy is successful there.'
-        Exit(1)
+        return False
     context.env.Append(CPPPATH=numpy.get_include())
     result = CheckLibs(context,[''],numpy_source_file)
     if not result:
         context.Result(0)
         print "Cannot build against NumPy."
-        Exit(1)
+        return False
     result, output = context.TryRun(numpy_source_file,'.cpp')
     if not result:
         context.Result(0)
         print "Cannot run program built with NumPy."
-        Exit(1)
+        return False
     context.Result(1)
-    return 1
+    return True
 
 def CheckLibs(context, try_libs, source_file):
     init_libs = context.env['LIBS']
@@ -154,66 +154,54 @@ int main()
     if not result:
         context.Result(0)
         print "Cannot build against Boost.Python."
-        Exit(1)
+        return False
     result, output = context.TryRun(bp_source_file, '.cpp')
     if not result:
         context.Result(0)
         print "Cannot build against Boost.Python."
-        Exit(1)
+        return False
     context.Result(1)
-    return 1
+    return True
 
 # Setup command-line options
-AddOption("--prefix", dest="prefix", type="string", nargs=1, action="store",
-          metavar="DIR", default="/usr/local", help="installation prefix")
-AddOption("--with-boost", dest="boost_prefix", type="string", nargs=1, action="store",
-          metavar="DIR", default=os.environ.get("BOOST_DIR"),
-          help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories")
-AddOption("--with-boost-include", dest="boost_include", type="string", nargs=1, action="store",
-          metavar="DIR", help="location of Boost header files")
-AddOption("--with-boost-lib", dest="boost_lib", type="string", nargs=1, action="store",
-          metavar="DIR", help="location of Boost libraries")
+def setupOptions():
+    AddOption("--prefix", dest="prefix", type="string", nargs=1, action="store",
+              metavar="DIR", default="/usr/local", help="installation prefix")
+    AddOption("--with-boost", dest="boost_prefix", type="string", nargs=1, action="store",
+              metavar="DIR", default=os.environ.get("BOOST_DIR"),
+              help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories")
+    AddOption("--with-boost-include", dest="boost_include", type="string", nargs=1, action="store",
+              metavar="DIR", help="location of Boost header files")
+    AddOption("--with-boost-lib", dest="boost_lib", type="string", nargs=1, action="store",
+              metavar="DIR", help="location of Boost libraries")
 
-# Initialize environment
-env = Environment()
-env.AppendUnique(CPPPATH="#.")
+def makeEnvironment():
+    env = Environment()
+    if os.environ.has_key("PATH"):
+        env["ENV"]["PATH"] = os.environ["PATH"]
+    if os.environ.has_key("LD_LIBRARY_PATH"):
+        env["ENV"]["LD_LIBRARY_PATH"] = os.environ["LD_LIBRARY_PATH"]
+    if os.environ.has_key("DYLD_LIBRARY_PATH"):
+        env["ENV"]["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"]
+    if os.environ.has_key("PYTHONPATH"):
+        env["ENV"]["PYTHONPATH"] = os.environ["PYTHONPATH"]
+    return env
 
-# Propogate external environment variables
-if os.environ.has_key("LD_LIBRARY_PATH"):
-    env["ENV"]["LD_LIBRARY_PATH"] = os.environ["LD_LIBRARY_PATH"]
-if os.environ.has_key("DYLD_LIBRARY_PATH"):
-    env["ENV"]["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"]
-if os.environ.has_key("PYTHONPATH"):
-    env["ENV"]["PYTHONPATH"] = os.environ["PYTHONPATH"]
+def setupTargets(env, root="."):
+    lib = SConscript(os.path.join(root, "libs", "numpy", "src", "SConscript"), exports='env')
+    example = SConscript(os.path.join(root, "libs", "numpy", "example", "SConscript"), exports='env')
+    test = SConscript(os.path.join(root, "libs", "numpy", "test", "SConscript"), exports='env')
+    prefix = Dir(GetOption("prefix")).abspath
 
-# Configure dependencies
-if not GetOption("help") and not GetOption("clean"):
-    config = env.Configure(
-        custom_tests = {
-            "CheckPython": CheckPython,
-            "CheckNumPy": CheckNumPy,
-            "CheckBoostPython": CheckBoostPython,
-            }
-    )
-    config.CheckPython()
-    config.CheckNumPy()
-    config.CheckBoostPython()
-    env = config.Finish()
+    env.Alias("install", env.Install(os.path.join(prefix, "lib"), lib))
+    for header in ("dtype.hpp", "invoke_matching.hpp", "matrix.hpp", 
+                   "ndarray.hpp", "numpy_object_mgr_traits.hpp",
+                   "scalars.hpp", "ufunc.hpp",):
+        env.Alias("install", env.Install(os.path.join(prefix, "include", "boost", "numpy"),
+                                         os.path.join(root, "boost", "numpy", header)))
+    env.Alias("install", env.Install(os.path.join(prefix, "include", "boost"),
+                                     os.path.join(root, "boost", "numpy.hpp")))
 
-# Setup build targets
-lib = SConscript(os.path.join("libs", "numpy", "src", "SConscript"), exports='env')
-example = SConscript(os.path.join("libs", "numpy", "example", "SConscript"), exports='env')
-test = SConscript(os.path.join("libs", "numpy", "test", "SConscript"), exports='env')
+checks = {"CheckPython": CheckPython, "CheckNumPy": CheckNumPy, "CheckBoostPython": CheckBoostPython}
 
-prefix = Dir(GetOption("prefix")).abspath
-
-env.Alias("install", env.Install(os.path.join(prefix, "lib"), lib))
-for header in ("dtype.hpp", "invoke_matching.hpp", "matrix.hpp", 
-               "ndarray.hpp", "numpy_object_mgr_traits.hpp",
-               "scalars.hpp", "ufunc.hpp",):
-    env.Alias("install", env.Install(os.path.join(prefix, "include", "boost", "numpy"),
-                                     os.path.join("boost", "numpy", header)))
-env.Alias("install", env.Install(os.path.join(prefix, "include", "boost"),
-                                 os.path.join("boost", "numpy.hpp")))
-
-Return("env")
+Return("setupOptions", "makeEnvironment", "setupTargets", "checks")
