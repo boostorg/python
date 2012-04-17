@@ -1,9 +1,9 @@
 # -*- python -*-
 setupOptions, makeEnvironment, setupTargets, checks = SConscript("SConscript")
 
-setupOptions()
+variables = setupOptions()
 
-env = makeEnvironment()
+env = makeEnvironment(variables)
 env.AppendUnique(CPPPATH="#.")
 
 if not GetOption("help") and not GetOption("clean"):

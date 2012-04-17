@@ -176,9 +176,12 @@ def setupOptions():
               metavar="DIR", help="location of Boost libraries")
     AddOption("--rpath", dest="custom_rpath", type="string", action="append",
               help="runtime link paths to add to libraries and executables; may be passed more than once")
+    variables = Variables()
+    variables.Add("CCFLAGS", default=os.environ.get("CCFLAGS", "-O2 -g"), help="compiler flags")
+    return variables
 
-def makeEnvironment():
-    env = Environment()
+def makeEnvironment(variables):
+    env = Environment(variables=variables)
     if os.environ.has_key("PATH"):
         env["ENV"]["PATH"] = os.environ["PATH"]
     if os.environ.has_key("LD_LIBRARY_PATH"):
@@ -187,6 +190,8 @@ def makeEnvironment():
         env["ENV"]["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"]
     if os.environ.has_key("PYTHONPATH"):
         env["ENV"]["PYTHONPATH"] = os.environ["PYTHONPATH"]
+    if os.environ.has_key("CCFLAGS"):
+        env.AppendUnique(CCFLAGS = os.environ["CCFLAGS"])
     custom_rpath = GetOption("custom_rpath")
     if custom_rpath is not None:
         env.AppendUnique(RPATH=custom_rpath)
