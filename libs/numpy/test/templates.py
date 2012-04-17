@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import templates_mod
 import unittest
 import numpy

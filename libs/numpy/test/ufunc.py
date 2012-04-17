@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import ufunc_mod
 import unittest
 import numpy
