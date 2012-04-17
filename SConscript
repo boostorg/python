@@ -174,6 +174,8 @@ def setupOptions():
               metavar="DIR", help="location of Boost header files")
     AddOption("--with-boost-lib", dest="boost_lib", type="string", nargs=1, action="store",
               metavar="DIR", help="location of Boost libraries")
+    AddOption("--rpath", dest="custom_rpath", type="string", action="append",
+              help="runtime link paths to add to libraries and executables; may be passed more than once")
 
 def makeEnvironment():
     env = Environment()
@@ -185,6 +187,9 @@ def makeEnvironment():
         env["ENV"]["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"]
     if os.environ.has_key("PYTHONPATH"):
         env["ENV"]["PYTHONPATH"] = os.environ["PYTHONPATH"]
+    custom_rpath = GetOption("custom_rpath")
+    if custom_rpath is not None:
+        env.AppendUnique(RPATH=custom_rpath)
     return env
 
 def setupTargets(env, root="."):
