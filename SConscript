@@ -143,9 +143,9 @@ int main()
         if boost_lib is None:
             boost_lib = os.path.join(boost_prefix, "lib")
     if boost_include:
-        context.env.AppendUnique(CPPPATH=[boost_include])
+        context.env.PrependUnique(CPPPATH=[boost_include])
     if boost_lib:
-        context.env.AppendUnique(LIBPATH=[boost_lib])
+        context.env.PrependUnique(LIBPATH=[boost_lib])
     result = (
         CheckLibs(context, [''], bp_source_file) or
         CheckLibs(context, ['boost_python'], bp_source_file) or
