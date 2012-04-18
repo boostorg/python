@@ -23,8 +23,8 @@ struct BinaryCallable
 BOOST_PYTHON_MODULE(ufunc_mod) 
 {
   np::initialize();
-  p::class_<UnaryCallable, boost::shared_ptr<UnaryCallable> >("UnaryCallable")
+  p::class_<UnaryCallable>("UnaryCallable")
     .def("__call__", np::unary_ufunc<UnaryCallable>::make());
-  p::class_< BinaryCallable, boost::shared_ptr<BinaryCallable> >("BinaryCallable")
+  p::class_< BinaryCallable>("BinaryCallable")
     .def("__call__", np::binary_ufunc<BinaryCallable>::make());
 }
