@@ -167,6 +167,10 @@ int main()
 def setupOptions():
     AddOption("--prefix", dest="prefix", type="string", nargs=1, action="store",
               metavar="DIR", default="/usr/local", help="installation prefix")
+    AddOption("--install-headers", dest="install_headers", type="string", nargs=1, action="store",
+              metavar="DIR", help="location to install header files (overrides --prefix for headers)")
+    AddOption("--install-lib", dest="install_lib", type="string", nargs=1, action="store",
+              metavar="DIR", help="location to install libraries (overrides --prefix for libraries)")
     AddOption("--with-boost", dest="boost_prefix", type="string", nargs=1, action="store",
               metavar="DIR", default=os.environ.get("BOOST_DIR"),
               help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories")
@@ -195,6 +199,9 @@ def makeEnvironment(variables):
     custom_rpath = GetOption("custom_rpath")
     if custom_rpath is not None:
         env.AppendUnique(RPATH=custom_rpath)
+    boost_lib = GetOption ('boost_lib')
+    if boost_lib is not None:
+        env.PrependUnique(LIBPATH=boost_lib)
     return env
 
 def setupTargets(env, root="."):
@@ -202,15 +209,19 @@ def setupTargets(env, root="."):
     example = SConscript(os.path.join(root, "libs", "numpy", "example", "SConscript"), exports='env')
     test = SConscript(os.path.join(root, "libs", "numpy", "test", "SConscript"), exports='env')
     prefix = Dir(GetOption("prefix")).abspath
-
-    env.Alias("install", env.Install(os.path.join(prefix, "lib"), lib))
+    install_headers = GetOption('install_headers')
+    install_lib = GetOption('install_lib')
+    if not install_headers:
+        install_headers = os.path.join(prefix, "include")
+    if not install_lib:
+        install_lib = os.path.join(prefix, "lib")
+    env.Alias("install", env.Install(install_lib, lib))
     for header in ("dtype.hpp", "invoke_matching.hpp", "matrix.hpp", 
                    "ndarray.hpp", "numpy_object_mgr_traits.hpp",
                    "scalars.hpp", "ufunc.hpp",):
-        env.Alias("install", env.Install(os.path.join(prefix, "include", "boost", "numpy"),
+        env.Alias("install", env.Install(os.path.join(install_headers, "boost", "numpy"),
                                          os.path.join(root, "boost", "numpy", header)))
-    env.Alias("install", env.Install(os.path.join(prefix, "include", "boost"),
-                                     os.path.join(root, "boost", "numpy.hpp")))
+    env.Alias("install", env.Install(install_headers, os.path.join(root, "boost", "numpy.hpp")))
 
 checks = {"CheckPython": CheckPython, "CheckNumPy": CheckNumPy, "CheckBoostPython": CheckBoostPython}
 
