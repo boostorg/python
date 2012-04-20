@@ -1,5 +1,5 @@
 # -*- python -*-
-setupOptions, makeEnvironment, setupTargets, checks = SConscript("SConscript")
+setupOptions, makeEnvironment, setupTargets, checks, CheckLibs = SConscript("SConscript")
 
 variables = setupOptions()
 

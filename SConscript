@@ -4,6 +4,7 @@
 
 import os
 import sys
+import subprocess
 
 def CheckPython(context):
     python_source_file = """
@@ -113,7 +114,7 @@ int main()
     return True
 
 def CheckLibs(context, try_libs, source_file):
-    init_libs = context.env['LIBS']
+    init_libs = context.env.get('LIBS', [])
     context.env.PrependUnique(LIBS=[try_libs])
     result = context.TryLink(source_file, '.cpp')
     if not result :
@@ -225,4 +226,4 @@ def setupTargets(env, root="."):
 
 checks = {"CheckPython": CheckPython, "CheckNumPy": CheckNumPy, "CheckBoostPython": CheckBoostPython}
 
-Return("setupOptions", "makeEnvironment", "setupTargets", "checks")
+Return("setupOptions", "makeEnvironment", "setupTargets", "checks", "CheckLibs")
