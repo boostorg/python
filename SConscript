@@ -5,6 +5,28 @@
 import os
 import sys
 import subprocess
+from SCons.SConf import CheckContext
+
+def setupPaths(env, prefix, include, lib):
+    if prefix is not None:
+        if include is None:
+            include = os.path.join(prefix, "include")
+        if lib is None:
+            lib = os.path.join(prefix, "lib")
+    if include:
+        env.PrependUnique(CPPPATH=[include])
+    if lib:
+        env.PrependUnique(LIBPATH=[lib])
+AddMethod(Environment, setupPaths)
+
+def checkLibs(context, try_libs, source_file):
+    init_libs = context.env.get('LIBS', [])
+    context.env.PrependUnique(LIBS=[try_libs])
+    result = context.TryLink(source_file, '.cpp')
+    if not result :
+        context.env.Replace(LIBS=init_libs)
+    return result
+AddMethod(CheckContext, checkLibs)
 
 def CheckPython(context):
     python_source_file = """
@@ -100,7 +122,7 @@ int main()
         print '   import numpy is successful there.'
         return False
     context.env.Append(CPPPATH=numpy.get_include())
-    result = CheckLibs(context,[''],numpy_source_file)
+    result = context.checkLibs([''],numpy_source_file)
     if not result:
         context.Result(0)
         print "Cannot build against NumPy."
@@ -112,14 +134,6 @@ int main()
         return False
     context.Result(1)
     return True
-
-def CheckLibs(context, try_libs, source_file):
-    init_libs = context.env.get('LIBS', [])
-    context.env.PrependUnique(LIBS=[try_libs])
-    result = context.TryLink(source_file, '.cpp')
-    if not result :
-        context.env.Replace(LIBS=init_libs)
-    return result
 
 def CheckBoostPython(context):
     bp_source_file = """
@@ -135,22 +149,15 @@ int main()
 }
 """
     context.Message('Checking if we can build against Boost.Python... ')
-    boost_prefix = GetOption("boost_prefix")
-    boost_include = GetOption("boost_include")
-    boost_lib = GetOption("boost_lib")
-    if boost_prefix is not None:
-        if boost_include is None:
-            boost_include = os.path.join(boost_prefix, "include")
-        if boost_lib is None:
-            boost_lib = os.path.join(boost_prefix, "lib")
-    if boost_include:
-        context.env.PrependUnique(CPPPATH=[boost_include])
-    if boost_lib:
-        context.env.PrependUnique(LIBPATH=[boost_lib])
+    context.env.setupPaths(
+        prefix = GetOption("boost_prefix"),
+        include = GetOption("boost_include"),
+        lib = GetOption("boost_lib")
+        )
     result = (
-        CheckLibs(context, [''], bp_source_file) or
-        CheckLibs(context, ['boost_python'], bp_source_file) or
-        CheckLibs(context, ['boost_python-mt'], bp_source_file)
+        context.checkLibs([''], bp_source_file) or
+        context.checkLibs(['boost_python'], bp_source_file) or
+        context.checkLibs(['boost_python-mt'], bp_source_file)
         )
     if not result:
         context.Result(0)
@@ -226,4 +233,4 @@ def setupTargets(env, root="."):
 
 checks = {"CheckPython": CheckPython, "CheckNumPy": CheckNumPy, "CheckBoostPython": CheckBoostPython}
 
-Return("setupOptions", "makeEnvironment", "setupTargets", "checks", "CheckLibs")
+Return("setupOptions", "makeEnvironment", "setupTargets", "checks")
