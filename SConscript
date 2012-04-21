@@ -193,15 +193,11 @@ def setupOptions():
     return variables
 
 def makeEnvironment(variables):
-    env = Environment(variables=variables)
-    if os.environ.has_key("PATH"):
-        env["ENV"]["PATH"] = os.environ["PATH"]
-    if os.environ.has_key("LD_LIBRARY_PATH"):
-        env["ENV"]["LD_LIBRARY_PATH"] = os.environ["LD_LIBRARY_PATH"]
-    if os.environ.has_key("DYLD_LIBRARY_PATH"):
-        env["ENV"]["DYLD_LIBRARY_PATH"] = os.environ["DYLD_LIBRARY_PATH"]
-    if os.environ.has_key("PYTHONPATH"):
-        env["ENV"]["PYTHONPATH"] = os.environ["PYTHONPATH"]
+    shellEnv = {}
+    for key in ("PATH", "LD_LIBRARY_PATH", "DYLD_LIBRARY_PATH", "PYTHONPATH"):
+        if key in os.environ:
+            shellEnv[key] = os.environ[key]
+    env = Environment(variables=variables, ENV=shellEnv)
     if os.environ.has_key("CCFLAGS"):
         env.AppendUnique(CCFLAGS = os.environ["CCFLAGS"])
     custom_rpath = GetOption("custom_rpath")
