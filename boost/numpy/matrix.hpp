@@ -52,6 +52,20 @@ public:
 
 };
 
+/**
+ *  @brief CallPolicies that causes a function that returns a numpy.ndarray to
+ *         return a numpy.matrix instead.
+ */
+template <typename Base = python::default_call_policies>
+struct as_matrix : Base {
+    static PyObject * postcall(PyObject *, PyObject * result) {
+        python::object a = python::object(python::handle<>(result));
+        numpy::matrix m(a, false);
+        Py_INCREF(m.ptr());
+        return m.ptr();
+    }
+};
+
 } // namespace boost::numpy
 namespace python
 {

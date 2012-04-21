@@ -24,10 +24,12 @@ np::ndarray c_empty(p::tuple shape, np::dtype dt)
 np::ndarray transpose(np::ndarray arr) { return arr.transpose();}
 np::ndarray squeeze(np::ndarray arr) { return arr.squeeze();}
 np::ndarray reshape(np::ndarray arr,p::tuple tup) { return arr.reshape(tup);}
+
 BOOST_PYTHON_MODULE(ndarray_mod) 
 {
   np::initialize();
   p::def("zeros", zeros);
+  p::def("zeros_matrix", zeros, np::as_matrix<>());
   p::def("array", array2);
   p::def("array", array1);
   p::def("empty", empty1);

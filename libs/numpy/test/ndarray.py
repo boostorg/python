@@ -16,6 +16,16 @@ class TestNdarray(unittest.TestCase):
                 self.assertEqual(shape,a1.shape)
                 self.assert_((a1 == a2).all())
 
+    def testNdzeros_matrix(self):    
+        for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
+            dt = numpy.dtype(dtp)
+            shape = (6, 10)
+            a1 = ndarray_mod.zeros_matrix(shape, dt)
+            a2 = numpy.matrix(numpy.zeros(shape, dtype=dtp))
+            self.assertEqual(shape,a1.shape)
+            self.assert_((a1 == a2).all())
+            self.assertEqual(type(a1), type(a2))
+
     def testNdarray(self):    
         a = range(0,60)
         for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
