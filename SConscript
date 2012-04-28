@@ -224,8 +224,9 @@ def setupTargets(env, root="."):
                    "ndarray.hpp", "numpy_object_mgr_traits.hpp",
                    "scalars.hpp", "ufunc.hpp",):
         env.Alias("install", env.Install(os.path.join(install_headers, "boost", "numpy"),
-                                         os.path.join(root, "boost", "numpy", header)))
-    env.Alias("install", env.Install(install_headers, os.path.join(root, "boost", "numpy.hpp")))
+                                           os.path.join(root, "boost", "numpy", header)))
+    env.Alias("install", env.Install(os.path.join(install_headers, "boost"),
+                                     os.path.join(root, "boost", "numpy.hpp")))
 
 checks = {"CheckPython": CheckPython, "CheckNumPy": CheckNumPy, "CheckBoostPython": CheckBoostPython}
 
