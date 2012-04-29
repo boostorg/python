@@ -23,7 +23,7 @@ def PythonUnitTest(env, script, dependencies):
     return run
 
 for name in ("ufunc", "templates", "ndarray", "indexing", "shapes"):
-    mod = test_env.LoadableModule("%s_mod" % name, "%s_mod.cpp" % name, SHLIBPREFIX="")
+    mod = test_env.LoadableModule("%s_mod" % name, "%s_mod.cpp" % name, LDMODULEPREFIX="")
     test.extend(PythonUnitTest(test_env, "%s.py" % name, mod))
 
 Return("test")

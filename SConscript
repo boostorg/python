@@ -57,7 +57,7 @@ int main()
              if f != "-L"]
     context.env.MergeFlags(" ".join(flags))
     result, output = context.TryRun(python_source_file,'.cpp')
-    if not result and sys.platform == 'darwin':
+    if not result and context.env["PLATFORM"] == 'darwin':
         # Sometimes we need some extra stuff on Mac OS
         frameworkDir = libDir       # search up the libDir tree for the proper home for frameworks
         while frameworkDir and frameworkDir != "/":
@@ -76,6 +76,8 @@ int main()
         context.Result(0)
         print "Cannot run program built with Python."
         return False
+    if context.env["PLATFORM"] == "darwin":
+        context.env["LDMODULESUFFIX"] = ".so"
     context.Result(1)
     return True
 
