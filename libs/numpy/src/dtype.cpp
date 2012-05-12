@@ -84,19 +84,5 @@ NUMPY_DTYPE_TRAITS_COMPLEX(float, npy_cfloat, NPY_CFLOAT);
 NUMPY_DTYPE_TRAITS_COMPLEX(double, npy_cdouble, NPY_CDOUBLE);
 NUMPY_DTYPE_TRAITS_COMPLEX(long double, npy_clongdouble, NPY_CLONGDOUBLE);
 
-#if 0
-template <> struct dtype_traits<bool> 
-{
-  static dtype get()
-  {
-    if (sizeof(bool) == sizeof(npy_ubyte)) return dtype_traits<npy_ubyte>::get();
-    if (sizeof(bool) == sizeof(npy_bool)) return dtype_traits<npy_bool>::get();
-    PyErr_SetString(PyExc_TypeError, "Cannot determine numpy dtype corresponding to C++ bool.");
-    python::throw_error_already_set();
-  }
-};
-template dtype dtype::get_builtin<bool>();
-#endif
-
 } // namespace boost::numpy
 } // namespace boost
