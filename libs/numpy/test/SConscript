@@ -22,7 +22,7 @@ def PythonUnitTest(env, script, dependencies):
     env.Depends(run, dependencies)
     return run
 
-for name in ("ufunc", "templates", "ndarray", "indexing", "shapes"):
+for name in ("dtype", "ufunc", "templates", "ndarray", "indexing", "shapes"):
     mod = test_env.LoadableModule("%s_mod" % name, "%s_mod.cpp" % name, LDMODULEPREFIX="")
     test.extend(PythonUnitTest(test_env, "%s.py" % name, mod))
 

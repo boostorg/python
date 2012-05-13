@@ -23,9 +23,10 @@ namespace numpy {
  *  It should probably be the first line inside BOOST_PYTHON_MODULE.
  *
  *  @internal This just calls the Numpy C-API functions "import_array()"
- *            and "import_ufunc()".
+ *            and "import_ufunc()", and then calls
+ *            dtype::register_scalar_converters().
  */
-void initialize();
+void initialize(bool register_scalar_converters=true);
 
 } // namespace boost::numpy
 } // namespace boost
