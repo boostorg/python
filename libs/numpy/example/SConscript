@@ -6,6 +6,8 @@ import os
 example_env = env.Clone()
 lib_path = os.path.abspath(os.path.join("..", "src"))
 example_env.Append(LIBPATH=[lib_path])
+example_env.Append(RPATH=[lib_path])
+example_env.Append(LINKFLAGS = ["$__RPATH"])  # workaround for SCons bug #1644
 example_env.Append(LIBS=["boost_numpy"])
 
 example = []

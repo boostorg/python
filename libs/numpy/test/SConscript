@@ -6,9 +6,9 @@ import sys
 
 test_env = env.Clone()
 lib_path = os.path.abspath(os.path.join("..", "src"))
-test_env.AppendENVPath("PYTHONPATH", os.path.abspath("."))
-test_env.AppendENVPath("LD_LIBRARY_PATH", lib_path)
 test_env.Append(LIBPATH=[lib_path])
+test_env.Append(RPATH=[lib_path])
+test_env.Append(LINKFLAGS = ["$__RPATH"])  # workaround for SCons bug #1644t
 test_env.Append(LIBS=["boost_numpy"])
 
 test = []
