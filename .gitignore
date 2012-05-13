@@ -8,3 +8,4 @@ libs/numpy/example/fromdata
 libs/numpy/example/ndarray
 libs/numpy/example/simple
 libs/numpy/example/ufunc
+libs/numpy/example/wrap
