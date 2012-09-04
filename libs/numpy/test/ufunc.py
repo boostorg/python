@@ -19,7 +19,7 @@ class TestUnary(unittest.TestCase):
         assert_array_almost_equal(b, a*2.0) 
         c = numpy.zeros(5, dtype=float)
         d = f(a,output=c)
-        assert_array_almost_equal(c, a*2.0) 
+        self.assert_(c is d)
         assert_array_almost_equal(d, a*2.0) 
 
     def testList(self):
@@ -42,7 +42,7 @@ class TestBinary(unittest.TestCase):
         assert_array_almost_equal(f(a,b), (a*2+b*3)) 
         c = numpy.zeros(5, dtype=float)
         d = f(a,b,output=c)
-        assert_array_almost_equal(c, a*2 + b*3) 
+        self.assert_(c is d)
         assert_array_almost_equal(d, a*2 + b*3) 
         assert_array_almost_equal(f(a, 2.0), a*2 + 6.0) 
         assert_array_almost_equal(f(1.0, b), 2.0 + b*3) 
