@@ -9,10 +9,11 @@ np::dtype accept(T) {
   return np::dtype::get_builtin<T>();
 }
 
-
 BOOST_PYTHON_MODULE(dtype_mod) 
 {
   np::initialize();
+  // wrap dtype equivalence test, since it isn't available in Python API.
+  p::def("equivalent", np::equivalent);
   // integers, by number of bits
   p::def("accept_int8", accept<boost::int8_t>);
   p::def("accept_uint8", accept<boost::uint8_t>);

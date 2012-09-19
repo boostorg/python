@@ -81,6 +81,13 @@ python::detail::new_reference dtype::convert(python::object const & arg, bool al
 
 int dtype::get_itemsize() const { return reinterpret_cast<PyArray_Descr*>(ptr())->elsize;}
 
+bool equivalent(dtype const & a, dtype const & b) {
+    return PyArray_EquivTypes(
+        reinterpret_cast<PyArray_Descr*>(a.ptr()),
+        reinterpret_cast<PyArray_Descr*>(b.ptr())
+    );
+}
+
 namespace {
 
 namespace pyconv = boost::python::converter;

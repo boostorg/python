@@ -44,6 +44,14 @@ public:
   int get_itemsize() const;
 
   /**
+   *  @brief Compare two dtypes for equivalence.
+   *
+   *  This is more permissive than equality tests.  For instance, if long and int are the same
+   *  size, the dtypes corresponding to each will be equivalent, but not equal.
+   */
+  friend bool equivalent(dtype const & a, dtype const & b);
+
+  /**
    *  @brief Register from-Python converters for NumPy's built-in array scalar types.
    *
    *  This is usually called automatically by initialize(), and shouldn't be called twice
@@ -54,6 +62,8 @@ public:
   BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dtype, python::object);
 
 };
+
+bool equivalent(dtype const & a, dtype const & b);
 
 namespace detail
 {
