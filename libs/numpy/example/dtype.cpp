@@ -1,6 +1,11 @@
+// Copyright Ankit Daftery 2011-2012.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 /**
- *  @brief An example to show how to create ndarrays with built-in python data types, and extract the types and values 
- *          of member variables
+ *  @brief An example to show how to create ndarrays with built-in python data types, and extract
+ *         the types and values of member variables
  *
  *  @todo Add an example to show type conversion.
  *        Add an example to show use of user-defined types

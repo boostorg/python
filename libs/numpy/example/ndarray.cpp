@@ -1,8 +1,14 @@
+// Copyright Ankit Daftery 2011-2012.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 /**
  *  @brief An example to show how to create ndarrays using arbitrary Python sequences.
- *         The Python sequence could be any object whose __array__ method returns an array, or any (nested) sequence.
- *	   This example also shows how to create arrays using both unit and non-unit strides
- *        
+ *
+ *  The Python sequence could be any object whose __array__ method returns an array, or any
+ *  (nested) sequence.  This example also shows how to create arrays using both unit and
+ *  non-unit strides.      
  */
 
 #include <boost/numpy.hpp>

@@ -1,7 +1,11 @@
+// Copyright Ankit Daftery 2011-2012.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 /**
- *  @brief An example to show how to access data using raw pointers.This shows that you can use and manipulate data in either Python or C++ and have the changes
- *         reflected in both 
- *
+ *  @brief An example to show how to access data using raw pointers.  This shows that you can use and
+ *         manipulate data in either Python or C++ and have the changes reflected in both.
  */
 
 #include <boost/numpy.hpp>

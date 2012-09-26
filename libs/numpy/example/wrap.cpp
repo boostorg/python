@@ -1,3 +1,8 @@
+// Copyright Jim Bosch 2011-2012.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 /**
  *  A simple example showing how to wrap a couple of C++ functions that
  *  operate on 2-d arrays into Python functions that take NumPy arrays
