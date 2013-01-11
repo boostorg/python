@@ -146,6 +146,12 @@ ndarray ndarray::view(dtype const & dt) const
   return ndarray(python::detail::new_reference
     (PyObject_CallMethod(this->ptr(), const_cast<char*>("view"), const_cast<char*>("O"), dt.ptr())));
 }
+    
+ndarray ndarray::astype(dtype const & dt) const
+{
+  return ndarray(python::detail::new_reference
+    (PyObject_CallMethod(this->ptr(), const_cast<char*>("astype"), const_cast<char*>("O"), dt.ptr())));
+}
 
 ndarray ndarray::copy() const 
 {

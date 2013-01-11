@@ -37,6 +37,7 @@ synopsis
     };
 
     ndarray view(dtype const & dt) const;
+    ndarray astype(dtype const & dt) const;
     ndarray copy() const;
     int const shape(int n) const;
     int const strides(int n) const;
@@ -91,6 +92,12 @@ constructors
   ndarray view(dtype const & dt) const;
 
 :Returns: new ndarray with old ndarray data cast as supplied dtype
+
+::
+
+  ndarray astype(dtype const & dt) const;
+
+:Returns: new ndarray with old ndarray data converted to supplied dtype
 
 ::
 
