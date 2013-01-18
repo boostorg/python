@@ -79,6 +79,9 @@ public:
 
   /// @brief Return a view of the scalar with the given dtype.
   ndarray view(dtype const & dt) const;
+    
+  /// @brief Copy the array, cast to a specified type.
+  ndarray astype(dtype const & dt) const;
 
   /// @brief Copy the scalar (deep for all non-object fields).
   ndarray copy() const;
