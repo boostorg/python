@@ -8,6 +8,11 @@
 #include <cmath>
 #include <memory>
 
+#ifndef M_PI
+#include <boost/math/constants/constants.hpp>
+const double M_PI = boost::math::constants::pi<double>();
+#endif
+
 namespace bp = boost::python;
 namespace bn = boost::numpy;
 

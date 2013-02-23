@@ -17,6 +17,10 @@
 namespace p = boost::python;
 namespace np = boost::numpy;
 
+#if _MSC_VER
+using boost::uint8_t;
+#endif
+
 int main(int argc, char **argv)
 {
   // Initialize the Python runtime.

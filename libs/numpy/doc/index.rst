@@ -13,4 +13,5 @@ Contents:
 
    Tutorial <tutorial/index>
    Reference <reference/index>
+   cmakeBuild.rst
 
