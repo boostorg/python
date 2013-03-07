@@ -58,6 +58,10 @@ int main()
     match = re.search("(python.*)\.(a|so|dylib)", libfile)
     if match:
         context.env.AppendUnique(LIBS=[match.group(1)])
+        if match.group(2) == 'a':
+            flags = distutils.sysconfig.get_config_var('LINKFORSHARED')
+            if flags is not None:
+                context.env.AppendUnique(LINKFLAGS=flags.split())
     flags = [f for f in " ".join(distutils.sysconfig.get_config_vars("MODLIBS", "SHLIBS")).split()
              if f != "-L"]
     context.env.MergeFlags(" ".join(flags))
@@ -75,7 +79,7 @@ int main()
                         % frameworkDir)
                     return False
                 break
-        context.env.AppendUnique(LDFLAGS="-F%s" % frameworkDir)
+        context.env.AppendUnique(LINKFLAGS="-F%s" % frameworkDir)
         result, output = context.TryRun(python_source_file,'.cpp')
     if not result:
         context.Result(0)
