@@ -19,12 +19,17 @@ propose it for inclusion in Boost eventually.
 
 INSTALLATION
 
-We have provided both a Boost.Build and an SCons build system.  At
-the moment, we recommend using the latter.  Building should be as
-simple as running "scons" and "scons install", but you may need
-to use the "--with-boost*" options (see "scons --help") to specify
-where to find Boost.  The Python that is used by SCons will
-be the one built against.
+We have provided three build systems: Boost.Build, SCons, and CMake
+build system.  At the moment, we recommend using SCons or CMake on
+Linux and CMake on Windows.
+
+Building with SCons should be as simple as running "scons" and "scons
+install", but you may need to use the "--with-boost*" options (see
+"scons --help") to specify where to find Boost.  The Python that is
+used by SCons will be the one built against.
+
+Please see libs/numpy/doc/cmakeBuild.rst for more information on
+building with CMake.
 
 
 DOCUMENTATION
@@ -70,6 +75,7 @@ Boost.NumPy was originally written by Jim Bosch as part of the
 "ndarray" C++ library, then reorganized into a standalone component,
 cleaned up, and documented as part of a Boost-sponsored
 Google Summer of Code by Ankit Daftery, mentored by Stefan Seefeld.
+Philip Miller contributed the CMake build system.
 
 The project is hosted both on the Boost Sandbox:
 
