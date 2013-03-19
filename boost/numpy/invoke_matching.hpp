@@ -44,7 +44,7 @@ struct dtype_template_invoker
   {
     if (dtype::get_builtin<T>() == m_dtype) 
     {
-      m_func.template apply<T>();
+      m_func.Function::template apply<T>();
       throw dtype_template_match_found();
     }
   }
@@ -66,7 +66,7 @@ struct dtype_template_invoker< boost::reference_wrapper<Function> >
   {
     if (dtype::get_builtin<T>() == m_dtype) 
     {
-      m_func.template apply<T>();
+      m_func.Function::template apply<T>();
       throw dtype_template_match_found();
     }
   }
@@ -87,7 +87,7 @@ struct nd_template_invoker
   {
     if (m_nd == N) 
     {
-      m_func.template apply<N>();
+      m_func.Function::template apply<N>();
       throw nd_template_match_found();
     }
   }
@@ -107,7 +107,7 @@ struct nd_template_invoker< boost::reference_wrapper<Function> >
   {
     if (m_nd == N) 
     {
-      m_func.template apply<N>();
+      m_func.Function::template apply<N>();
       throw nd_template_match_found();
     }
   }
@@ -148,7 +148,7 @@ template <typename T, typename Function>
 struct array_template_invoker_wrapper_2 
 {
   template <int N>
-  void apply() const { m_func.template apply<T,N>();}
+  void apply() const { m_func.Function::template apply<T,N>();}
   array_template_invoker_wrapper_2(Function & func) : m_func(func) {}
 
 private:
