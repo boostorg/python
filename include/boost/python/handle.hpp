@@ -87,8 +87,6 @@ class handle
         return *this;
     }
 
-#if !defined(BOOST_MSVC) || (BOOST_MSVC >= 1300)
-
     template<typename Y>
     handle& operator=(handle<Y> const & r) // never throws
     {
@@ -96,8 +94,6 @@ class handle
         m_p = python::xincref(python::upcast<T>(r.get()));
         return *this;
     }
-
-#endif
 
     template <typename Y>
     handle(handle<Y> const& r)

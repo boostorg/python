@@ -11,9 +11,7 @@
 //  Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
 //  Copyright (C) 2001 Peter Dimov
 
-# if _MSC_VER+0 >= 1020
-#  pragma once
-# endif
+# pragma once
 
 # include <boost/config.hpp>
 # include <boost/mpl/bool.hpp>

@@ -7,9 +7,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-# if _MSC_VER+0 >= 1020
-#  pragma once
-# endif
+# pragma once
 
 # include <boost/config.hpp>
 

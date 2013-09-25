@@ -78,10 +78,9 @@ inline type_info type_id()
 {
     return type_info(
 #  if !defined(_MSC_VER)                                       \
-      || (!BOOST_WORKAROUND(BOOST_MSVC, <= 1300)                \
-          && !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, <= 700))
+      || !BOOST_WORKAROUND(BOOST_INTEL_CXX_VERSION, <= 700)
         typeid(T)
-#  else // strip the decoration which msvc and Intel mistakenly leave in
+#  else // strip the decoration which Intel mistakenly leaves in
         python::detail::msvc_typeid((boost::type<T>*)0)
 #  endif 
         );
@@ -169,7 +168,6 @@ inline char const* type_info::name() const
 
 BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_info const&);
 
-#  if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
 template<>
 inline type_info type_id<void>()
 {
@@ -182,8 +180,6 @@ inline type_info type_id<const volatile void>()
     return type_info (typeid (void *));
 }
 #  endif
-
-# endif 
 
 }} // namespace boost::python
 

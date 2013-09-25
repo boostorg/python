@@ -172,12 +172,6 @@ PyTypeObject opaque<Pointee>::type_object =
 };
 }} // namespace boost::python
 
-#  if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-
-#  define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)
-
-#  else
-
 // If you change the below, don't forget to alter the end of type_id.hpp
 #   define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)                     \
     namespace boost { namespace python {                                        \
@@ -192,7 +186,5 @@ PyTypeObject opaque<Pointee>::type_object =
         return type_info (typeid (Pointee *));                                  \
     }                                                                           \
     }}
-
-#  endif
 
 # endif    // OPAQUE_POINTER_CONVERTER_HPP_
