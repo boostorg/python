@@ -97,7 +97,7 @@ inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 
 #   define BOOST_PYTHON_SIGNED_INTEGRAL_TYPE_ID(T)              \
 template <>                                                     \
-inline type_info type_id<T>(BOOST_PYTHON_EXPLICIT_TT_DEF(T))    \
+inline type_info type_id<T>()                                   \
 {                                                               \
     return type_info(typeid(T));                                \
 }
@@ -171,13 +171,13 @@ BOOST_PYTHON_DECL std::ostream& operator<<(std::ostream&, type_info const&);
 
 #  if !BOOST_WORKAROUND(BOOST_MSVC, == 1200)
 template<>
-inline type_info type_id<void>(BOOST_PYTHON_EXPLICIT_TT_DEF(void))
+inline type_info type_id<void>()
 {
     return type_info (typeid (void *));
 }
 #   ifndef BOOST_NO_CV_VOID_SPECIALIZATIONS
 template<>
-inline type_info type_id<const volatile void>(BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile void))
+inline type_info type_id<const volatile void>()
 {
     return type_info (typeid (void *));
 }

@@ -182,13 +182,12 @@ PyTypeObject opaque<Pointee>::type_object =
 #   define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)                     \
     namespace boost { namespace python {                                        \
     template<>                                                                  \
-    inline type_info type_id<Pointee>(BOOST_PYTHON_EXPLICIT_TT_DEF(Pointee))    \
+    inline type_info type_id<Pointee>()                                         \
     {                                                                           \
         return type_info (typeid (Pointee *));                                  \
     }                                                                           \
     template<>                                                                  \
-    inline type_info type_id<const volatile Pointee&>(                          \
-        BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile Pointee&))                  \
+    inline type_info type_id<const volatile Pointee&>()                         \
     {                                                                           \
         return type_info (typeid (Pointee *));                                  \
     }                                                                           \
