@@ -348,30 +348,13 @@ namespace api
   // Macros for forwarding constructors in classes derived from
   // object. Derived classes will usually want these as an
   // implementation detail
-# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived, base)              \
+# define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived, base)               \
     inline explicit derived(::boost::python::detail::borrowed_reference p)     \
         : base(p) {}                                                           \
     inline explicit derived(::boost::python::detail::new_reference p)          \
         : base(p) {}                                                           \
     inline explicit derived(::boost::python::detail::new_non_null_reference p) \
         : base(p) {}
-
-# if !defined(BOOST_MSVC) || BOOST_MSVC >= 1300
-#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_
-# else
-  // MSVC6 has a bug which causes an explicit template constructor to
-  // be preferred over an appropriate implicit conversion operator
-  // declared on the argument type. Normally, that would cause a
-  // runtime failure when using extract<T> to extract a type with a
-  // templated constructor. This additional constructor will turn that
-  // runtime failure into an ambiguity error at compile-time due to
-  // the lack of partial ordering, or at least a link-time error if no
-  // generalized template constructor is declared.
-#  define BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(derived, base)       \
-    BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS_(derived, base)            \
-    template <class T>                                                  \
-    explicit derived(extract<T> const&);
-# endif
 
   //
   // object_initializer -- get the handle to construct the object with,
