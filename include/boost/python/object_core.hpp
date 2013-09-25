@@ -36,12 +36,6 @@
 # include <boost/type_traits/is_convertible.hpp>
 # include <boost/type_traits/remove_reference.hpp>
 
-# if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-#  include <boost/type_traits/add_pointer.hpp>
-# endif
-
-# include <boost/mpl/if.hpp>
-
 namespace boost { namespace python { 
 
 namespace detail
@@ -98,11 +92,7 @@ namespace api
   class object_operators : public def_visitor<U>
   {
    protected:
-# if !defined(BOOST_MSVC) || BOOST_MSVC >= 1300
       typedef object const& object_cref;
-# else 
-      typedef object object_cref;
-# endif
    public:
       // function call
       //
@@ -139,25 +129,11 @@ namespace api
     
       template <class T>
       const_object_item
-      operator[](T const& key) const
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-          ;
-# else 
-      {
-          return (*this)[object(key)];
-      }
-# endif 
+      operator[](T const& key) const;
     
       template <class T>
       object_item
-      operator[](T const& key)
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-          ;
-# else 
-      {
-          return (*this)[object(key)];
-      }
-# endif
+      operator[](T const& key);
 
       // slicing
       //
@@ -175,29 +151,11 @@ namespace api
 
       template <class T, class V>
       const_object_slice
-      slice(T const& start, V const& end) const
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-          ;
-# else
-      {
-          return this->slice(
-               slice_bound<T>::type(start)
-              ,  slice_bound<V>::type(end));
-      }
-# endif
+      slice(T const& start, V const& end) const;
     
       template <class T, class V>
       object_slice
-      slice(T const& start, V const& end)
-# if !defined(BOOST_MSVC) || BOOST_MSVC > 1300
-          ;
-# else
-      {
-          return this->slice(
-              slice_bound<T>::type(start)
-              , slice_bound<V>::type(end));
-      }
-# endif
+      slice(T const& start, V const& end);
       
    private: // def visitation for adding callable objects as class methods
       
@@ -323,14 +281,7 @@ namespace api
       
       // explicit conversion from any C++ object to Python
       template <class T>
-      explicit object(
-          T const& x
-# if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
-          // use some SFINAE to un-confuse MSVC about its
-          // copy-initialization ambiguity claim.
-        , typename mpl::if_<is_proxy<T>,int&,int>::type* = 0
-# endif 
-      )
+      explicit object(T const& x)
         : object_base(object_base_initializer(x))
       {
       }
