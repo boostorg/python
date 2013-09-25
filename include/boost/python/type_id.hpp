@@ -74,7 +74,7 @@ struct type_info : private totally_ordered<type_info>
 # define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
 
 template <class T>
-inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline type_info type_id()
 {
     return type_info(
 #  if !defined(_MSC_VER)                                       \
