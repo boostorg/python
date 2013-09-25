@@ -69,11 +69,9 @@ struct type_info : private totally_ordered<type_info>
     base_id_t m_base_type;
 };
 
-#  ifdef BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
-#   define BOOST_PYTHON_EXPLICIT_TT_DEF(T) ::boost::type<T>*
-#  else
-#   define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
-#  endif
+
+// This macro is obsolete. Port away and remove.
+# define BOOST_PYTHON_EXPLICIT_TT_DEF(T)
 
 template <class T>
 inline type_info type_id(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
