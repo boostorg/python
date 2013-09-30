@@ -238,23 +238,9 @@ namespace api
   template <class T>
   typename objects::unforward_cref<T>::type do_unforward_cref(T const& x)
   {
-# if BOOST_WORKAROUND(__GNUC__, == 2)
-      typedef typename objects::unforward_cref<T>::type ret;
-      return ret(x);
-# else
       return x;
-# endif 
   }
 
-# if BOOST_WORKAROUND(__GNUC__, == 2)
-  // GCC 2.x has non-const string literals; this hacks around that problem.
-  template <unsigned N>
-  char const (& do_unforward_cref(char const(&x)[N]) )[N]
-  {
-      return x;
-  }
-# endif
-  
   class object;
   
   template <class T>

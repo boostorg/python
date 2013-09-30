@@ -45,8 +45,7 @@
 # if BOOST_WORKAROUND(__MWERKS__, <= 0x3004)                        \
     /* pro9 reintroduced the bug */                                 \
     || (BOOST_WORKAROUND(__MWERKS__, > 0x3100)                      \
-        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))   \
-    || BOOST_WORKAROUND(__GNUC__, < 3)
+        && BOOST_WORKAROUND(__MWERKS__, BOOST_TESTED_AT(0x3201)))
 
 #  define BOOST_PYTHON_NO_MEMBER_POINTER_ORDERING 1
 
