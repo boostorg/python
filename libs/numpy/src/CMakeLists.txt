@@ -17,6 +17,7 @@ add_library(boost_numpy ${LIBRARY_TYPE}
   ufunc.cpp
   numpy.cpp
 )
+target_link_libraries(boost_numpy ${Boost_LIBRARIES} ${PYTHON_LIBRARIES})
 
 install(TARGETS boost_numpy 
   ARCHIVE DESTINATION lib 

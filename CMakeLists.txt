@@ -98,10 +98,6 @@ include_directories(
   ${Boost_INCLUDE_DIRS} 
   )
 
-# link against boost and python libraries
-LINK_LIBRARIES(${Boost_LIBRARIES}) # Deprecated but so convenient!
-LINK_LIBRARIES(${PYTHON_LIBRARY})
-
 # install headers
 install(DIRECTORY boost
     DESTINATION "include"

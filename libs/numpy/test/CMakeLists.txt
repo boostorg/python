@@ -17,7 +17,7 @@ set( TestCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${runCmakeTest} )
 # custom macro with most of the redundant code for making a python test
 macro( addPythonTest _name _srcpy )
   # make the pyd library link against boost_numpy python and boost
-  TARGET_LINK_LIBRARIES(${_name} boost_numpy ${PYTHON_LIBRARIES} ${Boost_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${_name} boost_numpy)
   
   # make a test of the module using the python source file in the test directory
   ADD_TEST(${_name} ${TestCommand} ${TEST_SOURCE_DIR}/${_srcpy})
