@@ -12,7 +12,6 @@
 #include <boost/type_traits/broken_compiler_spec.hpp>
 using namespace boost::python;
 
-BOOST_TT_BROKEN_COMPILER_SPEC( object )
 
 #if BOOST_WORKAROUND(BOOST_MSVC, == 1200)
 bool accept_const_arg( object );
