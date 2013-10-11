@@ -206,26 +206,6 @@ namespace api
       PyObject* m_ptr;
   };
 
-# ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
-  template <class T, class U>
-  struct is_derived_impl
-  {
-      static T x;
-      template <class X>
-      static X* to_pointer(X const&);
-      
-      static char test(U const*);
-      typedef char (&no)[2];
-      static no test(...);
-
-      BOOST_STATIC_CONSTANT(bool, value = sizeof(test(to_pointer(x))) == 1);
-  };
-  
-  template <class T, class U>
-  struct is_derived
-    : mpl::bool_<is_derived_impl<T,U>::value>
-  {};
-# else
   template <class T, class U>
   struct is_derived
     : is_convertible<
@@ -233,7 +213,6 @@ namespace api
         , U const*
       >
   {};
-# endif 
 
   template <class T>
   typename objects::unforward_cref<T>::type do_unforward_cref(T const& x)
