@@ -43,7 +43,6 @@ struct forward
 {
 };
 
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template<typename T>
 struct unforward
 {
@@ -70,88 +69,6 @@ struct unforward_cref<reference_to_value<T> >
 {
 };
 
-# else // no partial specialization
-
-namespace detail
-{
-  typedef char (&yes_reference_to_value_t)[1];
-  typedef char (&no_reference_to_value_t)[2];
-      
-  no_reference_to_value_t is_reference_to_value_test(...);
-
-  template<typename T>
-  yes_reference_to_value_t is_reference_to_value_test(boost::type< reference_to_value<T> >);
-
-  template<bool wrapped>
-  struct unforwarder
-  {
-      template <class T>
-      struct apply
-      {
-          typedef typename unwrap_reference<T>::type& type;
-      };
-  };
-
-  template<>
-  struct unforwarder<true>
-  {
-      template <class T>
-      struct apply
-      {
-          typedef typename T::reference type;
-      };
-  };
-
-  template<bool wrapped = false>
-  struct cref_unforwarder
-  {
-      template <class T>
-      struct apply
-        : python::detail::value_arg<
-              typename unwrap_reference<T>::type
-          >
-      {          
-      };
-  };
-      
-  template<>
-  struct cref_unforwarder<true>
-  {
-      template <class T>
-      struct apply
-        : python::detail::value_arg<
-              typename T::reference
-          >
-      {
-      };
-  };
-
-  template<typename T>
-  struct is_reference_to_value
-  {
-      BOOST_STATIC_CONSTANT(
-          bool, value = (
-              sizeof(is_reference_to_value_test(boost::type<T>()))
-              == sizeof(yes_reference_to_value_t)));
-      typedef mpl::bool_<value> type;
-  };
-}
-
-template <typename T>
-struct unforward
-    : public detail::unforwarder<
-        detail::is_reference_to_value<T>::value
-      >::template apply<T>
-{};
-
-template <typename T>
-struct unforward_cref
-    : public detail::cref_unforwarder<
-        detail::is_reference_to_value<T>::value
-      >::template apply<T>
-{};
-
-# endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 template <class T>
 typename reference_to_value<T>::reference
