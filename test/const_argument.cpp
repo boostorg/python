@@ -9,7 +9,6 @@
  * compiler's bug.
  */
 #include <boost/python.hpp>
-#include <boost/type_traits/broken_compiler_spec.hpp>
 using namespace boost::python;
 
 
