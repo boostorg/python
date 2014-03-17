@@ -15,7 +15,6 @@
 # include <boost/static_assert.hpp>
 # include <boost/detail/workaround.hpp>
 # include <boost/type_traits/same_traits.hpp>
-# include <boost/type_traits/broken_compiler_spec.hpp>
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   if defined(__GNUC__)                                                \
