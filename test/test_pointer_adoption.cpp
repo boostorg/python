@@ -8,6 +8,7 @@
 #include <boost/python/manage_new_object.hpp>
 #include <boost/python/return_internal_reference.hpp>
 #include <boost/python/class.hpp>
+#include <boost/python/make_constructor.hpp>
 
 using namespace boost::python;
 
@@ -86,6 +87,11 @@ A* as_A(Base* b)
     return dynamic_cast<A*>(b);
 }
 
+B* create_B(A* a)
+{
+    return new B(a);
+}
+
 BOOST_PYTHON_MODULE(test_pointer_adoption_ext)
 {
     def("num_a_instances", num_a_instances);
@@ -102,6 +108,8 @@ BOOST_PYTHON_MODULE(test_pointer_adoption_ext)
     class_<A, bases<Base> >("A", no_init)
         .def("content", &A::content)
         .def("get_inner", &A::get_inner, return_internal_reference<>())
+        .def("create_B", &create_B, with_custodian_and_ward_postcall<0,1,
+                                    return_value_policy<manage_new_object> >())
         ;
 
     class_<inner>("inner", no_init)
@@ -119,6 +127,16 @@ BOOST_PYTHON_MODULE(test_pointer_adoption_ext)
             )
 
          .def("a_content", &B::a_content)
+        ;
+
+    class_<B>("B1")
+        .def(init<A*>()[construct_custodian_for<1>()])
+        .def("a_content", &B::a_content)
+        ;
+
+    class_<B>("B2")
+        .def("__init__", make_constructor(&create_B, construct_custodian_for<1>()))
+        .def("a_content", &B::a_content)
         ;
 }
 
