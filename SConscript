@@ -7,6 +7,7 @@
 
 # Big thanks to Mike Jarvis for help with the configuration prescriptions below.
 
+from __future__ import print_function
 import os
 import sys
 import subprocess
@@ -48,7 +49,7 @@ int main()
         import distutils.sysconfig
     except ImportError:
         context.Result(0)
-        print 'Failed to import distutils.sysconfig.'
+        print('Failed to import distutils.sysconfig.')
         return False
     context.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
     libDir = distutils.sysconfig.get_config_var("LIBDIR")
@@ -74,16 +75,16 @@ int main()
             if d2 == "Python.framework":
                 if not "Python" in os.listdir(os.path.join(frameworkDir, d2)):
                     context.Result(0)
-                    print (
+                    print((
                         "Expected to find Python in framework directory %s, but it isn't there"
-                        % frameworkDir)
+                        % frameworkDir))
                     return False
                 break
         context.env.AppendUnique(LINKFLAGS="-F%s" % frameworkDir)
         result, output = context.TryRun(python_source_file,'.cpp')
     if not result:
         context.Result(0)
-        print "Cannot run program built with Python."
+        print("Cannot run program built with Python.")
         return False
     if context.env["PLATFORM"] == "darwin":
         context.env["LDMODULESUFFIX"] = ".so"
@@ -94,8 +95,17 @@ def CheckNumPy(context):
     numpy_source_file = """
 #include "Python.h"
 #include "numpy/arrayobject.h"
+#if PY_MAJOR_VERSION == 2
+static void wrap_import_array() {
+    import_array();
+}
+#else
+static void * wrap_import_array() {
+    import_array();
+}
+#endif
 void doImport() {
-  import_array();
+  wrap_import_array();
 }
 int main()
 {
@@ -119,29 +129,29 @@ int main()
         import numpy
     except ImportError:
         context.Result(0)
-        print 'Failed to import numpy.'
-        print 'Things to try:'
-        print '1) Check that the command line python (with which you probably installed numpy):'
-        print '   ',
+        print('Failed to import numpy.')
+        print('Things to try:')
+        print('1) Check that the command line python (with which you probably installed numpy):')
+        print('   ', end=' ')
         sys.stdout.flush()
         subprocess.call('which python',shell=True)
-        print '  is the same as the one used by SCons:'
-        print '  ',sys.executable
-        print '   If not, then you probably need to reinstall numpy with %s.' % sys.executable
-        print '   Alternatively, you can reinstall SCons with your preferred python.'
-        print '2) Check that if you open a python session from the command line,'
-        print '   import numpy is successful there.'
+        print('  is the same as the one used by SCons:')
+        print('  ',sys.executable)
+        print('   If not, then you probably need to reinstall numpy with %s.' % sys.executable)
+        print('   Alternatively, you can reinstall SCons with your preferred python.')
+        print('2) Check that if you open a python session from the command line,')
+        print('   import numpy is successful there.')
         return False
     context.env.Append(CPPPATH=numpy.get_include())
     result = context.checkLibs([''],numpy_source_file)
     if not result:
         context.Result(0)
-        print "Cannot build against NumPy."
+        print("Cannot build against NumPy.")
         return False
     result, output = context.TryRun(numpy_source_file,'.cpp')
     if not result:
         context.Result(0)
-        print "Cannot run program built with NumPy."
+        print("Cannot run program built with NumPy.")
         return False
     context.Result(1)
     return True
@@ -165,19 +175,20 @@ int main()
         include = GetOption("boost_include"),
         lib = GetOption("boost_lib")
         )
+    boost_python_lib = GetOption ('boost_python_lib')
     result = (
         context.checkLibs([''], bp_source_file) or
-        context.checkLibs(['boost_python'], bp_source_file) or
-        context.checkLibs(['boost_python-mt'], bp_source_file)
+        context.checkLibs([boost_python_lib], bp_source_file) or
+        context.checkLibs([boost_python_lib+'_mt'], bp_source_file)
         )
     if not result:
         context.Result(0)
-        print "Cannot build against Boost.Python."
+        print("Cannot build against Boost.Python.")
         return False
     result, output = context.TryRun(bp_source_file, '.cpp')
     if not result:
         context.Result(0)
-        print "Cannot run program built against Boost.Python."
+        print ("Cannot run program built against Boost.Python.")
         return False
     context.Result(1)
     return True
@@ -199,6 +210,8 @@ def setupOptions():
               metavar="DIR", help="location of Boost libraries")
     AddOption("--rpath", dest="custom_rpath", type="string", action="append",
               help="runtime link paths to add to libraries and executables; may be passed more than once")
+    AddOption("--boost-python-lib", dest="boost_python_lib", type="string", action="store",
+              help="name of boost_python_lib", default='boost_python')
     variables = Variables()
     variables.Add("CCFLAGS", default=os.environ.get("CCFLAGS", "-O2 -g"), help="compiler flags")
     return variables
@@ -209,7 +222,7 @@ def makeEnvironment(variables):
         if key in os.environ:
             shellEnv[key] = os.environ[key]
     env = Environment(variables=variables, ENV=shellEnv)
-    if os.environ.has_key("CCFLAGS"):
+    if "CCFLAGS" in os.environ:
         env.AppendUnique(CCFLAGS = os.environ["CCFLAGS"])
     custom_rpath = GetOption("custom_rpath")
     if custom_rpath is not None:

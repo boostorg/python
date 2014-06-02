@@ -15,8 +15,17 @@ lib_path = os.path.abspath(os.path.join("..", "src"))
 test_env.Append(LIBPATH=[lib_path])
 test_env.Append(RPATH=[lib_path])
 test_env.Append(LINKFLAGS = ["$__RPATH"])  # workaround for SCons bug #1644t
-test_env.Append(LIBS=["boost_numpy"])
+import sys;
+VERSION = sys.version_info.major
+print (VERSION)
 
+import sysconfig
+EXT_SUFFIX = sysconfig.get_config_var("EXT_SUFFIX")
+
+if VERSION == 2:
+    test_env.Append(LIBS=["boost_numpy"])
+elif VERSION == 3:
+    test_env.Append(LIBS=["boost_numpy"+EXT_SUFFIX.replace('.so', '')])
 test = []
 
 def RunPythonUnitTest(target, source, env):
