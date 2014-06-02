@@ -114,9 +114,13 @@ public:
   static void * convertible(PyObject * obj) {
 	if (obj->ob_type == get_pytype()) {
 	  return obj;
-	} else { 
-	  return 0;
+	} else {
+        dtype dt(python::detail::borrowed_reference(obj->ob_type));
+        if (equivalent(dt, dtype::get_builtin<T>())) {
+            return obj;
+        }
 	}
+    return 0;
   }
 
   static void convert(PyObject * obj, pyconv::rvalue_from_python_stage1_data* data) {
