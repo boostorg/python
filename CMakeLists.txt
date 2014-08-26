@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project( boost.numpy )
 
+set(BUILD_TEST ON CACHE BOOL "Build Boost.NumPy Tests")
+set(BUILD_EXAMPLES ON CACHE BOOL "Build Boost.NumPy Examples")
+
 # put our local cmake find scripts at the beginning of the cmake
 # module search path
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/libs/numpy/cmake ${CMAKE_MODULE_PATH})
@@ -84,8 +87,10 @@ if (NOT WIN32)
   add_definitions(-fPIC)
 endif()
 
-# enable ctest targets
-ENABLE_TESTING()
+if (BUILD_TESTS)
+  # enable ctest targets
+  ENABLE_TESTING()
+endif()
 
 # turn on visual studio solution folders
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -108,8 +113,12 @@ install(DIRECTORY boost
 
 # add submodules
 ADD_SUBDIRECTORY(libs/numpy/src)
-ADD_SUBDIRECTORY(libs/numpy/example)
-ADD_SUBDIRECTORY(libs/numpy/test)
+if (BUILD_EXAMPLES)
+  ADD_SUBDIRECTORY(libs/numpy/example)
+endif()
+if (BUILD_TESTS)
+  ADD_SUBDIRECTORY(libs/numpy/test)
+endif()
 
 if (BUILD_DOCS)
   ADD_SUBDIRECTORY(libs/numpy/doc)
