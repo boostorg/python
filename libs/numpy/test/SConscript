@@ -5,7 +5,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-Import("env")
+Import(['env', 'lib', 'EXT_SUFFIX', 'LIB_SUFFIX', 'OBJ_SUFFIX', 'PY_SUFFIX'])
 
 import os
 import sys
@@ -15,17 +15,7 @@ lib_path = os.path.abspath(os.path.join("..", "src"))
 test_env.Append(LIBPATH=[lib_path])
 test_env.Append(RPATH=[lib_path])
 test_env.Append(LINKFLAGS = ["$__RPATH"])  # workaround for SCons bug #1644t
-import sys;
-VERSION = sys.version_info.major
-print (VERSION)
-
-import sysconfig
-EXT_SUFFIX = sysconfig.get_config_var("EXT_SUFFIX")
-
-if VERSION == 2:
-    test_env.Append(LIBS=["boost_numpy"])
-elif VERSION == 3:
-    test_env.Append(LIBS=["boost_numpy"+EXT_SUFFIX.replace('.so', '')])
+test_env.AppendUnique(LIBS=lib)
 test = []
 
 def RunPythonUnitTest(target, source, env):
@@ -39,6 +29,11 @@ def PythonUnitTest(env, script, dependencies):
 
 for name in ("dtype", "ufunc", "templates", "ndarray", "indexing", "shapes"):
     mod = test_env.LoadableModule("%s_mod" % name, "%s_mod.cpp" % name, LDMODULEPREFIX="")
+    if os.name == 'nt':
+        # Move the module to have the correct name.
+        mod = env.Command(os.path.join(Dir('.').srcnode().abspath, "%s_mod.pyd" % (name)),
+                          mod,
+                          Move(os.path.join(Dir('.').srcnode().abspath, "%s_mod.pyd" % (name)), mod[0]))
     test.extend(PythonUnitTest(test_env, "%s.py" % name, mod))
 
 Return("test")

@@ -5,7 +5,9 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-setupOptions, makeEnvironment, setupTargets, checks = SConscript("SConscript")
+from SConsChecks import GetLibChecks
+
+setupOptions, makeEnvironment, setupTargets, checks, libnames = SConscript("SConscript")
 
 variables = setupOptions()
 
@@ -14,8 +16,9 @@ env.AppendUnique(CPPPATH="#.")
 
 if not GetOption("help") and not GetOption("clean"):
     config = env.Configure(custom_tests=checks)
-    if not (config.CheckPython() and config.CheckNumPy() and config.CheckBoostPython()):
-       Exit(1)
+    checknames = GetLibChecks(libnames).keys()
+    if False in (config.__dict__[checkname]() for checkname in checknames):
+        Exit(1)
     env = config.Finish()
 
 setupTargets(env)

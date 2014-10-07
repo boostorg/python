@@ -26,7 +26,11 @@ Linux and CMake on Windows.
 Building with SCons should be as simple as running "scons" and "scons
 install", but you may need to use the "--with-boost*" options (see
 "scons --help") to specify where to find Boost.  The Python that is
-used by SCons will be the one built against.
+used by SCons will be the one built against. Additionally, the
+SConsChecks submodule must be initialized by git before building
+by running
+
+    git submodule update --init
 
 Please see libs/numpy/doc/cmakeBuild.rst for more information on
 building with CMake.

@@ -1,0 +1,4 @@
+[submodule "SConsChecks"]
+	path = SConsChecks
+	url = https://github.com/ChrislS/SConsChecks.git
+	branch = master
