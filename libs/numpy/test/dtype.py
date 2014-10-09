@@ -49,7 +49,7 @@ class DtypeTestCase(unittest.TestCase):
         c = numpy.complex128
         self.assertEquivalent(dtype_mod.accept_float64(f(numpy.pi)), numpy.dtype(f))
         self.assertEquivalent(dtype_mod.accept_complex128(c(1+2j)), numpy.dtype(c))
-        if hasattr(numpy, "longdouble"):
+        if hasattr(numpy, "longdouble") and hasattr(dtype_mod, "accept_longdouble"):
             f = numpy.longdouble
             c = numpy.clongdouble
             self.assertEquivalent(dtype_mod.accept_longdouble(f(numpy.pi)), numpy.dtype(f))
