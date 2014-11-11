@@ -30,6 +30,7 @@ shared_ptr_deleter::shared_ptr_deleter(handle<> owner)
 
 shared_ptr_deleter::~shared_ptr_deleter() {}
 
+#if PY_VERSION_HEX >= 0x02040000 && defined(WITH_THREAD)
 namespace
 {
 
@@ -37,23 +38,32 @@ namespace
   {
    public:
       scoped_gil_state()
-          : m_gil_state(PyGILState_Ensure())
-      {}
+      {
+          if ((m_py_threads_initialized = PyEval_ThreadsInitialized())) {
+              m_gil_state = PyGILState_Ensure();
+          }
+      }
 
       ~scoped_gil_state()
       {
-          PyGILState_Release(m_gil_state);
+          if (m_py_threads_initialized) {
+              PyGILState_Release(m_gil_state);
+          }
       }
 
    private:
       PyGILState_STATE m_gil_state;
+      bool m_py_threads_initialized;
   };
 
 }
+#endif
 
 void shared_ptr_deleter::operator()(void const*)
 {
+#if PY_VERSION_HEX >= 0x02040000 && defined(WITH_THREAD)
     scoped_gil_state gil;
+#endif
     owner.reset();
 }
 
