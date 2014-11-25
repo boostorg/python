@@ -32,7 +32,7 @@ def setupOptions():
               metavar="DIR", help="location to install libraries (overrides --prefix for libraries)")
     AddOption("--with-boost", dest="boost_prefix", type="string", nargs=1, action="store",
               metavar="DIR", default=os.environ.get("BOOST_DIR"),
-              help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories")
+              help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories, 'boost' and 'stage\\lib' subdirectories on Windows")
     AddOption("--with-boost-include", dest="boost_include", type="string", nargs=1, action="store",
               metavar="DIR", help="location of Boost header files", default=os.environ.get("BOOST_DIR"))
     AddOption("--with-boost-lib", dest="boost_lib", type="string", nargs=1, action="store",
