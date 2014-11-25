@@ -34,7 +34,7 @@ def setupOptions():
               metavar="DIR", default=os.environ.get("BOOST_DIR"),
               help="prefix for Boost libraries; should have 'include' and 'lib' subdirectories, 'boost' and 'stage\\lib' subdirectories on Windows")
     AddOption("--with-boost-include", dest="boost_include", type="string", nargs=1, action="store",
-              metavar="DIR", help="location of Boost header files", default=os.environ.get("BOOST_DIR"))
+              metavar="DIR", help="location of Boost header files")
     AddOption("--with-boost-lib", dest="boost_lib", type="string", nargs=1, action="store",
               metavar="DIR", help="location of Boost libraries")
     AddOption("--rpath", dest="custom_rpath", type="string", action="append",
@@ -62,9 +62,8 @@ def makeEnvironment(variables):
     if env['CC'] == 'cl':
         # C++ exception handling,
         # multithread-supporting, dynamically linked system libraries,
-        # generate debug information,
-        # dynamic link library.
-        env.AppendUnique(CPPFLAGS=['/EHsc', '/MD', '/Zi', '/LD'])
+        # generate debug information.
+        env.AppendUnique(CPPFLAGS=['/EHsc', '/MD', '/Zi'])
     return env
 
 def setupTargets(env, root="."):
