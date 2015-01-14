@@ -496,7 +496,7 @@ template <typename U>
 template <class T>
 object api::object_operators<U>::contains(T const& key) const
 {
-    return this->attr("__contains__")(object(key));
+    return (*this)[object(key)];
 }
 
 
