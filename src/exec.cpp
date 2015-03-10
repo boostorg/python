@@ -96,10 +96,12 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
   FILE *fs = PyFile_AsFile(file.get());
 #endif
 
-  PyObject* result = PyRun_File(fs,
+  int closeit = 1;  // Close file before PyRun returns
+  PyObject* result = PyRun_FileEx(fs,
                 f,
                 Py_file_input,
-                global.ptr(), local.ptr());
+                global.ptr(), local.ptr(),
+                closeit);
   if (!result) throw_error_already_set();
   return object(detail::new_reference(result));
 }
