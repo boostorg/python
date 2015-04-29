@@ -181,10 +181,9 @@ namespace detail
   {
       enum { arity = mpl::size<Sig>::value - 1 };
       
-      typedef typename detail::error::more_keywords_than_function_arguments<
-          NumKeywords::value, arity
-          >::too_many_keywords assertion;
     
+      BOOST_MPL_ASSERT_MSG(NumKeywords::value <= arity,
+                           MORE_KEYWORDS_THAN_FUNCTION_ARGUMENTS, ());
       typedef typename outer_constructor_signature<Sig>::type outer_signature;
 
       typedef constructor_policy<CallPolicies> inner_policy;
