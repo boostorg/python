@@ -36,15 +36,6 @@ namespace detail
       BOOST_STATIC_CONSTANT(std::size_t, size = 0);
       static keyword_range range() { return keyword_range(); }
   };
-
-  namespace error
-  {
-    template <int keywords, int function_args>
-    struct more_keywords_than_function_arguments
-    {
-        typedef char too_many_keywords[keywords > function_args ? -1 : 1];
-    };
-  }
 }
 
 }} // namespace boost::python

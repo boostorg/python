@@ -39,6 +39,7 @@
 # include <boost/mpl/for_each.hpp>
 # include <boost/mpl/bool.hpp>
 # include <boost/mpl/not.hpp>
+# include <boost/mpl/assert.hpp>
 
 # include <boost/detail/workaround.hpp>
 
@@ -107,23 +108,6 @@ namespace detail
   namespace error
   {
     //
-    // A meta-assertion mechanism which prints nice error messages and
-    // backtraces on lots of compilers. Usage:
-    //
-    //      assertion<C>::failed
-    //
-    // where C is an MPL metafunction class
-    //
-    
-    template <class C> struct assertion_failed { };
-    template <class C> struct assertion_ok { typedef C failed; };
-
-    template <class C>
-    struct assertion
-        : mpl::if_<C, assertion_ok<C>, assertion_failed<C> >::type
-    {};
-
-    //
     // Checks for validity of arguments used to define virtual
     // functions with default implementations.
     //
@@ -141,9 +125,11 @@ namespace detail
             // https://svn.boost.org/trac/boost/ticket/5803
             //typedef typename assertion<mpl::not_<is_same<Default,Fn> > >::failed test0;
 # if !BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-            typedef typename assertion<is_polymorphic<T> >::failed test1;
-# endif 
-            typedef typename assertion<is_member_function_pointer<Fn> >::failed test2;
+            BOOST_MPL_ASSERT_MSG(is_polymorphic<T>::value,
+                                 NOT_POLYMORPHIC, (T));
+# endif
+            BOOST_MPL_ASSERT_MSG(is_member_function_pointer<Fn>::value,
+                                 NOT_MEMBER_FUNCTION_POINTER, (Fn));
             not_a_derived_class_member<Default>(Fn());
         }
     };

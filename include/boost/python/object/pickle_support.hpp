@@ -6,6 +6,7 @@
 # define BOOST_PYTHON_OBJECT_PICKLE_SUPPORT_RWGK20020603_HPP
 
 # include <boost/python/detail/prefix.hpp>
+# include <boost/mpl/assert.hpp>
 
 namespace boost { namespace python {
 
@@ -21,10 +22,6 @@ BOOST_PYTHON_DECL object const& make_instance_reduce_function();
 struct pickle_suite;
 
 namespace error_messages {
-
-  template <class T>
-  struct missing_pickle_suite_function_or_incorrect_signature {};
-
   inline void must_be_derived_from_pickle_suite(pickle_suite const&) {}
 }
 
@@ -105,9 +102,8 @@ namespace detail {
       Class_&,
       ...)
     {
-      typedef typename
-        error_messages::missing_pickle_suite_function_or_incorrect_signature<
-          Class_>::error_type error_type;
+      BOOST_MPL_ASSERT_MSG
+        (false, MISSING_PICKLE_SUITE_FUNCTION_OR_INCORRECT_SIGNATURE, ());
     }
   };
 
