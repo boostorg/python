@@ -84,11 +84,12 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
   if (local.is_none()) local = global;
   // should be 'char const *' but older python versions don't use 'const' yet.
   char *f = python::extract<char *>(filename);
-#if PY_VERSION_HEX >= 0x03000000
-  // TODO(bhy) temporary workaround for Python 3.
-  // should figure out a way to avoid binary incompatibilities as the Python 2
-  // version did.
+#if PY_VERSION_HEX >= 0x03040000
   FILE *fs = fopen(f, "r");
+#elif PY_VERSION_HEX >= 0x03000000
+  PyObject *fo = Py_BuildValue("s", f);
+  FILE *fs = _Py_fopen(fo, "r");
+  Py_DECREF(fo);
 #else
   // Let python open the file to avoid potential binary incompatibilities.
   PyObject *pyfile = PyFile_FromString(f, const_cast<char*>("r"));
