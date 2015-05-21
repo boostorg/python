@@ -7,7 +7,6 @@
 
 #include <typeinfo>
 #include <boost/type.hpp>
-#include <boost/type_traits/config.hpp>
 
 //
 // Fix for icc's broken typeid() implementation which doesn't strip
@@ -48,8 +47,14 @@ inline typeinfo typeid_ref(type<T>*, ...)
     return detail::typeid_ref_1((T(*)())0);
 }
 
+#if defined(BOOST_MSVC) || (defined(__BORLANDC__) && !defined(BOOST_DISABLE_WIN32))
+#   define BOOST_PYTT_DECL __cdecl
+#else
+#   define BOOST_PYTT_DECL /**/
+#endif
+
 template< typename T > T&(* is_ref_tester1(type<T>) )(type<T>) { return 0; }
-inline char BOOST_TT_DECL is_ref_tester1(...) { return 0; }
+inline char BOOST_PYTT_DECL is_ref_tester1(...) { return 0; }
 
 template <class T>
 inline typeinfo msvc_typeid(boost::type<T>*)
