@@ -486,52 +486,7 @@ bjam -sTOOLS=gcc -sPYTHON_LAUNCH=gdb test
 
     <h2><a name="macosx"></a>Does Boost.Python work with Mac OS X?</h2>
 
-    It is known to work under 10.2.8 and 10.3 using
-    Apple's gcc 3.3 compiler:
-    <pre>gcc (GCC) 3.3 20030304 (Apple Computer, Inc. build 1493)</pre>
-    Under 10.2.8 get the August 2003 gcc update (free at
-    <a href="http://connect.apple.com/">http://connect.apple.com/</a>).
-    Under 10.3 get the Xcode Tools v1.0 (also free).
-    <p>
-    Python 2.3 is required. The Python that ships with 10.3 is
-    fine. Under 10.2.8 use these commands to install Python
-    as a framework:
-    <pre>./configure --enable-framework
-make
-make frameworkinstall</pre>
-    The last command requires root privileges because the target
-    directory is
-    <tt>/Library/Frameworks/Python.framework/Versions/2.3</tt>.
-    However, the installation does not interfere with the Python
-    version that ships with 10.2.8.
-    <p>
-    It is also crucial to increase the <tt>stacksize</tt> before
-    starting compilations, e.g.:
-    <pre>limit stacksize 8192k</pre>
-    If the <tt>stacksize</tt> is too small the build might crash with
-    internal compiler errors.
-    <p>
-    Sometimes Apple's compiler exhibits a bug by printing an error
-    like the following while compiling a
-    <tt>boost::python::class_&lt;your_type&gt;</tt>
-    template instantiation:
-    <pre>.../inheritance.hpp:44: error: cannot
- dynamic_cast `p' (of type `struct cctbx::boost_python::&lt;unnamed&gt;::add_pair*
-   ') to type `void*' (source type is not polymorphic)</pre>
-
-    We do not know a general workaround, but if the definition of
-    <tt>your_type</tt> can be modified the following was found
-    to work in all cases encountered so far:<pre>struct your_type
-{
-  // before defining any member data
-#if defined(__MACH__) &amp;&amp; defined(__APPLE_CC__) &amp;&amp; __APPLE_CC__ == 1493
-  bool dummy_;
-#endif
-  // now your member data, e.g.
-  double x;
-  int j;
-  // etc.
-};</pre>
+    Yes.
 
     <hr>
     <h2><a name="xref">How can I find the existing PyObject that holds a C++
