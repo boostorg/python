@@ -133,7 +133,8 @@ inline rvalue_from_python_data<T>::~rvalue_from_python_data()
 {
     if (this->stage1.convertible == this->storage.address()){
         size_t allocated = sizeof(this->storage);
-        void* aligned_storage = ::boost::align(::boost::python::alignment_of<T>::value, 0, this->storage.address(), allocated);
+        void * ptr = this->storage.address();
+        void* aligned_storage = ::boost::alignment::align(detail::alignment_of<T>::value, 0, ptr, allocated);
         python::detail::destroy_referent<ref_type>(aligned_storage);
     }
 }

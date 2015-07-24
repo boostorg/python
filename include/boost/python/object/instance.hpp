@@ -35,7 +35,7 @@ struct instance
     instance_holder* objects;
 
     typedef typename ::boost::aligned_storage<sizeof(Data), detail::alignment_of<Data>::value>::type storage_t;
-    storage_t storage;
+    BOOST_ALIGNMENT(::boost::python::detail::alignment_of<Data>::value+0) storage_t storage;
 };
 
 template <class Data>
@@ -45,7 +45,7 @@ struct additional_instance_size
     typedef instance<char> instance_char;
     BOOST_STATIC_CONSTANT(
         std::size_t, value = sizeof(instance_data)
-                           - BOOST_PYTHON_OFFSETOF(instance_char,storage));
+                           - BOOST_PYTHON_OFFSETOF(instance_char,storage) + detail::alignment_of<Data>::value);
 };
 
 }}} // namespace boost::python::object
