@@ -6,6 +6,7 @@
 # define MAKE_INSTANCE_DWA200296_HPP
 
 # include <boost/python/detail/prefix.hpp>
+# include <boost/python/detail/alignment_of.hpp>
 # include <boost/python/object/instance.hpp>
 # include <boost/python/converter/registered.hpp>
 # include <boost/python/detail/decref_guard.hpp>
@@ -13,6 +14,8 @@
 # include <boost/mpl/assert.hpp>
 # include <boost/mpl/or.hpp>
 # include <boost/type_traits/is_union.hpp>
+# include <boost/align.hpp>
+# include <boost/type_traits/aligned_storage.hpp>
 
 namespace boost { namespace python { namespace objects { 
 
@@ -42,7 +45,7 @@ struct make_instance_impl
             
             // construct the new C++ object and install the pointer
             // in the Python object.
-            Derived::construct(&instance->storage, (PyObject*)instance, x)->install(raw_result);
+            Derived::construct(instance->storage.address(), (PyObject*)instance, x)->install(raw_result);
               
             // Note the position of the internally-stored Holder,
             // for the sake of destruction

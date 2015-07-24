@@ -62,7 +62,7 @@ struct AFromPython
   {
     void* storage = (
         (boost::python::converter::rvalue_from_python_storage< A >*)
-        data)-> storage.bytes;
+        data)-> storage.address();
 
 #if PY_VERSION_HEX >= 0x03000000
     new (storage) A((int)PyLong_AsLong(obj_ptr));

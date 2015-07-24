@@ -7,11 +7,20 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/type_traits/alignment_traits.hpp>
+# include <boost/align.hpp>
+# include <boost/python/detail/alignment_of.hpp>
+# include <boost/type_traits/aligned_storage.hpp>
 # include <cstddef>
 
 namespace boost { namespace python
 {
   struct BOOST_PYTHON_DECL_FORWARD instance_holder;
+
+    //allow users to override the alignment through partial template specialization/SFINAE
+    template<typename T, class Enable = void>
+    struct alignment_of : public ::boost::alignment::alignment_of<T>{
+    };
+
 }} // namespace boost::python
 
 namespace boost { namespace python { namespace objects { 
@@ -25,15 +34,8 @@ struct instance
     PyObject* weakrefs; 
     instance_holder* objects;
 
-    typedef typename type_with_alignment<
-        ::boost::alignment_of<Data>::value
-    >::type align_t;
-          
-    union
-    {
-        align_t align;
-        char bytes[sizeof(Data)];
-    } storage;
+    typedef typename ::boost::aligned_storage<sizeof(Data), detail::alignment_of<Data>::value>::type storage_t;
+    storage_t storage;
 };
 
 template <class Data>

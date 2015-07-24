@@ -33,7 +33,7 @@ namespace boost { namespace python { namespace converter {
 //
 //   3. where y is of type rvalue_from_python_data<T>,
 //      x.construct(source, y) constructs an object of type T
-//      in y.storage.bytes and then sets y.convertible == y.storage.bytes,
+//      in y.storage.address() and then sets y.convertible == y.storage.address(),
 //      or else throws an exception and has no effect.
 BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     PyObject* source
