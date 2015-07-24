@@ -769,7 +769,7 @@ namespace sandbox { namespace {
       if (value == 0) boost::python::throw_error_already_set();
       void* storage = (
         (boost::python::converter::rvalue_from_python_storage&lt;custom_string&gt;*)
-          data)-&gt;storage.bytes;
+          data)-&gt;storage.address();
       new (storage) custom_string(value);
       data-&gt;convertible = storage;
     }

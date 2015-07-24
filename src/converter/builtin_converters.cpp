@@ -83,7 +83,7 @@ namespace
           handle<> intermediate(creator(obj));
 
           // Get the location in which to construct
-          void* storage = ((rvalue_from_python_storage<T>*)data)->storage.bytes;
+          void* storage = ((rvalue_from_python_storage<T>*)data)->storage.address();
 # ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable:4244)

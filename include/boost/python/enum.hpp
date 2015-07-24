@@ -84,7 +84,7 @@ void enum_<T>::construct(PyObject* obj, converter::rvalue_from_python_stage1_dat
 #else
     T x = static_cast<T>(PyInt_AS_LONG(obj));
 #endif
-    void* const storage = ((converter::rvalue_from_python_storage<T>*)data)->storage.bytes;
+    void* const storage = ((converter::rvalue_from_python_storage<T>*)data)->storage.address();
     new (storage) T(x);
     data->convertible = storage;
 }

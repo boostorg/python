@@ -179,8 +179,8 @@ namespace converter
   {
       return *(T*)(
           // Only do the stage2 conversion once
-          m_data.stage1.convertible ==  m_data.storage.bytes
-             ? m_data.storage.bytes
+          m_data.stage1.convertible ==  m_data.storage.address()
+             ? m_data.storage.address()
              : (rvalue_from_python_stage2)(m_source, m_data.stage1, registered<T>::converters)
           );
   }

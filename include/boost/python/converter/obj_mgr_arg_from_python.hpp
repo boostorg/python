@@ -81,16 +81,16 @@ inline object_manager_ref_arg_from_python<Ref>::object_manager_ref_arg_from_pyth
 # if defined(__EDG_VERSION__) && __EDG_VERSION__ <= 243
     // needed for warning suppression
     python::detail::borrowed_reference x_ = python::detail::borrowed_reference(x);
-    python::detail::construct_referent<Ref>(&m_result.bytes, x_);
+    python::detail::construct_referent<Ref>(m_result.address(), x_);
 # else 
-    python::detail::construct_referent<Ref>(&m_result.bytes, (python::detail::borrowed_reference)x);
+    python::detail::construct_referent<Ref>(m_result.address(), (python::detail::borrowed_reference)x);
 # endif 
 }
 
 template <class Ref>
 inline object_manager_ref_arg_from_python<Ref>::~object_manager_ref_arg_from_python()
 {
-    python::detail::destroy_referent<Ref>(this->m_result.bytes);
+    python::detail::destroy_referent<Ref>(this->m_result.address());
 }
 
 namespace detail
@@ -106,14 +106,14 @@ template <class Ref>
 inline bool object_manager_ref_arg_from_python<Ref>::convertible() const
 {
     return detail::object_manager_ref_check(
-        python::detail::void_ptr_to_reference(this->m_result.bytes, (Ref(*)())0));
+        python::detail::void_ptr_to_reference(this->m_result.address(), (Ref(*)())0));
 }
 
 template <class Ref>
 inline Ref object_manager_ref_arg_from_python<Ref>::operator()() const
 {
     return python::detail::void_ptr_to_reference(
-        this->m_result.bytes, (Ref(*)())0);
+        this->m_result.address(), (Ref(*)())0);
 }
 
 }}} // namespace boost::python::converter

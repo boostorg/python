@@ -40,7 +40,7 @@ struct shared_ptr_from_python
     
     static void construct(PyObject* source, rvalue_from_python_stage1_data* data)
     {
-        void* const storage = ((converter::rvalue_from_python_storage<shared_ptr<T> >*)data)->storage.bytes;
+        void* const storage = ((converter::rvalue_from_python_storage<shared_ptr<T> >*)data)->storage.address();
         // Deal with the "None" case.
         if (data->convertible == source)
             new (storage) shared_ptr<T>();

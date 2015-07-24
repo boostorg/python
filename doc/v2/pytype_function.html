@@ -329,7 +329,7 @@ struct BFromPython
       converter::rvalue_from_python_stage1_data* data)
   {
     void* storage = (
-        (converter::rvalue_from_python_storage&lt; B &gt;*)data)-&gt; storage.bytes;
+        (converter::rvalue_from_python_storage&lt; B &gt;*)data)-&gt; storage.address();
 
     extract&lt;const A&&gt; ex(obj_ptr);
     new (storage) B(ex());

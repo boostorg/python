@@ -83,7 +83,7 @@ struct rvalue_from_python_storage
 };
 
 // Augments rvalue_from_python_storage<T> with a destructor. If
-// stage1.convertible == storage.bytes, it indicates that an object of
+// stage1.convertible == storage.address(), it indicates that an object of
 // remove_reference<T>::type has been constructed in storage and
 // should will be destroyed in ~rvalue_from_python_data(). It is
 // crucial that successful rvalue conversions establish this equality
@@ -131,8 +131,11 @@ inline rvalue_from_python_data<T>::rvalue_from_python_data(void* convertible)
 template <class T>
 inline rvalue_from_python_data<T>::~rvalue_from_python_data()
 {
-    if (this->stage1.convertible == this->storage.bytes)
-        python::detail::destroy_referent<ref_type>(this->storage.bytes);
+    if (this->stage1.convertible == this->storage.address()){
+        size_t allocated = sizeof(this->storage);
+        void* aligned_storage = ::boost::align(::boost::python::alignment_of<T>::value, 0, this->storage.address(), allocated);
+        python::detail::destroy_referent<ref_type>(aligned_storage);
+    }
 }
 
 }}} // namespace boost::python::converter
