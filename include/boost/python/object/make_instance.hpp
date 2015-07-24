@@ -45,11 +45,13 @@ struct make_instance_impl
             
             // construct the new C++ object and install the pointer
             // in the Python object.
-            Derived::construct(instance->storage.address(), (PyObject*)instance, x)->install(raw_result);
+            Holder *holder =Derived::construct(instance->storage.address(), (PyObject*)instance, x);
+            holder->install(raw_result);
               
             // Note the position of the internally-stored Holder,
             // for the sake of destruction
-            Py_SIZE(instance) = offsetof(instance_t, storage);
+            const size_t offset = reinterpret_cast<size_t>(holder) - reinterpret_cast<size_t>(instance->storage.address()) + offsetof(instance_t, storage);
+            Py_SIZE(instance) = offset;
 
             // Release ownership of the python object
             protect.cancel();
@@ -63,6 +65,8 @@ template <class T, class Holder>
 struct make_instance
     : make_instance_impl<T, Holder, make_instance<T,Holder> >
 {
+    typedef typename make_instance_impl<T, Holder, make_instance<T,Holder> >::instance_t instance_t;
+
     template <class U>
     static inline PyTypeObject* get_class_object(U&)
     {
@@ -71,7 +75,9 @@ struct make_instance
     
     static inline Holder* construct(void* storage, PyObject* instance, reference_wrapper<T const> x)
     {
-        return new (storage) Holder(instance, x);
+        size_t allocated = objects::additional_instance_size<Holder>::value;
+        void* aligned_storage = ::boost::alignment::align(detail::alignment_of<Holder>::value, sizeof(Holder), storage, allocated);
+        return new (aligned_storage) Holder(instance, x);
     }
 };
   
