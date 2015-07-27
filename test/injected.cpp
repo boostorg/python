@@ -8,6 +8,7 @@
 #include "test_class.hpp"
 #include <memory>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/python/make_constructor.hpp>
 #include <boost/python/args.hpp>
 
@@ -21,7 +22,7 @@ std::auto_ptr<X> sum(int a, int b) { return std::auto_ptr<X>(new X(a+b)); }
 
 boost::shared_ptr<X> product(int a, int b, int c)
 {
-    return boost::shared_ptr<X>(new X(a*b*c));
+    return boost::make_shared<X>(a*b*c);
 }
 
 BOOST_PYTHON_MODULE(injected_ext)
