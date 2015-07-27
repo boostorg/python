@@ -726,28 +726,45 @@ namespace objects
 } // namespace objects
 
 
-void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std::size_t holder_size)
+typedef unsigned int alignment_marker_t;
+
+void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std::size_t holder_size, std::size_t alignment)
 {
     assert(PyType_IsSubtype(Py_TYPE(Py_TYPE(self_)), &class_metatype_object));
     objects::instance<>* self = (objects::instance<>*)self_;
     
-    int total_size_needed = holder_offset + holder_size;
+    int total_size_needed = holder_offset + holder_size + alignment - 1;
     
     if (-Py_SIZE(self) >= total_size_needed)
     {
         // holder_offset should at least point into the variable-sized part
         assert(holder_offset >= offsetof(objects::instance<>,storage));
 
+        size_t allocated = holder_size + alignment;
+        void* storage = (char*)self + holder_offset;
+        void* aligned_storage = ::boost::alignment::align(alignment, holder_size, storage, allocated);
+
         // Record the fact that the storage is occupied, noting where it starts
-        Py_SIZE(self) = holder_offset;
-        return (char*)self + holder_offset;
+        const size_t offset = reinterpret_cast<size_t>(aligned_storage) - reinterpret_cast<size_t>(storage) + holder_offset;
+        Py_SIZE(self) = offset;
+        return (char*)self + offset;
     }
     else
     {
-        void* const result = PyMem_Malloc(holder_size);
-        if (result == 0)
+        const size_t base_allocation = holder_size + alignment - 1 + sizeof(alignment_marker_t);
+        void* const base_storage = PyMem_Malloc(base_allocation);
+        if (base_storage == 0)
             throw std::bad_alloc();
-        return result;
+
+        const size_t x = reinterpret_cast<size_t>(base_storage);
+        //this has problems for x -> max(void *)
+        //const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) % alignment);
+        //only works for alignments with alignments of powers of 2, but no edge conditions
+        const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) & (alignment - 1));
+        void* const aligned_storage = (char *)base_storage + padding;
+        alignment_marker_t* const marker_storage = reinterpret_cast<alignment_marker_t *>((char *)aligned_storage - sizeof(alignment_marker_t));
+        *marker_storage = static_cast<alignment_marker_t>(padding);
+        return aligned_storage;
     }
 }
 
@@ -757,7 +774,9 @@ void instance_holder::deallocate(PyObject* self_, void* storage) throw()
     objects::instance<>* self = (objects::instance<>*)self_;
     if (storage != (char*)self + Py_SIZE(self))
     {
-        PyMem_Free(storage);
+        alignment_marker_t* marker_storage = reinterpret_cast<alignment_marker_t *>((char *)storage - sizeof(alignment_marker_t));
+        void *malloced_storage = (char *) storage - (*marker_storage);
+        PyMem_Free(malloced_storage);
     }
 }
 
