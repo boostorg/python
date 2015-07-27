@@ -751,17 +751,19 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
     }
     else
     {
-        const size_t base_allocation = holder_size + alignment - 1 + sizeof(alignment_marker_t);
+        const size_t base_allocation = sizeof(alignment_marker_t) + holder_size + alignment - 1;
         void* const base_storage = PyMem_Malloc(base_allocation);
         if (base_storage == 0)
             throw std::bad_alloc();
 
-        const size_t x = reinterpret_cast<size_t>(base_storage);
+        const size_t x = reinterpret_cast<size_t>(base_storage) + sizeof(alignment_marker_t);
         //this has problems for x -> max(void *)
         //const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) % alignment);
         //only works for alignments with alignments of powers of 2, but no edge conditions
-        const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) & (alignment - 1));
-        void* const aligned_storage = (char *)base_storage + padding;
+        const size_t padding = alignment == 1 ? 0 : ( alignment - (x & (alignment - 1)) );
+        const size_t aligned_offset = sizeof(alignment_marker_t) + padding;
+        void* const aligned_storage = (char *)base_storage + aligned_offset;
+        BOOST_ASSERT((char *) aligned_storage + holder_size <= (char *)base_storage + base_allocation);
         alignment_marker_t* const marker_storage = reinterpret_cast<alignment_marker_t *>((char *)aligned_storage - sizeof(alignment_marker_t));
         *marker_storage = static_cast<alignment_marker_t>(padding);
         return aligned_storage;
@@ -775,7 +777,7 @@ void instance_holder::deallocate(PyObject* self_, void* storage) throw()
     if (storage != (char*)self + Py_SIZE(self))
     {
         alignment_marker_t* marker_storage = reinterpret_cast<alignment_marker_t *>((char *)storage - sizeof(alignment_marker_t));
-        void *malloced_storage = (char *) storage - (*marker_storage);
+        void *malloced_storage = (char *) storage - sizeof(alignment_marker_t) - (*marker_storage);
         PyMem_Free(malloced_storage);
     }
 }
