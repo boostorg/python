@@ -89,14 +89,13 @@ struct make_holder<N>
             BOOST_PP_ENUM_TRAILING_BINARY_PARAMS_Z(1, N, t, a))
         {
             typedef instance<Holder> instance_t;
-            
-            void* memory = Holder::allocate(p, offsetof(instance_t, storage), sizeof(Holder));
+            void* aligned_memory = Holder::allocate(p, offsetof(instance_t, storage), sizeof(Holder), detail::alignment_of<Holder>::value);
             try {
-                (new (memory) Holder(
+                (new (aligned_memory) Holder(
                     p BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_DO_FORWARD_ARG, nil)))->install(p);
             }
             catch(...) {
-                Holder::deallocate(p, memory);
+                Holder::deallocate(p, aligned_memory);
                 throw;
             }
         }
