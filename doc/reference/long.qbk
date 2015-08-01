@@ -1,9 +1,9 @@
-[section long.hpp]
+[section boost/python/long.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python long integer type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/doc/current/lib/typesnumeric.html long] integer type.
 [endsect]
 [section Class `long_`]
-Exposes the numeric type protocol of Python's built-in long type. The semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since long_ is publicly derived from object, the public object interface applies to long_ instances as well.
+Exposes the [@http://www.python.org/doc/current/lib/typesnumeric.html numeric type protocol] of Python's built-in `long` type. The semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since `long_` is publicly derived from [link object_wrappers.boost_python_object_hpp.class_object `object`], the public `object` interface applies to `long_` instances as well.
 ``
 namespace boost { namespace python
 {

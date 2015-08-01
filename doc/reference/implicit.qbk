@@ -1,6 +1,6 @@
-[section implicit.hpp]
+[section boost/python/implicit.hpp]
 [section Introduction]
- implicitly_convertible allows Boost.Python to implicitly take advantage of a C++ implicit or explicit conversion when matching Python objects to C++ argument types. 
+`implicitly_convertible` allows Boost.Python to implicitly take advantage of a C++ implicit or explicit conversion when matching Python objects to C++ argument types. 
 [endsect]
 [section Function template `implicit_convertible`]
 ``
@@ -13,8 +13,8 @@ void implicitly_convertible();
 [[Target][The target type of the implicit conversion]]
 ]
 [variablelist
-[[Requires][The declaration Target t(s);, where s is of type Source, is valid.]]
-[[Effects][registers an rvalue from_python converter to Target which can succeed for any PyObject* p iff there exists any registered converter which can produce Source rvalues]]
+[[Requires][The declaration `Target t(s);`, where s is of type Source, is valid.]]
+[[Effects][registers an rvalue `from_python` converter to Target which can succeed for any `PyObject* p` iff there exists any registered converter which can produce Source rvalues]]
 [[Rationale][C++ users expect to be able to take advantage of the same sort of interoperability in Python as they do in C++.]]
 ]
 [endsect]

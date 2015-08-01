@@ -1,6 +1,6 @@
-[section function_doc_signature.hpp]
+[section boost/python/function_doc_signature.hpp]
 [section Introduction]
-Boost.Python supports docstrings with automatic appending of Pythonic and C++ signatures. This feature is implemented by class function_doc_signature_generator The class uses all of the overloads, supplied arg names and default values, as well as the user-defined docstrings, to generate documentation for a given function.
+Boost.Python supports docstrings with automatic appending of Pythonic and C++ signatures. This feature is implemented by class `function_doc_signature_generator`. The class uses all of the overloads, supplied arg names and default values, as well as the user-defined docstrings, to generate documentation for a given function.
 [endsect]
 [section Class `function_doc_signature_generator`]
 The class has only one public function which returns a list of strings documenting the overloads of a function. 
@@ -71,7 +71,7 @@ BOOST_PYTHON_MODULE(args_ext)
 
 }
 ``
-Python code:
+Python code: [python]
 ``
 >>> import args_ext
 >>> help(args_ext)

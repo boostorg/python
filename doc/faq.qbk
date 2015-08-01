@@ -1,4 +1,4 @@
-[chapter FAQ
+[chapter Frequently Asked Questions (FAQs)
     [quickbook 1.7]
     [id faq]
 ]
@@ -79,25 +79,24 @@ situation at runtime and helpfully throws an exception instead of letting
 you do that.
 
 [endsect]
-[section Is return_internal_reference efficient?]
+[section Is `return_internal_reference` efficient?]
 
-[*Q:] /I have an object composed of 12 doubles. A const& to
+[*Q:] /I have an object composed of 12 doubles. A `const&` to
 this object is returned by a member function of another class. From the
 viewpoint of using the returned object in Python I do not care if I get
-a copy or a reference to the returned object. In Boost.Python Version 2
-I have the choice of using copy_const_reference or
-return_internal_reference. Are there considerations that would lead me
-to prefer one over the other, such as size of generated code or memory
-overhead?/
+a copy or a reference to the returned object. In Boost.Python I have the
+choice of using `copy_const_reference` or `return_internal_reference`.
+Are there considerations that would lead me to prefer one over the other,
+such as size of generated code or memory overhead?/
 
 [*A:] `copy_const_reference` will make an instance with storage
-for one of your objects, size = base_size + 12 * sizeof(double).
-return_internal_reference will make an instance with storage for a
-pointer to one of your objects, size = base_size + sizeof(void*).
+for one of your objects, `size = base_size + 12 * sizeof(double)`.
+`return_internal_reference` will make an instance with storage for a
+pointer to one of your objects, `size = base_size + sizeof(void*)`.
 However, it will also create a weak reference object which goes in the
 source object's weakreflist and a special callback object to manage the
 lifetime of the internally-referenced object. My guess?
-copy_const_reference is your friend here, resulting in less overall
+`copy_const_reference` is your friend here, resulting in less overall
 memory use and less fragmentation, also probably fewer total
 cycles.
 
@@ -113,8 +112,8 @@ Ralf W. Grosse-Kunstleve provides these notes:
       ...
     ;
   ``
-  This can be moved to a template so that several types (double, int,
-  long, etc.) can be wrapped with the same code. This technique is used
+  This can be moved to a template so that several types (`double`, `int`,
+  `long`, etc.) can be wrapped with the same code. This technique is used
   in the file `scitbx/include/scitbx/array_family/boost_python/flex_wrapper.h`
   in the "scitbx" package. The file could easily be modified for
   wrapping `std::vector<>` instantiations.
@@ -157,7 +156,7 @@ C++:
     }
   }
 ``
-Python:
+Python: [python]
 ``
   >>> l = [1, 2, 3]
   >>> foo(l)
@@ -187,7 +186,7 @@ CVS:
 
 # Break your source file up into multiple translation units.
 
-  `my_module.cpp`:
+  `my_module.cpp`: [c++]
 
   ``
     ...
@@ -208,7 +207,7 @@ CVS:
       ...
     }
   ``
-  If you find that a [link reference.class-spec class_]<...> declaration
+  If you find that a `class_<...>` declaration
   can't fit in a single source file without triggering the error, you
   can always pass a reference to the `class_` object to a
   function in another source file, and call some of its member
@@ -522,7 +521,7 @@ Then make a thin wrapper function which takes an auto_ptr parameter:
     a.release();
   }
 ``
-Wrap that as B.add. Note that pointers returned via [link reference.manage_new_object manage_new_object]
+Wrap that as B.add. Note that pointers returned via `manage_new_object`
 will also be held by `auto_ptr`, so this transfer-of-ownership
 will also work correctly.
 
@@ -530,12 +529,12 @@ will also work correctly.
 [section Compilation takes too much time and eats too much memory!
  What can I do to make it faster?]
 
-Please refer to the [link tutorial.python.reducing_compiling_time Reducing Compiling Time] section in the tutorial.
+Please refer to the `Reducing Compiling Time` section in the _tutorial_.
 
 [endsect]
 [section How do I create sub-packages using Boost.Python?]
 
-Please refer to the [link tutorial.python.creating_packages Creating Packages] section in the tutorial.
+Please refer to the `Creating Packages` section in the _tutorial_.
 
 [endsect]
 [section error C2064: term does not evaluate to a function taking 2 arguments]

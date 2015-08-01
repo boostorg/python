@@ -1,6 +1,6 @@
-[section return_by_value.hpp]
+[section boost/python/return_by_value.hpp]
 [section Class `return_by_value`]
-return_by_value is a model of ResultConverterGenerator which can be used to wrap C++ functions returning any reference or value type such that the return value is copied into a new Python object.
+`return_by_value` is a model of [link concepts.resultconverter.resultconvertergenerator_concept ResultConverterGenerator] which can be used to wrap C++ functions returning any reference or value type such that the return value is copied into a new Python object.
 ``
 namespace boost { namespace python
 {

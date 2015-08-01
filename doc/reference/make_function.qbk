@@ -1,4 +1,4 @@
-[section make_function.hpp]
+[section boost/python/make_function.hpp]
 [section Introduction]
 make_function() and make_constructor() are the functions used internally by def() and class_<>::def() to produce Python callable objects which wrap C++ functions and member functions.
 [endsect]

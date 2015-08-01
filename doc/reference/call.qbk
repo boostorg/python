@@ -1,4 +1,4 @@
-[section call.hpp]
+[section boost/python/call.hpp]
 [section Introduction]
  <boost/python/call.hpp> defines the call family of overloaded function templates, used to invoke Python callable objects from C++. 
 [endsect]

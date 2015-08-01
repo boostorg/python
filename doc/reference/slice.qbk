@@ -1,9 +1,9 @@
-[section slice.hpp]
+[section boost/python/slice.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python slice type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/doc/2.3.3/api/slice-objects.html `slice`] type.
 [endsect]
 [section Class `slice`]
-Exposes the extended slicing protocol by wrapping the built-in slice type. The semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since slice is publicly derived from object, the public object interface applies to slice instances as well.
+Exposes the extended slicing protocol by wrapping the built-in slice type. The semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since `slice` is publicly derived from [link object_wrappers.boost_python_object_hpp.class_object `object`], the public `object` interface applies to `slice` instances as well.
 ``
 namespace boost { namespace python
 {

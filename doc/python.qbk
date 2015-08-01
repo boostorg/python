@@ -21,6 +21,8 @@
 [def _tutorial_   [@tutorial/index.html Tutorial]]
 [def _reference_  [@reference/index.html Reference Manual]]
 [def _gsg_        Boost [@http://www.boost.org/more/getting_started/ Getting Started Guide]]
+[def _extending_  [@https://docs.python.org/2/extending/extending.html extending]]
+[def _embedding_  [@https://docs.python.org/2/extending/embedding.html embedding]]
 
 [h2 Synopsis]
 
@@ -37,7 +39,7 @@ Welcome to Boost.Python, a C++ library which enables seamless interoperability b
 * Exporting C++ Iterators as Python Iterators
 * Documentation Strings
 
-The development of these features was funded in part by grants to [@http://www.boost-consulting.com Boost Consulting] from the [@http://www.llnl.gov Lawrence Livermore National Laboratories] and by the [@http://cci.lbl.gov Computational Crystallography Initiative] at Lawrence Berkeley National Laboratories. 
+The development of these features was funded in part by grants to `Boost Consulting` from the [@http://www.llnl.gov Lawrence Livermore National Laboratories] and by the [@http://cci.lbl.gov Computational Crystallography Initiative] at Lawrence Berkeley National Laboratories. 
 
 [section Contents]
 
@@ -53,7 +55,7 @@ The development of these features was funded in part by grants to [@http://www.b
 
 [h2 Articles]
 
-"Building Hybrid Systems With Boost Python", by Dave Abrahams and Ralf W. Grosse-Kunstleve (PDF)
+[@bpl.html Building Hybrid Systems With Boost Python], by Dave Abrahams and Ralf W. Grosse-Kunstleve ([@bpl.pdf PDF])
 
 [include building.qbk]
 [include configuration.qbk]

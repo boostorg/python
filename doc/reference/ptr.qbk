@@ -1,8 +1,8 @@
-[section ptr.hpp]
+[section boost/python/ptr.hpp]
 [section Introduction]
 <boost/python/ptr.hpp> defines the ptr() function template, which allows users to specify how to convert C++ pointer values to python in the context of implementing overridable virtual functions, invoking Python callable objects, or explicitly converting C++ objects to Python. Normally, when passing pointers to Python callbacks, the pointee is copied to ensure that the Python object never holds a dangling reference. To specify that the new Python object should merely contain a copy of a pointer p, the user can pass ptr(p) instead of passing p directly. This interface is meant to mirror the use of boost::ref(), which can be similarly used to prevent copying of referents.
 
-ptr(p) returns an instance of pointer_wrapper<>, which can be detected using the is_pointer_wrapper<> metafunction; unwrap_pointer<> is a metafunction which extracts the original pointer type from a pointer_wrapper<>. These classes can be thought of as implementation details. 
+ptr(p) returns an instance of [link function_invocation_and_creation.boost_python_ptr_hpp.class_template_pointer_wrapper `pointer_wrapper<>`], which can be detected using the [link function_invocation_and_creation.boost_python_ptr_hpp.metafunctions.class_template_is_pointer_wrappe `is_pointer_wrapper<>`] metafunction; [link function_invocation_and_creation.boost_python_ptr_hpp.metafunctions.class_template_unwrap_pointer `unwrap_pointer<>`] is a metafunction which extracts the original pointer type from a `pointer_wrapper<>`. These classes can be thought of as implementation details. 
 [endsect]
 [section Functions]
 ``
@@ -16,7 +16,7 @@ pointer_wrapper<T> ptr(T x);
 ]
 [endsect]
 [section Class template `pointer_wrapper`]
-A "type envelope" which is returned by ptr(), used to indicate reference semantics for pointers passed to Python callbacks.
+A "type envelope" which is returned by `ptr()`, used to indicate reference semantics for pointers passed to Python callbacks.
 ``
 namespace boost { namespace python
 {
@@ -43,8 +43,8 @@ The type of the pointer being wrapped.
 explicit pointer_wrapper(Ptr x);
 ``
 [variablelist
-[[Requires][Ptr is a pointer type]]
-[[Effects][Stores x in a the pointer_wrapper<>. ]]
+[[Requires][`Ptr` is a pointer type]]
+[[Effects][Stores `x` in a the `pointer_wrapper<>`. ]]
 [[Throws][nothing.]]
 ]
 [endsect]
@@ -71,7 +71,7 @@ namespace boost { namespace python
 }}
 ``
 [variablelist
-[[Returns][true iff T is a specialization of pointer_wrapper<>.
+[[Returns][`true` iff `T` is a specialization of `pointer_wrapper<>`.
 value is an integral constant convertible to bool of unspecified type ]]
 ]
 [endsect]
@@ -87,7 +87,7 @@ namespace boost { namespace python
 }}
 ``
 [variablelist
-[[Returns][T::type if T is a specialization of pointer_wrapper<>, T otherwise ]]
+[[Returns][`T::type` if `T` is a specialization of `pointer_wrapper<>`, `T` otherwise ]]
 ]
 [endsect]
 [endsect]

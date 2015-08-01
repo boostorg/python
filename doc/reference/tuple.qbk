@@ -1,9 +1,9 @@
-[section tuple.hpp]
+[section boost/python/tuple.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python tuple type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/doc/current/tut/node7.html#SECTION007300000000000000000`tuple`] type.
 [endsect]
 [section Class `tuple`]
-Exposes the interface of Python's built-in tuple type. The semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since tuple is publicly derived from object, the public object interface applies to tuple instances as well.
+Exposes the interface of Python's built-in tuple type. The semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since tuple is publicly derived from [link object_wrappers.boost_python_object_hpp.class_object `object`], the public `object` interface applies to `tuple` instances as well.
 ``
 namespace boost { namespace python
 {

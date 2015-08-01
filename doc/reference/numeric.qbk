@@ -1,9 +1,9 @@
-[section numeric.hpp]
+[section boost/python/numeric.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python array type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/dev/doc/devel/lib/typesmapping.html array] type.
 [endsect]
 [section Class `array`]
-Provides access to the array types of Numerical Python's Numeric and NumArray modules. With the exception of the functions documented below, the semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since array is publicly derived from object, the public object interface applies to array instances as well.
+Provides access to the array types of [@http://www.pfdubois.com/numpy/ Numerical Python]\ 's [@http://www.pfdubois.com/numpy/#Numeric Numeric] and [@http://stsdas.stsci.edu/numarray/index.html NumArray] modules. With the exception of the functions documented below, the semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since array is publicly derived from object, the public object interface applies to array instances as well.
 
 The default behavior is to use numarray.NDArray as the associated Python type if the numarray module is installed in the default location. Otherwise it falls back to use Numeric.ArrayType. If neither extension module is installed, overloads of wrapped C++ functions with numeric::array parameters will never be matched, and other attempted uses of numeric::array will raise an appropriate Python exception. The associated Python type can be set manually using the set_module_and_type(...) static function.
 ``
@@ -130,12 +130,12 @@ static void set_module_and_type(char const* package_path, char const* type_name)
 static void set_module_and_type();
 ``
 [variablelist
-[[Requires][package_path and type_name, if supplied, is an ntbs.]]
+[[Requires][package_path and type_name, if supplied, is an [link ntbs].]]
 [[Effects][The first form sets the package path of the module that supplies the type named by type_name to package_path. The second form restores the default search behavior. The associated Python type will be searched for only the first time it is needed, and thereafter the first time it is needed after an invocation of set_module_and_type.]]
 ]
 ``static std::string get_module_name()``
-[variablename
-[[Effects][Returns the name of the module containing the class that will be held by new numeric::array instances.]]
+[variablelist
+[[Effects][Returns the name of the module containing the class that will be held by new `numeric::array` instances.]]
 ]
 [endsect]
 [section Example]

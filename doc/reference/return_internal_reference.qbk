@@ -1,12 +1,12 @@
-[section return_internal_reference.hpp]
+[section boost/python/return_internal_reference.hpp]
 [section Introduction]
- return_internal_reference instantiations are models of CallPolicies which allow pointers and references to objects held internally by a free or member function argument or from the target of a member function to be returned safely without making a copy of the referent. The default for its first template argument handles the common case where the containing object is the target (*this) of a wrapped member function. 
+`return_internal_reference` instantiations are models of [link concepts.callpolicies `CallPolicies`] which allow pointers and references to objects held internally by a free or member function argument or from the target of a member function to be returned safely without making a copy of the referent. The default for its first template argument handles the common case where the containing object is the target (`*this`) of a wrapped member function. 
 [endsect]
 [section Class template `return_internal_reference`]
 [table
  [[Parameter][Requirements][Description][Default]]
- [[owner_arg][A positive compile-time constant of type std::size_t.][The index of the parameter which contains the object to which the reference or pointer is being returned. If used to wrap a member function, parameter 1 is the target object (*this). Note that if the target Python object type doesn't support weak references, a Python TypeError exception will be raised when the function being wrapped is called.][]]
- [[Base][A model of CallPolicies][Used for policy composition. Any result_converter it supplies will be overridden by return_internal_reference, but its precall and postcall policies are composed as described here CallPolicies.][default_call_policies]]
+ [[owner_arg][A positive compile-time constant of type `std::size_t`.][The index of the parameter which contains the object to which the reference or pointer is being returned. If used to wrap a member function, parameter 1 is the target object (`*this`). Note that if the target Python object type doesn't support weak references, a Python TypeError exception will be raised when the function being wrapped is called.][]]
+ [[Base][A model of [link concepts.callpolicies `CallPolicies`]][Used for policy composition. Any `result_converter` it supplies will be overridden by `return_internal_reference`, but its `precall` and `postcall` policies are composed as described here [link concepts.callpolicies `CallPolicies`].][default_call_policies]]
 ]
 ``
 namespace boost { namespace python
@@ -24,7 +24,7 @@ namespace boost { namespace python
 ``PyObject* postcall(PyObject* args, PyObject* result);``
 [variablelist
 [[Requires][`PyTuple_Check(args) != 0`]]
-[[Returns][ `with_custodian_and_ward_postcall::postcall(args, result)`]]
+[[Returns][[link function_invocation_and_creation.models_of_callpolicies.boost_python_with_custodian_and_.class_with_custodian_and_ward_st `with_custodian_and_ward_postcall::postcall(args, result)`]]]
 ]
 [endsect]
 [section Example]

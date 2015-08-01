@@ -1,12 +1,12 @@
-[section stl_iterator.hpp]
+[section boost/python/stl_iterator.hpp]
 [section Introduction]
-<boost/python/stl_iterator.hpp> provides types for creating C++ Iterators from Python iterables.
+<boost/python/stl_iterator.hpp> provides types for creating C++ Iterators from [@http://www.python.org/doc/current/lib/typeiter.html Python iterables].
 [endsect]
 [section Class template `stl_input_iterator`]
-Instances of stl_input_iterator<T> hold a Python iterator and adapt it for use with STL algorithms. stl_input_iterator<T> satisfies the requirements for an Input Iterator.
+Instances of `stl_input_iterator<T>` hold a Python iterator and adapt it for use with STL algorithms. `stl_input_iterator<T>` satisfies the requirements for an Input Iterator.
 [table
 [[Template Parameter][Requirements][Semantics][Default]]
-[[ValueType][ValueType must be CopyConstructible.][Dereferencing an instance of stl_input_iterator<ValueType> will return an rvalue of type ValueType.][None]]
+[[ValueType][ValueType must be CopyConstructible.][Dereferencing an instance of `stl_input_iterator<ValueType>` will return an rvalue of type ValueType.][None]]
 ]
 ``
 namespace boost { namespace python

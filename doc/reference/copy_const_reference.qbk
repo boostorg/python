@@ -1,6 +1,6 @@
-[section copy_const_reference.hpp]
+[section boost/python/copy_const_reference.hpp]
 [section Class `copy_const_reference`]
-copy_const_reference is a model of ResultConverterGenerator which can be used to wrap C++ functions returning a reference-to-const type such that the referenced value is copied into a new Python object.
+`copy_const_reference` is a model of [link concepts.resultconverter.resultconvertergenerator_concept ResultConverterGenerator] which can be used to wrap C++ functions returning a reference-to-const type such that the referenced value is copied into a new Python object.
 ``
 namespace boost { namespace python
 {
@@ -14,8 +14,8 @@ namespace boost { namespace python
 [section Class `copy_const_reference` metafunctions]
 ``template <class T> struct apply``
 [variablelist
-[[Requires][T is U const& for some U.]]
-[[Returns][typedef to_python_value<T> type;]]
+[[Requires][`T` is `U const&` for some `U`.]]
+[[Returns][`typedef to_python_value<T> type;`]]
 ]
 [endsect]
 [section Example]

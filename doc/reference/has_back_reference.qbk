@@ -1,9 +1,9 @@
-[section has_back_reference.hpp]
+[section boost/python/has_back_reference.hpp]
 [section Introduction]
-<boost/python/has_back_reference.hpp> defines the predicate metafunction has_back_reference<>, which can be specialized by the user to indicate that a wrapped class instance holds a PyObject* corresponding to a Python object.
+<boost/python/has_back_reference.hpp> defines the predicate metafunction `has_back_reference<>`, which can be specialized by the user to indicate that a wrapped class instance holds a `PyObject*` corresponding to a Python object.
 [endsect]
 [section Class template `has_back_reference`]
-A unary metafunction whose value is true iff its argument is a pointer_wrapper<>.
+A unary metafunction whose value is true iff its argument is a `pointer_wrapper<>`.
 ``
 namespace boost { namespace python
 {
@@ -14,7 +14,7 @@ namespace boost { namespace python
 }}
 ``
 
-A " metafunction" that is inspected by Boost.Python to determine how wrapped classes can be constructed.
+A metafunction that is inspected by Boost.Python to determine how wrapped classes can be constructed.
 
 `type::value` is an integral constant convertible to bool of unspecified type.
 Specializations may substitute a true-valued integral constant wrapper for type iff for each invocation of `class_<WrappedClass>::def(init< type-sequence...>())` and the implicitly wrapped copy constructor (unless it is noncopyable), there exists a corresponding constructor `WrappedClass::WrappedClass(PyObject*,  type-sequence...)`. If such a specialization exists, the WrappedClass constructors will be called with a "back reference" pointer to the corresponding Python object whenever they are invoked from Python. The easiest way to provide this nested type is to derive the specialization from `mpl::true_`.

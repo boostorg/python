@@ -1,4 +1,4 @@
-[section import.hpp]
+[section boost/python/import.hpp]
 [section Introduction]
 Exposes a mechanism for importing python modules.
 [endsect]
@@ -10,7 +10,7 @@ Exposes a mechanism for importing python modules.
 ]
 [endsect]
 [section Examples]
- The following example demonstrates the use of import to access a function in python, and later call it from within C++. 
+The following example demonstrates the use of import to access a function in python, and later call it from within C++. 
 ``
 #include <iostream>
 #include <string>

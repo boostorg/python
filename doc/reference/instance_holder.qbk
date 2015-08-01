@@ -1,9 +1,9 @@
-[section instance_holder.hpp]
+[section boost/python/instance_holder.hpp]
 [section Introduction]
-<boost/python/instance_holder.hpp> provides class instance_holder, the base class for types which hold C++ instances of wrapped classes. 
+<boost/python/instance_holder.hpp> provides class `instance_holder`, the base class for types which hold C++ instances of wrapped classes. 
 [endsect]
 [section Class template `instance_holder`]
-instance_holder is an abstract base class whose concrete derived classes hold C++ class instances within their Python object wrappers. To allow multiple inheritance in Python from C++ class wrappers, each such Python object contains a chain of instance_holders. When an __init__ function for a wrapped C++ class is invoked, a new instance_holder instance is created and installed in the Python object using its install() function. Each concrete class derived from instance_holder must provide a holds() implementation which allows Boost.Python to query it for the type(s) it is holding. In order to support the held type's wrapped constructor(s), the class must also provide constructors that can accept an initial PyObject* argument referring to the owning Python object, and which forward the rest of their arguments to the constructor of the held type. The initial argument is needed to enable virtual function overriding in Python, and may be ignored, depending on the specific instance_holder subclass. 
+`instance_holder` is an abstract base class whose concrete derived classes hold C++ class instances within their Python object wrappers. To allow multiple inheritance in Python from C++ class wrappers, each such Python object contains a chain of instance_holders. When an `__init__` function for a wrapped C++ class is invoked, a new `instance_holder` instance is created and installed in the Python object using its `install()` function. Each concrete class derived from `instance_holder` must provide a `holds()` implementation which allows Boost.Python to query it for the type(s) it is holding. In order to support the held type's wrapped constructor(s), the class must also provide constructors that can accept an initial `PyObject*` argument referring to the owning Python object, and which forward the rest of their arguments to the constructor of the held type. The initial argument is needed to enable virtual function overriding in Python, and may be ignored, depending on the specific `instance_holder` subclass. 
 ``
 namespace boost { namespace python
 {
@@ -30,7 +30,7 @@ namespace boost { namespace python
 [section Class `intance_holder` modifiers]
 ``void install(PyObject* inst) throw();``
 [variablelist
-[[Requires][inst is a Python instance of a wrapped C++ class type, or is a type derived from a wrapped C++ class type. ]]
+[[Requires][`inst` is a Python instance of a wrapped C++ class type, or is a type derived from a wrapped C++ class type. ]]
 [[Effects][installs the new instance at the head of the Python object's chain of held instances. ]]
 [[Throws][nothing]]
 ]
@@ -43,7 +43,7 @@ namespace boost { namespace python
 [endsect]
 [endsect]
 [section Examples]
- The following is a simplified version of the instance holder template used by Boost.Python to wrap classes held by smart pointers:
+The following is a simplified version of the instance holder template used by Boost.Python to wrap classes held by smart pointers:
 
 ``
 template <class SmartPtr, class Value>

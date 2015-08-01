@@ -1,4 +1,4 @@
-[section object.hpp]
+[section boost/python/object.hpp]
 [section Introduction]
 Exposes the generic Python object wrapper class object, and related classes. In order to avoid some potenential problems with argument-dependent lookup and the generalized operators defined on object, all these facilities are defined in namespace boost::python::api, and object is imported into namespace boost::python with a using-declaration.
 [endsect]
@@ -36,10 +36,10 @@ namespace boost { namespace python { namespace api
 static object get(object const& target, char const* key);
 ``
 [variablelist
-[[Requires][key is an ntbs.]]
+[[Requires][key is an [link ntbs].]]
 [[Effects][accesses the attribute of target named by key.]]
 [[Returns][An object managing the result of the attribute access.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `attribute_policies`]
@@ -60,17 +60,17 @@ namespace boost { namespace python { namespace api
 static object const& set(object const& target, char const* key, object const& value);
 ``
 [variablelist
-[[Requires][key is an ntbs.]]
+[[Requires][key is an [link ntbs].]]
 [[Effects][sets the attribute of target named by key to value.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 ``
 static void del(object const&target, char const* key);
 ``
 [variablelist
-[[Requires][key is an ntbs.]]
+[[Requires][key is an [link ntbs].]]
 [[Effects][deletes the attribute of target named by key.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `const_objattribute_policies`]
@@ -94,7 +94,7 @@ static object get(object const& target, object const& key);
 [[Requires][key is an object holding a string.]]
 [[Effects][accesses the attribute of target named by key.]]
 [[Returns][An object managing the result of the attribute access.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `objattribute_policies`]
@@ -117,7 +117,7 @@ static object const& set(object const& target, object const& key, object const& 
 [variablelist
 [[Requires][key is an object holding a string.]]
 [[Effects][sets the attribute of target named by key to value.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 ``
 static void del(object const&target, object const& key);
@@ -125,7 +125,7 @@ static void del(object const&target, object const& key);
 [variablelist
 [[Requires][key is an object holding a string.]]
 [[Effects][deletes the attribute of target named by key.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `const_item_policies`]
@@ -148,7 +148,7 @@ static object get(object const& target, object const& key);
 [variablelist
 [[Effects][accesses the item of target specified by key.]]
 [[Returns][An object managing the result of the item access.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `item_policies`]
@@ -170,14 +170,14 @@ static object const& set(object const& target, object const& key, object const& 
 ``
 [variablelist
 [[Effects][sets the item of target specified by key to value.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 ``
 static void del(object const& target, object const& key);
 ``
 [variablelist
 [[Effects][deletes the item of target specified by key.]]
-[[Throws][ error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `const_slice_policies`]
@@ -200,7 +200,7 @@ static object get(object const& target, key_type const& key);
 [variablelist
 [[Effects][accesses the slice of target specified by key.]]
 [[Returns][An object managing the result of the slice access.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class `slice_policies`]
@@ -222,14 +222,14 @@ static object const& set(object const& target, key_type const& key, object const
 ``
 [variablelist
 [[Effects][sets the slice of target specified by key to value.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 ``
 static void del(object const& target, key_type const& key);
 ``
 [variablelist
 [[Effects][deletes the slice of target specified by key.]]
-[[Throws][error_already_set if a Python exception is raised.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] if a Python exception is raised.]]
 ]
 [endsect]
 [section Class template `object_operators`]
@@ -324,9 +324,9 @@ proxy<const_object_attribute> attr(char const* name) const;
 proxy<object_attribute> attr(char const* name);
 ``
 [variablelist
-[[Requires][name is an ntbs.]]
+[[Requires][name is an [link ntbs].]]
 [[Effects][accesses the named attribute of *this.]]
-[[Returns][a proxy object which binds object(*static_cast<U*>(this)) as its target, and name as its key.]]
+[[Returns][a proxy object which binds `object(*static_cast<U*>(this))` as its target, and name as its key.]]
 ]
 ``
 proxy<const_object_objattribute> attr(const object& name) const;
@@ -334,8 +334,8 @@ proxy<object_objattribute> attr(const object& name);
 ``
 [variablelist
 [[Requires][name is a object holding a string.]]
-[[Effects][accesses the named attribute of *this.]]
-[[Returns][a proxy object which binds object(*static_cast<U*>(this)) as its target, and name as its key.]]
+[[Effects][accesses the named attribute of `*this`.]]
+[[Returns][a proxy object which binds `object(*static_cast<U*>(this))` as its target, and name as its key.]]
 ]
 ``
 template <class T>
@@ -344,8 +344,8 @@ template <class T>
 proxy<object_item> operator[](T const& key);
 ``
 [variablelist
-[[Effects][accesses the item of *this indicated by key.]]
-[[Returns][a proxy object which binds object(*static_cast<U*>(this)) as its target, and object(key) as its key.]]
+[[Effects][accesses the item of `*this` indicated by key.]]
+[[Returns][a proxy object which binds `object(*static_cast<U*>(this))` as its target, and object(key) as its key.]]
 ]
 ``
 template <class T, class V>
@@ -354,12 +354,12 @@ template <class T, class V>
 proxy<object_slice> slice(T const& start; start, V const& finish);
 ``
 [variablelist
-[[Effects][accesses the slice of *this indicated by std::make_pair(object(start), object(finish)).]]
-[[Returns][a proxy object which binds object(*static_cast<U*>(this)) as its target, and std::make_pair(object(start), object(finish)) as its key.]]
+[[Effects][accesses the slice of `*this` indicated by `std::make_pair(object(start), object(finish))`.]]
+[[Returns][a proxy object which binds `object(*static_cast<U*>(this))` as its target, and `std::make_pair(object(start), object(finish))` as its key.]]
 ]
 [endsect]
 [section Class `object`]
-The intention is that object acts as much like a Python variable as possible. Thus expressions you'd expect to work in Python should generally work in the same way from C++. Most of object's interface is provided by its base class object_operators<object>, and the free functions defined in this header.
+The intention is that object acts as much like a Python variable as possible. Thus expressions you'd expect to work in Python should generally work in the same way from C++. Most of object's interface is provided by its base class `object_operators<object>`, and the free functions defined in this header.
 ``
 namespace boost { namespace python { namespace api
 {
@@ -391,7 +391,7 @@ explicit object(T const& x);
 ``
 [variablelist
 [[Effects][converts x to python and manages a reference to it.]]
-[[Throws][error_already_set and sets a Python TypeError exception if no such conversion is possible.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set error_already_set] and sets a Python TypeError exception if no such conversion is possible.]]
 ]
 ``
 ~object();
@@ -409,7 +409,7 @@ explicit object(T const& x);
 ``bool is_none() const;``
 
 [variablelist
-[[Returns] [result of (ptr() == Py_None)]]
+[[Returns] [result of `(ptr() == Py_None)`]]
 ]
 [endsect]
 [section Class template `proxy`]
@@ -454,7 +454,7 @@ namespace boost { namespace python { namespace api
 [section Class template `proxy` observer functions]
 ``operator object() const;``
 [variablelist
-[[Effects][applies Policies::get(target, key ) with the proxy's target and key objects.]]
+[[Effects][applies `Policies::get(target, key)` with the proxy's target and key objects.]]
 ]
 [endsect]
 [section Class template `proxy` modifier functions]
@@ -464,7 +464,7 @@ template <class T>
 inline proxy const& operator=(T const& rhs) const;
 ``
 [variablelist
-[[Effects][ Policies::set(target, key , object(rhs)) with the proxy's target and key objects.]]
+[[Effects][ `Policies::set(target, key , object(rhs))` with the proxy's target and key objects.]]
 ]
 ``
 template <class R>
@@ -487,7 +487,7 @@ template <class R>
 proxy operator|=(R const& rhs);
 ``
 [variablelist
-[[Effects][for a given operator@=, object(*this) @= rhs;]]
+[[Effects][for a given `operator@=`, `object(*this) @= rhs;`]]
 [[Returns][`*this`]]
 ]
 ``void del() const;``
@@ -512,7 +512,7 @@ template<class L,class R> object operator==(L const&l,R const&r);
 template<class L,class R> object operator!=(L const&l,R const&r);
 ``
 [variablelist
-[[Effects][returns the result of applying the operator to object(l) and object(r), respectively, in Python.]]
+[[Effects][returns the result of applying the operator to `object(l)` and `object(r)`, respectively, in Python.]]
 ]
 ``
 template<class L,class R> object operator+(L const&l,R const&r);
@@ -527,7 +527,7 @@ template<class L,class R> object operator^(L const&l,R const&r);
 template<class L,class R> object operator|(L const&l,R const&r);
 ``
 [variablelist
-[[Effects][returns the result of applying the operator to object(l) and object(r), respectively, in Python.]]
+[[Effects][returns the result of applying the operator to `object(l)` and `object(r)`, respectively, in Python.]]
 ]
 ``
 template<class R> object& operator+=(object&l,R const&r);
@@ -542,7 +542,7 @@ template<class R> object& operator^=(object&l,R const&r);
 template<class R> object& operator|=(object&l,R const&r);
 ``
 [variablelist
-[[Effects][assigns to l the result of applying the corresponding Python inplace operator to l and object(r), respectively.]]
+[[Effects][assigns to `l` the result of applying the corresponding Python inplace operator to `l` and `object(r)`, respectively.]]
 [[Returns][l]]
 ]
 ``long len(object const& obj);``

@@ -1,6 +1,6 @@
-[section reference_existing_object.hpp]
+[section boost/python/reference_existing_object.hpp]
 [section Class `reference_existing_object`]
-reference_existing_object is a model of ResultConverterGenerator which can be used to wrap C++ functions which return a reference or pointer to a C++ object. When the wrapped function is called, the value referenced by its return value is not copied. A new Python object is created which contains a pointer to the referent, and no attempt is made to ensure that the lifetime of the referent is at least as long as that of the corresponding Python object. Thus, it can be highly dangerous to use reference_existing_object without additional lifetime management from such models of CallPolicies as with_custodian_and_ward. This class is used in the implementation of return_internal_reference.
+`reference_existing_object` is a model of [link concepts.resultconverter.resultconvertergenerator_concept ResultConverterGenerator] which can be used to wrap C++ functions which return a reference or pointer to a C++ object. When the wrapped function is called, the value referenced by its return value is not copied. A new Python object is created which contains a pointer to the referent, and no attempt is made to ensure that the lifetime of the referent is at least as long as that of the corresponding Python object. Thus, it can be *highly dangerous* to use `reference_existing_object` without additional lifetime management from such models of [link concepts.callpolicies CallPolicies] as [link function_invocation_and_creation.models_of_callpolicies.boost_python_with_custodian_and_.class_with_custodian_and_ward `with_custodian_and_ward`]. This class is used in the implementation of [link function_invocation_and_creation.models_of_callpolicies.boost_python_return_internal_ref.class_template_return_internal_r `return_internal_reference`].
 ``
 namespace boost { namespace python
 {
@@ -15,7 +15,7 @@ namespace boost { namespace python
 ``template <class T> struct apply``
 [variablelist
 [[Requires][`T` is `U&` or `U*` for some `U`.]]
-[[Returns][`typedef to_python_indirect<T, V> type;`, where V is a class whose static execute function constructs an instance holder containing an unowned U* pointing to the referent of the wrapped function's return value.]]
+[[Returns][`typedef to_python_indirect<T, V> type;`, where V is a class whose static execute function constructs an instance holder containing an unowned `U*` pointing to the referent of the wrapped function's return value.]]
 ]
 [endsect]
 [section Example]

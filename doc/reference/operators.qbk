@@ -1,9 +1,9 @@
-[section operators.hpp]
+[section boost/python/operators.hpp]
 [section Introduction]
-<boost/python/operators.hpp> provides types and functions for automatically generating Python special methods from the corresponding C++ constructs. Most of these constructs are operator expressions, hence the name. To use the facility, substitute the self object for an object of the class type being wrapped in the expression to be exposed, and pass the result to class_<>::def(). Much of what is exposed in this header should be considered part of the implementation, so is not documented in detail here.
+<boost/python/operators.hpp> provides types and functions for automatically generating Python [@http://www.python.org/doc/ref/specialnames.html special methods] from the corresponding C++ constructs. Most of these constructs are operator expressions, hence the name. To use the facility, substitute the [link high_level_components.boost_python_operators_hpp.object_self self] object for an object of the class type being wrapped in the expression to be exposed, and pass the result to [link high_level_components.boost_python_class_hpp.class_template_class_t_bases_hel.class_template_class_modifier_fu class_<>::def()]. Much of what is exposed in this header should be considered part of the implementation, so is not documented in detail here.
 [endsect]
 [section Class `self_ns::self_t`]
-`self_ns::self_t` is the actual type of the self object. The library isolates `self_t` in its own namespace, `self_ns`, in order to prevent the generalized operator templates which operate on it from being found by argument-dependent lookup in other contexts. This should be considered an implementation detail, since users should never have to mention `self_t` directly.
+`self_ns::self_t` is the actual type of the [link high_level_components.boost_python_operators_hpp.object_self self] object. The library isolates `self_t` in its own namespace, `self_ns`, in order to prevent the generalized operator templates which operate on it from being found by argument-dependent lookup in other contexts. This should be considered an implementation detail, since users should never have to mention `self_t` directly.
 ``
 namespace boost { namespace python { namespace self_ns {
 {
@@ -58,9 +58,9 @@ namespace boost { namespace python { namespace self_ns {
    operator_<unspecified> repr(self_t);
 }}};
 ``
-The tables below describe the methods generated when the results of the expressions described are passed as arguments to class_<>::def(). x is an object of the class type being wrapped.
+The tables below describe the methods generated when the results of the expressions described are passed as arguments to [link high_level_components.boost_python_class_hpp.class_template_class_t_bases_hel.class_template_class_modifier_fu class_<>::def()]. `x` is an object of the class type being wrapped.
 [section `self_t` inplace operators]
-In the table below, If r is an object of type other<T>, y is an object of type T; otherwise, y is an object of the same type as r.
+In the table below, If `r` is an object of type [link high_level_components.boost_python_operators_hpp.class_template_other other<T>], `y` is an object of type `T`; otherwise, `y` is an object of the same type as `r`.
 [table
 [[C++ Expression][Python Method Name][C++ Implementation]]
 [[`self += r`][`__iadd__`][`x += y`]]
@@ -76,12 +76,12 @@ In the table below, If r is an object of type other<T>, y is an object of type T
 ]
 [endsect]
 [section `self_t` comparison functions]
-In the tables below, if r is of type self_t, y is an object of the same type as x;
-if l or r is an object of type other<T>, y is an object of type T;
-otherwise, y is an object of the same type as l or r.
-l is never of type self_t.
+In the tables below, if `r` is of type [link high_level_components.boost_python_operators_hpp.class_self_ns_self_t self_t], `y` is an object of the same type as `x`;
+if `l` or `r` is an object of type [link high_level_components.boost_python_operators_hpp.class_template_other other<T>], `y` is an object of type `T`;
+otherwise, `y` is an object of the same type as `l` or `r`.
+`l` is never of type [link high_level_components.boost_python_operators_hpp.class_self_ns_self_t self_t].
 
-The column of Python Expressions illustrates the expressions that will be supported in Python for objects convertible to the types of x and y. The secondary operation arises due to Python's reflection rules for rich comparison operators, and are only used when the corresponding operation is not defined as a method of the y object.
+The column of Python Expressions illustrates the expressions that will be supported in Python for objects convertible to the types of x and y. The secondary operation arises due to Python's [@http://www.python.org/doc/ref/customization.html#l2h-89 reflection rules] for rich comparison operators, and are only used when the corresponding operation is not defined as a method of the y object.
 [table
 [[C++ Expression][Python Method Name][C++ Implementation][Python Expression (primary, secondary)]]
 [[`self == r`][`__eq__`][`x == y`][`x == y`, `y == x`]]
@@ -99,7 +99,7 @@ The column of Python Expressions illustrates the expressions that will be suppor
 ]
 [endsect]
 [section `self_t` non-member operations]
-The operations whose names begin with "__r" below will only be called if the left-hand operand does not already support the given operation, as described here. 
+The operations whose names begin with "__r" below will only be called if the left-hand operand does not already support the given operation, as described [@http://www.python.org/doc/current/ref/numeric-types.html#l2h-152 here]. 
 [table
 [[C++ Expression][Python Method Name][C++ Implementation]]
 [[`self + r`][`__add__`][`x + y`]]
@@ -148,7 +148,7 @@ The operations whose names begin with "__r" below will only be called if the lef
 [endsect]
 [endsect]
 [section Class template `other`]
-Instances of other<T> can be used in operator expressions with self; the result is equivalent to the same expression with a T object in place of other<T>. Use other<T> to prevent construction of a T object in case it is heavyweight, when no constructor is available, or simply for clarity.
+Instances of `other<T>` can be used in operator expressions with [link high_level_components.boost_python_operators_hpp.object_self self]; the result is equivalent to the same expression with a `T` object in place of `other<T>`. Use `other<T>` to prevent construction of a `T` object in case it is heavyweight, when no constructor is available, or simply for clarity.
 ``
 namespace boost { namespace python
 {
@@ -160,7 +160,7 @@ namespace boost { namespace python
 ``
 [endsect]
 [section Class template `detail::operator_`]
-Instantiations of detail::operator_<> are used as the return type of operator expressions involving self. This should be considered an implementation detail and is only documented here as a way of showing how the result of self-expressions match calls to class_<>::def().
+Instantiations of `detail::operator_<>` are used as the return type of operator expressions involving [link high_level_components.boost_python_operators_hpp.object_self self]. This should be considered an implementation detail and is only documented here as a way of showing how the result of self-expressions match calls to [link high_level_components.boost_python_class_hpp.class_template_class_t_bases_hel.class_template_class_modifier_fu `class_<>::def()`].
 ``
 namespace boost { namespace python { namespace detail
 {

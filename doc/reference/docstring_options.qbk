@@ -1,4 +1,4 @@
-[section docstring_options.hpp]
+[section boost/python/docstring_options.hpp]
 [section Introduction]
 Boost.Python supports user-defined docstrings with automatic appending of C++ signatures. These features are enabled by default. The class docstring_options is available to selectively suppress the user-defined docstrings, signatures, or both.
 [endsect]
@@ -7,25 +7,24 @@ Controls the appearance of docstrings of wrapped functions and member functions 
 
 ``namespace boost { namespace python {
 
-    class docstring_options : boost::noncopyable
-    {
-      public:
-          docstring_options(bool show_all=true);
-          docstring_options(bool show_user_defined, bool show_signatures);
-          docstring_options(bool show_user_defined, bool show_py_signatures, bool show_cpp_signatures);
-          ~docstring_options();
-          void disable_user_defined();
-          void enable_user_defined();
-          void disable_signatures();
-          void enable_signatures();
-          void disable_py_signatures();
-          void enable_py_signatures();
-          void disable_cpp_signatures();
-          void enable_cpp_signatures();
-          void disable_all();
-          void enable_all();
-    };
-
+  class docstring_options : boost::noncopyable
+  {
+  public:
+    docstring_options(bool show_all=true);
+    docstring_options(bool show_user_defined, bool show_signatures);
+    docstring_options(bool show_user_defined, bool show_py_signatures, bool show_cpp_signatures);
+    ~docstring_options();
+    void disable_user_defined();
+    void enable_user_defined();
+    void disable_signatures();
+    void enable_signatures();
+    void disable_py_signatures();
+    void enable_py_signatures();
+    void disable_cpp_signatures();
+    void enable_cpp_signatures();
+    void disable_all();
+    void enable_all();
+  };
 }}
 
 ``
@@ -35,27 +34,27 @@ Controls the appearance of docstrings of wrapped functions and member functions 
 docstring_options(bool show_all=true);
 ``
 [variablelist
-[[Effects][Constructs a docstring_options object which controls the appearance of function and member-function docstrings defined in the code that follows. If show_all is true, both the user-defined docstrings and the automatically generated Python and C++ signatures are shown. If show_all is false the __doc__ attributes are None.]]
+[[Effects][Constructs a docstring_options object which controls the appearance of function and member-function docstrings defined in the code that follows. If show_all is true, both the user-defined docstrings and the automatically generated Python and C++ signatures are shown. If show_all is false the `__doc__` attributes are `None`.]]
 ]
 ``
 docstring_options(bool show_user_defined, bool show_signatures);
 ``
 [variablelist
-[[Effects][Constructs a docstring_options object which controls the appearance of function and member-function docstrings defined in the code that follows. Iff show_user_defined is true, the user-defined docstrings are shown. Iff show_signatures is true, Python and C++ signatures are automatically added. If both show_user_defined and show_signatures are false, the __doc__ attributes are None.]]
+[[Effects][Constructs a `docstring_options` object which controls the appearance of function and member-function docstrings defined in the code that follows. Iff `show_user_defined` is `true`, the user-defined docstrings are shown. Iff `show_signatures` is `true`, Python and C++ signatures are automatically added. If both `show_user_defined` and `show_signatures` are `false`, the `__doc__` attributes are `None`.]]
 ]
 ``
 docstring_options(bool show_user_defined, bool show_py_signatures, bool show_cpp_signatures);
 ``
 [variablelist
-[[Effects][Constructs a docstring_options object which controls the appearance of function and member-function docstrings defined in the code that follows. Iff show_user_defined is true, the user-defined docstrings are shown. Iff show_py_signatures is true, Python signatures are automatically added. Iff show_cpp_signatures is true, C++ signatures are automatically added. If all parameters are false, the __doc__ attributes are None.]]
+[[Effects][Constructs a `docstring_options` object which controls the appearance of function and member-function docstrings defined in the code that follows. Iff `show_user_defined` is `true`, the user-defined docstrings are shown. Iff `show_py_signatures` is `true`, Python signatures are automatically added. Iff `show_cpp_signatures` is true, C++ signatures are automatically added. If all parameters are `false`, the `__doc__` attributes are `None`.]]
 ]
 [endsect]
 [section Class docstring_options destructor]
 ``~docstring_options();``
 [variablelist
-[[Effects][Restores the previous state of the docstring options. In particular, if docstring_options instances are in nested C++ scopes the settings effective in the enclosing scope are restored. If the last docstring_options instance goes out of scope the default "all on" settings are restored.]]]
+[[Effects][Restores the previous state of the docstring options. In particular, if `docstring_options` instances are in nested C++ scopes the settings effective in the enclosing scope are restored. If the last `docstring_options` instance goes out of scope the default "all on" settings are restored.]]]
 [endsect]
-[section Class docstring_options modifier functions]
+[section Class `docstring_options` modifier functions]
 ``
 void disable_user_defined();
 void enable_user_defined();
@@ -68,7 +67,7 @@ void enable_cpp_signatures();
 void disable_all();
 void enable_all();
 ``
-These member functions dynamically change the appearance of docstrings in the code that follows. The *_user_defined() and *_signatures() member functions are provided for fine-grained control. The *_all() member functions are convenient shortcuts to manipulate all settings simultaneously.
+These member functions dynamically change the appearance of docstrings in the code that follows. The `*_user_defined()` and `*_signatures()` member functions are provided for fine-grained control. The `*_all()` member functions are convenient shortcuts to manipulate all settings simultaneously.
 [endsect]
 [section Example]
 [section Docstring options defined at compile time]
@@ -86,7 +85,7 @@ BOOST_PYTHON_MODULE(demo)
     def("foo", foo, "foo doc");
 }
 ``
-If compiled with -DDEMO_DOCSTRING_SHOW_ALL=true:
+If compiled with `-DDEMO_DOCSTRING_SHOW_ALL=true`:
 ``
 >>> import demo
 >>> print demo.foo.__doc__
@@ -94,7 +93,7 @@ foo() -> None : foo doc
 C++ signature:
     foo(void) -> void
 ``
-If compiled with -DDEMO_DOCSTRING_SHOW_ALL=false:
+If compiled with `-DDEMO_DOCSTRING_SHOW_ALL=false`:
 ``
 >>> import demo
 >>> print demo.foo.__doc__

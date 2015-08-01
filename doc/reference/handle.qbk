@@ -1,11 +1,11 @@
-[section handle.hpp]
+[section boost/python/handle.hpp]
 [section Introduction]
-<boost/python/handle.hpp> provides class template handle, a smart pointer for managing reference-counted Python objects.
+<boost/python/handle.hpp> provides class template `handle`, a smart pointer for managing reference-counted Python objects.
 [endsect]
 [section Class template `handle`]
-handle is a smart pointer to a Python object type; it holds a pointer of type T*, where T is its template parameter. T must be either a type derived from PyObject or a POD type whose initial sizeof(PyObject) bytes are layout-compatible with PyObject. Use handle<> at the boundary between the Python/'C' API and high-level code; prefer object for a generalized interface to Python objects.
+`handle` is a smart pointer to a Python object type; it holds a pointer of type `T*`, where `T` is its template parameter. T must be either a type derived from `PyObject` or a [link pod POD] type whose initial `sizeof(PyObject)` bytes are layout-compatible with `PyObject`. Use `handle<>` at the boundary between the Python/'C' API and high-level code; prefer object for a generalized interface to Python objects.
 
-In this document, the term "upcast" refers to an operation which converts a pointer Y* to a base class pointer T* via static_cast<T*> if Y is derived from T, or via C-style cast (T*) if it is not. However, in the latter case the "upcast" is ill-formed if the initial sizeof(PyObject) bytes of Y are not layout-compatible with PyObject.
+In this document, the term "upcast" refers to an operation which converts a pointer `Y*` to a base class `pointer T*` via `static_cast<T*>` if `Y` is derived from `T`, or via C-style cast (`T*`) if it is not. However, in the latter case the "upcast" is ill-formed if the initial `sizeof(PyObject)` bytes of `Y` are not layout-compatible with `PyObject`.
 
 ``
 namespace boost { namespace python

@@ -1,4 +1,4 @@
-[section scope.hpp]
+[section boost/python/scope.hpp]
 [section Introduction]
 Defines facilities for querying and controlling the Python scope (namespace) which will contain new wrapped classes and functions.
 [endsect]

@@ -1,8 +1,8 @@
-[section register_ptr_to_python.hpp]
+[section boost/python/register_ptr_to_python.hpp]
 [section Introduction]
- <boost/python/register_ptr_to_python.hpp> supplies register_ptr_to_python, a function template which registers a conversion for smart pointers to Python. The resulting Python object holds a copy of the converted smart pointer, but behaves as though it were a wrapped copy of the pointee. If the pointee type has virtual functions and the class representing its dynamic (most-derived) type has been wrapped, the Python object will be an instance of the wrapper for the most-derived type. More than one smart pointer type for a pointee's class can be registered.
+<boost/python/register_ptr_to_python.hpp> supplies `register_ptr_to_python`, a function template which registers a conversion for smart pointers to Python. The resulting Python object holds a copy of the converted smart pointer, but behaves as though it were a wrapped copy of the pointee. If the pointee type has virtual functions and the class representing its dynamic (most-derived) type has been wrapped, the Python object will be an instance of the wrapper for the most-derived type. More than one smart pointer type for a pointee's class can be registered.
 
- Note that in order to convert a Python X object to a smart_ptr<X>& (non-const reference), the embedded C++ object must be held by smart_ptr<X>, and that when wrapped objects are created by calling the constructor from Python, how they are held is determined by the HeldType parameter to class_<...> instances. 
+Note that in order to convert a Python `X` object to a `smart_ptr<X>&` (non-const reference), the embedded C++ object must be held by `smart_ptr<X>`, and that when wrapped objects are created by calling the constructor from Python, how they are held is determined by the HeldType parameter to `class_<...>` instances. 
 [endsect]
 [section Function `register_ptr_to_python`]
 ``
@@ -10,13 +10,12 @@ template <class P>
 void register_ptr_to_python() 
 ``
 [variablelist
-[[Requires][`P` is Dereferenceable.]]
+[[Requires][`P` is [link concepts.dereferenceable Dereferenceable].]]
 [[Effects][Allows conversions to-python of P instances. ]]
 ]
 [endsect]
-[endsect]
 [section Example]
- Here is an example of a module that contains a class A with virtual functions and some functions that work with boost::shared_ptr<A>.
+Here is an example of a module that contains a class A with virtual functions and some functions that work with boost::shared_ptr<A>.
 
 In C++:
 ``
@@ -84,5 +83,4 @@ File "<stdin>", line 1, in ?
 TypeError: No to_python (by-value) converter found for C++ type: class boost::shared_ptr<struct A>
 >>> 
 ``
-[endsect]
 [endsect]

@@ -1,9 +1,9 @@
-[section dict.hpp]
+[section boost/python/dict.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python dict type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/dev/doc/devel/lib/typesmapping.html `dict`] type.
 [endsect]
 [section Class `dict`]
-Exposes the mapping protocol of Python's built-in dict type. The semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since dict is publicly derived from object, the public object interface applies to dict instances as well.
+Exposes the [@http://www.python.org/dev/doc/devel/lib/typesmapping.html mapping protocol] of Python's built-in `dict` type. The semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since `dict` is publicly derived from [link object_wrappers.boost_python_object_hpp.class_object `object`], the public `object` interface applies to `dict` instances as well.
 ``
 namespace boost { namespace python
 {

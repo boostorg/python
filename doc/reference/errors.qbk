@@ -1,9 +1,9 @@
-[section errors.hpp]
+[section boost/python/errors.hpp]
 [section Introduction]
 <boost/python/errors.hpp> provides types and functions for managing and translating between Python and C++ exceptions. This is relatively low-level functionality that is mostly used internally by Boost.Python. Users should seldom need it.
 [endsect]
 [section Class `error_already_set`]
-error_already_set is an exception type which can be thrown to indicate that a Python error has occurred. If thrown, the precondition is that PyErr_Occurred() returns a value convertible to true. Portable code shouldn't throw this exception type directly, but should instead use throw_error_already_set(), below.
+error_already_set is an exception type which can be thrown to indicate that a Python error has occurred. If thrown, the precondition is that [@http://www.python.org/doc/2.2/api/exceptionHandling.html#l2h-71 PyErr_Occurred()] returns a value convertible to `true`. Portable code shouldn't throw this exception type directly, but should instead use [link high_level_components.boost_python_errors_hpp.functions throw_error_already_set()], below.
 ``
 namespace boost { namespace python
 {
@@ -18,10 +18,10 @@ void handle_exception() throw();
 ``
 [variablelist
 [[Requires][The first form requires that the expression function0<void>(f) is valid. The second form requires that a C++ exception is currently being handled (see section 15.1 in the C++ standard).]]
-[[Effects][The first form calls f() inside a try block which first attempts to use all registered exception translators. If none of those translates the exception, the catch clauses then set an appropriate Python exception for the C++ exception caught, returning true if an exception was thrown, false otherwise. The second form passes a function which rethrows the exception currently being handled to the first form.]]
+[[Effects][The first form calls f() inside a try block which first attempts to use all registered [link high_level_components.boost_python_exception_translato exception translators]. If none of those translates the exception, the catch clauses then set an appropriate Python exception for the C++ exception caught, returning true if an exception was thrown, false otherwise. The second form passes a function which rethrows the exception currently being handled to the first form.]]
 [[Postconditions][No exception is being handled]]
 [[Throws][nothing]]
-[[Rationale][At inter-language boundaries it is important to ensure that no C++ exceptions escape, since the calling language usually doesn't have the equipment necessary to properly unwind the stack. Use handle_exception to manage exception translation whenever your C++ code is called directly from the Python API. This is done for you automatically by the usual function wrapping facilities: make_function(), make_constructor(), def() and class_::def(). The second form can be more convenient to use (see the example below), but various compilers have problems when exceptions are rethrown from within an enclosing try block.]]
+[[Rationale][At inter-language boundaries it is important to ensure that no C++ exceptions escape, since the calling language usually doesn't have the equipment necessary to properly unwind the stack. Use handle_exception to manage exception translation whenever your C++ code is called directly from the Python API. This is done for you automatically by the usual function wrapping facilities: [link function_invocation_and_creation.boost_python_make_function_hpp.functions make_function()], [link function_invocation_and_creation.boost_python_make_function_hpp.functions make_constructor()], [link high_level_components.boost_python_def_hpp.functions def()] and [link high_level_components.boost_python_class_hpp.class_template_class_t_bases_hel.class_template_class_modifier_fu class_::def()]. The second form can be more convenient to use (see the example below), but various compilers have problems when exceptions are rethrown from within an enclosing try block.]]
 ]
 ``template <class T> T* expect_non_null(T* x);``
 [variablelist

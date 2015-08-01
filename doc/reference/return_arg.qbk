@@ -1,12 +1,12 @@
-[section return_arg.hpp]
+[section boost/python/return_arg.hpp]
 [section Introduction]
-return_arg and return_self instantiations are models of CallPolicies which return the specified argument parameter (usually *this) of a wrapped (member) function. 
+`return_arg` and `return_self` instantiations are models of [link concepts.callpolicies `CallPolicies`] which return the specified argument parameter (usually `*this`) of a wrapped (member) function. 
 [endsect]
 [section Class `return_arg`]
 [table
 [[Parameter][Requirements][Description][Default]]
- [[arg_pos][A positive compile-time constant of type std::size_t.][the position of the argument to be returned.][1]]
-[[Base][A model of CallPolicies][Used for policy composition. Any result_converter it supplies will be overridden by return_arg, but its precall and postcall policies are composed as described here CallPolicies.][default_call_policies]]
+ [[arg_pos][A positive compile-time constant of type `std::size_t`.][the position of the argument to be returned.][1]]
+[[Base][A model of [link concepts.callpolicies `CallPolicies`]][Used for policy composition. Any `result_converter` it supplies will be overridden by `return_arg`, but its `precall` and `postcall` policies are composed as described here [link concepts.callpolicies `CallPolicies`].][default_call_policies]]
  ]
 ``
 namespace boost { namespace python

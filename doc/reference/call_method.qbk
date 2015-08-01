@@ -1,4 +1,4 @@
-[section call_method.hpp]
+[section boost/python/call_method.hpp]
 [section Introduction]
 <boost/python/call_method.hpp> defines the call_method family of overloaded function templates, used to invoke callable attributes of Python objects from C++.
 [endsect]
@@ -8,14 +8,14 @@ template <class R, class A1, class A2, ... class An>
 R call_method(PyObject* self, char const* method, A1 const&, A2 const&, ... An const&)
 ``
 [variablelist
-[[Requires][R is a pointer type, reference type, or a complete type with an accessible copy constructor]]
-[[Effects][Invokes self.method(a1, a2, ...an) in Python, where a1...an are the arguments to call_method(), converted to Python objects. For a complete semantic description, see this page.]]
-[[Returns][The result of the Python call, converted to the C++ type R.]]
-[[Rationale][call_method is critical to implementing C++ virtual functions which are overridable in Python, as shown by the example below.]]
+[[Requires][`R` is a pointer type, reference type, or a complete type with an accessible copy constructor]]
+[[Effects][Invokes `self.method(a1, a2, ...an)` in Python, where `a1...an` are the arguments to `call_method()`, converted to Python objects. For a complete semantic description, see this page.]]
+[[Returns][The result of the Python call, converted to the C++ type `R`.]]
+[[Rationale][`call_method` is critical to implementing C++ virtual functions which are overridable in Python, as shown by the example below.]]
 ]
 [endsect]
 [section Example]
-The following C++ illustrates the use of call_method in wrapping a class with a virtual function that can be overridden in Python:
+The following C++ illustrates the use of `call_method` in wrapping a class with a virtual function that can be overridden in Python:
 C++ Module Definition
 ``
 #include <boost/python/module.hpp>

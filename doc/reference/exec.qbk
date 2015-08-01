@@ -1,4 +1,4 @@
-[section exec.hpp]
+[section boost/python/exec.hpp]
 [section Introduction]
 Exposes a mechanism for embedding the python interpreter into C++ code.
 [endsect]
@@ -36,7 +36,7 @@ object exec_file(str filename,
 ]
 [endsect]
 [section Examples]
- The following example demonstrates the use of import and exec to define a function in python, and later call it from within C++.
+The following example demonstrates the use of import and exec to define a function in python, and later call it from within C++.
 
 ``
 #include <iostream>

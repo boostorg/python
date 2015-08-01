@@ -1,6 +1,6 @@
-[section copy_non_const_reference.hpp]
+[section boost/python/copy_non_const_reference.hpp]
 [section Class `copy_non_const_reference`]
-copy_non_const_reference is a model of ResultConverterGenerator which can be used to wrap C++ functions returning a reference-to-non-const type such that the referenced value is copied into a new Python object.
+`copy_non_const_reference` is a model of [link concepts.resultconverter.resultconvertergenerator_concept ResultConverterGenerator] which can be used to wrap C++ functions returning a reference-to-non-const type such that the referenced value is copied into a new Python object.
 ``
 namespace boost { namespace python
 {

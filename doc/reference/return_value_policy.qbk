@@ -1,12 +1,12 @@
-[section return_value_policy.hpp]
+[section boost/python/return_value_policy.hpp]
 [section Introduction]
- return_value_policy instantiations are simply models of CallPolicies which are composed of a ResultConverterGenerator and optional Base CallPolicies. 
+return_value_policy instantiations are simply models of [link concepts.callpolicies `CallPolicies`] which are composed of a [link concepts.resultconverter.resultconvertergenerator_concept `ResultConverterGenerator`] and optional `Base` [link concepts.callpolicies `CallPolicies`]. 
 [endsect]
 [section Class template `return_value_policy`]
 [table
 [[Parameter][Requirements][Default]]
- [[ResultConverterGenerator][A model of ResultConverterGenerator][]]
-[[Base][A model of CallPolicies][default_call_policies]]
+ [[ResultConverterGenerator][A model of [link concepts.resultconverter.resultconvertergenerator_concept `ResultConverterGenerator`]][]]
+[[Base][A model of [link concepts.callpolicies `CallPolicies`]][default_call_policies]]
  ]
 ``
 namespace boost { namespace python

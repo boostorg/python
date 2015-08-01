@@ -1,12 +1,12 @@
-[section init.hpp]
+[section boost/python/init.hpp]
 [section Introduction]
-<boost/python/init.hpp> defines the interface for exposing C++ constructors to Python as extension class __init__ functions.
+<boost/python/init.hpp> defines the interface for exposing C++ constructors to Python as extension class `__init__` functions.
 [section init-expressions]
-An init-expression is used to describe a family of __init__ methods to be generated for an extension class, and the result has the following properties:
+An init-expression is used to describe a family of `__init__` methods to be generated for an extension class, and the result has the following properties:
 [variablelist
-[[docstring][An ntbs whose value will bound to the method's __doc__ attribute]]
-[[keywords][A keyword-expression which will be used to name (a trailing subsequence of) the arguments to the generated __init__ function(s).]]
-[[call_policies][An instance of a model of CallPolicies.]]
+[[docstring][An [link ntbs] whose value will bound to the method's `__doc__` attribute]]
+[[keywords][A [link function_invocation_and_creation.boost_python_args_hpp.introduction.keyword_expressions keyword-expression] which will be used to name (a trailing subsequence of) the arguments to the generated `__init__` function(s).]]
+[[call_policies][An instance of a model of [link concepts.callpolicies CallPolicies].]]
 [[argument_types][An MPL sequence of C++ argument types which will be used to construct the wrapped C++ object. An init expression has one or more valid prefixes which are given by a sequence of prefixes of its argument types.]]
 ]
 [endsect]
@@ -20,12 +20,12 @@ namespace boost { namespace python
   template <T1 = unspecified,...Tn = unspecified>
   struct init
   {
-      init(char const* doc = 0);
-      template <class Keywords> init(Keywords const& kw, char const* doc = 0);
-      template <class Keywords> init(char const* doc, Keywords const& kw);
+    init(char const* doc = 0);
+    template <class Keywords> init(Keywords const& kw, char const* doc = 0);
+    template <class Keywords> init(char const* doc, Keywords const& kw);
 
-      template <class CallPolicies>
-      unspecified operator[](CallPolicies const& policies) const
+    template <class CallPolicies>
+    unspecified operator[](CallPolicies const& policies) const
   };
 }}
 ``
@@ -36,9 +36,9 @@ template <class Keywords> init(Keywords const& kw, char const* doc = 0);
 template <class Keywords> init(char const* doc, Keywords const& kw);
 ``
 [variablelist
-[[Requires][If supplied, doc is an ntbs. If supplied, kw is the result of a ]]
-[[Effects][The result is an init-expression whose docstring is doc and whose keywords are a reference to kw. If the first form is used, the resulting expression's keywords are empty. The expression's call policies are an instance of default_call_policies. If Tn is optional<U1, U2,... Um>, the expression's valid prefixes are given by: ``(T1, T2,...Tn-1), (T1, T2,...Tn-1 , U1), (T1, T2,...Tn-1 , U1, U2), ...(T1, T2,...Tn-1 , U1, U2,...Um)``. 
-Otherwise, the expression has one valid prefix given by the the template arguments the user specified. ]]
+[[Requires][If supplied, doc is an [link ntbs]. If supplied, kw is the result of a ]]
+[[Effects][The result is an init-expression whose docstring is doc and whose keywords are a reference to kw. If the first form is used, the resulting expression's keywords are empty. The expression's call policies are an instance of [link function_invocation_and_creation.models_of_callpolicies.boost_python_default_call_polici default_call_policies]. If Tn is [link high_level_components.boost_python_init_hpp.class_template_optional optional<U1, U2,... Um>], the expression's valid prefixes are given by: ``(T1, T2,...Tn-1), (T1, T2,...Tn-1 , U1), (T1, T2,...Tn-1 , U1, U2), ...(T1, T2,...Tn-1 , U1, U2,...Um)``. 
+Otherwise, the expression has one valid prefix given by the template arguments the user specified. ]]
 ]
 [endsect]
 [section Class template `init` observer functions]
@@ -47,8 +47,8 @@ template <class Policies>
 unspecified operator[](Policies const& policies) const
 ``
 [variablelist
-[[Requires][Policies is a model of CallPolicies.]]
-[[Effects][Returns a new init-expression with all the same properties as the init object except that its call policies are replaced by a reference to policies.]]
+[[Requires][Policies is a model of [link concepts.callpolicies CallPolicies].]]
+[[Effects][Returns a new [link high_level_components.boost_python_init_hpp.introduction.init_expressions init-expression] with all the same properties as the init object except that its call policies are replaced by a reference to policies.]]
 ]
 [endsect]
 [endsect]

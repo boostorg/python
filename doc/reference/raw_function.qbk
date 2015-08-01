@@ -1,6 +1,6 @@
-[section raw_function.hpp]
+[section boost/python/raw_function.hpp]
 [section Introduction]
-raw_function(...) is used to convert a function taking a tuple and a dict into a Python callable object which accepts a variable number of arguments and arbitrary keyword arguments. 
+`raw_function(...)` is used to convert a function taking a [link object_wrappers.boost_python_tuple_hpp.class_tuple `tuple`] and a [link object_wrappers.boost_python_dict_hpp.class_dict `dict`] into a Python callable object which accepts a variable number of arguments and arbitrary keyword arguments. 
 [endsect]
 [section Function `raw_function`]
 ``

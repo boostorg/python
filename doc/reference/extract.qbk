@@ -1,9 +1,9 @@
-[section extract.hpp]
+[section boost/python/extract.hpp]
 [section Introduction]
-Exposes a mechanism for extracting C++ object values from generalized Python objects. Note that `extract<...>` can also be used to "downcast" an object to some specific ObjectWrapper. Because invoking a mutable python type with an argument of the same type (e.g. `list([1,2]`) typically makes a copy of the argument object, this may be the only way to access the ObjectWrapper's interface on the original object.
+Exposes a mechanism for extracting C++ object values from generalized Python objects. Note that `extract<...>` can also be used to "downcast" an [link object_wrappers.boost_python_object_hpp.class_object `object`] to some specific [link concepts.objectwrapper ObjectWrapper]. Because invoking a mutable python type with an argument of the same type (e.g. `list([1,2]`) typically makes a copy of the argument object, this may be the only way to access the [link concepts.objectwrapper ObjectWrapper]\ 's interface on the original object.
 [endsect]
 [section Class template `extract`]
-`extract<T>` can be used to extract a value of an arbitrary C++ type from an instance of object. Two usages are supported:
+`extract<T>` can be used to extract a value of an arbitrary C++ type from an instance of [link object_wrappers.boost_python_object_hpp.class_object object]. Two usages are supported:
 
 # `extract<T>(o)` is a temporary object which is implicitly convertible to `T` (explicit conversion is also available through the object's function-call operator). However, if no conversion is available which can convert o to an object of type `T`, a Python TypeError exception will be raised.
 # `extract<T> x(o);` constructs an extractor whose `check()` member function can be used to ask whether a conversion is available without causing an exception to be thrown. 
@@ -45,7 +45,7 @@ operator result_type() const;
 [variablelist
 [[Effects][Converts the stored pointer to result_type, which is either T or T const&. ]]
 [[Returns][An object of result_type corresponding to the one referenced by the stored pointer.]]
-[[Throws][error_already_set and sets a TypeError if no such conversion is available. May also emit other unspecified exceptions thrown by the converter which is actually used.]]
+[[Throws][[link high_level_components.boost_python_errors_hpp.class_error_already_set `error_already_set`] and sets a `TypeError` if no such conversion is available. May also emit other unspecified exceptions thrown by the converter which is actually used.]]
 ]
 `` bool check() const;``
 [variablelist
@@ -69,7 +69,7 @@ int Print(str s)
    return extract<int>(s.attr("__len__")())
 }
 ``
- The following example shows how extract can be used along with class_<...> to create and access an instance of a wrapped C++ class.
+ The following example shows how extract can be used along with [link high_level_components.boost_python_class_hpp.class_template_class_t_bases_hel `class_<...>`] to create and access an instance of a wrapped C++ class.
 ``
 struct X
 {

@@ -1,9 +1,9 @@
-[section list.hpp]
+[section boost_python_list.hpp]
 [section Introduction]
-Exposes a TypeWrapper for the Python list type.
+Exposes a [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] for the Python [@http://www.python.org/doc/current/lib/typesseq-mutable.html list] type.
 [endsect]
 [section Class `list`]
-Exposes the mapping protocol of Python's built-in list type. The semantics of the constructors and member functions defined below can be fully understood by reading the TypeWrapper concept definition. Since list is publicly derived from object, the public object interface applies to list instances as well.``
+Exposes the [@http://www.python.org/doc/current/lib/typesseq-mutable.html mapping protocol] of Python's built-in `list` type. The semantics of the constructors and member functions defined below can be fully understood by reading the [link concepts.objectwrapper.typewrapper_concept_requirements TypeWrapper] concept definition. Since `list` is publicly derived from [link object_wrappers.boost_python_object_hpp.class_object `object`], the public `object` interface applies to `list` instances as well.``
 namespace boost { namespace python
 {
   class list : public object

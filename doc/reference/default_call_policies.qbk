@@ -1,6 +1,6 @@
-[section default_call_policies.hpp]
+[section boost/python/default_call_policies.hpp]
 [section Class `default_call_policies`]
-default_call_policies is a model of CallPolicies with no precall or postcall behavior and a result_converter which handles by-value returns. Wrapped C++ functions and member functions use default_call_policies unless otherwise specified. You may find it convenient to derive new models of CallPolicies from default_call_policies. 
+`default_call_policies` is a model of [link concepts.callpolicies `CallPolicies`] with no `precall` or `postcall` behavior and a `result_converter` which handles by-value returns. Wrapped C++ functions and member functions `use default_call_policies` unless otherwise specified. You may find it convenient to derive new models of [link concepts.callpolicies `CallPolicies`] from `default_call_policies`. 
 ``
 namespace boost { namespace python
 {
@@ -27,7 +27,7 @@ namespace boost { namespace python
 ]
 [endsect]
 [section Class `default_result_converter`]
-default_result_converter is a model of ResultConverterGenerator which can be used to wrap C++ functions returning non-pointer types, `char const*`, and `PyObject*`, by-value.
+default_result_converter is a model of [link concepts.resultconverter.resultconvertergenerator_concept `ResultConverterGenerator`] which can be used to wrap C++ functions returning non-pointer types, `char const*`, and `PyObject*`, by-value.
 ``
 namespace boost { namespace python
 {

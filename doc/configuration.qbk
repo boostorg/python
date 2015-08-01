@@ -9,12 +9,12 @@
 [section Configuration]
 
 [section Introduction]
-*Boost.Python* uses several configuration macros in `<boost/config.hpp>`, as well as configuration macros meant to be supplied by the application. These macros are documented here.
+[*Boost.Python] uses several configuration macros in `<boost/config.hpp>`, as well as configuration macros meant to be supplied by the application. These macros are documented here.
 
 [endsect]
 [section Application Defined Macros]
 
-These are the macros that may be defined by an application using Boost.Python. Note that if you extend a strict interpretation of the C++ standard to cover dynamic libraries, using different values of these macros when compiling different libraries (including extension modules and the Boost.Python library itself) is a violation of the ODR. However, we know of no C++ implementations on which this particular violation is detectable or causes any problems.
+These are the macros that may be defined by an application using Boost.Python. Note that if you extend a strict interpretation of the C++ standard to cover dynamic libraries, using different values of these macros when compiling different libraries (including extension modules and the Boost.Python library itself) is a violation of the [link odr ODR]. However, we know of no C++ implementations on which this particular violation is detectable or causes any problems.
 
 [table
  [[Macro][Default][Meaning]]
@@ -49,7 +49,7 @@ These are the macros that may be defined by an application using Boost.Python. N
 ]
 [endsect]
 [section Library Defined Defined Macros]
-
+These macros are defined by *Boost.Python* and are implementation details of interest only to implementors and those porting to new platforms.
 [table
  [[Macro][Default][Meaning]]
  [[BOOST_PYTHON_TYPE_ID_NAME][ /not defined/ ]
