@@ -34,8 +34,19 @@ struct instance
     PyObject* weakrefs; 
     instance_holder* objects;
 
-    typedef typename ::boost::aligned_storage<sizeof(Data), detail::alignment_of<Data>::value>::type storage_t;
-    BOOST_ALIGNMENT(::boost::python::detail::alignment_of<Data>::value+0) storage_t storage;
+
+    //compatability union
+    union aligned_storage_t{
+      typedef typename ::boost::aligned_storage< sizeof(Data), detail::alignment_of<Data>::value>::type type;
+      type storage;
+      char bytes[sizeof(type)];
+
+      void * address() const{
+          return storage.address();
+      }
+    };
+
+    BOOST_ALIGNMENT(::boost::python::detail::alignment_of<Data>::value+0) aligned_storage_t storage;
 };
 
 template <class Data>
