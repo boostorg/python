@@ -24,13 +24,24 @@ namespace boost { namespace python { namespace detail {
           std::size_t, value = sizeof(T));
   };
 
+  //compatability union
+  template<class T>
+  union aligned_storage_t{
+    typedef typename ::boost::aligned_storage< ::boost::python::detail::referent_size<T>::value, alignment_of<T>::value>::type type;
+    type storage;
+    char bytes[sizeof(type)];
+
+    void * address() const{
+        return storage.address();
+    }
+  };
 
 // A metafunction returning a POD type which can store U, where T ==
 // U&. If T is not a reference type, returns a POD which can store T.
 template <class T>
 struct referent_storage
 {
-    typedef typename ::boost::aligned_storage< ::boost::python::detail::referent_size<T>::value, alignment_of<T>::value>::type type;
+    typedef aligned_storage_t<T> type;
     type storage;
 };
 
