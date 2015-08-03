@@ -5,6 +5,7 @@
 
 #include <boost/python/detail/prefix.hpp>
 #include <boost/mpl/lambda.hpp> // #including this first is an intel6 workaround
+#include <boost/cstdint.hpp>
 
 #include <boost/python/object/class.hpp>
 #include <boost/python/object/instance.hpp>
@@ -745,7 +746,7 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
         void* aligned_storage = ::boost::alignment::align(alignment, holder_size, storage, allocated);
 
         // Record the fact that the storage is occupied, noting where it starts
-        const size_t offset = reinterpret_cast<size_t>(aligned_storage) - reinterpret_cast<size_t>(storage) + holder_offset;
+        const size_t offset = reinterpret_cast<uintptr_t>(aligned_storage) - reinterpret_cast<uintptr_t>(storage) + holder_offset;
         Py_SIZE(self) = offset;
         return (char*)self + offset;
     }
@@ -756,11 +757,11 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
         if (base_storage == 0)
             throw std::bad_alloc();
 
-        const size_t x = reinterpret_cast<size_t>(base_storage) + sizeof(alignment_marker_t);
+        const uintptr_t x = reinterpret_cast<uintptr_t>(base_storage) + sizeof(alignment_marker_t);
         //this has problems for x -> max(void *)
         //const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) % alignment);
         //only works for alignments with alignments of powers of 2, but no edge conditions
-        const size_t padding = alignment == 1 ? 0 : ( alignment - (x & (alignment - 1)) );
+        const uintptr_t padding = alignment == 1 ? 0 : ( alignment - (x & (alignment - 1)) );
         const size_t aligned_offset = sizeof(alignment_marker_t) + padding;
         void* const aligned_storage = (char *)base_storage + aligned_offset;
         BOOST_ASSERT((char *) aligned_storage + holder_size <= (char *)base_storage + base_allocation);
