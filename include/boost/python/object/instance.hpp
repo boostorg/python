@@ -7,11 +7,20 @@
 
 # include <boost/python/detail/prefix.hpp>
 # include <boost/type_traits/alignment_traits.hpp>
+# include <boost/align.hpp>
+# include <boost/python/detail/alignment_of.hpp>
+# include <boost/type_traits/aligned_storage.hpp>
 # include <cstddef>
 
 namespace boost { namespace python
 {
   struct BOOST_PYTHON_DECL_FORWARD instance_holder;
+
+    //allow users to override the alignment through partial template specialization/SFINAE
+    template<typename T, class Enable = void>
+    struct alignment_of : public ::boost::alignment::alignment_of<T>{
+    };
+
 }} // namespace boost::python
 
 namespace boost { namespace python { namespace objects { 
@@ -25,15 +34,19 @@ struct instance
     PyObject* weakrefs; 
     instance_holder* objects;
 
-    typedef typename type_with_alignment<
-        ::boost::alignment_of<Data>::value
-    >::type align_t;
-          
-    union
-    {
-        align_t align;
-        char bytes[sizeof(Data)];
-    } storage;
+
+    //compatability union
+    union aligned_storage_t{
+      typedef typename ::boost::aligned_storage< sizeof(Data), detail::alignment_of<Data>::value>::type type;
+      type storage;
+      char bytes[sizeof(type)];
+
+      void * address() const{
+          return storage.address();
+      }
+    };
+
+    BOOST_ALIGNMENT(::boost::python::detail::alignment_of<Data>::value+0) aligned_storage_t storage;
 };
 
 template <class Data>
@@ -43,7 +56,7 @@ struct additional_instance_size
     typedef instance<char> instance_char;
     BOOST_STATIC_CONSTANT(
         std::size_t, value = sizeof(instance_data)
-                           - BOOST_PYTHON_OFFSETOF(instance_char,storage));
+                           - BOOST_PYTHON_OFFSETOF(instance_char,storage) + detail::alignment_of<Data>::value);
 };
 
 }}} // namespace boost::python::object

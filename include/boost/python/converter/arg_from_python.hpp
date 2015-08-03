@@ -242,7 +242,7 @@ inline pointer_cref_arg_from_python<T>::pointer_cref_arg_from_python(PyObject* p
     // indicates success.  If find returns nonzero, it's a pointer to
     // a U object.
     python::detail::write_void_ptr_reference(
-        m_result.bytes
+        m_result.address()
         , p == Py_None ? p : converter::get_lvalue_from_python(p, registered_pointee<T>::converters)
         , (T(*)())0);
 }
@@ -250,15 +250,15 @@ inline pointer_cref_arg_from_python<T>::pointer_cref_arg_from_python(PyObject* p
 template <class T>
 inline bool pointer_cref_arg_from_python<T>::convertible() const
 {
-    return python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0) != 0;
+    return python::detail::void_ptr_to_reference(m_result.address(), (T(*)())0) != 0;
 }
 template <class T>
 inline T pointer_cref_arg_from_python<T>::operator()() const
 {
-    return (*(void**)m_result.bytes == Py_None)  // None ==> 0
+    return (*(void**)m_result.address() == Py_None)  // None ==> 0
         ? detail::null_ptr_reference((T(*)())0)
         // Otherwise, return a U*const& to the m_result storage.
-        : python::detail::void_ptr_to_reference(m_result.bytes, (T(*)())0);
+        : python::detail::void_ptr_to_reference(m_result.address(), (T(*)())0);
 }
 
 // pointer_arg_from_python

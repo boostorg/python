@@ -59,7 +59,7 @@ struct value_holder : instance_holder
         return 0;
     }
  private: // data members
-    Value m_held;
+    BOOST_ALIGNMENT(::boost::python::detail::alignment_of<Value>::value + 0) Value m_held;
 };
 
 template <class Value, class Held>

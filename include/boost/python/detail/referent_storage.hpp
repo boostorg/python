@@ -6,37 +6,11 @@
 # define REFERENT_STORAGE_DWA200278_HPP
 # include <boost/mpl/if.hpp>
 # include <cstddef>
+# include <boost/align/align.hpp>
+# include <boost/python/detail/alignment_of.hpp>
+# include <boost/type_traits/aligned_storage.hpp>
 
 namespace boost { namespace python { namespace detail {
-
-struct alignment_dummy;
-typedef void (*function_ptr)();
-typedef int (alignment_dummy::*member_ptr);
-typedef int (alignment_dummy::*member_function_ptr)();
-
-# define BOOST_PYTHON_ALIGNER(T, n)                     \
-        typename mpl::if_c<                             \
-           sizeof(T) <= size, T, char>::type t##n
-
-// Storage for size bytes, aligned to all fundamental types no larger than size
-template <std::size_t size>
-union aligned_storage
-{
-    BOOST_PYTHON_ALIGNER(char, 0);
-    BOOST_PYTHON_ALIGNER(short, 1);
-    BOOST_PYTHON_ALIGNER(int, 2);
-    BOOST_PYTHON_ALIGNER(long, 3);
-    BOOST_PYTHON_ALIGNER(float, 4);
-    BOOST_PYTHON_ALIGNER(double, 5);
-    BOOST_PYTHON_ALIGNER(long double, 6);
-    BOOST_PYTHON_ALIGNER(void*, 7);
-    BOOST_PYTHON_ALIGNER(function_ptr, 8);
-    BOOST_PYTHON_ALIGNER(member_ptr, 9);
-    BOOST_PYTHON_ALIGNER(member_function_ptr, 10);
-    char bytes[size];
-};
-
-# undef BOOST_PYTHON_ALIGNER
 
   // Compute the size of T's referent. We wouldn't need this at all,
   // but sizeof() is broken in CodeWarriors <= 8.0
@@ -50,15 +24,25 @@ union aligned_storage
           std::size_t, value = sizeof(T));
   };
 
+  //compatability union
+  template<class T>
+  union aligned_storage_t{
+    typedef typename ::boost::aligned_storage< ::boost::python::detail::referent_size<T>::value, alignment_of<T>::value>::type type;
+    type storage;
+    char bytes[sizeof(type)];
+
+    void * address() const{
+        return storage.address();
+    }
+  };
 
 // A metafunction returning a POD type which can store U, where T ==
 // U&. If T is not a reference type, returns a POD which can store T.
 template <class T>
 struct referent_storage
 {
-    typedef aligned_storage<
-        ::boost::python::detail::referent_size<T>::value
-    > type;
+    typedef aligned_storage_t<T> type;
+    type storage;
 };
 
 }}} // namespace boost::python::detail

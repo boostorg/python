@@ -59,7 +59,7 @@ struct BFromPython
       boost::python::converter::rvalue_from_python_stage1_data* data)
   {
     void* storage = (
-        (boost::python::converter::rvalue_from_python_storage< B >*)data)-> storage.bytes;
+        (boost::python::converter::rvalue_from_python_storage< B >*)data)-> storage.address();
 
     extract<const A&> ex(obj_ptr);
     new (storage) B(ex());
