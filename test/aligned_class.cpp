@@ -6,6 +6,7 @@
 #include <boost/python/object.hpp>
 #include <boost/python/class.hpp>
 #include <boost/assert.hpp>
+#include <boost/cstdint.hpp>
 
 using namespace boost::python;
 
@@ -14,7 +15,7 @@ struct BOOST_ALIGNMENT(32) X
     int x;
     BOOST_ALIGNMENT(32) float f;
     X(int n, float _f) : x(n), f(_f){
-        BOOST_ASSERT((reinterpret_cast<size_t>(&f) % 32) == 0);
+        BOOST_ASSERT((reinterpret_cast<uintptr_t>(&f) % 32) == 0);
     }
 };
 
