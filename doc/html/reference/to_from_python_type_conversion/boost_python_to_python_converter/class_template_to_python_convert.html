@@ -1,0 +1,173 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template to_python_converter</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../boost_python_to_python_converter.html" title="boost/python/to_python_converter.hpp">
+<link rel="prev" href="../boost_python_to_python_converter.html" title="boost/python/to_python_converter.hpp">
+<link rel="next" href="example.html" title="Example">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../boost_python_to_python_converter.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_python_to_python_converter.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="to_from_python_type_conversion.boost_python_to_python_converter.class_template_to_python_convert"></a><a class="link" href="class_template_to_python_convert.html" title="Class template to_python_converter">Class
+        template <code class="computeroutput"><span class="identifier">to_python_converter</span></code></a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc"><dt><span class="section"><a href="class_template_to_python_convert.html#to_from_python_type_conversion.boost_python_to_python_converter.class_template_to_python_convert.class_template_to_python_convert">Class
+          template <code class="computeroutput"><span class="identifier">to_python_converter</span></code>
+          constructor</a></span></dt></dl></div>
+<p>
+          <code class="computeroutput"><span class="identifier">to_python_converter</span></code> adds
+          a wrapper around a static member function of its second template parameter,
+          handling low-level details such as insertion into the converter registry.
+        </p>
+<p>
+          In the table below, x denotes an object of type T
+        </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                  <p>
+                    Parameter
+                  </p>
+                </th>
+<th>
+                  <p>
+                    Requirements
+                  </p>
+                </th>
+<th>
+                  <p>
+                    Description
+                  </p>
+                </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                  <p>
+                    T
+                  </p>
+                </td>
+<td>
+                </td>
+<td>
+                  <p>
+                    The C++ type of the source object in the conversion
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    Conversion
+                  </p>
+                </td>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">PyObject</span><span class="special">*</span>
+                    <span class="identifier">p</span> <span class="special">=</span>
+                    <span class="identifier">Conversion</span><span class="special">::</span><span class="identifier">convert</span><span class="special">(</span><span class="identifier">x</span><span class="special">)</span></code>,
+                    <code class="computeroutput"><span class="keyword">if</span> <span class="identifier">p</span>
+                    <span class="special">==</span> <span class="number">0</span></code>,
+                    <code class="computeroutput"><span class="identifier">PyErr_Occurred</span><span class="special">()</span> <span class="special">!=</span>
+                    <span class="number">0</span></code>.
+                  </p>
+                </td>
+<td>
+                  <p>
+                    A class type whose static member function convert does the real
+                    work of the conversion.
+                  </p>
+                </td>
+</tr>
+<tr>
+<td>
+                  <p>
+                    bool has_get_pytype=false
+                  </p>
+                </td>
+<td>
+                  <p>
+                    <code class="computeroutput"><span class="identifier">PyTypeObject</span> <span class="keyword">const</span> <span class="special">*</span>
+                    <span class="identifier">p</span> <span class="special">=</span>
+                    <span class="identifier">Conversion</span><span class="special">::</span><span class="identifier">get_pytype</span><span class="special">()</span></code>
+                  </p>
+                </td>
+<td>
+                  <p>
+                    Optional member - if Conversion has <code class="computeroutput"><span class="identifier">get_pytype</span></code>
+                    member supply <code class="computeroutput"><span class="keyword">true</span></code>
+                    for this parameters. If present <code class="computeroutput"><span class="identifier">get_pytype</span></code>
+                    is used to document the return type of functions using this conversion.
+                    The <code class="computeroutput"><span class="identifier">get_pytype</span></code>
+                    may be implemented using the classes and functions from pytype_function.hpp
+                    NOTE : For backward compatibility this parameter may be passed
+                    after checking if BOOST_PYTHON_SUPPORTS_PY_SIGNATURES is defined
+                    (see <a class="link" href="../../function_invocation_and_creation/function_documentation/boost_python_pytype_function_hpp.html#function_invocation_and_creation.function_documentation.boost_python_pytype_function_hpp.example" title="Example">here</a>).
+                  </p>
+                </td>
+</tr>
+</tbody>
+</table></div>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">python</span>
+<span class="special">{</span>
+  <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">Conversion</span><span class="special">,</span> <span class="keyword">bool</span> <span class="identifier">convertion_has_get_pytype_member</span><span class="special">=</span><span class="keyword">false</span><span class="special">&gt;</span>
+  <span class="keyword">struct</span> <span class="identifier">to_python_converter</span>
+  <span class="special">{</span>
+      <span class="identifier">to_python_converter</span><span class="special">();</span>
+  <span class="special">};</span>
+<span class="special">}}</span>
+</pre>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="to_from_python_type_conversion.boost_python_to_python_converter.class_template_to_python_convert.class_template_to_python_convert"></a><a class="link" href="class_template_to_python_convert.html#to_from_python_type_conversion.boost_python_to_python_converter.class_template_to_python_convert.class_template_to_python_convert" title="Class template to_python_converter constructor">Class
+          template <code class="computeroutput"><span class="identifier">to_python_converter</span></code>
+          constructor</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="identifier">to_python_converter</span><span class="special">();</span></pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                  Registers a <code class="computeroutput"><span class="identifier">to_python</span></code>
+                  converter which uses <code class="computeroutput"><span class="identifier">Conversion</span><span class="special">::</span><span class="identifier">convert</span><span class="special">()</span></code> to do its work.
+                </p></dd>
+</dl>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../boost_python_to_python_converter.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_python_to_python_converter.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

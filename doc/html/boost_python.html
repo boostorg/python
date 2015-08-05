@@ -1,0 +1,823 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Chapter&#160;1.&#160;Boost.Python</title>
+<link rel="stylesheet" href="boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="Boost.Python">
+<link rel="up" href="index.html" title="Boost.Python">
+<link rel="prev" href="index.html" title="Boost.Python">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="images/boost.png"></td>
+<td align="center"><a href="../../index.html">Home</a></td>
+<td align="center"><a href="../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="index.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="index.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a>
+</div>
+<div class="chapter">
+<div class="titlepage"><div>
+<div><h1 class="title">
+<a name="boost_python"></a>Chapter&#160;1.&#160;Boost.Python</h1></div>
+<div><div class="authorgroup"><div class="author"><h3 class="author">
+<span class="firstname">David</span> <span class="surname">Abrahams</span>
+</h3></div></div></div>
+<div><p class="copyright">Copyright &#169; 2002-2015 David Abrahams, Stefan Seefeld</p></div>
+</div></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="boost_python.building_and_testing"></a><a class="link" href="boost_python.html#boost_python.building_and_testing" title="Building and Testing">Building and Testing</a>
+</h3></div></div></div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_python.building_and_testing.requirements"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.requirements" title="Requirements">Requirements</a>
+</h4></div></div></div>
+<p>
+          Boost.Python requires <a href="http://www.python.org/2.2" target="_top">Python 2.2</a>
+          <a href="#ftn.boost_python.building_and_testing.requirements.f0" class="footnote" name="boost_python.building_and_testing.requirements.f0"><sup class="footnote">[1]</sup></a> <span class="bold"><strong>or</strong></span> <a href="http://www.python.org" target="_top">newer</a>.
+        </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_python.building_and_testing.background"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.background" title="Background">Background</a>
+</h4></div></div></div>
+<p>
+          There are two basic models for combining C++ and Python:
+        </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+              <a href="http://www.python.org/doc/current/ext/intro.html" target="_top">extending</a>,
+              in which the end-user launches the Python interpreter executable and
+              imports Python &#8220;extension modules&#8221; written in C++. Think of taking
+              a library written in C++ and giving it a Python interface so Python
+              programmers can use it. From Python, these modules look just like regular
+              Python modules.
+            </li>
+<li class="listitem">
+              <a href="http://www.python.org/doc/current/ext/embedding.html" target="_top">embedding</a>,
+              in which the end-user launches a program written in C++ that in turn
+              invokes the Python interpreter as a library subroutine. Think of adding
+              scriptability to an existing application.
+            </li>
+</ul></div>
+<p>
+          The key distinction between extending and embedding is the location of
+          the C++ <code class="computeroutput"><span class="identifier">main</span><span class="special">()</span></code>
+          function: in the Python interpreter executable, or in some other program,
+          respectively. Note that even when embedding Python in another program,
+          <a href="http://www.python.org/doc/current/ext/extending-with-embedding.html" target="_top">extension
+          modules are often the best way to make C/C++ functionality accessible to
+          Python code</a>, so the use of extension modules is really at the heart
+          of both models.
+        </p>
+<p>
+          Except in rare cases, extension modules are built as dynamically-loaded
+          libraries with a single entry point, which means you can change them without
+          rebuilding either the other extension modules or the executable containing
+          <code class="computeroutput"><span class="identifier">main</span><span class="special">()</span></code>.
+        </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart" title="No-Install Quickstart">No-Install
+        Quickstart</a>
+</h4></div></div></div>
+<p>
+          There is no need to &#8220;install Boost&#8221; in order to get started using Boost.Python.
+          These instructions use <a href="http://boost.org/build" target="_top">http://boost.org/build</a>
+          projects, which will build those binaries as soon as they're needed. Your
+          first tests may take a little longer while you wait for Boost.Python to
+          build, but doing things this way will save you from worrying about build
+          intricacies like which library binaries to use for a specific compiler
+          configuration and figuring out the right compiler options to use yourself.
+        </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top">
+<p>
+            Of course it's possible to use other build systems to build Boost.Python
+            and its extensions, but they are not officially supported by Boost. Moreover
+            <span class="bold"><strong>99% of all &#8220;I can't build Boost.Python&#8221; problems
+            come from trying to use another build system</strong></span> without first
+            following these instructions.
+          </p>
+<p>
+            If you want to use another system anyway, we suggest that you follow
+            these instructions, and then invoke
+          </p>
+<pre class="programlisting"><span class="identifier">bjam</span></pre>
+<p>
+            with the
+          </p>
+<p>
+            <code class="computeroutput"><span class="special">-</span><span class="identifier">a</span>
+            <span class="special">-</span><span class="identifier">o</span></code><span class="bold"><strong>filename</strong></span>
+          </p>
+<p>
+            options to dump the build commands it executes to a file, so you can
+            see what your alternate build system needs to do.
+          </p>
+</td></tr>
+</table></div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.basic_procedure"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.basic_procedure" title="Basic Procedure">Basic
+          Procedure</a>
+</h5></div></div></div>
+<p>
+            1. Get Boost; see sections 1 and 2 of the Boost <a href="http://www.boost.org/more/getting_started/" target="_top">Getting
+            Started Guide</a>.
+          </p>
+<p>
+            2. Get the <code class="computeroutput"><span class="identifier">bjam</span></code> build
+            driver. See section 5 of the Boost <a href="http://www.boost.org/more/getting_started/" target="_top">Getting
+            Started Guide</a>.
+          </p>
+<p>
+            3. cd into the <code class="computeroutput"><span class="identifier">example</span><span class="special">/</span><span class="identifier">quickstart</span><span class="special">/</span></code> directory of your Boost.Python installation,
+            which contains a small example project.
+          </p>
+<p>
+            4. Invoke <code class="computeroutput"><span class="identifier">bjam</span></code>. Replace
+            the &#8220;<code class="computeroutput"><span class="identifier">stage</span></code>&#8220; argument
+            from the example invocation from section 5 of the Boost <a href="http://www.boost.org/more/getting_started/" target="_top">Getting
+            Started Guide</a> with &#8220;<code class="computeroutput"><span class="identifier">test</span></code>,&#8220;
+            to build all the test targets. Also add the argument &#8220;<code class="computeroutput"><span class="special">--</span><span class="identifier">verbose</span><span class="special">-</span><span class="identifier">test</span></code>&#8221;
+            to see the output generated by the tests when they are run. On Windows,
+            your <code class="computeroutput"><span class="identifier">bjam</span></code> invocation
+            might look something like:
+          </p>
+<pre class="programlisting"><span class="identifier">C</span><span class="special">:\\</span><span class="identifier">boost_1_34_0</span><span class="special">\\...\\</span><span class="identifier">quickstart</span><span class="special">&gt;</span> <span class="identifier">bjam</span> <span class="identifier">toolset</span><span class="special">=</span><span class="identifier">msvc</span> <span class="special">--</span><span class="identifier">verbose</span><span class="special">-</span><span class="identifier">test</span> <span class="identifier">test</span>
+</pre>
+<p>
+            and on Unix variants, perhaps,
+          </p>
+<pre class="programlisting"><span class="special">~/</span><span class="identifier">boost_1_34_0</span><span class="special">/.../</span><span class="identifier">quickstart</span><span class="error">$</span> <span class="identifier">bjam</span> <span class="identifier">toolset</span><span class="special">=</span><span class="identifier">gcc</span> <span class="special">--</span><span class="identifier">verbose</span><span class="special">-</span><span class="identifier">test</span> <span class="identifier">test</span>
+</pre>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              For the sake of concision, the rest of this guide will use unix-style
+              forward slashes in pathnames instead of the backslashes with which
+              Windows users may be more familiar. The forward slashes should work
+              everywhere except in <a href="http://www.boost.org/more/getting_started/windows.html#command-prompt" target="_top">Command
+              Prompt windows</a>, where you should use backslashes.
+            </p></td></tr>
+</table></div>
+<p>
+            If you followed this procedure successfully, you will have built an extension
+            module called <code class="computeroutput"><span class="identifier">extending</span></code>
+            and tested it by running a Python script called <code class="computeroutput"><span class="identifier">test_extending</span><span class="special">.</span><span class="identifier">py</span></code>.
+            You will also have built and run a simple application called <code class="computeroutput"><span class="identifier">embedding</span></code> that embeds python.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.in_case_of_trouble"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.in_case_of_trouble" title="In Case of Trouble">In
+          Case of Trouble</a>
+</h5></div></div></div>
+<p>
+            If you're seeing lots of compiler and/or linker error messages, it's
+            probably because Boost.Build is having trouble finding your Python installation.
+            You might want to pass the <code class="computeroutput"><span class="special">--</span><span class="identifier">debug</span><span class="special">-</span><span class="identifier">configuration</span></code> option to <code class="computeroutput"><span class="identifier">bjam</span></code> the first few times you invoke
+            it, to make sure that Boost.Build is correctly locating all the parts
+            of your Python installation. If it isn't, consider <a class="link" href="">Configuring
+            Boost.Build</a> as detailed below.
+          </p>
+<p>
+            If you're still having trouble, Someone on one of the following mailing
+            lists may be able to help:
+          </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                The <a href="http://www.boost.org/more/mailing_lists.htm#jamboost" target="_top">Boost.Build
+                mailing list</a> for issues related to Boost.Build
+              </li>
+<li class="listitem">
+                The <a href="http://www.boost.org/more/mailing_lists.htm#cplussig" target="_top">Boost.Python
+                mailing list</a> for issues specifically related to Boost.Python
+              </li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.in_case_everything_seemed_to_wor"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.in_case_everything_seemed_to_wor" title="In Case Everything Seemed to Work">In
+          Case Everything Seemed to Work</a>
+</h5></div></div></div>
+<p>
+            Rejoice! If you're new to Boost.Python, at this point it might be a good
+            idea to ignore build issues for a while and concentrate on learning the
+            library by going through the <a href="tutorial/index.html" target="_top">Tutorial</a>
+            and perhaps some of the <a href="reference/index.html" target="_top">Reference Manual</a>,
+            trying out what you've learned about the API by modifying the quickstart
+            project.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project" title="Modifying the Example Project">Modifying
+          the Example Project</a>
+</h5></div></div></div>
+<p>
+            If you're content to keep your extension module forever in one source
+            file called <code class="computeroutput"><span class="identifier">extending</span><span class="special">.</span><span class="identifier">cpp</span></code>,
+            inside your Boost.Python distribution, and import it forever as <code class="computeroutput"><span class="identifier">extending</span></code>, then you can stop here.
+            However, it's likely that you will want to make a few changes. There
+            are a few things you can do without having to learn <a href="http://www.boost.org/build" target="_top">Boost.Build</a>
+            in depth.
+          </p>
+<p>
+            The project you just built is specified in two files in the current directory:
+            <code class="computeroutput"><span class="identifier">boost</span><span class="special">-</span><span class="identifier">build</span><span class="special">.</span><span class="identifier">jam</span></code>, which tells <code class="computeroutput"><span class="identifier">bjam</span></code>
+            where it can find the interpreted code of the Boost build system, and
+            <code class="computeroutput"><span class="identifier">Jamroot</span></code>, which describes
+            the targets you just built. These files are heavily commented, so they
+            should be easy to modify. Take care, however, to preserve whitespace.
+            Punctuation such as <code class="computeroutput"><span class="special">;</span></code> will
+            not be recognized as intended by <code class="computeroutput"><span class="identifier">bjam</span></code>
+            if it is not surrounded by whitespace.
+          </p>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.relocate_the_project"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.relocate_the_project" title="Relocate the Project">Relocate
+            the Project</a>
+</h6></div></div></div>
+<p>
+              You'll probably want to copy this project elsewhere so you can change
+              it without modifying your Boost distribution. To do that, simply
+            </p>
+<p>
+              a. copy the entire <code class="computeroutput"><span class="identifier">example</span><span class="special">/</span><span class="identifier">quickstart</span><span class="special">/</span></code> directory into a new directory.
+            </p>
+<p>
+              b. In the new copies of <code class="computeroutput"><span class="identifier">boost</span><span class="special">-</span><span class="identifier">build</span><span class="special">.</span><span class="identifier">jam</span></code>
+              and <code class="computeroutput"><span class="identifier">Jamroot</span></code>, locate
+              the relative path near the top of the file that is clearly marked by
+              a comment, and edit that path so that it refers to the same directory
+              your Boost distribution as it referred to when the file was in its
+              original location in the <code class="computeroutput"><span class="identifier">example</span><span class="special">/</span><span class="identifier">quickstart</span><span class="special">/</span></code> directory.
+            </p>
+<p>
+              For example, if you moved the project from <code class="computeroutput"><span class="special">/</span><span class="identifier">home</span><span class="special">/</span><span class="identifier">dave</span><span class="special">/</span><span class="identifier">boost_1_34_0</span><span class="special">/</span><span class="identifier">libs</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">example</span><span class="special">/</span><span class="identifier">quickstart</span></code> to <code class="computeroutput"><span class="special">/</span><span class="identifier">home</span><span class="special">/</span><span class="identifier">dave</span><span class="special">/</span><span class="identifier">my</span><span class="special">-</span><span class="identifier">project</span></code>, you could change the first
+              path in <code class="computeroutput"><span class="identifier">boost</span><span class="special">-</span><span class="identifier">build</span><span class="special">.</span><span class="identifier">jam</span></code> from
+            </p>
+<pre class="programlisting"><span class="special">../../../../</span><span class="identifier">tools</span><span class="special">/</span><span class="identifier">build</span><span class="special">/</span><span class="identifier">v2</span>
+</pre>
+<p>
+              to
+            </p>
+<pre class="programlisting"><span class="special">/</span><span class="identifier">home</span><span class="special">/</span><span class="identifier">dave</span><span class="special">/</span><span class="identifier">boost_1_34_0</span><span class="special">/</span><span class="identifier">tools</span><span class="special">/</span><span class="identifier">build</span><span class="special">/</span><span class="identifier">v2</span>
+</pre>
+<p>
+              and change the first path in <code class="computeroutput"><span class="identifier">Jamroot</span></code>
+              from
+            </p>
+<pre class="programlisting"><span class="special">../../../..</span>
+</pre>
+<p>
+              to
+            </p>
+<pre class="programlisting"><span class="special">/</span><span class="identifier">home</span><span class="special">/</span><span class="identifier">dave</span><span class="special">/</span><span class="identifier">boost_1_34_0</span>
+</pre>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.add_new_or_change_names_of_exist"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.add_new_or_change_names_of_exist" title="Add New or Change Names of Existing Source Files">Add
+            New or Change Names of Existing Source Files</a>
+</h6></div></div></div>
+<p>
+              The names of additional source files involved in building your extension
+              module or embedding application can be listed in <code class="computeroutput"><span class="identifier">Jamroot</span></code>
+              right alongside <code class="computeroutput"><span class="identifier">extending</span><span class="special">.</span><span class="identifier">cpp</span></code>
+              or <code class="computeroutput"><span class="identifier">embedding</span><span class="special">.</span><span class="identifier">cpp</span></code> respectively. Just be sure to
+              leave whitespace around each filename:
+            </p>
+<pre class="programlisting"><span class="error">&#8230;</span> <span class="identifier">file1</span><span class="special">.</span><span class="identifier">cpp</span> <span class="identifier">file2</span><span class="special">.</span><span class="identifier">cpp</span> <span class="identifier">file3</span><span class="special">.</span><span class="identifier">cpp</span> <span class="error">&#8230;</span>
+</pre>
+<p>
+              Naturally, if you want to change the name of a source file you can
+              tell Boost.Build about it by editing the name in <code class="computeroutput"><span class="identifier">Jamroot</span></code>.
+            </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.change_the_name_of_your_extensio"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.modifying_the_example_project.change_the_name_of_your_extensio" title="Change the Name of your Extension Module">Change
+            the Name of your Extension Module</a>
+</h6></div></div></div>
+<p>
+              The name of the extension module is determined by two things:
+            </p>
+<p>
+              1. the name in <code class="computeroutput"><span class="identifier">Jamroot</span></code>
+              immediately following <code class="computeroutput"><span class="identifier">python</span><span class="special">-</span><span class="identifier">extension</span></code>,
+              and 2. the name passed to
+            </p>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_MODULE</span></pre>
+<p>
+              in <code class="computeroutput"><span class="identifier">extending</span><span class="special">.</span><span class="identifier">cpp</span></code>.
+            </p>
+<p>
+              To change the name of the extension module from <code class="computeroutput"><span class="identifier">extending</span></code>
+              to <code class="computeroutput"><span class="identifier">hello</span></code>, you'd edit
+              <code class="computeroutput"><span class="identifier">Jamroot</span></code>, changing
+            </p>
+<pre class="programlisting"><span class="identifier">python</span><span class="special">-</span><span class="identifier">extension</span> <span class="identifier">extending</span> <span class="special">:</span> <span class="identifier">extending</span><span class="special">.</span><span class="identifier">cpp</span> <span class="special">;</span>
+</pre>
+<p>
+              to
+            </p>
+<pre class="programlisting"><span class="identifier">python</span><span class="special">-</span><span class="identifier">extension</span> <span class="identifier">hello</span> <span class="special">:</span> <span class="identifier">extending</span><span class="special">.</span><span class="identifier">cpp</span> <span class="special">;</span>
+</pre>
+<p>
+              and you'd edit extending.cpp, changing
+            </p>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">extending</span><span class="special">)</span>
+</pre>
+<p>
+              to
+            </p>
+<pre class="programlisting"><span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">hello</span><span class="special">)</span>
+</pre>
+</div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.installing_boost_python_on_your_"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.installing_boost_python_on_your_" title="Installing Boost.Python on your System">Installing
+          Boost.Python on your System</a>
+</h5></div></div></div>
+<p>
+            Since Boost.Python is a separately-compiled (as opposed to <code class="computeroutput"><span class="identifier">header</span><span class="special">-</span><span class="identifier">only</span></code>) library, its user relies on the
+            services of a Boost.Python library binary.
+          </p>
+<p>
+            If you need a regular installation of the Boost.Python library binaries
+            on your system, the Boost <a href="http://www.boost.org/more/getting_started/" target="_top">Getting
+            Started Guide</a> will walk you through the steps of creating one.
+            If building binaries from source, you might want to supply the <code class="computeroutput"><span class="special">--</span><span class="identifier">with</span><span class="special">-</span><span class="identifier">python</span></code>
+            argument to <code class="computeroutput"><span class="identifier">bjam</span></code> (or
+            the <code class="computeroutput"><span class="special">--</span><span class="identifier">with</span><span class="special">-</span><span class="identifier">libraries</span><span class="special">=</span><span class="identifier">python</span></code>
+            argument to <code class="computeroutput"><span class="identifier">configure</span></code>),
+            so only the Boost.Python binary will be built, rather than all the Boost
+            binaries.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.configuring_boost_build"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.configuring_boost_build" title="Configuring Boost.Build">Configuring
+          Boost.Build</a>
+</h5></div></div></div>
+<p>
+            As described in the <a href="reference/index.html" target="_top">Reference Manual</a>,
+            a file called <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code> in your home directory is used
+            to specify the tools and libraries available to the build system. You
+            may need to create or edit <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code>
+            to tell Boost.Build how to invoke Python, <code class="computeroutput"><span class="preprocessor">#include</span></code>
+            its headers, and link with its libraries.
+          </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+              If you are using a unix-variant OS and you ran Boost's <code class="computeroutput"><span class="identifier">configure</span></code> script, it may have generated
+              a <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code> for you. <a href="#ftn.boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.f0" class="footnote" name="boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.f0"><sup class="footnote">[2]</sup></a> If your <code class="computeroutput"><span class="identifier">configure</span></code>/<code class="computeroutput"><span class="identifier">make</span></code> sequence was successful and
+              Boost.Python binaries were built, your <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code>
+              file is probably already correct.
+            </p></td></tr>
+</table></div>
+<p>
+            If you have one fairly &#8220;standard&#8221; python installation for your platform,
+            you might not need to do anything special to describe it. If you haven't
+            configured python in <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code>
+            (and you don't specify <code class="computeroutput"><span class="special">--</span><span class="identifier">without</span><span class="special">-</span><span class="identifier">python</span></code> on the Boost.Build command line),
+            Boost.Build will automatically execute the equivalent of
+          </p>
+<pre class="programlisting"><span class="identifier">import</span> <span class="identifier">toolset</span> <span class="special">:</span> <span class="keyword">using</span> <span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">;</span>
+</pre>
+<p>
+            which automatically looks for Python in the most likely places. However,
+            that only happens when using the Boost.Python project file (e.g. when
+            referred to by another project as in the quickstart method). If instead
+            you are linking against separately-compiled Boost.Python binaries, you
+            should set up a <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code>
+            file with at least the minimal incantation above.
+          </p>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.python_configuration_parameters"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.python_configuration_parameters" title="Python Configuration Parameters">Python
+            Configuration Parameters</a>
+</h6></div></div></div>
+<p>
+              If you have several versions of Python installed, or Python is installed
+              in an unusual way, you may want to supply any or all of the following
+              optional parameters to <code class="computeroutput"><span class="keyword">using</span>
+              <span class="identifier">python</span></code>.
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>version</strong></span>
+                </p>
+<p class="simpara">
+                  the version of Python to use. Should be in Major.Minor format,
+                  for example, <code class="computeroutput"><span class="number">2.3</span></code>. Do
+                  not include the subminor version (i.e. <span class="bold"><strong>not</strong></span>
+                  <code class="computeroutput"><span class="number">2.5</span><span class="special">.</span><span class="number">1</span></code>). If you have multiple Python versions
+                  installed, the version will usually be the only configuration argument
+                  required.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>cmd-or-prefix</strong></span>
+                </p>
+<p class="simpara">
+                  preferably, a command that invokes a Python interpreter. Alternatively,
+                  the installation prefix for Python libraries and header files.
+                  Only use the alternative formulation if there is no appropriate
+                  Python executable available.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>includes</strong></span>
+                </p>
+<p class="simpara">
+                  the <code class="computeroutput"><span class="preprocessor">#include</span></code>
+                  paths for Python headers. Normally the correct path(s) will be
+                  automatically deduced from <code class="computeroutput"><span class="identifier">version</span></code>
+                  and/or <code class="computeroutput"><span class="identifier">cmd</span><span class="special">-</span><span class="keyword">or</span><span class="special">-</span><span class="identifier">prefix</span></code>.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>libraries</strong></span>
+                </p>
+<p class="simpara">
+                  the path to Python library binaries. On MacOS/Darwin, you can also
+                  pass the path of the Python framework. Normally the correct path(s)
+                  will be automatically deduced from <code class="computeroutput"><span class="identifier">version</span></code>
+                  and/or <code class="computeroutput"><span class="identifier">cmd</span><span class="special">-</span><span class="keyword">or</span><span class="special">-</span><span class="identifier">prefix</span></code>.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>condition</strong></span>
+                </p>
+<p class="simpara">
+                  if specified, should be a set of Boost.Build properties that are
+                  matched against the build configuration when Boost.Build selects
+                  a Python configuration to use. See examples below for details.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  <span class="bold"><strong>extension-suffix</strong></span>
+                </p>
+<p class="simpara">
+                  A string to append to the name of extension modules before the
+                  true filename extension. You almost certainly don't need to use
+                  this. Usually this suffix is only used when targeting a Windows
+                  debug build of Python, and will be set automatically for you based
+                  on the value of the |python-debugging|_ feature. However, at least
+                  one Linux distribution (Ubuntu Feisty Fawn) has a specially configured
+                  <a href="https://wiki.ubuntu.com/PyDbgBuilds" target="_top">&lt;python-debugging&gt;</a>
+                  package that claims to use such a suffix.
+                </p>
+</li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.examples"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.examples" title="Examples">Examples</a>
+</h6></div></div></div>
+<p>
+              Note that in the examples below, case and <span class="bold"><strong>especially
+              whitespace</strong></span> are significant.
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+<p class="simpara">
+                  If you have both python 2.5 and python 2.4 installed, <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code> might contain
+                </p>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.5</span> <span class="special">;</span>  <span class="special">#</span> <span class="identifier">Make</span> <span class="identifier">both</span> <span class="identifier">versions</span> <span class="identifier">of</span> <span class="identifier">Python</span> <span class="identifier">available</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.4</span> <span class="special">;</span>  <span class="special">#</span> <span class="identifier">To</span> <span class="identifier">build</span> <span class="identifier">with</span> <span class="identifier">python</span> <span class="number">2.4</span><span class="special">,</span> <span class="identifier">add</span> <span class="identifier">python</span><span class="special">=</span><span class="number">2.4</span>
+                      <span class="preprocessor"># to</span> <span class="identifier">your</span> <span class="identifier">command</span> <span class="identifier">line</span><span class="special">.</span>
+</pre>
+<p class="simpara">
+                  The first version configured (2.5) becomes the default. To build
+                  against python 2.4, add <code class="computeroutput"><span class="identifier">python</span><span class="special">=</span><span class="number">2.4</span></code>
+                  to the <code class="computeroutput"><span class="identifier">bjam</span></code> command
+                  line.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  If you have python installed in an unusual location, you might
+                  supply the path to the interpreter in the <code class="computeroutput"><span class="identifier">cmd</span><span class="special">-</span><span class="keyword">or</span><span class="special">-</span><span class="identifier">prefix</span></code>
+                  parameter:
+                </p>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="special">:</span> <span class="special">/</span><span class="identifier">usr</span><span class="special">/</span><span class="identifier">local</span><span class="special">/</span><span class="identifier">python</span><span class="special">-</span><span class="number">2.6</span><span class="special">-</span><span class="identifier">beta</span><span class="special">/</span><span class="identifier">bin</span><span class="special">/</span><span class="identifier">python</span> <span class="special">;</span>
+</pre>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  If you have a separate build of Python for use with a particular
+                  toolset, you might supply that toolset in the <code class="computeroutput"><span class="identifier">condition</span></code>
+                  parameter:
+                </p>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">python</span> <span class="special">;</span>  <span class="special">#</span> <span class="identifier">use</span> <span class="keyword">for</span> <span class="identifier">most</span> <span class="identifier">toolsets</span>
+
+<span class="preprocessor"># Use</span> <span class="identifier">with</span> <span class="identifier">Intel</span> <span class="identifier">C</span><span class="special">++</span> <span class="identifier">toolset</span>
+<span class="keyword">using</span> <span class="identifier">python</span>
+     <span class="special">:</span> <span class="special">#</span> <span class="identifier">version</span>
+     <span class="special">:</span> <span class="identifier">c</span><span class="special">:\\</span><span class="identifier">Devel</span><span class="special">\\</span><span class="identifier">Python</span><span class="special">-</span><span class="number">2.5</span><span class="special">-</span><span class="identifier">IntelBuild</span><span class="special">\\</span><span class="identifier">PCBuild</span><span class="special">\\</span><span class="identifier">python</span> <span class="special">#</span> <span class="identifier">cmd</span><span class="special">-</span><span class="keyword">or</span><span class="special">-</span><span class="identifier">prefix</span>
+     <span class="special">:</span> <span class="special">#</span> <span class="identifier">includes</span>
+     <span class="special">:</span> <span class="special">#</span> <span class="identifier">libraries</span>
+     <span class="special">:</span> <span class="special">&lt;</span><span class="identifier">toolset</span><span class="special">&gt;</span><span class="identifier">intel</span> <span class="special">#</span> <span class="identifier">condition</span>
+     <span class="special">;</span>
+</pre>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  If you have downloaded the Python sources and built both the normal
+                  and the &#8220;<code class="computeroutput"><span class="identifier">python</span> <span class="identifier">debugging</span></code>_&#8221; builds from source
+                  on Windows, you might see:
+                </p>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.5</span> <span class="special">:</span> <span class="identifier">C</span><span class="special">:\\</span><span class="identifier">src</span><span class="special">\\</span><span class="identifier">Python</span><span class="special">-</span><span class="number">2.5</span><span class="special">\\</span><span class="identifier">PCBuild</span><span class="special">\\</span><span class="identifier">python</span> <span class="special">;</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.5</span> <span class="special">:</span> <span class="identifier">C</span><span class="special">:\\</span><span class="identifier">src</span><span class="special">\\</span><span class="identifier">Python</span><span class="special">-</span><span class="number">2.5</span><span class="special">\\</span><span class="identifier">PCBuild</span><span class="special">\\</span><span class="identifier">python_d</span>
+  <span class="special">:</span> <span class="special">#</span> <span class="identifier">includes</span>
+  <span class="special">:</span> <span class="special">#</span> <span class="identifier">libs</span>
+  <span class="special">:</span> <span class="special">&lt;</span><span class="identifier">python</span><span class="special">-</span><span class="identifier">debugging</span><span class="special">&gt;</span><span class="identifier">on</span> <span class="special">;</span>
+</pre>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  You can set up your user-config.jam so a bjam built under Windows
+                  can build/test both Windows and Cygwin_ python extensions. Just
+                  pass <code class="computeroutput"><span class="special">&lt;</span><span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">&gt;</span><span class="identifier">cygwin</span></code>
+                  in the <code class="computeroutput"><span class="identifier">condition</span></code>
+                  parameter for the cygwin python installation:
+                </p>
+<pre class="programlisting"><span class="preprocessor"># windows</span> <span class="identifier">installation</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">;</span>
+
+<span class="preprocessor"># cygwin</span> <span class="identifier">installation</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="special">:</span> <span class="identifier">c</span><span class="special">:\\</span><span class="identifier">cygwin</span><span class="special">\\</span><span class="identifier">bin</span><span class="special">\\</span><span class="identifier">python2</span><span class="special">.</span><span class="number">5</span> <span class="special">:</span> <span class="special">:</span> <span class="special">:</span> <span class="special">&lt;</span><span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">&gt;</span><span class="identifier">cygwin</span> <span class="special">;</span>
+</pre>
+<p class="simpara">
+                  when you put target-os=cygwin in your build request, it should
+                  build with the cygwin version of python: <a name="flavor"></a>_
+                </p>
+<pre class="programlisting"><span class="identifier">bjam</span> <span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">=</span><span class="identifier">cygwin</span> <span class="identifier">toolset</span><span class="special">=</span><span class="identifier">gcc</span>
+</pre>
+<p class="simpara">
+                  This is supposed to work the other way, too (targeting windows
+                  python with a <a href="http://cygwin.com" target="_top">Cygwin</a> bjam)
+                  but it seems as though the support in Boost.Build's toolsets for
+                  building that way is broken at the time of this writing.
+                </p>
+</li>
+<li class="listitem">
+<p class="simpara">
+                  Note that because of <a href="http://zigzag.cs.msu.su/boost.build/wiki/AlternativeSelection" target="_top">the
+                  way Boost.Build currently selects target alternatives</a>,
+                  you might have be very explicit in your build requests. For example,
+                  given:
+                </p>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.5</span> <span class="special">;</span> <span class="special">#</span> <span class="identifier">a</span> <span class="identifier">regular</span> <span class="identifier">windows</span> <span class="identifier">build</span>
+<span class="keyword">using</span> <span class="identifier">python</span> <span class="special">:</span> <span class="number">2.4</span> <span class="special">:</span> <span class="special">:</span> <span class="special">:</span> <span class="special">:</span> <span class="special">&lt;</span><span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">&gt;</span><span class="identifier">cygwin</span> <span class="special">;</span>
+</pre>
+<p class="simpara">
+                  building with
+                </p>
+<pre class="programlisting"><span class="identifier">bjam</span> <span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">=</span><span class="identifier">cygwin</span>
+</pre>
+<p class="simpara">
+                  will yield an error. Instead, you'll need to write
+                </p>
+<pre class="programlisting"><span class="identifier">bjam</span> <span class="identifier">target</span><span class="special">-</span><span class="identifier">os</span><span class="special">=</span><span class="identifier">cygwin</span><span class="special">/</span><span class="identifier">python</span><span class="special">=</span><span class="number">2.4</span>
+</pre>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_" title="Choosing a Boost.Python Library Binary">Choosing
+          a Boost.Python Library Binary</a>
+</h5></div></div></div>
+<p>
+            If&#8212;instead of letting Boost.Build construct and link with the right
+            libraries automatically&#8212;you choose to use a pre-built Boost.Python
+            library, you'll need to think about which one to link with. The Boost.Python
+            binary comes in both static and dynamic flavors. Take care to choose
+            the right flavor for your application. <a href="#ftn.boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.f0" class="footnote" name="boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.f0"><sup class="footnote">[3]</sup></a>
+          </p>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary" title="The Dynamic Binary">The
+            Dynamic Binary</a>
+</h6></div></div></div>
+<p>
+              The dynamic library is the safest and most-versatile choice:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                  A single copy of the library code is used by all extension modules
+                  built with a given toolset. <a href="#ftn.boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary.f0" class="footnote" name="boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary.f0"><sup class="footnote">[4]</sup></a>
+                </li>
+<li class="listitem">
+                  The library contains a type conversion registry. Because one registry
+                  is shared among all extension modules, instances of a class exposed
+                  to Python in one dynamically-loaded extension module can be passed
+                  to functions exposed in another such module.
+                </li>
+</ul></div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h6 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_static_binary"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_static_binary" title="The Static Binary">The
+            Static Binary</a>
+</h6></div></div></div>
+<p>
+              It might be appropriate to use the static Boost.Python library in any
+              of the following cases:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                  You are extending python and the types exposed in your dynamically-loaded
+                  extension module don't need to be used by any other Boost.Python
+                  extension modules, and you don't care if the core library code
+                  is duplicated among them.
+                </li>
+<li class="listitem">
+                  You are embedding python in your application and either:
+                  <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
+<li class="listitem">
+                        You are targeting a Unix variant OS other than MacOS or AIX,
+                        where the dynamically-loaded extension modules can &#8220;see&#8221;
+                        the Boost.Python library symbols that are part of the executable.
+                      </li>
+<li class="listitem">
+                        Or, you have statically linked some Boost.Python extension
+                        modules into your application and you don't care if any dynamically-loaded
+                        Boost.Python extension modules are able to use the types
+                        exposed by your statically-linked extension modules (and
+                        vice-versa).
+                      </li>
+</ul></div>
+                </li>
+</ul></div>
+</div>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.include_issues"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.include_issues" title="#include Issues"><code class="computeroutput"><span class="preprocessor">#include</span></code> Issues</a>
+</h5></div></div></div>
+<p>
+            1. If you should ever have occasion to <code class="computeroutput"><span class="preprocessor">#include</span>
+            <span class="string">"python.h"</span></code> directly in
+            a translation unit of a program using Boost.Python, use <code class="computeroutput"><span class="preprocessor">#include</span> <span class="string">"boost/python/detail/wrap_python.hpp"</span></code>
+            instead. It handles several issues necessary for use with Boost.Python,
+            one of which is mentioned in the next section.
+          </p>
+<p>
+            2. Be sure not to <code class="computeroutput"><span class="preprocessor">#include</span></code>
+            any system headers before <code class="computeroutput"><span class="identifier">wrap_python</span><span class="special">.</span><span class="identifier">hpp</span></code>.
+            This restriction is actually imposed by Python, or more properly, by
+            Python's interaction with your operating system. See http://docs.python.org/ext/simpleExample.html
+            for details.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.python_debugging_builds"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.python_debugging_builds" title="Python Debugging Builds">Python
+          Debugging Builds</a>
+</h5></div></div></div>
+<p>
+            Python can be built in a special &#8220;python debugging&#8221; configuration
+            that adds extra checks and instrumentation that can be very useful for
+            developers of extension modules. The data structures used by the debugging
+            configuration contain additional members, so <span class="bold"><strong>a
+            Python executable built with python debugging enabled cannot be used
+            with an extension module or library compiled without it, and vice-versa.</strong></span>
+          </p>
+<p>
+            Since pre-built &#8220;python debugging&#8221; versions of the Python executable
+            and libraries are not supplied with most distributions of Python, <a name="get-debug-build"></a>_ and we didn't want to force our users to build
+            them, Boost.Build does not automatically enable python debugging in its
+            <code class="computeroutput"><span class="identifier">debug</span></code> build variant (which
+            is the default). Instead there is a special build property called <code class="computeroutput"><span class="identifier">python</span><span class="special">-</span><span class="identifier">debugging</span></code> that, when used as a build
+            property, will define the right preprocessor symbols and select the right
+            libraries to link with.
+          </p>
+<p>
+            On unix-variant platforms, the debugging versions of Python's data structures
+            will only be used if the symbol <code class="computeroutput"><span class="identifier">Py_DEBUG</span></code>
+            is defined. On many windows compilers, when extension modules are built
+            with the preprocessor symbol <code class="computeroutput"><span class="identifier">_DEBUG</span></code>,
+            Python defaults to force linking with a special debugging version of
+            the Python DLL. Since that symbol is very commonly used even when Python
+            is not present, Boost.Python temporarily undefines _DEBUG when Python.h
+            is #included from <code class="computeroutput"><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">detail</span><span class="special">/</span><span class="identifier">wrap_python</span><span class="special">.</span><span class="identifier">hpp</span></code>
+            - unless <code class="computeroutput"><span class="identifier">BOOST_DEBUG_PYTHON</span></code>
+            is defined. The upshot is that if you want &#8220;python debugging&#8221;and
+            you aren't using Boost.Build, you should make sure <code class="computeroutput"><span class="identifier">BOOST_DEBUG_PYTHON</span></code>
+            is defined, or python debugging will be suppressed.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.testing_boost_python"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.testing_boost_python" title="Testing Boost.Python">Testing
+          Boost.Python</a>
+</h5></div></div></div>
+<p>
+            To run the full test suite for Boost.Python, invoke <code class="computeroutput"><span class="identifier">bjam</span></code>
+            in the <code class="computeroutput"><span class="identifier">test</span></code> subdirectory
+            of your Boost.Python distribution.
+          </p>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h5 class="title">
+<a name="boost_python.building_and_testing.no_install_quickstart.notes_for_mingw_and_cygwin_with_"></a><a class="link" href="boost_python.html#boost_python.building_and_testing.no_install_quickstart.notes_for_mingw_and_cygwin_with_" title="Notes for MinGW (and Cygwin with -mno-cygwin) GCC Users">Notes
+          for MinGW (and Cygwin with -mno-cygwin) GCC Users</a>
+</h5></div></div></div>
+<p>
+            If you are using a version of Python prior to 2.4.1 with a MinGW prior
+            to 3.0.0 (with binutils-2.13.90-20030111-1), you will need to create
+            a MinGW-compatible version of the Python library; the one shipped with
+            Python will only work with a Microsoft-compatible linker. Follow the
+            instructions in the &#8220;Non-Microsoft&#8221; section of the &#8220;Building Extensions:
+            Tips And Tricks&#8221; chapter in <a href="http://www.python.org/doc/current/inst/index.html" target="_top">Installing
+            Python Modules</a> to create <code class="computeroutput"><span class="identifier">libpythonXX</span><span class="special">.</span><span class="identifier">a</span></code>,
+            where <code class="computeroutput"><span class="identifier">XX</span></code> corresponds
+            to the major and minor version numbers of your Python installation.
+          </p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.boost_python.building_and_testing.requirements.f0" class="footnote"><p><a href="#boost_python.building_and_testing.requirements.f0" class="para"><sup class="para">[1] </sup></a>
+            Note that although we tested earlier versions of Boost.Python with Python
+            2.2, and we don't <span class="bold"><strong>think</strong></span> we've done anything
+            to break compatibility, this release of Boost.Python may not have been
+            tested with versions of Python earlier than 2.4, so we're not 100% sure
+            that python 2.2 and 2.3 are supported.
+          </p></div>
+<div id="ftn.boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.f0" class="footnote"><p><a href="#boost_python.building_and_testing.no_install_quickstart.configuring_boost_build.f0" class="para"><sup class="para">[2] </sup></a>
+                <code class="computeroutput"><span class="identifier">configure</span></code> overwrites
+                the existing <code class="computeroutput"><span class="identifier">user</span><span class="special">-</span><span class="identifier">config</span><span class="special">.</span><span class="identifier">jam</span></code>
+                in your home directory (if any) after making a backup of the old
+                version.
+              </p></div>
+<div id="ftn.boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.f0" class="footnote"><p><a href="#boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.f0" class="para"><sup class="para">[3] </sup></a>
+              Information about how to identify the static and dynamic builds of
+              Boost.Python on <a href="http://boost.org/getting_started/windows.html#library-naming" target="_top">Windows</a>
+              / <a href="http://boost.org/getting_started/unix-variants.html#library-naming" target="_top">Unix
+              variants</a>
+            </p></div>
+<div id="ftn.boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary.f0" class="footnote"><p><a href="#boost_python.building_and_testing.no_install_quickstart.choosing_a_boost_python_library_.the_dynamic_binary.f0" class="para"><sup class="para">[4] </sup></a>
+                    Because of the way most *nix platforms share symbols among dynamically-loaded
+                    objects, I'm not certain that extension modules built with different
+                    compiler toolsets will always use different copies of the Boost.Python
+                    library when loaded into the same Python instance. Not using
+                    different libraries could be a good thing if the compilers have
+                    compatible ABIs, because extension modules built with the two
+                    libraries would be interoperable. Otherwise, it could spell disaster,
+                    since an extension module and the Boost.Python library would
+                    have different ideas of such things as class layout. I would
+                    appreciate someone doing the experiment to find out what happens.
+                  </p></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2015 David
+      Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="index.html"><img src="images/prev.png" alt="Prev"></a><a accesskey="u" href="index.html"><img src="images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="images/home.png" alt="Home"></a>
+</div>
+</body>
+</html>

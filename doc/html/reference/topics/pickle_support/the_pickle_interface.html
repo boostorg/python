@@ -1,0 +1,97 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>The Pickle Interface</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../pickle_support.html" title="Pickle support">
+<link rel="prev" href="../pickle_support.html" title="Pickle support">
+<link rel="next" href="example.html" title="Example">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../pickle_support.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../pickle_support.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="topics.pickle_support.the_pickle_interface"></a><a class="link" href="the_pickle_interface.html" title="The Pickle Interface">The Pickle
+        Interface</a>
+</h3></div></div></div>
+<p>
+          At the user level, the Boost.Python pickle interface involves three special
+          methods:
+        </p>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">__getinitargs__</span></dt>
+<dd>
+<p>
+                When an instance of a Boost.Python extension class is pickled, the
+                pickler tests if the instance has a <code class="computeroutput"><span class="identifier">__getinitargs__</span></code>
+                method. This method must return a Python <code class="computeroutput"><span class="identifier">tuple</span></code>
+                (it is most convenient to use a <a class="link" href="../../object_wrappers/boost_python_tuple_hpp/class_tuple.html" title="Class tuple"><code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">tuple</span></code></a>). When the instance
+                is restored by the unpickler, the contents of this tuple are used
+                as the arguments for the class constructor.
+              </p>
+<p>
+                If <code class="computeroutput"><span class="identifier">__getinitargs__</span></code>
+                is not defined, <code class="computeroutput"><span class="identifier">pickle</span><span class="special">.</span><span class="identifier">load</span></code>
+                will call the constructor (<code class="computeroutput"><span class="identifier">__init__</span></code>)
+                without arguments; i.e., the object must be default-constructible.
+              </p>
+</dd>
+<dt><span class="term">__getstate__</span></dt>
+<dd><p>
+                When an instance of a <code class="computeroutput"><span class="identifier">Boost</span><span class="special">.</span><span class="identifier">Python</span></code>
+                extension class is pickled, the pickler tests if the instance has
+                a <code class="computeroutput"><span class="identifier">__getstate__</span></code> method.
+                This method should return a Python object representing the state
+                of the instance.
+              </p></dd>
+<dt><span class="term">__setstate__</span></dt>
+<dd><p>
+                When an instance of a <code class="computeroutput"><span class="identifier">Boost</span><span class="special">.</span><span class="identifier">Python</span></code>
+                extension class is restored by the unpickler (<code class="computeroutput"><span class="identifier">pickle</span><span class="special">.</span><span class="identifier">load</span></code>),
+                it is first constructed using the result of <code class="computeroutput"><span class="identifier">__getinitargs__</span></code>
+                as arguments (see above). Subsequently the unpickler tests if the
+                new instance has a <code class="computeroutput"><span class="identifier">__setstate__</span></code>
+                method. If so, this method is called with the result of <code class="computeroutput"><span class="identifier">__getstate__</span></code> (a Python object)
+                as the argument.
+              </p></dd>
+</dl>
+</div>
+<p>
+          The three special methods described above may be <code class="computeroutput"><span class="special">.</span><span class="identifier">def</span><span class="special">()</span></code>'ed
+          individually by the user. However, <code class="computeroutput"><span class="identifier">Boost</span><span class="special">.</span><span class="identifier">Python</span></code>
+          provides an easy to use high-level interface via the <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">::</span><span class="identifier">pickle_suite</span></code>
+          class that also enforces consistency: <code class="computeroutput"><span class="identifier">__getstate__</span></code>
+          and <code class="computeroutput"><span class="identifier">__setstate__</span></code> must be
+          defined as pairs. Use of this interface is demonstrated by the following
+          examples.
+        </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../pickle_support.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../pickle_support.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

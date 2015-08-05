@@ -1,0 +1,105 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template object_operators</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../object_hpp.html" title="object.hpp">
+<link rel="prev" href="class_slice_policies_static_func.html" title="Class slice_policies static functions">
+<link rel="next" href="class_template_object_operators_.html" title="Class template object_operators observer functions">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_slice_policies_static_func.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../object_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_template_object_operators_.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="object_wrappers.object_hpp.class_template_object_operators"></a><a class="link" href="class_template_object_operators.html" title="Class template object_operators">Class
+        template <code class="computeroutput"><span class="identifier">object_operators</span></code></a>
+</h3></div></div></div>
+<p>
+          This is the base class of object and its proxy template used to supply
+          common interface: member functions, and operators which must be defined
+          within the class body. Its template parameter U is expected to be a class
+          derived from object_operators&lt;U&gt;. In practice users should never
+          use this class directly, but it is documented here because it supplies
+          important interface to object and its proxies.
+        </p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">python</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">api</span>
+<span class="special">{</span>
+  <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">U</span><span class="special">&gt;</span>
+  <span class="keyword">class</span> <span class="identifier">object_operators</span>
+  <span class="special">{</span>
+   <span class="keyword">public</span><span class="special">:</span>
+      <span class="comment">// function call</span>
+      <span class="comment">//</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()()</span> <span class="keyword">const</span><span class="special">;</span>
+
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">&gt;</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">A1</span><span class="special">&gt;</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;,</span> <span class="identifier">A1</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="special">...</span>
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">A1</span><span class="special">,...</span><span class="keyword">class</span> <span class="identifier">An</span><span class="special">&gt;</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;,</span> <span class="identifier">A1</span> <span class="keyword">const</span><span class="special">&amp;,...</span><span class="identifier">An</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+
+      <span class="identifier">detail</span><span class="special">::</span><span class="identifier">args_proxy</span> <span class="keyword">operator</span><span class="special">*</span> <span class="special">()</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">args_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">args</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">args_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">args</span><span class="special">,</span>
+                        <span class="identifier">detail</span><span class="special">::</span><span class="identifier">kwds_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">kwds</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+
+      <span class="comment">// truth value testing</span>
+      <span class="comment">//</span>
+      <span class="keyword">typedef</span> <span class="identifier">unspecified</span> <span class="identifier">bool_type</span><span class="special">;</span>
+      <span class="keyword">operator</span> <span class="identifier">bool_type</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span>
+
+      <span class="comment">// Attribute access</span>
+      <span class="comment">//</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_attribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*)</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_attribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*);</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_objattribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="identifier">object</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_objattribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="identifier">object</span> <span class="keyword">const</span><span class="special">&amp;);</span>
+
+      <span class="comment">// item access</span>
+      <span class="comment">//</span>
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_item</span><span class="special">&gt;</span> <span class="keyword">operator</span><span class="special">[](</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">key</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_item</span><span class="special">&gt;</span> <span class="keyword">operator</span><span class="special">[](</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">key</span><span class="special">);</span>
+
+      <span class="comment">// slicing</span>
+      <span class="comment">//</span>
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">&gt;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_slice</span><span class="special">&gt;</span> <span class="identifier">slice</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">V</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">end</span><span class="special">)</span> <span class="keyword">const</span>
+
+      <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">&gt;</span>
+      <span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_slice</span><span class="special">&gt;</span> <span class="identifier">slice</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">V</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">end</span><span class="special">);</span>
+  <span class="special">};</span>
+<span class="special">}}}</span>
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_slice_policies_static_func.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../object_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_template_object_operators_.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

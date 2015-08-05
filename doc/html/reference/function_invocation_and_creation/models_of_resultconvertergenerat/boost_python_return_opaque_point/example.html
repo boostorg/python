@@ -1,0 +1,116 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Example</title>
+<link rel="stylesheet" href="../../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../boost_python_return_opaque_point.html" title="boost/python/return_opaque_pointer.hpp">
+<link rel="prev" href="class_return_opaque_pointer_meta.html" title="Class return_opaque_pointer metafunctions">
+<link rel="next" href="../../../to_from_python_type_conversion.html" title="Chapter&#160;5.&#160;To/From Python Type Conversion">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../images/boost.png"></td>
+<td align="center"><a href="../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_return_opaque_pointer_meta.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_python_return_opaque_point.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../to_from_python_type_conversion.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="function_invocation_and_creation.models_of_resultconvertergenerat.boost_python_return_opaque_point.example"></a><a class="link" href="example.html" title="Example">Example</a>
+</h4></div></div></div>
+<p>
+            In C++:
+          </p>
+<pre class="programlisting"><span class="preprocessor"># include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">return_opaque_pointer</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor"># include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">def</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor"># include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor"># include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">return_value_policy</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="identifier">opaque_</span> <span class="special">*</span><span class="identifier">opaque</span><span class="special">;</span>
+
+<span class="identifier">opaque</span> <span class="identifier">the_op</span>   <span class="special">=</span> <span class="special">((</span><span class="identifier">opaque</span><span class="special">)</span> <span class="number">0x47110815</span><span class="special">);</span>
+
+<span class="identifier">opaque</span> <span class="identifier">get</span> <span class="special">()</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">the_op</span><span class="special">;</span> <span class="special">}</span>
+<span class="keyword">void</span> <span class="identifier">use</span> <span class="special">(</span><span class="identifier">opaque</span> <span class="identifier">op</span><span class="special">)</span> <span class="special">{</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">op</span> <span class="special">!=</span> <span class="identifier">the_op</span><span class="special">)</span>
+	<span class="keyword">throw</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">runtime_error</span> <span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="special">(</span><span class="string">"failed"</span><span class="special">));</span>
+<span class="special">}</span>
+
+<span class="keyword">void</span> <span class="identifier">failuse</span> <span class="special">(</span><span class="identifier">opaque</span> <span class="identifier">op</span><span class="special">)</span> <span class="special">{</span>
+    <span class="keyword">if</span> <span class="special">(</span><span class="identifier">op</span> <span class="special">==</span> <span class="identifier">the_op</span><span class="special">)</span>
+	<span class="keyword">throw</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">runtime_error</span> <span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">string</span> <span class="special">(</span><span class="string">"success"</span><span class="special">));</span>
+<span class="special">}</span>
+
+<span class="identifier">BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID</span><span class="special">(</span><span class="identifier">opaque_</span><span class="special">)</span>
+
+<span class="keyword">namespace</span> <span class="identifier">bpl</span> <span class="special">=</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
+
+<span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">opaque_ext</span><span class="special">)</span>
+<span class="special">{</span>
+    <span class="identifier">bpl</span><span class="special">::</span><span class="identifier">def</span> <span class="special">(</span>
+        <span class="string">"get"</span><span class="special">,</span> <span class="special">&amp;::</span><span class="identifier">get</span><span class="special">,</span> <span class="identifier">bpl</span><span class="special">::</span><span class="identifier">return_value_policy</span><span class="special">&lt;</span><span class="identifier">bpl</span><span class="special">::</span><span class="identifier">return_opaque_pointer</span><span class="special">&gt;());</span>
+    <span class="identifier">bpl</span><span class="special">::</span><span class="identifier">def</span> <span class="special">(</span><span class="string">"use"</span><span class="special">,</span> <span class="special">&amp;::</span><span class="identifier">use</span><span class="special">);</span>
+    <span class="identifier">bpl</span><span class="special">::</span><span class="identifier">def</span> <span class="special">(</span><span class="string">"failuse"</span><span class="special">,</span> <span class="special">&amp;::</span><span class="identifier">failuse</span><span class="special">);</span>
+<span class="special">}</span>
+</pre>
+<p>
+            Python code:
+          </p>
+<pre class="programlisting"><span class="string">""</span><span class="string">"
+&gt;&gt;&gt; from opaque_ext import *
+&gt;&gt;&gt; #
+&gt;&gt;&gt; # Check for correct conversion
+&gt;&gt;&gt; use(get())
+&gt;&gt;&gt; failuse(get())
+Traceback (most recent call last):
+        ...
+RuntimeError: success
+&gt;&gt;&gt; #
+&gt;&gt;&gt; # Check that there is no conversion from integers ...
+&gt;&gt;&gt; use(0)
+Traceback (most recent call last):
+        ...
+TypeError: bad argument type for built-in operation
+&gt;&gt;&gt; #
+&gt;&gt;&gt; # ... and from strings to opaque objects
+&gt;&gt;&gt; use("</span><span class="string">")
+Traceback (most recent call last):
+        ...
+TypeError: bad argument type for built-in operation
+"</span><span class="string">""</span>
+<span class="identifier">def</span> <span class="identifier">run</span><span class="special">(</span><span class="identifier">args</span> <span class="special">=</span> <span class="identifier">None</span><span class="special">):</span>
+    <span class="identifier">import</span> <span class="identifier">sys</span>
+    <span class="identifier">import</span> <span class="identifier">doctest</span>
+
+    <span class="keyword">if</span> <span class="identifier">args</span> <span class="identifier">is</span> <span class="keyword">not</span> <span class="identifier">None</span><span class="special">:</span>
+        <span class="identifier">sys</span><span class="special">.</span><span class="identifier">argv</span> <span class="special">=</span> <span class="identifier">args</span>
+    <span class="keyword">return</span> <span class="identifier">doctest</span><span class="special">.</span><span class="identifier">testmod</span><span class="special">(</span><span class="identifier">sys</span><span class="special">.</span><span class="identifier">modules</span><span class="special">.</span><span class="identifier">get</span><span class="special">(</span><span class="identifier">__name__</span><span class="special">))</span>
+
+<span class="keyword">if</span> <span class="identifier">__name__</span> <span class="special">==</span> <span class="char">'__main__'</span><span class="special">:</span>
+    <span class="identifier">print</span> <span class="string">"running..."</span>
+    <span class="identifier">import</span> <span class="identifier">sys</span>
+    <span class="identifier">sys</span><span class="special">.</span><span class="identifier">exit</span><span class="special">(</span><span class="identifier">run</span><span class="special">()[</span><span class="number">0</span><span class="special">])</span>
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_return_opaque_pointer_meta.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../boost_python_return_opaque_point.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="../../../to_from_python_type_conversion.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

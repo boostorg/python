@@ -1,0 +1,89 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template handle modifiers</title>
+<link rel="stylesheet" href="../../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../class_template_handle.html" title="Class template handle">
+<link rel="prev" href="../class_template_handle.html" title="Class template handle">
+<link rel="next" href="class_template_handle_observers.html" title="Class template handle observers">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../images/boost.png"></td>
+<td align="center"><a href="../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../class_template_handle.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../class_template_handle.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_template_handle_observers.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="utility_and_infrastructure.boost_python_handle_hpp.class_template_handle.class_template_handle_modifiers"></a><a class="link" href="class_template_handle_modifiers.html" title="Class template handle modifiers">Class
+          template <code class="computeroutput"><span class="identifier">handle</span></code> modifiers</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="identifier">handle</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">=(</span><span class="identifier">handle</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">r</span><span class="special">);</span>
+<span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">typename</span> <span class="identifier">Y</span><span class="special">&gt;</span>
+<span class="identifier">handle</span><span class="special">&amp;</span> <span class="keyword">operator</span><span class="special">=(</span><span class="identifier">handle</span><span class="special">&lt;</span><span class="identifier">Y</span><span class="special">&gt;</span> <span class="keyword">const</span> <span class="special">&amp;</span> <span class="identifier">r</span><span class="special">);</span> <span class="comment">// never throws</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                  <code class="computeroutput"><span class="identifier">Py_XINCREF</span><span class="special">(</span><span class="identifier">upcast</span><span class="special">&lt;</span><span class="identifier">PyObject</span><span class="special">*&gt;(</span><span class="identifier">r</span><span class="special">.</span><span class="identifier">m_p</span><span class="special">));</span>
+                  <span class="identifier">Py_XDECREF</span><span class="special">(</span>
+                  <span class="identifier">upcast</span><span class="special">&lt;</span><span class="identifier">PyObject</span><span class="special">*&gt;(</span><span class="identifier">m_p</span><span class="special">));</span>
+                  <span class="identifier">m_p</span> <span class="special">=</span>
+                  <span class="identifier">r</span><span class="special">.</span><span class="identifier">m_p</span><span class="special">;</span></code>
+                </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="identifier">T</span><span class="special">*</span> <span class="identifier">release</span><span class="special">();</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                  <code class="computeroutput"><span class="identifier">T</span><span class="special">*</span>
+                  <span class="identifier">x</span> <span class="special">=</span>
+                  <span class="identifier">m_p</span><span class="special">;</span>
+                  <span class="identifier">m_p</span> <span class="special">=</span>
+                  <span class="number">0</span><span class="special">;</span>
+                  <span class="keyword">return</span> <span class="identifier">x</span><span class="special">;</span></code>
+                </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="keyword">void</span> <span class="identifier">reset</span><span class="special">();</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                  <code class="computeroutput"><span class="special">*</span><span class="keyword">this</span>
+                  <span class="special">=</span> <span class="identifier">handle</span><span class="special">&lt;</span><span class="identifier">T</span><span class="special">&gt;();</span></code>
+                </p></dd>
+</dl>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../class_template_handle.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../class_template_handle.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_template_handle_observers.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

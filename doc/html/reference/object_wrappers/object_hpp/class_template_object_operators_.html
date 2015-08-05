@@ -1,0 +1,197 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template object_operators observer functions</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../object_hpp.html" title="object.hpp">
+<link rel="prev" href="class_template_object_operators.html" title="Class template object_operators">
+<link rel="next" href="class_object.html" title="Class object">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_object_operators.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../object_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_object.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="object_wrappers.object_hpp.class_template_object_operators_"></a><a class="link" href="class_template_object_operators_.html" title="Class template object_operators observer functions">Class
+        template <code class="computeroutput"><span class="identifier">object_operators</span></code>
+        observer functions</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()()</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">&gt;</span>
+<span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">A1</span><span class="special">&gt;</span>
+<span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;,</span> <span class="identifier">A1</span> <span class="keyword">const</span><span class="special">&amp;)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="special">...</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">A0</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">A1</span><span class="special">,...</span><span class="keyword">class</span> <span class="identifier">An</span><span class="special">&gt;</span>
+<span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">A0</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">a1</span><span class="special">,</span> <span class="identifier">A1</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">a2</span><span class="special">,...</span><span class="identifier">An</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">aN</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                <code class="computeroutput"><span class="identifier">call</span><span class="special">&lt;</span><span class="identifier">object</span><span class="special">&gt;(</span><span class="identifier">object</span><span class="special">(*</span><span class="keyword">static_cast</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">*&gt;(</span><span class="keyword">this</span><span class="special">)).</span><span class="identifier">ptr</span><span class="special">(),</span>
+                <span class="identifier">a1</span><span class="special">,</span>
+                <span class="identifier">a2</span><span class="special">,...</span><span class="identifier">aN</span><span class="special">)</span></code>
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">args_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">args</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                <code class="computeroutput"><span class="identifier">call</span> <span class="identifier">object</span>
+                <span class="identifier">with</span> <span class="identifier">arguments</span>
+                <span class="identifier">given</span> <span class="identifier">by</span>
+                <span class="identifier">the</span> <span class="identifier">tuple</span>
+                <span class="identifier">args</span></code>
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="identifier">object</span> <span class="keyword">operator</span><span class="special">()(</span><span class="identifier">detail</span><span class="special">::</span><span class="identifier">args_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">args</span><span class="special">,</span>
+                  <span class="identifier">detail</span><span class="special">::</span><span class="identifier">kwds_proxy</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">kwds</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                <code class="computeroutput"><span class="identifier">call</span> <span class="identifier">object</span>
+                <span class="identifier">with</span> <span class="identifier">arguments</span>
+                <span class="identifier">given</span> <span class="identifier">by</span>
+                <span class="identifier">the</span> <span class="identifier">tuple</span>
+                <span class="identifier">args</span><span class="special">,</span>
+                <span class="keyword">and</span> <span class="identifier">named</span>
+                <span class="identifier">arguments</span> <span class="identifier">given</span>
+                <span class="identifier">by</span> <span class="identifier">the</span>
+                <span class="identifier">dictionary</span> <span class="identifier">kwds</span></code>
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="keyword">operator</span> <span class="identifier">bool_type</span><span class="special">()</span> <span class="keyword">const</span><span class="special">;</span></pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                Tests truth value of <code class="computeroutput"><span class="special">*</span><span class="keyword">this</span></code>.
+              </p></dd>
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                <code class="computeroutput"><span class="identifier">call</span><span class="special">&lt;</span><span class="identifier">object</span><span class="special">&gt;(</span><span class="identifier">object</span><span class="special">(*</span><span class="keyword">static_cast</span><span class="special">&lt;</span><span class="identifier">U</span><span class="special">*&gt;(</span><span class="keyword">this</span><span class="special">)).</span><span class="identifier">ptr</span><span class="special">(),</span>
+                <span class="identifier">a1</span><span class="special">,</span>
+                <span class="identifier">a2</span><span class="special">,...</span><span class="identifier">aN</span><span class="special">)</span></code>
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_attribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">name</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_attribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">name</span><span class="special">);</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Requires</span></dt>
+<dd><p>
+                name is an ntbs.
+              </p></dd>
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                accesses the named attribute of *this.
+              </p></dd>
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                a proxy object which binds object(<span class="bold"><strong>static_cast&lt;U</strong></span>&gt;(this))
+                as its target, and name as its key.
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_objattribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">object</span><span class="special">&amp;</span> <span class="identifier">name</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_objattribute</span><span class="special">&gt;</span> <span class="identifier">attr</span><span class="special">(</span><span class="keyword">const</span> <span class="identifier">object</span><span class="special">&amp;</span> <span class="identifier">name</span><span class="special">);</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Requires</span></dt>
+<dd><p>
+                name is a object holding a string.
+              </p></dd>
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                accesses the named attribute of *this.
+              </p></dd>
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                a proxy object which binds object(<span class="bold"><strong>static_cast&lt;U</strong></span>&gt;(this))
+                as its target, and name as its key.
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_item</span><span class="special">&gt;</span> <span class="keyword">operator</span><span class="special">[](</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">key</span><span class="special">)</span> <span class="keyword">const</span><span class="special">;</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_item</span><span class="special">&gt;</span> <span class="keyword">operator</span><span class="special">[](</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">key</span><span class="special">);</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                accesses the item of *this indicated by key.
+              </p></dd>
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                a proxy object which binds object(<span class="bold"><strong>static_cast&lt;U</strong></span>&gt;(this))
+                as its target, and object(key) as its key.
+              </p></dd>
+</dl>
+</div>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">&gt;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">const_object_slice</span><span class="special">&gt;</span> <span class="identifier">slice</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">start</span><span class="special">;</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">V</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">finish</span><span class="special">)</span> <span class="keyword">const</span>
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">V</span><span class="special">&gt;</span>
+<span class="identifier">proxy</span><span class="special">&lt;</span><span class="identifier">object_slice</span><span class="special">&gt;</span> <span class="identifier">slice</span><span class="special">(</span><span class="identifier">T</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">start</span><span class="special">;</span> <span class="identifier">start</span><span class="special">,</span> <span class="identifier">V</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">finish</span><span class="special">);</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                accesses the slice of *this indicated by std::make_pair(object(start),
+                object(finish)).
+              </p></dd>
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                a proxy object which binds object(<span class="bold"><strong>static_cast&lt;U</strong></span>&gt;(this))
+                as its target, and std::make_pair(object(start), object(finish))
+                as its key.
+              </p></dd>
+</dl>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_object_operators.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../object_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="class_object.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

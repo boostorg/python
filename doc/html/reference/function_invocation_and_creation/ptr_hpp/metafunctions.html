@@ -1,0 +1,76 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Metafunctions</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../ptr_hpp.html" title="ptr.hpp">
+<link rel="prev" href="class_template_pointer_wrapper_o.html" title="Class template pointer_wrapper observer functions">
+<link rel="next" href="metafunctions/class_template_unwrap_pointer.html" title="Class template unwrap_pointer">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_pointer_wrapper_o.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../ptr_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="metafunctions/class_template_unwrap_pointer.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="function_invocation_and_creation.ptr_hpp.metafunctions"></a><a class="link" href="metafunctions.html" title="Metafunctions">Metafunctions</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="metafunctions.html#function_invocation_and_creation.ptr_hpp.metafunctions.class_template_is_pointer_wrappe">Class
+          template <code class="computeroutput"><span class="identifier">is_pointer_wrapper</span></code></a></span></dt>
+<dt><span class="section"><a href="metafunctions/class_template_unwrap_pointer.html">Class
+          template <code class="computeroutput"><span class="identifier">unwrap_pointer</span></code></a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="function_invocation_and_creation.ptr_hpp.metafunctions.class_template_is_pointer_wrappe"></a><a class="link" href="metafunctions.html#function_invocation_and_creation.ptr_hpp.metafunctions.class_template_is_pointer_wrappe" title="Class template is_pointer_wrapper">Class
+          template <code class="computeroutput"><span class="identifier">is_pointer_wrapper</span></code></a>
+</h4></div></div></div>
+<p>
+            A unary metafunction whose value is true iff its argument is a pointer_wrapper&lt;&gt;.
+          </p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">python</span>
+<span class="special">{</span>
+    <span class="keyword">template</span><span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span> <span class="keyword">class</span> <span class="identifier">is_pointer_wrapper</span>
+    <span class="special">{</span>
+        <span class="keyword">static</span> <span class="identifier">unspecified</span> <span class="identifier">value</span> <span class="special">=</span> <span class="special">...;</span>
+    <span class="special">};</span>
+<span class="special">}}</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Returns</span></dt>
+<dd><p>
+                  true iff T is a specialization of pointer_wrapper&lt;&gt;. value
+                  is an integral constant convertible to bool of unspecified type
+                </p></dd>
+</dl>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_pointer_wrapper_o.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../ptr_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="metafunctions/class_template_unwrap_pointer.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

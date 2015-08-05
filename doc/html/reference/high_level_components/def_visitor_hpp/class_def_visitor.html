@@ -1,0 +1,151 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class def_visitor</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../def_visitor_hpp.html" title="def_visitor.hpp">
+<link rel="prev" href="../def_visitor_hpp.html" title="def_visitor.hpp">
+<link rel="next" href="example.html" title="Example">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../def_visitor_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../def_visitor_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="high_level_components.def_visitor_hpp.class_def_visitor"></a><a class="link" href="class_def_visitor.html" title="Class def_visitor">Class
+        <code class="computeroutput"><span class="identifier">def_visitor</span></code></a>
+</h3></div></div></div>
+<p>
+          The class def_visitor is a base class paramaterized by its derived class.
+          The def_visitor class is a protocol class. Its derived class, DerivedVisitor,
+          is expected to have a member function visit. The def_visitor class is never
+          instantiated directly. Instead, an instance of its subclass, DerivedVisitor,
+          is passed on as an argument to the class_ def member function.
+        </p>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">python</span> <span class="special">{</span>
+
+    <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">DerivedVisitor</span><span class="special">&gt;</span>
+    <span class="keyword">class</span> <span class="identifier">def_visitor</span> <span class="special">{};</span>
+<span class="special">}</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Requires</span></dt>
+<dd>
+<p>
+                The client supplied class DerivedVisitor template parameter is expected
+                to: * be privately derived from def_visitor * grant friend access
+                to class def_visitor_access * define either or both visit member
+                functions listed in the table below:
+              </p>
+<div class="informaltable"><table class="table">
+<colgroup>
+<col>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th>
+                        <p>
+                          Expression
+                        </p>
+                      </th>
+<th>
+                        <p>
+                          Return Type
+                        </p>
+                      </th>
+<th>
+                        <p>
+                          Requirements
+                        </p>
+                      </th>
+<th>
+                        <p>
+                          Effects
+                        </p>
+                      </th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+                        <p>
+                          <code class="computeroutput"><span class="identifier">visitor</span><span class="special">.</span><span class="identifier">visit</span><span class="special">(</span><span class="identifier">cls</span><span class="special">)</span></code>
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          <code class="computeroutput"><span class="keyword">void</span></code>
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          cls is an instance of a class_ being wrapped to Python.
+                          visitor is a def_visitor derived class.
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          A call to cls.def(visitor) forwards to this member function.
+                        </p>
+                      </td>
+</tr>
+<tr>
+<td>
+                        <p>
+                          <code class="computeroutput"><span class="identifier">visitor</span><span class="special">.</span><span class="identifier">visit</span><span class="special">(</span><span class="identifier">cls</span><span class="special">,</span> <span class="identifier">name</span><span class="special">,</span> <span class="identifier">options</span><span class="special">)</span></code>
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          <code class="computeroutput"><span class="keyword">void</span></code>
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          cls is a class_ instance, name is a C string. visitor is
+                          a def_visitor derived class. options is a context specific
+                          optional argument.
+                        </p>
+                      </td>
+<td>
+                        <p>
+                          A call to cls.def(name, visitor) or cls.def(name, visitor,
+                          options) forwards to this member function.
+                        </p>
+                      </td>
+</tr>
+</tbody>
+</table></div>
+</dd>
+</dl>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../def_visitor_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../def_visitor_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

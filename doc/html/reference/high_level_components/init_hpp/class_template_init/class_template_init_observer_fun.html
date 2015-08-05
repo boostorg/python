@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template init observer functions</title>
+<link rel="stylesheet" href="../../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../class_template_init.html" title="Class template init">
+<link rel="prev" href="../class_template_init.html" title="Class template init">
+<link rel="next" href="../class_template_optional.html" title="Class template optional">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../images/boost.png"></td>
+<td align="center"><a href="../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../class_template_init.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../class_template_init.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="../class_template_optional.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="high_level_components.init_hpp.class_template_init.class_template_init_observer_fun"></a><a class="link" href="class_template_init_observer_fun.html" title="Class template init observer functions">Class
+          template <code class="computeroutput"><span class="identifier">init</span></code> observer
+          functions</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">Policies</span><span class="special">&gt;</span>
+<span class="identifier">unspecified</span> <span class="keyword">operator</span><span class="special">[](</span><span class="identifier">Policies</span> <span class="keyword">const</span><span class="special">&amp;</span> <span class="identifier">policies</span><span class="special">)</span> <span class="keyword">const</span>
+</pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Requires</span></dt>
+<dd><p>
+                  Policies is a model of CallPolicies.
+                </p></dd>
+<dt><span class="term">Effects</span></dt>
+<dd><p>
+                  Returns a new init-expression with all the same properties as the
+                  init object except that its call policies are replaced by a reference
+                  to policies.
+                </p></dd>
+</dl>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../class_template_init.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../class_template_init.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="../class_template_optional.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

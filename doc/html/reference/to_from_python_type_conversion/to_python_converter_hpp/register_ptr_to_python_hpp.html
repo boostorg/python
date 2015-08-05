@@ -1,0 +1,57 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>register_ptr_to_python.hpp</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../to_python_converter_hpp.html" title="to_python_converter.hpp">
+<link rel="prev" href="../to_python_converter_hpp.html" title="to_python_converter.hpp">
+<link rel="next" href="register_ptr_to_python_hpp/function_register_ptr_to_python.html" title="Function register_ptr_to_python">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../to_python_converter_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../to_python_converter_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="register_ptr_to_python_hpp/function_register_ptr_to_python.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="to_from_python_type_conversion.to_python_converter_hpp.register_ptr_to_python_hpp"></a><a class="link" href="register_ptr_to_python_hpp.html" title="register_ptr_to_python.hpp">register_ptr_to_python.hpp</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="register_ptr_to_python_hpp.html#to_from_python_type_conversion.to_python_converter_hpp.register_ptr_to_python_hpp.introduction">Introduction</a></span></dt>
+<dt><span class="section"><a href="register_ptr_to_python_hpp/function_register_ptr_to_python.html">Function
+          <code class="computeroutput"><span class="identifier">register_ptr_to_python</span></code></a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="to_from_python_type_conversion.to_python_converter_hpp.register_ptr_to_python_hpp.introduction"></a><a class="link" href="register_ptr_to_python_hpp.html#to_from_python_type_conversion.to_python_converter_hpp.register_ptr_to_python_hpp.introduction" title="Introduction">Introduction</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">register_ptr_to_python</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span> <span class="identifier">supplies</span> <span class="identifier">register_ptr_to_python</span><span class="special">,</span> <span class="identifier">a</span> <span class="identifier">function</span> <span class="keyword">template</span> <span class="identifier">which</span> <span class="identifier">registers</span> <span class="identifier">a</span> <span class="identifier">conversion</span> <span class="keyword">for</span> <span class="identifier">smart</span> <span class="identifier">pointers</span> <span class="identifier">to</span> <span class="identifier">Python</span><span class="special">.</span> <span class="identifier">The</span> <span class="identifier">resulting</span> <span class="identifier">Python</span> <span class="identifier">object</span> <span class="identifier">holds</span> <span class="identifier">a</span> <span class="identifier">copy</span> <span class="identifier">of</span> <span class="identifier">the</span> <span class="identifier">converted</span> <span class="identifier">smart</span> <span class="identifier">pointer</span><span class="special">,</span> <span class="identifier">but</span> <span class="identifier">behaves</span> <span class="identifier">as</span> <span class="identifier">though</span> <span class="identifier">it</span> <span class="identifier">were</span> <span class="identifier">a</span> <span class="identifier">wrapped</span> <span class="identifier">copy</span> <span class="identifier">of</span> <span class="identifier">the</span> <span class="identifier">pointee</span><span class="special">.</span> <span class="identifier">If</span> <span class="identifier">the</span> <span class="identifier">pointee</span> <span class="identifier">type</span> <span class="identifier">has</span> <span class="keyword">virtual</span> <span class="identifier">functions</span> <span class="keyword">and</span> <span class="identifier">the</span> <span class="keyword">class</span> <span class="identifier">representing</span> <span class="identifier">its</span> <span class="identifier">dynamic</span> <span class="special">(</span><span class="identifier">most</span><span class="special">-</span><span class="identifier">derived</span><span class="special">)</span> <span class="identifier">type</span> <span class="identifier">has</span> <span class="identifier">been</span> <span class="identifier">wrapped</span><span class="special">,</span> <span class="identifier">the</span> <span class="identifier">Python</span> <span class="identifier">object</span> <span class="identifier">will</span> <span class="identifier">be</span> <span class="identifier">an</span> <span class="identifier">instance</span> <span class="identifier">of</span> <span class="identifier">the</span> <span class="identifier">wrapper</span> <span class="keyword">for</span> <span class="identifier">the</span> <span class="identifier">most</span><span class="special">-</span><span class="identifier">derived</span> <span class="identifier">type</span><span class="special">.</span> <span class="identifier">More</span> <span class="identifier">than</span> <span class="identifier">one</span> <span class="identifier">smart</span> <span class="identifier">pointer</span> <span class="identifier">type</span> <span class="keyword">for</span> <span class="identifier">a</span> <span class="identifier">pointee</span><span class="error">'</span><span class="identifier">s</span> <span class="keyword">class</span> <span class="identifier">can</span> <span class="identifier">be</span> <span class="identifier">registered</span><span class="special">.</span>
+
+<span class="identifier">Note</span> <span class="identifier">that</span> <span class="identifier">in</span> <span class="identifier">order</span> <span class="identifier">to</span> <span class="identifier">convert</span> <span class="identifier">a</span> <span class="identifier">Python</span> <span class="identifier">X</span> <span class="identifier">object</span> <span class="identifier">to</span> <span class="identifier">a</span> <span class="identifier">smart_ptr</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;&amp;</span> <span class="special">(</span><span class="identifier">non</span><span class="special">-</span><span class="keyword">const</span> <span class="identifier">reference</span><span class="special">),</span> <span class="identifier">the</span> <span class="identifier">embedded</span> <span class="identifier">C</span><span class="special">++</span> <span class="identifier">object</span> <span class="identifier">must</span> <span class="identifier">be</span> <span class="identifier">held</span> <span class="identifier">by</span> <span class="identifier">smart_ptr</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;,</span> <span class="keyword">and</span> <span class="identifier">that</span> <span class="identifier">when</span> <span class="identifier">wrapped</span> <span class="identifier">objects</span> <span class="identifier">are</span> <span class="identifier">created</span> <span class="identifier">by</span> <span class="identifier">calling</span> <span class="identifier">the</span> <span class="identifier">constructor</span> <span class="identifier">from</span> <span class="identifier">Python</span><span class="special">,</span> <span class="identifier">how</span> <span class="identifier">they</span> <span class="identifier">are</span> <span class="identifier">held</span> <span class="identifier">is</span> <span class="identifier">determined</span> <span class="identifier">by</span> <span class="identifier">the</span> <span class="identifier">HeldType</span> <span class="identifier">parameter</span> <span class="identifier">to</span> <span class="identifier">class_</span><span class="special">&lt;...&gt;</span> <span class="identifier">instances</span><span class="special">.</span>
+</pre>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../to_python_converter_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../to_python_converter_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="register_ptr_to_python_hpp/function_register_ptr_to_python.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Enums</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../index.html" title="Boost.Python Tutorial">
+<link rel="up" href="object.html" title="Object Interface">
+<link rel="prev" href="extracting_c___objects.html" title="Extracting C++ objects">
+<link rel="next" href="creating_python_object.html" title="Creating boost::python::object from PyObject*">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../images/boost.png"></td>
+<td align="center"><a href="../../../index.html">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="extracting_c___objects.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="object.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="creating_python_object.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="tutorial.enums"></a>Enums</h3></div></div></div>
+<p>
+        Boost.Python has a nifty facility to capture and wrap C++ enums. While Python
+        has no <code class="literal">enum</code> type, we'll often want to expose our C++ enums
+        to Python as an <code class="literal">int</code>. Boost.Python's enum facility makes
+        this easy while taking care of the proper conversions from Python's dynamic
+        typing to C++'s strong static typing (in C++, ints cannot be implicitly converted
+        to enums). To illustrate, given a C++ enum:
+      </p>
+<pre class="programlisting"><span class="keyword">enum</span> <span class="identifier">choice</span> <span class="special">{</span> <span class="identifier">red</span><span class="special">,</span> <span class="identifier">blue</span> <span class="special">};</span>
+</pre>
+<p>
+        the construct:
+      </p>
+<pre class="programlisting"><span class="identifier">enum_</span><span class="special">&lt;</span><span class="identifier">choice</span><span class="special">&gt;(</span><span class="string">"choice"</span><span class="special">)</span>
+    <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"red"</span><span class="special">,</span> <span class="identifier">red</span><span class="special">)</span>
+    <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"blue"</span><span class="special">,</span> <span class="identifier">blue</span><span class="special">)</span>
+    <span class="special">;</span>
+</pre>
+<p>
+        can be used to expose to Python. The new enum type is created in the current
+        <code class="literal">scope()</code>, which is usually the current module. The snippet
+        above creates a Python class derived from Python's <code class="literal">int</code>
+        type which is associated with the C++ type passed as its first parameter.
+      </p>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top">
+<p>
+          <span class="bold"><strong>what is a scope?</strong></span>
+        </p>
+<p>
+          The scope is a class that has an associated global Python object which
+          controls the Python namespace in which new extension classes and wrapped
+          functions will be defined as attributes. Details can be found <a href="../../../../v2/scope.html" target="_top">here</a>.
+        </p>
+</td></tr>
+</table></div>
+<p>
+        You can access those values in Python as
+      </p>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span>
+<span class="identifier">my_module</span><span class="special">.</span><span class="identifier">choice</span><span class="special">.</span><span class="identifier">red</span>
+</pre>
+<p>
+        where my_module is the module where the enum is declared. You can also create
+        a new scope around a class:
+      </p>
+<pre class="programlisting"><span class="identifier">scope</span> <span class="identifier">in_X</span> <span class="special">=</span> <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">&gt;(</span><span class="string">"X"</span><span class="special">)</span>
+                <span class="special">.</span><span class="identifier">def</span><span class="special">(</span> <span class="special">...</span> <span class="special">)</span>
+                <span class="special">.</span><span class="identifier">def</span><span class="special">(</span> <span class="special">...</span> <span class="special">)</span>
+            <span class="special">;</span>
+
+<span class="comment">// Expose X::nested as X.nested</span>
+<span class="identifier">enum_</span><span class="special">&lt;</span><span class="identifier">X</span><span class="special">::</span><span class="identifier">nested</span><span class="special">&gt;(</span><span class="string">"nested"</span><span class="special">)</span>
+    <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"red"</span><span class="special">,</span> <span class="identifier">red</span><span class="special">)</span>
+    <span class="special">.</span><span class="identifier">value</span><span class="special">(</span><span class="string">"blue"</span><span class="special">,</span> <span class="identifier">blue</span><span class="special">)</span>
+    <span class="special">;</span>
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005 Joel
+      de Guzman, David Abrahams<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at [@http://www.boost.org/LICENSE_1_0.txt]
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="extracting_c___objects.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="object.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="creating_python_object.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

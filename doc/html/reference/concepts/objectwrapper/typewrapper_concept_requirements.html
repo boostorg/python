@@ -1,0 +1,61 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>TypeWrapper Concept Requirements</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../objectwrapper.html" title="ObjectWrapper">
+<link rel="prev" href="objectwrapper_concept_requiremen.html" title="ObjectWrapper Concept Requirements">
+<link rel="next" href="caveat.html" title="Caveat">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="objectwrapper_concept_requiremen.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../objectwrapper.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="caveat.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="concepts.objectwrapper.typewrapper_concept_requirements"></a><a class="link" href="typewrapper_concept_requirements.html" title="TypeWrapper Concept Requirements">TypeWrapper
+        Concept Requirements</a>
+</h3></div></div></div>
+<p>
+          TypeWrapper is a refinement of <a class="link" href="objectwrapper_concept_requiremen.html" title="ObjectWrapper Concept Requirements">ObjectWrapper</a>
+          which is associated with a particular Python type <code class="computeroutput"><span class="identifier">X</span></code>.
+          For a given TypeWrapper <code class="computeroutput"><span class="identifier">T</span></code>,
+          a valid constructor expression
+        </p>
+<pre class="programlisting"><span class="identifier">T</span><span class="special">(</span><span class="identifier">a1</span><span class="special">,</span> <span class="identifier">a2</span><span class="special">,...</span><span class="identifier">an</span><span class="special">)</span></pre>
+<p>
+          builds a new T object managing the result of invoking X with arguments
+          corresponding to
+        </p>
+<pre class="programlisting"><span class="identifier">object</span><span class="special">(</span><span class="identifier">a1</span><span class="special">),</span> <span class="identifier">object</span><span class="special">(</span><span class="identifier">a2</span><span class="special">),...</span><span class="identifier">object</span><span class="special">(</span><span class="identifier">an</span><span class="special">)</span></pre>
+<p>
+          . When used as arguments to wrapped C++ functions, or as the template parameter
+          to <a class="link" href="../../to_from_python_type_conversion.html#to_from_python_type_conversion.boost_python_extract_hpp.class_template_extract" title="Class template extract">extract&lt;&gt;</a>,
+          only instances of the associated Python type will be considered a match.
+        </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="objectwrapper_concept_requiremen.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../objectwrapper.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="caveat.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

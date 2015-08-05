@@ -1,0 +1,86 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Example</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../docstring_options_hpp.html" title="docstring_options.hpp">
+<link rel="prev" href="class_docstring_options_modifier.html" title="Class docstring_options modifier functions">
+<link rel="next" href="example/selective_suppressions.html" title="Selective suppressions">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_docstring_options_modifier.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../docstring_options_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example/selective_suppressions.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="high_level_components.docstring_options_hpp.example"></a><a class="link" href="example.html" title="Example">Example</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="example.html#high_level_components.docstring_options_hpp.example.docstring_options_defined_at_com">Docstring
+          options defined at compile time</a></span></dt>
+<dt><span class="section"><a href="example/selective_suppressions.html">Selective
+          suppressions</a></span></dt>
+<dt><span class="section"><a href="example/wrapping_from_multiple_c_scopes.html">Wrapping
+          from multiple C++ scopes</a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="high_level_components.docstring_options_hpp.example.docstring_options_defined_at_com"></a><a class="link" href="example.html#high_level_components.docstring_options_hpp.example.docstring_options_defined_at_com" title="Docstring options defined at compile time">Docstring
+          options defined at compile time</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">def</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">docstring_options</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">void</span> <span class="identifier">foo</span><span class="special">()</span> <span class="special">{}</span>
+
+<span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">demo</span><span class="special">)</span>
+<span class="special">{</span>
+    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
+    <span class="identifier">docstring_options</span> <span class="identifier">doc_options</span><span class="special">(</span><span class="identifier">DEMO_DOCSTRING_SHOW_ALL</span><span class="special">);</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo"</span><span class="special">,</span> <span class="identifier">foo</span><span class="special">,</span> <span class="string">"foo doc"</span><span class="special">);</span>
+<span class="special">}</span>
+</pre>
+<p>
+            If compiled with -DDEMO_DOCSTRING_SHOW_ALL=true:
+          </p>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">import</span> <span class="identifier">demo</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo</span><span class="special">()</span> <span class="special">-&gt;</span> <span class="identifier">None</span> <span class="special">:</span> <span class="identifier">foo</span> <span class="identifier">doc</span>
+<span class="identifier">C</span><span class="special">++</span> <span class="identifier">signature</span><span class="special">:</span>
+    <span class="identifier">foo</span><span class="special">(</span><span class="keyword">void</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">void</span>
+</pre>
+<p>
+            If compiled with -DDEMO_DOCSTRING_SHOW_ALL=false:
+          </p>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">import</span> <span class="identifier">demo</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">None</span>
+</pre>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_docstring_options_modifier.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../docstring_options_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="example/selective_suppressions.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

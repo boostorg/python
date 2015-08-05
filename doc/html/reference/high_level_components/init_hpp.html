@@ -1,0 +1,104 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>init.hpp</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../high_level_components.html" title="Chapter&#160;2.&#160;High Level Components">
+<link rel="prev" href="exception_translator_hpp/example.html" title="Example">
+<link rel="next" href="init_hpp/class_template_init.html" title="Class template init">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../images/boost.png"></td>
+<td align="center"><a href="../../../index.html">Home</a></td>
+<td align="center"><a href="../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="exception_translator_hpp/example.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../high_level_components.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="init_hpp/class_template_init.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="high_level_components.init_hpp"></a><a class="link" href="init_hpp.html" title="init.hpp">init.hpp</a>
+</h2></div></div></div>
+<div class="toc"><dl class="toc">
+<dt><span class="section"><a href="init_hpp.html#high_level_components.init_hpp.introduction">Introduction</a></span></dt>
+<dd><dl><dt><span class="section"><a href="init_hpp.html#high_level_components.init_hpp.introduction.init_expressions">init-expressions</a></span></dt></dl></dd>
+<dt><span class="section"><a href="init_hpp/class_template_init.html">Class
+        template <code class="computeroutput"><span class="identifier">init</span></code></a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="init_hpp/class_template_init.html#high_level_components.init_hpp.class_template_init.class_template_init_constructors">Class
+          template <code class="computeroutput"><span class="identifier">init</span></code> constructors</a></span></dt>
+<dt><span class="section"><a href="init_hpp/class_template_init/class_template_init_observer_fun.html">Class
+          template <code class="computeroutput"><span class="identifier">init</span></code> observer
+          functions</a></span></dt>
+</dl></dd>
+<dt><span class="section"><a href="init_hpp/class_template_optional.html">Class
+        template <code class="computeroutput"><span class="identifier">optional</span></code> </a></span></dt>
+<dt><span class="section"><a href="init_hpp/example.html">Example</a></span></dt>
+</dl></div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="high_level_components.init_hpp.introduction"></a><a class="link" href="init_hpp.html#high_level_components.init_hpp.introduction" title="Introduction">Introduction</a>
+</h3></div></div></div>
+<div class="toc"><dl class="toc"><dt><span class="section"><a href="init_hpp.html#high_level_components.init_hpp.introduction.init_expressions">init-expressions</a></span></dt></dl></div>
+<p>
+          &lt;boost/python/init.hpp&gt; defines the interface for exposing C++ constructors
+          to Python as extension class __init__ functions.
+        </p>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="high_level_components.init_hpp.introduction.init_expressions"></a><a class="link" href="init_hpp.html#high_level_components.init_hpp.introduction.init_expressions" title="init-expressions">init-expressions</a>
+</h4></div></div></div>
+<p>
+            An init-expression is used to describe a family of __init__ methods to
+            be generated for an extension class, and the result has the following
+            properties:
+          </p>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">docstring</span></dt>
+<dd><p>
+                  An ntbs whose value will bound to the method's __doc__ attribute
+                </p></dd>
+<dt><span class="term">keywords</span></dt>
+<dd><p>
+                  A keyword-expression which will be used to name (a trailing subsequence
+                  of) the arguments to the generated __init__ function(s).
+                </p></dd>
+<dt><span class="term">call_policies</span></dt>
+<dd><p>
+                  An instance of a model of CallPolicies.
+                </p></dd>
+<dt><span class="term">argument_types</span></dt>
+<dd><p>
+                  An MPL sequence of C++ argument types which will be used to construct
+                  the wrapped C++ object. An init expression has one or more valid
+                  prefixes which are given by a sequence of prefixes of its argument
+                  types.
+                </p></dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="exception_translator_hpp/example.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../high_level_components.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="init_hpp/class_template_init.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

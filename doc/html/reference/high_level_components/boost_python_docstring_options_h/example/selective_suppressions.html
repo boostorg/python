@@ -1,0 +1,95 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Selective suppressions</title>
+<link rel="stylesheet" href="../../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../example.html" title="Example">
+<link rel="prev" href="../example.html" title="Example">
+<link rel="next" href="wrapping_from_multiple_c_scopes.html" title="Wrapping from multiple C++ scopes">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../images/boost.png"></td>
+<td align="center"><a href="../../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../example.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../example.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="wrapping_from_multiple_c_scopes.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="high_level_components.boost_python_docstring_options_h.example.selective_suppressions"></a><a class="link" href="selective_suppressions.html" title="Selective suppressions">Selective
+          suppressions</a>
+</h4></div></div></div>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">def</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">args</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">docstring_options</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="keyword">int</span> <span class="identifier">foo1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">i</span><span class="special">;</span> <span class="special">}</span>
+<span class="keyword">int</span> <span class="identifier">foo2</span><span class="special">(</span><span class="keyword">long</span> <span class="identifier">l</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">l</span><span class="special">);</span> <span class="special">}</span>
+<span class="keyword">int</span> <span class="identifier">foo3</span><span class="special">(</span><span class="keyword">float</span> <span class="identifier">f</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">f</span><span class="special">);</span> <span class="special">}</span>
+<span class="keyword">int</span> <span class="identifier">foo4</span><span class="special">(</span><span class="keyword">double</span> <span class="identifier">d</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="keyword">static_cast</span><span class="special">&lt;</span><span class="keyword">int</span><span class="special">&gt;(</span><span class="identifier">d</span><span class="special">);</span> <span class="special">}</span>
+
+<span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">demo</span><span class="special">)</span>
+<span class="special">{</span>
+    <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
+    <span class="identifier">docstring_options</span> <span class="identifier">doc_options</span><span class="special">;</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo1"</span><span class="special">,</span> <span class="identifier">foo1</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"i"</span><span class="special">),</span> <span class="string">"foo1 doc"</span><span class="special">);</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">disable_user_defined</span><span class="special">();</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo2"</span><span class="special">,</span> <span class="identifier">foo2</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"l"</span><span class="special">),</span> <span class="string">"foo2 doc"</span><span class="special">);</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">disable_signatures</span><span class="special">();</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo3"</span><span class="special">,</span> <span class="identifier">foo3</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"f"</span><span class="special">),</span> <span class="string">"foo3 doc"</span><span class="special">);</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">enable_user_defined</span><span class="special">();</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo4"</span><span class="special">,</span> <span class="identifier">foo4</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"d"</span><span class="special">),</span> <span class="string">"foo4 doc"</span><span class="special">);</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">enable_py_signatures</span><span class="special">();</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo5"</span><span class="special">,</span> <span class="identifier">foo4</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"d"</span><span class="special">),</span> <span class="string">"foo5 doc"</span><span class="special">);</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">disable_py_signatures</span><span class="special">();</span>
+    <span class="identifier">doc_options</span><span class="special">.</span><span class="identifier">enable_cpp_signatures</span><span class="special">();</span>
+    <span class="identifier">def</span><span class="special">(</span><span class="string">"foo6"</span><span class="special">,</span> <span class="identifier">foo4</span><span class="special">,</span> <span class="identifier">arg</span><span class="special">(</span><span class="string">"d"</span><span class="special">),</span> <span class="string">"foo6 doc"</span><span class="special">);</span>
+<span class="special">}</span>
+</pre>
+<p>
+            Python code:
+          </p>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">import</span> <span class="identifier">demo</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo1</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo1</span><span class="special">(</span> <span class="special">(</span><span class="keyword">int</span><span class="special">)</span><span class="identifier">i</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span> <span class="special">:</span> <span class="identifier">foo1</span> <span class="identifier">doc</span>
+<span class="identifier">C</span><span class="special">++</span> <span class="identifier">signature</span><span class="special">:</span>
+    <span class="identifier">foo1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">i</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo2</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo2</span><span class="special">(</span> <span class="special">(</span><span class="keyword">int</span><span class="special">)</span><span class="identifier">l</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span> <span class="special">:</span>
+<span class="identifier">C</span><span class="special">++</span> <span class="identifier">signature</span><span class="special">:</span>
+    <span class="identifier">foo2</span><span class="special">(</span><span class="keyword">long</span> <span class="identifier">l</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo3</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">None</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo4</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo4</span> <span class="identifier">doc</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo5</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo5</span><span class="special">(</span> <span class="special">(</span><span class="keyword">float</span><span class="special">)</span><span class="identifier">d</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span> <span class="special">:</span> <span class="identifier">foo5</span> <span class="identifier">doc</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">print</span> <span class="identifier">demo</span><span class="special">.</span><span class="identifier">foo6</span><span class="special">.</span><span class="identifier">__doc__</span>
+<span class="identifier">foo6</span> <span class="identifier">doc</span>
+<span class="identifier">C</span><span class="special">++</span> <span class="identifier">signature</span><span class="special">:</span>
+    <span class="identifier">foo6</span><span class="special">(</span><span class="keyword">double</span> <span class="identifier">d</span><span class="special">)</span> <span class="special">-&gt;</span> <span class="keyword">int</span>
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../example.html"><img src="../../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../example.html"><img src="../../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../../index.html"><img src="../../../../images/home.png" alt="Home"></a><a accesskey="n" href="wrapping_from_multiple_c_scopes.html"><img src="../../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

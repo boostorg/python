@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Choosing a Boost.Python Library Binary</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Chapter&#160;1.&#160;Boost.Python">
+<link rel="up" href="../building_and_testing.html" title="Building and Testing">
+<link rel="prev" href="configuring_boost_build/examples.html" title="Examples">
+<link rel="next" href="choosing_a_boost_python_library_/the_static_binary.html" title="The Static Binary">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="configuring_boost_build/examples.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../building_and_testing.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="choosing_a_boost_python_library_/the_static_binary.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.building_and_testing.choosing_a_boost_python_library_"></a><a class="link" href="choosing_a_boost_python_library_.html" title="Choosing a Boost.Python Library Binary">Choosing
+      a Boost.Python Library Binary</a>
+</h3></div></div></div>
+<p>
+        If&#8212;instead of letting Boost.Build construct and link with the right libraries
+        automatically&#8212;you choose to use a pre-built Boost.Python library, you'll
+        need to think about which one to link with. The Boost.Python binary comes
+        in both static and dynamic flavors. Take care to choose the right flavor
+        for your application. <a href="#ftn.python.building_and_testing.choosing_a_boost_python_library_.f0" class="footnote" name="python.building_and_testing.choosing_a_boost_python_library_.f0"><sup class="footnote">[2]</sup></a>
+      </p>
+<div class="section">
+<div class="titlepage"><div><div><h4 class="title">
+<a name="python.building_and_testing.choosing_a_boost_python_library_.the_dynamic_binary"></a><a class="link" href="choosing_a_boost_python_library_.html#python.building_and_testing.choosing_a_boost_python_library_.the_dynamic_binary" title="The Dynamic Binary">The
+        Dynamic Binary</a>
+</h4></div></div></div>
+<p>
+          The dynamic library is the safest and most-versatile choice:
+        </p>
+<p>
+          - A single copy of the library code is used by all extension modules built
+          with a given toolset. <a name="toolset-specific"></a>_
+        </p>
+<p>
+          - The library contains a type conversion registry. Because one registry
+          is shared among all extension modules, instances of a class exposed to
+          Python in one dynamically-loaded extension module can be passed to functions
+          exposed in another such module.
+        </p>
+</div>
+<div class="footnotes">
+<br><hr style="width:100; text-align:left;margin-left: 0">
+<div id="ftn.python.building_and_testing.choosing_a_boost_python_library_.f0" class="footnote"><p><a href="#python.building_and_testing.choosing_a_boost_python_library_.f0" class="para"><sup class="para">[2] </sup></a>
+          Information about how to identify the static and dynamic builds of Boost.Python
+          on <a href="http://boost.org/getting_started/windows.html#library-naming" target="_top">Windows</a>
+          / <a href="http://boost.org/getting_started/unix-variants.html#library-naming" target="_top">Unix
+          variants</a>
+        </p></div>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2015 David
+      Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="configuring_boost_build/examples.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../building_and_testing.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="choosing_a_boost_python_library_/the_static_binary.html"><img src="../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

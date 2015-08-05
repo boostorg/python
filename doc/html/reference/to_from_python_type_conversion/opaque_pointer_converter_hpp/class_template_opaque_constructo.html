@@ -1,0 +1,74 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Class template opaque constructor</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../opaque_pointer_converter_hpp.html" title="opaque_pointer_converter.hpp">
+<link rel="prev" href="../opaque_pointer_converter_hpp.html" title="opaque_pointer_converter.hpp">
+<link rel="next" href="macro_boost_python_opaque_specia.html" title="Macro BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="macro_boost_python_opaque_specia.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="to_from_python_type_conversion.opaque_pointer_converter_hpp.class_template_opaque_constructo"></a><a class="link" href="class_template_opaque_constructo.html" title="Class template opaque constructor">Class
+        template <code class="computeroutput"><span class="identifier">opaque</span></code> constructor</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="identifier">opaque</span><span class="special">();</span></pre>
+<div class="variablelist">
+<p class="title"><b></b></p>
+<dl class="variablelist">
+<dt><span class="term">Effects</span></dt>
+<dd><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                    Registers the instance as a lvalue_from_pytype converter from
+                    Python objects into opaque pointers. The Python Objects created
+                    are named after the type pointed to by the opaque pointer being
+                    wrapped.
+                  </li>
+<li class="listitem">
+                    Registers the instance as a to_python_converter from opaque pointers
+                    to Python objects.
+                  </li>
+</ul></div></dd>
+</dl>
+</div>
+<div class="note"><table border="0" summary="Note">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="../../../images/note.png"></td>
+<th align="left">Note</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+            If there is already an instance registered by another module, this instance
+            doesn't try to register again in order to avoid warnings about multiple
+            registrations.
+          </p></td></tr>
+</table></div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="macro_boost_python_opaque_specia.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

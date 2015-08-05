@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Example</title>
+<link rel="stylesheet" href="../../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python Reference Manual">
+<link rel="up" href="../lvalue_from_pytype_hpp.html" title="lvalue_from_pytype.hpp">
+<link rel="prev" href="class_template_extract_member.html" title="Class template extract_member">
+<link rel="next" href="../opaque_pointer_converter_hpp.html" title="opaque_pointer_converter.hpp">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_extract_member.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../lvalue_from_pytype_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="to_from_python_type_conversion.lvalue_from_pytype_hpp.example"></a><a class="link" href="example.html" title="Example">Example</a>
+</h3></div></div></div>
+<pre class="programlisting"><span class="identifier">This</span> <span class="identifier">example</span> <span class="identifier">presumes</span> <span class="identifier">that</span> <span class="identifier">someone</span> <span class="identifier">has</span> <span class="identifier">implemented</span> <span class="identifier">the</span> <span class="identifier">standard</span> <span class="identifier">noddy</span> <span class="identifier">example</span> <span class="identifier">module</span> <span class="identifier">from</span> <span class="identifier">the</span> <span class="identifier">Python</span> <span class="identifier">documentation</span><span class="special">,</span> <span class="keyword">and</span> <span class="identifier">we</span> <span class="identifier">want</span> <span class="identifier">to</span> <span class="identifier">build</span> <span class="identifier">a</span> <span class="identifier">module</span> <span class="identifier">which</span> <span class="identifier">manipulates</span> <span class="identifier">Noddys</span><span class="special">.</span> <span class="identifier">Since</span> <span class="identifier">noddy_NoddyObject</span> <span class="identifier">is</span> <span class="identifier">so</span> <span class="identifier">simple</span> <span class="identifier">that</span> <span class="identifier">it</span> <span class="identifier">carries</span> <span class="identifier">no</span> <span class="identifier">interesting</span> <span class="identifier">information</span><span class="special">,</span> <span class="identifier">the</span> <span class="identifier">example</span> <span class="identifier">is</span> <span class="identifier">a</span> <span class="identifier">bit</span> <span class="identifier">contrived</span><span class="special">:</span> <span class="identifier">it</span> <span class="identifier">assumes</span> <span class="identifier">you</span> <span class="identifier">want</span> <span class="identifier">to</span> <span class="identifier">keep</span> <span class="identifier">track</span> <span class="identifier">of</span> <span class="identifier">one</span> <span class="identifier">particular</span> <span class="identifier">object</span> <span class="keyword">for</span> <span class="identifier">some</span> <span class="identifier">reason</span><span class="special">.</span> <span class="identifier">This</span> <span class="identifier">module</span> <span class="identifier">would</span> <span class="identifier">have</span> <span class="identifier">to</span> <span class="identifier">be</span> <span class="identifier">dynamically</span> <span class="identifier">linked</span> <span class="identifier">to</span> <span class="identifier">the</span> <span class="identifier">module</span> <span class="identifier">which</span> <span class="identifier">defines</span> <span class="identifier">noddy_NoddyType</span><span class="special">.</span>
+</pre>
+<p>
+          In C++:
+        </p>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">handle</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">borrowed</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">lvalue_from_pytype</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+
+<span class="comment">// definition lifted from the Python docs</span>
+<span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="special">{</span>
+   <span class="identifier">PyObject_HEAD</span>
+<span class="special">}</span> <span class="identifier">noddy_NoddyObject</span><span class="special">;</span>
+
+<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">python</span><span class="special">;</span>
+<span class="keyword">static</span> <span class="identifier">handle</span><span class="special">&lt;</span><span class="identifier">noddy_NoddyObject</span><span class="special">&gt;</span> <span class="identifier">cache</span><span class="special">;</span>
+
+<span class="keyword">bool</span> <span class="identifier">is_cached</span><span class="special">(</span><span class="identifier">noddy_NoddyObject</span><span class="special">*</span> <span class="identifier">x</span><span class="special">)</span>
+<span class="special">{</span>
+   <span class="keyword">return</span> <span class="identifier">x</span> <span class="special">==</span> <span class="identifier">cache</span><span class="special">.</span><span class="identifier">get</span><span class="special">();</span>
+<span class="special">}</span>
+
+<span class="keyword">void</span> <span class="identifier">set_cache</span><span class="special">(</span><span class="identifier">noddy_NoddyObject</span><span class="special">*</span> <span class="identifier">x</span><span class="special">)</span>
+<span class="special">{</span>
+   <span class="identifier">cache</span> <span class="special">=</span> <span class="identifier">handle</span><span class="special">&lt;</span><span class="identifier">noddy_NoddyObject</span><span class="special">&gt;(</span><span class="identifier">borrowed</span><span class="special">(</span><span class="identifier">x</span><span class="special">));</span>
+<span class="special">}</span>
+
+<span class="identifier">BOOST_PYTHON_MODULE</span><span class="special">(</span><span class="identifier">noddy_cache</span><span class="special">)</span>
+<span class="special">{</span>
+   <span class="identifier">def</span><span class="special">(</span><span class="string">"is_cached"</span><span class="special">,</span> <span class="identifier">is_cached</span><span class="special">);</span>
+   <span class="identifier">def</span><span class="special">(</span><span class="string">"set_cache"</span><span class="special">,</span> <span class="identifier">set_cache</span><span class="special">);</span>
+
+   <span class="comment">// register Noddy lvalue converter</span>
+   <span class="identifier">lvalue_from_pytype</span><span class="special">&lt;</span><span class="identifier">extract_identity</span><span class="special">&lt;</span><span class="identifier">noddy_NoddyObject</span><span class="special">&gt;,&amp;</span><span class="identifier">noddy_NoddyType</span><span class="special">&gt;();</span>
+<span class="special">}</span>
+</pre>
+<p>
+          In Python:
+        </p>
+<pre class="programlisting"><span class="special">&gt;&gt;&gt;</span> <span class="identifier">import</span> <span class="identifier">noddy</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">n</span> <span class="special">=</span> <span class="identifier">noddy</span><span class="special">.</span><span class="identifier">new_noddy</span><span class="special">()</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">import</span> <span class="identifier">noddy_cache</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">noddy_cache</span><span class="special">.</span><span class="identifier">is_cached</span><span class="special">(</span><span class="identifier">n</span><span class="special">)</span>
+<span class="number">0</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">noddy_cache</span><span class="special">.</span><span class="identifier">set_cache</span><span class="special">(</span><span class="identifier">n</span><span class="special">)</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">noddy_cache</span><span class="special">.</span><span class="identifier">is_cached</span><span class="special">(</span><span class="identifier">n</span><span class="special">)</span>
+<span class="number">1</span>
+<span class="special">&gt;&gt;&gt;</span> <span class="identifier">noddy_cache</span><span class="special">.</span><span class="identifier">is_cached</span><span class="special">(</span><span class="identifier">noddy</span><span class="special">.</span><span class="identifier">new_noddy</span><span class="special">())</span>
+<span class="number">0</span>
+</pre>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="class_template_extract_member.html"><img src="../../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../lvalue_from_pytype_hpp.html"><img src="../../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../../images/home.png" alt="Home"></a><a accesskey="n" href="../opaque_pointer_converter_hpp.html"><img src="../../../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

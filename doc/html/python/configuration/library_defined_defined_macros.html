@@ -1,0 +1,70 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Library Defined Defined Macros</title>
+<link rel="stylesheet" href="../../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../../index.html" title="Boost.Python">
+<link rel="up" href="../configuration.html" title="Configuration">
+<link rel="prev" href="application_defined_macros.html" title="Application Defined Macros">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr>
+<td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../images/boost.png"></td>
+<td align="center"><a href="../../../../index.html">Home</a></td>
+<td align="center"><a href="../../../../libs/libraries.htm">Libraries</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
+<td align="center"><a href="../../../../more/index.htm">More</a></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="application_defined_macros.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../configuration.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h3 class="title">
+<a name="python.configuration.library_defined_defined_macros"></a><a class="link" href="library_defined_defined_macros.html" title="Library Defined Defined Macros">Library
+      Defined Defined Macros</a>
+</h3></div></div></div>
+<p>
+        ================================================ ========================
+        ======================== Macro Default Meaning ================================================
+        ======================== ======================== BOOST_PYTHON_TYPE_ID_NAME
+        <span class="emphasis"><em>not defined</em></span> If defined, this indicates that the type_info
+        comparison across shared library boundaries does not work on this platform.
+        In other words, if shared-lib-1 passes <code class="computeroutput"><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">)</span></code>
+        to a function in shared-lib-2 which compares it to <code class="computeroutput"><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">)</span></code>,
+        that comparison may return <code class="computeroutput"><span class="keyword">false</span></code>.
+        If this macro is #defined, Boost.Python uses and compares <code class="computeroutput"><span class="keyword">typeid</span><span class="special">(</span><span class="identifier">T</span><span class="special">).</span><span class="identifier">name</span><span class="special">()</span></code>
+        instead of using and comparing the <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">type_info</span></code>
+        objects directly. BOOST_PYTHON_NO_PY_SIGNATURES <span class="emphasis"><em>not defined</em></span>
+        If defined for a module no pythonic signatures are generated for the docstrings
+        of the module functions, and no python type is associated with any of the
+        converters registered by the module. This also reduces the binary size of
+        the module by about 14% (gcc compiled). If defined for the boost_python runtime
+        library, the default for the <code class="computeroutput"><span class="identifier">docstring_options</span><span class="special">.</span><span class="identifier">enable_py_signatures</span><span class="special">()</span></code> is set to <code class="computeroutput"><span class="keyword">false</span></code>.
+        BOOST_PYTHON_SUPPORTS_PY_SIGNATURES <span class="emphasis"><em>not defined</em></span> This
+        macro is defined to enable a smooth transition from older Boost.Python versions
+        which do not support pythonic signatures. For example usage see here. BOOST_PYTHON_PY_SIGNATURES_PROPER_INIT_SELF_TYPE
+        <span class="emphasis"><em>not defined</em></span> If defined the python type of <code class="computeroutput"><span class="identifier">__init__</span></code> method "self" parameters
+        is properly generated, otherwise object is used. It is undefined by default
+        because it increases the binary size of the module by about 14% (gcc compiled).
+        ================================================ ========================
+        ========================
+      </p>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2002-2015 David
+      Abrahams, Stefan Seefeld<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="application_defined_macros.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../configuration.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../../index.html"><img src="../../images/home.png" alt="Home"></a>
+</div>
+</body>
+</html>
