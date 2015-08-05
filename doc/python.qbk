@@ -48,16 +48,17 @@ The development of these features was funded in part by grants to `Boost Consult
 * _reference_
 * [link configuration Configuration Information]
 * [link glossary Glossary]
-* Support Resources
+* [link support Support Resources]
 * [link faq Frequently Asked Questions (FAQs)]
 
 [endsect]
 
 [h2 Articles]
 
-[@bpl.html Building Hybrid Systems With Boost Python], by Dave Abrahams and Ralf W. Grosse-Kunstleve ([@bpl.pdf PDF])
+[@article.html Building Hybrid Systems With Boost Python], by Dave Abrahams and Ralf W. Grosse-Kunstleve
 
 [include building.qbk]
 [include configuration.qbk]
+[include support.qbk]
 [include faq.qbk]
 [include glossary.qbk]

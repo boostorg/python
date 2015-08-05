@@ -5,7 +5,7 @@
 :Author: David Abrahams
 :Contact: dave@boost-consulting.com
 :organization: `Boost Consulting`_
-:date: $Date$
+:date: 2003-05-14
 
 :Author: Ralf W. Grosse-Kunstleve
 
@@ -808,7 +808,7 @@ mainly concentrated on the C++ parts.  However, as the toolbox is
 becoming more complete, more and more newly added functionality can be
 implemented in Python.
 
-.. image:: python_cpp_mix.jpg
+.. image:: images/python_cpp_mix.png
 
 This figure shows the estimated ratio of newly added C++ and Python
 code over time as new algorithms are implemented.  We expect this

@@ -9,14 +9,15 @@ path-constant images : html/images ;
 
 
 project python/doc
-    : requirements <format>html:<xsl:param>boost.defaults=Boost
+    : requirements <format>html:<xsl:param>boost.defaults=none
       <format>html:<xsl:param>toc.max.depth=3
-      <format>html:<xsl:param>toc.section.depth=3
-      <format>html:<xsl:param>chunk.section.depth=3
+      <format>html:<xsl:param>toc.section.depth=2
+      <format>html:<xsl:param>chunk.section.depth=1
     ;
 
 import boostbook ;
 import quickbook ;
+import docutils ;
 
 boostbook python : python.qbk
 	  : <format>html:<name>$(here)/html
@@ -39,3 +40,8 @@ boostbook reference : reference.qbk
             <format>html:<xsl:param>boost.image.src=../images/boost.png
             <format>html:<xsl:param>boost.graphics.root=../images/
 	    ;
+
+html article : article.rst
+         : <location>html
+	   <docutils-html>"--link-stylesheet --traceback --trim-footnote-reference-space --footnote-references=superscript --stylesheet=rst.css"
+            ;
