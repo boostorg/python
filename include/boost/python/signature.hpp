@@ -6,8 +6,6 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 ///////////////////////////////////////////////////////////////////////////////
-#if !defined(BOOST_PP_IS_ITERATING)
-
 # ifndef SIGNATURE_JDG20020813_HPP
 #  define SIGNATURE_JDG20020813_HPP
 
@@ -15,23 +13,19 @@
 
 # include <boost/mpl/if.hpp>
 # include <boost/type_traits/is_convertible.hpp>
-
-#  include <boost/python/detail/preprocessor.hpp>
-#  include <boost/preprocessor/repeat.hpp>
-#  include <boost/preprocessor/enum.hpp>
-#  include <boost/preprocessor/enum_params.hpp>
-#  include <boost/preprocessor/empty.hpp>
-#  include <boost/preprocessor/arithmetic/sub.hpp>
-#  include <boost/preprocessor/iterate.hpp>
-#  include <boost/python/detail/type_list.hpp>
-
-#  include <boost/preprocessor/debug/line.hpp>
-#  include <boost/preprocessor/arithmetic/sub.hpp>
-#  include <boost/preprocessor/arithmetic/inc.hpp>
-#  include <boost/preprocessor/repetition/enum_trailing_params.hpp>
-
-# define BOOST_PYTHON_LIST_INC(n)        \
-   BOOST_PP_CAT(mpl::vector, BOOST_PP_INC(n))
+# include <boost/type_traits/is_class.hpp>
+# include <boost/type_traits/conditional.hpp>
+# include <boost/type_traits/decay.hpp>
+# include <boost/function_types/result_type.hpp>
+# include <boost/function_types/parameter_types.hpp>
+# include <boost/function_types/components.hpp>
+# include <boost/function_types/is_function_pointer.hpp>
+# include <boost/mpl/vector.hpp>
+# include <boost/mpl/insert_range.hpp>
+# include <boost/mpl/copy.hpp>
+# include <boost/mpl/joint_view.hpp>
+# include <boost/mpl/transform.hpp>
+# include <boost/type_traits/remove_cv.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost { namespace python { namespace detail {
@@ -108,145 +102,99 @@ struct most_derived
 //
 // @group {
 
-// 'default' calling convention
+template<typename T>
+struct is_callable_detect {
+private:
+    typedef char(&yes)[1];
+    typedef char(&no)[2];
 
-#  define BOOST_PYTHON_FN_CC
+    struct Fallback { void operator()(); };
+    struct Derived : T, Fallback { };
 
-#  define BOOST_PP_ITERATION_PARAMS_1                                   \
-    (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/signature.hpp>))
+    template<typename U, U> struct Check;
 
-#  include BOOST_PP_ITERATE()
+    template<typename>
+    static yes test(...);
 
-#  undef BOOST_PYTHON_FN_CC
+    template<typename C>
+    static no test(Check<void (Fallback::*)(), &C::operator()>*);
 
-// __cdecl calling convention
+public:
+    static const bool value = sizeof(test<Derived>(0)) == sizeof(yes);
+};
 
-#  if defined(BOOST_PYTHON_ENABLE_CDECL)
+template<typename T>
+struct is_callable
+    : conditional<
+        is_class<T>::value,
+        is_callable_detect<T>,
+        false_type
+    >::type
+{ };
 
-#   define BOOST_PYTHON_FN_CC __cdecl
-#   define BOOST_PYTHON_FN_CC_IS_CDECL
+template<class CallableT, class Target, class Enable = void>
+struct get_signature_helper;
 
-#   define BOOST_PP_ITERATION_PARAMS_1                                   \
-     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/signature.hpp>))
 
-#   include BOOST_PP_ITERATE()
+template<class CallableT, class Target>
+struct get_signature_helper<CallableT, Target, typename enable_if_c<is_function<CallableT>::value>::type>{
+    typedef typename function_types::components<CallableT>::types components;
 
-#   undef BOOST_PYTHON_FN_CC
-#   undef BOOST_PYTHON_FN_CC_IS_CDECL
+    inline static components signature(CallableT, Target * = 0){ return components(); }
+};
 
-#  endif // defined(BOOST_PYTHON_ENABLE_CDECL)
 
-// __stdcall calling convention
+#if (__cplusplus > 199711L) && !defined(BOOST_NO_CXX11_LAMBDAS)
+template<class CallableT, class Target>
+struct get_signature_helper<CallableT, Target, typename enable_if_c<is_callable<CallableT>::value>::type>{
+    typedef decltype(&CallableT::operator()) operator_type;
+    typedef typename function_types::components<operator_type>::types components;
 
-#  if defined(BOOST_PYTHON_ENABLE_STDCALL)
+    inline static components signature(CallableT, Target * = 0){ return components(); }
+};
+#endif
 
-#   define BOOST_PYTHON_FN_CC __stdcall
+template<class CallableT, class Target>
+struct get_signature_helper<CallableT, Target, typename enable_if_c<function_types::is_function_pointer<CallableT>::value>::type>{
+    typedef typename function_types::components<typename decay<CallableT>::type>::types components;
 
-#   define BOOST_PP_ITERATION_PARAMS_1                                   \
-     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/signature.hpp>))
+    inline static components signature(CallableT, Target * = 0){ return components(); }
+};
 
-#   include BOOST_PP_ITERATE()
+template<class CallableT, class Target>
+struct get_signature_helper<CallableT, Target, typename enable_if_c<is_member_function_pointer<CallableT>::value>::type>{
+    typedef typename function_types::components<CallableT>::types base_components;
+    typedef typename mpl::at_c<base_components, 0>::type return_type;
+    typedef typename decay<typename
+        remove_cv<
+            typename mpl::at_c<base_components, 1>::type
+        >::type
+    >::type class_type;
 
-#   undef BOOST_PYTHON_FN_CC
+    typedef typename mpl::advance_c<typename mpl::begin<base_components>::type,  2>::type param_types_begin;
+    typedef typename mpl::end<base_components>::type param_types_end;
+    typedef mpl::iterator_range<param_types_begin, param_types_end> param_types;
 
-#  endif // defined(BOOST_PYTHON_ENABLE_STDCALL)
+    typedef typename mpl::if_c<is_same<Target, void>::value,
+        class_type,
+        typename most_derived<Target, class_type>::type
+    >::type target_type;
 
-// __fastcall calling convention
+    typedef mpl::vector<return_type, target_type&> result_and_class_type;
+    typedef mpl::joint_view<result_and_class_type, param_types> types_view;
 
-#  if defined(BOOST_PYTHON_ENABLE_FASTCALL)
+    typedef typename mpl::reverse_copy<types_view, mpl::front_inserter< mpl::vector0<> > >::type target_components;
+    typedef target_components components;
 
-#   define BOOST_PYTHON_FN_CC __fastcall
+    inline static components signature(CallableT, Target * = 0){ return components();}
+};
 
-#   define BOOST_PP_ITERATION_PARAMS_1                                   \
-     (3, (0, BOOST_PYTHON_MAX_ARITY, <boost/python/signature.hpp>))
-
-#   include BOOST_PP_ITERATE()
-
-#   undef BOOST_PYTHON_FN_CC
-
-#  endif // defined(BOOST_PYTHON_ENABLE_FASTCALL)
-
-#  undef BOOST_PYTHON_LIST_INC
-
-// }
+template<class CallableT, class Target = void>
+inline typename get_signature_helper<CallableT, Target>::components get_signature(CallableT c, Target *p = 0){
+    return get_signature_helper<CallableT, Target>::signature(boost::forward<CallableT>(c), p);
+}
 
 }}} // namespace boost::python::detail
 
 
 # endif // SIGNATURE_JDG20020813_HPP
-
-// For gcc 4.4 compatability, we must include the
-// BOOST_PP_ITERATION_DEPTH test inside an #else clause.
-#else // BOOST_PP_IS_ITERATING
-#if BOOST_PP_ITERATION_DEPTH() == 1 // defined(BOOST_PP_IS_ITERATING)
-
-# define N BOOST_PP_ITERATION()
-
-   // as 'get_signature(RT(*)(T0...TN), void* = 0)' is the same
-   // function as 'get_signature(RT(__cdecl *)(T0...TN), void* = 0)',
-   // we don't define it twice
-#  if !defined(BOOST_PYTHON_FN_CC_IS_CDECL)
-
-template <
-    class RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)>
-inline BOOST_PYTHON_LIST_INC(N)<
-    RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)>
-get_signature(RT(BOOST_PYTHON_FN_CC *)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)), void* = 0)
-{
-    return BOOST_PYTHON_LIST_INC(N)<
-            RT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
-        >();
-}
-
-#  endif // !defined(BOOST_PYTHON_FN_CC_IS_CDECL)
-
-# undef N
-
-# define BOOST_PP_ITERATION_PARAMS_2 \
-    (3, (0, 3, <boost/python/signature.hpp>))
-# include BOOST_PP_ITERATE()
-
-#else
-
-# define N BOOST_PP_RELATIVE_ITERATION(1)
-# define Q BOOST_PYTHON_CV_QUALIFIER(BOOST_PP_ITERATION())
-
-template <
-    class RT, class ClassT BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)>
-inline BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-    RT, ClassT& BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)>
-get_signature(RT(BOOST_PYTHON_FN_CC ClassT::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)) Q)
-{
-    return BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-            RT, ClassT& BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
-        >();
-}
-
-template <
-    class Target
-  , class RT
-  , class ClassT
-    BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, class T)
->
-inline BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-    RT
-  , typename most_derived<Target, ClassT>::type&
-    BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
->
-get_signature(
-    RT(BOOST_PYTHON_FN_CC ClassT::*)(BOOST_PP_ENUM_PARAMS_Z(1, N, T)) Q
-  , Target*
-)
-{
-    return BOOST_PYTHON_LIST_INC(BOOST_PP_INC(N))<
-        RT
-      , BOOST_DEDUCED_TYPENAME most_derived<Target, ClassT>::type&
-        BOOST_PP_ENUM_TRAILING_PARAMS_Z(1, N, T)
-    >();
-}
-
-# undef Q
-# undef N
-
-#endif // BOOST_PP_ITERATION_DEPTH()
-#endif // !defined(BOOST_PP_IS_ITERATING)
