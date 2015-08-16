@@ -9,6 +9,10 @@ Ensure sanity:
     >>> x = X(42)
     >>> x_function(x)
     42
+    >>> y_function(x)
+    0
+    >>> y_function(x)
+    1
 
 Demonstrate extraction in the presence of metaclass changes:
 
