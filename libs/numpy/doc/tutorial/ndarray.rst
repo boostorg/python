@@ -39,15 +39,15 @@ We can also create an array by supplying data arrays and a few other parameters.
 
 First,create an integer array ::
 
-  int data[] = {1,2,3,4} ;
+  int data[] = {1,2,3,4,5} ;
 
 Create a shape, and strides, needed by the function ::
 
-  p::tuple shape = p::make_tuple(4) ;
-  p::tuple stride = p::make_tuple(4) ; 
+  p::tuple shape = p::make_tuple(5) ;
+  p::tuple stride = p::make_tuple(sizeof(int)) ;
 
-Here, shape is 1x4 , and the stride is also 4. 
-A stride is the number of bytes that must be travelled to get to the next desired element while constructing the ndarray. Here, the size of the "int" is 32 bits and hence, the stride is 4 to access each element.
+Here, shape is (4,) , and the stride is `sizeof(int)``.
+A stride is the number of bytes that must be traveled to get to the next desired element while constructing the ndarray.
 
 The function also needs an owner, to keep track of the data array passed. Passing none is dangerous ::
 
@@ -59,7 +59,7 @@ The from_data function takes the data array, datatype,shape,stride and owner as 
 
 Now let's print the ndarray we created ::
 
-  std::cout << "Single dimensional array ::" << std::endl << p::extract < char const * > (p::str(data_ex)) << std::endl ; 
+  std::cout << "Single dimensional array ::" << std::endl << p::extract < char const * > (p::str(data_ex)) << std::endl ;
 
 Let's make it a little more interesting. Lets make an 3x2 ndarray from a multi-dimensional array using non-unit strides
 
@@ -71,7 +71,7 @@ Now let's create an array of 3x2 elements, picking the first and third elements 
 The strides will be 4x2 i.e. 4 bytes to go to the next desired row, and 2 bytes to go to the next desired column ::
 
   shape = p::make_tuple(3,2) ;
-  stride = p::make_tuple(4,2) ;
+  stride = p::make_tuple(sizeof(uint8_t)*2,sizeof(uint8_t)) ;
  
 Get the numpy dtype for the built-in 8-bit integer data type ::
 
