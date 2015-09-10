@@ -87,10 +87,10 @@ public:
   ndarray copy() const;
 
   /// @brief Return the size of the nth dimension.
-  Py_intptr_t const shape(int n) const { return get_shape()[n]; }
+  Py_intptr_t shape(int n) const { return get_shape()[n]; }
 
   /// @brief Return the stride of the nth dimension.
-  Py_intptr_t const strides(int n) const { return get_strides()[n]; }
+  Py_intptr_t strides(int n) const { return get_strides()[n]; }
     
   /**
    *  @brief Return the array's raw data pointer.
@@ -116,10 +116,10 @@ public:
   Py_intptr_t const * get_strides() const { return get_struct()->strides; }
   
   /// @brief Return the number of array dimensions.
-  int const get_nd() const { return get_struct()->nd; }
+  int get_nd() const { return get_struct()->nd; }
   
   /// @brief Return the array flags.
-  bitflag const get_flags() const;
+  bitflag get_flags() const;
   
   /// @brief Reverse the dimensions of the array.
   ndarray transpose() const;

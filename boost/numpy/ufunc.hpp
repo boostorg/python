@@ -52,13 +52,13 @@ public:
   char * get_data(int n) const;
 
   /// @brief Return the number of dimensions of the broadcasted array expression.
-  int const get_nd() const;
+  int get_nd() const;
     
   /// @brief Return the shape of the broadcasted array expression as an array of integers.
   Py_intptr_t const * get_shape() const;
 
   /// @brief Return the shape of the broadcasted array expression in the nth dimension.
-  Py_intptr_t const shape(int n) const;
+  Py_intptr_t shape(int n) const;
     
 };
 

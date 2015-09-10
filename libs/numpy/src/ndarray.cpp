@@ -22,7 +22,7 @@ namespace numpy
 namespace detail 
 {
 
-ndarray::bitflag numpy_to_bitflag(int const f) 
+ndarray::bitflag numpy_to_bitflag(int const f)
 {
   ndarray::bitflag r = ndarray::NONE;
   if (f & NPY_C_CONTIGUOUS) r = (r | ndarray::C_CONTIGUOUS);
@@ -32,7 +32,7 @@ ndarray::bitflag numpy_to_bitflag(int const f)
   return r;
 }
 
-int const bitflag_to_numpy(ndarray::bitflag f) 
+int bitflag_to_numpy(ndarray::bitflag f)
 {
   int r = 0;
   if (f & ndarray::C_CONTIGUOUS) r |= NPY_C_CONTIGUOUS;
@@ -184,7 +184,7 @@ void ndarray::set_base(object const & base)
   }
 }
 
-ndarray::bitflag const ndarray::get_flags() const 
+ndarray::bitflag ndarray::get_flags() const
 {
   return numpy::detail::numpy_to_bitflag(get_struct()->flags);
 }

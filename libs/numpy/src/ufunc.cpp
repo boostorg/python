@@ -50,7 +50,7 @@ char * multi_iter::get_data(int i) const
   return reinterpret_cast<char*>(PyArray_MultiIter_DATA(ptr(), i));
 }
 
-int const multi_iter::get_nd() const 
+int multi_iter::get_nd() const
 {
   return reinterpret_cast<PyArrayMultiIterObject*>(ptr())->nd;
 }
@@ -60,7 +60,7 @@ Py_intptr_t const * multi_iter::get_shape() const
   return reinterpret_cast<PyArrayMultiIterObject*>(ptr())->dimensions;
 }
 
-Py_intptr_t const multi_iter::shape(int n) const 
+Py_intptr_t multi_iter::shape(int n) const
 {
   return reinterpret_cast<PyArrayMultiIterObject*>(ptr())->dimensions[n];
 }
