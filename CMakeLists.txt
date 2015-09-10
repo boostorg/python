@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 
 project( boost.numpy )
 
-set(BUILD_TEST ON CACHE BOOL "Build Boost.NumPy Tests")
+set(BUILD_TESTS ON CACHE BOOL "Build Boost.NumPy Tests")
 set(BUILD_EXAMPLES ON CACHE BOOL "Build Boost.NumPy Examples")
 
 # put our local cmake find scripts at the beginning of the cmake

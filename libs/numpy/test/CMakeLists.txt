@@ -16,11 +16,19 @@ set( TestCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${runCmakeTest} )
 
 # custom macro with most of the redundant code for making a python test
 macro( addPythonTest _name _srcpy )
+  ADD_CUSTOM_TARGET(
+    ${_srcpy} ALL
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_srcpy}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_SOURCE_DIR}/${_srcpy}
+    ${CMAKE_CURRENT_BINARY_DIR}/${_srcpy}
+  )
+
   # make the pyd library link against boost_numpy python and boost
   TARGET_LINK_LIBRARIES(${_name} boost_numpy)
-  
+
   # make a test of the module using the python source file in the test directory
-  ADD_TEST(${_name} ${TestCommand} ${TEST_SOURCE_DIR}/${_srcpy})
+  ADD_TEST(${_name} ${TestCommand} ${CMAKE_CURRENT_BINARY_DIR}/${_srcpy})
 
   # set the regex to use to recognize a failure since `python testfoo.py`
   # does not seem to return non-zero with a test failure
