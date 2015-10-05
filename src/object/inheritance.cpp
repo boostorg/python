@@ -15,6 +15,7 @@
 #include <boost/integer_traits.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
+#include <boost/unordered_map.hpp>
 #include <queue>
 #include <vector>
 #include <functional>
@@ -50,6 +51,9 @@ namespace
   //
   typedef python::type_info class_id;
 
+  // Integer type for cast distances
+  typedef unsigned int distance_t;
+
   // represents a graph of available casts
   
 #if 0
@@ -61,7 +65,7 @@ namespace
         adjacency_list<vecS,vecS, bidirectionalS, no_property
 
       // edge index property allows us to look up edges in the connectivity matrix
-      , property<edge_index_t,std::size_t
+      , property<edge_index_t, distance_t
   
                  // The function which casts a void* from the edge's source type
                  // to its destination type.
@@ -74,10 +78,83 @@ namespace
 
   typedef cast_graph::vertex_descriptor vertex_t;
   typedef cast_graph::edge_descriptor edge_t;
+
+  // Each distance is stored along with the version of the graph used to
+  // compute it.  As the graph expands, the distance can be recomputed in
+  // place.
+  struct distance_version
+  {
+      distance_t distance;
+      unsigned int version;
+  };
+
+  // Sparse storage of smart_graph distances.
+  typedef boost::unordered_map<std::pair<vertex_t, vertex_t>, distance_version>
+      all_pairs_distance_map;
+
+  // For a pair of vertices, (outer_key, inner_key), node_distance_map
+  // provides a BGL property_map interface to the inner_keys for a given
+  // outer_key.
+  class node_distance_map
+  {
+  public:
+      typedef distance_t value_type;
+      typedef vertex_t key_type;
+      typedef distance_t& reference;
+      typedef read_write_property_map_tag category;
+
+      node_distance_map(all_pairs_distance_map &full_map, vertex_t outer_key, unsigned int version)
+          : m_all_pairs_map(full_map)
+          , m_outer_key(outer_key)
+          , m_version(version)
+      {}
+
+      bool is_initialized() const
+      {
+          // Check the version of the identity entry (if it exists) to see if
+          // this row needs (re-)initialization.
+          all_pairs_distance_map::const_iterator i =
+              m_all_pairs_map.find(make_full_key(m_outer_key));
+          return i != m_all_pairs_map.end() && i->second.version == m_version;
+      }
+
+      distance_t distance(vertex_t inner_key) const
+      {
+          all_pairs_distance_map::const_iterator i =
+              m_all_pairs_map.find(make_full_key(inner_key));
+          return (i != m_all_pairs_map.end() && i->second.version == m_version)
+              ? i->second.distance : std::numeric_limits<distance_t>::max();
+      }
+
+      void set_distance(vertex_t inner_key, distance_t value)
+      {
+          distance_version dv = { value, m_version };
+          m_all_pairs_map[make_full_key(inner_key)] = dv;
+      }
+
+  private:
+      std::pair<vertex_t, vertex_t> make_full_key(vertex_t inner_key) const
+      {
+          return std::pair<vertex_t, vertex_t>(m_outer_key, inner_key);
+      }
+
+      all_pairs_distance_map &m_all_pairs_map;
+      vertex_t m_outer_key;
+      unsigned int m_version;
+  };
+
+  inline distance_t get(node_distance_map const& m, vertex_t inner_key)
+  {
+      return m.distance(inner_key);
+  }
+
+  inline void put(node_distance_map& m, vertex_t inner_key, distance_t value)
+  {
+      m.set_distance(inner_key, value);
+  }
   
   struct smart_graph
   {
-      typedef std::vector<std::size_t>::const_iterator node_distance_map;
       
       typedef std::pair<cast_graph::out_edge_iterator
                         , cast_graph::out_edge_iterator> out_edges_t;
@@ -86,36 +163,26 @@ namespace
       // target node
       node_distance_map distances_to(vertex_t target) const
       {
-          std::size_t n = num_vertices(m_topology);
-          if (m_distances.size() != n * n)
-          {
-              m_distances.clear();
-              m_distances.resize(n * n, (std::numeric_limits<std::size_t>::max)());
-              m_known_vertices = n;
-          }
-          
-          std::vector<std::size_t>::iterator to_target = m_distances.begin() + n * target;
+          // Because the graph only expands, use the number of vertices as the
+          // "version" of the node_distance_map.
+          unsigned int version = num_vertices(m_topology);
+
+          node_distance_map to_target(m_distances, target, version);
 
           // this node hasn't been used as a target yet
-          if (to_target[target] != 0)
+          if (!to_target.is_initialized())
           {
               typedef reverse_graph<cast_graph> reverse_cast_graph;
               reverse_cast_graph reverse_topology(m_topology);
               
-              to_target[target] = 0;
+              to_target.set_distance(target, 0);
               
               breadth_first_search(
                   reverse_topology, target
                   , visitor(
                       make_bfs_visitor(
                           record_distances(
-                              make_iterator_property_map(
-                                  to_target
-                                  , get(vertex_index, reverse_topology)
-# ifdef BOOST_NO_STD_ITERATOR_TRAITS
-                                  , *to_target
-# endif 
-                                  )
+                              to_target
                               , on_tree_edge()
                               ))));
           }
@@ -127,13 +194,11 @@ namespace
       cast_graph const& topology() const { return m_topology; }
 
       smart_graph()
-          : m_known_vertices(0)
       {}
       
    private:
       cast_graph m_topology;
-      mutable std::vector<std::size_t> m_distances;
-      mutable std::size_t m_known_vertices;
+      mutable all_pairs_distance_map m_distances;
   };
   
   smart_graph& full_graph()
@@ -236,7 +301,7 @@ namespace
 
   struct q_elt
   {
-      q_elt(std::size_t distance
+      q_elt(distance_t distance
             , void* src_address
             , vertex_t target
             , cast_function cast
@@ -247,7 +312,7 @@ namespace
           , cast(cast)
       {}
       
-      std::size_t distance;
+      distance_t distance;
       void* src_address;
       vertex_t target;
       cast_function cast;
@@ -285,14 +350,10 @@ namespace
 
   void* search(smart_graph const& g, void* p, vertex_t src, vertex_t dst)
   {
-      // I think this test was thoroughly bogus -- dwa
-      // If we know there's no path; bail now.
-      // if (src > g.known_vertices() || dst > g.known_vertices())
-      //    return 0;
-      
-      smart_graph::node_distance_map d(g.distances_to(dst));
+      node_distance_map d(g.distances_to(dst));
 
-      if (d[src] == (std::numeric_limits<std::size_t>::max)())
+      const distance_t src_distance = d.distance(src);
+      if (src_distance == std::numeric_limits<distance_t>::max())
           return 0;
 
       typedef property_map<cast_graph,edge_cast_t>::const_type cast_map;
@@ -303,7 +364,7 @@ namespace
       visited_t visited;
       std::priority_queue<q_elt> q;
       
-      q.push(q_elt(d[src], p, src, identity_cast));
+      q.push(q_elt(src_distance, p, src, identity_cast));
       while (!q.empty())
       {
           q_elt top = q.top();
@@ -338,7 +399,7 @@ namespace
           {
               edge_t e = *p;
               q.push(q_elt(
-                         d[target(e, g.topology())]
+                         d.distance(target(e, g.topology()))
                          , dst_address
                          , target(e, g.topology())
                          , boost::get(casts, e)));
