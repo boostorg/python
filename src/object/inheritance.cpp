@@ -69,7 +69,8 @@ namespace
   
                  // The function which casts a void* from the edge's source type
                  // to its destination type.
-                 , property<edge_cast_t,cast_function> > >
+                 , property<edge_cast_t,cast_function> >
+      , no_property, vecS >
 #if 0
   {};
 #else
