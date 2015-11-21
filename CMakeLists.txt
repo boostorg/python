@@ -43,7 +43,17 @@ message( STATUS "Boost Paths:")
 message( STATUS "Include  : " ${Boost_INCLUDE_DIRS})
 message( STATUS "Libraries: " ${Boost_LIBRARIES})
 
-# add_definitions( -DBOOST_ALL_NO_LIB )
+if(MSVC)
+  # With Visual Studio remove the automatic linking
+  # feature
+  add_definitions( -DBOOST_ALL_NO_LIB )
+endif()
+
+if(Boost_USE_STATIC_LIBS)
+  # if the user specified he wants to link to static libraries
+  # force linking to static boost python
+  add_definitions( -DBOOST_PYTHON_STATIC_LIB )
+endif()
 # In some cases, you may need to explicitly specify that a dynamic Boost is used; if so use:
 # add_definitions( -DBOOST_ALL_DYN_LINK )
 
