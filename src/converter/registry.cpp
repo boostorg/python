@@ -85,8 +85,7 @@ BOOST_PYTHON_DECL PyObject* registration::to_python(void const volatile* source)
 
         throw_error_already_set();
     }
-    
-    if (this->m_to_python != 0)
+    else
     {
         return source == 0
             ? incref(Py_None)
