@@ -104,6 +104,8 @@ namespace
           delete_node( node->next );
           delete node;
       }
+      else if( node )
+          delete node;
   }
 }
 
