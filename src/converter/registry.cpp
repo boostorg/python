@@ -98,13 +98,9 @@ namespace
   template< typename T >
   void delete_node( T* node )
   {
-      if( node && node->next )
-      {
+      if (node != 0)
           delete_node( node->next );
-          delete node;
-      }
-      else if( node )
-          delete node;
+      delete node;
   }
 }
 
