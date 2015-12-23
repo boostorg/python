@@ -1976,7 +1976,7 @@ various files as demonstrated here.]
 
 [note This method is useful too if you are getting the error message
 ['"fatal error C1204:Compiler limit:internal structure overflow"] when compiling
-a large source file, as explained in the [@../../../v2/faq.html#c1204 FAQ].]
+a large source file, as explained in the [@../doc/html/faq/fatal_error_c1204_compiler_limit.html FAQ].]
 
 [endsect]
 [endsect] [/ General Techniques]
