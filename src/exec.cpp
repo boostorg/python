@@ -101,6 +101,9 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
                 f,
                 Py_file_input,
 		global.ptr(), local.ptr());
+#if PY_VERSION_HEX >= 0x03000000
+  fclose(fs);
+#endif
   if (!result) throw_error_already_set();
   return object(detail::new_reference(result));
 }
