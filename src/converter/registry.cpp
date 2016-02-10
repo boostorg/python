@@ -209,20 +209,6 @@ namespace registry
 #  endif 
       entry* slot = get(source_t);
       
-      assert(slot->m_to_python == 0); // we have a problem otherwise
-      if (slot->m_to_python != 0)
-      {
-          std::string msg = (
-              std::string("to-Python converter for ")
-              + source_t.name()
-              + " already registered; second conversion method ignored."
-          );
-          
-          if ( ::PyErr_Warn( NULL, const_cast<char*>(msg.c_str()) ) )
-          {
-              throw_error_already_set();
-          }
-      }
       slot->m_to_python = f;
       slot->m_to_python_target_type = to_python_target_type;
   }
