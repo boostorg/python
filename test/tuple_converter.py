@@ -15,6 +15,10 @@
 ... except TypeError: pass
 ... else: print 'expected an exception, got', result, 'instead'
 
+>>> try: result = test_tuple_int_string((5,))
+... except TypeError: pass
+... else: print 'expected an exception, got', result, 'instead'
+
 """
 
 def run(args = None):
