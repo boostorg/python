@@ -8,7 +8,7 @@ import os ;
 lib socket ;
 
 use-project /boost/python : ../build ;
-project /boost/python/test 
+project /boost/python/test
   : requirements
     <toolset>gcc:<cxxflags>-Wextra
     <target-os>qnxnto:<library>socket
@@ -27,7 +27,7 @@ rule py-run ( sources * : input-file ? )
       : $(input-file)
       : #requirements
         <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
- 
+
     ] ;
 }
 
@@ -90,8 +90,8 @@ bpl-test crossmod_exception
 [ bpl-test andreas_beyer ]
 [ bpl-test wrapper_held_type ]
 
-[ bpl-test polymorphism2_auto_ptr 
-  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp 
+[ bpl-test polymorphism2_auto_ptr
+  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp
 ]
 
 [ bpl-test polymorphism ]
@@ -109,7 +109,7 @@ bpl-test crossmod_exception
 [ bpl-test try : newtest.py m1.cpp m2.cpp ]
 [ bpl-test const_argument ]
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
-   
+
 
 [ python-extension builtin_converters_ext : test_builtin_converters.cpp /boost/python//boost_python ]
 [ bpl-test builtin_converters : test_builtin_converters.py builtin_converters_ext ]
@@ -174,6 +174,8 @@ bpl-test crossmod_opaque
 
 [ bpl-test vector_indexing_suite ]
 
+[ bpl-test tuple_converter ]
+
 [ bpl-test pointer_vector
   : # files
   : # requirements
@@ -181,13 +183,13 @@ bpl-test crossmod_opaque
     # Whenever the cause for the failure of the polymorphism test is found
     # and fixed, this should be retested.
     <toolset>hp_cxx:<build>no ]
-      
+
 [ python-extension map_indexing_suite_ext
     : map_indexing_suite.cpp int_map_indexing_suite.cpp a_map_indexing_suite.cpp
     /boost/python//boost_python ]
-[ bpl-test  
+[ bpl-test
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
-      
+
 [ run import_.cpp /boost/python//boost_python $(PY) : : import_.py ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
@@ -215,11 +217,11 @@ bpl-test crossmod_opaque
 [ py-compile copy_ctor_mutates_rhs.cpp ]
 
 [ py-run upcast.cpp ]
-  
+
 [ py-compile select_holder.cpp ]
-  
-[ run select_from_python_test.cpp ../src/converter/type_id.cpp 
-  :   
+
+[ run select_from_python_test.cpp ../src/converter/type_id.cpp
+  :
   :
   : <define>BOOST_PYTHON_STATIC_LIB
     <use>$(PY)
