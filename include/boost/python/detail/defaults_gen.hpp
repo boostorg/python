@@ -26,6 +26,7 @@
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next.hpp>
 #include <boost/mpl/deref.hpp>
+#include <boost/mpl/assert.hpp>
 #include <cstddef>
 
 namespace boost { namespace python {
@@ -211,18 +212,16 @@ namespace detail
         : ::boost::python::detail::overloads_common<fstubs_name>(                           \
             doc, keywords.range())                                                          \
     {                                                                                       \
-        typedef typename ::boost::python::detail::                                          \
-            error::more_keywords_than_function_arguments<                                   \
-                N,n_args>::too_many_keywords assertion;                                     \
+        BOOST_MPL_ASSERT_MSG(N <= n_args,                                                   \
+                             MORE_KEYWORDS_THAN_FUNCTION_ARGUMENTS, ());                    \
     }                                                                                       \
     template <std::size_t N>                                                                \
     fstubs_name(::boost::python::detail::keywords<N> const& keywords, char const* doc = 0)  \
         : ::boost::python::detail::overloads_common<fstubs_name>(                           \
             doc, keywords.range())                                                          \
     {                                                                                       \
-        typedef typename ::boost::python::detail::                                          \
-            error::more_keywords_than_function_arguments<                                   \
-                N,n_args>::too_many_keywords assertion;                                     \
+        BOOST_MPL_ASSERT_MSG(N <= n_args,                                                   \
+                             MORE_KEYWORDS_THAN_FUNCTION_ARGUMENTS, ());                    \
     }
 
 # if defined(BOOST_NO_VOID_RETURNS)

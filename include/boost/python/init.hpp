@@ -26,7 +26,7 @@
 #include <boost/mpl/prior.hpp>
 #include <boost/mpl/joint_view.hpp>
 #include <boost/mpl/back.hpp>
-
+#include <boost/mpl/assert.hpp>
 #include <boost/type_traits/is_same.hpp>
 
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
@@ -63,15 +63,6 @@ struct optional; // forward declaration
 
 namespace detail
 {
-  namespace error
-  {
-    template <int keywords, int init_args>
-    struct more_keywords_than_init_arguments
-    {
-        typedef char too_many_keywords[init_args - keywords >= 0 ? 1 : -1];
-    };
-  }
-
   //  is_optional<T>::value
   //
   //      This metaprogram checks if T is an optional
@@ -222,18 +213,16 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     init(char const* doc_, detail::keywords<N> const& kw)
         : base(doc_, kw.range())
     {
-        typedef typename detail::error::more_keywords_than_init_arguments<
-            N, n_arguments::value + 1
-            >::too_many_keywords assertion;
+        BOOST_MPL_ASSERT_MSG(N <= n_arguments::value + 1,
+                             MORE_KEYWORDS_THAN_FUNCTION_ARGUMENTS, ());
     }
 
     template <std::size_t N>
     init(detail::keywords<N> const& kw, char const* doc_ = 0)
         : base(doc_, kw.range())
     {
-        typedef typename detail::error::more_keywords_than_init_arguments<
-            N, n_arguments::value + 1
-            >::too_many_keywords assertion;
+      BOOST_MPL_ASSERT_MSG(N <= n_arguments::value + 1,
+                             MORE_KEYWORDS_THAN_FUNCTION_ARGUMENTS, ());
     }
 
     template <class CallPoliciesT>
