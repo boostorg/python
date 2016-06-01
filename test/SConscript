@@ -91,7 +91,8 @@ for test in [('injected',),
              ('docstring',),
              ('pytype_function',),
              ('vector_indexing_suite',),
-             ('pointer_vector',)]:
+             ('pointer_vector',),
+             ('override_null',)]:
     tests+=env.BPLTest(*test)
 
 test = env.BoostRunPythonScript('test_builtin_converters.py')
