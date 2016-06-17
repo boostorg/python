@@ -7,15 +7,15 @@
 1
 >>> try:
 ...     accept_slice(list((1,2)))
-...     print "test failed"
+...     print("test failed")
 ... except:
-...     print "test passed"
+...     print("test passed")
 ...
 test passed
 >>> try:
 ...     from Numeric import array
 ... except:
-...     print 1
+...     print(1)
 ... else:
 ...     check_numeric_array_rich_slice('Numeric', 'ArrayType', lambda x:x)
 ...
@@ -23,7 +23,7 @@ test passed
 >>> try:
 ...     from numarray import array, all
 ... except:
-...     print 1
+...     print(1)
 ... else:
 ...     check_numeric_array_rich_slice('numarray', 'NDArray', all)
 ...
@@ -34,7 +34,7 @@ test passed
 ... elif sys.version_info[0] > 2:
 ...     check_string_rich_slice()
 ... else:
-...     print 1
+...     print(1)
 ...
 1
 >>> check_slice_get_indices( slice(None))
@@ -65,8 +65,8 @@ def run(args = None):
     return doctest.testmod(sys.modules.get(__name__))
     
 if __name__ == '__main__':
-    print "running..."
+    print("running...")
     import sys
     status = run()[0]
-    if (status == 0): print "Done."
+    if (status == 0): print("Done.")
     sys.exit(status)

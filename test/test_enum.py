@@ -38,7 +38,7 @@ enum_ext.color.blue
 
 >>> try: identity(1)
 ... except TypeError: pass
-... else: print 'expected a TypeError'
+... else: print('expected a TypeError')
 
 >>> c = colorized()
 >>> c.x
@@ -78,8 +78,8 @@ def run(args = None):
     return doctest.testmod(self)
 
 if __name__ == '__main__':
-    print "running..."
+    print("running...")
     import sys
     status = run()[0]
-    if (status == 0): print "Done."
+    if (status == 0): print("Done.")
     sys.exit(status)

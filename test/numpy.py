@@ -51,20 +51,20 @@ def _run(args = None):
     #
     
     # run all the tests with default module search
-    print 'testing default extension module:', \
-          numpy_ext.get_module_name() or '[numeric support not installed]'
+    print('testing default extension module:', \
+          numpy_ext.get_module_name() or '[numeric support not installed]')
 
     failures += _count_failures()
         
     # test against Numeric if installed
     if has_numeric:
-        print 'testing Numeric module explicitly'
+        print('testing Numeric module explicitly')
         numpy_ext.set_module_and_type('Numeric', 'ArrayType')
         
         failures += _count_failures()
             
     if has_numarray:
-        print 'testing numarray module explicitly'
+        print('testing numarray module explicitly')
         numpy_ext.set_module_and_type('numarray', 'NDArray')
         # Add the _numarray_tests to the list of things to test in
         # this case.
@@ -72,16 +72,16 @@ def _run(args = None):
 
     # see that we can go back to the default
     numpy_ext.set_module_and_type('', '')
-    print 'testing default module again:', \
-          numpy_ext.get_module_name() or '[numeric support not installed]'
+    print('testing default module again:', \
+          numpy_ext.get_module_name() or '[numeric support not installed]')
     
     failures += _count_failures()
     
     return failures
     
 if __name__ == '__main__':
-    print "running..."
+    print("running...")
     import sys
     status = _run()
-    if (status == 0): print "Done."
+    if (status == 0): print("Done.")
     sys.exit(status)

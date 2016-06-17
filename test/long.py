@@ -1,20 +1,21 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+from past.builtins import long
 '''
 >>> from long_ext import *
->>> print new_long()
+>>> print(new_long())
 0
->>> print longify(42)
+>>> print(longify(42))
 42
->>> print longify_string('300')
+>>> print(longify_string('300'))
 300
->>> is_long(20L)
+>>> is_long(long(20))
 'yes'
 >>> is_long('20')
 0
 
->>> x = Y(4294967295L)
+>>> x = Y(long(4294967295))
 '''
 
 def run(args = None):
@@ -26,8 +27,8 @@ def run(args = None):
     return doctest.testmod(sys.modules.get(__name__))
     
 if __name__ == '__main__':
-    print "running..."
+    print("running...")
     import sys
     status = run()[0]
-    if (status == 0): print "Done."
+    if (status == 0): print("Done.")
     sys.exit(status)

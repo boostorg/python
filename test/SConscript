@@ -46,10 +46,10 @@ for test in ['injected',
              'args',
              'raw_ctor',
              #'numpy',
-             'enum',
              'exception_translator']:
     tests+=env.BPLTest(test)
 
+tests+=env.BPLTest('test_enum', ['enum_ext'])
 tests+=env.BPLTest('test_cltree', ['cltree'])
 tests+=env.BPLTest('newtest', ['m1', 'm2'])
 tests+=env.BPLTest('const_argument')

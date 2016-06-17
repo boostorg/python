@@ -1,6 +1,7 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+from past.builtins import long
 r"""
 >>> from builtin_converters_ext import *
 
@@ -10,7 +11,7 @@ r"""
 ...     return [[-base, -1, 1, base - 1], [-base - 1, base]]
 >>> def _unsigned_values(s):
 ...     base = 2 ** (8 * s)
-...     return [[1, base - 1], [-1L, -1, base]]
+...     return [[1, base - 1], [long(-1), -1, base]]
 
 # Wrappers to simplify tests
 >>> def should_pass(method, values):
@@ -232,7 +233,7 @@ Now check implicit conversions between floating/integer types
 >>> rewrap_const_reference_float(42)
 42.0
 
->>> rewrap_const_reference_float(42L)
+>>> rewrap_const_reference_float(long(42))
 42.0
 
 >>> try: rewrap_const_reference_int(42.0)
@@ -286,17 +287,17 @@ def run(args = None):
     import builtin_converters_ext
     
     if 'rewrap_value_long_long' in dir(builtin_converters_ext):
-        print 'LONG_LONG supported, testing...'
+        print('LONG_LONG supported, testing...')
     else:
-        print 'LONG_LONG not supported, skipping those tests...'
+        print('LONG_LONG not supported, skipping those tests...')
         
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
     
 if __name__ == '__main__':
-    print "running..."
+    print("running...")
     import sys
     status = run()[0]
-    if (status == 0): print "Done."
+    if (status == 0): print("Done.")
     sys.exit(status)

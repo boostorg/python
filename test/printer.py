@@ -9,5 +9,5 @@ class _printer(object):
             self.results.append(str(x))
     def check(self, x):
         if self.results[0] != str(x):
-            print '  Expected:\n %s\n  but the C++ interface gave:\n %s' % (x, self.results[0])
+            print('  Expected:\n %s\n  but the C++ interface gave:\n %s' % (x, self.results[0]))
         del self.results[0]
