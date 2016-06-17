@@ -1,0 +1,10 @@
+language: cpp
+compiler:
+  - gcc
+
+before_install:
+  - sudo apt-get install -y python-dev
+  - sudo apt-get install -y libboost-all-dev
+
+script: scons config && scons && scons test
+
