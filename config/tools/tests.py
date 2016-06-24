@@ -11,10 +11,25 @@ from SCons.Script import Builder
 from SCons.Action import Action
 from subprocess import check_output, STDOUT, CalledProcessError
 import sys
+import os
 
 
 def BoostCompileTest(env, test, source = None, **kw):
+
+    def gen_result(target, source, env=env):
+        target_file = target[0].abspath
+        result_file = os.path.splitext(target_file)[0] + '.result'
+        if sys.stdout.isatty():
+            env['RESULT']='\033[92mPASS\033[0m'
+        else:
+            env['RESULT']='PASS'
+
+        with open(result_file, 'w+') as result:
+            result.write('Result: {}\n'.format('pass'))
+
     obj = env.Object(test, source if source is not None else test + '.cpp')
+    env.AddPostAction(obj, Action(gen_result, cmdstr=None))
+    env.AddPostAction(obj, Action('@echo $RESULT'))
     return obj
 
 def BoostRun(env, prog, target, command = '$SOURCE'):
@@ -77,8 +92,11 @@ def BoostTestSummary(env, tests, **kw):
         failures = [r for r in results
                     if r.get_path().endswith('.result') and not 'Result: pass' in r.get_contents()]
         print('%s tests; %s pass; %s fails'%(len(results), len(results)-len(failures), len(failures)))
+        if failures:
+            print('For detailed failure reports, see:')
         for f in failures:
-            print('%s\n%s'%(f.get_path(), f.get_contents()))
+            print(f.get_path())
+
     testsumcomstr = env.get('TESTSUMCOMSTR')
     if testsumcomstr:
         run = env.Command('summary', tests, Action(print_summary, cmdstr=testsumcomstr))

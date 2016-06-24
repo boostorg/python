@@ -17,12 +17,12 @@ r"""
 >>> def should_pass(method, values):
 ...     result = map(method, values[0])
 ...     if result != values[0]:
-...         print "Got %s but expected %s" % (result, values[0])
+...         print("Got %s but expected %s" % (result, values[0]))
 >>> def test_overflow(method, values):
 ...     for v in values[1]:
 ...         try: method(v)
 ...         except OverflowError: pass
-...         else: print "OverflowError expected"
+...         else: print("OverflowError expected")
 
 # Synthesize idendity functions in case long long not supported
 >>> if not 'rewrap_value_long_long' in dir():
@@ -114,7 +114,7 @@ True
 >>> for v in _unsigned_values(long_long_size())[1]:
 ...     try: rewrap_value_unsigned_long_long(v)
 ...     except (OverflowError, TypeError): pass
-...     else: print "OverflowError or TypeError expected"
+...     else: print("OverflowError or TypeError expected")
 
 >>> assert abs(rewrap_value_float(4.2) - 4.2) < .000001
 >>> rewrap_value_double(4.2) - 4.2
@@ -131,12 +131,12 @@ True
 >>> rewrap_value_string('yo, wassup?')
 'yo, wassup?'
 
->>> print rewrap_value_wstring(u'yo, wassup?')
+>>> print(rewrap_value_wstring(u'yo, wassup?'))
 yo, wassup?
 
    test that overloading on unicode works:
 
->>> print rewrap_value_string(u'yo, wassup?')
+>>> print(rewrap_value_string(u'yo, wassup?'))
 yo, wassup?
 
    wrap strings with embedded nulls:
@@ -163,7 +163,7 @@ yo, wassup?
 
 >>> try: rewrap_const_reference_bool('yes')
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 >>> rewrap_const_reference_char('x')
 'x'
@@ -226,7 +226,7 @@ But None cannot be converted to a string object:
 
 >>> try: rewrap_const_reference_string(None)
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 Now check implicit conversions between floating/integer types
 
@@ -238,14 +238,14 @@ Now check implicit conversions between floating/integer types
 
 >>> try: rewrap_const_reference_int(42.0)
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 >>> rewrap_value_float(42)
 42.0
 
 >>> try: rewrap_value_int(42.0)
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 Check that classic classes also work
 
@@ -261,19 +261,19 @@ Check that classic classes also work
 
 >>> try: rewrap_const_reference_float(FortyTwo())
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 >>> try: rewrap_value_int(FortyTwo())
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 >>> try: rewrap_const_reference_string(FortyTwo())
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 >>> try: rewrap_value_complex_double(FortyTwo())
 ... except TypeError: pass
-... else: print 'expected a TypeError exception'
+... else: print('expected a TypeError exception')
 
 # show that arbitrary handle<T> instantiations can be returned
 >>> assert get_type(1) is type(1)

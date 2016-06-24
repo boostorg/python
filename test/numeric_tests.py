@@ -9,11 +9,11 @@ import printer
 
 >>> try: take_array(3)
 ... except TypeError: pass
-... else: print 'expected a TypeError'
+... else: print('expected a TypeError')
 
 >>> take_array(x)
 
->>> print x
+>>> print(x)
 [[1 2 3]
  [4 0 6]
  [7 8 9]]
