@@ -1,7 +1,9 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-from past.builtins import long
+import sys
+if (sys.version_info.major >= 3):
+    from past.builtins import long
 r"""
 >>> from builtin_converters_ext import *
 
@@ -74,7 +76,7 @@ False
 
     test unsigned long values which don't fit in a signed long.
     strip any 'L' characters in case the platform has > 32 bit longs
-        
+
 >>> hex(rewrap_value_unsigned_long(0x80000001L)).replace('L','')
 '0x80000001'
 
@@ -83,7 +85,7 @@ True
 >>> rewrap_value_unsigned_long_long(42) == 42
 True
 
-   show that we have range checking. 
+   show that we have range checking.
 
 >>> should_pass(rewrap_value_signed_char, _signed_values(char_size()))
 >>> should_pass(rewrap_value_short, _signed_values(short_size()))
@@ -140,7 +142,7 @@ yo, wassup?
 yo, wassup?
 
    wrap strings with embedded nulls:
-   
+
 >>> rewrap_value_string('yo,\0wassup?')
 'yo,\x00wassup?'
 
@@ -152,7 +154,7 @@ yo, wassup?
 
   Note that we can currently get a mutable pointer into an immutable
   Python string:
-  
+
 >>> rewrap_value_mutable_cstring('hello, world')
 'hello, world'
 
@@ -285,16 +287,16 @@ def run(args = None):
     import sys
     import doctest
     import builtin_converters_ext
-    
+
     if 'rewrap_value_long_long' in dir(builtin_converters_ext):
         print('LONG_LONG supported, testing...')
     else:
         print('LONG_LONG not supported, skipping those tests...')
-        
+
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
-    
+
 if __name__ == '__main__':
     print("running...")
     import sys
