@@ -1,7 +1,9 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-from past.builtins import long
+import sys
+if (sys.version_info.major >= 3):
+    from past.builtins import long
 '''
 >>> from long_ext import *
 >>> print(new_long())
@@ -25,7 +27,7 @@ def run(args = None):
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
-    
+
 if __name__ == '__main__':
     print("running...")
     import sys
