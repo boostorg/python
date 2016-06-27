@@ -92,7 +92,7 @@ def prepare_build_dir(env):
 
 def variants(env):
 
-    env.Append(CPPPATH = "#/include", CPPDEFINES = ["BOOST_ALL_NO_LIB=1"])
+    env.Prepend(CPPPATH = "#/include", CPPDEFINES = ["BOOST_ALL_NO_LIB=1"])
     set_property(env, architecture = env['TARGET_ARCH'])
     for variant in env["variant"]:
         e = env.Clone()
