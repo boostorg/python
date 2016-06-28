@@ -39,7 +39,7 @@ def BoostRun(env, prog, target, command = '$SOURCE'):
         result_file = env.subst('$TARGET', target=target)
         output=''
         try:
-            output=check_output(cmd, stderr=STDOUT, shell=True)
+            output=check_output(cmd, stderr=STDOUT, shell=True, env=env['ENV'])
             success=True
         except CalledProcessError as e:
             output=e.output

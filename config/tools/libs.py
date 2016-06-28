@@ -6,8 +6,9 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-import distutils.sysconfig
 from SCons.Script import AddOption, COMMAND_LINE_TARGETS, BUILD_TARGETS
+import distutils.sysconfig
+import platform
 
 
 def BoostLibrary(env, lib, sources, make_aliases = True, **kw):
@@ -27,19 +28,20 @@ def BoostLibrary(env, lib, sources, make_aliases = True, **kw):
 
 
 def BoostUseLib(env, lib):
-    env.AppendUnique(
-        LIBPATH = [env.Dir("$BOOST_CURRENT_VARIANT_DIR/src")],
-        LIBS = ["boost_" + lib + env["BOOST_SUFFIX"]]
-    )
+    build_dir = env.Dir('$BOOST_CURRENT_VARIANT_DIR/src')
+    env.AppendUnique(LIBPATH = [build_dir],
+                     LIBS = ["boost_" + lib + env["BOOST_SUFFIX"]])
     if env.get("BOOST_TEST"):
-        env.AppendUnique(RPATH = [env.Dir("$BOOST_CURRENT_VARIANT_DIR/src")])
+        env.AppendUnique(RPATH = [build_dir])
+        if platform.system() == 'Windows':
+            env.PrependENVPath('PATH', build_dir.abspath)
+        else:
+            env.PrependENVPath('LD_LIBRARY_PATH', build_dir.abspath)
 
 
 def PythonExtension(env, lib, sources, **kw):
     if env["LINK_DYNAMIC"]:
-        #env.AppendUnique(CPPDEFINES = ['BOOST_PYTHON_DYN_LINK=1'])
         ext = env.SharedLibrary(lib, sources, SHLIBPREFIX='', SHLIBSUFFIX=distutils.sysconfig.get_config_var("SO"), **kw)
-        #env.Alias(lib, ext)
         return ext
 
 
@@ -74,11 +76,8 @@ def generate(env):
 
     env.Replace(
         INSTALL = boost_copy_func,
-        BOOST_CURRENT_VARIANT_DIR = "$BOOST_BUILD_DIR/$current_variant/$linking/threading-$current_threading"
+        BOOST_CURRENT_VARIANT_DIR = "#/$BOOST_BUILD_DIR/$current_variant/$linking/threading-$current_threading"
     )
 
     AddOption('--stage', dest='stage', action="store_true")
     AddOption('--install', dest='install', action="store_true")
-
-    #if env.GetOption("install"):
-    #    BUILD_TARGETS.extend(env.Alias("install-headers"))
