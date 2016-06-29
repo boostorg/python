@@ -11,18 +11,28 @@ using namespace boost::python;
 struct X
 {
     int x;
-    X(int n) : x(n) { }
+    int foo;
+    X(int n) : x(n), foo(0){ }
 };
 
 int x_function(X& x)
 {   return x.x;
 }
 
+int y_function(X& x)
+{   return x.foo++;
+}
 
 BOOST_PYTHON_MODULE(class_ext)
 {
     class_<X>("X", init<int>());
     def("x_function", x_function);
+#if (__cplusplus > 199711L) && !defined(BOOST_NO_CXX11_LAMBDAS)
+    def("y_function", [&foo](int) -> int { return foo++; });
+#else
+    def("y_function", y_function);
+
+#endif
 }
 
 #include "module_tail.cpp"
