@@ -96,12 +96,16 @@ class override : public object
     detail::method_result
     operator()() const
     {
-        detail::method_result x(
-            PyEval_CallFunction(
-                this->ptr()
-              , const_cast<char*>("()")
-            ));
-        return x;
+        PyObject* const result = PyEval_CallFunction(
+                                    this->ptr()
+                                    , const_cast<char*>("()")
+                                 );
+
+        if (!result) {
+            throw_error_already_set();
+        }
+
+        return detail::method_result(result);
     }
 
 # define BOOST_PYTHON_fast_arg_to_python_get(z, n, _)   \
@@ -131,13 +135,17 @@ template <
 detail::method_result
 operator()( BOOST_PP_ENUM_BINARY_PARAMS_Z(1, N, A, const& a) ) const
 {
-    detail::method_result x(
-        PyEval_CallFunction(
-            this->ptr()
-          , const_cast<char*>("(" BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FIXED, "O") ")")
-            BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_fast_arg_to_python_get, nil)
-        ));
-    return x;
+    PyObject* const result = PyEval_CallFunction(
+                                this->ptr()
+                                , const_cast<char*>("(" BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_FIXED, "O") ")")
+                                  BOOST_PP_REPEAT_1ST(N, BOOST_PYTHON_fast_arg_to_python_get, nil)
+                             );
+
+    if (!result) {
+        throw_error_already_set();
+    }
+
+    return detail::method_result(result);
 }
 
 # undef N
