@@ -3,14 +3,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Embedding</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Tutorial">
 <link rel="up" href="../index.html" title="Boost.Python Tutorial">
 <link rel="prev" href="object.html" title="Object Interface">
 <link rel="next" href="iterators.html" title="Iterators">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/boost.png"></td></tr></table>
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/bpl.png"></td></tr></table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="object.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="iterators.html"><img src="../../images/next.png" alt="Next"></a>
@@ -124,9 +124,9 @@ exe embedded_program # name of the executable
         There is a difference however. While the reference-counting is fully automatic
         in Python, the Python C API requires you to do it <a href="http://www.python.org/doc/current/c-api/refcounting.html" target="_top">by
         hand</a>. This is messy and especially hard to get right in the presence
-        of C++ exceptions. Fortunately Boost.Python provides the <a href="../../../../v2/handle.html" target="_top">handle</a>
-        and <a href="../../../../v2/object.html" target="_top">object</a> class templates to
-        automate the process.
+        of C++ exceptions. Fortunately Boost.Python provides the <a href="../../reference/utility_and_infrastructure/boost_python_handle_hpp.html#utility_and_infrastructure.boost_python_handle_hpp.class_template_handle" target="_top">handle</a>
+        and <a href="../../reference/object_wrappers/boost_python_object_hpp.html#object_wrappers.boost_python_object_hpp.class_object" target="_top">object</a>
+        class templates to automate the process.
       </p>
 <h3>
 <a name="tutorial.embedding.using_the_interpreter.h0"></a>
@@ -183,9 +183,9 @@ exe embedded_program # name of the executable
       </h3>
 <p>
         Often we'd like to have a class to manipulate Python objects. But we have
-        already seen such a class above, and in the <a href="../python/object.html" target="_top">previous
-        section</a>: the aptly named <code class="literal">object</code> class and its
-        derivatives. We've already seen that they can be constructed from a <code class="literal">handle</code>.
+        already seen such a class above, and in the <a class="link" href="object.html" title="Object Interface">previous
+        section</a>: the aptly named <code class="literal">object</code> class and its derivatives.
+        We've already seen that they can be constructed from a <code class="literal">handle</code>.
         The following examples should further illustrate this fact:
       </p>
 <pre class="programlisting"><span class="identifier">object</span> <span class="identifier">main_module</span> <span class="special">=</span> <span class="identifier">import</span><span class="special">(</span><span class="string">"__main__"</span><span class="special">);</span>
@@ -208,7 +208,7 @@ exe embedded_program # name of the executable
         handling</a>
       </h3>
 <p>
-        If an exception occurs in the evaluation of the python expression, <a href="../../../../v2/errors.html#error_already_set-spec" target="_top">error_already_set</a>
+        If an exception occurs in the evaluation of the python expression, <a href="../../reference/high_level_components/boost_python_errors_hpp.html#high_level_components.boost_python_errors_hpp.class_error_already_set" target="_top">error_already_set</a>
         is thrown:
       </p>
 <pre class="programlisting"><span class="keyword">try</span>

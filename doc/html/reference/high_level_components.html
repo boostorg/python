@@ -3,14 +3,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Chapter&#160;2.&#160;High Level Components</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="index.html" title="Boost.Python Reference Manual">
 <link rel="up" href="index.html" title="Boost.Python Reference Manual">
 <link rel="prev" href="concepts/objectwrapper.html" title="ObjectWrapper">
 <link rel="next" href="high_level_components/boost_python_def_hpp.html" title="boost/python/def.hpp">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../images/boost.png"></td></tr></table>
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../images/bpl.png"></td></tr></table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="concepts/objectwrapper.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="high_level_components/boost_python_def_hpp.html"><img src="../images/next.png" alt="Next"></a>
@@ -516,23 +516,16 @@
                   attribute of the <a class="link" href="high_level_components/boost_python_scope_hpp.html#high_level_components.boost_python_scope_hpp.introduction" title="Introduction">current
                   scope</a> is bound to the new extension class.
                 </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
-<li class="listitem">
-                      If supplied, the value of docstring is bound to the <code class="computeroutput"><span class="identifier">__doc__</span></code> attribute of the
-                      extension class.
-                    </li>
-<li class="listitem">
-                      If <code class="computeroutput"><span class="identifier">init_spec</span></code>
-                      is <code class="computeroutput"><span class="identifier">no_init</span></code>,
-                      a special <code class="computeroutput"><span class="identifier">__init__</span></code>
-                      function is generated which always raises a Python exception.
-                      Otherwise, <code class="computeroutput"><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init_spec</span><span class="special">)</span></code> is called.
-                    </li>
-<li class="listitem">
-                      If <code class="computeroutput"><span class="identifier">init_spec</span></code>
-                      is not supplied, <code class="computeroutput"><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;&gt;())</span></code> is called.
-                    </li>
-</ul></div>
+<p>
+                  * If supplied, the value of docstring is bound to the <code class="computeroutput"><span class="identifier">__doc__</span></code> attribute of the extension
+                  class. * If <code class="computeroutput"><span class="identifier">init_spec</span></code>
+                  is <code class="computeroutput"><span class="identifier">no_init</span></code>, a special
+                  <code class="computeroutput"><span class="identifier">__init__</span></code> function
+                  is generated which always raises a Python exception. Otherwise,
+                  <code class="computeroutput"><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init_spec</span><span class="special">)</span></code>
+                  is called. * If <code class="computeroutput"><span class="identifier">init_spec</span></code>
+                  is not supplied, <code class="computeroutput"><span class="keyword">this</span><span class="special">-&gt;</span><span class="identifier">def</span><span class="special">(</span><span class="identifier">init</span><span class="special">&lt;&gt;())</span></code> is called.
+                </p>
 </dd>
 <dt><span class="term">Rationale</span></dt>
 <dd><p>
@@ -628,29 +621,21 @@
                   but the first <code class="computeroutput"><span class="identifier">N</span> <span class="special">-</span> <span class="identifier">M</span></code>
                   arguments of each overload.
                 </p>
-<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem">
-                      Otherwise, a single method overload is built around fn, which
-                      must not be null:
-                      <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; ">
-<li class="listitem">
-                            If fn is a function pointer, its first argument must
-                            be of the form U, U cv&amp;, U cv*, or U cv* const&amp;,
-                            where T* is convertible to U*, and a1-a3, if supplied,
-                            may be selected in any order from the table below.
-                          </li>
-<li class="listitem">
-                            Otherwise, if fn is a member function pointer, its target
-                            must be T or one of its public base classes, and a1-a3,
-                            if supplied, may be selected in any order from the table
-                            below.
-                          </li>
-<li class="listitem">
-<p class="simpara">
-                            Otherwise, Fn must be [derived from] <a class="link" href="object_wrappers/boost_python_object_hpp.html#object_wrappers.boost_python_object_hpp.class_object" title="Class object">object</a>,
-                            and a1-a2, if supplied, may be selcted in any order from
-                            the first two rows of the table below. To be useful,
-                            fn should be <a href="http://www.python.org/doc/current/lib/built-in-funcs.html#l2h-6" target="_top">callable</a>.
-                          </p>
+<p>
+                  * Otherwise, a single method overload is built around fn, which
+                  must not be null:
+                </p>
+<p>
+                  * If fn is a function pointer, its first argument must be of the
+                  form U, U cv&amp;, U cv*, or U cv* const&amp;, where T* is convertible
+                  to U*, and a1-a3, if supplied, may be selected in any order from
+                  the table below. * Otherwise, if fn is a member function pointer,
+                  its target must be T or one of its public base classes, and a1-a3,
+                  if supplied, may be selected in any order from the table below.
+                  * Otherwise, Fn must be [derived from] <a class="link" href="object_wrappers/boost_python_object_hpp.html#object_wrappers.boost_python_object_hpp.class_object" title="Class object">object</a>,
+                  and a1-a2, if supplied, may be selcted in any order from the first
+                  two rows of the table below. To be useful, fn should be <a href="http://www.python.org/doc/current/lib/built-in-funcs.html#l2h-6" target="_top">callable</a>.
+                </p>
 <div class="informaltable"><table class="table">
 <colgroup>
 <col>
@@ -659,85 +644,82 @@
 </colgroup>
 <thead><tr>
 <th>
-                                    <p>
-                                      Mnemonic Name
-                                    </p>
-                                  </th>
+                          <p>
+                            Mnemonic Name
+                          </p>
+                        </th>
 <th>
-                                    <p>
-                                      Requirements/Type properties
-                                    </p>
-                                  </th>
+                          <p>
+                            Requirements/Type properties
+                          </p>
+                        </th>
 <th>
-                                    <p>
-                                      Effects
-                                    </p>
-                                  </th>
+                          <p>
+                            Effects
+                          </p>
+                        </th>
 </tr></thead>
 <tbody>
 <tr>
 <td>
-                                    <p>
-                                      docstring
-                                    </p>
-                                  </td>
+                          <p>
+                            docstring
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      Any <a class="link" href="glossary.html#ntbs">ntbs</a>
-                                    </p>
-                                  </td>
+                          <p>
+                            Any <a class="link" href="glossary.html#ntbs">ntbs</a>
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      Value will be bound to the __doc__ attribute
-                                      of the resulting method overload. If an earlier
-                                      overload supplied a docstring, two newline
-                                      characters and the new docstring are appended
-                                      to it.
-                                    </p>
-                                  </td>
+                          <p>
+                            Value will be bound to the __doc__ attribute of the resulting
+                            method overload. If an earlier overload supplied a docstring,
+                            two newline characters and the new docstring are appended
+                            to it.
+                          </p>
+                        </td>
 </tr>
 <tr>
 <td>
-                                    <p>
-                                      policies
-                                    </p>
-                                  </td>
+                          <p>
+                            policies
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      A model of <a class="link" href="concepts.html#concepts.callpolicies" title="CallPolicies">CallPolicies</a>
-                                    </p>
-                                  </td>
+                          <p>
+                            A model of <a class="link" href="concepts.html#concepts.callpolicies" title="CallPolicies">CallPolicies</a>
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      A copy will be used as the call policies of
-                                      the resulting method overload.
-                                    </p>
-                                  </td>
+                          <p>
+                            A copy will be used as the call policies of the resulting
+                            method overload.
+                          </p>
+                        </td>
 </tr>
 <tr>
 <td>
-                                    <p>
-                                      keywords
-                                    </p>
-                                  </td>
+                          <p>
+                            keywords
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      The result of a <a class="link" href="function_invocation_and_creation.html#function_invocation_and_creation.boost_python_args_hpp.introduction.keyword_expressions" title="keyword-expressions">keyword-expression</a>
-                                      specifying no more arguments than the <a class="link" href="glossary.html#arity">arity</a> of fn.
-                                    </p>
-                                  </td>
+                          <p>
+                            The result of a <a class="link" href="function_invocation_and_creation.html#function_invocation_and_creation.boost_python_args_hpp.introduction.keyword_expressions" title="keyword-expressions">keyword-expression</a>
+                            specifying no more arguments than the <a class="link" href="glossary.html#arity">arity</a>
+                            of fn.
+                          </p>
+                        </td>
 <td>
-                                    <p>
-                                      A copy will be used as the call policies of
-                                      the resulting method overload.
-                                    </p>
-                                  </td>
+                          <p>
+                            A copy will be used as the call policies of the resulting
+                            method overload.
+                          </p>
+                        </td>
 </tr>
 </tbody>
 </table></div>
-</li>
-</ul></div>
-                    </li></ul></div>
 </dd>
 <dt><span class="term">Returns</span></dt>
 <dd><p>

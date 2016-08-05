@@ -3,14 +3,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Indexing support</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Reference Manual">
 <link rel="up" href="../topics.html" title="Chapter&#160;8.&#160;Topics">
 <link rel="prev" href="pickle_support.html" title="Pickle support">
 <link rel="next" href="../glossary.html" title="Chapter&#160;9.&#160;Glossary">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/boost.png"></td></tr></table>
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/bpl.png"></td></tr></table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="pickle_support.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../topics.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="../glossary.html"><img src="../../images/next.png" alt="Next"></a>
@@ -63,19 +63,17 @@
               Python container to behave.
             </li>
 <li class="listitem">
-<p class="simpara">
               Provide default reference semantics for container element indexing
               (<code class="computeroutput"><span class="identifier">__getitem__</span></code>) such
               that c[i] can be mutable. Require:
-            </p>
 <pre class="programlisting"><span class="identifier">val</span> <span class="special">=</span> <span class="identifier">c</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span>
 <span class="identifier">c</span><span class="special">[</span><span class="identifier">i</span><span class="special">].</span><span class="identifier">m</span><span class="special">()</span>
 <span class="identifier">val</span> <span class="special">==</span> <span class="identifier">c</span><span class="special">[</span><span class="identifier">i</span><span class="special">]</span>
 </pre>
-<p class="simpara">
-              where m is a non-const (mutating) member function (method).
-            </p>
-</li>
+              <p>
+                where m is a non-const (mutating) member function (method).
+              </p>
+            </li>
 <li class="listitem">
               Return safe references from <code class="computeroutput"><span class="identifier">__getitem__</span></code>
               such that subsequent adds and deletes to and from the container will

@@ -3,14 +3,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>Functions</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Tutorial">
 <link rel="up" href="../index.html" title="Boost.Python Tutorial">
 <link rel="prev" href="exposing.html" title="Exposing Classes">
 <link rel="next" href="object.html" title="Object Interface">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
-<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/boost.png"></td></tr></table>
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../../images/bpl.png"></td></tr></table>
 <hr>
 <div class="spirit-nav">
 <a accesskey="p" href="exposing.html"><img src="../../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../../images/home.png" alt="Home"></a><a accesskey="n" href="object.html"><img src="../../images/next.png" alt="Next"></a>
@@ -239,7 +239,7 @@ Namespaces are one honking great idea -- let's do more of those!
 </pre>
 <p>
         Here is the list of predefined call policies. A complete reference detailing
-        these can be found <a href="../../../../v2/reference.html#models_of_call_policies" target="_top">here</a>.
+        these can be found <a href="../../reference/function_invocation_and_creation/models_of_callpolicies.html" target="_top">here</a>.
       </p>
 <div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
 <li class="listitem">
@@ -276,7 +276,7 @@ Namespaces are one honking great idea -- let's do more of those!
           </li>
 </ul></div>
 <div class="sidebar">
-<div class="titlepage"></div>
+<div class="titlepage"><div><div><p class="title"><b></b></p></div></div></div>
 <p>
         <span class="inlinemediaobject"><img src="../../images/smiley.png"></span>
         <span class="bold"><strong>Remember the Zen, Luke:</strong></span>
@@ -367,8 +367,8 @@ Namespaces are one honking great idea -- let's do more of those!
 </pre>
 <p>
         Because of this, when wrapping C++ code, we had to resort to manual wrapping
-        as outlined in the <a class="link" href="../">previous section</a>,
-        or writing thin wrappers:
+        as outlined in the <a class="link" href="functions.html#tutorial.functions.overloading" title="Overloading">previous
+        section</a>, or writing thin wrappers:
       </p>
 <pre class="programlisting"><span class="comment">// write "thin wrappers"</span>
 <span class="keyword">int</span> <span class="identifier">f1</span><span class="special">(</span><span class="keyword">int</span> <span class="identifier">x</span><span class="special">)</span> <span class="special">{</span> <span class="keyword">return</span> <span class="identifier">f</span><span class="special">(</span><span class="identifier">x</span><span class="special">);</span> <span class="special">}</span>
@@ -459,7 +459,7 @@ Namespaces are one honking great idea -- let's do more of those!
 <pre class="programlisting"><span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"wack_em"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">george</span><span class="special">::</span><span class="identifier">wack_em</span><span class="special">,</span> <span class="identifier">george_overloads</span><span class="special">());</span>
 </pre>
 <p>
-        See the <a href="../../../../v2/overloads.html#BOOST_PYTHON_FUNCTION_OVERLOADS-spec" target="_top">overloads
+        See the <a href="../../reference/function_invocation_and_creation/boost_python_overloads_hpp.html#function_invocation_and_creation.boost_python_overloads_hpp.macros" target="_top">overloads
         reference</a> for details.
       </p>
 <h3>
@@ -542,13 +542,13 @@ Namespaces are one honking great idea -- let's do more of those!
         It is important to emphasize however that <span class="bold"><strong>the overloaded
         functions must have a common sequence of initial arguments</strong></span>. Otherwise,
         our scheme above will not work. If this is not the case, we have to wrap
-        our functions <a class="link" href="../">manually</a>.
+        our functions <a class="link" href="functions.html#tutorial.functions.overloading" title="Overloading">manually</a>.
       </p>
 <p>
         Actually, we can mix and match manual wrapping of overloaded functions and
         automatic wrapping through <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code>
         and its sister, <code class="literal">BOOST_PYTHON_FUNCTION_OVERLOADS</code>. Following
-        up on our example presented in the section <a class="link" href="../">on
+        up on our example presented in the section <a class="link" href="functions.html#tutorial.functions.overloading" title="Overloading">on
         overloading</a>, since the first 4 overload functins have a common sequence
         of initial arguments, we can use <code class="literal">BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS</code>
         to automatically wrap the first three of the <code class="literal">def</code>s and
