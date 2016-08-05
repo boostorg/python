@@ -1,4 +1,3 @@
-# -*- python -*-
 #
 # Copyright (c) 2016 Stefan Seefeld
 # All rights reserved.
@@ -7,17 +6,23 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
+sudo: required
+dist: trusty
+
 language: cpp
 
 env:
-- PYTHON=python CCFLAGS=-std=c++98
-- PYTHON=python CCFLAGS=-std=c++11
-- PYTHON=python3 CCFLAGS=-std=c++98
-- PYTHON=python3 CCFLAGS=-std=c++11
+  matrix:
+  - PYTHON=python CCFLAGS=-std=c++98
+  - PYTHON=python CCFLAGS=-std=c++11
+  - PYTHON=python3 CCFLAGS=-std=c++98
+  - PYTHON=python3 CCFLAGS=-std=c++11
+  - PYTHON=python DOC=1
+  global:
+  - secure: mqoxglbUN/At/r8O7nLVccGldnB1jvhLHNyYjfCXrdOD0GNX+TY2TS1+kIEv9Deg/P6X/QvrBa/ZzbDNryn3mDXBfOSy400ebSIUHHP3HtGHJShOGDyXedY3hZ/dqmxdV3p9hIxv4lcx1HPyC96s4wpiR0S9F1JBzD6scIabezM=
 
 compiler:
 - gcc
-
 
 addons:
   apt:
@@ -30,12 +35,18 @@ addons:
     - python-dev python-pip
     - python3-dev
     - libboost-all-dev
-    
+    - xsltproc
+    - python-docutils
+
 before_install:
-  - sudo pip install future
+- sudo pip install future
 
 install:
 - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 
-script: scons config --python=$PYTHON && scons && scons test
+script:
+- scons config --python=$PYTHON
+- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
 
+after_success:
+- if [ "$DOC" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then .ci/upload_docs.sh; fi
