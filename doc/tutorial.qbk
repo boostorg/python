@@ -1,5 +1,5 @@
 [article Boost.Python Tutorial
-    [quickbook 1.7]
+    [quickbook 1.6]
     [authors [de Guzman, Joel], [Abrahams, David]]
     [copyright 2002 2003 2004 2005 Joel de Guzman, David Abrahams]
     [category inter-language support]
@@ -1758,13 +1758,13 @@ sounds/
     \_\_init\_\_.py
     core/
         \_\_init\_\_.py
-        _core.pyd
+        \_core.pyd
     filters/
         \_\_init\_\_.py
-        _filters.pyd
+        \_filters.pyd
     io/
         \_\_init\_\_.py
-        _io.pyd
+        \_io.pyd
 ]
 
 Note that we created a directory for each extension module, and added a

@@ -25,6 +25,7 @@ def add_options(vars):
     vars.Add('LIBS', converter=lambda v:v.split())
     vars.Add('PYTHON')
     vars.Add('PYTHONLIBS')
+    vars.Add('boostbook_prefix')
 
     ui.add_variable(vars, ("arch", "target architeture", platform.machine()))
     ui.add_variable(vars, ("toolchain", "toolchain to use", 'gcc'))

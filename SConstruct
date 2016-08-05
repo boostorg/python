@@ -36,7 +36,7 @@ vars = Variables('bin.SCons/config.py', ARGUMENTS)
 config.add_options(vars)
 arch = ARGUMENTS.get('arch', platform.machine())
 env = Environment(toolpath=['config/tools'],
-                  tools=['default', 'libs', 'tests'],
+                  tools=['default', 'libs', 'tests', 'doc'],
                   variables=vars,
                   TARGET_ARCH=arch)
 
@@ -80,3 +80,7 @@ for e in config.variants(env):
         test_env.BoostUseLib('python')
         e.SConscript('test/SConscript', variant_dir=variant_dir + '/test',
                      exports = { 'env' : test_env })
+
+if 'doc' in COMMAND_LINE_TARGETS:
+    env.SConscript('doc/SConscript', variant_dir='bin.SCons/doc',
+                   exports = { 'env' : e.Clone(BOOST_LIB = 'python') })
