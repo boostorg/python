@@ -39,6 +39,10 @@ addons:
     - python-docutils
 
 before_install:
+# The Trusty image has several Python versions pre-installed compiled with
+# conflicting UCS2 and UCS4 unicode. Modify the PATH to skip the TravisCI python.
+# See https://github.com/travis-ci/travis-ci/issues/4948 for details.
+- export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 - sudo pip install future
 
 install:
