@@ -24,6 +24,8 @@ def BoostLibrary(env, lib, sources, make_aliases = True, **kw):
 
         if env.GetOption("install"):
             env.Alias(lib, env.Install("$prefix/lib", lib_node))
+            env.Alias(lib, env.Install('$prefix/include/boost', '#/include/boost/python'))
+            env.Alias(lib, env.Install('$prefix/include/boost', '#/include/boost/python.hpp'))
     return lib_node
 
 
