@@ -11,24 +11,30 @@ dist: trusty
 
 language: cpp
 
-env:
-  matrix:
-  - PYTHON=python CCFLAGS=-std=c++98
-  - PYTHON=python CCFLAGS=-std=c++11
-  - PYTHON=python3 CCFLAGS=-std=c++98
-  - PYTHON=python3 CCFLAGS=-std=c++11
-  - PYTHON=python DOC=1
+matrix:
+  include:
+  - compiler: gcc
+    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
+  - compiler: gcc
+    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
+  - compiler: gcc
+    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
+  - compiler: gcc
+    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
+  - compiler: clang
+    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
+  - compiler: clang
+    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+  - env: PYTHON=python DOC=1
   global:
   - secure: mqoxglbUN/At/r8O7nLVccGldnB1jvhLHNyYjfCXrdOD0GNX+TY2TS1+kIEv9Deg/P6X/QvrBa/ZzbDNryn3mDXBfOSy400ebSIUHHP3HtGHJShOGDyXedY3hZ/dqmxdV3p9hIxv4lcx1HPyC96s4wpiR0S9F1JBzD6scIabezM=
-
-compiler:
-- gcc
 
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
+    - scons
     - gcc-4.8
     - g++-4.8
     - clang
@@ -46,11 +52,14 @@ before_install:
 - sudo pip install future
 
 install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+
+before_script:
+- scons --version
 
 script:
 - scons config --python=$PYTHON
 - if [ "$DOC" ]; then scons doc; else scons && scons test; fi
 
 after_success:
-- if [ "$DOC" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then .ci/upload_docs.sh; fi
+# Upload docs only when building upstream.
+- if [ "$DOC" -a "$TRAVIS_REPO_SLUG" = "boostorg/python" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then .ci/upload_docs.sh; fi

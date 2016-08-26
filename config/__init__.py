@@ -11,6 +11,7 @@ from SCons.Script import AddOption
 from collections import OrderedDict
 import platform
 from . import ui
+from . import cxx
 from . import python
 from . import boost
 
@@ -19,14 +20,17 @@ def add_options(vars):
     python.add_options(vars)
     boost.add_options(vars)
 
+    vars.Add('CXX')
     vars.Add('CPPPATH', converter=lambda v:v.split())
     vars.Add('CCFLAGS', converter=lambda v:v.split())
+    vars.Add('CXXFLAGS', converter=lambda v:v.split())
     vars.Add('LIBPATH', converter=lambda v:v.split())
     vars.Add('LIBS', converter=lambda v:v.split())
     vars.Add('PYTHON')
     vars.Add('PYTHONLIBS')
     vars.Add('prefix')
-    vars.Add('boostbook_prefix')
+    vars.Add('boostbook_prefix',
+    vars.Add('CXX11'))
 
     ui.add_variable(vars, ("arch", "target architeture", platform.machine()))
     ui.add_variable(vars, ("toolchain", "toolchain to use", 'gcc'))
@@ -40,6 +44,7 @@ def add_options(vars):
 
 def get_checks():
   checks = OrderedDict()
+  checks['cxx'] = cxx.check
   checks['python'] = python.check
   checks['boost'] = boost.check
   return checks
@@ -64,7 +69,10 @@ def boost_suffix(env):
 
     if env["layout"] == "versioned":
         if "gcc" in env["TOOLS"]:
-            suffix += "-gcc" + "".join(env["CCVERSION"].split(".")[0:2])
+            if env['CXX'] in ('clang', 'clang++'):
+                suffix += "-clang" + "".join(env["CXXVERSION"].split(".")[0:2])
+            else: # assume g++
+                suffix += "-gcc" + "".join(env["CXXVERSION"].split(".")[0:2])
     if env["THREADING"] == "multi":
         suffix += "-mt"
     if env["DEBUG"]:
@@ -80,10 +88,15 @@ def prepare_build_dir(env):
     vars = {}
     env["boost_suffix"] = boost_suffix
     build_dir="bin.SCons"
+    # FIXME: Support 'toolchain' variable properly.
+    #        For now, we simply check whether $CXX refers to clang or gcc.
     if "gcc" in env["TOOLS"]:
-        build_dir+="/gcc-%s"%env["CCVERSION"]
-        vars['CXXFLAGS'] = ['-ftemplate-depth-128', '-Wall']
-
+        if env['CXX'] in ('clang', 'clang++'):
+            build_dir+="/clang-%s"%env["CXXVERSION"]
+        else: # assume g++
+            build_dir+="/gcc-%s"%env["CXXVERSION"]
+        default_cxxflags = ['-ftemplate-depth-128', '-Wall', '-g', '-O2']
+        vars['CXXFLAGS'] = env.get('CXXFLAGS', default_cxxflags)
     elif "msvc" in env["TOOLS"]:
         build_dir+="/msvc-%s"%env["MSVS_VERSION"]
     vars['BOOST_BUILD_DIR'] = build_dir

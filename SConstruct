@@ -12,7 +12,8 @@ import config
 import config.ui
 import platform
 import os
-
+import subprocess
+import re
 
 #
 # We try to mimic the typical autotools-workflow.
@@ -35,10 +36,23 @@ if not os.path.exists('bin.SCons/'):
 vars = Variables('bin.SCons/config.py', ARGUMENTS)
 config.add_options(vars)
 arch = ARGUMENTS.get('arch', platform.machine())
+env_vars = {}
+if 'CXX' in os.environ: env_vars['CXX'] = os.environ['CXX']
+if 'CXXFLAGS' in os.environ: env_vars['CXXFLAGS'] = os.environ['CXXFLAGS'].split()
 env = Environment(toolpath=['config/tools'],
                   tools=['default', 'libs', 'tests', 'doc'],
                   variables=vars,
-                  TARGET_ARCH=arch)
+                  TARGET_ARCH=arch,
+                  **env_vars)
+if 'gcc' in env['TOOLS']:
+    # Earlier SCons versions (~ 2.3.0) can't handle CXX=clang++.
+    version = subprocess.check_output([env['CXX'], '--version'])
+    match = re.search(r'[0-9]+(\.[0-9]+)+', version)
+    if match:
+        version = match.group(0)
+    else:
+        version = 'unknown'
+    env['CXXVERSION'] = version
 
 Help(config.ui.help(vars, env) + """
 Variables are saved in bin.SCons/config.py and persist between scons invocations.
