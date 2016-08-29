@@ -84,7 +84,7 @@ if not GetOption('verbose'):
     config.ui.pretty_output(env)    
 
 # build
-env['BPL_VERSION'] = '1.61'
+env['BPL_VERSION'] = '1.62'
 for e in config.variants(env):
     variant_dir=e.subst("$BOOST_CURRENT_VARIANT_DIR")
     e.SConscript('src/SConscript', variant_dir=variant_dir + '/src',
