@@ -44,8 +44,6 @@ for test in [('injected',),
              ('polymorphism',),
              ('polymorphism2',),
              ('wrapper_held_type',),
-             ('polymorphism2_auto_ptr',),
-             ('auto_ptr',),
              ('minimal',),
              ('args',),
              ('raw_ctor',),
@@ -93,6 +91,18 @@ for test in [('injected',),
              ('vector_indexing_suite',),
              ('pointer_vector',)]:
     tests+=env.BPLTest(*test)
+
+if env['CXX11']:
+    for test in [
+    ]:
+        tests+=env.BPLTest(*test)
+else:
+    for test in [
+        ('polymorphism2_auto_ptr',),
+        ('auto_ptr',),
+    ]:
+        tests+=env.BPLTest(*test)
+
 
 test = env.BoostRunPythonScript('test_builtin_converters.py')
 Depends(
