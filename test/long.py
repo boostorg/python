@@ -3,7 +3,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 import sys
 if (sys.version_info.major >= 3):
-    from past.builtins import long
+    long = int
 '''
 >>> from long_ext import *
 >>> print(new_long())
