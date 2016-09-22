@@ -2,7 +2,7 @@
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 '''
->>> from shared_ptr_ext import *
+>>> from boost_shared_ptr_ext import *
 
    Test that shared_ptr<Derived> can be converted to shared_ptr<Base>
 
@@ -19,9 +19,9 @@
 >>> New(0)
 
 >>> type(factory(3))
-<class 'shared_ptr_ext.Y'>
+<class 'boost_shared_ptr_ext.Y'>
 >>> type(factory(42))
-<class 'shared_ptr_ext.YY'>
+<class 'boost_shared_ptr_ext.YY'>
 
 >>> class P(Z):
 ...     def v(self):

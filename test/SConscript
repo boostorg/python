@@ -38,7 +38,7 @@ for test in [('injected',),
              ('properties',),
              ('return_arg',),
              ('staticmethod',),
-             ('shared_ptr',),
+             ('boost_shared_ptr',),
              ('enable_shared_from_this',),
              ('andreas_beyer',),
              ('polymorphism',),
@@ -94,6 +94,7 @@ for test in [('injected',),
 
 if env['CXX11']:
     for test in [
+        ('shared_ptr',),
     ]:
         tests+=env.BPLTest(*test)
 else:
