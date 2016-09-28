@@ -84,4 +84,10 @@ script:
 
 after_success:
 # Upload docs only when building upstream.
-- if [ "$DOC" -a "$TRAVIS_REPO_SLUG" = "boostorg/python" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then .ci/upload_docs.sh; fi
+- |
+   if [ "$DOC" -a
+        "$TRAVIS_REPO_SLUG" = "boostorg/python" -a
+        "$TRAVIS_PULL_REQUEST" = "false" ]; then
+     export GH_TOKEN
+     .ci/upload_docs.sh
+   fi
