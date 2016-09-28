@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
-
+set -vx
 SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
@@ -20,7 +20,7 @@ SHA=`git rev-parse --verify HEAD`
 cd bin.SCons
 git init
 git config user.name "Travis CI"
-git config user.email "$COMMIT_AUTHOR_EMAIL"
+git config user.email "travis-ci"
 
 # Make sure 'GH_TOKEN' is set (as 'secure' variable) in .travis.yml
 git remote add upstream "https://$GH_TOKEN@github.com/boostorg/python.git"
