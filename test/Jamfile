@@ -4,6 +4,7 @@
 
 import python ;
 import os ;
+import ../../config/checks/config : requires ;
 
 lib socket ;
 
@@ -85,7 +86,11 @@ bpl-test crossmod_exception
 [ bpl-test properties ]
 [ bpl-test return_arg ]
 [ bpl-test staticmethod ]
-[ bpl-test shared_ptr ]
+[ bpl-test boost_shared_ptr ]
+[ bpl-test shared_ptr
+  : # sources
+  : [ requires cxx11_smart_ptr ]
+]
 [ bpl-test enable_shared_from_this ]
 [ bpl-test andreas_beyer ]
 [ bpl-test wrapper_held_type ]
