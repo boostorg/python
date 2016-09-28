@@ -27,7 +27,7 @@ matrix:
     env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
   - env: PYTHON=python DOC=1
   global:
-  - secure: mqoxglbUN/At/r8O7nLVccGldnB1jvhLHNyYjfCXrdOD0GNX+TY2TS1+kIEv9Deg/P6X/QvrBa/ZzbDNryn3mDXBfOSy400ebSIUHHP3HtGHJShOGDyXedY3hZ/dqmxdV3p9hIxv4lcx1HPyC96s4wpiR0S9F1JBzD6scIabezM=
+  - secure: pkZAwxzBDIVqGi+1LgZdnWjvd3cFuiTBZ2TryMWp4sy8B5EuCHoALOLwd8YreYNENJmZoZKdLXUhmMG82nLmzdWZiCvH2lavkimyHwjJYn6Qj6ayeDCwRvb6rXG6mdgNkQAhbkuDu6OJv0uvkcIU8fPom+ZLIABCPWs+gKNeOmA=
 
 addons:
   apt:
