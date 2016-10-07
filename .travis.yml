@@ -11,23 +11,26 @@ dist: trusty
 
 language: cpp
 
+env:
+  global:
+    - secure: BRNUkxN3p8f+uYKWC3Hr0VPqZA0PxbWr1DJlcI4hbiZtzKhMCWjDmd9UW9CzzexqeOxpd+9s0G87qvOur+wMSVxugDxtTesZrh1czXHeSVxgQrYD783XJtQJ9aYypbChkiboRD6Xpmbq7itwMuHBJMFtCuDxMynpU1jWwkyTf2Y=
+
 matrix:
   include:
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-  - compiler: clang
-    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
-  - compiler: clang
-    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
-  - env: PYTHON=python DOC=1
-  global:
-  - secure: pkZAwxzBDIVqGi+1LgZdnWjvd3cFuiTBZ2TryMWp4sy8B5EuCHoALOLwd8YreYNENJmZoZKdLXUhmMG82nLmzdWZiCvH2lavkimyHwjJYn6Qj6ayeDCwRvb6rXG6mdgNkQAhbkuDu6OJv0uvkcIU8fPom+ZLIABCPWs+gKNeOmA=
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - compiler: clang
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - compiler: clang
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - env: PYTHON=python DOC=1
+
 
 addons:
   apt:
@@ -85,8 +88,8 @@ script:
 after_success:
 # Upload docs only when building upstream.
 - |
-   if [ "$DOC" -a
-        "$TRAVIS_REPO_SLUG" = "boostorg/python" -a
+   if [ "$DOC" -a \
+        "$TRAVIS_REPO_SLUG" = "boostorg/python" -a \
         "$TRAVIS_PULL_REQUEST" = "false" ]; then
      export GH_TOKEN
      .ci/upload_docs.sh
