@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ndarray - Boost.NumPy 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '../',
+          VERSION:     '1.0',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="Boost.NumPy 1.0 documentation" href="../index.html" />
+    <link rel="up" title="Boost.NumPy Reference" href="index.html" />
+    <link rel="next" title="unary_ufunc" href="unary_ufunc.html" />
+    <link rel="prev" title="dtype" href="dtype.html" /> 
+  </head>
+  <body>
+    <div class="header">
+    <table border="0" cellpadding="7" cellspacing="0" width="100%" summary=
+    "header">
+      <tr>
+        <td valign="top" width="300">
+          <h3><a href="../index.html"><img 
+          alt="C++ Boost" src="../_static/bpl.png" border="0"></a></h3>
+        </td>
+
+        <td valign="top">
+<!--          <h1 align="center"><a href="../index.html">Boost.NumPy</a></h1>-->
+<!--          <h2 align="center">CallPolicies Concept</h2>-->
+        </td>
+	<td>
+      <div id="searchbox" style="display: none">
+        <form class="search" action="../search.html" method="get">
+          <input type="text" name="q" size="18" />
+          <input type="submit" value="Search" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+      </div>
+      <script type="text/javascript">$('#searchbox').show(0);</script>
+	</td>
+      </tr>
+    </table>
+    </div>
+    <hr/>
+    <div class="content">
+    <div class="navbar" style="text-align:right;">
+      
+      
+      <a class="prev" title="dtype" href="dtype.html"><img src="../_static/prev.png" alt="prev"/></a>
+      <a class="up" title="Boost.NumPy Reference" href="index.html"><img src="../_static/up.png" alt="up"/></a>
+      <a class="next" title="unary_ufunc" href="unary_ufunc.html"><img src="../_static/next.png" alt="next"/></a>
+      
+    </div>
+      
+  <div class="section" id="ndarray">
+<h1><a class="toc-backref" href="#id2">ndarray</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#ndarray" id="id2">ndarray</a><ul>
+<li><a class="reference internal" href="#synopsis" id="id3">synopsis</a></li>
+<li><a class="reference internal" href="#constructors" id="id4">constructors</a></li>
+<li><a class="reference internal" href="#accessors" id="id5">accessors</a></li>
+<li><a class="reference internal" href="#example-s" id="id6">Example(s)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>A <a class="reference external" href="http://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html">ndarray</a> is an N-dimensional array which contains items of the same type and size, where N is the number of dimensions and is specified in the form of a <tt class="docutils literal"><span class="pre">shape</span></tt> tuple. Optionally, the numpy <tt class="docutils literal"><span class="pre">dtype</span></tt> for the objects contained may also be specified.</p>
+<blockquote>
+<div><tt class="docutils literal"><span class="pre">&lt;boost/python/numpy/ndarray.hpp&gt;</span></tt> contains the structures and methods necessary to move raw data between C++ and Python and create ndarrays from the data</div></blockquote>
+<div class="section" id="synopsis">
+<h2><a class="toc-backref" href="#id3">synopsis</a></h2>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">boost</span>
+<span class="p">{</span>
+<span class="k">namespace</span> <span class="n">python</span>
+<span class="p">{</span>
+<span class="k">namespace</span> <span class="n">numpy</span>
+<span class="p">{</span>
+
+<span class="k">class</span> <span class="nc">ndarray</span> <span class="o">:</span> <span class="k">public</span> <span class="n">object</span>
+<span class="p">{</span>
+
+<span class="nl">public:</span>
+
+  <span class="k">enum</span> <span class="n">bitflag</span>
+  <span class="p">{</span>
+    <span class="n">NONE</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span> <span class="n">C_CONTIGUOUS</span><span class="o">=</span><span class="mh">0x1</span><span class="p">,</span> <span class="n">F_CONTIGUOUS</span><span class="o">=</span><span class="mh">0x2</span><span class="p">,</span> <span class="n">V_CONTIGUOUS</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x2</span><span class="p">,</span>
+    <span class="n">ALIGNED</span><span class="o">=</span><span class="mh">0x4</span><span class="p">,</span> <span class="n">WRITEABLE</span><span class="o">=</span><span class="mh">0x8</span><span class="p">,</span> <span class="n">BEHAVED</span><span class="o">=</span><span class="mh">0x4</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span>
+    <span class="n">CARRAY_RO</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x4</span><span class="p">,</span> <span class="n">CARRAY</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x4</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span> <span class="n">CARRAY_MIS</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span>
+    <span class="n">FARRAY_RO</span><span class="o">=</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x4</span><span class="p">,</span> <span class="n">FARRAY</span><span class="o">=</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x4</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span> <span class="n">FARRAY_MIS</span><span class="o">=</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span>
+    <span class="n">UPDATE_ALL</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x4</span><span class="p">,</span> <span class="n">VARRAY</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x8</span><span class="p">,</span> <span class="n">ALL</span><span class="o">=</span><span class="mh">0x1</span><span class="o">|</span><span class="mh">0x2</span><span class="o">|</span><span class="mh">0x4</span><span class="o">|</span><span class="mh">0x8</span>
+  <span class="p">};</span>
+
+  <span class="n">ndarray</span> <span class="n">view</span><span class="p">(</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ndarray</span> <span class="n">astype</span><span class="p">(</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ndarray</span> <span class="n">copy</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="k">const</span> <span class="n">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="k">const</span> <span class="n">strides</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="o">*</span> <span class="n">get_data</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">dtype</span> <span class="n">get_dtype</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">python</span><span class="o">::</span><span class="n">object</span> <span class="n">get_base</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">void</span> <span class="nf">set_base</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">base</span><span class="p">);</span>
+  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_strides</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="k">const</span> <span class="n">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">bitflag</span> <span class="k">const</span> <span class="n">get_flags</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="n">ndarray</span> <span class="n">transpose</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ndarray</span> <span class="n">squeeze</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">ndarray</span> <span class="n">reshape</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">object</span> <span class="n">scalarize</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">ndarray</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">zeros</span><span class="p">(</span><span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+
+<span class="n">ndarray</span> <span class="nf">empty</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">empty</span><span class="p">(</span><span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+
+<span class="n">ndarray</span> <span class="nf">array</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">array</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="o">&gt;</span>
+<span class="n">ndarray</span> <span class="n">from_data</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">data</span><span class="p">,</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span><span class="n">Container</span> <span class="n">shape</span><span class="p">,</span><span class="n">Container</span> <span class="n">strides</span><span class="p">,</span><span class="n">python</span><span class="o">::</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">owner</span><span class="p">);</span>
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="o">&gt;</span>
+<span class="n">ndarray</span> <span class="n">from_data</span><span class="p">(</span><span class="kt">void</span> <span class="k">const</span> <span class="o">*</span> <span class="n">data</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span> <span class="n">Container</span> <span class="n">shape</span><span class="p">,</span> <span class="n">Container</span> <span class="n">strides</span><span class="p">,</span> <span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">owner</span><span class="p">);</span>
+
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span><span class="kt">int</span> <span class="n">nd_min</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_max</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span><span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_min</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_max</span><span class="p">,</span><span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+
+<span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="k">operator</span><span class="o">|</span><span class="p">(</span><span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">a</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">b</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="k">operator</span><span class="o">&amp;</span><span class="p">(</span><span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">a</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">b</span><span class="p">);</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="constructors">
+<h2><a class="toc-backref" href="#id4">constructors</a></h2>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">view</span><span class="p">(</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">new ndarray with old ndarray data cast as supplied dtype</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">astype</span><span class="p">(</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">new ndarray with old ndarray data converted to supplied dtype</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">copy</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Copy of calling ndarray object</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">transpose</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An ndarray with the rows and columns interchanged</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">squeeze</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An ndarray with all unit-shaped dimensions removed</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="n">reshape</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body">The new <tt class="docutils literal"><span class="pre">shape</span></tt> of the ndarray must be supplied as a tuple</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An ndarray with the same data but reshaped to the <tt class="docutils literal"><span class="pre">shape</span></tt> supplied</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">object</span> <span class="n">scalarize</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A scalar if the ndarray has only one element, otherwise it returns the entire array</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="nf">zeros</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">zeros</span><span class="p">(</span><span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied as required :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">shape</span></tt> or the size of all dimensions, as a tuple</li>
+<li>the <tt class="docutils literal"><span class="pre">dtype</span></tt> of the data</li>
+<li>the <tt class="docutils literal"><span class="pre">nd</span></tt> size for a square shaped ndarray</li>
+<li>the <tt class="docutils literal"><span class="pre">shape</span></tt> Py_intptr_t</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A new ndarray with the given shape and data type, with data initialized to zero.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="nf">empty</span><span class="p">(</span><span class="n">tuple</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">empty</span><span class="p">(</span><span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">shape</span></tt> or the size of all dimensions, as a tuple</li>
+<li>the <tt class="docutils literal"><span class="pre">dtype</span></tt> of the data</li>
+<li>the <tt class="docutils literal"><span class="pre">shape</span></tt> Py_intptr_t</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A new ndarray with the given shape and data type, with data left uninitialized.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="nf">array</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">);</span>
+<span class="n">ndarray</span> <span class="nf">array</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A new ndarray from an arbitrary Python sequence, with dtype of each element specified optionally</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">Container</span><span class="o">&gt;</span>
+<span class="kr">inline</span> <span class="n">ndarray</span> <span class="n">from_data</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span> <span class="n">data</span><span class="p">,</span><span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span><span class="n">Container</span> <span class="n">shape</span><span class="p">,</span><span class="n">Container</span> <span class="n">strides</span><span class="p">,</span><span class="n">python</span><span class="o">::</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">owner</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">data</span></tt> which is a generic C++ data container</li>
+<li>the dtype <tt class="docutils literal"><span class="pre">dt</span></tt> of the data</li>
+<li>the <tt class="docutils literal"><span class="pre">shape</span></tt> of the ndarray as Python object</li>
+<li>the <tt class="docutils literal"><span class="pre">strides</span></tt> of each dimension of the array as a Python object</li>
+<li>the <tt class="docutils literal"><span class="pre">owner</span></tt> of the data, in case it is not the ndarray itself</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ndarray with attributes and data supplied</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body"><p class="first last">The <tt class="docutils literal"><span class="pre">Container</span></tt> typename must be one that is convertible to a std::vector or python object type</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span><span class="kt">int</span> <span class="n">nd_min</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_max</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>the dtype <tt class="docutils literal"><span class="pre">dt</span></tt> of the data</li>
+<li>minimum number of dimensions <tt class="docutils literal"><span class="pre">nd_min</span></tt> of the ndarray as Python object</li>
+<li>maximum number of dimensions <tt class="docutils literal"><span class="pre">nd_max</span></tt> of the ndarray as Python object</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ndarray constructed with dimensions and data supplied as parameters</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>the dtype <tt class="docutils literal"><span class="pre">dt</span></tt> of the data</li>
+<li>number of dimensions <tt class="docutils literal"><span class="pre">nd</span></tt> of the ndarray as Python object</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ndarray with dimensions <tt class="docutils literal"><span class="pre">nd</span></tt> x <tt class="docutils literal"><span class="pre">nd</span></tt> and suplied parameters</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span> <span class="n">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dtype</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">dt</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>the dtype <tt class="docutils literal"><span class="pre">dt</span></tt> of the data</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Supplied Python object as ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_min</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd_max</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>minimum number of dimensions <tt class="docutils literal"><span class="pre">nd_min</span></tt> of the ndarray as Python object</li>
+<li>maximum number of dimensions <tt class="docutils literal"><span class="pre">nd_max</span></tt> of the ndarray as Python object</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">ndarray with supplied dimension limits and parameters</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body"><p class="first last">dtype need not be supplied here</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="kt">int</span> <span class="n">nd</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>the dtype <tt class="docutils literal"><span class="pre">dt</span></tt> of the data</li>
+<li>number of dimensions <tt class="docutils literal"><span class="pre">nd</span></tt> of the ndarray as Python object</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ndarray of <tt class="docutils literal"><span class="pre">nd</span></tt> x <tt class="docutils literal"><span class="pre">nd</span></tt> dimensions constructed from the supplied object</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span> <span class="n">from_object</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">obj</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">flags</span><span class="o">=</span><span class="n">ndarray</span><span class="o">::</span><span class="n">NONE</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requirements:</th><td class="field-body"><p class="first">The following parameters must be supplied :</p>
+<ul class="simple">
+<li>the <tt class="docutils literal"><span class="pre">obj</span></tt> Python object to convert to ndarray</li>
+<li>optional <tt class="docutils literal"><span class="pre">flags</span></tt> bitflags</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ndarray of same dimensions and dtype as supplied Python object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="accessors">
+<h2><a class="toc-backref" href="#id5">accessors</a></h2>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The size of the n-th dimension of the ndarray</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">strides</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The stride of the nth dimension.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char</span> <span class="o">*</span> <span class="n">get_data</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array&#8217;s raw data pointer as a char</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Note:</th><td class="field-body">This returns char so stride math works properly on it.User will have to reinterpret_cast it.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">dtype</span> <span class="n">get_dtype</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array&#8217;s data-type descriptor object (dtype)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">object</span> <span class="n">get_base</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Object that owns the array&#8217;s data, or None if the array owns its own data.</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">set_base</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">base</span><span class="p">);</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Set the object that owns the array&#8217;s data. Exercise caution while using this</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Shape of the array as an array of integers</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_strides</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Stride of the array as an array of integers</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Number of array dimensions</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="n">bitflag</span> <span class="k">const</span> <span class="n">get_flags</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Array flags</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="k">operator</span><span class="o">|</span><span class="p">(</span><span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">a</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bitflag logically OR-ed as (a | b)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-c++"><div class="highlight"><pre><span class="kr">inline</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="k">operator</span><span class="o">&amp;</span><span class="p">(</span><span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">a</span><span class="p">,</span> <span class="n">ndarray</span><span class="o">::</span><span class="n">bitflag</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bitflag logically AND-ed as (a &amp; b)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="example-s">
+<h2><a class="toc-backref" href="#id6">Example(s)</a></h2>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first">namespace p = boost::python;
+namespace np = boost::python::numpy;</p>
+<p>p::object tu = p::make_tuple(&#8216;a&#8217;,&#8217;b&#8217;,&#8217;c&#8217;) ;
+np::ndarray example_tuple = np::array (tu) ;</p>
+<p>p::list l ;
+np::ndarray example_list = np::array (l) ;</p>
+<p>np::dtype dt = np::dtype::get_builtin&lt;int&gt;();
+np::ndarray example_list1 = np::array (l,dt);</p>
+<p>int data[] = {1,2,3,4} ;
+p::tuple shape = p::make_tuple(4) ;
+p::tuple stride = p::make_tuple(4) ;
+p::object own ;
+np::ndarray data_ex = np::from_data(data,dt,shape,stride,own);</p>
+<p>uint8_t mul_data[][4] = {{1,2,3,4},{5,6,7,8},{1,3,5,7}};
+shape = p::make_tuple(3,2) ;
+stride = p::make_tuple(4,2) ;
+np::dtype dt1 = np::dtype::get_builtin&lt;uint8_t&gt;();</p>
+<p class="last">np::ndarray mul_data_ex = np::from_data(mul_data,dt1, p::make_tuple(3,4),p::make_tuple(4,1),p::object());
+mul_data_ex = np::from_data(mul_data,dt1, shape,stride,p::object());</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+    <div class="navbar" style="text-align:right;">
+      
+      
+      <a class="prev" title="dtype" href="dtype.html"><img src="../_static/prev.png" alt="prev"/></a>
+      <a class="up" title="Boost.NumPy Reference" href="index.html"><img src="../_static/up.png" alt="up"/></a>
+      <a class="next" title="unary_ufunc" href="unary_ufunc.html"><img src="../_static/next.png" alt="next"/></a>
+      
+    </div>
+    </div>
+  </body>
+</html>
