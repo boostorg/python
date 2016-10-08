@@ -17,8 +17,7 @@ Welcome to Boost.Python, a C++ library which enables seamless interoperability b
 
 See the [Boost.Python](http://boostorg.github.io/python) documentation for details.
 
-!!! note
-    Check out the [development version](http://boostorg.github.io/python/develop) of the documentation to see work in progress.
+**Hint :** Check out the [development version](http://boostorg.github.io/python/develop) of the documentation to see work in progress.
 
 # Building ![Build Status](https://travis-ci.org/boostorg/python.svg?branch=develop)
 
