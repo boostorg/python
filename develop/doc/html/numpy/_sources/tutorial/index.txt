@@ -1,5 +1,5 @@
-Boost.NumPy Tutorial
-====================
+Boost.Python NumPy extension Tutorial
+=====================================
 
 Contents:
 

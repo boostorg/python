@@ -1,5 +1,5 @@
-Boost.NumPy Reference
-=====================
+Boost.Python NumPy extension Reference
+======================================
 
 Contents:
 
