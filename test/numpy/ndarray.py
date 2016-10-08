@@ -5,7 +5,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-import ndarray_mod
+import ndarray_ext
 import unittest
 import numpy
 
@@ -16,7 +16,7 @@ class TestNdarray(unittest.TestCase):
             v = numpy.zeros(60, dtype=dtp)
             dt = numpy.dtype(dtp)
             for shape in ((60,),(6,10),(4,3,5),(2,2,3,5)):
-                a1 = ndarray_mod.zeros(shape,dt)
+                a1 = ndarray_ext.zeros(shape,dt)
                 a2 = v.reshape(a1.shape)
                 self.assertEqual(shape,a1.shape)
                 self.assert_((a1 == a2).all())
@@ -25,7 +25,7 @@ class TestNdarray(unittest.TestCase):
         for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
             dt = numpy.dtype(dtp)
             shape = (6, 10)
-            a1 = ndarray_mod.zeros_matrix(shape, dt)
+            a1 = ndarray_ext.zeros_matrix(shape, dt)
             a2 = numpy.matrix(numpy.zeros(shape, dtype=dtp))
             self.assertEqual(shape,a1.shape)
             self.assert_((a1 == a2).all())
@@ -36,8 +36,8 @@ class TestNdarray(unittest.TestCase):
         for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
             v = numpy.array(a, dtype=dtp)
             dt = numpy.dtype(dtp)
-            a1 = ndarray_mod.array(a)
-            a2 = ndarray_mod.array(a,dt)
+            a1 = ndarray_ext.array(a)
+            a2 = ndarray_ext.array(a,dt)
             self.assert_((a1 == v).all())
             self.assert_((a2 == v).all())
             for shape in ((60,),(6,10),(4,3,5),(2,2,3,5)):
@@ -50,8 +50,8 @@ class TestNdarray(unittest.TestCase):
         for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
             dt = numpy.dtype(dtp)
             for shape in ((60,),(6,10),(4,3,5),(2,2,3,5)):
-                a1 = ndarray_mod.empty(shape,dt)
-                a2 = ndarray_mod.c_empty(shape,dt)
+                a1 = ndarray_ext.empty(shape,dt)
+                a2 = ndarray_ext.c_empty(shape,dt)
                 self.assertEqual(shape,a1.shape)
                 self.assertEqual(shape,a2.shape)
 
@@ -61,18 +61,18 @@ class TestNdarray(unittest.TestCase):
             for shape in ((6,10),(4,3,5),(2,2,3,5)):
                 a1 = numpy.empty(shape,dt)
                 a2 = a1.transpose()
-                a1 = ndarray_mod.transpose(a1)    
+                a1 = ndarray_ext.transpose(a1)
                 self.assertEqual(a1.shape,a2.shape)
 
     def testSqueeze(self):
         a1 = numpy.array([[[3,4,5]]])
         a2 = a1.squeeze()
-        a1 = ndarray_mod.squeeze(a1)
+        a1 = ndarray_ext.squeeze(a1)
         self.assertEqual(a1.shape,a2.shape)
 
     def testReshape(self):
         a1 = numpy.empty((2,2))
-        a2 = ndarray_mod.reshape(a1,(1,4))
+        a2 = ndarray_ext.reshape(a1,(1,4))
         self.assertEqual(a2.shape,(1,4))
 
 if __name__=="__main__":

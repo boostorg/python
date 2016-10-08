@@ -1,24 +1,22 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_UFUNC_HPP_INCLUDED
-#define BOOST_NUMPY_UFUNC_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_ufunc_hpp_
+#define boost_python_numpy_ufunc_hpp_
 
 /**
- *  @file boost/numpy/ufunc.hpp
  *  @brief Utilities to create ufunc-like broadcasting functions out of C++ functors.
  */
 
 #include <boost/python.hpp>
-#include <boost/numpy/numpy_object_mgr_traits.hpp>
-#include <boost/numpy/dtype.hpp>
-#include <boost/numpy/ndarray.hpp>
+#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
+#include <boost/python/numpy/dtype.hpp>
+#include <boost/python/numpy/ndarray.hpp>
 
-namespace boost 
-{
-namespace numpy 
-{
+namespace boost { namespace python { namespace numpy {
 
 /**
  *  @brief A boost.python "object manager" (subclass of object) for PyArray_MultiIter.
@@ -36,11 +34,11 @@ namespace numpy
  *        It's more dangerous than most object managers, however - maybe it actually belongs in
  *        a detail namespace?
  */
-class multi_iter : public python::object 
+class multi_iter : public object
 {
 public:
 
-  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(multi_iter, python::object);
+  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(multi_iter, object);
 
   /// @brief Increment the iterator.
   void next();
@@ -63,13 +61,13 @@ public:
 };
 
 /// @brief Construct a multi_iter over a single sequence or scalar object.
-multi_iter make_multi_iter(python::object const & a1);
+multi_iter make_multi_iter(object const & a1);
 
 /// @brief Construct a multi_iter by broadcasting two objects.
-multi_iter make_multi_iter(python::object const & a1, python::object const & a2);
+multi_iter make_multi_iter(object const & a1, object const & a2);
 
 /// @brief Construct a multi_iter by broadcasting three objects.
-multi_iter make_multi_iter(python::object const & a1, python::object const & a2, python::object const & a3);
+multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
 /**
  *  @brief Helps wrap a C++ functor taking a single scalar argument as a broadcasting ufunc-like
@@ -102,12 +100,12 @@ struct unary_ufunc
    *  @brief A C++ function with object arguments that broadcasts its arguments before
    *         passing them to the underlying C++ functor.
    */
-  static python::object call(TUnaryFunctor & self, python::object const & input, python::object const & output) 
+  static object call(TUnaryFunctor & self, object const & input, object const & output)
   {
     dtype in_dtype = dtype::get_builtin<TArgument>();
     dtype out_dtype = dtype::get_builtin<TResult>();
     ndarray in_array = from_object(input, in_dtype, ndarray::ALIGNED);
-    ndarray out_array = (output != python::object()) ? 
+    ndarray out_array = (output != object()) ?
       from_object(output, out_dtype, ndarray::ALIGNED | ndarray::WRITEABLE)
       : zeros(in_array.get_nd(), in_array.get_shape(), out_dtype);
     multi_iter iter = make_multi_iter(in_array, out_array);
@@ -127,10 +125,9 @@ struct unary_ufunc
    *  Users will often want to specify their own keyword names with the same signature, but this
    *  is a convenient shortcut.
    */
-  static python::object make() 
+  static object make()
   {
-    namespace p = python;
-    return p::make_function(call, p::default_call_policies(), (p::arg("input"), p::arg("output")=p::object())); 
+    return make_function(call, default_call_policies(), (arg("input"), arg("output")=object()));
   }
 };
 
@@ -163,9 +160,9 @@ template <typename TBinaryFunctor,
 struct binary_ufunc 
 {
 
-  static python::object 
-  call(TBinaryFunctor & self, python::object const & input1, python::object const & input2, 
-       python::object const & output) 
+  static object
+  call(TBinaryFunctor & self, object const & input1, object const & input2,
+       object const & output)
   {
     dtype in1_dtype = dtype::get_builtin<TArgument1>();
     dtype in2_dtype = dtype::get_builtin<TArgument2>();
@@ -173,7 +170,7 @@ struct binary_ufunc
     ndarray in1_array = from_object(input1, in1_dtype, ndarray::ALIGNED);
     ndarray in2_array = from_object(input2, in2_dtype, ndarray::ALIGNED);
     multi_iter iter = make_multi_iter(in1_array, in2_array);
-    ndarray out_array = (output != python::object())
+    ndarray out_array = (output != object())
       ? from_object(output, out_dtype, ndarray::ALIGNED | ndarray::WRITEABLE)
       : zeros(iter.get_nd(), iter.get_shape(), out_dtype);
     iter = make_multi_iter(in1_array, in2_array, out_array);
@@ -188,26 +185,21 @@ struct binary_ufunc
     return out_array.scalarize();
   }
 
-  static python::object make() 
+  static object make()
   {
-    namespace p = python;
-    return p::make_function(call, p::default_call_policies(), 
-			    (p::arg("input1"), p::arg("input2"), p::arg("output")=p::object())); 
+    return make_function(call, default_call_policies(),
+			    (arg("input1"), arg("input2"), arg("output")=object()));
   }
 
 };
 
-} // namespace boost::numpy
+} // namespace boost::python::numpy
 
-namespace python
-{
 namespace converter 
 {
 
 NUMPY_OBJECT_MANAGER_TRAITS(numpy::multi_iter);
 
-} // namespace boost::python::converter
-} // namespace boost::python
-} // namespace boost
+}}} // namespace boost::python::converter
 
-#endif // !BOOST_NUMPY_UFUNC_HPP_INCLUDED
+#endif

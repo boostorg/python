@@ -5,7 +5,7 @@ multi_iter
 
 A ``multi_iter`` is a Python object, intended to be used as an iterator  It should generally only be used in loops.
 
- ``<boost/numpy/ufunc.hpp>`` contains the class definitions for ``multi_iter``
+ ``<boost/python/numpy/ufunc.hpp>`` contains the class definitions for ``multi_iter``
 
 
 synopsis
@@ -15,10 +15,12 @@ synopsis
 
   namespace boost 
   {
+  namespace python
+  {
   namespace numpy 
   {
 
-  class multi_iter : public python::object 
+  class multi_iter : public object 
   {
   public:
     void next();
@@ -30,10 +32,11 @@ synopsis
   };
 
 
-  multi_iter make_multi_iter(python::object const & a1);
-  multi_iter make_multi_iter(python::object const & a1, python::object const & a2);
-  multi_iter make_multi_iter(python::object const & a1, python::object const & a2, python::object const & a3);
+  multi_iter make_multi_iter(object const & a1);
+  multi_iter make_multi_iter(object const & a1, object const & a2);
+  multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
+  }
   }
   }
 
@@ -43,9 +46,9 @@ constructors
 
 ::
 
-  multi_iter make_multi_iter(python::object const & a1);
-  multi_iter make_multi_iter(python::object const & a1, python::object const & a2);
-  multi_iter make_multi_iter(python::object const & a1, python::object const & a2, python::object const & a3);
+  multi_iter make_multi_iter(object const & a1);
+  multi_iter make_multi_iter(object const & a1, object const & a2);
+  multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
 :Returns: A Python iterator object broadcasting over one, two or three sequences as supplied
 

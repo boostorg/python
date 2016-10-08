@@ -5,11 +5,11 @@ Let's start with a simple tutorial to create and modify arrays.
 
 Get the necessary headers for numpy components and set up necessary namespaces::
 
-	#include <boost/numpy.hpp>
+	#include <boost/python/numpy.hpp>
 	#include <iostream>
 
 	namespace p = boost::python;
-	namespace np = boost::numpy;
+	namespace np = boost::python::numpy;
 
 Initialise the Python runtime, and the numpy module. Failure to call these results in segmentation errors::
 

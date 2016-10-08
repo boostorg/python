@@ -5,7 +5,7 @@ unary_ufunc
 
 A ``unary_ufunc`` is a struct used as an intermediate step to broadcast a single argument so that a C++ function can be converted to a ufunc like function
 
- ``<boost/numpy/ufunc.hpp>`` contains the ``unary_ufunc`` structure definitions
+ ``<boost/python/numpy/ufunc.hpp>`` contains the ``unary_ufunc`` structure definitions
 
 
 synopsis
@@ -14,6 +14,8 @@ synopsis
 ::
 
   namespace boost 
+  {
+  namespace python
   {
   namespace numpy 
   {
@@ -24,13 +26,14 @@ synopsis
   struct unary_ufunc 
   {
 
-    static python::object call(TUnaryFunctor & self, 
-                               python::object const & input, 
-                               python::object const & output) ;
+    static object call(TUnaryFunctor & self, 
+                       object const & input, 
+                       object const & output) ;
 
-    static python::object make(); 
+    static object make(); 
 
   };
+  }
   }
   }
 
@@ -58,9 +61,9 @@ accessors
   template <typename TUnaryFunctor, 
             typename TArgument=typename TUnaryFunctor::argument_type,
             typename TResult=typename TUnaryFunctor::result_type>
-  static python::object call(TUnaryFunctor & self, 
-                             python::object const & input, 
-                             python::object const & output);
+  static object call(TUnaryFunctor & self, 
+                     object const & input, 
+                     object const & output);
 
 :Requires: Typenames ``TUnaryFunctor`` and optionally ``TArgument`` for argument type and ``TResult`` for result type
 
@@ -71,7 +74,7 @@ accessors
   template <typename TUnaryFunctor, 
             typename TArgument=typename TUnaryFunctor::argument_type,
             typename TResult=typename TUnaryFunctor::result_type>
-  static python::object make(); 
+  static object make(); 
 
 :Requires: Typenames ``TUnaryFunctor`` and optionally ``TArgument`` for argument type and ``TResult`` for result type
 
@@ -83,6 +86,8 @@ Example(s)
 ----------
 
 ::
+  namespace p = boost::python;
+  namespace np = boost::python::numpy;
 
   struct UnarySquare 
   {

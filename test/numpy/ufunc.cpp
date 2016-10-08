@@ -1,14 +1,15 @@
 // Copyright Jim Bosch & Ankit Daftery 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
-struct UnaryCallable 
+struct UnaryCallable
 {
   typedef double argument_type;
   typedef double result_type;
@@ -16,7 +17,7 @@ struct UnaryCallable
   double operator()(double r) const { return r * 2;}
 };
 
-struct BinaryCallable 
+struct BinaryCallable
 {
   typedef double first_argument_type;
   typedef double second_argument_type;
@@ -25,7 +26,7 @@ struct BinaryCallable
   double operator()(double a, double b) const { return a * 2 + b * 3;}
 };
 
-BOOST_PYTHON_MODULE(ufunc_mod) 
+BOOST_PYTHON_MODULE(ufunc_ext)
 {
   np::initialize();
   p::class_<UnaryCallable>("UnaryCallable")

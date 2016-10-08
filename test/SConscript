@@ -47,7 +47,6 @@ for test in [('injected',),
              ('minimal',),
              ('args',),
              ('raw_ctor',),
-             ('numpy',None, ['printer.py', 'numeric_tests.py', 'numarray_tests.py']),
              ('exception_translator',),
              ('test_enum', ['enum_ext']),
              ('test_cltree', ['cltree']),
@@ -80,7 +79,7 @@ for test in [('injected',),
              ('extract',),
              ('crossmod_opaque', ['crossmod_opaque_a', 'crossmod_opaque_b']),
              ('opaque',),
-             ('voidptr',),
+#             ('voidptr',),
              ('pickle1',),
              ('pickle2',),
              ('pickle3',),
@@ -144,6 +143,18 @@ tests+=env.BoostCompileTest('select_arg_to_python_test')
 if platform.system() == 'Windows':
     tests+=env.BPLTest('calling_conventions')
     tests+=env.BPLTest('calling_conventions_mf')
+
+if env['NUMPY']:
+    numpy_env = env.Clone()
+    numpy_env.BoostUseLib('numpy')
+    for test in [('numpy/dtype',),
+                 ('numpy/ufunc',),
+                 ('numpy/templates',),
+                 ('numpy/ndarray',),
+                 ('numpy/indexing',),
+                 ('numpy/shapes',),]:
+        tests+=numpy_env.BPLTest(*test)
+
 
 env.BoostTestSummary(tests)
 AlwaysBuild(tests)

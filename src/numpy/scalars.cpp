@@ -1,20 +1,17 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-#define BOOST_NUMPY_INTERNAL
-#include <boost/numpy/internal.hpp>
+#define BOOST_PYTHON_NUMPY_INTERNAL
+#include <boost/python/numpy/internal.hpp>
 
-namespace boost 
-{ 
-namespace python 
-{
+namespace boost { namespace python {
 namespace converter 
 {
 NUMPY_OBJECT_MANAGER_TRAITS_IMPL(PyVoidArrType_Type, numpy::void_)
 } // namespace boost::python::converter
-} // namespace boost::python
 
 namespace numpy 
 {
@@ -36,5 +33,4 @@ void_ void_::copy() const
     (PyObject_CallMethod(this->ptr(), const_cast<char*>("copy"), const_cast<char*>(""))));
 }
 
-}
-}
+}}} // namespace boost::python::numpy

@@ -5,7 +5,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-import ufunc_mod
+import ufunc_ext
 import unittest
 import numpy
 from numpy.testing.utils import assert_array_almost_equal
@@ -13,12 +13,12 @@ from numpy.testing.utils import assert_array_almost_equal
 class TestUnary(unittest.TestCase):
 
     def testScalar(self):
-        f = ufunc_mod.UnaryCallable()
+        f = ufunc_ext.UnaryCallable()
         assert_array_almost_equal(f(1.0), 2.0)
         assert_array_almost_equal(f(3.0), 6.0)
 
     def testArray(self):
-        f = ufunc_mod.UnaryCallable()
+        f = ufunc_ext.UnaryCallable()
         a = numpy.arange(5, dtype=float)
         b = f(a)
         assert_array_almost_equal(b, a*2.0) 
@@ -28,7 +28,7 @@ class TestUnary(unittest.TestCase):
         assert_array_almost_equal(d, a*2.0) 
 
     def testList(self):
-        f = ufunc_mod.UnaryCallable()
+        f = ufunc_ext.UnaryCallable()
         a = range(5)
         b = f(a)
         assert_array_almost_equal(b/2.0, a) 
@@ -36,12 +36,12 @@ class TestUnary(unittest.TestCase):
 class TestBinary(unittest.TestCase):
 
     def testScalar(self):
-        f = ufunc_mod.BinaryCallable()
+        f = ufunc_ext.BinaryCallable()
         assert_array_almost_equal(f(1.0, 3.0), 11.0) 
         assert_array_almost_equal(f(3.0, 2.0), 12.0) 
 
     def testArray(self):
-        f = ufunc_mod.BinaryCallable()
+        f = ufunc_ext.BinaryCallable()
         a = numpy.random.randn(5)
         b = numpy.random.randn(5)
         assert_array_almost_equal(f(a,b), (a*2+b*3)) 

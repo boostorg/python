@@ -1,30 +1,28 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_SCALARS_HPP_INCLUDED
-#define BOOST_NUMPY_SCALARS_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_scalars_hpp_
+#define boost_python_numpy_scalars_hpp_
 
 /**
- *  @file boost/numpy/scalars.hpp
  *  @brief Object managers for array scalars (currently only numpy.void is implemented).
  */
 
 #include <boost/python.hpp>
-#include <boost/numpy/numpy_object_mgr_traits.hpp>
-#include <boost/numpy/dtype.hpp>
+#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
+#include <boost/python/numpy/dtype.hpp>
 
-namespace boost 
-{
-namespace numpy 
-{
+namespace boost { namespace python { namespace numpy {
 
 /**
  *  @brief A boost.python "object manager" (subclass of object) for numpy.void.
  *
  *  @todo This could have a lot more functionality.
  */
-class void_ : public python::object 
+class void_ : public object
 {
   static python::detail::new_reference convert(object_cref arg, bool align);
 public:
@@ -50,15 +48,11 @@ public:
 
 };
 
-} // namespace boost::numpy
+} // namespace boost::python::numpy
 
-namespace python
-{
 namespace converter 
 {
 NUMPY_OBJECT_MANAGER_TRAITS(numpy::void_);
-} // namespace boost::python::converter
-} // namespace boost::python
-} // namespace boost
+}}} // namespace boost::python::converter
 
-#endif // !BOOST_NUMPY_SCALARS_HPP_INCLUDED
+#endif

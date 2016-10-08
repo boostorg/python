@@ -42,3 +42,13 @@ env.BoostLibrary(
      'import.cpp',
      'exec.cpp',
      'object/function_doc_signature.cpp'])
+
+if env['NUMPY']:
+    env.BoostLibrary(
+        'numpy',
+        ['numpy/dtype.cpp',
+         'numpy/matrix.cpp',
+         'numpy/ndarray.cpp',
+         'numpy/numpy.cpp',
+         'numpy/scalars.cpp',
+         'numpy/ufunc.cpp'])

@@ -8,7 +8,7 @@ A `ndarray`_ is an N-dimensional array which contains items of the same type and
 .. _ndarray: http://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html
 .. _dtype: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#data-type-objects-dtype
 
- ``<boost/numpy/ndarray.hpp>`` contains the structures and methods necessary to move raw data between C++ and Python and create ndarrays from the data
+ ``<boost/python/numpy/ndarray.hpp>`` contains the structures and methods necessary to move raw data between C++ and Python and create ndarrays from the data
 
 
 
@@ -19,10 +19,12 @@ synopsis
 
   namespace boost 
   {
+  namespace python
+  {
   namespace numpy 
   {
 
-  class ndarray : public python::object 
+  class ndarray : public object 
   {
 
   public:
@@ -53,30 +55,30 @@ synopsis
   
     ndarray transpose() const;
     ndarray squeeze() const;
-    ndarray reshape(python::tuple const & shape) const;
-    python::object scalarize() const;
+    ndarray reshape(tuple const & shape) const;
+    object scalarize() const;
   };
 
-  ndarray zeros(python::tuple const & shape, dtype const & dt);
+  ndarray zeros(tuple const & shape, dtype const & dt);
   ndarray zeros(int nd, Py_intptr_t const * shape, dtype const & dt);
 
-  ndarray empty(python::tuple const & shape, dtype const & dt);
+  ndarray empty(tuple const & shape, dtype const & dt);
   ndarray empty(int nd, Py_intptr_t const * shape, dtype const & dt);
 
-  ndarray array(python::object const & obj);
-  ndarray array(python::object const & obj, dtype const & dt);
+  ndarray array(object const & obj);
+  ndarray array(object const & obj, dtype const & dt);
 
   template <typename Container>
   ndarray from_data(void * data,dtype const & dt,Container shape,Container strides,python::object const & owner);
   template <typename Container>
-  ndarray from_data(void const * data, dtype const & dt, Container shape, Container strides, python::object const & owner);
+  ndarray from_data(void const * data, dtype const & dt, Container shape, Container strides, object const & owner);
 
-  ndarray from_object(python::object const & obj, dtype const & dt,int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
-  ndarray from_object(python::object const & obj, dtype const & dt,int nd, ndarray::bitflag flags=ndarray::NONE);
-  ndarray from_object(python::object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE);
-  ndarray from_object(python::object const & obj, int nd_min, int nd_max,ndarray::bitflag flags=ndarray::NONE);
-  ndarray from_object(python::object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
-  ndarray from_object(python::object const & obj, ndarray::bitflag flags=ndarray::NONE)
+  ndarray from_object(object const & obj, dtype const & dt,int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, dtype const & dt,int nd, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, int nd_min, int nd_max,ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, ndarray::bitflag flags=ndarray::NONE)
 
   ndarray::bitflag operator|(ndarray::bitflag a, ndarray::bitflag b) ; 
   ndarray::bitflag operator&(ndarray::bitflag a, ndarray::bitflag b);
@@ -119,7 +121,7 @@ constructors
   
 ::
 
-  ndarray reshape(python::tuple const & shape) const;
+  ndarray reshape(tuple const & shape) const;
 
 :Requirements: The new ``shape`` of the ndarray must be supplied as a tuple
 
@@ -128,13 +130,13 @@ constructors
 
 ::
 
-  python::object scalarize() const;
+  object scalarize() const;
 
 :Returns: A scalar if the ndarray has only one element, otherwise it returns the entire array
 
 ::
 
-  ndarray zeros(python::tuple const & shape, dtype const & dt);
+  ndarray zeros(tuple const & shape, dtype const & dt);
   ndarray zeros(int nd, Py_intptr_t const * shape, dtype const & dt);
 
 :Requirements: The following parameters must be supplied as required :
@@ -148,7 +150,7 @@ constructors
 
 ::
 
-  ndarray empty(python::tuple const & shape, dtype const & dt);
+  ndarray empty(tuple const & shape, dtype const & dt);
   ndarray empty(int nd, Py_intptr_t const * shape, dtype const & dt);
 
 
@@ -162,8 +164,8 @@ constructors
 
 ::
 
-  ndarray array(python::object const & obj);
-  ndarray array(python::object const & obj, dtype const & dt);
+  ndarray array(object const & obj);
+  ndarray array(object const & obj, dtype const & dt);
 
 :Returns:  A new ndarray from an arbitrary Python sequence, with dtype of each element specified optionally
 
@@ -186,7 +188,7 @@ constructors
 
 ::
 
-  ndarray from_object(python::object const & obj, dtype const & dt,int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, dtype const & dt,int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
 
 :Requirements: The following parameters must be supplied :
 
@@ -200,7 +202,7 @@ constructors
 
 ::
 
-  inline ndarray from_object(python::object const & obj, dtype const & dt, int nd, ndarray::bitflag flags=ndarray::NONE);
+  inline ndarray from_object(object const & obj, dtype const & dt, int nd, ndarray::bitflag flags=ndarray::NONE);
 
 :Requirements: The following parameters must be supplied :
 
@@ -213,7 +215,7 @@ constructors
 
 ::
 
-  inline ndarray from_object(python::object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE)
+  inline ndarray from_object(object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE)
 
 :Requirements: The following parameters must be supplied :
 
@@ -225,7 +227,7 @@ constructors
 
 ::
 
-  ndarray from_object(python::object const & obj, int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
+  ndarray from_object(object const & obj, int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
 
 :Requirements: The following parameters must be supplied :
 
@@ -240,7 +242,7 @@ constructors
 
 ::
 
-  inline ndarray from_object(python::object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
+  inline ndarray from_object(object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE);
 
 :Requirements: The following parameters must be supplied :
 
@@ -253,7 +255,7 @@ constructors
 
 ::
 
-  inline ndarray from_object(python::object const & obj, ndarray::bitflag flags=ndarray::NONE)
+  inline ndarray from_object(object const & obj, ndarray::bitflag flags=ndarray::NONE)
 
 :Requirements: The following parameters must be supplied :
 
@@ -295,7 +297,7 @@ accessors
 
 ::
 
-  python::object get_base() const;
+  object get_base() const;
 
 :Returns: Object that owns the array's data, or None if the array owns its own data.  
 
@@ -351,6 +353,8 @@ Example(s)
 ----------
 
 ::
+  namespace p = boost::python;
+  namespace np = boost::python::numpy;
 
   p::object tu = p::make_tuple('a','b','c') ;
   np::ndarray example_tuple = np::array (tu) ; 

@@ -7,11 +7,11 @@ Lets try and see how we can use the binary and unary ufunc methods
 
 After the neccessary includes ::
 
-  #include <boost/numpy.hpp>
+  #include <boost/python/numpy.hpp>
   #include <iostream>
   
   namespace p = boost::python;
-  namespace np = boost::numpy;
+  namespace np = boost::python::numpy;
 
 Now we create the structs necessary to implement the ufuncs. The typedefs *must* be made as the ufunc generators take these typedefs as inputs and return an error otherwise ::
 

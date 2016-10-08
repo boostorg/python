@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Boost.NumPy documentation build configuration file, created by
+# Boost.Python NumPy documentation build configuration file, created by
 # sphinx-quickstart on Thu Oct 27 09:04:58 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -40,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Boost.NumPy'
+project = u'Boost.Python NumPy extension'
 copyright = u'2011, Stefan Seefeld'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -112,7 +112,7 @@ html_theme = 'default'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = '_static/boost.png'
+html_logo = 'static/bpl.png'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -122,7 +122,7 @@ html_logo = '_static/boost.png'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ['static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -166,7 +166,7 @@ html_use_index = True
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'BoostNumPydoc'
+htmlhelp_basename = 'BoostPythonNumPydoc'
 
 html_add_permalinks = False
 
@@ -181,7 +181,7 @@ html_add_permalinks = False
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'BoostNumPy.tex', u'Boost.NumPy Documentation',
+  ('index', 'BoostPythonNumPy.tex', u'Boost.Python NumPy Documentation',
    u'Stefan Seefeld', 'manual'),
 ]
 
@@ -214,6 +214,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'boostnumpy', u'Boost.NumPy Documentation',
+    ('index', 'boostnumpy', u'Boost.Python NumPy Documentation',
      [u'Stefan Seefeld'], 1)
 ]

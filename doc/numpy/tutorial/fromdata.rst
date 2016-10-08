@@ -6,11 +6,11 @@ The from_data method makes this possible.
 
 Like before, first get the necessary headers, setup the namespaces and initialize the Python runtime and numpy module::
 
-	#include <boost/numpy.hpp>
+	#include <boost/python/numpy.hpp>
 	#include <iostream>
 
 	namespace p = boost::python;
-	namespace np = boost::numpy;
+	namespace np = boost::python::numpy;
 
 	int main(int argc, char **argv)
 	{

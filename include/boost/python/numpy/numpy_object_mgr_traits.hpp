@@ -1,12 +1,13 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_NUMPY_OBJECT_MGR_TRAITS_HPP_INCLUDED
-#define BOOST_NUMPY_NUMPY_OBJECT_MGR_TRAITS_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_numpy_object_mgr_traits_hpp_
+#define boost_python_numpy_numpy_object_mgr_traits_hpp_
 
 /**
- *  @file boost/numpy/numpy_object_mgr_traits.hpp
  *  @brief Macro that specializes object_manager_traits by requiring a 
  *         source-file implementation of get_pytype().
  */
@@ -31,5 +32,5 @@ struct object_manager_traits<manager>					\
   static PyTypeObject const * get_pytype();				\
 }
 
-#endif // !BOOST_NUMPY_NUMPY_OBJECT_MGR_TRAITS_HPP_INCLUDED
+#endif
 

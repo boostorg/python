@@ -1,28 +1,25 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-#define BOOST_NUMPY_INTERNAL
-#include <boost/numpy/internal.hpp>
-#include <boost/numpy/matrix.hpp>
+#define BOOST_PYTHON_NUMPY_INTERNAL
+#include <boost/python/numpy/internal.hpp>
+#include <boost/python/numpy/matrix.hpp>
 
-namespace boost 
+namespace boost { namespace python { namespace numpy
 {
-namespace numpy 
-{ 
 namespace detail 
 {
-inline python::object get_matrix_type() 
+inline object get_matrix_type()
 {
-  python::object module = python::import("numpy");
+  object module = import("numpy");
   return module.attr("matrix");
 }
-} // namespace boost::numpy::detail
-} // namespace boost::numpy
+} // namespace boost::python::numpy::detail
+} // namespace boost::python::numpy
 
-namespace python
-{
 namespace converter 
 {
 
@@ -32,17 +29,16 @@ PyTypeObject const * object_manager_traits<numpy::matrix>::get_pytype()
 }
 
 } // namespace boost::python::converter
-} // namespace boost::python
 
 namespace numpy 
 {
 
-python::object matrix::construct(python::object const & obj, dtype const & dt, bool copy) 
+object matrix::construct(object const & obj, dtype const & dt, bool copy)
 {
   return numpy::detail::get_matrix_type()(obj, dt, copy);
 }
 
-python::object matrix::construct(python::object const & obj, bool copy) 
+object matrix::construct(object const & obj, bool copy)
 {
   return numpy::detail::get_matrix_type()(obj, object(), copy);
 }
@@ -61,8 +57,7 @@ matrix matrix::copy() const
 
 matrix matrix::transpose() const 
 {
-  return matrix(python::extract<matrix>(ndarray::transpose()));
+  return matrix(extract<matrix>(ndarray::transpose()));
 }
 
-} // namespace boost::numpy
-} // namespace boost
+}}} // namespace boost::python::numpy

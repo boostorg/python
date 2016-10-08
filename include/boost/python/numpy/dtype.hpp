@@ -1,35 +1,37 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_DTYPE_HPP_INCLUDED
-#define BOOST_NUMPY_DTYPE_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_dtype_hpp_
+#define boost_python_numpy_dtype_hpp_
 
 /**
- *  @file boost/numpy/dtype.hpp
+ *  @file boost/python/numpy/dtype.hpp
  *  @brief Object manager for Python's numpy.dtype class.
  */
 
 #include <boost/python.hpp>
-#include <boost/numpy/numpy_object_mgr_traits.hpp>
+#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 
 #include <boost/mpl/for_each.hpp>
 #include <boost/type_traits/add_pointer.hpp>
 
-namespace boost { namespace numpy {
+namespace boost { namespace python { namespace numpy {
 
 /**
  *  @brief A boost.python "object manager" (subclass of object) for numpy.dtype.
  *
  *  @todo This could have a lot more interesting accessors.
  */
-class dtype : public python::object {
-  static python::detail::new_reference convert(python::object::object_cref arg, bool align);
+class dtype : public object {
+  static python::detail::new_reference convert(object::object_cref arg, bool align);
 public:
 
   /// @brief Convert an arbitrary Python object to a data-type descriptor object.
   template <typename T>
-  explicit dtype(T arg, bool align=false) : python::object(convert(arg, align)) {}
+  explicit dtype(T arg, bool align=false) : object(convert(arg, align)) {}
 
   /**
    *  @brief Get the built-in numpy dtype associated with the given scalar template type.
@@ -63,7 +65,7 @@ public:
    */
   static void register_scalar_converters();
 
-  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dtype, python::object);
+  BOOST_PYTHON_FORWARD_OBJECT_CONSTRUCTORS(dtype, object);
 
 };
 
@@ -106,10 +108,10 @@ struct builtin_dtype< std::complex<T>, false > {
 template <typename T>
 inline dtype dtype::get_builtin() { return detail::builtin_dtype<T>::get(); }
 
-}} // namespace boost::numpy
+} // namespace boost::python::numpy
 
-namespace boost { namespace python { namespace converter {
+namespace converter {
 NUMPY_OBJECT_MANAGER_TRAITS(numpy::dtype);
 }}} // namespace boost::python::converter
 
-#endif // !BOOST_NUMPY_DTYPE_HPP_INCLUDED
+#endif

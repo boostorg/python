@@ -13,11 +13,14 @@ import platform
 from . import ui
 from . import cxx
 from . import python
+from . import numpy
 from . import boost
 
 def add_options(vars):
     ui.add_option('-V', '--verbose', dest='verbose', action='store_true', help='verbose mode: print full commands.')
+    ui.add_option('--no-numpy', dest='numpy', action='store_false', help='do not attempt to build NumPy bindings.')
     python.add_options(vars)
+    numpy.add_options(vars)
     boost.add_options(vars)
 
     vars.Add('CXX')
@@ -29,8 +32,10 @@ def add_options(vars):
     vars.Add('PYTHON')
     vars.Add('PYTHONLIBS')
     vars.Add('prefix')
-    vars.Add('boostbook_prefix',
-    vars.Add('CXX11'))
+    vars.Add('boostbook_prefix')
+    vars.Add('CXX11')
+    vars.Add('NUMPY')
+    vars.Add('NUMPY_CPPPATH', converter=lambda v:v.split())
 
     ui.add_variable(vars, ("arch", "target architeture", platform.machine()))
     ui.add_variable(vars, ("toolchain", "toolchain to use", 'gcc'))
@@ -42,10 +47,14 @@ def add_options(vars):
     ui.add_variable(vars, PathVariable("prefix", "Install prefix", "/usr/local", PathVariable.PathAccept))
 
 
-def get_checks():
+def get_checks(env):
   checks = OrderedDict()
   checks['cxx'] = cxx.check
   checks['python'] = python.check
+  if env.GetOption('numpy') is not False:
+      checks['numpy'] = numpy.check
+  else:
+      env['NUMPY'] = False
   checks['boost'] = boost.check
   return checks
 

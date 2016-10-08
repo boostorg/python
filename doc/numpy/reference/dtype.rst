@@ -7,7 +7,7 @@ A `dtype`_ is an object describing the type of the elements of an ndarray
 
 .. _dtype: http://docs.scipy.org/doc/numpy/reference/arrays.dtypes.html#data-type-objects-dtype
 
- ``<boost/numpy/dtype.hpp>`` contains the method calls necessary to generate a python object equivalent to a numpy.dtype from builtin C++ objects, as well as to create custom dtypes from user defined types
+ ``<boost/python/numpy/dtype.hpp>`` contains the method calls necessary to generate a python object equivalent to a numpy.dtype from builtin C++ objects, as well as to create custom dtypes from user defined types
 
 
 synopsis
@@ -17,12 +17,14 @@ synopsis
 
   namespace boost 
   {
+  namespace python
+  {
   namespace numpy 
   {
 
-  class dtype : public python::object 
+  class dtype : public object 
   {
-    static python::detail::new_reference convert(python::object::object_cref arg, bool align);
+    static python::detail::new_reference convert(object::object_cref arg, bool align);
   public:
 
     // Convert an arbitrary Python object to a data-type descriptor object.
@@ -36,6 +38,8 @@ synopsis
     int get_itemsize() const;
   };
 
+  } 
+  } 
   } 
 
 constructors
@@ -78,8 +82,9 @@ Example(s)
 ----------
 
 ::
+  namespace p = boost::python;
+  namespace np = boost::python::numpy;
 
-  namespace np = boost::numpy;
   np::dtype dtype = np::dtype::get_builtin<double>();
   p::tuple for_custom_dtype = p::make_tuple("ha",dtype);
   np::dtype custom_dtype = np::dtype(list_for_dtype);

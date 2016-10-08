@@ -1,19 +1,20 @@
 // Copyright Jim Bosch & Ankit Daftery 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
 np::ndarray zeros(p::tuple shape, np::dtype dt) { return np::zeros(shape, dt);}
 np::ndarray array2(p::object obj, np::dtype dt) { return np::array(obj,dt);}
 np::ndarray array1(p::object obj) { return np::array(obj);}
 np::ndarray empty1(p::tuple shape, np::dtype dt) { return np::empty(shape,dt);}
 
-np::ndarray c_empty(p::tuple shape, np::dtype dt) 
+np::ndarray c_empty(p::tuple shape, np::dtype dt)
 {
   // convert 'shape' to a C array so we can test the corresponding
   // version of the constructor
@@ -30,7 +31,7 @@ np::ndarray transpose(np::ndarray arr) { return arr.transpose();}
 np::ndarray squeeze(np::ndarray arr) { return arr.squeeze();}
 np::ndarray reshape(np::ndarray arr,p::tuple tup) { return arr.reshape(tup);}
 
-BOOST_PYTHON_MODULE(ndarray_mod) 
+BOOST_PYTHON_MODULE(ndarray_ext)
 {
   np::initialize();
   p::def("zeros", zeros);

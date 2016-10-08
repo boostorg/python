@@ -1,16 +1,17 @@
 // Copyright Jim Bosch & Ankit Daftery 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/vector_c.hpp>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
-struct ArrayFiller 
+struct ArrayFiller
 {
 
   typedef boost::mpl::vector< short, int, float, std::complex<double> > TypeSequence;
@@ -19,14 +20,14 @@ struct ArrayFiller
   explicit ArrayFiller(np::ndarray const & arg) : argument(arg) {}
 
   template <typename T, int N>
-  void apply() const 
+  void apply() const
   {
-    if (N == 1) 
+    if (N == 1)
     {
       char * p = argument.get_data();
       int stride = argument.strides(0);
       int size = argument.shape(0);
-      for (int n = 0; n != size; ++n, p += stride) 
+      for (int n = 0; n != size; ++n, p += stride)
 	*reinterpret_cast<T*>(p) = static_cast<T>(n);
     }
     else
@@ -37,7 +38,7 @@ struct ArrayFiller
       int rows = argument.shape(0);
       int cols = argument.shape(1);
       int i = 0;
-      for (int n = 0; n != rows; ++n, row_p += row_stride) 
+      for (int n = 0; n != rows; ++n, row_p += row_stride)
       {
 	char * col_p = row_p;
 	for (int m = 0; m != cols; ++i, ++m, col_p += col_stride)
@@ -49,13 +50,13 @@ struct ArrayFiller
   np::ndarray argument;
 };
 
-void fill(np::ndarray const & arg) 
+void fill(np::ndarray const & arg)
 {
   ArrayFiller filler(arg);
   np::invoke_matching_array<ArrayFiller::TypeSequence, ArrayFiller::DimSequence >(arg, filler);
 }
 
-BOOST_PYTHON_MODULE(templates_mod)
+BOOST_PYTHON_MODULE(templates_ext)
 {
   np::initialize();
   p::def("fill", fill);

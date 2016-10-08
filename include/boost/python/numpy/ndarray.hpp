@@ -1,27 +1,24 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_NDARRAY_HPP_INCLUDED
-#define BOOST_NUMPY_NDARRAY_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_ndarray_hpp_
+#define boost_python_numpy_ndarray_hpp_
 
 /**
- *  @file boost/numpy/ndarray.hpp
  *  @brief Object manager and various utilities for numpy.ndarray.
  */
 
 #include <boost/python.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/is_integral.hpp>
-#include <boost/numpy/numpy_object_mgr_traits.hpp>
-#include <boost/numpy/dtype.hpp>
-
+#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
+#include <boost/python/numpy/dtype.hpp>
 #include <vector>
 
-namespace boost 
-{
-namespace numpy 
-{
+namespace boost { namespace python { namespace numpy {
 
 /**
  *  @brief A boost.python "object manager" (subclass of object) for numpy.ndarray.
@@ -29,7 +26,7 @@ namespace numpy
  *  @todo This could have a lot more functionality (like boost::python::numeric::array).
  *        Right now all that exists is what was needed to move raw data between C++ and Python.
  */
-class ndarray : public python::object 
+class ndarray : public object
 {
 
   /**
@@ -104,7 +101,7 @@ public:
   dtype get_dtype() const;
   
   /// @brief Return the object that owns the array's data, or None if the array owns its own data.
-  python::object get_base() const;
+  object get_base() const;
   
   /// @brief Set the object that owns the array's data.  Use with care.
   void set_base(object const & base);
@@ -136,7 +133,7 @@ public:
    *
    *  @internal This is simply a call to PyArray_Return();
    */
-  python::object scalarize() const;
+  object scalarize() const;
 };
 
 /**
@@ -156,8 +153,8 @@ ndarray empty(int nd, Py_intptr_t const * shape, dtype const & dt);
  *
  *  @todo This does't seem to handle ndarray subtypes the same way that "numpy.array" does in Python.
  */
-ndarray array(python::object const & obj);
-ndarray array(python::object const & obj, dtype const & dt);
+ndarray array(object const & obj);
+ndarray array(object const & obj, dtype const & dt);
 
 namespace detail 
 {
@@ -166,7 +163,7 @@ ndarray from_data_impl(void * data,
 		       dtype const & dt,
 		       std::vector<Py_intptr_t> const & shape,
 		       std::vector<Py_intptr_t> const & strides,
-		       python::object const & owner,
+		       object const & owner,
 		       bool writeable);
 
 template <typename Container>
@@ -174,7 +171,7 @@ ndarray from_data_impl(void * data,
 		       dtype const & dt,
 		       Container shape,
 		       Container strides,
-		       python::object const & owner,
+		       object const & owner,
 		       bool writeable,
 		       typename boost::enable_if< boost::is_integral<typename Container::value_type> >::type * enabled = NULL)
 {
@@ -185,12 +182,12 @@ ndarray from_data_impl(void * data,
 
 ndarray from_data_impl(void * data,
 		       dtype const & dt,
-		       python::object const & shape,
-		       python::object const & strides,
-		       python::object const & owner,
+		       object const & shape,
+		       object const & strides,
+		       object const & owner,
 		       bool writeable);
 
-} // namespace boost::numpy::detail
+} // namespace boost::python::numpy::detail
 
 /**
  *  @brief Construct a new ndarray object from a raw pointer.
@@ -250,29 +247,29 @@ inline ndarray from_data(void const * data,
  *  @param[in] nd_max  Maximum number of dimensions.
  *  @param[in] flags   Bitwise OR of flags specifying additional requirements.
  */
-ndarray from_object(python::object const & obj, dtype const & dt, 
+ndarray from_object(object const & obj, dtype const & dt,
                     int nd_min, int nd_max, ndarray::bitflag flags=ndarray::NONE);
 
-inline ndarray from_object(python::object const & obj, dtype const & dt, 
+inline ndarray from_object(object const & obj, dtype const & dt,
                            int nd, ndarray::bitflag flags=ndarray::NONE)
 {
   return from_object(obj, dt, nd, nd, flags);
 }
 
-inline ndarray from_object(python::object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE)
+inline ndarray from_object(object const & obj, dtype const & dt, ndarray::bitflag flags=ndarray::NONE)
 {
   return from_object(obj, dt, 0, 0, flags);
 }
 
-ndarray from_object(python::object const & obj, int nd_min, int nd_max, 
+ndarray from_object(object const & obj, int nd_min, int nd_max,
                     ndarray::bitflag flags=ndarray::NONE);
 
-inline ndarray from_object(python::object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE)
+inline ndarray from_object(object const & obj, int nd, ndarray::bitflag flags=ndarray::NONE)
 {
   return from_object(obj, nd, nd, flags);
 }
 
-inline ndarray from_object(python::object const & obj, ndarray::bitflag flags=ndarray::NONE)
+inline ndarray from_object(object const & obj, ndarray::bitflag flags=ndarray::NONE)
 {
   return from_object(obj, 0, 0, flags);
 }
@@ -287,17 +284,13 @@ inline ndarray::bitflag operator&(ndarray::bitflag a, ndarray::bitflag b)
   return ndarray::bitflag(int(a) & int(b));
 }
 
-} // namespace boost::numpy
+} // namespace boost::python::numpy
 
-namespace python
-{
 namespace converter 
 {
 
 NUMPY_OBJECT_MANAGER_TRAITS(numpy::ndarray);
 
-} // namespace boost::python::converter
-} // namespace boost::python
-} // namespace boost
+}}} // namespace boost::python::converter
 
-#endif // !BOOST_NUMPY_NDARRAY_HPP_INCLUDED
+#endif

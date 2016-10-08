@@ -1,21 +1,18 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-#define BOOST_NUMPY_INTERNAL
-#include <boost/numpy/internal.hpp>
+#define BOOST_PYTHON_NUMPY_INTERNAL
+#include <boost/python/numpy/internal.hpp>
 #include <boost/scoped_array.hpp>
 
-namespace boost 
-{ 
-namespace python 
-{
+namespace boost { namespace python {
 namespace converter 
 {
 NUMPY_OBJECT_MANAGER_TRAITS_IMPL(PyArray_Type, numpy::ndarray)
 } // namespace boost::python::converter
-} // namespace boost::python
 
 namespace numpy 
 {
@@ -277,5 +274,4 @@ ndarray from_object(python::object const & obj, int nd_min, int nd_max, ndarray:
 		     NULL)));
 }
 
-}
-}
+}}} // namespace boost::python::numpy

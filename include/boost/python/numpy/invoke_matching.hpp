@@ -1,24 +1,21 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_INVOKE_MATCHING_HPP_INCLUDED
-#define BOOST_NUMPY_INVOKE_MATCHING_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef boost_python_numpy_invoke_matching_hpp_
+#define boost_python_numpy_invoke_matching_hpp_
 
 /**
- *  @file boost/numpy/invoke_matching.hpp
  *  @brief Template invocation based on dtype matching.
  */
 
-#include <boost/numpy/dtype.hpp>
-#include <boost/numpy/ndarray.hpp>
-
+#include <boost/python/numpy/dtype.hpp>
+#include <boost/python/numpy/ndarray.hpp>
 #include <boost/mpl/integral_c.hpp>
 
-namespace boost 
-{
-namespace numpy 
-{
+namespace boost { namespace python { namespace numpy {
 namespace detail 
 {
 
@@ -119,7 +116,7 @@ private:
   Function & m_func;
 };
 
-} // namespace boost::numpy::detail
+} // namespace boost::python::numpy::detail
 
 template <typename Sequence, typename Function>
 void invoke_matching_nd(int nd, Function f) 
@@ -175,7 +172,7 @@ struct array_template_invoker_wrapper_1< DimSequence, boost::reference_wrapper<F
     : array_template_invoker_wrapper_1< DimSequence, Function >(nd, func) {}
 };
 
-} // namespace boost::numpy::detail
+} // namespace boost::python::numpy::detail
 
 template <typename TypeSequence, typename DimSequence, typename Function>
 void invoke_matching_array(ndarray const & array_, Function f) 
@@ -184,7 +181,6 @@ void invoke_matching_array(ndarray const & array_, Function f)
   invoke_matching_dtype<TypeSequence>(array_.get_dtype(), wrapper);
 }
 
-} // namespace boost::numpy
-} // namespace boost
+}}} // namespace boost::python::numpy
 
-#endif // !BOOST_NUMPY_INVOKE_MATCHING_HPP_INCLUDED
+#endif

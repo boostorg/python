@@ -8,11 +8,11 @@ This tutorial will introduce you to some of the ways in which you can create nda
 
 First, as before, initialise the necessary namepaces and runtimes ::
 
-	#include <boost/numpy.hpp>
+	#include <boost/python/numpy.hpp>
 	#include <iostream>
 
 	namespace p = boost::python;
-	namespace np = boost::numpy;
+	namespace np = boost::python::numpy;
 
 	int main(int argc, char **argv)
 	{

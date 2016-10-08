@@ -5,7 +5,7 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-import templates_mod
+import templates_ext
 import unittest
 import numpy
 
@@ -17,12 +17,12 @@ class TestTemplates(unittest.TestCase):
             for shape in ((12,), (4, 3), (2, 6)):
                 a1 = numpy.zeros(shape, dtype=dtype)
                 a2 = v.reshape(a1.shape)
-                templates_mod.fill(a1)
+                templates_ext.fill(a1)
                 self.assert_((a1 == a2).all())
         a1 = numpy.zeros((12,), dtype=numpy.float64)
-        self.assertRaises(TypeError, templates_mod.fill, a1)
+        self.assertRaises(TypeError, templates_ext.fill, a1)
         a1 = numpy.zeros((12,2,3), dtype=numpy.float32)
-        self.assertRaises(TypeError, templates_mod.fill, a1)
+        self.assertRaises(TypeError, templates_ext.fill, a1)
 
 if __name__=="__main__":
     unittest.main()

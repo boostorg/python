@@ -5,7 +5,7 @@ binary_ufunc
 
 A ``binary_ufunc`` is a struct used as an intermediate step to broadcast two arguments so that a C++ function can be converted to a ufunc like function
 
- ``<boost/numpy/ufunc.hpp>`` contains the ``binary_ufunc`` structure definitions
+ ``<boost/python/numpy/ufunc.hpp>`` contains the ``binary_ufunc`` structure definitions
 
 
 synopsis
@@ -14,6 +14,8 @@ synopsis
 ::
 
   namespace boost
+  {
+  namespace python
   {
   namespace numpy 
   {
@@ -26,14 +28,15 @@ synopsis
   struct binary_ufunc 
   {
 
-    static python::object call(TBinaryFunctor & self, 
-                               python::object const & input1, 
-                               python::object const & input2,
-                               python::object const & output);
+    static object call(TBinaryFunctor & self, 
+                       object const & input1, 
+                       object const & input2,
+                       object const & output);
 
-    static python::object make(); 
+    static object make(); 
   };
 
+  }
   }
   }
 
@@ -63,9 +66,9 @@ accessors
             typename TArgument1=typename TBinaryFunctor::first_argument_type,
             typename TArgument2=typename TBinaryFunctor::second_argument_type,
             typename TResult=typename TBinaryFunctor::result_type>
-  static python::object call(TBinaryFunctor & self, 
-                             python::object const & input, 
-                             python::object const & output);
+  static object call(TBinaryFunctor & self, 
+                     object const & input, 
+                     object const & output);
 
 :Requires: Typenames ``TBinaryFunctor`` and optionally ``TArgument1`` and ``TArgument2`` for argument type and ``TResult`` for result type
 
@@ -77,7 +80,7 @@ accessors
             typename TArgument1=typename TBinaryFunctor::first_argument_type,
             typename TArgument2=typename TBinaryFunctor::second_argument_type,
             typename TResult=typename TBinaryFunctor::result_type>
-  static python::object make(); 
+  static object make(); 
 
 :Requires: Typenames ``TBinaryFunctor`` and optionally ``TArgument1`` and ``TArgument2`` for argument type and ``TResult`` for result type
 
@@ -87,6 +90,8 @@ Example(s)
 ----------
 
 ::
+  namespace p = boost::python;
+  namespace np = boost::python::numpy;
 
   struct BinarySquare
   {

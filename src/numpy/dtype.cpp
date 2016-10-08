@@ -1,12 +1,14 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #ifdef _MSC_VER
 #include <boost/cstdint.hpp>
 #endif
-#define BOOST_NUMPY_INTERNAL
-#include <boost/numpy/internal.hpp>
+#define BOOST_PYTHON_NUMPY_INTERNAL
+#include <boost/python/numpy/internal.hpp>
 
 #define DTYPE_FROM_CODE(code) \
     dtype(python::detail::new_reference(reinterpret_cast<PyObject*>(PyArray_DescrFromType(code))))
@@ -35,10 +37,9 @@
 
 namespace boost { namespace python { namespace converter {
 NUMPY_OBJECT_MANAGER_TRAITS_IMPL(PyArrayDescr_Type, numpy::dtype)
-}}} // namespace boost::python::converter
+} // namespace boost::python::converter
 
-namespace boost { namespace numpy {
-
+namespace numpy {
 namespace detail {
 
 dtype builtin_dtype<bool,true>::get() { return DTYPE_FROM_CODE(NPY_BOOL); }
@@ -75,14 +76,18 @@ template dtype get_complex_dtype< 2 * NPY_BITSOF_LONGDOUBLE >();
 
 } // namespace detail
 
-python::detail::new_reference dtype::convert(python::object const & arg, bool align) {
+python::detail::new_reference dtype::convert(object const & arg, bool align)
+{
   PyArray_Descr* obj=NULL;
-  if (align) {
+  if (align)
+  {
     if (PyArray_DescrAlignConverter(arg.ptr(), &obj) < 0)
-      python::throw_error_already_set();
-  } else {
+      throw_error_already_set();
+  }
+  else
+  {
     if (PyArray_DescrConverter(arg.ptr(), &obj) < 0)
-      python::throw_error_already_set();
+      throw_error_already_set();
   }
   return python::detail::new_reference(reinterpret_cast<PyObject*>(obj));
 }
@@ -118,58 +123,68 @@ bool equivalent(dtype const & a, dtype const & b) {
 #endif
 }
 
-namespace {
+namespace
+{
 
 namespace pyconv = boost::python::converter;
 
 template <typename T>
-class array_scalar_converter {
+class array_scalar_converter
+{
 public:
 
-  static PyTypeObject const * get_pytype() {
-	// This implementation depends on the fact that get_builtin returns pointers to objects
-	// NumPy has declared statically, and that the typeobj member also refers to a static
-	// object.  That means we don't need to do any reference counting.
-	// In fact, I'm somewhat concerned that increasing the reference count of any of these
-	// might cause leaks, because I don't think Boost.Python ever decrements it, but it's
-	// probably a moot point if everything is actually static.
-	return reinterpret_cast<PyArray_Descr*>(dtype::get_builtin<T>().ptr())->typeobj;
+  static PyTypeObject const * get_pytype()
+  {
+    // This implementation depends on the fact that get_builtin returns pointers to objects
+    // NumPy has declared statically, and that the typeobj member also refers to a static
+    // object.  That means we don't need to do any reference counting.
+    // In fact, I'm somewhat concerned that increasing the reference count of any of these
+    // might cause leaks, because I don't think Boost.Python ever decrements it, but it's
+    // probably a moot point if everything is actually static.
+    return reinterpret_cast<PyArray_Descr*>(dtype::get_builtin<T>().ptr())->typeobj;
   }
 
-  static void * convertible(PyObject * obj) {
-	if (obj->ob_type == get_pytype()) {
-	  return obj;
-	} else {
-        dtype dt(python::detail::borrowed_reference(obj->ob_type));
-        if (equivalent(dt, dtype::get_builtin<T>())) {
-            return obj;
-        }
-	}
+  static void * convertible(PyObject * obj)
+  {
+    if (obj->ob_type == get_pytype())
+    {
+      return obj;
+    }
+    else
+    {
+      dtype dt(python::detail::borrowed_reference(obj->ob_type));
+      if (equivalent(dt, dtype::get_builtin<T>()))
+      {
+	return obj;
+      }
+    }
     return 0;
   }
 
-  static void convert(PyObject * obj, pyconv::rvalue_from_python_stage1_data* data) {
-	void * storage = reinterpret_cast<pyconv::rvalue_from_python_storage<T>*>(data)->storage.bytes;
-	// We assume std::complex is a "standard layout" here and elsewhere; not guaranteed by
-	// C++03 standard, but true in every known implementation (and guaranteed by C++11).
-	PyArray_ScalarAsCtype(obj, reinterpret_cast<T*>(storage));
-	data->convertible = storage;
+  static void convert(PyObject * obj, pyconv::rvalue_from_python_stage1_data* data)
+  {
+    void * storage = reinterpret_cast<pyconv::rvalue_from_python_storage<T>*>(data)->storage.bytes;
+    // We assume std::complex is a "standard layout" here and elsewhere; not guaranteed by
+    // C++03 standard, but true in every known implementation (and guaranteed by C++11).
+    PyArray_ScalarAsCtype(obj, reinterpret_cast<T*>(storage));
+    data->convertible = storage;
   }
 
-  static void declare() {
-	pyconv::registry::push_back(
-	  &convertible, &convert, python::type_id<T>()
+  static void declare()
+  {
+    pyconv::registry::push_back(&convertible, &convert, python::type_id<T>()
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-	  , &get_pytype
+				, &get_pytype
 #endif
-	);
+				);
   }
 
 };
 
 } // anonymous
 
-void dtype::register_scalar_converters() {
+void dtype::register_scalar_converters()
+{
   array_scalar_converter<bool>::declare();
   array_scalar_converter<npy_uint8>::declare();
   array_scalar_converter<npy_int8>::declare();
@@ -196,5 +211,4 @@ void dtype::register_scalar_converters() {
 #endif
 }
 
-} // namespace boost::numpy
-} // namespace boost
+}}} // namespace boost::python::numpy

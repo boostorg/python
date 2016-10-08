@@ -1,24 +1,20 @@
 // Copyright Jim Bosch 2010-2012.
+// Copyright Stefan Seefeld 2016.
 // Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
-#ifndef BOOST_NUMPY_HPP_INCLUDED
-#define BOOST_NUMPY_HPP_INCLUDED
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
 
-/**
- *  @file boost/numpy.hpp
- *  @brief Main public header file for boost.numpy.
- */
+#ifndef boost_python_numpy_hpp_
+#define boost_python_numpy_hpp_
 
-#include <boost/numpy/dtype.hpp>
-#include <boost/numpy/ndarray.hpp>
-#include <boost/numpy/scalars.hpp>
-#include <boost/numpy/matrix.hpp>
-#include <boost/numpy/ufunc.hpp>
-#include <boost/numpy/invoke_matching.hpp>
+#include <boost/python/numpy/dtype.hpp>
+#include <boost/python/numpy/ndarray.hpp>
+#include <boost/python/numpy/scalars.hpp>
+#include <boost/python/numpy/matrix.hpp>
+#include <boost/python/numpy/ufunc.hpp>
+#include <boost/python/numpy/invoke_matching.hpp>
 
-namespace boost {
-namespace numpy {
+namespace boost { namespace python { namespace numpy {
 
 /**
  *  @brief Initialize the Numpy C-API
@@ -32,7 +28,6 @@ namespace numpy {
  */
 void initialize(bool register_scalar_converters=true);
 
-} // namespace boost::numpy
-} // namespace boost
+}}} // namespace boost::python::numpy
 
-#endif // !BOOST_NUMPY_HPP_INCLUDED
+#endif
