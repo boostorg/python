@@ -47,7 +47,6 @@ html article : article.rst
          : <location>html
 	   <docutils-html>"--link-stylesheet --traceback --trim-footnote-reference-space --footnote-references=superscript --stylesheet=rst.css"
             ;
-             ;
 
 ###############################################################################
 alias boostdoc ;
