@@ -7,8 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>ndarray - Boost.Python NumPy extension 1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '../',
@@ -37,8 +37,8 @@
           alt="C++ Boost" src="../_static/bpl.png" border="0"></a></h3>
         </td>
 
-        <td valign="top">
-<!--          <h1 align="center"><a href="../index.html">Boost.NumPy</a></h1>-->
+        <td >
+          <h1 align="center"><a href="../index.html">(NumPy)</a></h1>
 <!--          <h2 align="center">CallPolicies Concept</h2>-->
         </td>
 	<td>
@@ -584,29 +584,33 @@
 </div>
 <div class="section" id="example-s">
 <h2><a class="toc-backref" href="#id6">Example(s)</a></h2>
-<dl class="docutils">
-<dt>::</dt>
-<dd><p class="first">namespace p = boost::python;
-namespace np = boost::python::numpy;</p>
-<p>p::object tu = p::make_tuple(&#8216;a&#8217;,&#8217;b&#8217;,&#8217;c&#8217;) ;
-np::ndarray example_tuple = np::array (tu) ;</p>
-<p>p::list l ;
-np::ndarray example_list = np::array (l) ;</p>
-<p>np::dtype dt = np::dtype::get_builtin&lt;int&gt;();
-np::ndarray example_list1 = np::array (l,dt);</p>
-<p>int data[] = {1,2,3,4} ;
-p::tuple shape = p::make_tuple(4) ;
-p::tuple stride = p::make_tuple(4) ;
-p::object own ;
-np::ndarray data_ex = np::from_data(data,dt,shape,stride,own);</p>
-<p>uint8_t mul_data[][4] = {{1,2,3,4},{5,6,7,8},{1,3,5,7}};
-shape = p::make_tuple(3,2) ;
-stride = p::make_tuple(4,2) ;
-np::dtype dt1 = np::dtype::get_builtin&lt;uint8_t&gt;();</p>
-<p class="last">np::ndarray mul_data_ex = np::from_data(mul_data,dt1, p::make_tuple(3,4),p::make_tuple(4,1),p::object());
-mul_data_ex = np::from_data(mul_data,dt1, shape,stride,p::object());</p>
-</dd>
-</dl>
+<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="p">;</span>
+<span class="k">namespace</span> <span class="n">np</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="o">::</span><span class="n">numpy</span><span class="p">;</span>
+
+<span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">tu</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="sc">&#39;a&#39;</span><span class="p">,</span><span class="sc">&#39;b&#39;</span><span class="p">,</span><span class="sc">&#39;c&#39;</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">example_tuple</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">array</span> <span class="p">(</span><span class="n">tu</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="n">p</span><span class="o">::</span><span class="n">list</span> <span class="n">l</span> <span class="p">;</span>
+<span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">example_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">array</span> <span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="p">;</span>
+
+<span class="n">np</span><span class="o">::</span><span class="n">dtype</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">example_list1</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">array</span> <span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">dt</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">data</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">}</span> <span class="p">;</span>
+<span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">stride</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">own</span> <span class="p">;</span>
+<span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">data_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">shape</span><span class="p">,</span><span class="n">stride</span><span class="p">,</span><span class="n">own</span><span class="p">);</span>
+
+<span class="kt">uint8_t</span> <span class="n">mul_data</span><span class="p">[][</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">}};</span>
+<span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">stride</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="p">;</span>
+<span class="n">np</span><span class="o">::</span><span class="n">dtype</span> <span class="n">dt1</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">mul_data_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">mul_data</span><span class="p">,</span><span class="n">dt1</span><span class="p">,</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span><span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span><span class="n">p</span><span class="o">::</span><span class="n">object</span><span class="p">());</span>
+<span class="n">mul_data_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">mul_data</span><span class="p">,</span><span class="n">dt1</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span><span class="n">stride</span><span class="p">,</span><span class="n">p</span><span class="o">::</span><span class="n">object</span><span class="p">());</span>
+</pre></div>
+</div>
 </div>
 </div>
 

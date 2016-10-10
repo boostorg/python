@@ -353,6 +353,7 @@ Example(s)
 ----------
 
 ::
+
   namespace p = boost::python;
   namespace np = boost::python::numpy;
 

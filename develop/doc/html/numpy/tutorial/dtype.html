@@ -7,8 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>How to use dtypes - Boost.Python NumPy extension 1.0 documentation</title>
-    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
           URL_ROOT:    '../',
@@ -37,8 +37,8 @@
           alt="C++ Boost" src="../_static/bpl.png" border="0"></a></h3>
         </td>
 
-        <td valign="top">
-<!--          <h1 align="center"><a href="../index.html">Boost.NumPy</a></h1>-->
+        <td >
+          <h1 align="center"><a href="../index.html">(NumPy)</a></h1>
 <!--          <h2 align="center">CallPolicies Concept</h2>-->
         </td>
 	<td>
@@ -112,9 +112,8 @@ Here, we first convert the variable into a string, and then extract it as a C++ 
 </pre></div>
 </div>
 <p>We are now ready to create an ndarray with dimensions specified by *shape* and of custom dtpye</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">custom_dtype</span><span class="p">);</span>
-
-      <span class="p">}</span>
+<div class="highlight-c++"><div class="highlight"><pre>  <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">custom_dtype</span><span class="p">);</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>

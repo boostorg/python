@@ -1,5 +1,12 @@
 @import url(boost.css);
 
+.header h1 a
+{
+  color: #00507f;
+  font-size: 200%;
+  font-style: italic; 
+}
+.header h3 { margin: 1px;}
 #contents 
 { 
 /*    border-bottom: solid thin black;*/
@@ -7,5 +14,16 @@
 
 .highlight
 {
-  border: 1px solid #aaaaaa;    
+  border: 1px solid #aaaaaa;
+  background-color: inherit;
+  padding: 0 1em;
+  margin: 0 5em;
 }
+#searchbox
+{
+  float: right;
+  width: auto;
+  margin: 0 2em;
+}
+
+.admonition-title { font-weight: bold;}
