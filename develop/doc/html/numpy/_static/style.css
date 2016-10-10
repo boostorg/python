@@ -14,7 +14,7 @@
 
 .highlight
 {
-  border: 1px solid #aaaaaa;
+  border: 1px solid #dcdcdc;
   background-color: inherit;
   padding: 0 1em;
   margin: 0 5em;
@@ -27,3 +27,12 @@
 }
 
 .admonition-title { font-weight: bold;}
+#table-of-contents
+{
+  border: 1px solid #dcdcdc;
+  padding: 1em;
+  margin: 0 2em;
+}
+#table-of-contents .caption,
+#table-of-contents .topic-title { font-weight: bold;}
+

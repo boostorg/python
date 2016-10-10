@@ -1,7 +1,7 @@
 binary_ufunc
 ============
 
-.. contents ::
+.. contents :: Table of Contents
 
 A ``binary_ufunc`` is a struct used as an intermediate step to broadcast two arguments so that a C++ function can be converted to a ufunc like function
 

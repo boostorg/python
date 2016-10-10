@@ -1,7 +1,7 @@
 unary_ufunc
 ===========
 
-.. contents ::
+.. contents :: Table of Contents
 
 A ``unary_ufunc`` is a struct used as an intermediate step to broadcast a single argument so that a C++ function can be converted to a ufunc like function
 

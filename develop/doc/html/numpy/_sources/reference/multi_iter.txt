@@ -1,7 +1,7 @@
 multi_iter
 ==========
 
-.. contents ::
+.. contents :: Table of Contents
 
 A ``multi_iter`` is a Python object, intended to be used as an iterator  It should generally only be used in loops.
 
