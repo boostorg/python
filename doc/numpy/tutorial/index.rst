@@ -1,9 +1,8 @@
 Boost.Python NumPy extension Tutorial
 =====================================
 
-Contents:
-
 .. toctree::
+   :caption: Table of Contents
    :maxdepth: 2
 
    simple

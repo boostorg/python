@@ -1,9 +1,8 @@
 Boost.Python NumPy extension Reference
 ======================================
 
-Contents:
-
 .. toctree::
+   :caption: Table of Contents
    :maxdepth: 2
 
    dtype

@@ -1,7 +1,7 @@
 ndarray
 =======
 
-.. contents ::
+.. contents :: Table of Contents
 
 A `ndarray`_ is an N-dimensional array which contains items of the same type and size, where N is the number of dimensions and is specified in the form of a ``shape`` tuple. Optionally, the numpy ``dtype`` for the objects contained may also be specified.
 

@@ -1,7 +1,7 @@
 dtype
 =====
 
-.. contents ::
+.. contents :: Table of Contents
 
 A `dtype`_ is an object describing the type of the elements of an ndarray
 
