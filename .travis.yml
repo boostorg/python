@@ -17,20 +17,20 @@ env:
 
 matrix:
   include:
-    - compiler: gcc
-      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-    - compiler: gcc
-      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-    - compiler: gcc
-      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: gcc
-      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-    - compiler: clang
-      # clang generates an 'illegal instruction' error in the NumPy check.
-      # Perhaps we need to upgrade clang to a newer version ?
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98 OPTIONS=--no-numpy
-    - compiler: clang
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11 OPTIONS=--no-numpy
+    #- compiler: gcc
+    #  env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
+    #- compiler: gcc
+    #  env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
+    #- compiler: gcc
+    #  env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
+    #- compiler: gcc
+    #  env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
+    #- compiler: clang
+    #  # clang generates an 'illegal instruction' error in the NumPy check.
+    #  # Perhaps we need to upgrade clang to a newer version ?
+    #  env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98 OPTIONS=--no-numpy
+    #- compiler: clang
+    #  env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11 OPTIONS=--no-numpy
     - env: PYTHON=python DOC=1
 
 
@@ -51,6 +51,7 @@ addons:
     - xsltproc
     - docbook-xsl
     - python-docutils
+    - python-pip
 
 
 cache:
@@ -86,7 +87,12 @@ before_script:
 
 script:
 - scons config --python=$PYTHON --boost-include=$HOME/Boost $OPTIONS
-- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
+- |
+   if [ "$DOC" ]; then
+     scons doc
+   else
+     scons && scons test
+   fi
 
 after_success:
 # Upload docs only when building upstream.
