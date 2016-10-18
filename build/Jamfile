@@ -138,14 +138,49 @@ rule lib_boost_python ( is-py3 ? )
             <link>static:<define>BOOST_PYTHON_STATIC_LIB
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         ;
+}
 
+rule lib_boost_numpy ( is-py3 ? )
+{
+    lib [ cond $(is-py3) : boost_numpy3 : boost_numpy ]
+        : # sources
+        numpy/dtype.cpp
+        numpy/matrix.cpp
+        numpy/ndarray.cpp
+	numpy/numpy.cpp
+	numpy/scalars.cpp
+	numpy/ufunc.cpp
+        :   # requirements
+            [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
+            [ unless [ python.numpy ] : <build>no ]
+	    <library>boost_python
+            <python-debugging>on:<define>BOOST_DEBUG_PYTHON
+            [ cond $(is-py3) : <python>$(py3-version) ]
+        :   # default build
+            <link>shared
+        :   # usage requirements
+            <python-debugging>on:<define>BOOST_DEBUG_PYTHON
+        ;
 }
 
 lib_boost_python ;
-boost-install boost_python ;
-
+lib_boost_numpy ;
 if $(py3-version)
 {
     lib_boost_python yes ;
-    boost-install boost_python3 ;
+    lib_boost_numpy yes ;
+}
+
+libraries = boost_python ;
+libraries3 = boost_python3 ;
+if [ python.numpy ]
+{
+    libraries += boost_numpy ;
+    libraries3 += boost_numpy3 ;
+}
+
+boost-install $(libraries) ;
+if $(py3-version)
+{
+    boost-install $(libraries3) ;
 }

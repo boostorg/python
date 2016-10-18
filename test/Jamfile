@@ -237,4 +237,14 @@ bpl-test crossmod_opaque
 [ py-compile-fail ./as_to_python_function.cpp ]
 [ py-compile-fail ./object_fail1.cpp ]
 
+# --- NumPy tests ---
+
+[ numpy-test numpy/dtype ]
+[ numpy-test numpy/ufunc ]
+[ numpy-test numpy/templates ]
+[ numpy-test numpy/ndarray ]
+[ numpy-test numpy/indexing ]
+[ numpy-test numpy/shapes ]
+
+
   ;

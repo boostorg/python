@@ -7,7 +7,6 @@ Welcome to the documentation of the Boost.Python NumPy extension!
 =================================================================
 
 .. toctree::
-   :caption: Table of Contents
    :name: mastertoc
    :maxdepth: 2
 
