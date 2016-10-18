@@ -27,12 +27,12 @@
 }
 
 .admonition-title { font-weight: bold;}
-#table-of-contents
+.toctree-wrapper
 {
   border: 1px solid #dcdcdc;
   padding: 1em;
   margin: 0 2em;
 }
-#table-of-contents .caption,
-#table-of-contents .topic-title { font-weight: bold;}
+.toctree-wrapper .caption,
+.toctree-wrapper .topic-title { font-weight: bold;}
 
