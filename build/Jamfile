@@ -163,14 +163,6 @@ rule lib_boost_numpy ( is-py3 ? )
         ;
 }
 
-lib_boost_python ;
-lib_boost_numpy ;
-if $(py3-version)
-{
-    lib_boost_python yes ;
-    lib_boost_numpy yes ;
-}
-
 libraries = boost_python ;
 libraries3 = boost_python3 ;
 if [ python.numpy ]
@@ -179,8 +171,14 @@ if [ python.numpy ]
     libraries3 += boost_numpy3 ;
 }
 
-boost-install $(libraries) ;
+lib_boost_python ;
+lib_boost_numpy ;
+
 if $(py3-version)
 {
-    boost-install $(libraries3) ;
+    lib_boost_python yes ;
+    lib_boost_numpy yes ;
+    libraries += $(libraries3) ;
 }
+
+boost-install $(libraries) ;
