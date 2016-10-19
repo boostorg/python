@@ -25,11 +25,11 @@ make numpy : numpy/index.rst : @sphinx-build ;
 
 if [ os.name ] = NT
 {
-  actions sphinx-build { chdir numpy && make clean && make html}
+  actions sphinx-build { chdir "$(>:D)" && make clean && make html}
 }
 else
 {
-  actions sphinx-build { make -C numpy clean html}
+  actions sphinx-build { make -C "$(>:D)" clean html}
 }
 
 boostbook python : python.qbk
