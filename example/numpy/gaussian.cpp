@@ -3,7 +3,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 
 #include <cmath>
 #include <memory>
@@ -14,7 +14,7 @@ const double M_PI = boost::math::constants::pi<double>();
 #endif
 
 namespace bp = boost::python;
-namespace bn = boost::numpy;
+namespace bn = boost::python::numpy;
 
 /**
  *  A 2x2 matrix class, purely for demonstration purposes.

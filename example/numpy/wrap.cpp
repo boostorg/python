@@ -23,12 +23,12 @@
  *  Python.  Again, see the Gaussian demo for an example.
  */
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <boost/scoped_array.hpp>
 #include <iostream>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
 // This is roughly the most efficient way to write a C/C++ function that operates
 // on a 2-d NumPy array - operate directly on the array by incrementing a pointer

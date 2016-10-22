@@ -11,11 +11,11 @@
  *       None of the methods like np::add, np::multiply etc are supported as yet
  */
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <iostream>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
 
 // Create the structs necessary to implement the ufuncs 

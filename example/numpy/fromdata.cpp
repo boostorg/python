@@ -8,11 +8,11 @@
  *         manipulate data in either Python or C++ and have the changes reflected in both.
  */
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <iostream>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
 
 int main(int argc, char **argv)

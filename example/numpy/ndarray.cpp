@@ -11,11 +11,11 @@
  *  non-unit strides.      
  */
 
-#include <boost/numpy.hpp>
+#include <boost/python/numpy.hpp>
 #include <iostream>
 
 namespace p = boost::python;
-namespace np = boost::numpy;
+namespace np = boost::python::numpy;
 
 #if _MSC_VER
 using boost::uint8_t;
