@@ -142,6 +142,7 @@ rule lib_boost_python ( is-py3 ? )
 
 rule lib_boost_numpy ( is-py3 ? )
 {
+    numpy-include = [ python.numpy-include ] ;
     lib [ cond $(is-py3) : boost_numpy3 : boost_numpy ]
         : # sources
         numpy/dtype.cpp
@@ -153,6 +154,7 @@ rule lib_boost_numpy ( is-py3 ? )
         :   # requirements
             [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
             [ unless [ python.numpy ] : <build>no ]
+	    <include>$(numpy-include)
 	    <library>boost_python
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
             [ cond $(is-py3) : <python>$(py3-version) ]
