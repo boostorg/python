@@ -8,6 +8,9 @@
 import dtype_ext
 import unittest
 import numpy
+import sys
+if (sys.version_info.major >= 3):
+    long = int
 
 class DtypeTestCase(unittest.TestCase):
     
