@@ -58,6 +58,10 @@ def BoostRST(env, target, source, resources=[]):
                 'rst2html --link-stylesheet --traceback --trim-footnote-reference-space --footnote-references=superscript --stylesheet=rst.css $SOURCE $TARGET')
 
 
+def BoostSphinx(env, target, source):
+    env.Sphinx(target, source)
+
+
 def exists(env):
     return True
 
@@ -68,3 +72,4 @@ def generate(env):
     env.AddMethod(BoostBook)
     env.AddMethod(BoostHTML)
     env.AddMethod(BoostRST)
+    env.AddMethod(BoostSphinx)

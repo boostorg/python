@@ -47,3 +47,6 @@ env.BoostHTML('html/reference/', 'reference.dbk',
                     '--stringparam', 'boost.graphics.root', '../images/'])
 
 env.BoostRST('html/article.html', 'article.rst', resources=['rst.css'])
+
+if env['NUMPY']:
+    env.BoostSphinx('html/numpy', 'numpy/')

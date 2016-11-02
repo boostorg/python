@@ -11,23 +11,28 @@ dist: trusty
 
 language: cpp
 
+env:
+  global:
+    - secure: BRNUkxN3p8f+uYKWC3Hr0VPqZA0PxbWr1DJlcI4hbiZtzKhMCWjDmd9UW9CzzexqeOxpd+9s0G87qvOur+wMSVxugDxtTesZrh1czXHeSVxgQrYD783XJtQJ9aYypbChkiboRD6Xpmbq7itwMuHBJMFtCuDxMynpU1jWwkyTf2Y=
+
 matrix:
   include:
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-  - compiler: gcc
-    env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-  - compiler: clang
-    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
-  - compiler: clang
-    env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
-  - env: PYTHON=python DOC=1
-  global:
-  - secure: mqoxglbUN/At/r8O7nLVccGldnB1jvhLHNyYjfCXrdOD0GNX+TY2TS1+kIEv9Deg/P6X/QvrBa/ZzbDNryn3mDXBfOSy400ebSIUHHP3HtGHJShOGDyXedY3hZ/dqmxdV3p9hIxv4lcx1HPyC96s4wpiR0S9F1JBzD6scIabezM=
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - compiler: clang
+      # clang generates an 'illegal instruction' error in the NumPy check.
+      # Perhaps we need to upgrade clang to a newer version ?
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98 OPTIONS=--no-numpy
+    - compiler: clang
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11 OPTIONS=--no-numpy
+    - env: PYTHON=python DOC=1
+
 
 addons:
   apt:
@@ -38,28 +43,57 @@ addons:
     - gcc-4.8
     - g++-4.8
     - clang
-    - python-dev python-pip
+    - python-numpy
+    - python-sphinx
     - python3-dev
+    - python3-numpy
     - libboost-all-dev
     - xsltproc
+    - docbook-xsl
     - python-docutils
 
+
+cache:
+  directories:
+  - $HOME/Boost
+
 before_install:
-# The Trusty image has several Python versions pre-installed compiled with
-# conflicting UCS2 and UCS4 unicode. Modify the PATH to skip the TravisCI python.
-# See https://github.com/travis-ci/travis-ci/issues/4948 for details.
-- export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
-- sudo pip install future
+  # The Trusty image has several Python versions pre-installed compiled with
+  # conflicting UCS2 and UCS4 unicode. Modify the PATH to skip the TravisCI python.
+  # See https://github.com/travis-ci/travis-ci/issues/4948 for details.
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 
 install:
+  # Install our own version of Boost (the subset we need) as the system version is
+  # too old (for C++11 support).
+  - rm -rf $HOME/Boost
+  - |
+     set -e
+     if [ ! -d $HOME/Boost ]; then
+       echo "rebuilding Boost prerequisites"
+       wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.gz/download
+       tar xf download
+       pushd boost_1_61_0
+       ./bootstrap.sh
+       ./b2 tools/bcp
+       mkdir -p $HOME/Boost
+       dist/bin/bcp python tools/boostbook tools/quickbook $HOME/Boost &> /dev/null
+       popd
+     fi
 
 before_script:
 - scons --version
 
 script:
-- scons config --python=$PYTHON
+- scons config --python=$PYTHON --boost-include=$HOME/Boost $OPTIONS
 - if [ "$DOC" ]; then scons doc; else scons && scons test; fi
 
 after_success:
 # Upload docs only when building upstream.
-- if [ "$DOC" -a "$TRAVIS_REPO_SLUG" = "boostorg/python" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then .ci/upload_docs.sh; fi
+- |
+   if [ "$DOC" -a \
+        "$TRAVIS_REPO_SLUG" = "boostorg/python" -a \
+        "$TRAVIS_PULL_REQUEST" = "false" ]; then
+     export GH_TOKEN
+     .ci/upload_docs.sh
+   fi

@@ -40,7 +40,7 @@ env_vars = {}
 if 'CXX' in os.environ: env_vars['CXX'] = os.environ['CXX']
 if 'CXXFLAGS' in os.environ: env_vars['CXXFLAGS'] = os.environ['CXXFLAGS'].split()
 env = Environment(toolpath=['config/tools'],
-                  tools=['default', 'libs', 'tests', 'doc'],
+                  tools=['default', 'libs', 'tests', 'doc', 'sphinx4scons'],
                   variables=vars,
                   TARGET_ARCH=arch,
                   **env_vars)
@@ -68,7 +68,7 @@ config_log = '{}/config.log'.format(build_dir)
 SConsignFile('{}/.sconsign'.format(build_dir))
 #env.Decider('MD5-timestamp')
 env.Decider('timestamp-newer')
-checks = config.get_checks()
+checks = config.get_checks(env)
 if 'config' in COMMAND_LINE_TARGETS:
     conf=env.Configure(custom_tests=checks, log_file=config_log, conf_dir=build_dir)
     if False in (getattr(conf, c)() for c in checks):

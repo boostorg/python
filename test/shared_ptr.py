@@ -5,7 +5,7 @@
 >>> from shared_ptr_ext import *
 
    Test that shared_ptr<Derived> can be converted to shared_ptr<Base>
- 
+
 >>> Y.store(YYY(42))
 
 >>> x = X(17)
@@ -121,7 +121,7 @@ def run(args = None):
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
-    
+
 if __name__ == '__main__':
     print("running...")
     import sys
