@@ -133,6 +133,9 @@ True
 >>> print(rewrap_value_wstring(u'yo, wassup?'))
 yo, wassup?
 
+>>> print(rewrap_value_wstring(u'\U0001f4a9'))
+\U0001f4a9
+
    test that overloading on unicode works:
 
 >>> print(rewrap_value_string(u'yo, wassup?'))
