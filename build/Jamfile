@@ -140,7 +140,7 @@ rule lib_boost_numpy ( is-py3 ? )
             [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
             [ unless [ python.numpy ] : <build>no ]
 	    <include>$(numpy-include)
-	    <library>boost_python
+	    [ cond $(is-py3) : <library>boost_python3 : <library>boost_python ]
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
             [ cond $(is-py3) : <python>$(py3-version) ]
 
