@@ -12,6 +12,8 @@
 #ifndef CONFIG_NUMPY20170215_H_
 # define CONFIG_NUMPY20170215_H_
 
+# include <boost/config.hpp>
+
 /*****************************************************************************
  *
  *  Set up dll import/export options:
