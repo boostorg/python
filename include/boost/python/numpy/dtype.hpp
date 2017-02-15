@@ -25,7 +25,7 @@ namespace boost { namespace python { namespace numpy {
  *
  *  @todo This could have a lot more interesting accessors.
  */
-class dtype : public object {
+class BOOST_PYTHON_DECL dtype : public object {
   static python::detail::new_reference convert(object::object_cref arg, bool align);
 public:
 
@@ -69,7 +69,7 @@ public:
 
 };
 
-bool equivalent(dtype const & a, dtype const & b);
+bool BOOST_PYTHON_DECL equivalent(dtype const & a, dtype const & b);
 
 namespace detail
 {

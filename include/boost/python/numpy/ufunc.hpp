@@ -34,7 +34,7 @@ namespace boost { namespace python { namespace numpy {
  *        It's more dangerous than most object managers, however - maybe it actually belongs in
  *        a detail namespace?
  */
-class multi_iter : public object
+class BOOST_PYTHON_DECL multi_iter : public object
 {
 public:
 
@@ -61,13 +61,13 @@ public:
 };
 
 /// @brief Construct a multi_iter over a single sequence or scalar object.
-multi_iter make_multi_iter(object const & a1);
+BOOST_PYTHON_DECL multi_iter make_multi_iter(object const & a1);
 
 /// @brief Construct a multi_iter by broadcasting two objects.
-multi_iter make_multi_iter(object const & a1, object const & a2);
+BOOST_PYTHON_DECL multi_iter make_multi_iter(object const & a1, object const & a2);
 
 /// @brief Construct a multi_iter by broadcasting three objects.
-multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
+BOOST_PYTHON_DECL multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
 /**
  *  @brief Helps wrap a C++ functor taking a single scalar argument as a broadcasting ufunc-like
