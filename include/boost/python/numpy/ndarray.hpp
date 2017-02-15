@@ -16,6 +16,8 @@
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/python/numpy/dtype.hpp>
+#include <boost/python/numpy/config.hpp>
+
 #include <vector>
 
 namespace boost { namespace python { namespace numpy {
@@ -26,7 +28,8 @@ namespace boost { namespace python { namespace numpy {
  *  @todo This could have a lot more functionality (like boost::python::numeric::array).
  *        Right now all that exists is what was needed to move raw data between C++ and Python.
  */
-class ndarray : public object
+ 
+class BOOST_NUMPY_DECL ndarray : public object
 {
 
   /**

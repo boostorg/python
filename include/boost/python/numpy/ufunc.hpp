@@ -15,6 +15,7 @@
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/python/numpy/dtype.hpp>
 #include <boost/python/numpy/ndarray.hpp>
+#include <boost/python/numpy/config.hpp>
 
 namespace boost { namespace python { namespace numpy {
 
@@ -34,7 +35,7 @@ namespace boost { namespace python { namespace numpy {
  *        It's more dangerous than most object managers, however - maybe it actually belongs in
  *        a detail namespace?
  */
-class multi_iter : public object
+class BOOST_NUMPY_DECL multi_iter : public object
 {
 public:
 

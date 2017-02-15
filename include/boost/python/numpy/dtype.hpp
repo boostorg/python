@@ -14,6 +14,7 @@
 
 #include <boost/python.hpp>
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
+#include <boost/python/numpy/config.hpp>
 
 #include <boost/mpl/for_each.hpp>
 #include <boost/type_traits/add_pointer.hpp>
@@ -25,7 +26,7 @@ namespace boost { namespace python { namespace numpy {
  *
  *  @todo This could have a lot more interesting accessors.
  */
-class dtype : public object {
+class BOOST_NUMPY_DECL dtype : public object {
   static python::detail::new_reference convert(object::object_cref arg, bool align);
 public:
 
