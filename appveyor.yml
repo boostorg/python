@@ -69,13 +69,15 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - easy_install scons
+  - easy_install sphinx
+  - pip install numpy
   #- "%CMD_IN_ENV% pip install -r dev-requirements.txt"
 
 build_script:
   # Build the compiled extension
   #- "%CMD_IN_ENV% python setup.py build"
   - scons config arch=%ARCH% --boost-include=%BOOST_PREFIX%
-  - scons arch=%ARCH%
+  - scons arch=%ARCH% --verbose
 
 test_script:
   # Run the project tests
