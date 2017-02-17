@@ -56,7 +56,7 @@ public:
    *  This is more permissive than equality tests.  For instance, if long and int are the same
    *  size, the dtypes corresponding to each will be equivalent, but not equal.
    */
-  friend bool equivalent(dtype const & a, dtype const & b);
+  friend BOOST_NUMPY_DECL bool equivalent(dtype const & a, dtype const & b);
 
   /**
    *  @brief Register from-Python converters for NumPy's built-in array scalar types.
@@ -70,7 +70,7 @@ public:
 
 };
 
-bool equivalent(dtype const & a, dtype const & b);
+BOOST_NUMPY_DECL bool equivalent(dtype const & a, dtype const & b);
 
 namespace detail
 {

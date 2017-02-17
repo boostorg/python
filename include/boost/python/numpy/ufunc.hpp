@@ -62,13 +62,13 @@ public:
 };
 
 /// @brief Construct a multi_iter over a single sequence or scalar object.
-multi_iter make_multi_iter(object const & a1);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1);
 
 /// @brief Construct a multi_iter by broadcasting two objects.
-multi_iter make_multi_iter(object const & a1, object const & a2);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1, object const & a2);
 
 /// @brief Construct a multi_iter by broadcasting three objects.
-multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
 /**
  *  @brief Helps wrap a C++ functor taking a single scalar argument as a broadcasting ufunc-like
@@ -94,7 +94,7 @@ multi_iter make_multi_iter(object const & a1, object const & a2, object const & 
 template <typename TUnaryFunctor, 
           typename TArgument=typename TUnaryFunctor::argument_type,
           typename TResult=typename TUnaryFunctor::result_type>
-struct unary_ufunc 
+struct BOOST_NUMPY_DECL unary_ufunc 
 {
 
   /**
@@ -158,7 +158,7 @@ template <typename TBinaryFunctor,
           typename TArgument1=typename TBinaryFunctor::first_argument_type,
           typename TArgument2=typename TBinaryFunctor::second_argument_type,
           typename TResult=typename TBinaryFunctor::result_type>
-struct binary_ufunc 
+struct BOOST_NUMPY_DECL binary_ufunc 
 {
 
   static object
