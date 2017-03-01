@@ -6,6 +6,7 @@ import os ;
 import indirect ;
 import modules ;
 import feature ;
+import property ;
 
 import python ;
 
@@ -30,21 +31,8 @@ else
         ;
 }
 
-rule find-py3-version
-{
-    local versions = [ feature.values python ] ;
-    local py3ver ;
-    for local v in $(versions)
-    {
-        if $(v) >= 3.0
-        {
-            py3ver = $(v) ;
-        }
-    }
-    return $(py3ver) ;
-}
-
-py3-version = [ find-py3-version ] ;
+py2-version = [ py-version 2 ] ;
+py3-version = [ py-version 3 ] ;
 
 project boost/python
   : source-location ../src
@@ -52,11 +40,14 @@ project boost/python
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
 rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }
+local rule eq ( a : b ) { if $(a) = $(b) { return 1 ; } }
 
-rule lib_boost_python ( is-py3 ? )
+lib_boost_python($(py2-version)) = boost_python ;
+lib_boost_python($(py3-version)) = boost_python3 ;
+
+rule lib_boost_python ( version )
 {
-
-    lib [ cond $(is-py3) : boost_python3 : boost_python ]
+    lib $(lib_boost_python($(version)))
         : # sources
         numeric.cpp
         list.cpp
@@ -112,10 +103,12 @@ rule lib_boost_python ( is-py3 ? )
             <dependency>config-warning
 
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
-            [ cond $(is-py3) : <python>$(py3-version) ]
+            <python>$(version)
 
             -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
             <tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).python-tag
+
+            <conditional>@python.require-py
 
         :   # default build
             <link>shared
@@ -125,27 +118,32 @@ rule lib_boost_python ( is-py3 ? )
         ;
 }
 
-rule lib_boost_numpy ( is-py3 ? )
+lib_boost_numpy($(py2-version)) = boost_numpy ;
+lib_boost_numpy($(py3-version)) = boost_numpy3 ;
+
+rule lib_boost_numpy ( version )
 {
     numpy-include = [ python.numpy-include ] ;
-    lib [ cond $(is-py3) : boost_numpy3 : boost_numpy ]
+    lib $(lib_boost_numpy$(version))
         : # sources
         numpy/dtype.cpp
         numpy/matrix.cpp
         numpy/ndarray.cpp
-	numpy/numpy.cpp
-	numpy/scalars.cpp
-	numpy/ufunc.cpp
+        numpy/numpy.cpp
+        numpy/scalars.cpp
+        numpy/ufunc.cpp
         :   # requirements
             [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
             [ unless [ python.numpy ] : <build>no ]
-	    <include>$(numpy-include)
-	    [ cond $(is-py3) : <library>boost_python3 : <library>boost_python ]
+            <include>$(numpy-include)
+            <library>$(lib_boost_python($(version)))
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
-            [ cond $(is-py3) : <python>$(py3-version) ]
+            <python>$(version)
 
             -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
             <tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).python-tag
+
+            <conditional>@python.require-py
 
         :   # default build
             <link>shared
@@ -154,22 +152,20 @@ rule lib_boost_numpy ( is-py3 ? )
         ;
 }
 
-libraries = boost_python ;
-libraries3 = boost_python3 ;
-if [ python.numpy ]
-{
-    libraries += boost_numpy ;
-    libraries3 += boost_numpy3 ;
-}
+libraries = ;
 
-lib_boost_python ;
-lib_boost_numpy ;
-
-if $(py3-version)
+for local N in 2 3
 {
-    lib_boost_python yes ;
-    lib_boost_numpy yes ;
-    libraries += $(libraries3) ;
+    if $(py$(N)-version)
+    {
+        lib_boost_python $(py$(N)-version) ;
+        libraries += $(lib_boost_python($(py$(N)-version))) ;
+        if [ python.numpy ]
+        {
+            lib_boost_numpy $(py$(N)-version) ;
+            libraries += $(lib_boost_numpy($(py$(N)-version))) ;
+        }
+    }
 }
 
 boost-install $(libraries) ;
