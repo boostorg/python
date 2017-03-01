@@ -133,6 +133,8 @@ rule lib_boost_numpy ( version )
         numpy/scalars.cpp
         numpy/ufunc.cpp
         :   # requirements
+            <link>static:<define>BOOST_NUMPY_STATIC_LIB 
+            <define>BOOST_NUMPY_SOURCE
             [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
             [ unless [ python.numpy ] : <build>no ]
             <include>$(numpy-include)
@@ -148,6 +150,7 @@ rule lib_boost_numpy ( version )
         :   # default build
             <link>shared
         :   # usage requirements
+			<link>static:<define>BOOST_NUMPY_STATIC_LIB
             <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         ;
 }
