@@ -124,7 +124,7 @@ lib_boost_numpy($(py3-version)) = boost_numpy3 ;
 rule lib_boost_numpy ( version )
 {
     numpy-include = [ python.numpy-include ] ;
-    lib $(lib_boost_numpy$(version))
+    lib $(lib_boost_numpy($(version)))
         : # sources
         numpy/dtype.cpp
         numpy/matrix.cpp
