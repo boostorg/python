@@ -42,8 +42,11 @@ rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { retu
 rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }
 local rule eq ( a : b ) { if $(a) = $(b) { return 1 ; } }
 
-lib_boost_python($(py2-version)) = boost_python ;
-lib_boost_python($(py3-version)) = boost_python3 ;
+lib_boost_python(2) = boost_python ;
+lib_boost_python(3) = boost_python3 ;
+
+lib_boost_python($(py2-version)) = $(lib_boost_python(2)) ;
+lib_boost_python($(py3-version)) = $(lib_boost_python(3)) ;
 
 rule lib_boost_python ( version )
 {
@@ -168,6 +171,10 @@ for local N in 2 3
             lib_boost_numpy $(py$(N)-version) ;
             libraries += $(lib_boost_numpy($(py$(N)-version))) ;
         }
+    }
+    else
+    {
+        alias $(lib_boost_python($(N))) ;
     }
 }
 
