@@ -169,15 +169,18 @@ for local N in 2 3
     {
         lib_boost_python $(py$(N)-version) ;
         libraries += $(lib_boost_python($(py$(N)-version))) ;
-        if [ python.numpy ]
-        {
-            lib_boost_numpy $(py$(N)-version) ;
-            libraries += $(lib_boost_numpy($(py$(N)-version))) ;
-        }
     }
     else
     {
         alias $(lib_boost_python($(N))) ;
+    }
+    if [ python.numpy ]
+    {
+        lib_boost_numpy $(py$(N)-version) ;
+        libraries += $(lib_boost_numpy($(py$(N)-version))) ;
+    }
+    else
+    {
         alias $(lib_boost_numpy($(N))) ;
     }
 }
