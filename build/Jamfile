@@ -121,8 +121,11 @@ rule lib_boost_python ( version )
         ;
 }
 
-lib_boost_numpy($(py2-version)) = boost_numpy ;
-lib_boost_numpy($(py3-version)) = boost_numpy3 ;
+lib_boost_numpy(2) = boost_numpy ;
+lib_boost_numpy(3) = boost_numpy3 ;
+
+lib_boost_numpy($(py2-version)) = $(lib_boost_python(2)) ;
+lib_boost_numpy($(py3-version)) = $(lib_boost_python(3)) ;
 
 rule lib_boost_numpy ( version )
 {
@@ -175,6 +178,7 @@ for local N in 2 3
     else
     {
         alias $(lib_boost_python($(N))) ;
+        alias $(lib_boost_numpy($(N))) ;
     }
 }
 
