@@ -56,7 +56,7 @@ public:
    *  This is more permissive than equality tests.  For instance, if long and int are the same
    *  size, the dtypes corresponding to each will be equivalent, but not equal.
    */
-  friend bool equivalent(dtype const & a, dtype const & b);
+  friend BOOST_NUMPY_DECL bool equivalent(dtype const & a, dtype const & b);
 
   /**
    *  @brief Register from-Python converters for NumPy's built-in array scalar types.
@@ -70,37 +70,37 @@ public:
 
 };
 
-bool equivalent(dtype const & a, dtype const & b);
+BOOST_NUMPY_DECL bool equivalent(dtype const & a, dtype const & b);
 
 namespace detail
 {
 
+template <typename T, bool isInt=boost::is_integral<T>::value> struct builtin_dtype;
+
+//INT INT INT INT INT INT INT INT INT INT INT INT INT INT INT INT INT INT 
+
+template <int bits, bool isUnsigned> struct builtin_int_dtype;
 template <int bits, bool isUnsigned> dtype get_int_dtype();
 
-template <int bits> dtype get_float_dtype();
-
-template <int bits> dtype get_complex_dtype();
-
-template <typename T, bool isInt=boost::is_integral<T>::value>
-struct builtin_dtype;
-
-template <typename T>
-struct builtin_dtype<T,true> {
+template <typename T> struct builtin_dtype<T,true> {
   static dtype get() { return get_int_dtype< 8*sizeof(T), boost::is_unsigned<T>::value >(); }
 };
 
-template <>
-struct builtin_dtype<bool,true> {
-  static dtype get();
-};
+//FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT FLOAT 
+	
+template <int bits> struct builtin_float_dtype;
+template <int bits> dtype get_float_dtype();
 
-template <typename T>
-struct builtin_dtype<T,false> {
+template <typename T> struct builtin_dtype<T,false> {
   static dtype get() { return get_float_dtype< 8*sizeof(T) >(); }
 };
 
-template <typename T>
-struct builtin_dtype< std::complex<T>, false > {
+//COMPLEX COMPLEX COMPLEX COMPLEX COMPLEX COMPLEX COMPLEX COMPLEX COMPLEX 
+	
+template <int bits> struct builtin_complex_dtype;
+template <int bits> dtype get_complex_dtype();
+
+template <typename T> struct builtin_dtype< std::complex<T>, false > {
   static dtype get() { return get_complex_dtype< 16*sizeof(T) >(); }  
 };
 
