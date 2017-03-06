@@ -174,7 +174,7 @@ for local N in 2 3
     {
         alias $(lib_boost_python($(N))) ;
     }
-    if [ python.numpy ]
+    if $(py$(N)-version) && [ python.numpy ]
     {
         lib_boost_numpy $(py$(N)-version) ;
         libraries += $(lib_boost_numpy($(py$(N)-version))) ;
