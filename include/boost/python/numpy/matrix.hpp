@@ -61,7 +61,7 @@ public:
  *         return a numpy.matrix instead.
  */
 template <typename Base = default_call_policies>
-struct BOOST_NUMPY_DECL as_matrix : Base
+struct as_matrix : Base
 {
   static PyObject * postcall(PyObject *, PyObject * result)
   {

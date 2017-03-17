@@ -70,7 +70,7 @@ public:
 
 };
 
-bool equivalent(dtype const & a, dtype const & b);
+BOOST_NUMPY_DECL bool equivalent(dtype const & a, dtype const & b);
 
 namespace detail
 {
