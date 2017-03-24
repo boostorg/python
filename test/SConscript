@@ -8,8 +8,17 @@
 # http://www.boost.org/LICENSE_1_0.txt)
 
 import platform
+import sys
 
 Import('env')
+
+if sys.platform == 'win32':
+    # HACK: This works around a bug in SCons.
+    #       subprocess.check_output will complain unless all environment
+    #       variables are strings.
+    system_root = env['ENV']['SystemRoot']
+    env['ENV']['SystemRoot'] = str(system_root)
+
 
 # libs needed for embedding
 ELIBS=env['LIBS'] + env['PYTHONLIBS']

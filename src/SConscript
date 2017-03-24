@@ -10,9 +10,11 @@
 Import('env')
 
 env.AppendUnique(CPPDEFINES = ["${LINK_DYNAMIC and 'BOOST_PYTHON_DYN_LINK=1' or ''}"])
-env.AppendUnique(CPPDEFINES = ['BOOST_PYTHON_SOURCE'])
 
-env.BoostLibrary(
+env1 = env.Clone()
+env1.AppendUnique(CPPDEFINES = ['BOOST_PYTHON_SOURCE'])
+
+env1.BoostLibrary(
     'python',
     ['numeric.cpp',
      'list.cpp',
@@ -44,7 +46,13 @@ env.BoostLibrary(
      'object/function_doc_signature.cpp'])
 
 if env['NUMPY']:
-    env.BoostLibrary(
+    env2 = env.Clone()
+    env2.Append(CPPPATH=env['NUMPY_CPPPATH'])
+    build_dir = env.Dir('$BOOST_CURRENT_VARIANT_DIR/src')
+    env2.AppendUnique(CPPDEFINES = ['BOOST_NUMPY_SOURCE'],
+                      LIBPATH = [build_dir],
+                      LIBS='boost_python' + env["BOOST_SUFFIX"])
+    env2.BoostLibrary(
         'numpy',
         ['numpy/dtype.cpp',
          'numpy/matrix.cpp',

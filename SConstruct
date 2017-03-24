@@ -39,6 +39,7 @@ arch = ARGUMENTS.get('arch', platform.machine())
 env_vars = {}
 if 'CXX' in os.environ: env_vars['CXX'] = os.environ['CXX']
 if 'CXXFLAGS' in os.environ: env_vars['CXXFLAGS'] = os.environ['CXXFLAGS'].split()
+env_vars['ENV'] = os.environ #{'PATH': os.environ['PATH'], 'TMP' : os.environ['TMP']}
 env = Environment(toolpath=['config/tools'],
                   tools=['default', 'libs', 'tests', 'doc', 'sphinx4scons'],
                   variables=vars,
