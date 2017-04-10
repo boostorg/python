@@ -97,6 +97,7 @@ object BOOST_PYTHON_DECL exec_file(str filename, object global, object local)
   python::handle<> file(pyfile);
   FILE *fs = PyFile_AsFile(file.get());
 #endif
+  if (!fs) throw std::invalid_argument(std::string(f) + " : no such file");
   PyObject* result = PyRun_File(fs,
                 f,
                 Py_file_input,
