@@ -90,7 +90,7 @@ struct builtin_dtype<T,true> {
 };
 
 template <>
-struct builtin_dtype<bool,true> {
+struct BOOST_NUMPY_DECL builtin_dtype<bool,true> {
   static dtype get();
 };
 
