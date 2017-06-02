@@ -115,7 +115,7 @@ bpl-test crossmod_exception
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
    
 
-[ python-extension builtin_converters_ext : test_builtin_converters.cpp /boost/python//boost_python ]
+[ python-extension builtin_converters_ext : builtin_converters.cpp /boost/python//boost_python ]
 [ bpl-test builtin_converters : test_builtin_converters.py builtin_converters_ext ]
 
  [ bpl-test test_pointer_adoption ]
