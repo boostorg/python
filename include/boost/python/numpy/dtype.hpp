@@ -13,9 +13,8 @@
  */
 
 #include <boost/python.hpp>
-#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/python/numpy/config.hpp>
-
+#include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/type_traits/add_pointer.hpp>
 

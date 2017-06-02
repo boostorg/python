@@ -75,4 +75,6 @@
 #include <boost/config/auto_link.hpp>
 #endif  // auto-linking disabled
 
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #endif // CONFIG_NUMPY20170215_H_
