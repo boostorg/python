@@ -63,6 +63,7 @@ rule lib_boost_python ( version )
         converter/from_python.cpp
         converter/registry.cpp
         converter/type_id.cpp
+		converter/pyobject_type.cpp
         object/enum.cpp
         object/class.cpp
         object/function.cpp
