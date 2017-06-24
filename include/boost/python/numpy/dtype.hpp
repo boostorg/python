@@ -16,7 +16,7 @@
 #include <boost/python/numpy/config.hpp>
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/mpl/for_each.hpp>
-#include <boost/type_traits/add_pointer.hpp>
+#include <boost/python/detail/type_traits.hpp>
 
 namespace boost { namespace python { namespace numpy {
 
