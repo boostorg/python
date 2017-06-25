@@ -116,7 +116,7 @@ else:
 test = env.BoostRunPythonScript('test_builtin_converters.py')
 Depends(
     test,
-    env.PythonExtension('builtin_converters_ext', ['test_builtin_converters.cpp'])
+    env.PythonExtension('builtin_converters_ext', ['builtin_converters.cpp'])
     )
 tests+=test
 test = env.BoostRunPythonScript('map_indexing_suite.py')
