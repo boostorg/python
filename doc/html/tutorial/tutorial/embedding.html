@@ -146,6 +146,11 @@ exe embedded_program # name of the executable
         and exec_file executes the code contained in the given file.
       </p>
 <p>
+        There are also overloads taking <code class="computeroutput"><span class="keyword">char</span>
+        <span class="keyword">const</span><span class="special">*</span></code>
+        instead of str as the first argument.
+      </p>
+<p>
         The <code class="literal">globals</code> and <code class="literal">locals</code> parameters are
         Python dictionaries containing the globals and locals of the context in which
         to run the code. For most intents and purposes you can use the namespace
