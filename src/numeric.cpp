@@ -121,14 +121,12 @@ namespace aux
       return downcast<PyTypeObject>(array_type.get());
   }
 
-# define BOOST_PYTHON_AS_OBJECT(z, n, _) object(x##n)
 # define BOOST_PP_LOCAL_MACRO(n)                                        \
     array_base::array_base(BOOST_PP_ENUM_PARAMS(n, object const& x))    \
         : object(demand_array_function()(BOOST_PP_ENUM_PARAMS(n, x)))   \
     {}
 # define BOOST_PP_LOCAL_LIMITS (1, 6)
 # include BOOST_PP_LOCAL_ITERATE()
-# undef BOOST_PYTHON_AS_OBJECT
 
     array_base::array_base(BOOST_PP_ENUM_PARAMS(7, object const& x))
         : object(demand_array_function()(BOOST_PP_ENUM_PARAMS(7, x)))
