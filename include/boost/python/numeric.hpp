@@ -216,7 +216,7 @@ class array : public aux::array_base
     {}
 # define BOOST_PP_LOCAL_LIMITS (1, 7)
 # include BOOST_PP_LOCAL_ITERATE()
-# undef BOOST_PYTHON_AS_OBJECT
+# undef BOOST_PYTHON_ENUM_AS_OBJECT
 
     static BOOST_PYTHON_DECL void set_module_and_type(char const* package_name = 0, char const* type_attribute_name = 0);
     static BOOST_PYTHON_DECL std::string get_module_name();
