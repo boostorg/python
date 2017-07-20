@@ -36,6 +36,8 @@ py3-version = [ py-version 3 ] ;
 
 project boost/python
   : source-location ../src
+  : requirements <toolset>gcc <target-os>windows:<cxxflags>-D_hypot=hypot
+  : requirements <toolset>gcc <target-os>windows <link>shared:<cxxflags>-DMS_WIN64
   ;
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
