@@ -52,7 +52,6 @@ rule lib_boost_python ( version )
 {
     lib $(lib_boost_python($(version)))
         : # sources
-        numeric.cpp
         list.cpp
         long.cpp
         dict.cpp

@@ -16,8 +16,7 @@ env1.AppendUnique(CPPDEFINES = ['BOOST_PYTHON_SOURCE'])
 
 env1.BoostLibrary(
     'python',
-    ['numeric.cpp',
-     'list.cpp',
+    ['list.cpp',
      'long.cpp',
      'dict.cpp',
      'tuple.cpp',

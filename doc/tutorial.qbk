@@ -92,7 +92,7 @@ who had to use a different tool.
 
 We will skip over the details. Our objective will be to simply create
 the hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: [@../../../building.html
+building Boost.Python, check out: [@../building.html
 building.html]. After this brief ['bjam] tutorial, we should have built
 the DLLs and run a python program using the extension.
 
