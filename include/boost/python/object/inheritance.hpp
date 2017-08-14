@@ -103,7 +103,7 @@ struct implicit_cast_generator
 template <class Source, class Target>
 struct cast_generator
   : mpl::if_<
-        detail::is_base_and_derived<Target,Source>
+        boost::python::detail::is_base_and_derived<Target,Source>
       , implicit_cast_generator<Source,Target>
       , dynamic_cast_generator<Source,Target>
     >
