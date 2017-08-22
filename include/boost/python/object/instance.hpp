@@ -18,7 +18,7 @@ namespace boost { namespace python { namespace objects {
 
 // Each extension instance will be one of these
 template <class Data = char>
-struct instance
+struct BOOST_PYTHON_DECL instance
 {
     PyObject_VAR_HEAD
     PyObject* dict;
