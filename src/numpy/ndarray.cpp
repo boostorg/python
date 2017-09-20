@@ -138,6 +138,30 @@ ndarray from_data_impl(void * data,
 
 } // namespace detail
 
+namespace {
+    int normalize_index(int n,int nlim) // wraps [-nlim:nlim) into [0:nlim), throw IndexError otherwise
+    {
+        if (n<0)
+            n += nlim; // negative indices work backwards from end
+        if (n < 0 || n >= nlim)
+        {
+            PyErr_SetObject(PyExc_IndexError, Py_None);
+            throw_error_already_set();
+        }
+        return n;
+    }
+}
+
+Py_intptr_t ndarray::shape(int n) const
+{
+    return get_shape()[normalize_index(n,get_nd())];
+}
+
+Py_intptr_t ndarray::strides(int n) const
+{
+    return get_strides()[normalize_index(n,get_nd())];
+}
+
 ndarray ndarray::view(dtype const & dt) const
 {
   return ndarray(python::detail::new_reference
@@ -170,7 +194,7 @@ python::object ndarray::get_base() const
 void ndarray::set_base(object const & base) 
 {
   Py_XDECREF(get_struct()->base);
-  if (base != object()) 
+  if (base.ptr())
   {
     Py_INCREF(base.ptr());
     get_struct()->base = base.ptr();

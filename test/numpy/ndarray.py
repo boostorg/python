@@ -75,5 +75,38 @@ class TestNdarray(unittest.TestCase):
         a2 = ndarray_ext.reshape(a1,(1,4))
         self.assertEqual(a2.shape,(1,4))
 
+    def testShapeIndex(self):
+        a = numpy.arange(24)
+        a.shape = (1,2,3,4)
+        def shape_check(i):
+            print(i)
+            self.assertEqual(ndarray_ext.shape_index(a,i) ,a.shape[i] )
+        for i in range(4):
+            shape_check(i)
+        for i in range(-1,-5,-1):
+            shape_check(i)
+        try:
+            ndarray_ext.shape_index(a,4) # out of bounds -- should raise IndexError
+            self.assertTrue(False)
+        except IndexError:
+            pass
+
+    def testStridesIndex(self):
+        a = numpy.arange(24)
+        a.shape = (1,2,3,4)
+        def strides_check(i):
+            print(i)
+            self.assertEqual(ndarray_ext.strides_index(a,i) ,a.strides[i] )
+        for i in range(4):
+            strides_check(i)
+        for i in range(-1,-5,-1):
+            strides_check(i)
+        try:
+            ndarray_ext.strides_index(a,4) # out of bounds -- should raise IndexError
+            self.assertTrue(False)
+        except IndexError:
+            pass
+
+
 if __name__=="__main__":
     unittest.main()
