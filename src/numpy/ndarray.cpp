@@ -170,7 +170,7 @@ python::object ndarray::get_base() const
 void ndarray::set_base(object const & base) 
 {
   Py_XDECREF(get_struct()->base);
-  if (base != object()) 
+  if (base.ptr())
   {
     Py_INCREF(base.ptr());
     get_struct()->base = base.ptr();
