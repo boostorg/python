@@ -31,6 +31,9 @@ np::ndarray transpose(np::ndarray arr) { return arr.transpose();}
 np::ndarray squeeze(np::ndarray arr) { return arr.squeeze();}
 np::ndarray reshape(np::ndarray arr,p::tuple tup) { return arr.reshape(tup);}
 
+Py_intptr_t shape_index(np::ndarray arr,int k) { return arr.shape(k); }
+Py_intptr_t strides_index(np::ndarray arr,int k) { return arr.strides(k); }
+
 BOOST_PYTHON_MODULE(ndarray_ext)
 {
   np::initialize();
@@ -43,4 +46,6 @@ BOOST_PYTHON_MODULE(ndarray_ext)
   p::def("transpose", transpose);
   p::def("squeeze", squeeze);
   p::def("reshape", reshape);
+  p::def("shape_index", shape_index);
+  p::def("strides_index", strides_index);
 }
