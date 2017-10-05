@@ -8,6 +8,17 @@
 #include <boost/python/numpy/internal.hpp>
 #include <boost/scoped_array.hpp>
 
+// make the code work with various numpy versions without complaint or error
+#if NPY_API_VERSION < 0x00000007
+#define NPY_ARRAY_FARRAY NPY_FARRAY
+#define NPY_ARRAY_ALIGNED NPY_ALIGNED
+#define NPY_ARRAY_F_CONTIGUOUS NPY_F_CONTIGUOUS
+#define NPY_ARRAY_C_CONTIGUOUS NPY_C_CONTIGUOUS
+#define NPY_ARRAY_WRITEABLE NPY_WRITEABLE
+#define NPY_ARRAY_ENSUREARRAY NPY_ENSUREARRAY
+#define PyArray_SetBaseObject(a, b) PyArray_BASE(a) = b
+#endif
+
 namespace boost { namespace python {
 namespace converter 
 {
