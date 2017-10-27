@@ -58,7 +58,7 @@ struct make_ptr_instance
     static inline PyTypeObject* get_derived_class_object(boost::python::detail::true_, U const volatile* x)
     {
         converter::registration const* r = converter::registry::query(
-            type_info(typeid(*get_pointer(x)))
+            type_info(typeid(*x))
         );
         return r ? r->m_class_object : 0;
     }
