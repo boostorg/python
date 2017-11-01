@@ -45,6 +45,7 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
     // instance, as a special case.
     data.convertible = objects::find_instance_impl(source, converters.target_type, converters.is_shared_ptr);
         data.construct = 0;
+        data.destruct = 0;
     if (!data.convertible)
     {
         for (rvalue_from_python_chain const* chain = converters.rvalue_chain;
@@ -56,6 +57,7 @@ BOOST_PYTHON_DECL rvalue_from_python_stage1_data rvalue_from_python_stage1(
             {
                 data.convertible = r;
                 data.construct = chain->construct;
+                data.destruct = chain->destruct;
                 break;
             }
         }

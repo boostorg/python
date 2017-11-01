@@ -27,6 +27,7 @@ struct rvalue_from_python_chain
 {
     convertible_function convertible;
     constructor_function construct;
+    destructor_function destruct;
     PyTypeObject const* (*expected_pytype)();
     rvalue_from_python_chain* next;
 };

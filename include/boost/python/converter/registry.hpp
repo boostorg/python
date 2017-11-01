@@ -36,6 +36,7 @@ namespace registry
   BOOST_PYTHON_DECL void insert(
       convertible_function
       , constructor_function
+      , destructor_function
       , type_info
       , PyTypeObject const* (*expected_pytype)()  = 0
       );
@@ -45,6 +46,7 @@ namespace registry
   BOOST_PYTHON_DECL void push_back(
       convertible_function
       , constructor_function
+      , destructor_function
       , type_info
       , PyTypeObject const* (*expected_pytype)()  = 0
       );

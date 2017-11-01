@@ -43,6 +43,7 @@ struct AFromPython
     boost::python::converter::registry::push_back(
         &convertible,
         &construct,
+        &destruct,
         boost::python::type_id< A >());
   }
 
@@ -70,6 +71,11 @@ struct AFromPython
     new (storage) A((int)PyInt_AsLong(obj_ptr));
 #endif
     data->convertible = storage;
+  }
+
+  static void destruct(boost::python::converter::rvalue_from_python_stage1_data* data)
+  {
+    reinterpret_cast<A*>(data->convertible)->~A();
   }
 };
 

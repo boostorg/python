@@ -192,6 +192,7 @@ enum_base::enum_base(
     , converter::to_python_function_t to_python
     , converter::convertible_function convertible
     , converter::constructor_function construct
+    , converter::destructor_function destruct
     , type_info id
     , char const *doc
     )
@@ -203,7 +204,7 @@ enum_base::enum_base(
 
     converters.m_class_object = downcast<PyTypeObject>(this->ptr());
     converter::registry::insert(to_python, id);
-    converter::registry::insert(convertible, construct, id);
+    converter::registry::insert(convertible, construct, destruct, id);
 }
 
 void enum_base::add_value(char const* name_, long value)

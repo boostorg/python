@@ -64,6 +64,7 @@ namespace
           registry::insert(
               &slot_rvalue_from_python<T,SlotPolicy>::convertible
               , &slot_rvalue_from_python<T,SlotPolicy>::construct
+              , &slot_rvalue_from_python<T,SlotPolicy>::destruct
               , type_id<T>()
               , &SlotPolicy::get_pytype
               );
@@ -95,6 +96,11 @@ namespace
 # endif 
           // record successful construction
           data->convertible = storage;
+      }
+
+      static void destruct(rvalue_from_python_stage1_data* data)
+      {
+          reinterpret_cast<T*> (data->convertible)->~T();
       }
   };
 

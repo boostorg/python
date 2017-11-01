@@ -176,9 +176,13 @@ public:
     data->convertible = storage;
   }
 
+  static void destruct(pyconv::rvalue_from_python_stage1_data*)
+  {
+  }
+
   static void declare()
   {
-    pyconv::registry::push_back(&convertible, &convert, python::type_id<T>()
+    pyconv::registry::push_back(&convertible, &convert, &destruct, python::type_id<T>()
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
 				, &get_pytype
 #endif

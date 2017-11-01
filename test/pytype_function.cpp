@@ -40,6 +40,7 @@ struct BFromPython
     boost::python::converter::registry::push_back(
         &convertible,
         &construct,
+        &destruct,
         boost::python::type_id< B >()
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
         , &converter::expected_from_python_type<A>::get_pytype//convertible to A can be converted to B
@@ -64,6 +65,11 @@ struct BFromPython
     extract<const A&> ex(obj_ptr);
     new (storage) B(ex());
     data->convertible = storage;
+  }
+
+  static void destruct(boost::python::converter::rvalue_from_python_stage1_data* data)
+  {
+    reinterpret_cast<B*>(data->convertible)->~B();
   }
 };
 
