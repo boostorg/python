@@ -16,40 +16,16 @@ public:
     ~Opaque();
 };
 
-static union
-{
-    char x[sizeof(Opaque)];
-    void* v;
-}  pseudo_Opaque;
-
-const Opaque& get() { return *reinterpret_cast<const Opaque*> (&pseudo_Opaque); }
-
 void use(const Opaque& op)
 {
-    if (&op != reinterpret_cast<const Opaque*> (&pseudo_Opaque))
-        throw std::runtime_error (std::string ("failed"));
-}
-
-int useany(const Opaque& op)
-{
-    return &op ? 1 : 0;
-}
-
-void failuse (const Opaque& op)
-{
-    if (&op == reinterpret_cast<const Opaque*> (&pseudo_Opaque))
-        throw std::runtime_error (std::string ("success"));
+    /* do nothing */
 }
 
 namespace bpl = boost::python;
 
 BOOST_PYTHON_MODULE(opaque_ref_ext)
 {
-    bpl::def (
-        "get", &::get, bpl::return_value_policy<bpl::reference_existing_object>());
     bpl::def ("use", &::use);
-    bpl::def ("useany", &::useany);
-    bpl::def ("failuse", &::failuse);
 }
 
 # include "module_tail.cpp"

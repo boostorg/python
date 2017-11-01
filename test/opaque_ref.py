@@ -7,30 +7,8 @@
 """
 >>> from opaque_ref_ext import *
 
+    Don't do anything. The module import is already enough.
 
-    Check for correct conversion
-    
->>> use(get())
-
->>> useany(get())
-1
-
->>> failuse(get())
-Traceback (most recent call last):
-        ...
-RuntimeError: success
-
-   Check that there is no conversion from integers ...
-   
->>> try: use(0)
-... except TypeError: pass
-... else: print('expected a TypeError')
-
-   ... and from strings to opaque objects
-   
->>> try: use("")
-... except TypeError: pass
-... else: print('expected a TypeError')
 """
 def run(args = None):
     import sys
