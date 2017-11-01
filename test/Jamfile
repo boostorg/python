@@ -164,6 +164,7 @@ bpl-test crossmod_opaque
   : crossmod_opaque.py crossmod_opaque_a.cpp crossmod_opaque_b.cpp
 ]
 [ bpl-test opaque ]
+[ bpl-test opaque_ref ]
 [ bpl-test voidptr ]
 
 [ bpl-test pickle1 ]
