@@ -3,6 +3,7 @@
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/foreach.hpp>
 #include <boost/python/type_id.hpp>
 #include <boost/python/detail/decorated_type_id.hpp>
 #include <utility>
@@ -18,9 +19,9 @@
 
 #if !defined(__GNUC__) || __GNUC__ >= 3 || __SGI_STL_PORT || __EDG_VERSION__
 # include <ostream>
-#else 
+#else
 # include <ostream.h>
-#endif 
+#endif
 
 #  ifdef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   if defined(__GNUC__) &&  __GNUC__ >= 3
@@ -34,7 +35,7 @@ class __class_type_info;
 
 #    include <cxxabi.h>
 #   endif
-#  endif 
+#  endif
 #endif                      /*  defined(__QNXNTO__) */
 
 namespace boost { namespace python {
@@ -76,17 +77,30 @@ namespace
           return std::strcmp(x.first,y.first) < 0;
       }
   };
-  
+
   struct free_mem
   {
       free_mem(char*p)
           : p(p) {}
-    
+
       ~free_mem()
       {
           std::free(p);
       }
       char* p;
+  };
+
+  struct free_list
+  {
+      std::vector<char*> container;
+
+      ~free_list()
+      {
+          BOOST_FOREACH(char * item, container)
+          {
+              free(item);
+          }
+      }
   };
 }
 
@@ -112,23 +126,25 @@ namespace detail
       typedef std::vector<
           std::pair<char const*, char const*>
       > mangling_map;
-      
+
+      static free_list demangler_free_mem;
       static mangling_map demangler;
+
       mangling_map::iterator p
           = std::lower_bound(
               demangler.begin(), demangler.end()
             , std::make_pair(mangled, (char const*)0)
             , compare_first_cstring());
-      
+
       if (p == demangler.end() || strcmp(p->first, mangled))
       {
           int status;
           free_mem keeper(
               cxxabi::__cxa_demangle(mangled, 0, 0, &status)
               );
-    
+
           assert(status != -3); // invalid argument error
-    
+
           if (status == -1)
           {
               throw std::bad_alloc();
@@ -181,10 +197,17 @@ namespace detail
               }
 
               p = demangler.insert(p, std::make_pair(mangled, demangled));
-              keeper.p = 0;
+              // We are keeping demangled reference.
+              // Transfer ownership to helper list that will free it
+              // on teardown.
+              if (keeper.p == demangled)
+              {
+                  demangler_free_mem.container.push_back(keeper.p);
+                  keeper.p = 0;
+              }
           }
       }
-      
+
       return p->second;
   }
 }
