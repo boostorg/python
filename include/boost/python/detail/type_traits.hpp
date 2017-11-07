@@ -7,7 +7,8 @@
 # define BOOST_PYTHON_DETAIL_TYPE_TRAITS_HPP
 
 
-#if __cplusplus < 201103L
+#if __cplusplus < 201103L && (!defined(BOOST_MSVC) || BOOST_MSVC<=1600)
+#define BOOST_PYTHON_USE_BOOST_TYPES
 # include <boost/type_traits/transform_traits.hpp>
 # include <boost/type_traits/same_traits.hpp>
 # include <boost/type_traits/cv_traits.hpp>
@@ -34,7 +35,7 @@
 
 namespace boost { namespace python { namespace detail {
 
-#if __cplusplus < 201103L
+#if defined(BOOST_PYTHON_USE_BOOST_TYPES)
     using boost::alignment_of;
     using boost::add_const;
     using boost::add_cv;
