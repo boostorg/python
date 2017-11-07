@@ -21,7 +21,14 @@ namespace
             object m_obj(((borrowed_reference_t*)m));
             scope current_module(m_obj);
 
-            handle_exception(init_function);
+            // If an exception happened we have to return NULL
+            if (handle_exception(init_function))
+            {
+#if PY_VERSION_HEX >= 0x03000000
+                Py_DECREF(m);
+                m = 0;
+#endif
+            }
         }
 
         return m;
