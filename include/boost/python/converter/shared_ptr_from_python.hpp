@@ -61,7 +61,8 @@ struct shared_ptr_from_python
 
   static void destruct(rvalue_from_python_stage1_data* data)
   {
-    reinterpret_cast<SP<T>*> (data->convertible)->~SP<T>();
+    typedef SP<T> pointer_type;
+    reinterpret_cast<pointer_type*> (data->convertible)->~pointer_type();
   }
 };
 
