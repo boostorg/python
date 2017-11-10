@@ -26,12 +26,10 @@ matrix:
     - compiler: gcc
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
     - compiler: clang
-      # clang generates an 'illegal instruction' error in the NumPy check.
-      # Perhaps we need to upgrade clang to a newer version ?
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98 OPTIONS=--no-numpy
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
     - compiler: clang
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11 OPTIONS=--no-numpy
-    - env: PYTHON=python DOC=1
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    #- env: PYTHON=python DOC=1
 
 
 addons:
@@ -77,16 +75,28 @@ install:
        ./bootstrap.sh
        ./b2 tools/bcp
        mkdir -p $HOME/Boost
+       # Install Boost.Python prerequisites, but not Boost.Python itself.
        dist/bin/bcp python tools/boostbook tools/quickbook $HOME/Boost &> /dev/null
+       rm -rf $HOME/Boost/boost/python*
+       popd
+       # Install Faber, the build tool.
+       date=2017-11-09
+       #wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
+       wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
+       tar xf 0.2.tar.gz
+       pushd faber-release-0.2
+       sudo python setup.py install
        popd
      fi
 
 before_script:
-- scons --version
+- sed -e "s/\$PYTHON/$PYTHON/g" .ci/faber > ~/.faber
+- $PYTHON --version
+- faber -h
 
 script:
-- scons config --python=$PYTHON --boost-include=$HOME/Boost $OPTIONS
-- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
+- faber --with-boost-include=$HOME/Boost test.report cxx.name=$CXX cxxflags=$CXXFLAGS
+#- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
 
 after_success:
 # Upload docs only when building upstream.
