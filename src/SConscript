@@ -19,6 +19,7 @@ env1.BoostLibrary(
     ['list.cpp',
      'long.cpp',
      'dict.cpp',
+     'gil.cpp',
      'tuple.cpp',
      'str.cpp',
      'slice.cpp',

@@ -28,6 +28,7 @@
 # include <boost/python/exception_translator.hpp>
 # include <boost/python/exec.hpp>
 # include <boost/python/extract.hpp>
+# include <boost/python/gil.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/python/has_back_reference.hpp>
 # include <boost/python/implicit.hpp>

@@ -126,6 +126,7 @@ bpl-test crossmod_exception
 
 [ bpl-test object ]
 [ bpl-test class ]
+[ bpl-test gil ]
 [ bpl-test list ]
 [ bpl-test long ]
 [ bpl-test dict ]
