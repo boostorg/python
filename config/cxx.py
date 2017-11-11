@@ -15,7 +15,7 @@ def add_options(vars):
 
 def check(context):
 
-    source = r"""#if __cplusplus < 201103L
+    source = r"""#if __cplusplus < 201103L && (!defined(_MSC_VER) || _MSC_VER < 1800) 
 #error no C++11
 #endif"""
 
