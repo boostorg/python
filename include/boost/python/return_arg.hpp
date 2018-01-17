@@ -12,8 +12,7 @@
 # include <boost/python/converter/pytype_function.hpp>
 #endif
 
-# include <boost/type_traits/add_reference.hpp>
-# include <boost/type_traits/add_const.hpp>
+# include <boost/python/detail/type_traits.hpp>
 
 # include <boost/mpl/int.hpp>
 # include <boost/mpl/at.hpp>
@@ -29,7 +28,7 @@ namespace detail
 {
   template <std::size_t>
   struct return_arg_pos_argument_must_be_positive
-# if defined(__GNUC__) && __GNUC__ >= 3 || defined(__EDG__)
+# if defined(__GNUC__) || defined(__EDG__)
   {}
 # endif
   ;

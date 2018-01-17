@@ -8,8 +8,7 @@
 # include <boost/config.hpp>
 # include <boost/type.hpp>
 # include <boost/mpl/if.hpp>
-# include <boost/type_traits/object_traits.hpp>
-# include <boost/type_traits/cv_traits.hpp>
+# include <boost/python/detail/type_traits.hpp>
 # include <boost/python/tag.hpp>
 
 namespace boost { namespace python { namespace detail {
@@ -19,7 +18,6 @@ template<class T> class borrowed
     typedef T type;
 };
 
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 template<typename T>
 struct is_borrowed_ptr
 {
@@ -68,35 +66,6 @@ struct is_borrowed_ptr<T*>
 };
 #  endif 
 
-# else // no partial specialization
-
-typedef char (&yes_borrowed_ptr_t)[1];
-typedef char (&no_borrowed_ptr_t)[2];
-
-no_borrowed_ptr_t is_borrowed_ptr_test(...);
-
-template <class T>
-typename mpl::if_c<
-    is_pointer<T>::value
-    , T
-    , int
-    >::type
-is_borrowed_ptr_test1(boost::type<T>);
-
-template<typename T>
-yes_borrowed_ptr_t is_borrowed_ptr_test(borrowed<T> const volatile*);
-
-template<typename T>
-class is_borrowed_ptr
-{
- public:
-    BOOST_STATIC_CONSTANT(
-        bool, value = (
-            sizeof(detail::is_borrowed_ptr_test(is_borrowed_ptr_test1(boost::type<T>())))
-            == sizeof(detail::yes_borrowed_ptr_t)));
-};
-
-# endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 }
 

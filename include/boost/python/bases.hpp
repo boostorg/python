@@ -6,8 +6,8 @@
 # define BASES_DWA2002321_HPP
 
 # include <boost/python/detail/prefix.hpp>
-# include <boost/type_traits/object_traits.hpp>
 # include <boost/python/detail/type_list.hpp>
+# include <boost/python/detail/type_traits.hpp>
 # include <boost/mpl/if.hpp>
 # include <boost/mpl/bool.hpp>
 # include <boost/preprocessor/enum_params_with_a_default.hpp>
@@ -24,7 +24,6 @@ namespace boost { namespace python {
 
   namespace detail
   {
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
     template <class T> struct specifies_bases
         : mpl::false_
     {
@@ -35,23 +34,6 @@ namespace boost { namespace python {
         : mpl::true_
     {
     };
-# else
-    template < BOOST_PP_ENUM_PARAMS(BOOST_PYTHON_MAX_BASES, class Base) >
-    static char is_bases_helper(bases< BOOST_PYTHON_BASE_PARAMS > const&);
-    
-    static char (& is_bases_helper(...) )[256];
-
-    template <class T>
-    struct specifies_bases
-    {
-     private:
-        static typename add_reference<T>::type make();
-        BOOST_STATIC_CONSTANT(bool, non_ref = !is_reference<T>::value);
-     public:
-        BOOST_STATIC_CONSTANT(bool, value = non_ref & (sizeof(is_bases_helper(make())) == 1));
-        typedef mpl::bool_<value> type;
-    };
-# endif
     template <class T, class Prev = bases<> >
     struct select_bases
         : mpl::if_<

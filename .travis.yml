@@ -1,0 +1,109 @@
+#
+# Copyright (c) 2016 Stefan Seefeld
+# All rights reserved.
+#
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+sudo: required
+dist: trusty
+
+language: cpp
+
+env:
+  global:
+    - secure: BRNUkxN3p8f+uYKWC3Hr0VPqZA0PxbWr1DJlcI4hbiZtzKhMCWjDmd9UW9CzzexqeOxpd+9s0G87qvOur+wMSVxugDxtTesZrh1czXHeSVxgQrYD783XJtQJ9aYypbChkiboRD6Xpmbq7itwMuHBJMFtCuDxMynpU1jWwkyTf2Y=
+
+matrix:
+  include:
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - compiler: gcc
+      env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - compiler: clang
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - compiler: clang
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    #- env: PYTHON=python DOC=1
+
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - scons
+    - gcc-4.8
+    - g++-4.8
+    - clang
+    - python-numpy
+    - python-sphinx
+    - python3-dev
+    - python3-numpy
+    - libboost-all-dev
+    - xsltproc
+    - docbook-xsl
+    - python-docutils
+
+
+cache:
+  directories:
+  - $HOME/Boost
+
+before_install:
+  # The Trusty image has several Python versions pre-installed compiled with
+  # conflicting UCS2 and UCS4 unicode. Modify the PATH to skip the TravisCI python.
+  # See https://github.com/travis-ci/travis-ci/issues/4948 for details.
+  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
+
+install:
+  # Install our own version of Boost (the subset we need) as the system version is
+  # too old (for C++11 support).
+  - rm -rf $HOME/Boost
+  - |
+     set -e
+     if [ ! -d $HOME/Boost ]; then
+       echo "rebuilding Boost prerequisites"
+       wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.gz/download
+       tar xf download
+       pushd boost_1_61_0
+       ./bootstrap.sh
+       ./b2 tools/bcp
+       mkdir -p $HOME/Boost
+       # Install Boost.Python prerequisites, but not Boost.Python itself.
+       dist/bin/bcp python tools/boostbook tools/quickbook $HOME/Boost &> /dev/null
+       rm -rf $HOME/Boost/boost/python*
+       popd
+       # Install Faber, the build tool.
+       date=2017-11-09
+       #wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
+       wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
+       tar xf 0.2.tar.gz
+       pushd faber-release-0.2
+       sudo python setup.py install
+       popd
+     fi
+
+before_script:
+- sed -e "s/\$PYTHON/$PYTHON/g" .ci/faber > ~/.faber
+- $PYTHON --version
+- faber -h
+
+script:
+- faber --with-boost-include=$HOME/Boost test.report cxx.name=$CXX cxxflags=$CXXFLAGS
+#- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
+
+after_success:
+# Upload docs only when building upstream.
+- |
+   if [ "$DOC" -a \
+        "$TRAVIS_REPO_SLUG" = "boostorg/python" -a \
+        "$TRAVIS_PULL_REQUEST" = "false" ]; then
+     export GH_TOKEN
+     .ci/upload_docs.sh
+   fi

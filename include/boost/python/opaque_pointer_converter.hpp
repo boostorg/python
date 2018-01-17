@@ -1,4 +1,4 @@
-// Copyright Gottfried Ganﬂauge 2003..2006.
+// Copyright Gottfried Gan√üauge 2003..2006.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -13,13 +13,10 @@
 # include <boost/python/to_python_converter.hpp>
 # include <boost/python/converter/registrations.hpp>
 # include <boost/python/detail/dealloc.hpp>
+# include <boost/python/detail/type_traits.hpp>
 # include <boost/python/detail/none.hpp>
 # include <boost/python/type_id.hpp>
 # include <boost/python/errors.hpp>
-
-# include <boost/type_traits/remove_pointer.hpp>
-# include <boost/type_traits/is_pointer.hpp>
-# include <boost/type_traits/is_void.hpp>
 
 # include <boost/implicit_cast.hpp>
 
@@ -172,28 +169,19 @@ PyTypeObject opaque<Pointee>::type_object =
 };
 }} // namespace boost::python
 
-#  if BOOST_WORKAROUND(BOOST_MSVC, <= 1300)
-
-#  define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)
-
-#  else
-
 // If you change the below, don't forget to alter the end of type_id.hpp
 #   define BOOST_PYTHON_OPAQUE_SPECIALIZED_TYPE_ID(Pointee)                     \
     namespace boost { namespace python {                                        \
     template<>                                                                  \
-    inline type_info type_id<Pointee>(BOOST_PYTHON_EXPLICIT_TT_DEF(Pointee))    \
+    inline type_info type_id<Pointee>()                                         \
     {                                                                           \
         return type_info (typeid (Pointee *));                                  \
     }                                                                           \
     template<>                                                                  \
-    inline type_info type_id<const volatile Pointee&>(                          \
-        BOOST_PYTHON_EXPLICIT_TT_DEF(const volatile Pointee&))                  \
+    inline type_info type_id<const volatile Pointee&>()                         \
     {                                                                           \
         return type_info (typeid (Pointee *));                                  \
     }                                                                           \
     }}
-
-#  endif
 
 # endif    // OPAQUE_POINTER_CONVERTER_HPP_

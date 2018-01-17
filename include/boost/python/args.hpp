@@ -11,10 +11,7 @@
 # include <boost/config.hpp>
 # include <boost/python/detail/preprocessor.hpp>
 # include <boost/python/detail/type_list.hpp>
-
-# include <boost/type_traits/is_reference.hpp>
-# include <boost/type_traits/remove_reference.hpp>
-# include <boost/type_traits/remove_cv.hpp>
+# include <boost/python/detail/type_traits.hpp>
 
 # include <boost/preprocessor/enum_params.hpp>
 # include <boost/preprocessor/repeat.hpp>
@@ -102,7 +99,6 @@ namespace detail
       return this->operator,(python::arg(name));
   }
 
-# ifndef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
   template<typename T>
   struct is_keywords
   {
@@ -117,40 +113,15 @@ namespace detail
   template <class T>
   struct is_reference_to_keywords
   {
-      BOOST_STATIC_CONSTANT(bool, is_ref = is_reference<T>::value);
-      typedef typename remove_reference<T>::type deref;
-      typedef typename remove_cv<deref>::type key_t;
+      BOOST_STATIC_CONSTANT(bool, is_ref = detail::is_reference<T>::value);
+      typedef typename detail::remove_reference<T>::type deref;
+      typedef typename detail::remove_cv<deref>::type key_t;
       BOOST_STATIC_CONSTANT(bool, is_key = is_keywords<key_t>::value);
       BOOST_STATIC_CONSTANT(bool, value = (is_ref & is_key));
       
       typedef mpl::bool_<value> type;
       BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
   };
-# else 
-  typedef char (&yes_keywords_t)[1];
-  typedef char (&no_keywords_t)[2];
-      
-  no_keywords_t is_keywords_test(...);
-
-  template<std::size_t nkeywords>
-  yes_keywords_t is_keywords_test(void (*)(keywords<nkeywords>&));
-
-  template<std::size_t nkeywords>
-  yes_keywords_t is_keywords_test(void (*)(keywords<nkeywords> const&));
-
-  template<typename T>
-  class is_reference_to_keywords
-  {
-   public:
-      BOOST_STATIC_CONSTANT(
-          bool, value = (
-              sizeof(detail::is_keywords_test( (void (*)(T))0 ))
-              == sizeof(detail::yes_keywords_t)));
-
-      typedef mpl::bool_<value> type;
-      BOOST_PYTHON_MPL_LAMBDA_SUPPORT(1,is_reference_to_keywords,(T))
-  };
-# endif 
 }
 
 inline detail::keywords<1> args(char const* name)

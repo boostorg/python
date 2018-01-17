@@ -27,7 +27,7 @@
 #include <boost/mpl/joint_view.hpp>
 #include <boost/mpl/back.hpp>
 
-#include <boost/type_traits/is_same.hpp>
+#include <boost/python/detail/type_traits.hpp>
 
 #include <boost/preprocessor/enum_params_with_a_default.hpp>
 #include <boost/preprocessor/enum_params.hpp>
@@ -68,7 +68,7 @@ namespace detail
     template <int keywords, int init_args>
     struct more_keywords_than_init_arguments
     {
-        typedef char too_many_keywords[init_args - keywords >= 0 ? 1 : -1];
+        typedef char too_many_keywords[init_args - keywords >= 0 ? 1 : -1] BOOST_ATTRIBUTE_UNUSED;
     };
   }
 
@@ -76,27 +76,6 @@ namespace detail
   //
   //      This metaprogram checks if T is an optional
   //
-#if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-
-    template <class T>
-    struct is_optional {
-
-    private:
-
-        template <BOOST_PYTHON_OVERLOAD_TYPES>
-        static boost::type_traits::yes_type f(optional<BOOST_PYTHON_OVERLOAD_ARGS>);
-        static boost::type_traits::no_type f(...);
-        static T t();
-
-    public:
-
-        BOOST_STATIC_CONSTANT(
-            bool, value =
-                sizeof(f(t())) == sizeof(::boost::type_traits::yes_type));
-        typedef mpl::bool_<value> type;
-    };
-
-#else
 
     template <class T>
     struct is_optional
@@ -108,7 +87,6 @@ namespace detail
       : mpl::true_
     {};
   
-#endif
 
   template <int NDefaults>
   struct define_class_init_helper;
@@ -246,7 +224,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
             N, n_arguments::value + 1
-            >::too_many_keywords assertion;
+            >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
     }
 
     template <std::size_t N>
@@ -255,7 +233,7 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
     {
         typedef typename detail::error::more_keywords_than_init_arguments<
             N, n_arguments::value + 1
-            >::too_many_keywords assertion;
+            >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
     }
 
     template <class CallPoliciesT>
