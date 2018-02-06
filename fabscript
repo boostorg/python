@@ -20,6 +20,7 @@ boost_include = options.get_with('boost-include')
 if boost_include:
     features += include(boost_include)
 python = python.instance()
+py_suffix = '{}{}'.format(*python.version.split('.')[:2])
 features |= set(python.include, python.linkpath, python.libs)
 
 class has_numpy(try_run):
