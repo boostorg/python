@@ -25,7 +25,7 @@ struct shared_ptr_from_python
 {
   shared_ptr_from_python()
   {
-    converter::registry::insert(&convertible, &construct, type_id<SP<T> >()
+    converter::registry::insert(&convertible, &construct, &destruct, type_id<SP<T> >()
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
 				, &converter::expected_from_python_type_direct<T>::get_pytype
 #endif
@@ -57,6 +57,12 @@ struct shared_ptr_from_python
     }
 
     data->convertible = storage;
+  }
+
+  static void destruct(rvalue_from_python_stage1_data* data)
+  {
+    typedef SP<T> pointer_type;
+    reinterpret_cast<pointer_type*> (data->convertible)->~pointer_type();
   }
 };
 

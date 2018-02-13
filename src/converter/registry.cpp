@@ -239,12 +239,13 @@ namespace registry
       registration->next = found->lvalue_chain;
       found->lvalue_chain = registration;
       
-      insert(convert, 0, key,exp_pytype);
+      insert(convert, 0, 0, key,exp_pytype);
   }
 
   // Insert an rvalue from_python converter
   void insert(convertible_function convertible
               , constructor_function construct
+              , destructor_function destruct
               , type_info key
               , PyTypeObject const* (*exp_pytype)())
   {
@@ -255,6 +256,7 @@ namespace registry
       rvalue_from_python_chain *registration = new rvalue_from_python_chain;
       registration->convertible = convertible;
       registration->construct = construct;
+      registration->destruct = destruct;
       registration->expected_pytype = exp_pytype;
       registration->next = found->rvalue_chain;
       found->rvalue_chain = registration;
@@ -263,6 +265,7 @@ namespace registry
   // Insert an rvalue from_python converter
   void push_back(convertible_function convertible
               , constructor_function construct
+              , destructor_function destruct
               , type_info key
               , PyTypeObject const* (*exp_pytype)())
   {
@@ -276,6 +279,7 @@ namespace registry
       rvalue_from_python_chain *registration = new rvalue_from_python_chain;
       registration->convertible = convertible;
       registration->construct = construct;
+      registration->destruct = destruct;
       registration->expected_pytype = exp_pytype;
       registration->next = 0;
       *found = registration;

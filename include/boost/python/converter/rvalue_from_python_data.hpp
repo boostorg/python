@@ -62,6 +62,7 @@ struct rvalue_from_python_stage1_data
 {
     void* convertible;
     constructor_function construct;
+    destructor_function destruct;
 };
 
 // Augments rvalue_from_python_stage1_data by adding storage for
@@ -132,7 +133,7 @@ template <class T>
 inline rvalue_from_python_data<T>::~rvalue_from_python_data()
 {
     if (this->stage1.convertible == this->storage.bytes)
-        python::detail::destroy_referent<ref_type>(this->storage.bytes);
+        this->stage1.destruct(&(this->stage1));
 }
 
 }}} // namespace boost::python::converter

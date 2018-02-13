@@ -39,6 +39,11 @@ struct implicit
         // record successful construction
         data->convertible = storage;
     }
+
+    static void destruct(rvalue_from_python_stage1_data* data)
+    {
+        reinterpret_cast<Target*>(data->convertible)->~Target();
+    }
 };
 
 }}} // namespace boost::python::converter

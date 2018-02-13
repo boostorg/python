@@ -31,6 +31,7 @@ struct enum_ : public objects::enum_base
     static PyObject* to_python(void const* x);
     static void* convertible_from_python(PyObject* obj);
     static void construct(PyObject* obj, converter::rvalue_from_python_stage1_data* data);
+    static void destruct(converter::rvalue_from_python_stage1_data* data);
 };
 
 template <class T>
@@ -40,6 +41,7 @@ inline enum_<T>::enum_(char const* name, char const* doc )
         , &enum_<T>::to_python
         , &enum_<T>::convertible_from_python
         , &enum_<T>::construct
+        , &enum_<T>::destruct
         , type_id<T>()
         , doc
         )
@@ -87,6 +89,12 @@ void enum_<T>::construct(PyObject* obj, converter::rvalue_from_python_stage1_dat
     void* const storage = ((converter::rvalue_from_python_storage<T>*)data)->storage.bytes;
     new (storage) T(x);
     data->convertible = storage;
+}
+
+template <class T>
+void enum_<T>::destruct(converter::rvalue_from_python_stage1_data* data)
+{
+    reinterpret_cast<T*>(data->convertible)->~T();
 }
 
 template <class T>

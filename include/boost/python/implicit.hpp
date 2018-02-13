@@ -24,6 +24,7 @@ void implicitly_convertible(boost::type<Source>* = 0, boost::type<Target>* = 0)
     converter::registry::push_back(
           &functions::convertible
         , &functions::construct
+        , &functions::destruct
         , type_id<Target>()
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
         , &converter::expected_from_python_type_direct<Source>::get_pytype
