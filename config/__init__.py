@@ -76,6 +76,9 @@ def set_property(env, **kw):
 def boost_suffix(env):
     suffix = str()
 
+    for lib in env["PYTHONLIBS"]:
+        if lib.startswith("python"):
+            suffix += "-" + lib[len("python"):]
     if env["layout"] == "versioned":
         if "gcc" in env["TOOLS"]:
             if env['CXX'] in ('clang', 'clang++'):
