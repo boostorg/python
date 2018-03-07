@@ -27,27 +27,14 @@ While Boost.Python is part of the Boost C++ Libraries super-project, and thus ca
 
 * [Python](http://www.python.org)
 * [Boost](http://www.boost.org)
-* [SCons](http://www.scons.org)
-
-## Configure
-
-Simply run
-
-```
-scons config [options]
-```
-to prepare a build. See `scons -h` for a description of the available options. For example
-```
-scons config --boost=/path/to/boost --python=/path/to/python
-```
-will configure Boost.Python to be built against the two specific versions of Boost and Python.
+* [Faber](https://stefanseefeld.github.io/faber)
 
 ## Build
 
 Run
 
 ```
-scons
+faber
 ```
 to build the library.
 
@@ -56,7 +43,7 @@ to build the library.
 Run
 
 ```
-scons test
+faber test.report
 ```
 to run the tests.
 
@@ -65,6 +52,6 @@ to run the tests.
 Run
 
 ```
-scons doc
+faber doc.html
 ```
 to build the documentation.
