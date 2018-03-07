@@ -29,7 +29,7 @@ matrix:
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
     - compiler: clang
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
-    #- env: PYTHON=python DOC=1
+    - env: PYTHON=python DOC=1
 
 
 addons:
@@ -37,7 +37,6 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - scons
     - gcc-4.8
     - g++-4.8
     - clang
@@ -80,11 +79,13 @@ install:
        rm -rf $HOME/Boost/boost/python*
        popd
        # Install Faber, the build tool.
-       date=2017-11-09
-       #wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
-       wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
-       tar xf 0.2.tar.gz
-       pushd faber-release-0.2
+       date=2018-03-07
+       wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
+       tar xf $date.tar.gz
+       pushd faber-snapshot-$date
+       #wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
+       #tar xf 0.2.tar.gz
+       #pushd faber-release-0.2
        sudo python setup.py install
        popd
      fi
@@ -95,8 +96,8 @@ before_script:
 - faber -h
 
 script:
-- faber --with-boost-include=$HOME/Boost test.report cxx.name=$CXX cxxflags=$CXXFLAGS
-#- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
+- faber --with-boost-include=$HOME/Boost --builddir=build test.report cxx.name=$CXX cxxflags=$CXXFLAGS
+- if [ "$DOC" ]; then BOOST_ROOT=$HOME/Boost faber --builddir=build doc.html; fi
 
 after_success:
 # Upload docs only when building upstream.
