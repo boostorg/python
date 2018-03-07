@@ -72,9 +72,9 @@ install:
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
   - |
-     curl -LfsS -o faber.tar.gz https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
+     curl -LfsS -o faber.tar.gz https://github.com/stefanseefeld/faber/archive/snapshot/2018-03-07.tar.gz
      tar xf faber.tar.gz
-     CD faber-release-0.2
+     CD faber-snapshot-2018-03-07
      python setup.py install
      CD ..
   # report the available MSVC compilers
