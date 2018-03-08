@@ -44,7 +44,7 @@ extern "C"
     static PyObject* enum_repr(PyObject* self_)
     {
         PyObject *mod = PyObject_GetAttrString( self_, "__module__");
-        object auto_free(handle<>(mod));
+        object auto_free = object(handle<>(mod));
         enum_object* self = downcast<enum_object>(self_);
         if (!self->name)
         {

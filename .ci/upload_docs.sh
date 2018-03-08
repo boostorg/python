@@ -22,10 +22,10 @@ fi
 REPO=`git config remote.origin.url`
 SHA=`git rev-parse --verify HEAD`
 
-# bin.SCons happens to contain the "doc/html" tree that we want to push
+# build happens to contain the "doc/html" tree that we want to push
 # into the gh-pages branch. So we step into that directory, create a new repo,
 # set the remote appropriately, then commit and push.
-cd bin.SCons
+cd build
 git init
 git config user.name "Travis CI"
 git config user.email "travis-ci"

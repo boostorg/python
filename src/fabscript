@@ -13,7 +13,7 @@ from faber.tools.compiler import define
 
 root = module('..')
 
-bpl = library('boost_python',
+bpl = library('boost_python' + root.py_suffix,
               ['list.cpp',
                'long.cpp',
                'dict.cpp',
@@ -44,7 +44,7 @@ bpl = library('boost_python',
               dependencies=root.config,
               features=features + define('BOOST_PYTHON_SOURCE'))
 
-bnl = library('boost_numpy',
+bnl = library('boost_numpy' + root.py_suffix,
               ['numpy/dtype.cpp',
                'numpy/matrix.cpp',
                'numpy/ndarray.cpp',
