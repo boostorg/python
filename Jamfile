@@ -46,7 +46,7 @@ rule version-suffix ( version )
 python-id = [ option.get "python-buildid" ] ;
 if $(python-id)
 {
-    PYTHON_ID = [ regex.replace $(python-id) [*\\/:.\"\'] _ ] ;
+    PYTHON_ID = [ regex.replace $(python-id) "[*\\/:.\"\']" _ ] ;
 }
 
 rule python-tag ( name : type ? : property-set )
