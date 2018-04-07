@@ -11,9 +11,11 @@
 //  Copyright (C) 1999, 2000 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
 //  Copyright (C) 2001 Peter Dimov
 
-# pragma once
-
 # include <boost/config.hpp>
+# if defined(BOOST_HAS_PRAGMA_ONCE)
+# pragma once
+# endif
+
 # include <boost/mpl/bool.hpp>
 
 namespace boost { namespace python {
