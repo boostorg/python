@@ -81,7 +81,7 @@ install:
        echo "using cached Boost prerequisites."
      fi
      # Install Faber, the build tool.
-     date=2018-03-07
+     date=2018-04-08
      wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
      tar xf $date.tar.gz
      pushd faber-snapshot-$date
