@@ -17,17 +17,19 @@ env:
 
 matrix:
   include:
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-    - compiler: clang
+    - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: clang
+    - os: linux
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - os: osx
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
     - env: PYTHON=python DOC=1
 
