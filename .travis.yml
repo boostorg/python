@@ -30,9 +30,10 @@ matrix:
     - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
     - os: osx
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+      env: CXX=clang++ PYTHON=python CXXFLAGS=-std=c++11
     - env: PYTHON=python DOC=1
-
+  allow_failures:
+    - os: osx
 
 addons:
   apt:
@@ -66,7 +67,6 @@ install:
   # Install our own version of Boost (the subset we need) as the system version is
   # too old (for C++11 support).
   - |
-     set -e
      if [ ! -d $HOME/Boost/tools/boostbook ]; then
        echo "rebuilding Boost prerequisites."
        wget https://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz/download
