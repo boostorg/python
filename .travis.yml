@@ -17,20 +17,23 @@ env:
 
 matrix:
   include:
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-    - compiler: clang
+    - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: clang
+    - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - os: osx
+      env: CXX=clang++ PYTHON=python CXXFLAGS=-std=c++11
     - env: PYTHON=python DOC=1
-
+  allow_failures:
+    - os: osx
 
 addons:
   apt:
@@ -64,7 +67,6 @@ install:
   # Install our own version of Boost (the subset we need) as the system version is
   # too old (for C++11 support).
   - |
-     set -e
      if [ ! -d $HOME/Boost/tools/boostbook ]; then
        echo "rebuilding Boost prerequisites."
        wget https://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz/download
@@ -81,7 +83,7 @@ install:
        echo "using cached Boost prerequisites."
      fi
      # Install Faber, the build tool.
-     date=2018-03-07
+     date=2018-04-08
      wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
      tar xf $date.tar.gz
      pushd faber-snapshot-$date
