@@ -50,6 +50,8 @@ rule require-windows ( properties * )
     }
 }
 
+if [ python.configured ]
+{
 test-suite python
   :
 
@@ -97,12 +99,16 @@ bpl-test crossmod_exception
 
 [ bpl-test polymorphism2_auto_ptr 
   : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp 
+  : [ requires auto_ptr ]
 ]
 
 [ bpl-test polymorphism ]
 [ bpl-test polymorphism2 ]
 
-[ bpl-test auto_ptr ]
+[ bpl-test auto_ptr
+  : # files
+  : [ requires auto_ptr ]
+]
 
 [ bpl-test minimal ]
 [ bpl-test args ]
@@ -115,7 +121,7 @@ bpl-test crossmod_exception
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
    
 
-[ python-extension builtin_converters_ext : test_builtin_converters.cpp /boost/python//boost_python ]
+[ python-extension builtin_converters_ext : builtin_converters.cpp /boost/python//boost_python ]
 [ bpl-test builtin_converters : test_builtin_converters.py builtin_converters_ext ]
 
  [ bpl-test test_pointer_adoption ]
@@ -248,3 +254,4 @@ bpl-test crossmod_opaque
 
 
   ;
+}

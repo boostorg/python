@@ -7,7 +7,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
-# include <boost/type_traits/is_enum.hpp>
+#include <boost/python/detail/type_traits.hpp>
 # include <boost/mpl/bool.hpp>
 #endif 
 using namespace boost::python;
@@ -17,7 +17,7 @@ enum color { red = 1, green = 2, blue = 4, blood = 1 };
 #if BOOST_WORKAROUND(__MWERKS__, <= 0x2407)
 namespace boost  // Pro7 has a hard time detecting enums
 {
-  template <> struct is_enum<color> : boost::mpl::true_ {};
+  template <> struct boost::python::detail::is_enum<color> : boost::mpl::true_ {};
 }
 #endif 
 

@@ -19,14 +19,12 @@
 #include <boost/python/converter/object_manager.hpp>
 #include <boost/python/converter/shared_ptr_to_python.hpp>
 
+#include <boost/python/detail/type_traits.hpp>
 #include <boost/python/detail/value_is_shared_ptr.hpp>
 #include <boost/python/detail/value_arg.hpp>
 
-#include <boost/type_traits/transform_traits.hpp>
-
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/or.hpp>
-#include <boost/type_traits/is_const.hpp>
 
 namespace boost { namespace python { 
 
@@ -120,7 +118,7 @@ struct object_manager_get_pytype<true>
     PyTypeObject const* get_pytype(boost::type<shared_ptr<U> &> *) const {return converter::registered<U>::converters.to_python_target_type();}
     template <class U>
     PyTypeObject const* get_pytype(boost::type<const shared_ptr<U> &> *) const {return converter::registered<U>::converters.to_python_target_type();}
-# if __cplusplus >= 201103L
+# if !defined(BOOST_NO_CXX11_SMART_PTR)
     template <class U>
     PyTypeObject const* get_pytype(boost::type<std::shared_ptr<U> &> *) const {return converter::registered<U>::converters.to_python_target_type();}
     template <class U>

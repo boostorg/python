@@ -11,29 +11,33 @@
 #include <boost/python/numpy/internal.hpp>
 
 #define DTYPE_FROM_CODE(code) \
-    dtype(python::detail::new_reference(reinterpret_cast<PyObject*>(PyArray_DescrFromType(code))))
+  dtype(python::detail::new_reference(reinterpret_cast<PyObject*>(PyArray_DescrFromType(code))))
 
 #define BUILTIN_INT_DTYPE(bits)                                         \
-    template <> struct builtin_int_dtype< bits, false > {               \
-        static dtype get() { return DTYPE_FROM_CODE(NPY_INT ## bits); } \
-    };                                                                  \
-    template <> struct builtin_int_dtype< bits, true > {                \
-        static dtype get() { return DTYPE_FROM_CODE(NPY_UINT ## bits); } \
-    };                                                                  \
-    template dtype get_int_dtype< bits, false >();                      \
-    template dtype get_int_dtype< bits, true >()
+  template <> struct builtin_int_dtype<bits, false>			\
+  {									\
+    static dtype get() { return DTYPE_FROM_CODE(NPY_INT ## bits);}	\
+  };									\
+  template <> struct builtin_int_dtype<bits, true>			\
+  {									\
+    static dtype get() { return DTYPE_FROM_CODE(NPY_UINT ## bits);}	\
+  };									\
+  template BOOST_NUMPY_DECL dtype get_int_dtype<bits, false>();		\
+  template BOOST_NUMPY_DECL dtype get_int_dtype<bits, true>()
 
 #define BUILTIN_FLOAT_DTYPE(bits)                                       \
-    template <> struct builtin_float_dtype< bits > {                    \
-        static dtype get() { return DTYPE_FROM_CODE(NPY_FLOAT ## bits); } \
-    };                                                                  \
-    template dtype get_float_dtype< bits >()
+  template <> struct builtin_float_dtype<bits>				\
+  {									\
+    static dtype get() { return DTYPE_FROM_CODE(NPY_FLOAT ## bits);}	\
+  };									\
+  template BOOST_NUMPY_DECL dtype get_float_dtype<bits>()
 
 #define BUILTIN_COMPLEX_DTYPE(bits)                                     \
-    template <> struct builtin_complex_dtype< bits > {                  \
-        static dtype get() { return DTYPE_FROM_CODE(NPY_COMPLEX ## bits); } \
-    };                                                                  \
-    template dtype get_complex_dtype< bits >()
+  template <> struct builtin_complex_dtype<bits>			\
+  {									\
+    static dtype get() { return DTYPE_FROM_CODE(NPY_COMPLEX ## bits);}	\
+  };									\
+  template BOOST_NUMPY_DECL dtype get_complex_dtype<bits>()
 
 namespace boost { namespace python { namespace converter {
 NUMPY_OBJECT_MANAGER_TRAITS_IMPL(PyArrayDescr_Type, numpy::dtype)
@@ -58,7 +62,9 @@ BUILTIN_INT_DTYPE(8);
 BUILTIN_INT_DTYPE(16);
 BUILTIN_INT_DTYPE(32);
 BUILTIN_INT_DTYPE(64);
+#ifdef NPY_FLOAT16
 BUILTIN_FLOAT_DTYPE(16);
+#endif
 BUILTIN_FLOAT_DTYPE(32);
 BUILTIN_FLOAT_DTYPE(64);
 BUILTIN_COMPLEX_DTYPE(64);

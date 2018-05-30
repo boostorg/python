@@ -1,6 +1,9 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+import sys
+if (sys.version_info.major >= 3):
+    long = int
 r"""
 >>> from builtin_converters_ext import *
 
@@ -74,7 +77,7 @@ False
     test unsigned long values which don't fit in a signed long.
     strip any 'L' characters in case the platform has > 32 bit longs
 
->>> hex(rewrap_value_unsigned_long(0x80000001L)).replace('L','')
+>>> hex(rewrap_value_unsigned_long(long(0x80000001))).replace('L','')
 '0x80000001'
 
 >>> rewrap_value_long_long(42) == 42

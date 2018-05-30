@@ -92,7 +92,7 @@ who had to use a different tool.
 
 We will skip over the details. Our objective will be to simply create
 the hello world module and run it in Python. For a complete reference to
-building Boost.Python, check out: [@../../../building.html
+building Boost.Python, check out: [@../building.html
 building.html]. After this brief ['bjam] tutorial, we should have built
 the DLLs and run a python program using the extension.
 
@@ -1416,6 +1416,8 @@ Boost.python provides three related functions to run Python code from C++.
 eval evaluates the given expression and returns the resulting value.
 exec executes the given code (typically a set of statements) returning the result,
 and exec_file executes the code contained in the given file.
+
+There are also overloads taking `char const*` instead of str as the first argument.
 
 The [^globals] and [^locals] parameters are Python dictionaries
 containing the globals and locals of the context in which to run the code.

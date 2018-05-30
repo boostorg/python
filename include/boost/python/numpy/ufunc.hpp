@@ -15,6 +15,7 @@
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/python/numpy/dtype.hpp>
 #include <boost/python/numpy/ndarray.hpp>
+#include <boost/python/numpy/config.hpp>
 
 namespace boost { namespace python { namespace numpy {
 
@@ -34,7 +35,7 @@ namespace boost { namespace python { namespace numpy {
  *        It's more dangerous than most object managers, however - maybe it actually belongs in
  *        a detail namespace?
  */
-class multi_iter : public object
+class BOOST_NUMPY_DECL multi_iter : public object
 {
 public:
 
@@ -61,13 +62,13 @@ public:
 };
 
 /// @brief Construct a multi_iter over a single sequence or scalar object.
-multi_iter make_multi_iter(object const & a1);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1);
 
 /// @brief Construct a multi_iter by broadcasting two objects.
-multi_iter make_multi_iter(object const & a1, object const & a2);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1, object const & a2);
 
 /// @brief Construct a multi_iter by broadcasting three objects.
-multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
+BOOST_NUMPY_DECL multi_iter make_multi_iter(object const & a1, object const & a2, object const & a3);
 
 /**
  *  @brief Helps wrap a C++ functor taking a single scalar argument as a broadcasting ufunc-like
@@ -105,7 +106,7 @@ struct unary_ufunc
     dtype in_dtype = dtype::get_builtin<TArgument>();
     dtype out_dtype = dtype::get_builtin<TResult>();
     ndarray in_array = from_object(input, in_dtype, ndarray::ALIGNED);
-    ndarray out_array = (output != object()) ?
+    ndarray out_array = ! output.is_none() ?
       from_object(output, out_dtype, ndarray::ALIGNED | ndarray::WRITEABLE)
       : zeros(in_array.get_nd(), in_array.get_shape(), out_dtype);
     multi_iter iter = make_multi_iter(in_array, out_array);
@@ -170,7 +171,7 @@ struct binary_ufunc
     ndarray in1_array = from_object(input1, in1_dtype, ndarray::ALIGNED);
     ndarray in2_array = from_object(input2, in2_dtype, ndarray::ALIGNED);
     multi_iter iter = make_multi_iter(in1_array, in2_array);
-    ndarray out_array = (output != object())
+    ndarray out_array = !output.is_none()
       ? from_object(output, out_dtype, ndarray::ALIGNED | ndarray::WRITEABLE)
       : zeros(iter.get_nd(), iter.get_shape(), out_dtype);
     iter = make_multi_iter(in1_array, in2_array, out_array);

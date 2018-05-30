@@ -17,29 +17,29 @@ env:
 
 matrix:
   include:
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++11
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++98
-    - compiler: gcc
+    - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
-    - compiler: clang
-      # clang generates an 'illegal instruction' error in the NumPy check.
-      # Perhaps we need to upgrade clang to a newer version ?
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98 OPTIONS=--no-numpy
-    - compiler: clang
-      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11 OPTIONS=--no-numpy
+    - os: linux
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
+    - os: linux
+      env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - os: osx
+      env: CXX=clang++ PYTHON=python CXXFLAGS=-std=c++11
     - env: PYTHON=python DOC=1
-
+  allow_failures:
+    - os: osx
 
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - scons
     - gcc-4.8
     - g++-4.8
     - clang
@@ -66,27 +66,46 @@ before_install:
 install:
   # Install our own version of Boost (the subset we need) as the system version is
   # too old (for C++11 support).
-  - rm -rf $HOME/Boost
   - |
-     set -e
-     if [ ! -d $HOME/Boost ]; then
-       echo "rebuilding Boost prerequisites"
-       wget https://sourceforge.net/projects/boost/files/boost/1.61.0/boost_1_61_0.tar.gz/download
+     if [ ! -d $HOME/Boost/tools/boostbook ]; then
+       echo "rebuilding Boost prerequisites."
+       wget https://sourceforge.net/projects/boost/files/boost/1.66.0/boost_1_66_0.tar.gz/download
        tar xf download
-       pushd boost_1_61_0
+       pushd boost_1_66_0
        ./bootstrap.sh
        ./b2 tools/bcp
        mkdir -p $HOME/Boost
+       # Install Boost.Python prerequisites, but not Boost.Python itself.
        dist/bin/bcp python tools/boostbook tools/quickbook $HOME/Boost &> /dev/null
+       rm -rf $HOME/Boost/boost/python*
        popd
+     else
+       echo "using cached Boost prerequisites."
      fi
+     # Install Faber, the build tool.
+     date=2018-04-08
+     wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
+     tar xf $date.tar.gz
+     pushd faber-snapshot-$date
+     #wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
+     #tar xf 0.2.tar.gz
+     #pushd faber-release-0.2
+     sudo python setup.py install
+     popd
 
 before_script:
-- scons --version
+- sed -e "s/\$PYTHON/$PYTHON/g" .ci/faber > ~/.faber
+- $PYTHON --version
+- faber -h
+- ls -l $HOME/Boost
 
 script:
-- scons config --python=$PYTHON --boost-include=$HOME/Boost $OPTIONS
-- if [ "$DOC" ]; then scons doc; else scons && scons test; fi
+- |
+   if [ "$DOC" ]; then
+     BOOST_ROOT=$HOME/Boost faber --builddir=build doc.html
+   else
+     faber --with-boost-include=$HOME/Boost --builddir=build test.report cxx.name=$CXX cxxflags=$CXXFLAGS
+   fi
 
 after_success:
 # Upload docs only when building upstream.

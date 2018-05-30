@@ -4,7 +4,7 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci\\run_with_env.cmd"
-    BOOST_PREFIX: C:\Libraries\boost_1_60_0
+    BOOST_PREFIX: C:\Libraries\boost_1_66_0
 
   matrix:
 
@@ -15,20 +15,21 @@ environment:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "32"
-      ARCH: "x86"
+      MSVC: "14.0"
+      ARCH: x86
 
-    #- PYTHON: "C:\\Python27-x64"
-    #  PYTHON_VERSION: "2.7.x" # currently 2.7.9
-    #  PYTHON_ARCH: "64"
-    #  ARCH: "x86_64"
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+      MSVC: "12.0"
+      ARCH: x86_64
 
-    #- PYTHON: "C:\\Python35"
-    #  PYTHON_VERSION: "3.5.x" # currently 3.4.3
-    #  PYTHON_ARCH: "32"
-
-    #- PYTHON: "C:\\Python35-x64"
-    #  PYTHON_VERSION: "3.5.x" # currently 3.4.3
-    #  PYTHON_ARCH: "64"
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+      MSVC: "14.13.26128"
+      ARCH: x86_64
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
@@ -44,8 +45,9 @@ install:
   - ps: "ls \"C:/\""
   - ECHO "Installed libraries:"
   - ps: "ls \"C:/Libraries/\""
-  - ECHO "Installed SDKs:"
-  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
+  ## This path doesn't exist with the VS 2017 worker images
+  #- ECHO "Installed SDKs:"
+  #- ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
   # Install Python (from the official .msi of http://python.org) and pip when
   # not already installed.
@@ -68,19 +70,22 @@ install:
   # compiled extensions and are not provided as pre-built wheel packages,
   # pip will build them from source using the MSVC compiler matching the
   # target Python version and architecture
-  - easy_install scons
-  #- "%CMD_IN_ENV% pip install -r dev-requirements.txt"
+  - |
+     curl -LfsS -o faber.tar.gz https://github.com/stefanseefeld/faber/archive/snapshot/2018-04-08.tar.gz
+     tar xf faber.tar.gz
+     CD faber-snapshot-2018-04-08
+     python setup.py install
+     CD ..
+  # report the available MSVC compilers
+  - faber --info=tools cxx
+  - easy_install sphinx
+  - pip install numpy
 
 build_script:
-  # Build the compiled extension
-  #- "%CMD_IN_ENV% python setup.py build"
-  - scons config arch=%ARCH% --boost-include=%BOOST_PREFIX%
-  - scons arch=%ARCH%
+  - faber --with-boost-include=%BOOST_PREFIX% target.arch=%ARCH% msvc.version=%MSVC%
 
 test_script:
-  # Run the project tests
-  #- "%CMD_IN_ENV% python setup.py nosetests"
-  - scons test arch=%ARCH% --verbose
+  - faber --with-boost-include=%BOOST_PREFIX% test.report target.arch=%ARCH% msvc.version=%MSVC%
 
 after_test:
   # If tests are successful, create binary packages for the project.
