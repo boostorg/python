@@ -1871,36 +1871,6 @@ This technique has several advantages:
 * Minimize the need to recompile
 * Rapid prototyping (you can move the code to C++ if required without changing the interface)
 
-You can even add a little syntactic sugar with the use of metaclasses. Let's
-create a special metaclass that "injects" methods in other classes.
-
-    # The one Boost.Python uses for all wrapped classes.
-    # You can use here any class exported by Boost instead of "point"
-    BoostPythonMetaclass = point.__class__
-
-    class injector(object):
-        class __metaclass__(BoostPythonMetaclass):
-            def __init__(self, name, bases, dict):
-                for b in bases:
-                    if type(b) not in (self, type):
-                        for k,v in dict.items():
-                            setattr(b,k,v)
-                return type.__init__(self, name, bases, dict)
-
-    # inject some methods in the point foo
-    class more_point(injector, point):
-        def __repr__(self):
-            return 'Point(x=%s, y=%s)' % (self.x, self.y)
-        def foo(self):
-            print 'foo!'
-
-Now let's see how it got:
-
-    >>> print point()
-    Point(x=10, y=10)
-    >>> point().foo()
-    foo!
-
 Another useful idea is to replace constructors with factory functions:
 
     _point = point
