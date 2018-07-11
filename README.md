@@ -2,6 +2,8 @@
 
 # Synopsis
 
+[![Join the chat at https://gitter.im/boostorg/python](https://badges.gitter.im/boostorg/python.svg)](https://gitter.im/boostorg/python?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Welcome to Boost.Python, a C++ library which enables seamless interoperability between C++ and the Python programming language. The library includes support for:
 
 * References and Pointers
