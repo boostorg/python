@@ -132,4 +132,7 @@ lib boost_numpy
         <link>static:<define>BOOST_NUMPY_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
+
+boost-install boost_python boost_numpy ;
+
 }
