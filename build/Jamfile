@@ -136,3 +136,14 @@ lib boost_numpy
 boost-install boost_python boost_numpy ;
 
 }
+else
+{
+# Python not configured
+
+alias stage : config-warning ;
+explicit stage ;
+
+alias install : config-warning ;
+explicit install ;
+
+}
