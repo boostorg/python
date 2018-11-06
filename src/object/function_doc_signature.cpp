@@ -116,7 +116,7 @@ namespace boost { namespace python { namespace objects {
 
     const  char * function_doc_signature_generator::py_type_str(const python::detail::signature_element &s)
     {
-        if (s.basename==std::string("void")){
+        if (strcmp(s.basename, "void") == 0){
             static const char * none = "None";
             return none;
         }

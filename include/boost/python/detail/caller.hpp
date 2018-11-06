@@ -233,10 +233,11 @@ struct caller_arity<N>
             typedef BOOST_DEDUCED_TYPENAME Policies::template extract_return_type<Sig>::type rtype;
             typedef typename select_result_converter<Policies, rtype>::type result_converter;
 
+            static const std::string rtype_name(is_void<rtype>::value ? "void" : type_id<rtype>().name());
             static const signature_element ret = {
-                (is_void<rtype>::value ? "void" : type_id<rtype>().name())
+                rtype_name.c_str()
                 , &detail::converter_target_type<result_converter>::get_pytype
-                , boost::detail::indirect_traits::is_reference_to_non_const<rtype>::value 
+                , boost::detail::indirect_traits::is_reference_to_non_const<rtype>::value
             };
             py_func_sig_info res = {sig, &ret };
 #else
