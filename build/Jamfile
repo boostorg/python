@@ -132,4 +132,30 @@ lib boost_numpy
         <link>static:<define>BOOST_NUMPY_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
+
+# boost-install creates `stage` and `install` targets
+#
+# `stage` stages (builds and copies into `stage/lib`) the given libraries
+#   `boost_python` and `boost_numpy` and their dependencies and is similar
+#   to issuing `b2 --with-python stage` from top level
+#
+# `install` installs the two libraries and their dependencies and is similar
+#   to issuing `b2 --with-python install` from top level
+
+boost-install boost_python boost_numpy ;
+
+}
+else
+{
+
+# When Python isn't configured, the above `boost-install` is not executed,
+# so we create empty `stage` and `install` targets that do nothing but issue
+# a warning message unless `--without-python` is given
+
+alias stage : config-warning ;
+explicit stage ;
+
+alias install : config-warning ;
+explicit install ;
+
 }
