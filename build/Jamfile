@@ -48,6 +48,7 @@ lib boost_python
     tuple.cpp
     str.cpp
     slice.cpp
+    set.cpp
 
     converter/from_python.cpp
     converter/registry.cpp
