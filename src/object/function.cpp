@@ -444,7 +444,9 @@ void function::add_to_namespace(
         if (dict == 0)
             throw_error_already_set();
 
+        assert(!PyErr_Occurred());
         handle<> existing(allow_null(::PyObject_GetItem(dict.get(), name.ptr())));
+        PyErr_Clear();
         
         if (existing)
         {
@@ -485,16 +487,15 @@ void function::add_to_namespace(
         if (new_func->name().is_none())
             new_func->m_name = name;
 
+        assert(!PyErr_Occurred());
         handle<> name_space_name(
             allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>("__name__"))));
+        PyErr_Clear();
         
         if (name_space_name)
             new_func->m_namespace = object(name_space_name);
     }
 
-    // The PyObject_GetAttrString() or PyObject_GetItem calls above may
-    // have left an active error
-    PyErr_Clear();
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
         throw_error_already_set();
 
