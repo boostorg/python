@@ -47,6 +47,13 @@
 # endif
 #endif
 
+// pyconfig.h defines a macro with hypot name, what breaks libstdc++ math headers
+// that Python.h tries to include afterwards.
+#if defined(__MINGW32__)
+# include <cmath>
+# include <math.h>
+#endif
+
 # include <pyconfig.h>
 # if defined(_SGI_COMPILER_VERSION) && _SGI_COMPILER_VERSION >= 740
 #  undef _POSIX_C_SOURCE
@@ -83,12 +90,6 @@
 // than MSVC on Win32
 //
 #if defined(_WIN32) || defined(__CYGWIN__)
-
-// Python.h defines a macro with hypot name, what breaks libstdc++ math header
-// that it tries to include afterwards.
-# if defined(__MINGW32__)
-#  include <cmath>
-# endif
 
 # if defined(__GNUC__) && defined(__CYGWIN__)
 
