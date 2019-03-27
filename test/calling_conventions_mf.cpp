@@ -31,15 +31,15 @@ using namespace boost::python;
 
 #define TEST_DECLARE_FUNCTIONS
 
-#define TESTED_CALLING_CONVENTION __cdecl
+#define TESTED_CALLING_CONVENTION cdecl
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __stdcall
+#define TESTED_CALLING_CONVENTION stdcall
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __fastcall
+#define TESTED_CALLING_CONVENTION fastcall
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
@@ -52,15 +52,15 @@ BOOST_PYTHON_MODULE( calling_conventions_mf_ext )
 
 #define TEST_WRAP_FUNCTIONS
 
-#define TESTED_CALLING_CONVENTION __cdecl
+#define TESTED_CALLING_CONVENTION cdecl
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __stdcall
+#define TESTED_CALLING_CONVENTION stdcall
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __fastcall
+#define TESTED_CALLING_CONVENTION fastcall
 #include "calling_conventions_mf.cpp"
 #undef TESTED_CALLING_CONVENTION
 
@@ -79,7 +79,7 @@ BOOST_PYTHON_MODULE( calling_conventions_mf_ext )
 #   error "One calling convention must be defined"
 #  endif // !defined(TESTED_CALLING_CONVENTION)
 
-namespace BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION) { 
+namespace BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION) {
 
 struct X
 {
@@ -87,35 +87,35 @@ struct X
 
     X(): hash(0) {}
 
-    void TESTED_CALLING_CONVENTION f0() { f1(17); }
-    void TESTED_CALLING_CONVENTION g0() const { g1(17); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f0() { f1(17); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g0() const { g1(17); }
 
-    void TESTED_CALLING_CONVENTION f1(int a1) { hash = (hash * 17041 + a1) % 32768; }
-    void TESTED_CALLING_CONVENTION g1(int a1) const { hash = (hash * 17041 + a1 * 2) % 32768; }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f1(int a1) { hash = (hash * 17041 + a1) % 32768; }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g1(int a1) const { hash = (hash * 17041 + a1 * 2) % 32768; }
 
-    void TESTED_CALLING_CONVENTION f2(int a1, int a2) { f1(a1); f1(a2); }
-    void TESTED_CALLING_CONVENTION g2(int a1, int a2) const { g1(a1); g1(a2); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f2(int a1, int a2) { f1(a1); f1(a2); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g2(int a1, int a2) const { g1(a1); g1(a2); }
 
-    void TESTED_CALLING_CONVENTION f3(int a1, int a2, int a3) { f2(a1, a2); f1(a3); }
-    void TESTED_CALLING_CONVENTION g3(int a1, int a2, int a3) const { g2(a1, a2); g1(a3); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f3(int a1, int a2, int a3) { f2(a1, a2); f1(a3); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g3(int a1, int a2, int a3) const { g2(a1, a2); g1(a3); }
 
-    void TESTED_CALLING_CONVENTION f4(int a1, int a2, int a3, int a4) { f3(a1, a2, a3); f1(a4); }
-    void TESTED_CALLING_CONVENTION g4(int a1, int a2, int a3, int a4) const { g3(a1, a2, a3); g1(a4); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f4(int a1, int a2, int a3, int a4) { f3(a1, a2, a3); f1(a4); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g4(int a1, int a2, int a3, int a4) const { g3(a1, a2, a3); g1(a4); }
 
-    void TESTED_CALLING_CONVENTION f5(int a1, int a2, int a3, int a4, int a5) { f4(a1, a2, a3, a4); f1(a5); }
-    void TESTED_CALLING_CONVENTION g5(int a1, int a2, int a3, int a4, int a5) const { g4(a1, a2, a3, a4); g1(a5); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f5(int a1, int a2, int a3, int a4, int a5) { f4(a1, a2, a3, a4); f1(a5); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g5(int a1, int a2, int a3, int a4, int a5) const { g4(a1, a2, a3, a4); g1(a5); }
 
-    void TESTED_CALLING_CONVENTION f6(int a1, int a2, int a3, int a4, int a5, int a6) { f5(a1, a2, a3, a4, a5); f1(a6); }
-    void TESTED_CALLING_CONVENTION g6(int a1, int a2, int a3, int a4, int a5, int a6) const { g5(a1, a2, a3, a4, a5); g1(a6); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f6(int a1, int a2, int a3, int a4, int a5, int a6) { f5(a1, a2, a3, a4, a5); f1(a6); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g6(int a1, int a2, int a3, int a4, int a5, int a6) const { g5(a1, a2, a3, a4, a5); g1(a6); }
 
-    void TESTED_CALLING_CONVENTION f7(int a1, int a2, int a3, int a4, int a5, int a6, int a7) { f6(a1, a2, a3, a4, a5, a6); f1(a7); }
-    void TESTED_CALLING_CONVENTION g7(int a1, int a2, int a3, int a4, int a5, int a6, int a7) const { g6(a1, a2, a3, a4, a5, a6); g1(a7); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f7(int a1, int a2, int a3, int a4, int a5, int a6, int a7) { f6(a1, a2, a3, a4, a5, a6); f1(a7); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g7(int a1, int a2, int a3, int a4, int a5, int a6, int a7) const { g6(a1, a2, a3, a4, a5, a6); g1(a7); }
 
-    void TESTED_CALLING_CONVENTION f8(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) { f7(a1, a2, a3, a4, a5, a6, a7); f1(a8); }
-    void TESTED_CALLING_CONVENTION g8(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) const { g7(a1, a2, a3, a4, a5, a6, a7); g1(a8); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f8(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) { f7(a1, a2, a3, a4, a5, a6, a7); f1(a8); }
+    void BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) g8(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8) const { g7(a1, a2, a3, a4, a5, a6, a7); g1(a8); }
 };
 
-} // namespace BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)
+} // namespace BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)
 
 # endif // defined(TEST_DECLARE_FUNCTIONS)
 
@@ -130,9 +130,9 @@ struct X
 
 {
   
-  typedef BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::X X;
+  typedef BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::X X;
 
-  class_<X>("X" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION))
+  class_<X>("X__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION))
     .def("f0", &X::f0)
     .def("g0", &X::g0)
     .def("f1", &X::f1)
