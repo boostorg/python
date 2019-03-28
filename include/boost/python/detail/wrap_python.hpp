@@ -167,7 +167,7 @@ typedef int pid_t;
 #if BOOST_PYTHON_GCC_HAS_WREGISTER
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wregister"
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && _MSC_VER >= 1900
 # pragma warning(push)
 # pragma warning(disable : 5033)  // 'register' is no longer a supported storage class
 #endif
@@ -180,7 +180,7 @@ typedef int pid_t;
 
 #if BOOST_PYTHON_GCC_HAS_WREGISTER
 # pragma GCC diagnostic pop
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && _MSC_VER >= 1900
 # pragma warning(pop)
 #endif
 #undef BOOST_PYTHON_GCC_HAS_WREGISTER
