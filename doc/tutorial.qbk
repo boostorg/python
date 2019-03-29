@@ -121,7 +121,7 @@ __jam__
 file. Simply copy the file and tweak [^use-project boost] to where your
 boost root directory is and you're OK.
 
-The comments contained in the Jamrules file above should be sufficient
+The comments contained in the Jamroot file above should be sufficient
 to get you going.
 
 [h2 Running bjam]
