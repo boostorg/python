@@ -295,7 +295,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
         PyErr_NewException(const_cast<char*>("Boost.Python.ArgumentError"), PyExc_TypeError, 0));
 
     object message = "Python argument types in\n    %s.%s("
-        % make_tuple(this->m_namespace, this->m_name);
+        % make_tuple(this->m_module, this->m_name);
     
     list actual_args;
     for (ssize_t i = 0; i < PyTuple_Size(args); ++i)
@@ -429,17 +429,22 @@ void function::add_to_namespace(
     {
         function* new_func = downcast<function>(attribute.ptr());
         handle<> dict;
+        handle<> module;
         
 #if PY_VERSION_HEX < 0x03000000
         // Old-style class gone in Python 3
-        if (PyClass_Check(ns))
+        if (PyClass_Check(ns)) {
             dict = handle<>(borrowed(((PyClassObject*)ns)->cl_dict));
-        else
+            module = handle<>(PyObject_GetAttrString(ns, const_cast<char *>("__module__")));
+        } else
 #endif        
-        if (PyType_Check(ns))
+        if (PyType_Check(ns)) {
             dict = handle<>(borrowed(((PyTypeObject*)ns)->tp_dict));
-        else    
+            module = handle<>(PyObject_GetAttrString(ns, const_cast<char *>("__module__")));
+        } else   {
             dict = handle<>(PyObject_GetAttrString(ns, const_cast<char*>("__dict__")));
+            module = handle<>(PyObject_GetAttrString(ns, const_cast<char *>("__name__")));
+        }
 
         if (dict == 0)
             throw_error_already_set();
@@ -486,14 +491,9 @@ void function::add_to_namespace(
         // A function is named the first time it is added to a namespace.
         if (new_func->name().is_none())
             new_func->m_name = name;
+        new_func->m_module = object(module);
 
         assert(!PyErr_Occurred());
-        handle<> name_space_name(
-            allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>("__name__"))));
-        PyErr_Clear();
-        
-        if (name_space_name)
-            new_func->m_namespace = object(name_space_name);
     }
 
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
@@ -670,9 +670,9 @@ extern "C"
     static PyObject* function_get_module(PyObject* op, void*)
     {
         function* f = downcast<function>(op);
-        object const& ns = f->get_namespace();
-        if (!ns.is_none()) {
-            return python::incref(ns.ptr());
+        object const& module = f->get_module();
+        if (!module.is_none()) {
+            return python::incref(module.ptr());
         }
         PyErr_SetString(
             PyExc_AttributeError, const_cast<char*>(

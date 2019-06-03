@@ -12,6 +12,16 @@ pytype_function_ext
 
 >>> print(func.__name__)
 func
+
+>>> print(A.memberfunc.__doc__.splitlines()[1])
+memberfunc( (A)arg1) -> None :
+
+>>> print(A.memberfunc.__name__)
+memberfunc
+
+>>> print(A.memberfunc.__module__)
+pytype_function_ext
+
 """
 def run(args = None):
     import sys

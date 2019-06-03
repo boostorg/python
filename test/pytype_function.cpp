@@ -12,6 +12,7 @@ using namespace boost::python;
 
 struct A
 {
+  void memberfunc(void) {}
 };
 
 struct B
@@ -76,7 +77,7 @@ BOOST_PYTHON_MODULE(pytype_function_ext)
   to_python_converter< B , BToPython,true >(); //has get_pytype
   BFromPython();
 
-  class_<A>("A") ;
+  class_<A>("A").def("memberfunc", &A::memberfunc);
 
   def("func", &func);
 
