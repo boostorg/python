@@ -11,7 +11,7 @@
 # include <boost/python/converter/rvalue_from_python_data.hpp>
 # include <boost/python/converter/registered.hpp>
 
-namespace boost { namespace python { 
+namespace boost { namespace python {
 
 template <class T>
 struct enum_ : public objects::enum_base
@@ -70,7 +70,7 @@ void* enum_<T>::convertible_from_python(PyObject* obj)
         obj
         , upcast<PyObject>(
             converter::registered<T>::converters.m_class_object))
-        
+
         ? obj : 0;
 }
 
@@ -80,9 +80,9 @@ template <class T>
 void enum_<T>::construct(PyObject* obj, converter::rvalue_from_python_stage1_data* data)
 {
 #if PY_VERSION_HEX >= 0x03000000
-    T x = static_cast<T>(PyLong_AS_LONG(obj));
+    T x = static_cast<T>(PyLong_AsLong(obj));
 #else
-    T x = static_cast<T>(PyInt_AS_LONG(obj));
+    T x = static_cast<T>(PyInt_AsLong(obj));
 #endif
     void* const storage = ((converter::rvalue_from_python_storage<T>*)data)->storage.bytes;
     new (storage) T(x);

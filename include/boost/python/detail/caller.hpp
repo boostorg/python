@@ -40,17 +40,17 @@
 #  include <boost/mpl/int.hpp>
 #  include <boost/mpl/next.hpp>
 
-namespace boost { namespace python { namespace detail { 
+namespace boost { namespace python { namespace detail {
 
 template <int N>
 inline PyObject* get(mpl::int_<N>, PyObject* const& args_)
 {
-    return PyTuple_GET_ITEM(args_,N);
+    return PyTuple_GetItem(args_,N);
 }
 
 inline Py_ssize_t arity(PyObject* const& args_)
 {
-    return PyTuple_GET_SIZE(args_);
+    return PyTuple_Size(args_);
 }
 
 // This "result converter" is really just used as
@@ -80,7 +80,7 @@ inline ResultConverter create_result_converter(
 {
     return ResultConverter(args_);
 }
-    
+
 template <class ArgPackage, class ResultConverter>
 inline ResultConverter create_result_converter(
     ArgPackage const&
@@ -93,7 +93,7 @@ inline ResultConverter create_result_converter(
 
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
 template <class ResultConverter>
-struct converter_target_type 
+struct converter_target_type
 {
     static PyTypeObject const *get_pytype()
     {
@@ -120,7 +120,7 @@ template<class Policies, class Sig> const signature_element* get_ret()
     static const signature_element ret = {
         (is_void<rtype>::value ? "void" : type_id<rtype>().name())
         , &detail::converter_target_type<result_converter>::get_pytype
-        , boost::detail::indirect_traits::is_reference_to_non_const<rtype>::value 
+        , boost::detail::indirect_traits::is_reference_to_non_const<rtype>::value
     };
 
     return &ret;
@@ -128,7 +128,7 @@ template<class Policies, class Sig> const signature_element* get_ret()
 
 #endif
 
-    
+
 template <unsigned> struct caller_arity;
 
 template <class F, class CallPolicies, class Sig>
@@ -187,7 +187,7 @@ struct caller
         >::type base;
 
     typedef PyObject* result_type;
-    
+
     caller(F f, CallPolicies p) : base(f,p) {}
 
 };
@@ -217,14 +217,14 @@ struct caller_arity<N>
             typedef typename first::type result_t;
             typedef typename select_result_converter<Policies, result_t>::type result_converter;
             typedef typename Policies::argument_package argument_package;
-            
+
             argument_package inner_args(args_);
 
 # if N
 #  define BOOST_PP_LOCAL_MACRO(i) BOOST_PYTHON_ARG_CONVERTER(i)
 #  define BOOST_PP_LOCAL_LIMITS (0, N-1)
 #  include BOOST_PP_LOCAL_ITERATE()
-# endif 
+# endif
             // all converters have been checked. Now we can do the
             // precall part of the policy
             if (!m_data.second().precall(inner_args))
@@ -236,17 +236,17 @@ struct caller_arity<N>
               , m_data.first()
                 BOOST_PP_ENUM_TRAILING_PARAMS(N, c)
             );
-            
+
             return m_data.second().postcall(inner_args, result);
         }
 
         static unsigned min_arity() { return N; }
-        
+
         static py_func_sig_info  signature()
         {
             const signature_element * sig = detail::signature<Sig>::elements();
 #ifndef BOOST_PYTHON_NO_PY_SIGNATURES
-            // MSVC 15.7.2, when compiling to /O2 left the static const signature_element ret, 
+            // MSVC 15.7.2, when compiling to /O2 left the static const signature_element ret,
             // originally defined here, uninitialized. This in turn led to SegFault in Python interpreter.
             // Issue is resolved by moving the generation of ret to separate function in detail namespace (see above).
             const signature_element * ret = detail::get_ret<Policies, Sig>();
@@ -265,6 +265,6 @@ struct caller_arity<N>
 
 
 
-#endif // BOOST_PP_IS_ITERATING 
+#endif // BOOST_PP_IS_ITERATING
 
 

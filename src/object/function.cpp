@@ -40,7 +40,7 @@ namespace boost { namespace python {
 #endif
 }}
 
-namespace boost { namespace python { namespace objects { 
+namespace boost { namespace python { namespace objects {
 
 py_function_impl_base::~py_function_impl_base()
 {
@@ -78,9 +78,9 @@ function::function(
         if (num_keywords != 0)
         {
             for (unsigned j = 0; j < keyword_offset; ++j)
-                PyTuple_SET_ITEM(m_arg_names.ptr(), j, incref(Py_None));
+                PyTuple_SetItem(m_arg_names.ptr(), j, incref(Py_None));
         }
-        
+
         for (unsigned i = 0; i < num_keywords; ++i)
         {
             tuple kv;
@@ -96,21 +96,21 @@ function::function(
                 kv = make_tuple(p->name);
             }
 
-            PyTuple_SET_ITEM(
+            PyTuple_SetItem(
                 m_arg_names.ptr()
                 , i + keyword_offset
                 , incref(kv.ptr())
                 );
         }
     }
-    
+
     PyObject* p = this;
     if (Py_TYPE(&function_type) == 0)
     {
         Py_SET_TYPE(&function_type, &PyType_Type);
         ::PyType_Ready(&function_type);
     }
-    
+
     (void)(     // warning suppression for GCC
         PyObject_INIT(p, &function_type)
     );
@@ -122,10 +122,10 @@ function::~function()
 
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
-    std::size_t n_unnamed_actual = PyTuple_GET_SIZE(args);
+    std::size_t n_unnamed_actual = PyTuple_Size(args);
     std::size_t n_keyword_actual = keywords ? PyDict_Size(keywords) : 0;
     std::size_t n_actual = n_unnamed_actual + n_keyword_actual;
-    
+
     function const* f = this;
 
     // Try overloads looking for a match
@@ -143,7 +143,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 
             if (n_keyword_actual > 0      // Keyword arguments were supplied
                  || n_actual < min_arity) // or default keyword values are needed
-            {                            
+            {
                 if (f->m_arg_names.is_none())
                 {
                     // this overload doesn't accept keywords
@@ -167,29 +167,29 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 
                         // Fill in the positional arguments
                         for (std::size_t i = 0; i < n_unnamed_actual; ++i)
-                            PyTuple_SET_ITEM(inner_args.get(), i, incref(PyTuple_GET_ITEM(args, i)));
+                            PyTuple_SetItem(inner_args.get(), i, incref(PyTuple_GetItem(args, i)));
 
                         // Grab remaining arguments by name from the keyword dictionary
                         std::size_t n_actual_processed = n_unnamed_actual;
-                
+
                         for (std::size_t arg_pos = n_unnamed_actual; arg_pos < max_arity ; ++arg_pos)
                         {
                             // Get the keyword[, value pair] corresponding
-                            PyObject* kv = PyTuple_GET_ITEM(f->m_arg_names.ptr(), arg_pos);
+                            PyObject* kv = PyTuple_GetItem(f->m_arg_names.ptr(), arg_pos);
 
                             // If there were any keyword arguments,
                             // look up the one we need for this
                             // argument position
                             PyObject* value = n_keyword_actual
-                                ? PyDict_GetItem(keywords, PyTuple_GET_ITEM(kv, 0))
+                                ? PyDict_GetItem(keywords, PyTuple_GetItem(kv, 0))
                                 : 0;
 
                             if (!value)
                             {
                                 // Not found; check if there's a default value
-                                if (PyTuple_GET_SIZE(kv) > 1)
-                                    value = PyTuple_GET_ITEM(kv, 1);
-                        
+                                if (PyTuple_Size(kv) > 1)
+                                    value = PyTuple_GetItem(kv, 1);
+
                                 if (!value)
                                 {
                                     // still not found; matching fails
@@ -203,7 +203,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                                 ++n_actual_processed;
                             }
 
-                            PyTuple_SET_ITEM(inner_args.get(), arg_pos, incref(value));
+                            PyTuple_SetItem(inner_args.get(), arg_pos, incref(value));
                         }
 
                         if (inner_args.get())
@@ -215,11 +215,11 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                     }
                 }
             }
-            
+
             // Call the function.  Pass keywords in case it's a
             // function accepting any number of keywords
             PyObject* result = inner_args ? f->m_fn(inner_args.get(), keywords) : 0;
-            
+
             // If the result is NULL but no error was set, m_fn failed
             // the argument-matching test.
 
@@ -240,10 +240,10 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 object function::signature(bool show_return_type) const
 {
     py_function const& impl = m_fn;
-    
+
     python::detail::signature_element const* return_type = impl.signature();
     python::detail::signature_element const* s = return_type + 1;
-    
+
     list formal_params;
     if (impl.max_arity() == 0)
         formal_params.append("void");
@@ -259,7 +259,7 @@ object function::signature(bool show_return_type) const
         str param(s[n].basename);
         if (s[n].lvalue)
             param += " {lvalue}";
-        
+
         if (m_arg_names) // None or empty tuple will test false
         {
             object kv(m_arg_names[n]);
@@ -269,7 +269,7 @@ object function::signature(bool show_return_type) const
                 param += fmt % kv;
             }
         }
-        
+
         formal_params.append(param);
     }
 
@@ -296,7 +296,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 
     object message = "Python argument types in\n    %s.%s("
         % make_tuple(this->m_namespace, this->m_name);
-    
+
     list actual_args;
     for (ssize_t i = 0; i < PyTuple_Size(args); ++i)
     {
@@ -309,7 +309,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 
 #if BOOST_PYTHON_DEBUG_ERROR_MESSAGES
     std::printf("\n--------\n%s\n--------\n", extract<const char*>(message)());
-#endif 
+#endif
     PyErr_SetObject(exception.get(), message.ptr());
     throw_error_already_set();
 }
@@ -317,7 +317,7 @@ void function::argument_error(PyObject* args, PyObject* /*keywords*/) const
 void function::add_overload(handle<function> const& overload_)
 {
     function* parent = this;
-    
+
     while (parent->m_overloads)
         parent = parent->m_overloads.get();
 
@@ -351,20 +351,20 @@ namespace
       "radd__",
       "rand__",
       "rdiv__",
-      "rdivmod__", 
+      "rdivmod__",
       "rfloordiv__",
       "rlshift__",
       "rmod__",
       "rmul__",
       "ror__",
-      "rpow__", 
+      "rpow__",
       "rrshift__",
       "rshift__",
       "rsub__",
       "rtruediv__",
       "rxor__",
       "sub__",
-      "truediv__", 
+      "truediv__",
       "xor__"
   };
 
@@ -375,7 +375,7 @@ namespace
           return BOOST_CSTD_::strcmp(x,y) < 0;
       }
   };
-  
+
   inline bool is_binary_operator(char const* name)
   {
       return name[0] == '_'
@@ -394,10 +394,10 @@ namespace
       Py_INCREF(Py_NotImplemented);
       return Py_NotImplemented;
   }
-  
+
   handle<function> not_implemented_function()
   {
-      
+
       static object keeper(
           function_object(
               py_function(&not_implemented, mpl::vector1<void>(), 2)
@@ -424,21 +424,21 @@ void function::add_to_namespace(
 {
     str const name(name_);
     PyObject* const ns = name_space.ptr();
-    
+
     if (attribute.ptr()->ob_type == &function_type)
     {
         function* new_func = downcast<function>(attribute.ptr());
         handle<> dict;
-        
+
 #if PY_VERSION_HEX < 0x03000000
         // Old-style class gone in Python 3
         if (PyClass_Check(ns))
             dict = handle<>(borrowed(((PyClassObject*)ns)->cl_dict));
         else
-#endif        
+#endif
         if (PyType_Check(ns))
             dict = handle<>(borrowed(((PyTypeObject*)ns)->tp_dict));
-        else    
+        else
             dict = handle<>(PyObject_GetAttrString(ns, const_cast<char*>("__dict__")));
 
         if (dict == 0)
@@ -447,7 +447,7 @@ void function::add_to_namespace(
         assert(!PyErr_Occurred());
         handle<> existing(allow_null(::PyObject_GetItem(dict.get(), name.ptr())));
         PyErr_Clear();
-        
+
         if (existing)
         {
             if (existing->ob_type == &function_type)
@@ -463,7 +463,7 @@ void function::add_to_namespace(
             else if (existing->ob_type == &PyStaticMethod_Type)
             {
                 char const* name_space_name = extract<char const*>(name_space.attr("__name__"));
-                
+
                 ::PyErr_Format(
                     PyExc_RuntimeError
                     , "Boost.Python - All overloads must be exported "
@@ -491,7 +491,7 @@ void function::add_to_namespace(
         handle<> name_space_name(
             allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>("__name__"))));
         PyErr_Clear();
-        
+
         if (name_space_name)
             new_func->m_namespace = object(name_space_name);
     }
@@ -504,7 +504,7 @@ void function::add_to_namespace(
     if (doc != 0 && docstring_options::show_user_defined_)
     {
         // Accumulate documentation
-        
+
         if (
             PyObject_HasAttrString(mutable_attribute.ptr(), "__doc__")
             && mutable_attribute.attr("__doc__"))
@@ -546,7 +546,7 @@ void function::add_to_namespace(
         _doc += str(const_cast<const char*>(detail::cpp_signature_tag));
     }
     if(_doc)
-    {    
+    {
         object mutable_attribute(attribute);
         mutable_attribute.attr("__doc__")= _doc;
     }
@@ -580,7 +580,7 @@ namespace
       {
           m_result = m_f->call(m_args, m_keywords);
       }
-      
+
    private:
       PyObject*& m_result;
       function const* m_f;
@@ -638,14 +638,14 @@ extern "C"
         signatures.reverse();
         return python::incref( str("\n").join(signatures).ptr());
     }
-    
+
     static int function_set_doc(PyObject* op, PyObject* doc, void*)
     {
         function* f = downcast<function>(op);
         f->doc(doc ? object(python::detail::borrowed_reference(doc)) : object());
         return 0;
     }
-    
+
     static PyObject* function_get_name(PyObject* op, void*)
     {
         function* f = downcast<function>(op);
@@ -773,7 +773,7 @@ namespace detail
   object BOOST_PYTHON_DECL make_raw_function(objects::py_function f)
   {
       static keyword k;
-    
+
       return objects::function_object(
           f
           , keyword_range(&k,&k));

@@ -1,4 +1,4 @@
-# ifndef BOOST_PYTHON_SYNOPSIS 
+# ifndef BOOST_PYTHON_SYNOPSIS
 # // Copyright David Abrahams 2002.
 # // Distributed under the Boost Software License, Version 1.0. (See
 # // accompanying file LICENSE_1_0.txt or copy at
@@ -11,7 +11,7 @@
 #  define N BOOST_PP_ITERATION()
 
 #  define BOOST_PYTHON_MAKE_TUPLE_ARG(z, N, ignored)    \
-    PyTuple_SET_ITEM(                                   \
+    PyTuple_SetItem(                                   \
         result.ptr()                                    \
         , N                                             \
         , python::incref(python::object(a##N).ptr())    \
@@ -29,4 +29,4 @@
 #  undef BOOST_PYTHON_MAKE_TUPLE_ARG
 
 #  undef N
-# endif // BOOST_PYTHON_SYNOPSIS 
+# endif // BOOST_PYTHON_SYNOPSIS
