@@ -93,7 +93,7 @@ lib boost_python
         <dependency>config-warning
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-        <tag>@$(__name__).python-tag
+        <tag>@python-tag
         <conditional>@python.require-py
 
     :   # default build
@@ -121,7 +121,7 @@ lib boost_numpy
         <library>boost_python
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-        <tag>@$(__name__).python-tag
+        <tag>@python-tag
         <conditional>@python.require-py
 
     :   # default build
