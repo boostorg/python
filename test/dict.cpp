@@ -21,11 +21,13 @@ object new_dict()
 object data_dict()
 {
     dict tmp1;
-    tmp1["key1"] = "value1";
 
     dict tmp2;
     tmp2["key2"] = "value2";
     tmp1[1] = tmp2;
+
+    tmp1["key1"] = "value1";
+
     return tmp1;
 }
 
@@ -60,22 +62,20 @@ void work_with_dict(dict data1, dict data2)
 void test_templates(object print)
 {
     std::string key = "key";
-    
+
     dict tmp;
-    tmp[1] = "a test string";
-    print(tmp.get(1));
-    //print(tmp[1]);
     tmp[1.5] = 13;
     print(tmp.get(1.5));
+    tmp[1] = "a test string";
+    print(tmp.get(1));
     print(tmp.get(44));
     print(tmp);
     print(tmp.get(2,"default"));
     print(tmp.setdefault(3,"default"));
 
     BOOST_ASSERT(!tmp.has_key(key));
-    //print(tmp[3]);
 }
-    
+
 BOOST_PYTHON_MODULE(dict_ext)
 {
     def("new_dict", new_dict);

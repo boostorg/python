@@ -1,7 +1,6 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-from __future__ import print_function
 '''
 >>> from list_ext import *
 
@@ -41,7 +40,7 @@ X(22)
 ['h', 'e', 'l', 'l', 'o', '.']
 
   tuples do not automatically convert to lists when passed as arguments
-  
+
 >>> try: append_list(letters, (1,2))
 ... except TypeError: pass
 ... else: print('expected an exception')
@@ -51,7 +50,7 @@ X(22)
 ['h', 'e', 'l', 'l', 'o', '.', [1, 2]]
 
     Check that subclass functions are properly called
-    
+
 >>> class mylist(list):
 ...     def append(self, o):
 ...         list.append(self, o)
@@ -103,6 +102,8 @@ reverse sorted:
 ['y', 'x', 'o', 'l', 'l', 'h', 'e', '.']
 '''
 
+from __future__ import print_function
+
 def run(args = None):
     import sys
     import doctest
@@ -110,7 +111,7 @@ def run(args = None):
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
-    
+
 if __name__ == '__main__':
     print("running...")
     import sys

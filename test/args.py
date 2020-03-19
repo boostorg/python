@@ -1,15 +1,19 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-from __future__ import print_function
 """
 >>> from args_ext import *
 
->>> raw(3, 4, foo = 'bar', baz = 42)
-((3, 4), {'foo': 'bar', 'baz': 42})
+>>> args, kwargs = raw(3, 4, foo = 'bar', baz = 42)
+>>> args
+(3, 4)
+>>> kwargs['foo']
+'bar'
+>>> kwargs['baz']
+42
 
    Prove that we can handle empty keywords and non-keywords
-   
+
 >>> raw(3, 4)
 ((3, 4), {})
 
@@ -76,7 +80,7 @@ from __future__ import print_function
 ... else: print('expected an exception: unknown keyword')
 
    Exercise member functions using default stubs
-   
+
 >>> q.f1(z = 'nix', y = .125, x = 2)
 (2, 0.125, 'nix')
 >>> q.f1(y = .125, x = 2)
@@ -123,10 +127,16 @@ from __future__ import print_function
 1
 
 >>> y = Y(value = 33)
->>> y.raw(this = 1, that = 'the other')[1]
-{'this': 1, 'that': 'the other'}
+>>> _, kwargs = y.raw(this = 1, that = 'the other')
+>>> kwargs['this']
+1
+>>> kwargs['that']
+'the other'
 
 """
+
+from __future__ import print_function
+
 def run(args = None):
     import sys
     import doctest
@@ -143,6 +153,3 @@ if __name__ == '__main__':
     import args_ext
     help(args_ext)
     sys.exit(status)
-
-
-
