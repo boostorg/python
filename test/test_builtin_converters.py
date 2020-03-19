@@ -1,9 +1,7 @@
+# -*- coding: utf-8 -*-
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-import sys
-if (sys.version_info.major >= 3):
-    long = int
 r"""
 >>> from builtin_converters_ext import *
 
@@ -17,7 +15,7 @@ r"""
 
 # Wrappers to simplify tests
 >>> def should_pass(method, values):
-...     result = map(method, values[0])
+...     result = list(map(method, values[0]))
 ...     if result != values[0]:
 ...         print("Got %s but expected %s" % (result, values[0]))
 >>> def test_overflow(method, values):
@@ -135,9 +133,6 @@ True
 
 >>> print(rewrap_value_wstring(u'yo, wassup?'))
 yo, wassup?
-
->>> print(rewrap_value_wstring(u'\U0001f4a9'))
-\U0001f4a9
 
    test that overloading on unicode works:
 
