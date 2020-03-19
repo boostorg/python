@@ -123,9 +123,9 @@ tests.append(extension_test('auto_ptr',
 import_ = binary('import_', ['import_.cpp', src.bpl], features=features|python_libs)
 if platform.os == 'Windows':
     command = """set PATH=$(runpath);%PATH%
-$(>[1]) $(>[2])"""
+$(>[0]) $(>[1])"""
 else:
-    command = 'LD_LIBRARY_PATH=$(runpath) $(>[1]) $(>[2])'
+    command = 'LD_LIBRARY_PATH=$(runpath) $(>[0]) $(>[1])'
 
 tests.append(test('import', [import_, 'import_.py'],
                   run=action('run', command),
