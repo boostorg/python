@@ -11,7 +11,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/reverse_graph.hpp>
 #include <boost/property_map/property_map.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/integer_traits.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -190,8 +190,8 @@ namespace
           type_index().begin(), type_index().end()
           , boost::make_tuple(type, vertex_t(), dynamic_id_function(0))
           , boost::bind<bool>(std::less<class_id>()
-               , boost::bind<class_id>(select1st<entry>(), _1)
-               , boost::bind<class_id>(select1st<entry>(), _2)));
+               , boost::bind<class_id>(select1st<entry>(), boost::placeholders::_1)
+               , boost::bind<class_id>(select1st<entry>(), boost::placeholders::_2)));
   }
 
   inline index_entry* seek_type(class_id type)

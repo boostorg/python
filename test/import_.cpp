@@ -6,7 +6,7 @@
 #include <boost/python.hpp>
 
 #include <boost/detail/lightweight_test.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <iostream>
 #include <sstream>
 
