@@ -146,7 +146,7 @@ typedef int pid_t;
 
 #  undef hypot // undo the evil #define left by Python.
 
-# elif defined(__BORLANDC__)
+# elif defined(__BORLANDC__) && !defined(__clang__)
 #  undef HAVE_HYPOT
 #  define HAVE_HYPOT 1
 # endif
