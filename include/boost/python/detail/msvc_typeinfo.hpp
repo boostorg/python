@@ -47,7 +47,7 @@ inline typeinfo typeid_ref(type<T>*, ...)
     return detail::typeid_ref_1((T(*)())0);
 }
 
-#if defined(BOOST_MSVC) || (defined(BOOST_BORLANDC) && !defined(BOOST_DISABLE_WIN32))
+#if defined(BOOST_MSVC) || (defined(__BORLANDC__) && !defined(BOOST_DISABLE_WIN32))
 #   define BOOST_PYTT_DECL __cdecl
 #else
 #   define BOOST_PYTT_DECL /**/
