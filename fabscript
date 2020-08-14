@@ -75,8 +75,8 @@ checks = [cxx_checks.has_cxx11(features, define('HAS_CXX11')),
           has_numpy(features)]
 config = report('config', checks)
 
-src = module('src', features=config.use)
-test = module('test', features=config.use)
-doc = module('doc', features=config.use)
+src = module('src', features=features|config.use)
+test = module('test', features=features|config.use)
+doc = module('doc', features=features|config.use)
 
 default = src.default

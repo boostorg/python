@@ -6,8 +6,7 @@
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-sudo: required
-dist: trusty
+dist: bionic
 
 language: cpp
 
@@ -15,7 +14,7 @@ env:
   global:
     - secure: BRNUkxN3p8f+uYKWC3Hr0VPqZA0PxbWr1DJlcI4hbiZtzKhMCWjDmd9UW9CzzexqeOxpd+9s0G87qvOur+wMSVxugDxtTesZrh1czXHeSVxgQrYD783XJtQJ9aYypbChkiboRD6Xpmbq7itwMuHBJMFtCuDxMynpU1jWwkyTf2Y=
 
-matrix:
+jobs:
   include:
     - os: linux
       env: CXX=g++ PYTHON=python CXXFLAGS=-std=c++98
@@ -40,9 +39,10 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - gcc-4.8
-    - g++-4.8
+    - gcc
+    - g++
     - clang
+    - python3-pip
     - python-numpy
     - python-sphinx
     - python3-dev
@@ -56,12 +56,6 @@ addons:
 cache:
   directories:
   - $HOME/Boost
-
-before_install:
-  # The Trusty image has several Python versions pre-installed compiled with
-  # conflicting UCS2 and UCS4 unicode. Modify the PATH to skip the TravisCI python.
-  # See https://github.com/travis-ci/travis-ci/issues/4948 for details.
-  - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
 
 install:
   # Install our own version of Boost (the subset we need) as the system version is
@@ -83,15 +77,14 @@ install:
        echo "using cached Boost prerequisites."
      fi
      # Install Faber, the build tool.
-     date=2018-04-08
-     wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
-     tar xf $date.tar.gz
-     pushd faber-snapshot-$date
-     #wget https://github.com/stefanseefeld/faber/archive/release/0.2.tar.gz
-     #tar xf 0.2.tar.gz
-     #pushd faber-release-0.2
-     sudo python setup.py install
-     popd
+     python3 -m pip install setuptools
+     python3 -m pip install faber
+     #date=2020-08-01
+     #wget https://github.com/stefanseefeld/faber/archive/snapshot/$date.tar.gz
+     #tar xf $date.tar.gz
+     #pushd faber-snapshot-$date
+     #sudo python3 setup.py install
+     #popd
 
 before_script:
 - sed -e "s/\$PYTHON/$PYTHON/g" .ci/faber > ~/.faber
@@ -104,7 +97,7 @@ script:
    if [ "$DOC" ]; then
      BOOST_ROOT=$HOME/Boost faber --builddir=build doc.html
    else
-     faber --with-boost-include=$HOME/Boost --builddir=build test.report cxx.name=$CXX cxxflags=$CXXFLAGS
+     faber --with-boost-include=$HOME/Boost --builddir=build test.report cxx.name=$CXX cxxflags=$CXXFLAGS -j8
    fi
 
 after_success:

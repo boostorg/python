@@ -30,8 +30,6 @@ else
         ;
 }
 
-if [ python.configured ]
-{
 project boost/python
   : source-location ../src
   ;
@@ -95,7 +93,7 @@ lib boost_python
         <dependency>config-warning
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-        <tag>@$(__name__).python-tag
+        <tag>@python-tag
         <conditional>@python.require-py
 
     :   # default build
@@ -123,7 +121,7 @@ lib boost_numpy
         <library>boost_python
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-	<tag>@$(__name__).python-tag
+        <tag>@python-tag
         <conditional>@python.require-py
 
     :   # default build
@@ -142,8 +140,16 @@ lib boost_numpy
 # `install` installs the two libraries and their dependencies and is similar
 #   to issuing `b2 --with-python install` from top level
 
-boost-install boost_python boost_numpy ;
-
+if [ python.configured ]
+{
+    if [ python.numpy ]
+    {
+        boost-install boost_python boost_numpy ;
+    }
+    else
+    {
+        boost-install boost_python ;
+    }
 }
 else
 {

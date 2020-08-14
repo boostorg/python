@@ -1,7 +1,6 @@
 # Copyright David Abrahams 2004. Distributed under the Boost
 # Software License, Version 1.0. (See accompanying
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-from __future__ import print_function
 r'''>>> import pickle2_ext
     >>> import pickle
     >>> pickle2_ext.world.__module__
@@ -35,6 +34,8 @@ r'''>>> import pickle2_ext
     Incomplete pickle support (__getstate_manages_dict__ not set)
 '''
 
+from __future__ import print_function
+
 def run(args = None):
     import sys
     import doctest
@@ -42,7 +43,7 @@ def run(args = None):
     if args is not None:
         sys.argv = args
     return doctest.testmod(sys.modules.get(__name__))
-    
+
 if __name__ == '__main__':
     print("running...")
     import sys
