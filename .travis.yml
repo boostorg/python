@@ -28,20 +28,26 @@ jobs:
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
     - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
+    - os: linux
+      env: CXX=g++ PYTHON=pypy3 CXXFLAGS=-std=c++11
     - os: osx
       env: CXX=clang++ PYTHON=python CXXFLAGS=-std=c++11
     - env: PYTHON=python DOC=1
   allow_failures:
+    - os: linux
+      env: CXX=g++ PYTHON=pypy3 CXXFLAGS=-std=c++11
     - os: osx
 
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
+    - pypy
     packages:
     - gcc
     - g++
     - clang
+    - pypy3-dev
     - python3-pip
     - python-numpy
     - python-sphinx
