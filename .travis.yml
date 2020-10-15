@@ -25,6 +25,8 @@ jobs:
     - os: linux
       env: CXX=g++ PYTHON=python3 CXXFLAGS=-std=c++11
     - os: linux
+      env: CXX=g++ PYTHON=pypy3 CXXFLAGS=-std=c++11
+    - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++98
     - os: linux
       env: CXX=clang++ PYTHON=python3 CXXFLAGS=-std=c++11
