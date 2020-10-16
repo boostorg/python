@@ -554,8 +554,8 @@ namespace objects
       for (ssize_t i = 1; i <= num_bases; ++i)
       {
           type_handle c = (i >= static_cast<ssize_t>(num_types)) ? class_type() : get_class(types[i]);
-          // PyTuple_SET_ITEM steals this reference
-          PyTuple_SET_ITEM(bases.get(), static_cast<ssize_t>(i - 1), upcast<PyObject>(c.release()));
+          // PyTuple_SetItem steals this reference
+          PyTuple_SetItem(bases.get(), static_cast<ssize_t>(i - 1), upcast<PyObject>(c.release()));
       }
 
       // Call the class metatype to create a new class

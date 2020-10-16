@@ -45,12 +45,12 @@ namespace boost { namespace python { namespace detail {
 template <int N>
 inline PyObject* get(mpl::int_<N>, PyObject* const& args_)
 {
-    return PyTuple_GET_ITEM(args_,N);
+    return PyTuple_GetItem(args_,N);
 }
 
 inline Py_ssize_t arity(PyObject* const& args_)
 {
-    return PyTuple_GET_SIZE(args_);
+    return PyTuple_Size(args_);
 }
 
 // This "result converter" is really just used as

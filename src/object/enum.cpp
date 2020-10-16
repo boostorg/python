@@ -52,7 +52,7 @@ extern "C"
 #if PY_VERSION_HEX >= 0x03000000
                 PyUnicode_FromFormat("%S.%s(%ld)", mod, self_->ob_type->tp_name, PyLong_AsLong(self_));
 #else
-                PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), self_->ob_type->tp_name, PyInt_AS_LONG(self_));
+                PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), self_->ob_type->tp_name, PyInt_AsLong(self_));
 #endif
         }
         else
