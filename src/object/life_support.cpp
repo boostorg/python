@@ -1,3 +1,5 @@
+#include "pythoncapi_compat.h"
+
 // Copyright David Abrahams 2002.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -93,7 +95,7 @@ PyObject* make_nurse_and_patient(PyObject* nurse, PyObject* patient)
     
     if (Py_TYPE(&life_support_type) == 0)
     {
-        Py_TYPE(&life_support_type) = &PyType_Type;
+        Py_SET_TYPE(&life_support_type, &PyType_Type);
         PyType_Ready(&life_support_type);
     }
     

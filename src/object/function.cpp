@@ -1,3 +1,5 @@
+#include "pythoncapi_compat.h"
+
 // Copyright David Abrahams 2001.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -107,7 +109,7 @@ function::function(
     PyObject* p = this;
     if (Py_TYPE(&function_type) == 0)
     {
-        Py_TYPE(&function_type) = &PyType_Type;
+        Py_SET_TYPE(&function_type, &PyType_Type);
         ::PyType_Ready(&function_type);
     }
     

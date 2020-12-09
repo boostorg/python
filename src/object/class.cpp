@@ -1,3 +1,5 @@
+#include "pythoncapi_compat.h"
+
 // Copyright David Abrahams 2001.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -208,7 +210,7 @@ namespace objects
   {
       if (static_data_object.tp_dict == 0)
       {
-          Py_TYPE(&static_data_object) = &PyType_Type;
+          Py_SET_TYPE(&static_data_object, &PyType_Type);
           static_data_object.tp_base = &PyProperty_Type;
           if (PyType_Ready(&static_data_object))
               return 0;
@@ -316,7 +318,7 @@ namespace objects
   {
       if (class_metatype_object.tp_dict == 0)
       {
-          Py_TYPE(&class_metatype_object) = &PyType_Type;
+          Py_SET_TYPE(&class_metatype_object, &PyType_Type);
           class_metatype_object.tp_base = &PyType_Type;
           if (PyType_Ready(&class_metatype_object))
               return type_handle();
@@ -470,7 +472,7 @@ namespace objects
   {
       if (class_type_object.tp_dict == 0)
       {
-          Py_TYPE(&class_type_object) = incref(class_metatype().get());
+          Py_SET_TYPE(&class_type_object, incref(class_metatype().get()));
           class_type_object.tp_base = &PyBaseObject_Type;
           if (PyType_Ready(&class_type_object))
               return type_handle();
