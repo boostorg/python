@@ -104,7 +104,7 @@ handle<> apply_to_own_type(handle<> x)
 {
     // Tests that we can return handle<> from a callback and that we
     // can pass arbitrary handle<T>.
-    return call<handle<> >(x.get(), type_handle(borrowed(x->ob_type)));
+    return call<handle<> >(x.get(), type_handle(borrowed(Py_TYPE(x))));
 }
 
 object apply_object_object(PyObject* f, object x)

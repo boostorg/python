@@ -50,9 +50,9 @@ extern "C"
         {
             return
 #if PY_VERSION_HEX >= 0x03000000
-                PyUnicode_FromFormat("%S.%s(%ld)", mod, self_->ob_type->tp_name, PyLong_AsLong(self_));
+                PyUnicode_FromFormat("%S.%s(%ld)", mod, Py_TYPE(self_)->tp_name, PyLong_AsLong(self_));
 #else
-                PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), self_->ob_type->tp_name, PyInt_AS_LONG(self_));
+                PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), Py_TYPE(self_)->tp_name, PyInt_AS_LONG(self_));
 #endif
         }
         else
@@ -63,10 +63,10 @@ extern "C"
 
             return
 #if PY_VERSION_HEX >= 0x03000000
-                PyUnicode_FromFormat("%S.%s.%S", mod, self_->ob_type->tp_name, name);
+                PyUnicode_FromFormat("%S.%s.%S", mod, Py_TYPE(self_)->tp_name, name);
 #else
                 PyString_FromFormat("%s.%s.%s", 
-                        PyString_AsString(mod), self_->ob_type->tp_name, PyString_AsString(name));
+                        PyString_AsString(mod), Py_TYPE(self_)->tp_name, PyString_AsString(name));
 #endif
         }
     }

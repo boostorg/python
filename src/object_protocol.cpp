@@ -104,7 +104,7 @@ namespace // slicing code copied directly out of the Python implementation
   apply_slice(PyObject *u, PyObject *v, PyObject *w) /* return u[v:w] */
   {
 #if PY_VERSION_HEX < 0x03000000
-      PyTypeObject *tp = u->ob_type;
+      PyTypeObject *tp = Py_TYPE(u);
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {
@@ -134,7 +134,7 @@ namespace // slicing code copied directly out of the Python implementation
       /* u[v:w] = x */
   {
 #if PY_VERSION_HEX < 0x03000000
-      PyTypeObject *tp = u->ob_type;
+      PyTypeObject *tp = Py_TYPE(u);
       PySequenceMethods *sq = tp->tp_as_sequence;
 
       if (sq && sq->sq_slice && ISINT(v) && ISINT(w)) {

@@ -154,7 +154,7 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
-          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          PyNumberMethods* number_methods = Py_TYPE(obj)->tp_as_number;
           if (number_methods == 0)
               return 0;
 
@@ -186,7 +186,7 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
-          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          PyNumberMethods* number_methods = Py_TYPE(obj)->tp_as_number;
           if (number_methods == 0)
               return 0;
 
@@ -244,7 +244,7 @@ namespace
 #if PY_VERSION_HEX >= 0x03000000
           return PyLong_Check(obj) ? &py_object_identity : 0;
 #else
-          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          PyNumberMethods* number_methods = Py_TYPE(obj)->tp_as_number;
           if (number_methods == 0)
               return 0;
 
@@ -340,7 +340,7 @@ namespace
   {
       static unaryfunc* get_slot(PyObject* obj)
       {
-          PyNumberMethods* number_methods = obj->ob_type->tp_as_number;
+          PyNumberMethods* number_methods = Py_TYPE(obj)->tp_as_number;
           if (number_methods == 0)
               return 0;
 
@@ -385,7 +385,7 @@ namespace
           return (PyUnicode_Check(obj)) ? &py_unicode_as_string_unaryfunc : 
                   PyBytes_Check(obj) ? &py_object_identity : 0;
 #else
-          return (PyString_Check(obj)) ? &obj->ob_type->tp_str : 0;
+          return (PyString_Check(obj)) ? &Py_TYPE(obj)->tp_str : 0;
 
 #endif
       };

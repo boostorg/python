@@ -49,7 +49,7 @@ using boost::python::borrowed;
 // Used to test that arbitrary handle<>s can be returned
 handle<PyTypeObject> get_type(handle<> x)
 {
-    return handle<PyTypeObject>(borrowed(x->ob_type));
+    return handle<PyTypeObject>(borrowed(Py_TYPE(x)));
 }
 
 handle<> return_null_handle()

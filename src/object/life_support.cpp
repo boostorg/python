@@ -20,7 +20,7 @@ extern "C"
     life_support_dealloc(PyObject* self)
     {
         Py_XDECREF(((life_support*)self)->patient);
-        self->ob_type->tp_free(self);
+        Py_TYPE(self)->tp_free(self);
     }
 
     static PyObject *

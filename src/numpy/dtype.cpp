@@ -158,7 +158,7 @@ public:
     }
     else
     {
-      dtype dt(python::detail::borrowed_reference(obj->ob_type));
+      dtype dt(python::detail::borrowed_reference(Py_TYPE(obj)));
       if (equivalent(dt, dtype::get_builtin<T>()))
       {
 	return obj;

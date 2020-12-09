@@ -101,7 +101,7 @@ BOOST_PYTHON_DECL void* rvalue_from_python_stage2(
                 (
                 "No registered converter was able to produce a C++ rvalue of type %s from this Python object of type %s"
                 , converters.target_type.name()
-                , source->ob_type->tp_name
+                , Py_TYPE(source)->tp_name
                 ));
               
         PyErr_SetObject(PyExc_TypeError, msg.get());
@@ -208,7 +208,7 @@ namespace
               " from this Python object of type %s"
               , ref_type
               , converters.target_type.name()
-              , source->ob_type->tp_name
+              , Py_TYPE(source)->tp_name
               ));
               
       PyErr_SetObject(PyExc_TypeError, msg.get());
@@ -293,7 +293,7 @@ pytype_check(PyTypeObject* type_, PyObject* source)
             PyExc_TypeError
             , "Expecting an object of type %s; got an object of type %s instead"
             , type_->tp_name
-            , source->ob_type->tp_name
+            , Py_TYPE(source)->tp_name
             );
         throw_error_already_set();
     }
