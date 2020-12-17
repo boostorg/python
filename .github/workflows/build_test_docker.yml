@@ -1,0 +1,42 @@
+name: Build and Test
+
+on:  [ push, pull_request ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [ python, python3 ]
+        cxx: [ g++, clang++ ]
+        std: [ c++98, c++11]
+        include:
+          - cxx: clang++
+            docker-img: teeks99/boost-python-test:clang-11
+          - cxx: g++
+            docker-img: teeks99/boost-python-test:gcc-9
+
+    container:
+      image: ${{ matrix.docker-img }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Test
+      run: |
+        ${{ matrix.python }} --version
+        ${{ matrix.cxx }} --version
+        faber -v
+        ls -l ${BOOST_PY_DEPS}
+
+        sed -e "s/\$PYTHON/${{ matrix.python }}/g" .ci/faber > ~/.faber
+        
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build test.report \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          -j2
