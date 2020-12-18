@@ -30,7 +30,7 @@ environment:
       PYTHON: C:\\Python36-x64
       PYTHON_VERSION: 3.6.x
       PYTHON_ARCH: 64
-      MSVC: 16.8.1
+      MSVC: 16.8.3
       ARCH: x86_64
       BOOST_PREFIX: C:\Libraries\boost_1_73_0
 
