@@ -1,10 +1,11 @@
-name: Build and Test
+name: Build and Test - Linux Docker
 
 on:  [ push, pull_request ]
 
 jobs:
   build:
 
+    # ubuntu-latest will be shortly upgrading to this
     runs-on: ubuntu-20.04
 
     strategy:
@@ -14,6 +15,10 @@ jobs:
         cxx: [ g++, clang++ ]
         std: [ c++98, c++11]
         include:
+          # Add the appropriate docker image for each compiler.
+          # The images from teeks99/boost-python-test already have boost::python
+          # pre-reqs installed, see:
+          # https://github.com/teeks99/boost-python-test-docker
           - cxx: clang++
             docker-img: teeks99/boost-python-test:clang-11_1.66.0
           - cxx: g++
@@ -39,4 +44,4 @@ jobs:
           --builddir=build test.report \
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
-          -j2
+          -j`nproc`
