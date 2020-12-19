@@ -15,9 +15,9 @@ jobs:
         std: [ c++98, c++11]
         include:
           - cxx: clang++
-            docker-img: teeks99/boost-python-test:clang-11
+            docker-img: teeks99/boost-python-test:clang-11_1.66.0
           - cxx: g++
-            docker-img: teeks99/boost-python-test:gcc-9
+            docker-img: teeks99/boost-python-test:gcc-9_1.66.0
 
     container:
       image: ${{ matrix.docker-img }}
