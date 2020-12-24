@@ -1,19 +1,17 @@
-name: Build and Test - Linux Docker
+name: Test Ubuntu
 
-on:  [ push, pull_request ]
+on:  [push, pull_request]
 
 jobs:
   build:
-
-    # ubuntu-latest will be shortly upgrading to this
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        python: [ python, python3 ]
-        cxx: [ g++, clang++ ]
-        std: [ c++98, c++11]
+        python: [python, python3]
+        cxx: [g++, clang++]
+        std: [c++98, c++11, c++14, c++17]
         include:
           # Add the appropriate docker image for each compiler.
           # The images from teeks99/boost-python-test already have boost::python
@@ -30,18 +28,24 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Test
+    - name: build
       run: |
         ${{ matrix.python }} --version
         ${{ matrix.cxx }} --version
         faber -v
-        ls -l ${BOOST_PY_DEPS}
-
         sed -e "s/\$PYTHON/${{ matrix.python }}/g" .ci/faber > ~/.faber
-        
         faber \
           --with-boost-include=${BOOST_PY_DEPS} \
-          --builddir=build test.report \
+          --builddir=build \
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
           -j`nproc`
+    - name: test
+      run: |
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          -j`nproc` \
+          test.report
