@@ -1,0 +1,136 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>Boost.Python Reference Manual</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="Boost.Python Reference Manual">
+<link rel="next" href="concepts.html" title="Chapter&#160;1.&#160;Concepts">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table cellpadding="2" width="100%"><tr><td valign="top"><img alt="" width="" height="" src="../images/bpl.png"></td></tr></table>
+<hr>
+<div class="spirit-nav"><a accesskey="n" href="concepts.html"><img src="../images/next.png" alt="Next"></a></div>
+<div class="book">
+<div class="titlepage">
+<div>
+<div><h1 class="title">
+<a name="reference"></a>Boost.Python Reference Manual</h1></div>
+<div><div class="authorgroup">
+<div class="author"><h3 class="author">
+<span class="firstname">David</span> <span class="surname">Abrahams</span>
+</h3></div>
+<div class="author"><h3 class="author">
+<span class="firstname">Stefan</span> <span class="surname">Seefeld</span>
+</h3></div>
+</div></div>
+<div><p class="copyright">Copyright &#169; 2002-2005, 2015 David Abrahams, Stefan Seefeld</p></div>
+<div><div class="legalnotice">
+<a name="reference.legal"></a><p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>
+      </p>
+</div></div>
+</div>
+<hr>
+</div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl class="toc">
+<dt><span class="chapter"><a href="concepts.html">1. Concepts</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="concepts.html#concepts.callpolicies">CallPolicies</a></span></dt>
+<dt><span class="section"><a href="concepts/dereferenceable.html">Dereferenceable</a></span></dt>
+<dt><span class="section"><a href="concepts/extractor.html">Extractor</a></span></dt>
+<dt><span class="section"><a href="concepts/holdergenerator.html">HolderGenerator</a></span></dt>
+<dt><span class="section"><a href="concepts/resultconverter.html">ResultConverter</a></span></dt>
+<dt><span class="section"><a href="concepts/objectwrapper.html">ObjectWrapper</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="high_level_components.html">2. High Level Components</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="high_level_components.html#high_level_components.boost_python_class_hpp">boost/python/class.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_def_hpp.html">boost/python/def.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_def_visitor_hpp.html">boost/python/def_visitor.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_docstring_options_h.html">boost/python/docstring_options.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_enum_hpp.html">boost/python/enum.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_errors_hpp.html">boost/python/errors.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_exception_translato.html">boost/python/exception_translator.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_init_hpp.html">boost/python/init.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_iterator_hpp.html">boost/python/iterator.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_module_hpp.html">boost/python/module.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_operators_hpp.html">boost/python/operators.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_scope_hpp.html">boost/python/scope.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_stl_iterator_hpp.html">boost/python/stl_iterator.hpp</a></span></dt>
+<dt><span class="section"><a href="high_level_components/boost_python_wrapper_hpp.html">boost/python/wrapper.hpp</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="object_wrappers.html">3. Object Wrappers</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="object_wrappers.html#object_wrappers.boost_python_dict_hpp">boost/python/dict.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_list_hpp.html">boost_python_list.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_long_hpp.html">boost/python/long.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_object_hpp.html">boost/python/object.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_str_hpp.html">boost/python/str.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_slice_hpp.html">boost/python/slice.hpp</a></span></dt>
+<dt><span class="section"><a href="object_wrappers/boost_python_tuple_hpp.html">boost/python/tuple.hpp</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="function_invocation_and_creation.html">4. Function Invocation and Creation</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="function_invocation_and_creation.html#function_invocation_and_creation.boost_python_args_hpp">boost/python/args.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_call_hpp.html">boost/python/call.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_call_method_hpp.html">boost/python/call_method.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_data_members_hpp.html">boost/python/data_members.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_make_function_hpp.html">boost/python/make_function.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_overloads_hpp.html">boost/python/overloads.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_ptr_hpp.html">boost/python/ptr.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/boost_python_raw_function_hpp.html">boost/python/raw_function.hpp</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/function_documentation.html">Function
+      documentation</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/models_of_callpolicies.html">Models
+      of CallPolicies</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/models_of_resultconverter.html">Models
+      of ResultConverter</a></span></dt>
+<dt><span class="section"><a href="function_invocation_and_creation/models_of_resultconvertergenerat.html">Models
+      of ResultConverterGenerator</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="to_from_python_type_conversion.html">5. To/From Python Type Conversion</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="to_from_python_type_conversion.html#to_from_python_type_conversion.boost_python_extract_hpp">boost/python/extract.hpp</a></span></dt>
+<dt><span class="section"><a href="to_from_python_type_conversion/boost_python_implicit_hpp.html">boost/python/implicit.hpp</a></span></dt>
+<dt><span class="section"><a href="to_from_python_type_conversion/boost_python_lvalue_from_pytype_.html">boost/python/lvalue_from_pytype.hpp</a></span></dt>
+<dt><span class="section"><a href="to_from_python_type_conversion/boost_python_opaque_pointer_conv.html">boost/python/opaque_pointer_converter.hpp</a></span></dt>
+<dt><span class="section"><a href="to_from_python_type_conversion/boost_python_to_python_converter.html">boost/python/to_python_converter.hpp</a></span></dt>
+<dt><span class="section"><a href="to_from_python_type_conversion/boost_python_register_ptr_to_pyt.html">boost/python/register_ptr_to_python.hpp</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="embedding.html">6. Embedding</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="embedding.html#embedding.boost_python_exec_hpp">boost/python/exec.hpp</a></span></dt>
+<dt><span class="section"><a href="embedding/boost_python_import_hpp.html">boost/python/import.hpp</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="utility_and_infrastructure.html">7. Utility and Infrastructure</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="utility_and_infrastructure.html#utility_and_infrastructure.boost_python_has_back_reference_">boost/python/has_back_reference.hpp</a></span></dt>
+<dt><span class="section"><a href="utility_and_infrastructure/boost_python_instance_holder_hpp.html">boost/python/instance_holder.hpp</a></span></dt>
+<dt><span class="section"><a href="utility_and_infrastructure/boost_python_pointee_hpp.html">boost/python/pointee.hpp</a></span></dt>
+<dt><span class="section"><a href="utility_and_infrastructure/boost_python_handle_hpp.html">boost/python/handle.hpp</a></span></dt>
+<dt><span class="section"><a href="utility_and_infrastructure/boost_python_type_id_hpp.html">boost/python/type_id.hpp</a></span></dt>
+<dt><span class="section"><a href="utility_and_infrastructure/boost_python_ssize_t_hpp.html">boost/python/ssize_t.hpp</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="topics.html">8. Topics</a></span></dt>
+<dd><dl>
+<dt><span class="section"><a href="topics.html#topics.calling_python_functions_and_met">Calling Python
+      Functions and Methods</a></span></dt>
+<dt><span class="section"><a href="topics/pickle_support.html">Pickle support</a></span></dt>
+<dt><span class="section"><a href="topics/indexing_support.html">Indexing support</a></span></dt>
+</dl></dd>
+<dt><span class="chapter"><a href="glossary.html">9. Glossary</a></span></dt>
+</dl>
+</div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"><p><small>Last revised: December 25, 2020 at 18:34:33 GMT</small></p></td>
+<td align="right"><div class="copyright-footer"></div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav"><a accesskey="n" href="concepts.html"><img src="../images/next.png" alt="Next"></a></div>
+</body>
+</html>
