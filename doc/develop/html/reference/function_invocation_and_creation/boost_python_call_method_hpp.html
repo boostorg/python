@@ -81,6 +81,8 @@
         </p>
 <pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">module</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="keyword">class</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">call_method</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">python</span><span class="special">/</span><span class="identifier">def</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">utility</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 <span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">cstring</span><span class="special">&gt;</span>
 
@@ -89,7 +91,7 @@
 <span class="special">{</span>
  <span class="keyword">public</span><span class="special">:</span>
    <span class="keyword">virtual</span> <span class="keyword">char</span> <span class="keyword">const</span><span class="special">*</span> <span class="identifier">class_name</span><span class="special">()</span> <span class="keyword">const</span> <span class="special">{</span> <span class="keyword">return</span> <span class="string">"Base"</span><span class="special">;</span> <span class="special">}</span>
-   <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">();</span>
+   <span class="keyword">virtual</span> <span class="special">~</span><span class="identifier">Base</span><span class="special">()</span> <span class="special">{};</span>
 <span class="special">};</span>
 
 <span class="keyword">bool</span> <span class="identifier">is_base</span><span class="special">(</span><span class="identifier">Base</span><span class="special">*</span> <span class="identifier">b</span><span class="special">)</span>
@@ -117,7 +119,7 @@
 <span class="special">{</span>
     <span class="identifier">def</span><span class="special">(</span><span class="string">"is_base"</span><span class="special">,</span> <span class="identifier">is_base</span><span class="special">);</span>
 
-    <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier">Base_callback</span><span class="special">,</span> <span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
+    <span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">Base</span><span class="special">,</span><span class="identifier">Base_callback</span><span class="special">,</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">noncopyable</span><span class="special">&gt;(</span><span class="string">"Base"</span><span class="special">)</span>
         <span class="special">.</span><span class="identifier">def</span><span class="special">(</span><span class="string">"class_name"</span><span class="special">,</span> <span class="special">&amp;</span><span class="identifier">Base_callback</span><span class="special">::</span><span class="identifier">Base_name</span><span class="special">)</span>
         <span class="special">;</span>
 
