@@ -21,8 +21,7 @@ See the [Boost.Python](http://boostorg.github.io/python) documentation for detai
 
 **Hint :** Check out the [development version](http://boostorg.github.io/python/develop) of the documentation to see work in progress.
 
-# Building [![Build Status](https://travis-ci.org/boostorg/python.svg?branch=develop)](https://travis-ci.org/boostorg/python) [![Build status](https://ci.appveyor.com/api/projects/status/cgx9xma6v3gjav92/branch/develop?svg=true)](https://ci.appveyor.com/project/stefanseefeld/python/branch/develop)
-
+# Building ![Test Ubuntu](https://github.com/boostorg/python/workflows/Test%20Ubuntu/badge.svg) ![Test OSX](https://github.com/boostorg/python/workflows/Test%20OSX/badge.svg) ![Test Windows](https://github.com/boostorg/python/workflows/Test%20Windows/badge.svg)
 
 While Boost.Python is part of the Boost C++ Libraries super-project, and thus can be compiled as part of Boost, it can also be compiled and installed stand-alone, i.e. against a pre-installed Boost package.
 
