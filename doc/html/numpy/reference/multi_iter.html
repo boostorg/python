@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="Boost.Python NumPy extension 1.0 documentation" href="../index.html" />
@@ -67,7 +68,7 @@
   <div class="section" id="multi-iter">
 <h1><a class="toc-backref" href="#id1">multi_iter</a></h1>
 <div class="contents topic" id="table-of-contents">
-<p class="topic-title first">Table of Contents</p>
+<p class="topic-title">Table of Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#multi-iter" id="id1">multi_iter</a><ul>
 <li><a class="reference internal" href="#synopsis" id="id2">synopsis</a></li>
@@ -77,12 +78,12 @@
 </li>
 </ul>
 </div>
-<p>A <tt class="docutils literal"><span class="pre">multi_iter</span></tt> is a Python object, intended to be used as an iterator  It should generally only be used in loops.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">multi_iter</span></code> is a Python object, intended to be used as an iterator  It should generally only be used in loops.</p>
 <blockquote>
-<div><tt class="docutils literal"><span class="pre">&lt;boost/python/numpy/ufunc.hpp&gt;</span></tt> contains the class definitions for <tt class="docutils literal"><span class="pre">multi_iter</span></tt></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">&lt;boost/python/numpy/ufunc.hpp&gt;</span></code> contains the class definitions for <code class="docutils literal notranslate"><span class="pre">multi_iter</span></code></div></blockquote>
 <div class="section" id="synopsis">
 <h2><a class="toc-backref" href="#id2">synopsis</a></h2>
-<div class="highlight-c++"><div class="highlight"><pre><span class="k">namespace</span> <span class="n">boost</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">namespace</span> <span class="n">boost</span>
 <span class="p">{</span>
 <span class="k">namespace</span> <span class="n">python</span>
 <span class="p">{</span>
@@ -91,13 +92,13 @@
 
 <span class="k">class</span> <span class="nc">multi_iter</span> <span class="o">:</span> <span class="k">public</span> <span class="n">object</span>
 <span class="p">{</span>
-<span class="nl">public:</span>
+<span class="k">public</span><span class="o">:</span>
   <span class="kt">void</span> <span class="n">next</span><span class="p">();</span>
-  <span class="kt">bool</span> <span class="n">not_done</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
-  <span class="kt">char</span> <span class="o">*</span> <span class="n">get_data</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
-  <span class="kt">int</span> <span class="k">const</span> <span class="n">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
-  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
-  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="n">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">not_done</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">char</span> <span class="o">*</span> <span class="nf">get_data</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="k">const</span> <span class="nf">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="nf">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="nf">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 <span class="p">};</span>
 
 
@@ -113,7 +114,7 @@
 </div>
 <div class="section" id="constructors">
 <h2><a class="toc-backref" href="#id3">constructors</a></h2>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">multi_iter</span> <span class="nf">make_multi_iter</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a1</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">multi_iter</span> <span class="nf">make_multi_iter</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a1</span><span class="p">);</span>
 <span class="n">multi_iter</span> <span class="nf">make_multi_iter</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a1</span><span class="p">,</span> <span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a2</span><span class="p">);</span>
 <span class="n">multi_iter</span> <span class="nf">make_multi_iter</span><span class="p">(</span><span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a1</span><span class="p">,</span> <span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a2</span><span class="p">,</span> <span class="n">object</span> <span class="k">const</span> <span class="o">&amp;</span> <span class="n">a3</span><span class="p">);</span>
 </pre></div>
@@ -129,7 +130,7 @@
 </div>
 <div class="section" id="accessors">
 <h2><a class="toc-backref" href="#id4">accessors</a></h2>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">next</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span> <span class="nf">next</span><span class="p">();</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -140,7 +141,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">bool</span> <span class="n">not_done</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span> <span class="nf">not_done</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -151,7 +152,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">char</span> <span class="o">*</span> <span class="n">get_data</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span> <span class="o">*</span> <span class="nf">get_data</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -162,7 +163,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="k">const</span> <span class="n">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="k">const</span> <span class="nf">get_nd</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -173,7 +174,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="n">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="o">*</span> <span class="nf">get_shape</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -184,7 +185,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="n">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">Py_intptr_t</span> <span class="k">const</span> <span class="nf">shape</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">

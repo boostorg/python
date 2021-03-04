@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>How can I wrap functions which take C++ containers as arguments?</title>
 <link rel="stylesheet" href="../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python">
 <link rel="up" href="../faq.html" title="Chapter&#160;5.&#160;Frequently Asked Questions (FAQs)">
 <link rel="prev" href="is_return_internal_reference_eff.html" title="Is return_internal_reference efficient?">
@@ -25,36 +25,40 @@
       </p>
 <div class="orderedlist"><ol class="orderedlist" type="1">
 <li class="listitem">
-            <p>
-              Using the regular <code class="computeroutput"><span class="identifier">class_</span><span class="special">&lt;&gt;</span></code> wrapper:
-            </p>
+<p class="simpara">
+            Using the regular <code class="computeroutput"><span class="identifier">class_</span><span class="special">&lt;&gt;</span></code> wrapper:
+          </p>
 <pre class="programlisting"><span class="identifier">class_</span><span class="special">&lt;</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="special">&gt;(</span><span class="string">"std_vector_double"</span><span class="special">)</span>
   <span class="special">.</span><span class="identifier">def</span><span class="special">(...)</span>
   <span class="special">...</span>
 <span class="special">;</span>
 </pre>
+<p class="simpara">
             This can be moved to a template so that several types (<code class="computeroutput"><span class="keyword">double</span></code>, <code class="computeroutput"><span class="keyword">int</span></code>,
             <code class="computeroutput"><span class="keyword">long</span></code>, etc.) can be wrapped
             with the same code. This technique is used in the file <code class="computeroutput"><span class="identifier">scitbx</span><span class="special">/</span><span class="identifier">include</span><span class="special">/</span><span class="identifier">scitbx</span><span class="special">/</span><span class="identifier">array_family</span><span class="special">/</span><span class="identifier">boost_python</span><span class="special">/</span><span class="identifier">flex_wrapper</span><span class="special">.</span><span class="identifier">h</span></code> in the "scitbx" package.
             The file could easily be modified for wrapping <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;&gt;</span></code> instantiations. This type of
             C++/Python binding is most suitable for containers that may contain a
             large number of elements (&gt;10000).
-          </li>
+          </p>
+</li>
 <li class="listitem">
-            <p>
-              Using custom rvalue converters. Boost.Python "rvalue converters"
-              match function signatures such as:
-            </p>
+<p class="simpara">
+            Using custom rvalue converters. Boost.Python "rvalue converters"
+            match function signatures such as:
+          </p>
 <pre class="programlisting"><span class="keyword">void</span> <span class="identifier">foo</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="keyword">const</span> <span class="special">&amp;</span><span class="identifier">array</span><span class="special">);</span> <span class="comment">// pass by const-reference</span>
 <span class="keyword">void</span> <span class="identifier">foo</span><span class="special">(</span><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">array</span><span class="special">);</span> <span class="comment">// pass by value</span>
 </pre>
+<p class="simpara">
             Some custom rvalue converters are implemented in the file <code class="computeroutput"><span class="identifier">scitbx</span><span class="special">/</span><span class="identifier">include</span><span class="special">/</span><span class="identifier">scitbx</span><span class="special">/</span><span class="identifier">boost_python</span><span class="special">/</span><span class="identifier">container_conversions</span><span class="special">.</span><span class="identifier">h</span></code> This code can be used to convert
             from C++ container types such as <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">vector</span><span class="special">&lt;&gt;</span></code> or <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">list</span><span class="special">&lt;&gt;</span></code> to Python tuples and vice versa.
             A few simple examples can be found in the file <code class="computeroutput"><span class="identifier">scitbx</span><span class="special">/</span><span class="identifier">array_family</span><span class="special">/</span><span class="identifier">boost_python</span><span class="special">/</span><span class="identifier">regression_test_module</span><span class="special">.</span><span class="identifier">cpp</span></code>
             Automatic C++ container &lt;-&gt; Python tuple conversions are most suitable
             for containers of moderate size. These converters generate significantly
             less object code compared to alternative 1 above.
-          </li>
+          </p>
+</li>
 </ol></div>
 <p>
         A disadvantage of using alternative 2 is that operators such as arithmetic

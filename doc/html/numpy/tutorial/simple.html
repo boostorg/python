@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="Boost.Python NumPy extension 1.0 documentation" href="../index.html" />
@@ -68,34 +69,34 @@
       
   <div class="section" id="a-simple-tutorial-on-arrays">
 <h1>A simple tutorial on Arrays</h1>
-<p>Let&#8217;s start with a simple tutorial to create and modify arrays.</p>
+<p>Let’s start with a simple tutorial to create and modify arrays.</p>
 <p>Get the necessary headers for numpy components and set up necessary namespaces:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;boost/python/numpy.hpp&gt;</span>
-<span class="cp">#include &lt;iostream&gt;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;boost/python/numpy.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="p">;</span>
 <span class="k">namespace</span> <span class="n">np</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="o">::</span><span class="n">numpy</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Initialise the Python runtime, and the numpy module. Failure to call these results in segmentation errors:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">Py_Initialize</span><span class="p">();</span>
   <span class="n">np</span><span class="o">::</span><span class="n">initialize</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Zero filled n-dimensional arrays can be created using the shape and data-type of the array as a parameter. Here, the shape is 3x3 and the datatype is the built-in float type:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 <span class="n">np</span><span class="o">::</span><span class="n">dtype</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>You can also create an empty array like this</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">dtype</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Print the original and reshaped array. The array a which is a list is first converted to a string, and each value in the list is extracted using extract&lt; &gt;:</p>
-<div class="highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Original array:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Original array:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 
   <span class="c1">// Reshape the array into a 1D array</span>
   <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">9</span><span class="p">));</span>

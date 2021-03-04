@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="Boost.Python NumPy extension 1.0 documentation" href="../index.html" />
@@ -71,8 +72,8 @@
 <p>One of the advantages of the ndarray wrapper is that the same data can be used in both Python and C++ and changes can be made to reflect at both ends.
 The from_data method makes this possible.</p>
 <p>Like before, first get the necessary headers, setup the namespaces and initialize the Python runtime and numpy module:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;boost/python/numpy.hpp&gt;</span>
-<span class="cp">#include &lt;iostream&gt;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;boost/python/numpy.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="p">;</span>
 <span class="k">namespace</span> <span class="n">np</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="o">::</span><span class="n">numpy</span><span class="p">;</span>
@@ -84,7 +85,7 @@ The from_data method makes this possible.</p>
 </pre></div>
 </div>
 <p>Create an array in C++ , and pass the pointer to it to the from_data method to create an ndarray:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">};</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">};</span>
 <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">py_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span>
                                      <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span>
                                      <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)),</span>
@@ -92,7 +93,7 @@ The from_data method makes this possible.</p>
 </pre></div>
 </div>
 <p>Print the source C++ array, as well as the ndarray, to check if they are the same:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;C++ array :&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;C++ array :&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="sc">&#39; &#39;</span><span class="p">;</span>
@@ -102,7 +103,7 @@ The from_data method makes this possible.</p>
 </pre></div>
 </div>
 <p>Now, change an element in the Python ndarray, and check if the value changed correspondingly in the source C++ array:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">py_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">py_array</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">;</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Is the change reflected in the C++ array used to create the ndarray ? &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
 <span class="p">{</span>
@@ -111,7 +112,7 @@ The from_data method makes this possible.</p>
 </pre></div>
 </div>
 <p>Next, change an element of the source C++ array and see if it is reflected in the Python ndarray:</p>
-<div class="highlight-c++"><div class="highlight"><pre>  <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span>  <span class="n">arr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
   <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
             <span class="o">&lt;&lt;</span> <span class="s">&quot;Is the change reflected in the Python ndarray ?&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
             <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">py_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>

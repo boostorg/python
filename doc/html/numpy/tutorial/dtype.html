@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="Boost.Python NumPy extension 1.0 documentation" href="../index.html" />
@@ -70,8 +71,8 @@
 <h1>How to use dtypes</h1>
 <p>Here is a brief tutorial to show how to create ndarrays with built-in python data types, and extract the types and values of member variables</p>
 <p>Like before, first get the necessary headers, setup the namespaces and initialize the Python runtime and numpy module:</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;boost/python/numpy.hpp&gt;</span>
-<span class="cp">#include &lt;iostream&gt;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;boost/python/numpy.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="p">;</span>
 <span class="k">namespace</span> <span class="n">np</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="o">::</span><span class="n">numpy</span><span class="p">;</span>
@@ -84,35 +85,35 @@
 </div>
 <p>Next, we create the shape and dtype. We use the get_builtin method to get the numpy dtype corresponding to the builtin C++ dtype
 Here, we will create a 3x3 array passing a tuple with (3,3) for the size, and double as the data type</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">shape</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
 <span class="n">np</span><span class="o">::</span><span class="n">dtype</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">();</span>
 <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Finally, we can print the array using the extract method in the python namespace.
 Here, we first convert the variable into a string, and then extract it as a C++ character array from the python string using the &lt;char const * &gt; template</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Original array:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Original array:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>We can also print the dtypes of the data members of the ndarray by using the get_dtype method for the ndarray</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Datatype is:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">get_dtype</span><span class="p">()))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Datatype is:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">get_dtype</span><span class="p">()))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span> <span class="p">;</span>
 </pre></div>
 </div>
 <p>We can also create custom dtypes and build ndarrays with the custom dtypes</p>
 <p>We use the dtype constructor to create a custom dtype. This constructor takes a list as an argument.</p>
 <p>The list should contain one or more tuples of the format (variable name, variable type)</p>
 <p>So first create a tuple with a variable name and its dtype, double, to create a custom dtype</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">for_custom_dtype</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="s">&quot;ha&quot;</span><span class="p">,</span><span class="n">dtype</span><span class="p">)</span> <span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">tuple</span> <span class="n">for_custom_dtype</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="s">&quot;ha&quot;</span><span class="p">,</span><span class="n">dtype</span><span class="p">)</span> <span class="p">;</span>
 </pre></div>
 </div>
 <p>Next, create a list, and add this tuple to the list. Then use the list to create the custom dtype</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">list</span> <span class="n">list_for_dtype</span> <span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">list</span> <span class="n">list_for_dtype</span> <span class="p">;</span>
 <span class="n">list_for_dtype</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">for_custom_dtype</span><span class="p">)</span> <span class="p">;</span>
 <span class="n">np</span><span class="o">::</span><span class="n">dtype</span> <span class="n">custom_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="p">(</span><span class="n">list_for_dtype</span><span class="p">)</span> <span class="p">;</span>
 </pre></div>
 </div>
 <p>We are now ready to create an ndarray with dimensions specified by *shape* and of custom dtpye</p>
-<div class="highlight-c++"><div class="highlight"><pre>  <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">custom_dtype</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span>  <span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">new_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span><span class="n">custom_dtype</span><span class="p">);</span>
 <span class="p">}</span>
 </pre></div>
 </div>

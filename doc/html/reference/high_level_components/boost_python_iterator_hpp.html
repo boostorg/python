@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>boost/python/iterator.hpp</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Reference Manual">
 <link rel="up" href="../high_level_components.html" title="Chapter&#160;2.&#160;High Level Components">
 <link rel="prev" href="boost_python_init_hpp.html" title="boost/python/init.hpp">
@@ -328,14 +328,21 @@
                 applying NextPolicies to the iterator's <code class="computeroutput"><span class="identifier">next</span><span class="special">()</span></code> function. The second form is identical
                 to the first, except that Target is deduced from Accessor1 as follows:
               </p>
-<p>
-                # If Accessor1 is a function type, Target is the type of its first
-                argument. # If Accessor1 is a data member pointer of the form <code class="computeroutput"><span class="identifier">R</span> <span class="special">(</span><span class="identifier">T</span><span class="special">::*)</span></code>,
-                Target is identical to <code class="computeroutput"><span class="identifier">T</span></code>.
-                # If Accessor1 is a member function pointer of the form <code class="computeroutput"><span class="identifier">R</span> <span class="special">(</span><span class="identifier">T</span><span class="special">::*)(</span><span class="identifier">arguments</span><span class="special">...)</span>
-                <span class="identifier">cv</span><span class="special">-</span><span class="identifier">opt</span></code>, where cv-opt is an optional
-                cv-qualifier, Target is identical to <code class="computeroutput"><span class="identifier">T</span></code>.
-              </p>
+<div class="orderedlist"><ol class="orderedlist" type="1">
+<li class="listitem">
+                    If Accessor1 is a function type, Target is the type of its first
+                    argument.
+                  </li>
+<li class="listitem">
+                    If Accessor1 is a data member pointer of the form <code class="computeroutput"><span class="identifier">R</span> <span class="special">(</span><span class="identifier">T</span><span class="special">::*)</span></code>,
+                    Target is identical to <code class="computeroutput"><span class="identifier">T</span></code>.
+                  </li>
+<li class="listitem">
+                    If Accessor1 is a member function pointer of the form <code class="computeroutput"><span class="identifier">R</span> <span class="special">(</span><span class="identifier">T</span><span class="special">::*)(</span><span class="identifier">arguments</span><span class="special">...)</span>
+                    <span class="identifier">cv</span><span class="special">-</span><span class="identifier">opt</span></code>, where cv-opt is an optional
+                    cv-qualifier, Target is identical to <code class="computeroutput"><span class="identifier">T</span></code>.
+                  </li>
+</ol></div>
 <p>
                 The third form is identical to the second, except that NextPolicies
                 is an unspecified model of <a class="link" href="../concepts.html#concepts.callpolicies" title="CallPolicies">CallPolicies</a>

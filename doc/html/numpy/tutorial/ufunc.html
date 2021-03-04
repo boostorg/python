@@ -20,6 +20,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="top" title="Boost.Python NumPy extension 1.0 documentation" href="../index.html" />
@@ -71,20 +72,20 @@
 <p>Ufuncs or universal functions operate on ndarrays element by element, and support array broadcasting, type casting, and other features.</p>
 <p>Lets try and see how we can use the binary and unary ufunc methods</p>
 <p>After the neccessary includes</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;boost/python/numpy.hpp&gt;</span>
-<span class="cp">#include &lt;iostream&gt;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;boost/python/numpy.hpp&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"></span>
 
 <span class="k">namespace</span> <span class="n">p</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="p">;</span>
 <span class="k">namespace</span> <span class="n">np</span> <span class="o">=</span> <span class="n">boost</span><span class="o">::</span><span class="n">python</span><span class="o">::</span><span class="n">numpy</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Now we create the structs necessary to implement the ufuncs. The typedefs <em>must</em> be made as the ufunc generators take these typedefs as inputs and return an error otherwise</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="k">struct</span> <span class="n">UnarySquare</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">UnarySquare</span>
 <span class="p">{</span>
   <span class="k">typedef</span> <span class="kt">double</span> <span class="n">argument_type</span><span class="p">;</span>
   <span class="k">typedef</span> <span class="kt">double</span> <span class="n">result_type</span><span class="p">;</span>
 
-  <span class="kt">double</span> <span class="k">operator</span><span class="p">()(</span><span class="kt">double</span> <span class="n">r</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span><span class="p">;}</span>
+  <span class="kt">double</span> <span class="nf">operator</span><span class="p">()(</span><span class="kt">double</span> <span class="n">r</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span><span class="p">;}</span>
 <span class="p">};</span>
 
 <span class="k">struct</span> <span class="n">BinarySquare</span>
@@ -98,87 +99,87 @@
 </pre></div>
 </div>
 <p>Initialise the Python runtime and the numpy module</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">)</span>
 <span class="p">{</span>
   <span class="n">Py_Initialize</span><span class="p">();</span>
   <span class="n">np</span><span class="o">::</span><span class="n">initialize</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Now expose the struct UnarySquare to Python as a class, and let ud be the class object.</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">ud</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">UnarySquare</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnarySquare</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;UnarySquare&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">ud</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">UnarySquare</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnarySquare</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;UnarySquare&quot;</span><span class="p">);</span>
 <span class="n">ud</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">::</span><span class="n">unary_ufunc</span><span class="o">&lt;</span><span class="n">UnarySquare</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>Let inst be an instance of the class ud</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">ud</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">ud</span><span class="p">();</span>
 </pre></div>
 </div>
-<p>Use the &#8220;__call__&#8221; method to call the overloaded () operator and print the value</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of unary scalar 1.0 is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="mf">1.0</span><span class="p">)))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<p>Use the “__call__” method to call the overloaded () operator and print the value</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of unary scalar 1.0 is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="mf">1.0</span><span class="p">)))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Create an array in C++</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">}</span> <span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">}</span> <span class="p">;</span>
 </pre></div>
 </div>
 <p>..and use it to create the ndarray in Python</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">demo_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">::</span><span class="n">ndarray</span> <span class="n">demo_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">::</span><span class="n">from_data</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">np</span><span class="o">::</span><span class="n">dtype</span><span class="o">::</span><span class="n">get_builtin</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(),</span>
                                        <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
                                        <span class="n">p</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span>
                                        <span class="n">p</span><span class="o">::</span><span class="n">object</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>Print out the demo array</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Demo array is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">demo_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Demo array is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">demo_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
-<p>Call the &#8220;__call__&#8221; method to perform the operation and assign the value to result_array</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">demo_array</span><span class="p">);</span>
+<p>Call the “__call__” method to perform the operation and assign the value to result_array</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">object</span> <span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">demo_array</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Print the resultant array</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of demo array is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of demo array is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Lets try the same with a list</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">p</span><span class="o">::</span><span class="n">list</span> <span class="n">li</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">::</span><span class="n">list</span> <span class="n">li</span><span class="p">;</span>
 <span class="n">li</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
 <span class="n">li</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>Print out the demo list</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Demo list is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">li</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Demo list is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">li</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Call the ufunc for the list</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">li</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">li</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>And print the list out</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of demo list is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of demo list is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Now lets try Binary ufuncs. Again, expose the struct BinarySquare to Python as a class, and let ud be the class object</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">ud</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">BinarySquare</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">BinarySquare</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;BinarySquare&quot;</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">ud</span> <span class="o">=</span> <span class="n">p</span><span class="o">::</span><span class="n">class_</span><span class="o">&lt;</span><span class="n">BinarySquare</span><span class="p">,</span> <span class="n">boost</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">BinarySquare</span><span class="o">&gt;</span> <span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;BinarySquare&quot;</span><span class="p">);</span>
 <span class="n">ud</span><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">::</span><span class="n">binary_ufunc</span><span class="o">&lt;</span><span class="n">BinarySquare</span><span class="o">&gt;::</span><span class="n">make</span><span class="p">());</span>
 </pre></div>
 </div>
 <p>And initialise ud</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">inst</span> <span class="o">=</span> <span class="n">ud</span><span class="p">();</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">inst</span> <span class="o">=</span> <span class="n">ud</span><span class="p">();</span>
 </pre></div>
 </div>
 <p>Print the two input lists</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;The two input list for binary ufunc are &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;The two input list for binary ufunc are &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
           <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">demo_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span>
           <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">demo_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>Call the binary ufunc taking demo_array as both inputs</p>
-<div class="highlight-c++"><div class="highlight"><pre><span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">demo_array</span><span class="p">,</span><span class="n">demo_array</span><span class="p">);</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">result_array</span> <span class="o">=</span> <span class="n">inst</span><span class="p">.</span><span class="n">attr</span><span class="p">(</span><span class="s">&quot;__call__&quot;</span><span class="p">)(</span><span class="n">demo_array</span><span class="p">,</span><span class="n">demo_array</span><span class="p">);</span>
 </pre></div>
 </div>
 <p>And print the output</p>
-<div class="highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of list with binary ufunc is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Square of list with binary ufunc is &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">p</span><span class="o">::</span><span class="n">extract</span><span class="o">&lt;</span><span class="kt">char</span> <span class="k">const</span> <span class="o">*&gt;</span><span class="p">(</span><span class="n">p</span><span class="o">::</span><span class="n">str</span><span class="p">(</span><span class="n">result_array</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>

@@ -3,7 +3,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>boost/python/make_function.hpp</title>
 <link rel="stylesheet" href="../../boostbook.css" type="text/css">
-<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
 <link rel="home" href="../index.html" title="Boost.Python Reference Manual">
 <link rel="up" href="../function_invocation_and_creation.html" title="Chapter&#160;4.&#160;Function Invocation and Creation">
 <link rel="prev" href="boost_python_data_members_hpp.html" title="boost/python/data_members.hpp">
@@ -69,16 +69,24 @@
                 from the first Python argument, and subsequent Python arguments will
                 be used as the arguments to f.
               </p>
-<p>
-                * If policies are supplied, it will be applied to the function as
-                described here. * If keywords are supplied, the keywords will be
-                applied in order to the final arguments of the resulting function.
-                * If Signature is supplied, it should be an instance of an MPL front-extensible
-                sequence representing the function's return type followed by its
-                argument types. Pass a Signature when wrapping function object types
-                whose signatures can't be deduced, or when you wish to override the
-                types which will be passed to the wrapped function.
-              </p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+                    If policies are supplied, it will be applied to the function
+                    as described here.
+                  </li>
+<li class="listitem">
+                    If keywords are supplied, the keywords will be applied in order
+                    to the final arguments of the resulting function.
+                  </li>
+<li class="listitem">
+                    If Signature is supplied, it should be an instance of an MPL
+                    front-extensible sequence representing the function's return
+                    type followed by its argument types. Pass a Signature when wrapping
+                    function object types whose signatures can't be deduced, or when
+                    you wish to override the types which will be passed to the wrapped
+                    function.
+                  </li>
+</ul></div>
 </dd>
 <dt><span class="term">Returns</span></dt>
 <dd><p>
