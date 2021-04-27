@@ -21,7 +21,7 @@ jobs:
         vcpkgGitCommitId: '8a9a97315aefb3f8bc5d81bf66ca0025938b9c91'
         vcpkgDirectory: '${{ runner.workspace }}/vcpkg'
         vcpkgTriplet: x64-windows
-        vcpkgArguments: boost-config boost-core boost-function boost-graph boost-iterator boost-lexical-cast boost-mpl boost-preprocessor boost-smart-ptr boost-static-assert
+        vcpkgArguments: boost-config boost-core boost-function boost-graph boost-iterator boost-lexical-cast boost-mpl boost-preprocessor boost-smart-ptr boost-static-assert boost-align
 
     - name: setup faber
       #shell: 'bash'
