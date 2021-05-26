@@ -117,7 +117,7 @@ lib boost_numpy
         <define>BOOST_NUMPY_SOURCE
         [ cond [ python.numpy ] : <library>/python//python_for_extensions ]
         [ unless [ python.numpy ] : <build>no ]
-        <library>/python//numpy
+        <include>$(numpy-include)
         <library>boost_python
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
         -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
