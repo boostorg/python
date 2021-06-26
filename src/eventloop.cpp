@@ -78,4 +78,34 @@ void EventLoop::call_at(double when, py::object f)
     return call_soon(f);
 }
 
+void EventLoop::sock_recv(py::object sock, int bytes)
+{
+
+}
+
+void EventLoop::sock_recv_into(py::object sock, py::object buffer)
+{
+
+}
+
+void EventLoop::sock_sendall(py::object sock, py::object data)
+{
+
+}
+
+void EventLoop::sock_connect(py::object sock, py::object address)
+{
+
+}
+
+void EventLoop::sock_accept(py::object sock)
+{
+
+}
+
+void EventLoop::sock_sendfile(py::object sock, py::object file, int offset, int count, bool fallback)
+{
+
+}
+
 }}}
