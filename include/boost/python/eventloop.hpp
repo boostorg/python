@@ -67,20 +67,21 @@ public:
     }
 
 
-    void sock_recv(object sock, int bytes);
+    object sock_recv(object sock, size_t nbytes);
 
-    void sock_recv_into(object sock, object buffer);
+    size_t sock_recv_into(object sock, object buffer);
 
-    void sock_sendall(object sock, object data);
+    object sock_sendall(object sock, object data);
 
     void sock_connect(object sock, object address);
 
-    void sock_accept(object sock);
+    object sock_accept(object sock);
     
     void sock_sendfile(object sock, object file, int offset = 0, int count = 0, bool fallback = true);
 
 private:
     int64_t _timer_id = 0;
+    object _pymod_socket = import("socket");
     boost::asio::io_context::strand _strand;
     std::unordered_map<int, std::unique_ptr<boost::asio::steady_timer>> _id_to_timer_map;
     // read: key = fd * 2 + 0, write: key = fd * 2 + 1
