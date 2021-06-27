@@ -25,7 +25,6 @@
 # include <boost/python/docstring_options.hpp>
 # include <boost/python/enum.hpp>
 # include <boost/python/errors.hpp>
-# include <boost/python/eventloop.hpp>
 # include <boost/python/exception_translator.hpp>
 # include <boost/python/exec.hpp>
 # include <boost/python/extract.hpp>

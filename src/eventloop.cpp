@@ -10,25 +10,23 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/python.hpp>
+#include <boost/python/eventloop.hpp>
 
-namespace a = boost::asio;
-namespace c = std::chrono;
-namespace py = boost::python;
 
-namespace boost { namespace python { namespace eventloop {
+namespace boost { namespace python { namespace asio {
 
-void EventLoop::_add_reader_or_writer(int fd, py::object f, int key)
+void event_loop::_add_reader_or_writer(int fd, object f, int key)
 {
     // add descriptor
     if (_descriptor_map.find(key) == _descriptor_map.end())
     {
         _descriptor_map.emplace(key,
-            std::move(std::make_unique<a::posix::stream_descriptor>(_strand.context(), fd))
+            std::move(std::make_unique<boost::asio::posix::stream_descriptor>(_strand.context(), fd))
         );
     }
 
-    _descriptor_map.find(key)->second->async_wait(a::posix::descriptor::wait_type::wait_read,
-        a::bind_executor(_strand, [key, f, loop=this] (const boost::system::error_code& ec)
+    _descriptor_map.find(key)->second->async_wait(boost::asio::posix::descriptor::wait_type::wait_read,
+        boost::asio::bind_executor(_strand, [key, f, loop=this] (const boost::system::error_code& ec)
         {
             // move descriptor
             auto iter = loop->_descriptor_map.find(key);
@@ -42,7 +40,7 @@ void EventLoop::_add_reader_or_writer(int fd, py::object f, int key)
     return;
 }
 
-void EventLoop::_remove_reader_or_writer(int key)
+void event_loop::_remove_reader_or_writer(int key)
 {
     auto iter = _descriptor_map.find(key);
     if (iter != _descriptor_map.end())
@@ -52,17 +50,17 @@ void EventLoop::_remove_reader_or_writer(int key)
     }
 }
 
-void EventLoop::call_later(double delay, py::object f)
+void event_loop::call_later(double delay, object f)
 {
     // add timer
     _id_to_timer_map.emplace(_timer_id,
-        std::move(std::make_unique<a::steady_timer>(_strand.context(),
+        std::move(std::make_unique<boost::asio::steady_timer>(_strand.context(),
             std::chrono::steady_clock::now() + std::chrono::nanoseconds(int64_t(delay * 1e9))))
     );
 
     _id_to_timer_map.find(_timer_id)->second->async_wait(
         // remove timer
-        a::bind_executor(_strand, [id=_timer_id, f, loop=this] (const boost::system::error_code& ec)
+        boost::asio::bind_executor(_strand, [id=_timer_id, f, loop=this] (const boost::system::error_code& ec)
         {
             loop->_id_to_timer_map.erase(id);
             loop->call_soon(f);
@@ -70,7 +68,7 @@ void EventLoop::call_later(double delay, py::object f)
     _timer_id++;
 }
 
-void EventLoop::call_at(double when, py::object f)
+void event_loop::call_at(double when, object f)
 {
     double diff = when - time();
     if (diff > 0)
@@ -78,32 +76,32 @@ void EventLoop::call_at(double when, py::object f)
     return call_soon(f);
 }
 
-void EventLoop::sock_recv(py::object sock, int bytes)
+void event_loop::sock_recv(object sock, int bytes)
 {
 
 }
 
-void EventLoop::sock_recv_into(py::object sock, py::object buffer)
+void event_loop::sock_recv_into(object sock, object buffer)
 {
 
 }
 
-void EventLoop::sock_sendall(py::object sock, py::object data)
+void event_loop::sock_sendall(object sock, object data)
 {
 
 }
 
-void EventLoop::sock_connect(py::object sock, py::object address)
+void event_loop::sock_connect(object sock, object address)
 {
 
 }
 
-void EventLoop::sock_accept(py::object sock)
+void event_loop::sock_accept(object sock)
 {
 
 }
 
-void EventLoop::sock_sendfile(py::object sock, py::object file, int offset, int count, bool fallback)
+void event_loop::sock_sendfile(object sock, object file, int offset, int count, bool fallback)
 {
 
 }
