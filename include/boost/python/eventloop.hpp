@@ -21,6 +21,17 @@ public:
     event_loop(boost::asio::io_context& ctx): 
         _strand{ctx}, _created_time{std::chrono::steady_clock::now()}
     {
+        try
+        {
+            _pymod_ssl = import("ssl");
+        }
+        catch (const error_already_set& e)
+        {
+            if (PyErr_ExceptionMatches(PyExc_ImportError))
+            {
+                PyErr_Clear();
+            }
+        }
     }
 
     // TODO: An instance of asyncio.Handle is returned, which can be used later to cancel the callback.
@@ -79,9 +90,40 @@ public:
     
     void sock_sendfile(object sock, object file, int offset = 0, int count = 0, bool fallback = true);
 
+    void start_tls(object transport, object protocol, object sslcontext, 
+        bool server_side = false, 
+        object server_hostname = object(), 
+        object ssl_handshake_timeout = object());
+
+    object getaddrinfo(object host, int port, int family = 0, int type = 0, int proto = 0, int flags = 0);
+
+    object getnameinfo(object sockaddr, int flags = 0);
+
+    void set_exception_handler(object handler)
+    {
+        if (handler != object() && !PyObject_HasAttrString(handler.ptr(), "__call__")) {
+            PyErr_SetString(PyExc_TypeError, "A callable object or None is expected");
+            throw_error_already_set();
+        }
+        _exception_handler = handler;
+    }
+
+    object get_exception_handler()
+    {
+        return _exception_handler;
+    }
+
+    void default_exception_handler(object context);
+
+    void call_exception_handler(object context);
+
 private:
     int64_t _timer_id = 0;
+    object _pymod_ssl = object();
     object _pymod_socket = import("socket");
+    object _pymod_traceback = import("traceback");
+    object _pymod_logger = import("asyncio.log").attr("logger");
+    object _exception_handler = object();
     boost::asio::io_context::strand _strand;
     std::unordered_map<int, std::unique_ptr<boost::asio::steady_timer>> _id_to_timer_map;
     // read: key = fd * 2 + 0, write: key = fd * 2 + 1

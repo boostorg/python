@@ -9,6 +9,7 @@
 // 3. _ensure_fd_no_transport
 // 4. _ensure_resolve
 
+#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/python.hpp>
@@ -52,7 +53,9 @@ void _sock_connect_cb(object pymod_socket, std::promise<void>& prom, std::future
         if (err != object(0)) {
             // TODO: print the address
             PyErr_SetString(PyExc_OSError, "Connect call failed {address}");
+            throw_error_already_set();
         }
+        prom.set_value();
     }
     catch (const error_already_set& e)
     {
@@ -67,15 +70,10 @@ void _sock_connect_cb(object pymod_socket, std::promise<void>& prom, std::future
         {
             // raise
         }
-        else if (PyErr_ExceptionMatches(PyExc_BaseException))
-        {
-            PyErr_Clear();
-            prom.set_exception(std::current_exception());
-        }
         else
         {
             PyErr_Clear();
-            prom.set_value();
+            prom.set_exception(std::current_exception());
         }
     }
 }
@@ -91,6 +89,7 @@ void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<obje
         conn = ret[0];
         address = ret[1];
         conn.attr("setblocking")(object(false));
+        prom.set_value(make_tuple(conn, address));
     }
     catch (const error_already_set& e)
     {
@@ -107,17 +106,25 @@ void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<obje
         {
             // raise
         }
-        else if (PyErr_ExceptionMatches(PyExc_BaseException))
+        else
         {
             PyErr_Clear();
             prom.set_exception(std::current_exception());
         }
-        else
-        {
-            PyErr_Clear();
-            prom.set_value(make_tuple(conn, address));
-        }
     }  
+}
+
+void _getaddrinfo_handler(object pymod_socket, std::promise<object>& prom, 
+    object host, int port, int family, int type, int proto, int flags)
+{
+    object res = pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
+    prom.set_value(res);
+}
+
+void _getnameinfo_handler(object pymod_socket, std::promise<object>& prom, object sockaddr, int flags)
+{
+    object res = pymod_socket.attr("getnameinfo")(sockaddr, flags);
+    prom.set_value(res);
 }
 
 }
@@ -237,6 +244,7 @@ void event_loop::sock_connect(object sock, object address)
     try 
     {
         sock.attr("connect")(address);
+        prom.set_value();
     }
     catch (const error_already_set& e)
     {
@@ -253,15 +261,10 @@ void event_loop::sock_connect(object sock, object address)
         {
             // raise
         }
-        else if (PyErr_ExceptionMatches(PyExc_BaseException))
-        {
-            PyErr_Clear();
-            prom.set_exception(std::current_exception());
-        }
         else
         {
             PyErr_Clear();
-            prom.set_value();
+            prom.set_exception(std::current_exception());
         }
     }
     fut.wait();
@@ -279,6 +282,176 @@ object event_loop::sock_accept(object sock)
 void event_loop::sock_sendfile(object sock, object file, int offset, int count, bool fallback)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented!");
+    throw_error_already_set();
 }
+
+// TODO: implement this
+void event_loop::start_tls(object transport, object protocol, object sslcontext, 
+    bool server_side, object server_hostname, object ssl_handshake_timeout)
+{
+    PyErr_SetString(PyExc_NotImplementedError, "Not implemented!");
+    throw_error_already_set();
+}
+
+object event_loop::getaddrinfo(object host, int port, int family, int type, int proto, int flags)
+{
+    std::promise<object> prom;
+    std::future<object> fut = prom.get_future();
+    call_soon(make_function(
+        bind(_getaddrinfo_handler, _pymod_socket, boost::ref(prom), host, port, family, type, proto, flags),
+        default_call_policies(), 
+        boost::mpl::vector<void, object>()));
+    return fut.get();
+}
+
+object event_loop::getnameinfo(object sockaddr, int flags)
+{
+    std::promise<object> prom;
+    std::future<object> fut = prom.get_future();
+    call_soon(make_function(
+        bind(_getnameinfo_handler, _pymod_socket, boost::ref(prom), sockaddr, flags),
+        default_call_policies(),
+        boost::mpl::vector<void, object>()));
+    return fut.get();
+}
+
+void event_loop::default_exception_handler(object context)
+{
+    object message = context.attr("get")(str("message"));
+    if (message == object())
+    {
+        message = str("Unhandled exception in event loop");
+    }
+
+    object exception = context.attr("get")(str("exception"));
+    object exc_info;
+    if (exception != object())
+    {
+        exc_info = make_tuple(exception.attr("__class__"), exception, exception.attr("__traceback__"));
+    }
+    else
+    {
+        exc_info = object(false);
+    }
+    if (!PyObject_IsTrue(context.attr("__contains__")(str("source_traceback")).ptr()) &&
+        _exception_handler != object() &&
+        _exception_handler.attr("_source_traceback") != object())
+    {
+        context["handle_traceback"] = _exception_handler.attr("_source_traceback");
+    }
+
+    list log_lines;
+    log_lines.append(message);
+    list context_keys(context.attr("keys"));
+    context_keys.sort();
+    for (int i = 0; i < len(context_keys); i++)
+    {
+        std::string key = extract<std::string>(context_keys[i]);
+        if (key == "message" || key == "exception")
+            continue;
+        str value(context[key]);
+        if (key == "source_traceback")
+        {
+            str tb = str("").join(_pymod_traceback.attr("format_list")(value));
+            value = str("Object created at (most recent call last):\n");
+            value += tb.rstrip();
+        }
+        else if (key == "handle_traceback")
+        {
+            str tb = str("").join(_pymod_traceback.attr("format_list")(value));
+            value = str("Handle created at (most recent call last):\n");
+            value += tb.rstrip();
+        }
+        else
+        {
+            value = str(value.attr("__str__")());
+        }
+        std::ostringstream stringStream;
+        stringStream << key << ": " << value;
+        log_lines.append(str(stringStream.str()));
+    }
+    list args;
+    dict kwargs;
+    args.append(str("\n").join(log_lines));
+    kwargs["exc_info"] = exc_info;
+    _pymod_logger.attr("error")(tuple(args), **kwargs);
+}
+
+void event_loop::call_exception_handler(object context)
+{
+    if (_exception_handler == object())
+    {
+        try
+        {
+            default_exception_handler(context);
+        }
+        catch (const error_already_set& e)
+        {
+            if (PyErr_ExceptionMatches(PyExc_SystemExit)
+                || PyErr_ExceptionMatches(PyExc_KeyboardInterrupt))
+            {
+                // raise
+            }
+            else
+            {
+                PyErr_Clear();
+                list args;
+                dict kwargs;
+                args.append(str("Exception in default exception handler"));
+                kwargs["exc_info"] = true;
+                _pymod_logger.attr("error")(tuple(args), **kwargs);
+            }
+        }
+    }
+    else
+    {
+        try
+        {
+            _exception_handler(context);
+        }
+        catch (const error_already_set& e)
+        {
+            if (PyErr_ExceptionMatches(PyExc_SystemExit)
+                || PyErr_ExceptionMatches(PyExc_KeyboardInterrupt))
+            {
+                // raise
+            }
+            else
+            {
+                PyObject *ptype, *pvalue, *ptraceback;
+                PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+                PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
+                object type(handle<>(ptype));
+                object value(handle<>(pvalue));
+                object traceback(handle<>(ptraceback));
+                try
+                {
+                    dict tmp_dict;
+                    tmp_dict["message"] = str("Unhandled error in exception handler");
+                    tmp_dict["exception"] = value;
+                    tmp_dict["context"] = context;
+                    default_exception_handler(tmp_dict);
+                }
+                catch (const error_already_set& e)
+                {
+                    if (PyErr_ExceptionMatches(PyExc_SystemExit)
+                        || PyErr_ExceptionMatches(PyExc_KeyboardInterrupt))
+                    {
+                        // raise
+                    }
+                    else
+                    {
+                        boost::python::list args;
+                        boost::python::dict kwargs;
+                        args.append(str("Exception in default exception handler"));
+                        kwargs["exc_info"] = true;
+                        _pymod_logger.attr("error")(tuple(args), **kwargs);
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 }}}
