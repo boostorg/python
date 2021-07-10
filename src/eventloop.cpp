@@ -27,24 +27,27 @@ bool _hasattr(object o, const char* name)
     return PyObject_HasAttrString(o.ptr(), name);
 }
 
-void _sock_recv_handler(
-    std::promise<std::vector<char>>& prom_data, 
-    std::promise<size_t>& prom_nbytes_read, 
-    size_t nbytes, 
-    int fd)
+void _sock_recv_handler(object fut, size_t nbytes, int fd)
 {
     std::vector<char> buffer(nbytes);
-    prom_nbytes_read.set_value(read(fd, buffer.data(), nbytes));
-    prom_data.set_value(std::move(buffer));
+    read(fd, buffer.data(), nbytes);
+    fut.attr("set_result")(object(handle<>(PyBytes_FromStringAndSize(buffer.data(), nbytes))));
 }
 
-void _sock_send_handler(std::promise<size_t>& prom, int fd, const char *py_str, ssize_t len)
+void _sock_recv_into_handler(object fut, size_t nbytes, int fd)
 {
-    size_t nwrite = write(fd, py_str, len);
-    prom.set_value(nwrite);
+    std::vector<char> buffer(nbytes);
+    ssize_t nbytes_read = read(fd, buffer.data(), nbytes);
+    fut.attr("set_result")(nbytes_read);
 }
 
-void _sock_connect_cb(object pymod_socket, std::promise<void>& prom, std::future<void>& fut, object sock, object addr)
+void _sock_send_handler(object fut, int fd, const char *py_str, ssize_t len)
+{
+    write(fd, py_str, len);
+    fut.attr("set_result")(object());
+}
+
+void _sock_connect_cb(object pymod_socket, object fut, object sock, object addr)
 {
     try 
     {
@@ -55,7 +58,7 @@ void _sock_connect_cb(object pymod_socket, std::promise<void>& prom, std::future
             PyErr_SetString(PyExc_OSError, "Connect call failed {address}");
             throw_error_already_set();
         }
-        prom.set_value();
+        fut.attr("set_result")(object());
     }
     catch (const error_already_set& e)
     {
@@ -73,12 +76,12 @@ void _sock_connect_cb(object pymod_socket, std::promise<void>& prom, std::future
         else
         {
             PyErr_Clear();
-            prom.set_exception(std::current_exception());
+            fut.attr("set_exception")(std::current_exception());
         }
     }
 }
 
-void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<object>& fut, object sock)
+void _sock_accept(event_loop& loop, object fut, object sock)
 {
     int fd = extract<int>(sock.attr("fileno")());
     object conn;
@@ -89,7 +92,7 @@ void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<obje
         conn = ret[0];
         address = ret[1];
         conn.attr("setblocking")(object(false));
-        prom.set_value(make_tuple(conn, address));
+        fut.attr("set_result")(make_tuple(conn, address));
     }
     catch (const error_already_set& e)
     {
@@ -98,7 +101,7 @@ void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<obje
         {
             PyErr_Clear();
             loop.add_reader(fd, make_function(bind(
-                _sock_accept, boost::ref(loop), boost::ref(prom), boost::ref(fut), sock),
+                _sock_accept, boost::ref(loop), fut, sock),
                 default_call_policies(), boost::mpl::vector<void, object>()));
         }
         else if (PyErr_ExceptionMatches(PyExc_SystemExit)
@@ -109,22 +112,22 @@ void _sock_accept(event_loop& loop, std::promise<object>& prom, std::future<obje
         else
         {
             PyErr_Clear();
-            prom.set_exception(std::current_exception());
+            fut.attr("set_exception")(std::current_exception());
         }
     }  
 }
 
-void _getaddrinfo_handler(object pymod_socket, std::promise<object>& prom, 
+void _getaddrinfo_handler(object pymod_socket, object fut, 
     object host, int port, int family, int type, int proto, int flags)
 {
     object res = pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
-    prom.set_value(res);
+    fut.attr("set_result")(res);
 }
 
-void _getnameinfo_handler(object pymod_socket, std::promise<object>& prom, object sockaddr, int flags)
+void _getnameinfo_handler(object pymod_socket, object fut, object sockaddr, int flags)
 {
     object res = pymod_socket.attr("getnameinfo")(sockaddr, flags);
-    prom.set_value(res);
+    fut.attr("set_result")(res);
 }
 
 }
@@ -193,29 +196,20 @@ void event_loop::call_at(double when, object f)
 object event_loop::sock_recv(object sock, size_t nbytes)
 {
     int fd = extract<int>(sock.attr("fileno")());
-    std::promise<std::vector<char>> prom_data;
-    std::future<std::vector<char>> fut_data = prom_data.get_future();
-    std::promise<size_t> prom_nbytes_read;
-    std::future<size_t> fut_nbytes_read = prom_nbytes_read.get_future();
-    add_reader(fd, make_function(bind(_sock_recv_handler, 
-        boost::ref(prom_data), boost::ref(prom_nbytes_read), nbytes, fd), 
+    object fut = _pymod_concurrent_future.attr("Future")();
+    add_reader(fd, make_function(bind(_sock_recv_handler, fut, nbytes, fd), 
         default_call_policies(), boost::mpl::vector<void, object>()));
-    return object(handle<>(PyBytes_FromStringAndSize(fut_data.get().data(), nbytes)));
+    return fut;
 }
 
-size_t event_loop::sock_recv_into(object sock, object buffer)
+object event_loop::sock_recv_into(object sock, object buffer)
 {
     int fd = extract<int>(sock.attr("fileno")());
     ssize_t nbytes = len(buffer);
-    std::promise<std::vector<char>> prom_data;
-    std::future<std::vector<char>> fut_data = prom_data.get_future();
-    std::promise<size_t> prom_nbytes_read;
-    std::future<size_t> fut_nbytes_read = prom_nbytes_read.get_future();
-    add_reader(fd, make_function(bind(_sock_recv_handler, 
-        boost::ref(prom_data), boost::ref(prom_nbytes_read), nbytes, fd), 
+    object fut = _pymod_concurrent_future.attr("Future")();
+    add_reader(fd, make_function(bind(_sock_recv_into_handler, fut, nbytes, fd), 
         default_call_policies(), boost::mpl::vector<void, object>()));
-    buffer = object(handle<>(PyBytes_FromStringAndSize(fut_data.get().data(), nbytes)));
-    return fut_nbytes_read.get();
+    return fut;
 }
 
 object event_loop::sock_sendall(object sock, object data)
@@ -223,28 +217,25 @@ object event_loop::sock_sendall(object sock, object data)
     int fd = extract<int>(sock.attr("fileno")());
     char const* py_str = extract<char const*>(data.attr("decode")());
     ssize_t py_str_len = len(data);
-    std::promise<size_t> prom;
-    std::future<size_t> fut = prom.get_future();
-    add_writer(fd, make_function(bind(_sock_send_handler, std::ref(prom), fd, py_str, py_str_len), 
+    object fut = _pymod_concurrent_future.attr("Future")();
+    add_writer(fd, make_function(bind(_sock_send_handler, fut, fd, py_str, py_str_len), 
         default_call_policies(), boost::mpl::vector<void, object>()));
-    fut.wait();
-    return object();
+    return fut;
 }
 
-void event_loop::sock_connect(object sock, object address)
+object event_loop::sock_connect(object sock, object address)
 {
     
     if (!_hasattr(_pymod_socket, "AF_UNIX") || sock.attr("family") != _pymod_socket.attr("AF_UNIX"))
     {
         // TODO: _ensure_resolve
     }
-    std::promise<void> prom;
-    std::future<void> fut = prom.get_future();
+    object fut = _pymod_concurrent_future.attr("Future")();
     int fd = extract<int>(sock.attr("fileno")());
     try 
     {
         sock.attr("connect")(address);
-        prom.set_value();
+        fut.attr("set_result")(object());
     }
     catch (const error_already_set& e)
     {
@@ -253,7 +244,7 @@ void event_loop::sock_connect(object sock, object address)
         {
             PyErr_Clear();
             add_writer(fd, make_function(bind(
-                _sock_connect_cb, _pymod_socket, boost::ref(prom), boost::ref(fut), sock, address),
+                _sock_connect_cb, _pymod_socket, fut, sock, address),
                 default_call_policies(), boost::mpl::vector<void, object>()));
         }
         else if (PyErr_ExceptionMatches(PyExc_SystemExit)
@@ -264,55 +255,54 @@ void event_loop::sock_connect(object sock, object address)
         else
         {
             PyErr_Clear();
-            prom.set_exception(std::current_exception());
+            fut.attr("set_exception")(std::current_exception());
         }
     }
-    fut.wait();
+    return fut;
 }
 
 object event_loop::sock_accept(object sock)
 {
-    std::promise<object> prom;
-    std::future<object> fut = prom.get_future();
-    _sock_accept(*this, prom, fut, sock);
-    return fut.get();
+    object fut = _pymod_concurrent_future.attr("Future")();
+    _sock_accept(*this, fut, sock);
+    return fut;
 }
 
 // TODO: implement this
-void event_loop::sock_sendfile(object sock, object file, int offset, int count, bool fallback)
+object event_loop::sock_sendfile(object sock, object file, int offset, int count, bool fallback)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented!");
     throw_error_already_set();
+    return object();
 }
 
 // TODO: implement this
-void event_loop::start_tls(object transport, object protocol, object sslcontext, 
+object event_loop::start_tls(object transport, object protocol, object sslcontext, 
     bool server_side, object server_hostname, object ssl_handshake_timeout)
 {
     PyErr_SetString(PyExc_NotImplementedError, "Not implemented!");
     throw_error_already_set();
+    return object();
 }
 
 object event_loop::getaddrinfo(object host, int port, int family, int type, int proto, int flags)
 {
-    std::promise<object> prom;
-    std::future<object> fut = prom.get_future();
+    object fut = _pymod_concurrent_future.attr("Future")();
     call_soon(make_function(
-        bind(_getaddrinfo_handler, _pymod_socket, boost::ref(prom), host, port, family, type, proto, flags),
+        bind(_getaddrinfo_handler, _pymod_socket, fut, host, port, family, type, proto, flags),
         default_call_policies(), 
         boost::mpl::vector<void, object>()));
-    return fut.get();
+    return fut;
 }
 
 object event_loop::getnameinfo(object sockaddr, int flags)
 {
-    std::promise<object> prom;
-    std::future<object> fut = prom.get_future();
+    object fut = _pymod_concurrent_future.attr("Future")();
     call_soon(make_function(
-        bind(_getnameinfo_handler, _pymod_socket, boost::ref(prom), sockaddr, flags),
+        bind(_getnameinfo_handler, _pymod_socket, fut, sockaddr, flags),
         default_call_policies(),
         boost::mpl::vector<void, object>()));
-    return fut.get();
+    return fut;
 }
 
 void event_loop::default_exception_handler(object context)

@@ -80,17 +80,17 @@ public:
 
     object sock_recv(object sock, size_t nbytes);
 
-    size_t sock_recv_into(object sock, object buffer);
+    object sock_recv_into(object sock, object buffer);
 
     object sock_sendall(object sock, object data);
 
-    void sock_connect(object sock, object address);
+    object sock_connect(object sock, object address);
 
     object sock_accept(object sock);
     
-    void sock_sendfile(object sock, object file, int offset = 0, int count = 0, bool fallback = true);
+    object sock_sendfile(object sock, object file, int offset = 0, int count = 0, bool fallback = true);
 
-    void start_tls(object transport, object protocol, object sslcontext, 
+    object start_tls(object transport, object protocol, object sslcontext, 
         bool server_side = false, 
         object server_hostname = object(), 
         object ssl_handshake_timeout = object());
@@ -123,6 +123,7 @@ private:
     object _pymod_socket = import("socket");
     object _pymod_traceback = import("traceback");
     object _pymod_logger = import("asyncio.log").attr("logger");
+    object _pymod_concurrent_future = import("concurrent").attr("futures");
     object _exception_handler = object();
     boost::asio::io_context::strand _strand;
     std::unordered_map<int, std::unique_ptr<boost::asio::steady_timer>> _id_to_timer_map;
