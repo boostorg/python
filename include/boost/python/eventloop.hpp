@@ -18,8 +18,8 @@ namespace boost { namespace python { namespace asio {
 class event_loop
 {
 public:
-    event_loop(boost::asio::io_context& ctx): 
-        _strand{ctx}, _created_time{std::chrono::steady_clock::now()}
+    event_loop(boost::asio::io_context::strand& strand): 
+        _strand{strand}, _created_time{std::chrono::steady_clock::now()}
     {
         try
         {
