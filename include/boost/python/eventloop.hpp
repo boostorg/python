@@ -37,9 +37,7 @@ public:
     // TODO: An instance of asyncio.Handle is returned, which can be used later to cancel the callback.
     inline void call_soon(object f)
     {
-        _strand.post([f, loop=this] {
-            f(boost::ref(*loop));
-        });
+        _strand.post([f, loop=this] {f();});
         return;
     }
 
@@ -118,7 +116,6 @@ public:
     void call_exception_handler(object context);
 
 private:
-    int64_t _timer_id = 0;
     object _pymod_ssl = object();
     object _pymod_socket = import("socket");
     object _pymod_traceback = import("traceback");
@@ -126,7 +123,6 @@ private:
     object _pymod_concurrent_future = import("concurrent").attr("futures");
     object _exception_handler = object();
     boost::asio::io_context::strand _strand;
-    std::unordered_map<int, std::unique_ptr<boost::asio::steady_timer>> _id_to_timer_map;
     // read: key = fd * 2 + 0, write: key = fd * 2 + 1
     std::unordered_map<int, std::unique_ptr<boost::asio::posix::stream_descriptor>> _descriptor_map;
     std::chrono::steady_clock::time_point _created_time;

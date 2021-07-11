@@ -27,26 +27,6 @@ bool _hasattr(object o, const char* name)
     return PyObject_HasAttrString(o.ptr(), name);
 }
 
-void _sock_recv_handler(object fut, size_t nbytes, int fd)
-{
-    std::vector<char> buffer(nbytes);
-    read(fd, buffer.data(), nbytes);
-    fut.attr("set_result")(object(handle<>(PyBytes_FromStringAndSize(buffer.data(), nbytes))));
-}
-
-void _sock_recv_into_handler(object fut, size_t nbytes, int fd)
-{
-    std::vector<char> buffer(nbytes);
-    ssize_t nbytes_read = read(fd, buffer.data(), nbytes);
-    fut.attr("set_result")(nbytes_read);
-}
-
-void _sock_send_handler(object fut, int fd, const char *py_str, ssize_t len)
-{
-    write(fd, py_str, len);
-    fut.attr("set_result")(object());
-}
-
 void _sock_connect_cb(object pymod_socket, object fut, object sock, object addr)
 {
     try 
@@ -117,19 +97,6 @@ void _sock_accept(event_loop& loop, object fut, object sock)
     }  
 }
 
-void _getaddrinfo_handler(object pymod_socket, object fut, 
-    object host, int port, int family, int type, int proto, int flags)
-{
-    object res = pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
-    fut.attr("set_result")(res);
-}
-
-void _getnameinfo_handler(object pymod_socket, object fut, object sockaddr, int flags)
-{
-    object res = pymod_socket.attr("getnameinfo")(sockaddr, flags);
-    fut.attr("set_result")(res);
-}
-
 }
 
 void event_loop::_add_reader_or_writer(int fd, object f, int key)
@@ -169,20 +136,11 @@ void event_loop::_remove_reader_or_writer(int key)
 
 void event_loop::call_later(double delay, object f)
 {
-    // add timer
-    _id_to_timer_map.emplace(_timer_id,
-        std::move(std::make_unique<boost::asio::steady_timer>(_strand.context(),
-            std::chrono::steady_clock::now() + std::chrono::nanoseconds(int64_t(delay * 1e9))))
-    );
-
-    _id_to_timer_map.find(_timer_id)->second->async_wait(
-        // remove timer
-        boost::asio::bind_executor(_strand, [id=_timer_id, f, loop=this] (const boost::system::error_code& ec)
-        {
-            loop->_id_to_timer_map.erase(id);
-            loop->call_soon(f);
-        }));
-    _timer_id++;
+    auto p_timer = std::make_shared<boost::asio::steady_timer>(_strand.context(),
+            std::chrono::nanoseconds(int64_t(delay * 1e9)));
+    p_timer->async_wait(boost::asio::bind_executor(
+        _strand, 
+        [f, p_timer, this] (const boost::system::error_code& ec) {f();}));
 }
 
 void event_loop::call_at(double when, object f)
@@ -196,31 +154,48 @@ void event_loop::call_at(double when, object f)
 object event_loop::sock_recv(object sock, size_t nbytes)
 {
     int fd = extract<int>(sock.attr("fileno")());
-    object fut = _pymod_concurrent_future.attr("Future")();
-    add_reader(fd, make_function(bind(_sock_recv_handler, fut, nbytes, fd), 
+    int fd_dup = dup(fd);
+    object py_fut = _pymod_concurrent_future.attr("Future")();
+    add_reader(fd_dup, make_function(
+        [py_fut, nbytes, fd=fd_dup] (object obj) {
+            std::vector<char> buffer(nbytes);
+            read(fd, buffer.data(), nbytes);
+            py_fut.attr("set_result")(object(handle<>(PyBytes_FromStringAndSize(buffer.data(), nbytes))));
+        },
         default_call_policies(), boost::mpl::vector<void, object>()));
-    return fut;
+    return py_fut;
 }
 
 object event_loop::sock_recv_into(object sock, object buffer)
 {
     int fd = extract<int>(sock.attr("fileno")());
+    int fd_dup = dup(fd);
     ssize_t nbytes = len(buffer);
-    object fut = _pymod_concurrent_future.attr("Future")();
-    add_reader(fd, make_function(bind(_sock_recv_into_handler, fut, nbytes, fd), 
+    object py_fut = _pymod_concurrent_future.attr("Future")();
+    add_reader(fd_dup, make_function(
+        [py_fut, nbytes, fd=fd_dup] (object obj) {
+            std::vector<char> buffer(nbytes);
+            ssize_t nbytes_read = read(fd, buffer.data(), nbytes);
+            py_fut.attr("set_result")(nbytes_read);
+        }, 
         default_call_policies(), boost::mpl::vector<void, object>()));
-    return fut;
+    return py_fut;
 }
 
 object event_loop::sock_sendall(object sock, object data)
 {
     int fd = extract<int>(sock.attr("fileno")());
+    int fd_dup = dup(fd);
     char const* py_str = extract<char const*>(data.attr("decode")());
     ssize_t py_str_len = len(data);
-    object fut = _pymod_concurrent_future.attr("Future")();
-    add_writer(fd, make_function(bind(_sock_send_handler, fut, fd, py_str, py_str_len), 
+    object py_fut = _pymod_concurrent_future.attr("Future")();
+    add_writer(fd_dup, make_function(
+        [py_fut, fd, py_str, py_str_len] (object obj) {
+            write(fd, py_str, py_str_len);
+            py_fut.attr("set_result")(object());
+        }, 
         default_call_policies(), boost::mpl::vector<void, object>()));
-    return fut;
+    return py_fut;
 }
 
 object event_loop::sock_connect(object sock, object address)
@@ -243,7 +218,7 @@ object event_loop::sock_connect(object sock, object address)
             || PyErr_ExceptionMatches(PyExc_InterruptedError))
         {
             PyErr_Clear();
-            add_writer(fd, make_function(bind(
+            add_writer(dup(fd), make_function(bind(
                 _sock_connect_cb, _pymod_socket, fut, sock, address),
                 default_call_policies(), boost::mpl::vector<void, object>()));
         }
@@ -287,22 +262,28 @@ object event_loop::start_tls(object transport, object protocol, object sslcontex
 
 object event_loop::getaddrinfo(object host, int port, int family, int type, int proto, int flags)
 {
-    object fut = _pymod_concurrent_future.attr("Future")();
+    object py_fut = _pymod_concurrent_future.attr("Future")();
     call_soon(make_function(
-        bind(_getaddrinfo_handler, _pymod_socket, fut, host, port, family, type, proto, flags),
+        [this, py_fut, host, port, family, type, proto, flags] (object obj) {
+            object res = _pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
+            py_fut.attr("set_result")(res);
+        },
         default_call_policies(), 
         boost::mpl::vector<void, object>()));
-    return fut;
+    return py_fut;
 }
 
 object event_loop::getnameinfo(object sockaddr, int flags)
 {
-    object fut = _pymod_concurrent_future.attr("Future")();
+    object py_fut = _pymod_concurrent_future.attr("Future")();
     call_soon(make_function(
-        bind(_getnameinfo_handler, _pymod_socket, fut, sockaddr, flags),
+        [this, py_fut, sockaddr, flags] (object obj) {
+            object res = _pymod_socket.attr("getnameinfo")(sockaddr, flags);
+            py_fut.attr("set_result")(res);
+        },
         default_call_policies(),
         boost::mpl::vector<void, object>()));
-    return fut;
+    return py_fut;
 }
 
 void event_loop::default_exception_handler(object context)
@@ -411,9 +392,9 @@ void event_loop::call_exception_handler(object context)
                 PyObject *ptype, *pvalue, *ptraceback;
                 PyErr_Fetch(&ptype, &pvalue, &ptraceback);
                 PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
-                object type(handle<>(ptype));
-                object value(handle<>(pvalue));
-                object traceback(handle<>(ptraceback));
+                object type{handle<>(ptype)};
+                object value{handle<>(pvalue)};
+                object traceback{handle<>(ptraceback)};
                 try
                 {
                     dict tmp_dict;
