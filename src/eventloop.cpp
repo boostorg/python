@@ -9,6 +9,7 @@
 // 3. _ensure_fd_no_transport
 // 4. _ensure_resolve
 
+#include <errno.h>
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -27,7 +28,13 @@ bool _hasattr(object o, const char* name)
     return PyObject_HasAttrString(o.ptr(), name);
 }
 
+void raise_dup_error()
+{
+    PyErr_SetString(PyExc_OSError, std::system_category().message(errno).c_str());
+    throw_error_already_set();
 }
+
+} // namespace
 
 void event_loop::_sock_connect_cb(object pymod_socket, object fut, object sock, object addr)
 {
@@ -100,30 +107,27 @@ void event_loop::call_later(double delay, object f)
 {
     auto p_timer = std::make_shared<boost::asio::steady_timer>(
         _strand.context(),
-        std::chrono::nanoseconds(int64_t(delay * 1e9)));
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(delay)));
     p_timer->async_wait(boost::asio::bind_executor(_strand,
-        [f, p_timer, this] (const boost::system::error_code& ec) {f();}));
+        [f, p_timer] (const boost::system::error_code& ec) {f();}));
 }
 
 void event_loop::call_at(double when, object f)
 {
-    double diff = when - time();
-    if (diff > 0)
-    {
-        auto p_timer = std::make_shared<boost::asio::steady_timer>(
-            _strand.context(),
-            std::chrono::nanoseconds(int64_t(diff * 1e9)));
-        p_timer->async_wait(boost::asio::bind_executor(_strand, 
-            [f, p_timer, this] (const boost::system::error_code& ec) {f();}));
-        return;
-    }
-    call_soon(f);
+    using sc = std::chrono::steady_clock;
+    auto p_timer = std::make_shared<boost::asio::steady_timer>(
+        _strand.context(),
+        sc::duration(static_cast<sc::time_point::rep>(when)));
+    p_timer->async_wait(boost::asio::bind_executor(_strand, 
+        [f, p_timer] (const boost::system::error_code& ec) {f();}));
 }
 
 object event_loop::sock_recv(object sock, size_t nbytes)
 {
     int fd = extract<int>(sock.attr("fileno")());
     int fd_dup = dup(fd);
+    if (fd_dup == -1)
+        raise_dup_error();
     object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
     _async_wait_fd(fd_dup, 
         [py_fut, nbytes, fd=fd_dup] {
@@ -139,6 +143,8 @@ object event_loop::sock_recv_into(object sock, object buffer)
 {
     int fd = extract<int>(sock.attr("fileno")());
     int fd_dup = dup(fd);
+    if (fd_dup == -1)
+        raise_dup_error();
     ssize_t nbytes = len(buffer);
     object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
     _async_wait_fd(fd_dup, 
@@ -155,6 +161,8 @@ object event_loop::sock_sendall(object sock, object data)
 {
     int fd = extract<int>(sock.attr("fileno")());
     int fd_dup = dup(fd);
+    if (fd_dup == -1)
+        raise_dup_error();
     char const* py_str = extract<char const*>(data.attr("decode")());
     ssize_t py_str_len = len(data);
     object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
@@ -187,7 +195,10 @@ object event_loop::sock_connect(object sock, object address)
             || PyErr_ExceptionMatches(PyExc_InterruptedError))
         {
             PyErr_Clear();
-            _async_wait_fd(dup(fd), bind(_sock_connect_cb, _pymod_socket, py_fut, sock, address), _write_key(fd));
+            int fd_dup = dup(fd);
+            if (fd_dup == -1)
+                raise_dup_error();
+            _async_wait_fd(fd_dup, bind(_sock_connect_cb, _pymod_socket, py_fut, sock, address), _write_key(fd));
         }
         else if (PyErr_ExceptionMatches(PyExc_SystemExit)
             || PyErr_ExceptionMatches(PyExc_KeyboardInterrupt))
@@ -388,4 +399,4 @@ void event_loop::call_exception_handler(object context)
 }
 
 
-}}}
+}}} // namespace boost::python

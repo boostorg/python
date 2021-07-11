@@ -18,8 +18,7 @@ namespace boost { namespace python { namespace asio {
 class event_loop
 {
 public:
-    event_loop(boost::asio::io_context::strand& strand): 
-        _strand{strand}, _created_time{std::chrono::steady_clock::now()}
+    event_loop(const boost::asio::io_context::strand& strand): _strand{strand}
     {
         try
         {
@@ -51,7 +50,7 @@ public:
 
     inline double time()
     {
-        return static_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now() - _created_time).count();
+        return std::chrono::steady_clock::now().time_since_epoch().count();
     }
 
     inline void add_reader(int fd, object f)
@@ -125,7 +124,6 @@ private:
     boost::asio::io_context::strand _strand;
     // read: key = fd * 2 + 0, write: key = fd * 2 + 1
     std::unordered_map<int, std::unique_ptr<boost::asio::posix::stream_descriptor>> _descriptor_map;
-    std::chrono::steady_clock::time_point _created_time;
 
     inline int _read_key(int fd)
     {
@@ -161,7 +159,7 @@ private:
     static void _sock_accept(event_loop& loop, object fut, object sock);
 };
 
-}}}
+}}} // namespace boost::python
 
 
 # endif
