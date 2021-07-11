@@ -37,8 +37,7 @@ public:
     // TODO: An instance of asyncio.Handle is returned, which can be used later to cancel the callback.
     inline void call_soon(object f)
     {
-        _strand.post([f, loop=this] {f();});
-        return;
+        _strand.post([f]{f();});
     }
 
     // TODO: implement this
@@ -57,22 +56,22 @@ public:
 
     inline void add_reader(int fd, object f)
     {
-        _add_reader_or_writer(fd, f, fd * 2);
+        _async_wait_fd(fd, f, _read_key(fd));
     }
 
     inline void remove_reader(int fd)
     {
-        _remove_reader_or_writer(fd * 2);
+        _descriptor_map.erase(_read_key(fd));
     }
 
     inline void add_writer(int fd, object f)
     {
-        _add_reader_or_writer(fd, f, fd * 2 + 1);
+        _async_wait_fd(fd, f, _write_key(fd));
     }
 
     inline void remove_writer(int fd)
     {
-        _remove_reader_or_writer(fd * 2 + 1);
+        _descriptor_map.erase(_write_key(fd));
     }
 
 
@@ -119,7 +118,8 @@ private:
     object _pymod_ssl = object();
     object _pymod_socket = import("socket");
     object _pymod_traceback = import("traceback");
-    object _pymod_logger = import("asyncio.log").attr("logger");
+    object _py_wrap_future = import("asyncio").attr("wrap_future");
+    object _py_logger = import("asyncio.log").attr("logger");
     object _pymod_concurrent_future = import("concurrent").attr("futures");
     object _exception_handler = object();
     boost::asio::io_context::strand _strand;
@@ -127,8 +127,38 @@ private:
     std::unordered_map<int, std::unique_ptr<boost::asio::posix::stream_descriptor>> _descriptor_map;
     std::chrono::steady_clock::time_point _created_time;
 
-    void _add_reader_or_writer(int fd, object f, int key);
-    void _remove_reader_or_writer(int key);
+    inline int _read_key(int fd)
+    {
+        return fd * 2;
+    }
+
+    inline int _write_key(int fd)
+    {
+        return fd * 2 + 1;
+    }
+
+    template<typename F>
+    void _async_wait_fd(int fd, F f, int key)
+    {
+        // add descriptor
+        if (_descriptor_map.find(key) == _descriptor_map.end())
+        {
+            _descriptor_map.emplace(key,
+                std::move(std::make_unique<boost::asio::posix::stream_descriptor>(_strand.context(), fd))
+            );
+        }
+
+        _descriptor_map.find(key)->second->async_wait(boost::asio::posix::descriptor::wait_type::wait_read,
+            boost::asio::bind_executor(_strand, [this, key, f] (const boost::system::error_code& ec)
+            {
+                _descriptor_map.erase(key);
+                f();
+            }));
+        return;
+    }
+
+    static void _sock_connect_cb(object pymod_socket, object fut, object sock, object addr);
+    static void _sock_accept(event_loop& loop, object fut, object sock);
 };
 
 }}}
