@@ -98,10 +98,10 @@ void event_loop::_sock_accept(event_loop& loop, object fut, object sock)
 
 void event_loop::call_later(double delay, object f)
 {
-    auto p_timer = std::make_shared<boost::asio::steady_timer>(_strand.context(),
-            std::chrono::nanoseconds(int64_t(delay * 1e9)));
-    p_timer->async_wait(boost::asio::bind_executor(
-        _strand, 
+    auto p_timer = std::make_shared<boost::asio::steady_timer>(
+        _strand.context(),
+        std::chrono::nanoseconds(int64_t(delay * 1e9)));
+    p_timer->async_wait(boost::asio::bind_executor(_strand,
         [f, p_timer, this] (const boost::system::error_code& ec) {f();}));
 }
 
@@ -109,8 +109,15 @@ void event_loop::call_at(double when, object f)
 {
     double diff = when - time();
     if (diff > 0)
-        return call_later(diff, f);
-    return call_soon(f);
+    {
+        auto p_timer = std::make_shared<boost::asio::steady_timer>(
+            _strand.context(),
+            std::chrono::nanoseconds(int64_t(diff * 1e9)));
+        p_timer->async_wait(boost::asio::bind_executor(_strand, 
+            [f, p_timer, this] (const boost::system::error_code& ec) {f();}));
+        return;
+    }
+    call_soon(f);
 }
 
 object event_loop::sock_recv(object sock, size_t nbytes)
