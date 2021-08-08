@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <boost/asio.hpp>
 #include <boost/python.hpp>
+#include <boost/mpl/vector.hpp>
 
 namespace boost { namespace python { namespace asio {
 
@@ -159,7 +160,8 @@ private:
     static void _sock_accept(event_loop& loop, object fut, object sock);
 };
 
-}}} // namespace boost::python
+void set_default_event_loop(const boost::asio::io_context::strand& strand);
 
+}}} // namespace boost::python
 
 # endif

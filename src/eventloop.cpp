@@ -398,5 +398,52 @@ void event_loop::call_exception_handler(object context)
     }
 }
 
+void set_default_event_loop(const boost::asio::io_context::strand& strand)
+{
+    class_<event_loop, boost::noncopyable>("BoostAsioEventLoop", init<boost::asio::io_context::strand&>())
+        .def("call_soon", &event_loop::call_soon)
+        .def("call_soon_thread_safe", &event_loop::call_soon_thread_safe)
+        .def("call_later", &event_loop::call_later)
+        .def("call_at", &event_loop::call_at)
+        .def("time", &event_loop::time)
+        .def("add_reader", &event_loop::add_reader)
+        .def("remove_reader", &event_loop::remove_reader)
+        .def("add_writer", &event_loop::add_writer)
+        .def("remove_writer", &event_loop::remove_writer)
+        .def("sock_recv", &event_loop::sock_recv)
+        .def("sock_recv_into", &event_loop::sock_recv_into)
+        .def("sock_sendall", &event_loop::sock_sendall)
+        .def("sock_connect", &event_loop::sock_connect)
+        .def("sock_accept", &event_loop::sock_accept)
+        .def("sock_sendfile", &event_loop::sock_sendfile)
+        .def("start_tls", &event_loop::start_tls)
+        .def("getaddrinfo", &event_loop::getaddrinfo)
+        .def("getnameinfo", &event_loop::getnameinfo)
+        .def("set_exception_handler", &event_loop::set_exception_handler)
+        .def("get_exception_handler", &event_loop::get_exception_handler)
+        .def("default_exception_handler", &event_loop::default_exception_handler)
+        .def("call_exception_handler", &event_loop::call_exception_handler);
+
+    object asyncio = import("asyncio");
+    object abstract_policy = asyncio.attr("AbstractEventLoopPolicy");
+
+    dict method_dict;
+    std::shared_ptr<event_loop> p_loop = std::make_shared<event_loop>(strand);
+
+    method_dict["get_event_loop"] = make_function(
+        [p_loop] (object e) {return object(boost::ref(*p_loop));},
+        default_call_policies(),
+        boost::mpl::vector<object, object>()
+    );
+
+    object class_boost_policy = call<object>(
+        (PyObject*)&PyType_Type, 
+        str("BoostEventLoopPolicy"),
+        boost::python::make_tuple(abstract_policy),
+        method_dict);
+
+    object boost_policy_instance = class_boost_policy.attr("__call__")();
+    asyncio.attr("set_event_loop_policy")(boost_policy_instance);
+}
 
 }}} // namespace boost::python
