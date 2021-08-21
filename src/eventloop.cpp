@@ -128,7 +128,7 @@ object event_loop::sock_recv(object sock, size_t nbytes)
     int fd_dup = dup(fd);
     if (fd_dup == -1)
         raise_dup_error();
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, nbytes, fd=fd_dup] {
             std::vector<char> buffer(nbytes);
@@ -146,7 +146,7 @@ object event_loop::sock_recv_into(object sock, object buffer)
     if (fd_dup == -1)
         raise_dup_error();
     ssize_t nbytes = len(buffer);
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, nbytes, fd=fd_dup] {
             std::vector<char> buffer(nbytes);
@@ -165,7 +165,7 @@ object event_loop::sock_sendall(object sock, object data)
         raise_dup_error();
     char const* py_str = extract<char const*>(data.attr("decode")());
     ssize_t py_str_len = len(data);
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, fd, py_str, py_str_len] {
             write(fd, py_str, py_str_len);
@@ -182,7 +182,7 @@ object event_loop::sock_connect(object sock, object address)
     {
         // TODO: _ensure_resolve
     }
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     int fd = extract<int>(sock.attr("fileno")());
     try 
     {
@@ -216,7 +216,7 @@ object event_loop::sock_connect(object sock, object address)
 
 object event_loop::sock_accept(object sock)
 {
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _sock_accept(*this, py_fut, sock);
     return py_fut;
 }
@@ -240,7 +240,7 @@ object event_loop::start_tls(object transport, object protocol, object sslcontex
 
 object event_loop::getaddrinfo(object host, int port, int family, int type, int proto, int flags)
 {
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _strand.post(
         [this, py_fut, host, port, family, type, proto, flags] {
             object res = _pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
@@ -251,7 +251,7 @@ object event_loop::getaddrinfo(object host, int port, int family, int type, int 
 
 object event_loop::getnameinfo(object sockaddr, int flags)
 {
-    object py_fut = _py_wrap_future(_pymod_concurrent_future.attr("Future")());
+    object py_fut = create_future();
     _strand.post(
         [this, py_fut, sockaddr, flags] {
             object res = _pymod_socket.attr("getnameinfo")(sockaddr, flags);
@@ -398,6 +398,13 @@ void event_loop::call_exception_handler(object context)
     }
 }
 
+object event_loop::create_future()
+{
+    boost::python::dict kwargs;
+    kwargs["loop"] = boost::ref(*this);
+    return _pymod_asyncio_futures.attr("Future")(*boost::python::tuple(), **kwargs);
+}
+
 void set_default_event_loop(const boost::asio::io_context::strand& strand)
 {
     class_<event_loop, boost::noncopyable>("BoostAsioEventLoop", init<boost::asio::io_context::strand&>())
@@ -422,7 +429,9 @@ void set_default_event_loop(const boost::asio::io_context::strand& strand)
         .def("set_exception_handler", &event_loop::set_exception_handler)
         .def("get_exception_handler", &event_loop::get_exception_handler)
         .def("default_exception_handler", &event_loop::default_exception_handler)
-        .def("call_exception_handler", &event_loop::call_exception_handler);
+        .def("call_exception_handler", &event_loop::call_exception_handler)
+        .def("create_future", &event_loop::create_future)
+        .def("get_debug", &event_loop::get_debug);
 
     object asyncio = import("asyncio");
     object abstract_policy = asyncio.attr("AbstractEventLoopPolicy");

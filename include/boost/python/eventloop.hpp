@@ -114,13 +114,21 @@ public:
 
     void call_exception_handler(object context);
 
+    object create_future();
+
+    // TODO
+    inline bool get_debug()
+    {
+        return false;
+    }
+
 private:
     object _pymod_ssl = object();
     object _pymod_socket = import("socket");
     object _pymod_traceback = import("traceback");
-    object _py_wrap_future = import("asyncio").attr("wrap_future");
+    object _pymod_asyncio_futures = import("asyncio").attr("futures");
     object _py_logger = import("asyncio.log").attr("logger");
-    object _pymod_concurrent_future = import("concurrent").attr("futures");
+    object _pymod_concurrent_futures = import("concurrent").attr("futures");
     object _exception_handler = object();
     boost::asio::io_context::strand _strand;
     // read: key = fd * 2 + 0, write: key = fd * 2 + 1
