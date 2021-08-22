@@ -10,7 +10,6 @@
 // 4. _ensure_resolve
 
 #include <errno.h>
-#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/python.hpp>
@@ -109,7 +108,11 @@ void event_loop::call_later(double delay, object f)
         _strand.context(),
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::duration<double>(delay)));
     p_timer->async_wait(boost::asio::bind_executor(_strand,
-        [f, p_timer] (const boost::system::error_code& ec) {f();}));
+        [f, p_timer] (const boost::system::error_code& ec) {
+            PyEval_AcquireLock();
+            f();
+            PyEval_ReleaseLock();
+        }));
 }
 
 void event_loop::call_at(double when, object f)
@@ -122,6 +125,7 @@ void event_loop::call_at(double when, object f)
         [f, p_timer] (const boost::system::error_code& ec) {f();}));
 }
 
+// TODO: support windows socket
 object event_loop::sock_recv(object sock, size_t nbytes)
 {
     int fd = extract<int>(sock.attr("fileno")());
@@ -131,14 +135,17 @@ object event_loop::sock_recv(object sock, size_t nbytes)
     object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, nbytes, fd=fd_dup] {
+            PyEval_AcquireLock();
             std::vector<char> buffer(nbytes);
             read(fd, buffer.data(), nbytes);
             py_fut.attr("set_result")(object(handle<>(PyBytes_FromStringAndSize(buffer.data(), nbytes))));
+            PyEval_ReleaseLock();
         },
         _read_key(fd));
     return py_fut;
 }
 
+// TODO: support windows socket
 object event_loop::sock_recv_into(object sock, object buffer)
 {
     int fd = extract<int>(sock.attr("fileno")());
@@ -149,14 +156,17 @@ object event_loop::sock_recv_into(object sock, object buffer)
     object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, nbytes, fd=fd_dup] {
+            PyEval_AcquireLock();
             std::vector<char> buffer(nbytes);
             ssize_t nbytes_read = read(fd, buffer.data(), nbytes);
             py_fut.attr("set_result")(nbytes_read);
+            PyEval_ReleaseLock();
         },
         _read_key(fd));
     return py_fut;
 }
 
+// TODO: support windows socket
 object event_loop::sock_sendall(object sock, object data)
 {
     int fd = extract<int>(sock.attr("fileno")());
@@ -168,13 +178,16 @@ object event_loop::sock_sendall(object sock, object data)
     object py_fut = create_future();
     _async_wait_fd(fd_dup, 
         [py_fut, fd, py_str, py_str_len] {
+            PyEval_AcquireLock();
             write(fd, py_str, py_str_len);
             py_fut.attr("set_result")(object());
+            PyEval_ReleaseLock();
         },
         _write_key(fd));
     return py_fut;
 }
 
+// TODO: support windows socket
 object event_loop::sock_connect(object sock, object address)
 {
     
@@ -243,8 +256,10 @@ object event_loop::getaddrinfo(object host, int port, int family, int type, int 
     object py_fut = create_future();
     _strand.post(
         [this, py_fut, host, port, family, type, proto, flags] {
+            PyEval_AcquireLock();
             object res = _pymod_socket.attr("getaddrinfo")(host, port, family, type, proto, flags);
             py_fut.attr("set_result")(res);
+            PyEval_ReleaseLock();
         });
     return py_fut;
 }
@@ -254,8 +269,10 @@ object event_loop::getnameinfo(object sockaddr, int flags)
     object py_fut = create_future();
     _strand.post(
         [this, py_fut, sockaddr, flags] {
+            PyEval_AcquireLock();
             object res = _pymod_socket.attr("getnameinfo")(sockaddr, flags);
             py_fut.attr("set_result")(res);
+            PyEval_ReleaseLock();
         });
     return py_fut;
 }
@@ -455,4 +472,4 @@ void set_default_event_loop(const boost::asio::io_context::strand& strand)
     asyncio.attr("set_event_loop_policy")(boost_policy_instance);
 }
 
-}}} // namespace boost::python
+}}} // namespace boost::python::asio

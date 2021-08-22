@@ -37,7 +37,11 @@ public:
     // TODO: An instance of asyncio.Handle is returned, which can be used later to cancel the callback.
     inline void call_soon(object f)
     {
-        _strand.post([f]{f();});
+        _strand.post([f]{
+            PyEval_AcquireLock();
+            f();
+            PyEval_ReleaseLock();
+        });
     }
 
     // TODO: implement this
@@ -170,6 +174,6 @@ private:
 
 void set_default_event_loop(const boost::asio::io_context::strand& strand);
 
-}}} // namespace boost::python
+}}} // namespace boost::python::asio
 
 # endif
