@@ -9,16 +9,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [python, python3]
-        cxx: [g++, clang++]
-        std: [c++98, c++11, c++14, c++17]
+        python: [python3]
+        cxx: [g++]
+        std: [c++98]
         include:
           # Add the appropriate docker image for each compiler.
           # The images from teeks99/boost-python-test already have boost::python
           # pre-reqs installed, see:
           # https://github.com/teeks99/boost-python-test-docker
-          - cxx: clang++
-            docker-img: teeks99/boost-python-test:clang-12_1.76.0
+          #- cxx: clang++
+          #  docker-img: teeks99/boost-python-test:clang-12_1.76.0
           - cxx: g++
             docker-img: teeks99/boost-python-test:gcc-10_1.76.0
 
