@@ -22,7 +22,7 @@
 
 #ifdef _DEBUG
 # ifndef BOOST_DEBUG_PYTHON
-#  ifdef _MSC_VER  
+#  ifdef _MSC_VER
     // VC8.0 will complain if system headers are #included both with
     // and without _DEBUG defined, so we have to #include all the
     // system headers used by pyconfig.h right here.
@@ -175,6 +175,7 @@ typedef int pid_t;
 #if PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION == 2 && PY_MICRO_VERSION < 2
 # include <boost/python/detail/python22_fixed.h>
 #else
+#define Py_LIMITED_API
 # include <Python.h>
 #endif
 
