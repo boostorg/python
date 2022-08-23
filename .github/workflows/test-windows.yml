@@ -15,16 +15,26 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+    - uses: microsoft/setup-msbuild@v1.1
     - name: setup boost prerequisites
       uses: lukka/run-vcpkg@v6
       with:
-        vcpkgGitCommitId: '8a9a97315aefb3f8bc5d81bf66ca0025938b9c91'
+        vcpkgGitCommitId: '88b1071e39f13b632644d9d953738d345a4ac055'
         vcpkgDirectory: '${{ runner.workspace }}/vcpkg'
         vcpkgTriplet: x64-windows
-        vcpkgArguments: boost-config boost-core boost-function boost-graph boost-iterator boost-lexical-cast boost-mpl boost-preprocessor boost-smart-ptr boost-static-assert boost-align
-
+        vcpkgArguments: >
+          boost-config
+          boost-core
+          boost-function
+          boost-graph
+          boost-iterator
+          boost-lexical-cast
+          boost-mpl
+          boost-preprocessor
+          boost-smart-ptr
+          boost-static-assert
+          boost-align
     - name: setup faber
-      #shell: 'bash'
       run: |
         python -m pip install --upgrade pip
         python -m pip install setuptools faber numpy
