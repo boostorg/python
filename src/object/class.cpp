@@ -766,10 +766,9 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
             throw std::bad_alloc();
 
         const uintptr_t x = reinterpret_cast<uintptr_t>(base_storage) + sizeof(alignment_marker_t);
-        //this has problems for x -> max(void *)
-        //const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) % alignment);
-        //only works for alignments with alignments of powers of 2, but no edge conditions
-        const uintptr_t padding = alignment == 1 ? 0 : ( alignment - (x & (alignment - 1)) );
+        // Padding required to align the start of a data structure is: (alignment - (x % alignment)) % alignment
+        // Since the alignment is a power of two, the formula can be simplified with bitwise AND operator as follow:
+        const uintptr_t padding = (alignment - (x & (alignment - 1))) & (alignment - 1);
         const size_t aligned_offset = sizeof(alignment_marker_t) + padding;
         void* const aligned_storage = (char *)base_storage + aligned_offset;
         BOOST_ASSERT((char *) aligned_storage + holder_size <= (char *)base_storage + base_allocation);
