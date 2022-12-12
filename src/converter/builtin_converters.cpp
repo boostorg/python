@@ -306,6 +306,26 @@ namespace
   };
 #endif 
 
+#ifndef BOOST_NO_CXX11_NULLPTR
+    struct nullptr_rvalue_from_python
+    {
+        static unaryfunc* get_slot(PyObject* obj)
+        {
+            return obj == Py_None ? &py_object_identity : 0;
+        }
+
+        static std::nullptr_t extract(PyObject*)
+        {
+            return nullptr;
+        }
+
+        static PyTypeObject const* get_pytype()
+        {
+            return Py_TYPE(Py_None);
+        }
+    };
+#endif
+
   // A SlotPolicy for extracting bool from a Python object
   struct bool_rvalue_from_python
   {
@@ -549,6 +569,10 @@ BOOST_PYTHON_DECL PyObject* do_arg_to_python(PyObject* x)
 
 void initialize_builtin_converters()
 {
+#ifndef BOOST_NO_CXX11_NULLPTR
+    slot_rvalue_from_python<std::nullptr_t,nullptr_rvalue_from_python>();
+#endif
+
     // booleans
     slot_rvalue_from_python<bool,bool_rvalue_from_python>();
 
