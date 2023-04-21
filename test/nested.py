@@ -14,7 +14,7 @@
     'X'
     
     >>> X.Y
-    <class 'nested_ext.Y'>
+    <class 'nested_ext.X.Y'>
     
     >>> X.Y.__module__
     'nested_ext'

@@ -502,6 +502,16 @@ namespace objects
           );
   }
 
+  str qualname(const char *name)
+  {
+#if PY_VERSION_HEX >= 0x03030000
+      if (PyObject_HasAttrString(scope().ptr(), "__qualname__")) {
+          return str("%s.%s" % make_tuple(scope().attr("__qualname__"), name));
+      }
+#endif
+      return str(name);
+  }
+
   namespace
   {
     // Find a registered class object corresponding to id. Return a
@@ -564,6 +574,9 @@ namespace objects
    
       object m = module_prefix();
       if (m) d["__module__"] = m;
+#if PY_VERSION_HEX >= 0x03030000
+      d["__qualname__"] = qualname(name);
+#endif
 
       if (doc != 0)
           d["__doc__"] = doc;
