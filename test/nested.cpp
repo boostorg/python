@@ -4,6 +4,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
+#include <boost/python/def.hpp>
 #include <boost/python/operators.hpp>
 #include <boost/python/scope.hpp>
 #include "test_class.hpp"
@@ -26,11 +27,13 @@ std::ostream& operator<<(std::ostream& s, Y const& x)
     return s << x.value();
 }
 
+void test_function(const X& x, const Y& y) {}
 
 BOOST_PYTHON_MODULE(nested_ext)
 {
     using namespace boost::python;
 
+    {
     // Establish X as the current scope.
     scope x_class
         = class_<X>("X", init<int>())
@@ -42,6 +45,10 @@ BOOST_PYTHON_MODULE(nested_ext)
     class_<Y>("Y", init<int>())
         .def(str(self))
         ;
+    }
+
+    // The generated docstring will use the fully-qualified name of Y
+    def("test_function", &test_function);
 }
 
 
