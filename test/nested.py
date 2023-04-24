@@ -21,6 +21,9 @@
     
     >>> X.Y.__name__
     'Y'
+
+    >>> test_function.__doc__.strip().split('\\n')[0]
+    'test_function( (X)arg1, (X.Y)arg2) -> None :'
     
 '''
 

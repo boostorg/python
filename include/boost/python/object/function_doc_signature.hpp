@@ -18,7 +18,7 @@
 namespace boost { namespace python { namespace objects {
 
 class function_doc_signature_generator{
-    static const  char * py_type_str(const python::detail::signature_element &s);
+    static str py_type_str(const python::detail::signature_element &s);
     static bool arity_cmp( function const *f1, function const *f2 );
     static bool are_seq_overloads( function const *f1, function const *f2 , bool check_docs);
     static std::vector<function const*> flatten(function const *f);

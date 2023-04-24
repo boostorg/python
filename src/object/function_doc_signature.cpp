@@ -114,19 +114,24 @@ namespace boost { namespace python { namespace objects {
         return res;
     }
 
-    const  char * function_doc_signature_generator::py_type_str(const python::detail::signature_element &s)
+    str function_doc_signature_generator::py_type_str(const python::detail::signature_element &s)
     {
         if (s.basename==std::string("void")){
             static const char * none = "None";
-            return none;
+            return str(none);
         }
 
         PyTypeObject const * py_type = s.pytype_f?s.pytype_f():0;
+#if PY_VERSION_HEX < 0x03030000
         if ( py_type )
-            return  py_type->tp_name;
+            return str(py_type->tp_name);
+#else
+        if ( py_type && (py_type->tp_flags & Py_TPFLAGS_HEAPTYPE) )
+            return str(handle<>(borrowed(((PyHeapTypeObject*)(py_type))->ht_qualname)));
+#endif
         else{
             static const char * object = "object";
-            return object;
+            return str(object);
         }
     }
 
