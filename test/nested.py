@@ -22,6 +22,15 @@
     >>> X.Y.__name__
     'Y'
 
+    >>> X.color.__qualname__
+    'X.color'
+
+    >>> repr(X.color.red)
+    'nested_ext.X.color.red'
+
+    >>> repr(X.color(1))
+    'nested_ext.X.color(1)'
+
     >>> test_function.__doc__.strip().split('\\n')[0]
     'test_function( (X)arg1, (X.Y)arg2) -> None :'
     
