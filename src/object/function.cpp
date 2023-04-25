@@ -489,11 +489,24 @@ void function::add_to_namespace(
 
         assert(!PyErr_Occurred());
         handle<> name_space_name(
-            allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>("__name__"))));
+            allow_null(::PyObject_GetAttrString(name_space.ptr(), const_cast<char*>(
+#if PY_VERSION_HEX < 0x03030000
+                "__name__"
+#else
+                "__qualname__"
+#endif
+            ))));
         PyErr_Clear();
         
         if (name_space_name)
             new_func->m_namespace = object(name_space_name);
+
+        object module_name(
+          PyObject_IsInstance(name_space.ptr(), upcast<PyObject>(&PyModule_Type))
+          ? object(name_space.attr("__name__"))
+          : api::getattr(name_space, "__module__", str())
+        );
+        new_func->m_module = module_name;
     }
 
     if (PyObject_SetAttr(ns, name.ptr(), attribute.ptr()) < 0)
@@ -670,7 +683,7 @@ extern "C"
     static PyObject* function_get_module(PyObject* op, void*)
     {
         function* f = downcast<function>(op);
-        object const& ns = f->get_namespace();
+        object const& ns = f->get_module();
         if (!ns.is_none()) {
             return python::incref(ns.ptr());
         }
