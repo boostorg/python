@@ -5,6 +5,7 @@
 #include <boost/python/module.hpp>
 #include <boost/python/class.hpp>
 #include <boost/python/def.hpp>
+#include <boost/python/enum.hpp>
 #include <boost/python/operators.hpp>
 #include <boost/python/scope.hpp>
 #include "test_class.hpp"
@@ -16,6 +17,8 @@
 
 typedef test_class<> X;
 typedef test_class<1> Y;
+
+enum color { red = 0, blue = 1, green = 2 };
 
 std::ostream& operator<<(std::ostream& s, X const& x)
 {
@@ -44,6 +47,13 @@ BOOST_PYTHON_MODULE(nested_ext)
     // Y will now be defined in the current scope
     class_<Y>("Y", init<int>())
         .def(str(self))
+        ;
+
+    // so will the enum `color`
+    enum_<color>("color")
+        .value("red", red)
+        .value("green", green)
+        .value("blue", blue)
         ;
     }
 
