@@ -42,6 +42,8 @@ struct BOOST_PYTHON_DECL function : PyObject
 
     object const& get_namespace() const { return m_namespace; }
     
+    object const& get_module() const { return m_module; }
+
  private: // helper functions
     object signature(bool show_return_type=false) const;
     object signatures(bool show_return_type=false) const;
@@ -53,6 +55,7 @@ struct BOOST_PYTHON_DECL function : PyObject
     handle<function> m_overloads;
     object m_name;
     object m_namespace;
+    object m_module;
     object m_doc;
     object m_arg_names;
     unsigned m_nkeyword_values;
