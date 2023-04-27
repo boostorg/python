@@ -35,6 +35,8 @@ struct BOOST_PYTHON_DECL function : PyObject
     static void add_to_namespace(
         object const& name_space, char const* name, object const& attribute, char const* doc);
 
+    static object const& add_doc(object const& attribute, char const* doc);
+
     object const& doc() const;
     void doc(object const& x);
     
