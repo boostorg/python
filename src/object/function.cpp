@@ -419,6 +419,30 @@ namespace detail
     extern char cpp_signature_tag[];
 }
 
+object const& function::add_doc(object const& attribute, char const* doc)
+{
+    str _doc;
+
+    if (docstring_options::show_py_signatures_)
+    {
+        _doc += str(const_cast<const char*>(detail::py_signature_tag));
+    }
+    if (doc != 0 && docstring_options::show_user_defined_)
+        _doc += doc;
+
+    if (docstring_options::show_cpp_signatures_)
+    {
+        _doc += str(const_cast<const char*>(detail::cpp_signature_tag));
+    }
+    if(_doc)
+    {    
+        object mutable_attribute(attribute);
+        mutable_attribute.attr("__doc__")= _doc;
+    }
+
+    return attribute;
+}
+
 void function::add_to_namespace(
     object const& name_space, char const* name_, object const& attribute, char const* doc)
 {
@@ -545,24 +569,7 @@ void function::add_to_namespace(
           "C++ signature:", f->signature(true)));
     }
     */
-    str _doc;
-
-    if (docstring_options::show_py_signatures_)
-    {
-        _doc += str(const_cast<const char*>(detail::py_signature_tag));
-    }
-    if (doc != 0 && docstring_options::show_user_defined_)
-        _doc += doc;
-
-    if (docstring_options::show_cpp_signatures_)
-    {
-        _doc += str(const_cast<const char*>(detail::cpp_signature_tag));
-    }
-    if(_doc)
-    {    
-        object mutable_attribute(attribute);
-        mutable_attribute.attr("__doc__")= _doc;
-    }
+    add_doc(attribute, doc);
 }
 
 BOOST_PYTHON_DECL void add_to_namespace(
@@ -575,6 +582,11 @@ BOOST_PYTHON_DECL void add_to_namespace(
     object const& name_space, char const* name, object const& attribute, char const* doc)
 {
     function::add_to_namespace(name_space, name, attribute, doc);
+}
+
+BOOST_PYTHON_DECL object const& add_doc(object const& attribute, char const* doc)
+{
+    return function::add_doc(attribute, doc);
 }
 
 

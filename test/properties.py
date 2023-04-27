@@ -20,6 +20,9 @@ value read only
 >>> x1.value_r
 1
 
+>>> x1.value_r_f
+1
+
 value read - write
 >>> x1.value_rw
 1
@@ -84,7 +87,26 @@ after creating second intstance of X instances count is 2
 
 >>> assert properties.X.value_rw_ds.__doc__ == "value_rw_ds is read-write"
 
+>>> properties.X.value_r_f.fget.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1) -> int :'
+
+>>> properties.X.value_rw_ds.fget.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1) -> int :'
+
+>>> properties.X.value_rw_ds.fset.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1, (int)arg2) -> None :'
+
+>>> properties.X.value_rw_ds.fget.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1) -> int :'
+
+>>> properties.X.value_direct.fset.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1, (int)arg2) -> None :'
+
+>>> properties.X.value_direct.fget.__doc__.strip().split("\\n")[0]
+'None( (properties_ext.X)arg1) -> int :'
 """
+
+# FIXME: cases to cover: pointer-to-member, preconstructed function
 
 #import sys; sys.path.append(r'P:\Actimize4.0\smart_const\py_smart_const___Win32_Debug')
 import properties_ext as properties

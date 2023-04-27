@@ -18,6 +18,8 @@ BOOST_PYTHON_DECL void add_to_namespace(
 BOOST_PYTHON_DECL void add_to_namespace(
     object const& name_space, char const* name, object const& attribute, char const* doc);
 
+BOOST_PYTHON_DECL object const& add_doc(object const& attribute, char const* doc);
+
 }}} // namespace boost::python::objects
 
 #endif // ADD_TO_NAMESPACE_DWA200286_HPP
