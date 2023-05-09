@@ -9,7 +9,7 @@
 # include <boost/python/converter/registered.hpp>
 #  include <boost/python/detail/unwind_type.hpp>
 #  include <boost/python/detail/type_traits.hpp>
-
+# include <boost/python/back_reference.hpp>
 
 namespace boost { namespace python {
 
@@ -42,6 +42,12 @@ struct unwind_type_id_helper{
 
 template <class T>
 inline python::type_info unwind_type_id_(boost::type<T>* = 0, mpl::false_ * =0)
+{
+    return boost::python::detail::unwind_type<unwind_type_id_helper, T> ();
+}
+
+template <class T>
+inline python::type_info unwind_type_id_(boost::type<back_reference<T> >* = 0, mpl::false_ * =0)
 {
     return boost::python::detail::unwind_type<unwind_type_id_helper, T> ();
 }
