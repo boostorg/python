@@ -333,8 +333,9 @@ namespace objects
           for (instance_holder* p = kill_me->objects, *next; p != 0; p = next)
           {
               next = p->next();
+              void* topmost_object = dynamic_cast<void*>(p);
               p->~instance_holder();
-              instance_holder::deallocate(inst, dynamic_cast<void*>(p));
+              instance_holder::deallocate(inst, topmost_object);
           }
         
           // Python 2.2.1 won't add weak references automatically when
