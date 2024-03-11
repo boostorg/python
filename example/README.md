@@ -3,7 +3,7 @@
 # Examples
 
 This directory contains various examples using Boost.Python.
-You may compile these using the `bjam` command either in this directory
+You may compile these using the `b2` command either in this directory
 or in any of the subdirectories.
 You may need to adjust the paths in the Jamroot file if Boost.Python
 is not installed in a default location.

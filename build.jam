@@ -1,0 +1,42 @@
+# Copyright René Ferdinand Rivera Morell 2024
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+import project ;
+
+project /boost/python
+    : common-requirements
+        <source>/boost/align//boost_align
+        <source>/boost/bind//boost_bind
+        <source>/boost/config//boost_config
+        <source>/boost/conversion//boost_conversion
+        <source>/boost/core//boost_core
+        <source>/boost/detail//boost_detail
+        <source>/boost/foreach//boost_foreach
+        <source>/boost/function//boost_function
+        <source>/boost/graph//boost_graph
+        <source>/boost/integer//boost_integer
+        <source>/boost/iterator//boost_iterator
+        <source>/boost/lexical_cast//boost_lexical_cast
+        <source>/boost/mpl//boost_mpl
+        <source>/boost/numeric_conversion//boost_numeric_conversion
+        <source>/boost/preprocessor//boost_preprocessor
+        <source>/boost/property_map//boost_property_map
+        <source>/boost/smart_ptr//boost_smart_ptr
+        <source>/boost/static_assert//boost_static_assert
+        <source>/boost/tuple//boost_tuple
+        <source>/boost/type_traits//boost_type_traits
+        <source>/boost/utility//boost_utility
+        <include>include
+    ;
+
+explicit
+    [ alias boost_python : build//boost_python ]
+    [ alias boost_numpy : build//boost_numpy ]
+    [ alias all : boost_python boost_numpy test ]
+    ;
+
+call-if : boost-library python
+    : install boost_python boost_numpy
+    ;
