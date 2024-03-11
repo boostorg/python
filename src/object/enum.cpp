@@ -49,7 +49,9 @@ extern "C"
         if (!self->name)
         {
             return
-#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03030000
+                PyUnicode_FromFormat("%S.%S(%ld)", mod, ((PyHeapTypeObject*)(self_->ob_type))->ht_qualname, PyLong_AsLong(self_));
+#elif PY_VERSION_HEX >= 0x03000000
                 PyUnicode_FromFormat("%S.%s(%ld)", mod, self_->ob_type->tp_name, PyLong_AsLong(self_));
 #else
                 PyString_FromFormat("%s.%s(%ld)", PyString_AsString(mod), self_->ob_type->tp_name, PyInt_AS_LONG(self_));
@@ -62,7 +64,9 @@ extern "C"
                 return 0;
 
             return
-#if PY_VERSION_HEX >= 0x03000000
+#if PY_VERSION_HEX >= 0x03030000
+                PyUnicode_FromFormat("%S.%S.%S", mod, ((PyHeapTypeObject*)(self_->ob_type))->ht_qualname, name);
+#elif PY_VERSION_HEX >= 0x03000000
                 PyUnicode_FromFormat("%S.%s.%S", mod, self_->ob_type->tp_name, name);
 #else
                 PyString_FromFormat("%s.%s.%s", 
@@ -145,6 +149,7 @@ static PyTypeObject enum_type_object = {
 };
 
 object module_prefix();
+object qualname(const char *name);
 
 namespace
 {
@@ -175,6 +180,11 @@ namespace
       object module_name = module_prefix();
       if (module_name)
          d["__module__"] = module_name;
+#if PY_VERSION_HEX >= 0x03030000
+      object q = qualname(name);
+      if (q)
+         d["__qualname__"] = q;
+#endif
       if (doc)
          d["__doc__"] = doc;
 
