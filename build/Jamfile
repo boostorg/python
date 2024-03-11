@@ -30,13 +30,24 @@ else
         ;
 }
 
-project boost/python
+project
   : source-location ../src
   ;
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
 rule unless ( test ? : yes * : no * ) { if ! $(test) { return $(yes) ; } else { return $(no) ; } }
 local rule eq ( a : b ) { if $(a) = $(b) { return 1 ; } }
+
+rule tag ( name : type ? : property-set )
+{
+    if python-tag in [ RULENAMES $(__name__) ]
+    {
+        return [  $(__name__).python-tag $(name) : $(type) : $(property-set) ] ;
+    }
+}
+
+if [ python.configured ]
+{
 
 lib boost_python
     : # sources
@@ -92,8 +103,8 @@ lib boost_python
         [ unless [ python.configured ] : <build>no ]
         <dependency>config-warning
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
-        -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-        <tag>@python-tag
+        -<tag>@%boostcpp.tag
+        <tag>@tag
         <conditional>@python.require-py
 
     :   # default build
@@ -102,6 +113,17 @@ lib boost_python
         <link>static:<define>BOOST_PYTHON_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
+
+}
+else
+{
+
+alias boost_python : config-warning ;
+
+}
+
+if [ python.configured ] && [ python.numpy ]
+{
 
 numpy-include = [ python.numpy-include ] ;
 lib boost_numpy
@@ -120,8 +142,8 @@ lib boost_numpy
         <library>/python//numpy
         <library>boost_python
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
-        -<tag>@$(BOOST_JAMROOT_MODULE)%$(BOOST_JAMROOT_MODULE).tag
-        <tag>@python-tag
+        -<tag>@%boostcpp.tag
+        <tag>@tag
         <conditional>@python.require-py
 
     :   # default build
@@ -131,37 +153,10 @@ lib boost_numpy
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
     ;
 
-# boost-install creates `stage` and `install` targets
-#
-# `stage` stages (builds and copies into `stage/lib`) the given libraries
-#   `boost_python` and `boost_numpy` and their dependencies and is similar
-#   to issuing `b2 --with-python stage` from top level
-#
-# `install` installs the two libraries and their dependencies and is similar
-#   to issuing `b2 --with-python install` from top level
-
-if [ python.configured ]
-{
-    if [ python.numpy ]
-    {
-        boost-install boost_python boost_numpy ;
-    }
-    else
-    {
-        boost-install boost_python ;
-    }
 }
 else
 {
 
-# When Python isn't configured, the above `boost-install` is not executed,
-# so we create empty `stage` and `install` targets that do nothing but issue
-# a warning message unless `--without-python` is given
-
-alias stage : config-warning ;
-explicit stage ;
-
-alias install : config-warning ;
-explicit install ;
+alias boost_numpy : config-warning ;
 
 }
