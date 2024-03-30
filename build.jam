@@ -7,27 +7,27 @@ import project ;
 
 project /boost/python
     : common-requirements
-        <source>/boost/align//boost_align
-        <source>/boost/bind//boost_bind
-        <source>/boost/config//boost_config
-        <source>/boost/conversion//boost_conversion
-        <source>/boost/core//boost_core
-        <source>/boost/detail//boost_detail
-        <source>/boost/foreach//boost_foreach
-        <source>/boost/function//boost_function
-        <source>/boost/graph//boost_graph
-        <source>/boost/integer//boost_integer
-        <source>/boost/iterator//boost_iterator
-        <source>/boost/lexical_cast//boost_lexical_cast
-        <source>/boost/mpl//boost_mpl
-        <source>/boost/numeric_conversion//boost_numeric_conversion
-        <source>/boost/preprocessor//boost_preprocessor
-        <source>/boost/property_map//boost_property_map
-        <source>/boost/smart_ptr//boost_smart_ptr
-        <source>/boost/static_assert//boost_static_assert
-        <source>/boost/tuple//boost_tuple
-        <source>/boost/type_traits//boost_type_traits
-        <source>/boost/utility//boost_utility
+        <library>/boost/align//boost_align
+        <library>/boost/bind//boost_bind
+        <library>/boost/config//boost_config
+        <library>/boost/conversion//boost_conversion
+        <library>/boost/core//boost_core
+        <library>/boost/detail//boost_detail
+        <library>/boost/foreach//boost_foreach
+        <library>/boost/function//boost_function
+        <library>/boost/graph//boost_graph
+        <library>/boost/integer//boost_integer
+        <library>/boost/iterator//boost_iterator
+        <library>/boost/lexical_cast//boost_lexical_cast
+        <library>/boost/mpl//boost_mpl
+        <library>/boost/numeric_conversion//boost_numeric_conversion
+        <library>/boost/preprocessor//boost_preprocessor
+        <library>/boost/property_map//boost_property_map
+        <library>/boost/smart_ptr//boost_smart_ptr
+        <library>/boost/static_assert//boost_static_assert
+        <library>/boost/tuple//boost_tuple
+        <library>/boost/type_traits//boost_type_traits
+        <library>/boost/utility//boost_utility
         <include>include
     ;
 
