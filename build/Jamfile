@@ -113,6 +113,7 @@ lib boost_python
     :   # usage requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
+        <define>BOOST_PYTHON_NO_LIB
     ;
 
 }
@@ -153,6 +154,7 @@ lib boost_numpy
     :   # usage requirements
         <link>static:<define>BOOST_NUMPY_STATIC_LIB
         <python-debugging>on:<define>BOOST_DEBUG_PYTHON
+        <define>BOOST_NUMPY_NO_LIB
     ;
 
 }
