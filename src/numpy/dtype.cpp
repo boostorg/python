@@ -107,32 +107,7 @@ int dtype::get_itemsize() const {
 }
 
 bool equivalent(dtype const & a, dtype const & b) {
-    // On Windows x64, the behaviour described on 
-    // http://docs.scipy.org/doc/numpy/reference/c-api.array.html for
-    // PyArray_EquivTypes unfortunately does not extend as expected:
-    // "For example, on 32-bit platforms, NPY_LONG and NPY_INT are equivalent".
-    // This should also hold for 64-bit platforms (and does on Linux), but not
-    // on Windows. Implement an alternative:
-#ifdef _MSC_VER
-    if (sizeof(long) == sizeof(int) &&
-        // Manually take care of the type equivalence.
-        ((a == dtype::get_builtin<long>() || a == dtype::get_builtin<int>()) &&
-         (b == dtype::get_builtin<long>() || b == dtype::get_builtin<int>()) ||
-         (a == dtype::get_builtin<unsigned int>() || a == dtype::get_builtin<unsigned long>()) &&
-         (b == dtype::get_builtin<unsigned int>() || b == dtype::get_builtin<unsigned long>()))) {
-        return true;
-    } else {
-        return PyArray_EquivTypes(
-            reinterpret_cast<PyArray_Descr*>(a.ptr()),
-            reinterpret_cast<PyArray_Descr*>(b.ptr())
-        );
-    }
-#else
-    return PyArray_EquivTypes(
-        reinterpret_cast<PyArray_Descr*>(a.ptr()),
-        reinterpret_cast<PyArray_Descr*>(b.ptr())
-    );
-#endif
+  return a == b;
 }
 
 namespace
