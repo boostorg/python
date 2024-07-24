@@ -32,6 +32,7 @@ else
 
 project
   : source-location ../src
+  : common-requirements <library>$(boost_dependencies)
   ;
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
