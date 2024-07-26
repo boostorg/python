@@ -48,7 +48,7 @@ Next, create a list, and add this tuple to the list. Then use the list to create
     list_for_dtype.append(for_custom_dtype) ;
     np::dtype custom_dtype = np::dtype(list_for_dtype) ;
 
-We are now ready to create an ndarray with dimensions specified by \*shape\* and of custom dtype ::
+We are now ready to create an ndarray with dimensions specified by \*shape\* and of custom dtpye ::
 
     np::ndarray new_array = np::zeros(shape,custom_dtype);
   }
