@@ -30,9 +30,17 @@ else
         ;
 }
 
+constant boost_dependencies_private :
+    /boost/graph//boost_graph
+    /boost/integer//boost_integer
+    /boost/property_map//boost_property_map
+    /boost/smart_ptr//boost_smart_ptr
+    ;
+
 project
   : source-location ../src
   : common-requirements <library>$(boost_dependencies)
+  : requirements <library>$(boost_dependencies_private)
   ;
 
 rule cond ( test ? : yes * : no * ) { if $(test) { return $(yes) ; } else { return $(no) ; } }
