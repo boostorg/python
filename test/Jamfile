@@ -30,7 +30,7 @@ rule py-run ( sources * : input-file ? )
       : $(input-file)
       : #requirements
         <define>BOOST_PYTHON_SUPPRESS_REGISTRY_INITIALIZATION
- 
+
     ] ;
 }
 
@@ -54,6 +54,18 @@ rule require-windows ( properties * )
 
 if [ python.configured ]
 {
+alias base_deps : usage-requirements
+    <library>/boost/align//boost_align
+    <library>/boost/assert//boost_assert
+    <library>/boost/config//boost_config
+    <library>/boost/core//boost_core
+    <library>/boost/detail//boost_detail
+    <library>/boost/function//boost_function
+    <library>/boost/mpl//boost_mpl
+    <library>/boost/preprocessor//boost_preprocessor
+    <library>/boost/static_assert//boost_static_assert
+    <library>/boost/type_traits//boost_type_traits
+    ;
 test-suite python
   :
 
@@ -99,8 +111,8 @@ bpl-test crossmod_exception
 [ bpl-test andreas_beyer ]
 [ bpl-test wrapper_held_type ]
 
-[ bpl-test polymorphism2_auto_ptr 
-  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp 
+[ bpl-test polymorphism2_auto_ptr
+  : polymorphism2_auto_ptr.py polymorphism2.py polymorphism2_auto_ptr.cpp
   : [ requires auto_ptr ]
 ]
 
@@ -121,7 +133,7 @@ bpl-test crossmod_exception
 [ bpl-test try : newtest.py m1.cpp m2.cpp ]
 [ bpl-test const_argument ]
 [ bpl-test keywords : keywords.cpp keywords_test.py ]
-   
+
 
 [ python-extension builtin_converters_ext : builtin_converters.cpp /boost/python//boost_python ]
 [ bpl-test builtin_converters : test_builtin_converters.py builtin_converters_ext ]
@@ -194,13 +206,13 @@ bpl-test crossmod_opaque
     # Whenever the cause for the failure of the polymorphism test is found
     # and fixed, this should be retested.
     <toolset>hp_cxx:<build>no ]
-      
+
 [ python-extension map_indexing_suite_ext
     : map_indexing_suite.cpp int_map_indexing_suite.cpp a_map_indexing_suite.cpp
     /boost/python//boost_python ]
-[ bpl-test  
+[ bpl-test
     map_indexing_suite : map_indexing_suite.py map_indexing_suite_ext ]
-      
+
 [ run import_.cpp /boost/python//boost_python $(PY) : : import_.py ]
 
 # if $(TEST_BIENSTMAN_NON_BUGS)
@@ -214,28 +226,29 @@ bpl-test crossmod_opaque
 
 # --- unit tests of library components ---
 
-[ compile indirect_traits_test.cpp ]
-[ run destroy_test.cpp ]
+[ compile indirect_traits_test.cpp : <use>base_deps ]
+[ run destroy_test.cpp : : : <use>base_deps ]
 [ py-run pointer_type_id_test.cpp ]
 [ py-run bases.cpp ]
-[ run if_else.cpp ]
+[ run if_else.cpp : : : <use>base_deps ]
 [ py-run pointee.cpp ]
-[ run result.cpp ]
+[ run result.cpp : : : <use>base_deps ]
 
-[ compile string_literal.cpp ]
+[ compile string_literal.cpp : <use>base_deps ]
 [ py-compile borrowed.cpp ]
 [ py-compile object_manager.cpp ]
 [ py-compile copy_ctor_mutates_rhs.cpp ]
 
 [ py-run upcast.cpp ]
-  
+
 [ py-compile select_holder.cpp ]
-  
-[ run select_from_python_test.cpp ../src/converter/type_id.cpp 
-  :   
+
+[ run select_from_python_test.cpp ../src/converter/type_id.cpp
+  :
   :
   : <define>BOOST_PYTHON_STATIC_LIB
     <use>$(PY)
+    <use>base_deps
 
 ]
 
