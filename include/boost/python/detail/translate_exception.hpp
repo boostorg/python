@@ -53,7 +53,7 @@ struct translate_exception
         || BOOST_WORKAROUND(__GNUC_PATCHLEVEL__, == 3))
         catch(exception_non_ref& e)
 # else
-        catch(exception_cref e)
+        catch(const exception_cref& e)
 # endif
         {
             translate(e);
