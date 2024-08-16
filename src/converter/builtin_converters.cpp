@@ -214,9 +214,9 @@ namespace
               return numeric_cast<T>(result);
           } else {
               // None of PyInt_AsUnsigned*() functions check for negative
-              // overflow, so use PyInt_AS_LONG instead and check if number is
+              // overflow, so use PyInt_AsLong instead and check if number is
               // negative, issuing the exception appropriately.
-              long result = PyInt_AS_LONG(intermediate);
+              long result = PyInt_AsLong(intermediate);
               if (PyErr_Occurred())
                   throw_error_already_set();
               if (result < 0) {
@@ -268,7 +268,7 @@ namespace
 #if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
-              return PyInt_AS_LONG(intermediate);
+              return PyInt_AsLong(intermediate);
           }
           else
 #endif
@@ -290,7 +290,7 @@ namespace
 #if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
-              return numeric_cast<unsigned BOOST_PYTHON_LONG_LONG>(PyInt_AS_LONG(intermediate));
+              return numeric_cast<unsigned BOOST_PYTHON_LONG_LONG>(PyInt_AsLong(intermediate));
           }
           else
 #endif
@@ -360,12 +360,12 @@ namespace
 #if PY_VERSION_HEX < 0x03000000
           if (PyInt_Check(intermediate))
           {
-              return PyInt_AS_LONG(intermediate);
+              return PyInt_AsLong(intermediate);
           }
           else
 #endif
           {
-              return PyFloat_AS_DOUBLE(intermediate);
+              return PyFloat_AsDouble(intermediate);
           }
       }
       static PyTypeObject const* get_pytype() { return &PyFloat_Type;}
@@ -493,12 +493,12 @@ namespace
 #if PY_VERSION_HEX < 0x03000000
           else if (PyInt_Check(intermediate))
           {
-              return PyInt_AS_LONG(intermediate);
+              return PyInt_AsLong(intermediate);
           }
 #endif
           else
           {
-              return PyFloat_AS_DOUBLE(intermediate);
+              return PyFloat_AsDouble(intermediate);
           }
       }
       static PyTypeObject const* get_pytype() { return &PyComplex_Type;}
