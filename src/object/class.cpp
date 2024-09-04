@@ -728,9 +728,9 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
 {
     assert(PyType_IsSubtype(Py_TYPE(Py_TYPE(self_)), &class_metatype_object));
     objects::instance<>* self = (objects::instance<>*)self_;
-    
-    int total_size_needed = holder_offset + holder_size + alignment - 1;
-    
+
+    std::ptrdiff_t total_size_needed = holder_offset + holder_size + alignment - 1;
+
     if (-Py_SIZE(self) >= total_size_needed)
     {
         // holder_offset should at least point into the variable-sized part
@@ -756,7 +756,7 @@ void* instance_holder::allocate(PyObject* self_, std::size_t holder_offset, std:
         //this has problems for x -> max(void *)
         //const size_t padding = alignment - ((x + sizeof(alignment_marker_t)) % alignment);
         //only works for alignments with alignments of powers of 2, but no edge conditions
-        const uintptr_t padding = alignment == 1 ? 0 : ( alignment - (x & (alignment - 1)) );
+        const uintptr_t padding = (x & (alignment - 1)) ? ( alignment - (x & (alignment - 1)) ) : 0;
         const size_t aligned_offset = sizeof(alignment_marker_t) + padding;
         void* const aligned_storage = (char *)base_storage + aligned_offset;
         BOOST_ASSERT((char *) aligned_storage + holder_size <= (char *)base_storage + base_allocation);
