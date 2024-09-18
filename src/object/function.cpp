@@ -586,6 +586,13 @@ BOOST_PYTHON_DECL void add_to_namespace(
 
 BOOST_PYTHON_DECL object const& add_doc(object const& attribute, char const* doc)
 {
+#if PY_VERSION_HEX >= 0x03000000
+    if (PyInstanceMethod_Check(attribute.ptr())) {
+#else
+    if (PyMethod_Check(attribute.ptr())) {
+#endif
+        return attribute;
+    }
     return function::add_doc(attribute, doc);
 }
 
