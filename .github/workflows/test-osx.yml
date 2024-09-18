@@ -9,14 +9,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6]
+        python-version: [3.8.10]
         cxx: [clang++]
-        std: [c++98, c++11, c++14] # TODO: c++17 is failing !
+        std: [c++11, c++14] # TODO: c++17 is failing !
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: setup prerequisites
@@ -28,9 +28,11 @@ jobs:
       run: |
         python --version
         ${{ matrix.cxx }} --version
+        brew info boost
         faber -v
         sed -e "s/\$PYTHON/python/g" .ci/faber > ~/.faber
         faber \
+          --with-boost-include=/opt/homebrew/Cellar/boost/1.86.0/include \
           --builddir=build \
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
@@ -38,6 +40,7 @@ jobs:
     - name: test
       run: |
         faber \
+          --with-boost-include=/opt/homebrew/Cellar/boost/1.86.0/include \
           --builddir=build\
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
