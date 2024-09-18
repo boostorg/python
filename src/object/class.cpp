@@ -502,7 +502,7 @@ namespace objects
           );
   }
 
-  str qualname(const char *name)
+  object qualname(const char *name)
   {
 #if PY_VERSION_HEX >= 0x03030000
       if (PyObject_HasAttrString(scope().ptr(), "__qualname__")) {
