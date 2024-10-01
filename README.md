@@ -13,6 +13,7 @@ Welcome to Boost.Python, a C++ library which enables seamless interoperability b
 * C++ to Python Exception Translation
 * Default Arguments
 * Keyword Arguments
+* user friendly
 * Manipulating Python objects in C++
 * Exporting C++ Iterators as Python Iterators
 * Documentation Strings
