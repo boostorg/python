@@ -176,7 +176,7 @@ ndarray from_data_impl(void * data,
 		       Container strides,
 		       object const & owner,
 		       bool writeable,
-		       typename boost::enable_if< boost::python::detail::is_integral<typename Container::value_type> >::type * enabled = NULL)
+		       typename boost::enable_if< boost::python::detail::is_integral<typename Container::value_type> >::type * = NULL)
 {
   std::vector<Py_intptr_t> shape_(shape.begin(),shape.end());
   std::vector<Py_intptr_t> strides_(strides.begin(), strides.end());

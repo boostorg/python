@@ -89,7 +89,7 @@ namespace detail
       NameSpaceT& name_space
       , char const* name
       , Func f
-      , keyword_range const& kw // ignored
+      , keyword_range const&
       , CallPolicies const& policies
       , char const* doc
       , module*

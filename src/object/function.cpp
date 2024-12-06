@@ -21,6 +21,7 @@
 #include <boost/python/detail/none.hpp>
 #include <boost/mpl/vector/vector10.hpp>
 
+#include <boost/core/ignore_unused.hpp>
 #include <boost/bind/bind.hpp>
 
 #include <algorithm>
@@ -628,6 +629,7 @@ extern "C"
     function_descr_get(PyObject *func, PyObject *obj, PyObject *type_)
     {
 #if PY_VERSION_HEX >= 0x03000000
+        boost::ignore_unused(type_);
         // The implement is different in Python 3 because of the removal of unbound method
         if (obj == Py_None || obj == NULL) {
             Py_INCREF(func);

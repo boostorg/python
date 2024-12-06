@@ -105,7 +105,7 @@ namespace boost { namespace python { namespace objects {
         return res;
     }
 
-    str function_doc_signature_generator::raw_function_pretty_signature(function const *f, size_t n_overloads,  bool cpp_types )
+    str function_doc_signature_generator::raw_function_pretty_signature(function const *f, size_t /*n_overloads*/,  bool /*cpp_types*/ )
     {
         str res("object");
 
