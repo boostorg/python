@@ -24,6 +24,9 @@ jobs:
         brew install boost
         python -m pip install --upgrade pip
         python -m pip install setuptools faber
+        boostDir=/opt/homebrew/Cellar/boost/1.86.0
+        [[ -d $boostDir ]] || boostDir=/opt/homebrew/Cellar/boost/1.86.0_2
+        echo "boostDir=$boostDir" >> "$GITHUB_ENV"
     - name: build
       run: |
         python --version
@@ -32,7 +35,7 @@ jobs:
         faber -v
         sed -e "s/\$PYTHON/python/g" .ci/faber > ~/.faber
         faber \
-          --with-boost-include=/opt/homebrew/Cellar/boost/1.86.0/include \
+          --with-boost-include=$boostDir/include \
           --builddir=build \
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
@@ -40,7 +43,7 @@ jobs:
     - name: test
       run: |
         faber \
-          --with-boost-include=/opt/homebrew/Cellar/boost/1.86.0/include \
+          --with-boost-include=$boostDir/include \
           --builddir=build\
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
