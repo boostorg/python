@@ -43,6 +43,8 @@ bool is_c_contiguous(std::vector<Py_intptr_t> const & shape,
 		     std::vector<Py_intptr_t> const & strides,
 		     int itemsize)
 {
+  // An itemsize less than 0 is not useful - default to non-contiguity.
+  if (0 > itemsize) return false;
   std::vector<Py_intptr_t>::const_reverse_iterator j = strides.rbegin();
   int total = itemsize;
   for (std::vector<Py_intptr_t>::const_reverse_iterator i = shape.rbegin(); i != shape.rend(); ++i, ++j) 
@@ -57,6 +59,8 @@ bool is_f_contiguous(std::vector<Py_intptr_t> const & shape,
 		     std::vector<Py_intptr_t> const & strides,
 		     int itemsize)
 {
+  // An itemsize less than 0 is not useful - default to non-contiguity.
+  if (0 > itemsize) return false;
   std::vector<Py_intptr_t>::const_iterator j = strides.begin();
   int total = itemsize;
   for (std::vector<Py_intptr_t>::const_iterator i = shape.begin(); i != shape.end(); ++i, ++j)
@@ -70,6 +74,8 @@ bool is_f_contiguous(std::vector<Py_intptr_t> const & shape,
 bool is_aligned(std::vector<Py_intptr_t> const & strides,
 		int itemsize)
 {
+  // An itemsize less than 0 is not useful - default to non-aligned.
+  if (0 > itemsize) return false;
   for (std::vector<Py_intptr_t>::const_iterator i = strides.begin(); i != strides.end(); ++i) 
   {
     if (*i % itemsize) return false;
