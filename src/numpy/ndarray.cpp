@@ -45,6 +45,8 @@ bool is_c_contiguous(std::vector<Py_intptr_t> const & shape,
 {
   // An itemsize less than 0 is not useful - default to non-contiguity.
   if (0 > itemsize) return false;
+  // Check the strides (stride[n]) match the accumulated shapes as per C-style,
+  // i.e. starting from rightmost C-index (itemsize * prod_{i in [n, N)} shape[i]).
   std::vector<Py_intptr_t>::const_reverse_iterator j = strides.rbegin();
   int total = itemsize;
   for (std::vector<Py_intptr_t>::const_reverse_iterator i = shape.rbegin(); i != shape.rend(); ++i, ++j) 
@@ -61,6 +63,8 @@ bool is_f_contiguous(std::vector<Py_intptr_t> const & shape,
 {
   // An itemsize less than 0 is not useful - default to non-contiguity.
   if (0 > itemsize) return false;
+  // Check the strides (stride[n]) match the accumulated shapes as per Fortran-style,
+  // i.e. starting from leftmost C-index (itemsize * prod_{i in [0, n]} shape[i]).
   std::vector<Py_intptr_t>::const_iterator j = strides.begin();
   int total = itemsize;
   for (std::vector<Py_intptr_t>::const_iterator i = shape.begin(); i != shape.end(); ++i, ++j)
@@ -76,6 +80,7 @@ bool is_aligned(std::vector<Py_intptr_t> const & strides,
 {
   // An itemsize less than 0 is not useful - default to non-aligned.
   if (0 > itemsize) return false;
+  // Check all strides to be aligned to itemsize.
   for (std::vector<Py_intptr_t>::const_iterator i = strides.begin(); i != strides.end(); ++i) 
   {
     if (*i % itemsize) return false;
