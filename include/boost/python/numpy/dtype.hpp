@@ -47,7 +47,7 @@ public:
   template <typename T> static dtype get_builtin();
 
   /// @brief Return the size of the data type in bytes.
-  Py_ssize_t get_itemsize() const;
+  boost::python::ssize_t get_itemsize() const;
 
   /**
    *  @brief Compare two dtypes for equivalence.
