@@ -98,7 +98,7 @@ python::detail::new_reference dtype::convert(object const & arg, bool align)
   return python::detail::new_reference(reinterpret_cast<PyObject*>(obj));
 }
 
-int dtype::get_itemsize() const {
+Py_ssize_t dtype::get_itemsize() const {
 #if NPY_ABI_VERSION < 0x02000000
   return reinterpret_cast<PyArray_Descr*>(ptr())->elsize;
 #else
