@@ -41,7 +41,7 @@ int bitflag_to_numpy(ndarray::bitflag f)
 
 bool is_c_contiguous(std::vector<Py_intptr_t> const & shape,
 		     std::vector<Py_intptr_t> const & strides,
-		     int itemsize)
+		     int const itemsize)
 {
   // An itemsize less than 0 is not useful - default to non-contiguity.
   if (0 > itemsize) return false;
@@ -59,7 +59,7 @@ bool is_c_contiguous(std::vector<Py_intptr_t> const & shape,
 
 bool is_f_contiguous(std::vector<Py_intptr_t> const & shape,
 		     std::vector<Py_intptr_t> const & strides,
-		     int itemsize)
+		     int const itemsize)
 {
   // An itemsize less than 0 is not useful - default to non-contiguity.
   if (0 > itemsize) return false;
@@ -76,7 +76,7 @@ bool is_f_contiguous(std::vector<Py_intptr_t> const & shape,
 }
 
 bool is_aligned(std::vector<Py_intptr_t> const & strides,
-		int itemsize)
+		int const itemsize)
 {
   // An itemsize less than 0 is not useful - default to non-aligned.
   if (0 > itemsize) return false;
@@ -128,7 +128,7 @@ ndarray from_data_impl(void * data,
     PyErr_SetString(PyExc_ValueError, "Length of shape and strides arrays do not match.");
     python::throw_error_already_set();
   }
-  int itemsize = dt.get_itemsize();
+  int const itemsize = dt.get_itemsize();
   int flags = 0;
   if (writeable) flags |= NPY_ARRAY_WRITEABLE;
   if (is_c_contiguous(shape, strides, itemsize)) flags |= NPY_ARRAY_C_CONTIGUOUS;
