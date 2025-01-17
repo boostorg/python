@@ -15,6 +15,7 @@
 
 # include <boost/mpl/size.hpp>
 # include <boost/mpl/int.hpp>
+# include <boost/static_assert.hpp>
 
 namespace boost { namespace python {
 
@@ -53,9 +54,7 @@ namespace detail
   {
       enum { arity = mpl::size<Sig>::value - 1 };
       
-      typedef typename detail::error::more_keywords_than_function_arguments<
-          NumKeywords::value, arity
-          >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
+      BOOST_STATIC_ASSERT(NumKeywords::value <= arity);
     
       return objects::function_object(
           detail::caller<F,CallPolicies,Sig>(f, p)
