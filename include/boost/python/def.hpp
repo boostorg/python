@@ -15,6 +15,8 @@
 # include <boost/python/signature.hpp>
 # include <boost/python/detail/scope.hpp>
 
+# include <boost/static_assert.hpp>
+
 namespace boost { namespace python {
 
 namespace detail
@@ -35,9 +37,7 @@ namespace detail
       char const* name, F const& fn, Helper const& helper)
   {
       // Must not try to use default implementations except with method definitions.
-      typedef typename error::multiple_functions_passed_to_def<
-          Helper::has_default_implementation
-          >::type assertion BOOST_ATTRIBUTE_UNUSED;
+      BOOST_STATIC_ASSERT(!Helper::has_default_implementation);
       
       detail::scope_setattr_doc(
           name, boost::python::make_function(
