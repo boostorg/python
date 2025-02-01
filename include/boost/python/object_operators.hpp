@@ -9,7 +9,7 @@
 
 # include <boost/python/object_core.hpp>
 # include <boost/python/call.hpp>
-# include <boost/iterator/detail/enable_if.hpp>
+# include <boost/type_traits/enable_if.hpp>
 # include <boost/mpl/bool.hpp>
 
 # include <boost/iterator/detail/config_def.hpp>
@@ -40,7 +40,7 @@ struct is_object_operators
 # if !defined(BOOST_NO_SFINAE) && !defined(BOOST_NO_IS_CONVERTIBLE)
 template <class L, class R, class T>
 struct enable_binary
-  : boost::iterators::enable_if<is_object_operators<L,R>, T>
+  : boost::enable_if_<is_object_operators<L,R>::value, T>
 {};
 #  define BOOST_PYTHON_BINARY_RETURN(T) typename enable_binary<L,R,T>::type
 # else
