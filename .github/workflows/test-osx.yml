@@ -36,6 +36,7 @@ jobs:
           --builddir=build \
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
           -j`sysctl -n hw.ncpu`
     - name: test
       run: |
@@ -44,5 +45,6 @@ jobs:
           --builddir=build\
           cxx.name=${{ matrix.cxx }} \
           cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
           -j`sysctl -n hw.ncpu` \
           test.report
