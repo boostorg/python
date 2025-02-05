@@ -11,7 +11,7 @@ jobs:
       matrix:
         python: [python, python3]
         cxx: [g++, clang++]
-        std: [c++98, c++11, c++14, c++17]
+        std: [c++11, c++14, c++17]
         include:
           # Add the appropriate docker image for each compiler.
           # The images from teeks99/boost-python-test already have boost::python
