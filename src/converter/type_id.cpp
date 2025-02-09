@@ -5,12 +5,12 @@
 
 #include <boost/python/type_id.hpp>
 #include <boost/python/detail/decorated_type_id.hpp>
-#include <utility>
-#include <vector>
 #include <algorithm>
-#include <memory>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
+#include <utility>
+#include <vector>
 
 #if defined(__QNXNTO__)
 # include <ostream>
@@ -120,7 +120,7 @@ namespace detail
             , std::make_pair(mangled, (char const*)0)
             , compare_first_cstring());
       
-      if (p == demangler.end() || strcmp(p->first, mangled))
+      if (p == demangler.end() || strcmp(p->first, mangled) != 0)
       {
           int status;
           free_mem keeper(
