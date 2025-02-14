@@ -24,6 +24,7 @@
 # include <boost/mpl/push_front.hpp>
 # include <boost/mpl/pop_front.hpp>
 # include <boost/mpl/assert.hpp>
+# include <boost/static_assert.hpp>
 
 namespace boost { namespace python {
 
@@ -182,9 +183,7 @@ namespace detail
   {
       enum { arity = mpl::size<Sig>::value - 1 };
       
-      typedef typename detail::error::more_keywords_than_function_arguments<
-          NumKeywords::value, arity
-          >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
+      BOOST_STATIC_ASSERT(NumKeywords::value <= arity);
     
       typedef typename outer_constructor_signature<Sig>::type outer_signature;
 
