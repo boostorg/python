@@ -31,15 +31,17 @@ extern "C" void (*old_translator)(unsigned, EXCEPTION_POINTERS*)
 #include <exception>
 #include <boost/python/extract.hpp>
 #include <boost/python/str.hpp>
+#include <boost/config.hpp>
+
 struct test_failure : std::exception
 {
     test_failure(char const* expr, char const* /*function*/, char const* file, unsigned line)
       : msg(file + boost::python::str(":%s:") % line + ": Boost.Python assertion failure: " + expr)
     {}
 
-    ~test_failure() throw() {}
+    ~test_failure() BOOST_NOEXCEPT_OR_NOTHROW {}
     
-    char const* what() const throw()
+    char const* what() const BOOST_NOEXCEPT_OR_NOTHROW
     {
         return boost::python::extract<char const*>(msg)();
     }
