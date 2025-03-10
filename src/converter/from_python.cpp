@@ -222,7 +222,7 @@ namespace
       , char const* ref_type)
   {
       handle<> holder(source);
-      if (source->ob_refcnt <= 1)
+      if (Py_REFCNT(source) <= 1)
       {
           handle<> msg(
 #if PY_VERSION_HEX >= 0x3000000
