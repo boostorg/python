@@ -19,8 +19,8 @@
 #include <boost/python/converter/pytype_function.hpp>
 
 #include <boost/cast.hpp>
-#include <string>
 #include <complex>
+#include <string>
 
 namespace boost { namespace python { namespace converter {
 
@@ -388,7 +388,7 @@ namespace
           return (PyString_Check(obj)) ? &obj->ob_type->tp_str : 0;
 
 #endif
-      };
+      }
 
       // Remember that this will be used to construct the result object 
 #if PY_VERSION_HEX >= 0x03000000
@@ -430,7 +430,7 @@ namespace
 #endif
               ? &py_encode_string
             : 0;
-      };
+      }
 
       // Remember that this will be used to construct the result object 
       static std::wstring extract(PyObject* intermediate)
