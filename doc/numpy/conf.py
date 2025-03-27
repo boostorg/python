@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Boost.Python NumPy extension'
-copyright = u'2011, Stefan Seefeld'
+project = 'Boost.Python NumPy extension'
+copyright = '2011, Stefan Seefeld'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -181,8 +181,8 @@ html_add_permalinks = False
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'BoostPythonNumPy.tex', u'Boost.Python NumPy Documentation',
-   u'Stefan Seefeld', 'manual'),
+  ('index', 'BoostPythonNumPy.tex', 'Boost.Python NumPy Documentation',
+   'Stefan Seefeld', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -214,6 +214,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'boostnumpy', u'Boost.Python NumPy Documentation',
-     [u'Stefan Seefeld'], 1)
+    ('index', 'boostnumpy', 'Boost.Python NumPy Documentation',
+     ['Stefan Seefeld'], 1)
 ]

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright Jim Bosch & Ankit Daftery 2010-2012.
 # Distributed under the Boost Software License, Version 1.0.

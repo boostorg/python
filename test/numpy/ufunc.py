@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright Jim Bosch & Ankit Daftery 2010-2012.
 # Distributed under the Boost Software License, Version 1.0.
@@ -24,7 +24,7 @@ class TestUnary(unittest.TestCase):
         assert_array_almost_equal(b, a*2.0) 
         c = numpy.zeros(5, dtype=float)
         d = f(a,output=c)
-        self.assert_(c is d)
+        self.assertTrue(c is d)
         assert_array_almost_equal(d, a*2.0) 
 
     def testList(self):
@@ -47,7 +47,7 @@ class TestBinary(unittest.TestCase):
         assert_array_almost_equal(f(a,b), (a*2+b*3)) 
         c = numpy.zeros(5, dtype=float)
         d = f(a,b,output=c)
-        self.assert_(c is d)
+        self.assertTrue(c is d)
         assert_array_almost_equal(d, a*2 + b*3) 
         assert_array_almost_equal(f(a, 2.0), a*2 + 6.0) 
         assert_array_almost_equal(f(1.0, b), 2.0 + b*3) 

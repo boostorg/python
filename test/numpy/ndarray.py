@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright Jim Bosch & Ankit Daftery 2010-2012.
 # Distributed under the Boost Software License, Version 1.0.
@@ -19,7 +19,7 @@ class TestNdarray(unittest.TestCase):
                 a1 = ndarray_ext.zeros(shape,dt)
                 a2 = v.reshape(a1.shape)
                 self.assertEqual(shape,a1.shape)
-                self.assert_((a1 == a2).all())
+                self.assertTrue((a1 == a2).all())
 
     def testNdzeros_matrix(self):    
         for dtp in (numpy.int16, numpy.int32, numpy.float32, numpy.complex128):
@@ -28,7 +28,7 @@ class TestNdarray(unittest.TestCase):
             a1 = ndarray_ext.zeros_matrix(shape, dt)
             a2 = numpy.matrix(numpy.zeros(shape, dtype=dtp))
             self.assertEqual(shape,a1.shape)
-            self.assert_((a1 == a2).all())
+            self.assertTrue((a1 == a2).all())
             self.assertEqual(type(a1), type(a2))
 
     def testNdarray(self):    
@@ -38,8 +38,8 @@ class TestNdarray(unittest.TestCase):
             dt = numpy.dtype(dtp)
             a1 = ndarray_ext.array(a)
             a2 = ndarray_ext.array(a,dt)
-            self.assert_((a1 == v).all())
-            self.assert_((a2 == v).all())
+            self.assertTrue((a1 == v).all())
+            self.assertTrue((a2 == v).all())
             for shape in ((60,),(6,10),(4,3,5),(2,2,3,5)):
                 a1 = a1.reshape(shape)
                 self.assertEqual(shape,a1.shape)
