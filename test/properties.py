@@ -56,11 +56,10 @@ class instance count from object:
 1
 
 as expected you can't assign new value to read only property
->>> x1.value_r = 2
+>>> x1.value_r = 2  # doctest: +ELLIPSIS
 Traceback (most recent call last):
-  File "properties.py", line 49, in ?
-    x1.value_r = 2
-AttributeError: can't set attribute
+    ...
+AttributeError: ...
 
 setting value_rw to 2. value_direct: 
 >>> x1.value_rw = 2
