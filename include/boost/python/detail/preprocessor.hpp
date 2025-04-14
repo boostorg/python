@@ -26,7 +26,7 @@
 # endif
 
 # ifndef BOOST_PYTHON_MAX_ARITY
-#  define BOOST_PYTHON_MAX_ARITY 15
+#  define BOOST_PYTHON_MAX_ARITY 31
 # endif
 
 # ifndef BOOST_PYTHON_MAX_BASES
