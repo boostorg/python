@@ -34,6 +34,9 @@ np::ndarray reshape(np::ndarray arr,p::tuple tup) { return arr.reshape(tup);}
 Py_intptr_t shape_index(np::ndarray arr,int k) { return arr.shape(k); }
 Py_intptr_t strides_index(np::ndarray arr,int k) { return arr.strides(k); }
 
+bool is_writeable(np::ndarray arr) { return arr.get_flags() & np::ndarray::WRITEABLE; }
+void set_writeable(np::ndarray arr, bool on) { arr.set_flag(np::ndarray::WRITEABLE, on); }
+
 BOOST_PYTHON_MODULE(ndarray_ext)
 {
   np::initialize();
@@ -48,4 +51,6 @@ BOOST_PYTHON_MODULE(ndarray_ext)
   p::def("reshape", reshape);
   p::def("shape_index", shape_index);
   p::def("strides_index", strides_index);
+  p::def("is_writeable", is_writeable);
+  p::def("set_writeable", set_writeable);
 }

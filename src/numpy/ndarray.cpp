@@ -210,6 +210,14 @@ ndarray::bitflag ndarray::get_flags() const
   return numpy::detail::numpy_to_bitflag(get_struct()->flags);
 }
 
+void ndarray::set_flag(ndarray::bitflag flag, bool on) {
+  const int x = numpy::detail::bitflag_to_numpy(flag);
+  if (on)
+    PyArray_ENABLEFLAGS(reinterpret_cast<PyArrayObject*>(this->ptr()), x);
+  else
+    PyArray_CLEARFLAGS(reinterpret_cast<PyArrayObject*>(this->ptr()), x);
+}
+
 ndarray ndarray::transpose() const 
 {
   return ndarray(python::detail::new_reference
