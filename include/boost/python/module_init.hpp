@@ -9,11 +9,16 @@
 # include <boost/preprocessor/cat.hpp>
 # include <boost/preprocessor/stringize.hpp>
 
+# if PY_VERSION_HEX >= 0x03050000
+#  include <boost/static_assert.hpp>
+#  include <boost/type_traits/is_pod.hpp>
+# endif
+
 # ifndef BOOST_PYTHON_MODULE_INIT
 
 namespace boost { namespace python {
 
-#ifdef HAS_CXX11
+#  ifdef HAS_CXX11
 // Use to activate the Py_MOD_GIL_NOT_USED flag.
 class mod_gil_not_used {
 public:
@@ -39,7 +44,7 @@ inline bool gil_not_used_option(F &&, O &&...o) {
 }
 
 }
-#endif // HAS_CXX11
+#  endif // HAS_CXX11
 
 namespace detail {
 
@@ -47,11 +52,19 @@ namespace detail {
 
 BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef&, void(*)(), bool gil_not_used = false);
 
-#else
+#   if PY_VERSION_HEX >= 0x03050000
+
+BOOST_PYTHON_DECL int exec_module(PyObject*, void(*)());
+
+BOOST_PYTHON_DECL int exec_module_with_state(PyObject*, void(*)(void*));
+
+#   endif // PY_VERSION_HEX >= 0x03050000
+
+#  else // PY_VERSION_HEX >= 0x03000000
 
 BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 
-#endif
+#  endif // PY_VERSION_HEX >= 0x03000000
 
 }}}
 
@@ -115,7 +128,161 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
   void BOOST_PP_CAT(init_module_, name)()
 #   endif // HAS_CXX11
 
-#  else
+#   if PY_VERSION_HEX >= 0x03050000
+
+#    if defined(HAS_CXX11) && (PY_VERSION_HEX >= 0x030D0000)
+#     define _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name, ...) \
+  int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
+  { \
+    return boost::python::detail::exec_module( \
+        mod, BOOST_PP_CAT(init_module_, name) ); \
+  } \
+  extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
+  { \
+    static PyModuleDef_Base initial_m_base = { \
+        PyObject_HEAD_INIT(NULL) \
+        0, /* m_init */ \
+        0, /* m_index */ \
+        0 /* m_copy */ };  \
+    static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } }; \
+ \
+    static PyModuleDef_Slot slots[] = { \
+        {Py_mod_exec, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(BOOST_PP_CAT(exec_module_, name)))}, \
+        {Py_mod_gil, boost::python::detail::gil_not_used_option(__VA_ARGS__) ? Py_MOD_GIL_NOT_USED : Py_MOD_GIL_USED}, \
+        {0, NULL} \
+    }; \
+ \
+    static struct PyModuleDef moduledef = { \
+        initial_m_base, \
+        BOOST_PP_STRINGIZE(name), \
+        0, /* m_doc */ \
+        0, /* m_size */ \
+        initial_methods, \
+        slots,  /* m_slots */ \
+        0, /* m_traverse */ \
+        0, /* m_clear */ \
+        0,  /* m_free */ \
+    }; \
+ \
+    return PyModuleDef_Init(&moduledef); \
+  } \
+  void BOOST_PP_CAT(init_module_, name)()
+#     define _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, ...) \
+  int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
+  { \
+    return boost::python::detail::exec_module_with_state( \
+        mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
+  } \
+  extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
+  { \
+    BOOST_STATIC_ASSERT_MSG(boost::is_pod<StateType>::value, \
+        "Module State MUST be a plain POD structure!"); \
+    static PyModuleDef_Base initial_m_base = { \
+        PyObject_HEAD_INIT(NULL) \
+        0, /* m_init */ \
+        0, /* m_index */ \
+        0 /* m_copy */ };  \
+    static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } }; \
+ \
+    static PyModuleDef_Slot slots[] = { \
+        {Py_mod_exec, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(BOOST_PP_CAT(exec_module_, name)))}, \
+        {Py_mod_gil, boost::python::detail::gil_not_used_option(__VA_ARGS__) ? Py_MOD_GIL_NOT_USED : Py_MOD_GIL_USED}, \
+        {0, NULL} \
+    }; \
+ \
+    static struct PyModuleDef moduledef = { \
+        initial_m_base, \
+        BOOST_PP_STRINGIZE(name), \
+        0, /* m_doc */ \
+        sizeof(StateType), /* m_size */ \
+        initial_methods, \
+        slots,  /* m_slots */ \
+        0, /* m_traverse */ \
+        0, /* m_clear */ \
+        0,  /* m_free */ \
+    }; \
+ \
+    return PyModuleDef_Init(&moduledef); \
+  } \
+  void BOOST_PP_CAT(init_module_, name)(StateType* state)
+#    else // ! HAS_CXX11 && Python 3.13+
+#     define _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name) \
+  int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
+  { \
+    return boost::python::detail::exec_module( \
+        mod, BOOST_PP_CAT(init_module_, name) ); \
+  } \
+  extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
+  { \
+    static PyModuleDef_Base initial_m_base = { \
+        PyObject_HEAD_INIT(NULL) \
+        0, /* m_init */ \
+        0, /* m_index */ \
+        0 /* m_copy */ };  \
+    static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } }; \
+ \
+    static PyModuleDef_Slot slots[] = { \
+        {Py_mod_exec, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(BOOST_PP_CAT(exec_module_, name)))}, \
+        {0, NULL} \
+    }; \
+ \
+    static struct PyModuleDef moduledef = { \
+        initial_m_base, \
+        BOOST_PP_STRINGIZE(name), \
+        0, /* m_doc */ \
+        0, /* m_size */ \
+        initial_methods, \
+        slots,  /* m_slots */ \
+        0, /* m_traverse */ \
+        0, /* m_clear */ \
+        0,  /* m_free */ \
+    }; \
+ \
+    return PyModuleDef_Init(&moduledef); \
+  } \
+  void BOOST_PP_CAT(init_module_, name)()
+#     define _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType) \
+  int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
+  { \
+    return boost::python::detail::exec_module_with_state( \
+        mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
+  } \
+  extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
+  { \
+    BOOST_STATIC_ASSERT_MSG(boost::is_pod<StateType>::value, \
+        "Module State MUST be a plain POD structure!"); \
+    static PyModuleDef_Base initial_m_base = { \
+        PyObject_HEAD_INIT(NULL) \
+        0, /* m_init */ \
+        0, /* m_index */ \
+        0 /* m_copy */ };  \
+    static PyMethodDef initial_methods[] = { { 0, 0, 0, 0 } }; \
+ \
+    static PyModuleDef_Slot slots[] = { \
+        {Py_mod_exec, reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(BOOST_PP_CAT(exec_module_, name)))}, \
+        {0, NULL} \
+    }; \
+ \
+    static struct PyModuleDef moduledef = { \
+        initial_m_base, \
+        BOOST_PP_STRINGIZE(name), \
+        0, /* m_doc */ \
+        sizeof(StateType), /* m_size */ \
+        initial_methods, \
+        slots,  /* m_slots */ \
+        0, /* m_traverse */ \
+        0, /* m_clear */ \
+        0,  /* m_free */ \
+    }; \
+ \
+    return PyModuleDef_Init(&moduledef); \
+  } \
+  void BOOST_PP_CAT(init_module_, name)(StateType* state)
+#    endif // HAS_CXX11 && Python 3.13+
+
+#   endif // PY_VERSION_HEX >= 0x03050000
+
+#  else // ! PY_VERSION_HEX >= 0x03000000
 
 #   define _BOOST_PYTHON_MODULE_INIT(name)              \
   void BOOST_PP_CAT(init,name)()                        \
@@ -125,7 +292,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 }                                                       \
   void BOOST_PP_CAT(init_module_,name)()
 
-#  endif
+#  endif // PY_VERSION_HEX >= 0x03000000
 
 #  if defined(HAS_CXX11) && (PY_VERSION_HEX >= 0x03000000)
 #   define BOOST_PYTHON_MODULE_INIT(name, ...)                  \
@@ -137,6 +304,24 @@ extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name, __VA_ARGS__)
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name)
 #  endif // HAS_CXX11 && Python 3
 
-# endif
+#  if PY_VERSION_HEX >= 0x03050000
+#   if defined(HAS_CXX11) && (PY_VERSION_HEX >= 0x030D0000)
+#    define BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name, ...)          \
+  void BOOST_PP_CAT(init_module_,name)();                      \
+extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name, __VA_ARGS__)
+#    define BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, ...)          \
+  void BOOST_PP_CAT(init_module_,name)(StateType* state);                      \
+extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, __VA_ARGS__)
+#   else
+#    define BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name)          \
+  void BOOST_PP_CAT(init_module_,name)();                      \
+extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name)
+#    define BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType)          \
+  void BOOST_PP_CAT(init_module_,name)(StateType* state);                      \
+extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType)
+#   endif // HAS_CXX11 && Python 3.13+
+#  endif // PY_VERSION_HEX >= 0x03050000
+
+# endif // BOOST_PYTHON_MODULE_INIT
 
 #endif // MODULE_INIT_DWA20020722_HPP
