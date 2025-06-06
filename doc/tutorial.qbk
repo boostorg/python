@@ -117,7 +117,7 @@ platforms. The complete list of Bjam executables can be found
 [h2 Let's Jam!]
 __jam__
 
-[@../../../../example/tutorial/Jamroot Here] is our minimalist Jamroot
+[@../example/Jamroot Here] is our minimalist Jamroot
 file. Simply copy the file and tweak [^use-project boost] to where your
 boost root directory is and you're OK.
 
