@@ -135,7 +135,15 @@ namespace boost { namespace python { namespace objects {
             str name(get_qualname(py_type));
             if ( py_type->tp_flags & Py_TPFLAGS_HEAPTYPE ) {
                 // Qualify the type name if it is defined in a different module.
-                PyObject *type_module_name = PyDict_GetItemString(py_type->tp_dict, "__module__");
+                PyObject *type_module_name;
+#if PY_VERSION_HEX >= 0x030D0000
+                if (PyDict_GetItemStringRef(py_type->tp_dict, "__module__", &type_module_name) < 0) {
+                    throw_error_already_set();
+                }
+#else
+                type_module_name = PyDict_GetItemString(py_type->tp_dict, "__module__");
+                Py_XINCREF(type_module_name);
+#endif
                 if (
                     type_module_name
                     && PyObject_RichCompareBool(
@@ -144,8 +152,11 @@ namespace boost { namespace python { namespace objects {
                         Py_NE
                     ) != 0
                 ) {
-                    return str("%s.%s" % make_tuple(handle<>(borrowed(type_module_name)), name));
+                    str result = str("%s.%s" % make_tuple(handle<>(type_module_name), name));
+                    return result;
                 }
+                // Clean up the strong reference if we didn't use it
+                Py_XDECREF(type_module_name);
             }
             return name;
         } else {
