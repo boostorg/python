@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
     - name: setup
       run: |
         sudo apt-get update
         sudo apt-get install \
-          libboost1.71-tools-dev \
+          libboost-tools-dev \
           python3 \
           python3-numpy \
           python3-sphinx \
@@ -29,7 +29,7 @@ jobs:
           echo "destination_dir=doc/develop/html" >> $GITHUB_ENV
         fi
     - name: deploy
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: build/doc/html
