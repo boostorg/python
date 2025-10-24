@@ -42,7 +42,7 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --with-boost-include=${{ runner.workspace }}\vcpkg\installed\x64-windows\include -j4
+        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include=${{ runner.workspace }}\vcpkg\installed\x64-windows\include -j4
     - name: test
       shell: cmd
       run: |
