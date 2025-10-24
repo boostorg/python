@@ -62,7 +62,7 @@ struct pointer_holder : instance_holder
  private: // types
     
  private: // required holder implementation
-    void* holds(type_info, bool null_ptr_only);
+    void* holds(type_info, bool null_ptr_only) BOOST_OVERRIDE;
     
     template <class T>
     inline void* holds_wrapped(type_info dst_t, wrapper<T>*,T* p)
@@ -96,7 +96,7 @@ struct pointer_holder_back_reference : instance_holder
 #  include BOOST_PP_ITERATE()
 
  private: // required holder implementation
-    void* holds(type_info, bool null_ptr_only);
+    void* holds(type_info, bool null_ptr_only) BOOST_OVERRIDE;
 
  private: // data members
     Pointer m_p;

@@ -33,17 +33,17 @@ struct caller_py_function_impl : py_function_impl_base
         : m_caller(caller)
     {}
     
-    PyObject* operator()(PyObject* args, PyObject* kw)
+    PyObject* operator()(PyObject* args, PyObject* kw) BOOST_OVERRIDE
     {
         return m_caller(args, kw);
     }
     
-    virtual unsigned min_arity() const
+    unsigned min_arity() const BOOST_OVERRIDE
     {
         return m_caller.min_arity();
     }
     
-    virtual python::detail::py_func_sig_info signature() const
+    python::detail::py_func_sig_info signature() const BOOST_OVERRIDE
     {
         return m_caller.signature();
     }
@@ -59,17 +59,17 @@ struct signature_py_function_impl : py_function_impl_base
         : m_caller(caller)
     {}
     
-    PyObject* operator()(PyObject* args, PyObject* kw)
+    PyObject* operator()(PyObject* args, PyObject* kw) BOOST_OVERRIDE
     {
         return m_caller(args, kw);
     }
     
-    virtual unsigned min_arity() const
+    unsigned min_arity() const BOOST_OVERRIDE
     {
         return mpl::size<Sig>::value - 1;
     }
     
-    virtual python::detail::py_func_sig_info signature() const
+    python::detail::py_func_sig_info signature() const BOOST_OVERRIDE
     {
         python::detail::signature_element const* sig = python::detail::signature<Sig>::elements();
         python::detail::py_func_sig_info res = {sig, sig};
@@ -89,22 +89,22 @@ struct full_py_function_impl : py_function_impl_base
       , m_max_arity(max_arity > min_arity ? max_arity : min_arity)
     {}
     
-    PyObject* operator()(PyObject* args, PyObject* kw)
+    PyObject* operator()(PyObject* args, PyObject* kw) BOOST_OVERRIDE
     {
         return m_caller(args, kw);
     }
     
-    virtual unsigned min_arity() const
+    unsigned min_arity() const BOOST_OVERRIDE
     {
         return m_min_arity;
     }
     
-    virtual unsigned max_arity() const
+    unsigned max_arity() const BOOST_OVERRIDE
     {
         return m_max_arity;
     }
     
-    virtual python::detail::py_func_sig_info signature() const
+    python::detail::py_func_sig_info signature() const BOOST_OVERRIDE
     {
         python::detail::signature_element const* sig = python::detail::signature<Sig>::elements();
         python::detail::py_func_sig_info res = {sig, sig};
