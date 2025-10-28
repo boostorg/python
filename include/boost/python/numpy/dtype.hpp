@@ -17,6 +17,7 @@
 #include <boost/python/numpy/numpy_object_mgr_traits.hpp>
 #include <boost/mpl/for_each.hpp>
 #include <boost/python/detail/type_traits.hpp>
+#include <boost/type_traits/is_unsigned.hpp>
 
 namespace boost { namespace python { namespace numpy {
 
