@@ -18,9 +18,9 @@ jobs:
           # pre-reqs installed, see:
           # https://github.com/teeks99/boost-python-test-docker
           - cxx: clang++
-            docker-img: teeks99/boost-python-test:clang-12_1.76.0
+            docker-img: teeks99/boost-python-test:clang-21_1.89.0
           - cxx: g++
-            docker-img: teeks99/boost-python-test:gcc-10_1.76.0
+            docker-img: teeks99/boost-python-test:gcc-15_1.89.0
 
     container:
       image: ${{ matrix.docker-img }}
