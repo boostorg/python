@@ -17,7 +17,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - uses: microsoft/setup-msbuild@v2
     - name: setup boost prerequisites
-      uses: lukka/run-vcpkg@v6
+      uses: lukka/run-vcpkg@v11
       with:
         vcpkgGitCommitId: '88b1071e39f13b632644d9d953738d345a4ac055'
         vcpkgDirectory: '${{ runner.workspace }}/vcpkg'
