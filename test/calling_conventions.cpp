@@ -31,15 +31,15 @@ using namespace boost::python;
 
 #define TEST_DECLARE_FUNCTIONS
 
-#define TESTED_CALLING_CONVENTION __cdecl
+#define TESTED_CALLING_CONVENTION cdecl
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __stdcall
+#define TESTED_CALLING_CONVENTION stdcall
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __fastcall
+#define TESTED_CALLING_CONVENTION fastcall
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
@@ -52,15 +52,15 @@ BOOST_PYTHON_MODULE( calling_conventions_ext )
 
 #define TEST_WRAP_FUNCTIONS
 
-#define TESTED_CALLING_CONVENTION __cdecl
+#define TESTED_CALLING_CONVENTION cdecl
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __stdcall
+#define TESTED_CALLING_CONVENTION stdcall
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
-#define TESTED_CALLING_CONVENTION __fastcall
+#define TESTED_CALLING_CONVENTION fastcall
 #include "calling_conventions.cpp"
 #undef TESTED_CALLING_CONVENTION
 
@@ -79,59 +79,59 @@ BOOST_PYTHON_MODULE( calling_conventions_ext )
 #   error "One calling convention must be defined"
 #  endif // !defined(TESTED_CALLING_CONVENTION)
 
-namespace BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION) { 
+namespace BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION) {
 
-  long TESTED_CALLING_CONVENTION f_0()
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_0()
   {
       return 17041L;
   }
   
-  long TESTED_CALLING_CONVENTION f_1(long a)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_1(long a)
   {
       return a;
   }
   
-  long TESTED_CALLING_CONVENTION f_2(long a, long b)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_2(long a, long b)
   {
       return a + 10 * b;
   }
   
-  long TESTED_CALLING_CONVENTION f_3(long a, long b, long c)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_3(long a, long b, long c)
   {
       return a + 10 * b + 100 * c;
   }
   
-  long TESTED_CALLING_CONVENTION f_4(long a, long b, long c, long d)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_4(long a, long b, long c, long d)
   {
       return a + 10 * b + 100 * c + 1000 * d;
   }
   
-  long TESTED_CALLING_CONVENTION f_5(long a, long b, long c, long d, long e)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_5(long a, long b, long c, long d, long e)
   {
       return a + 10 * b + 100 * c + 1000 * d + 10000 * e;
   }
   
-  long TESTED_CALLING_CONVENTION f_6(long a, long b, long c, long d, long e, long f)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_6(long a, long b, long c, long d, long e, long f)
   {
       return a + 10 * b + 100 * c + 1000 * d + 10000 * e + 100000 * f;
   }
   
-  long TESTED_CALLING_CONVENTION f_7(long a, long b, long c, long d, long e, long f, long g)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_7(long a, long b, long c, long d, long e, long f, long g)
   {
       return a + 10 * b + 100 * c + 1000 * d + 10000 * e + 100000 * f + 1000000 * g;
   }
   
-  long TESTED_CALLING_CONVENTION f_8(long a, long b, long c, long d, long e, long f, long g, long h)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_8(long a, long b, long c, long d, long e, long f, long g, long h)
   {
       return a + 10 * b + 100 * c + 1000 * d + 10000 * e + 100000 * f + 1000000 * g + 10000000 * h;
   }
   
-  long TESTED_CALLING_CONVENTION f_9(long a, long b, long c, long d, long e, long f, long g, long h, long i)
+  long BOOST_PP_CAT(__, TESTED_CALLING_CONVENTION) f_9(long a, long b, long c, long d, long e, long f, long g, long h, long i)
   {
       return a + 10 * b + 100 * c + 1000 * d + 10000 * e + 100000 * f + 1000000 * g + 10000000 * h + 100000000 * i;
   }
   
-} // namespace test##TESTED_CALLING_CONVENTION
+} // namespace BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)
 
 # endif // defined(TEST_DECLARE_FUNCTIONS)
 
@@ -144,16 +144,16 @@ namespace BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION) {
 #   error "One calling convention must be defined"
 #  endif // !defined(TESTED_CALLING_CONVENTION)
 
-    def("f_0" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_0);
-    def("f_1" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_1);
-    def("f_2" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_2);
-    def("f_3" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_3);
-    def("f_4" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_4);
-    def("f_5" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_5);
-    def("f_6" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_6);
-    def("f_7" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_7);
-    def("f_8" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_8);
-    def("f_9" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test, TESTED_CALLING_CONVENTION)::f_9);
+    def("f_0__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_0);
+    def("f_1__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_1);
+    def("f_2__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_2);
+    def("f_3__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_3);
+    def("f_4__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_4);
+    def("f_5__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_5);
+    def("f_6__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_6);
+    def("f_7__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_7);
+    def("f_8__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_8);
+    def("f_9__" BOOST_PP_STRINGIZE(TESTED_CALLING_CONVENTION), &BOOST_PP_CAT(test_, TESTED_CALLING_CONVENTION)::f_9);
 
 # endif // defined(TEST_WRAP_FUNCTIONS)
 
