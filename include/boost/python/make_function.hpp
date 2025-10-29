@@ -56,7 +56,13 @@ namespace detail
       typedef typename detail::error::more_keywords_than_function_arguments<
           NumKeywords::value, arity
           >::too_many_keywords assertion BOOST_ATTRIBUTE_UNUSED;
-    
+
+#ifdef BOOST_PYTHON_NUM_KEYWORDS_EQUALS_ARITY
+      typedef typename detail::error::less_keywords_than_function_arguments<
+          NumKeywords::value, arity
+      >::too_few_keywords assertion2 BOOST_ATTRIBUTE_UNUSED;
+#endif
+
       return objects::function_object(
           detail::caller<F,CallPolicies,Sig>(f, p)
         , kw);
