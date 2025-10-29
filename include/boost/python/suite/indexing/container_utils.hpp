@@ -8,26 +8,21 @@
 # define PY_CONTAINER_UTILS_JDG20038_HPP
 
 # include <utility>
-# include <boost/foreach.hpp>
 # include <boost/python/object.hpp>
 # include <boost/python/handle.hpp>
 # include <boost/python/extract.hpp>
 # include <boost/python/stl_iterator.hpp>
 
 namespace boost { namespace python { namespace container_utils {
-        
+
     template <typename Container>
     void
     extend_container(Container& container, object l)
     {
         typedef typename Container::value_type data_type;
-        
+
         //  l must be iterable
-        BOOST_FOREACH(object elem,
-            std::make_pair(
-              boost::python::stl_input_iterator<object>(l),
-              boost::python::stl_input_iterator<object>()
-              ))
+        for (object elem: l)
         {
             extract<data_type const&> x(elem);
             //  try if elem is an exact data_type type
@@ -49,7 +44,7 @@ namespace boost { namespace python { namespace container_utils {
                     throw_error_already_set();
                 }
             }
-        }          
+        }
     }
 
 }}} // namespace boost::python::container_utils
