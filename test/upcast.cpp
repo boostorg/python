@@ -13,7 +13,7 @@ int main()
 {
     PyTypeObject o;
     Y y;
-    BOOST_TEST(&Py_REFCNT(boost::python::upcast<PyObject>(&o)) == &Py_REFCNT(&o));
-    BOOST_TEST(&Py_REFCNT(boost::python::upcast<PyObject>(&y)) == &Py_REFCNT(&y));
+    BOOST_TEST(boost::python::upcast<PyObject>(&o) == reinterpret_cast<PyObject*>(&o));
+    BOOST_TEST(boost::python::upcast<PyObject>(&y) == &y);
     return boost::report_errors();
 }
