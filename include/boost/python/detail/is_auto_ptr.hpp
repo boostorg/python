@@ -8,6 +8,8 @@
 # ifndef BOOST_NO_AUTO_PTR
 #  include <boost/python/detail/is_xxx.hpp>
 #  include <memory>
+# else
+#  include <boost/mpl/bool.hpp>
 # endif
 
 namespace boost { namespace python { namespace detail { 
