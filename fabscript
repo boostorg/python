@@ -16,6 +16,7 @@ from faber.config.try_run import try_run
 
 features += include('include')
 features += define('BOOST_ALL_NO_LIB')  # disable auto-linking
+features += define('BOOST_NO_AUTO_PTR')
 boost_include = options.get_with('boost-include')
 if boost_include:
     features += include(boost_include)
