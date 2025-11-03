@@ -173,4 +173,9 @@ for t in ['numpy/dtype',
     tests.append(extension_test(t, numpy=True,
                                 condition=set.define.contains('HAS_NUMPY')))
 
+python_version_major, python_version_minor = map(int, python.instance().version.split('.')[:2])
+
+tests.append(extension_test("module_multi_phase",
+                            condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
+
 default = report('report', tests, fail_on_failures=True)
