@@ -244,6 +244,15 @@ class init : public init_base<init<BOOST_PYTHON_OVERLOAD_ARGS> >
             policies, this->doc_string(), this->keywords());
     }
 
+    template <std::size_t ward>
+    init_with_call_policies<with_custodian_and_ward_postcall<1, ward+1>, self_t>
+    operator[](construct_custodian_for<ward> const&) const
+    {
+        typedef with_custodian_and_ward_postcall<1, ward+1> init_policy;
+        return init_with_call_policies<init_policy, self_t>(
+                   init_policy(), this->doc_string(), this->keywords());
+    }
+
     typedef detail::type_list<BOOST_PYTHON_OVERLOAD_ARGS> signature_;
 
     typedef detail::is_optional<

@@ -115,6 +115,49 @@ struct with_custodian_and_ward_postcall : BasePolicy_
     }
 };
 
+template <std::size_t ward>
+struct construct_custodian_for : default_call_policies
+{
+    BOOST_STATIC_ASSERT(ward > 0);
+    
+    template <class ArgumentPackage>
+    static PyObject* postcall(ArgumentPackage const& args_, PyObject* result)
+    {
+        std::size_t arity_ = detail::arity(args_);
+#if BOOST_WORKAROUND(BOOST_MSVC, < 1300)
+        if (ward > arity_ )
+#else
+        // check if ward exceeds the arity
+        // (this weird formulation avoids "always false" warnings
+        // for arity_ = 0)
+        if ( (std::max<std::size_t>)(0, ward) > arity_ )
+#endif
+        {
+            PyErr_SetString(
+                PyExc_IndexError
+              , "boost::python::construct_custodian_for: argument index out of range"
+            );
+            return 0;
+        }
+        
+        PyObject* patient = detail::get_prev<ward>::execute(args_, result);
+        PyObject* nurse = detail::get_prev<1>::execute(args_.base);
+
+        if (nurse == 0) return 0;
+    
+        result = default_call_policies::postcall(args_, result);
+        if (result == 0)
+            return 0;
+            
+        if (python::objects::make_nurse_and_patient(nurse, patient) == 0)
+        {
+            Py_XDECREF(result);
+            return 0;
+        }
+        return result;
+    }
+};
+
 
 }} // namespace boost::python
 
