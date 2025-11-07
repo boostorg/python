@@ -11,6 +11,7 @@
 
 #include <boost/python/handle.hpp>
 #include <boost/python/detail/raw_pyobject.hpp>
+#include <boost/python/detail/pymutex.hpp>
 #include <boost/python/cast.hpp>
 
 #include <vector>
@@ -145,6 +146,8 @@ namespace
 
   inline bool visit(rvalue_from_python_chain const* chain)
   {
+      BOOST_PYTHON_LOCK_STATE();
+
       visited_t::iterator const p = std::lower_bound(visited.begin(), visited.end(), chain);
       if (p != visited.end() && *p == chain)
           return false;
@@ -157,9 +160,11 @@ namespace
   {
       unvisit(rvalue_from_python_chain const* chain)
           : chain(chain) {}
-      
+
       ~unvisit()
       {
+          BOOST_PYTHON_LOCK_STATE();
+
           visited_t::iterator const p = std::lower_bound(visited.begin(), visited.end(), chain);
           assert(p != visited.end());
           visited.erase(p);

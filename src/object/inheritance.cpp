@@ -4,6 +4,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/python/object/inheritance.hpp>
 #include <boost/python/type_id.hpp>
+#include <boost/python/detail/pymutex.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #if _MSC_FULL_VER >= 13102171 && _MSC_FULL_VER <= 13102179
 # include <boost/graph/reverse_graph.hpp>
@@ -390,6 +391,8 @@ namespace
 
   inline void* convert_type(void* const p, class_id src_t, class_id dst_t, bool polymorphic)
   {
+      BOOST_PYTHON_LOCK_STATE();
+
       // Quickly rule out unregistered types
       index_entry* src_p = seek_type(src_t);
       if (src_p == 0)
@@ -452,6 +455,8 @@ BOOST_PYTHON_DECL void* find_static_type(void* p, class_id src_t, class_id dst_t
 BOOST_PYTHON_DECL void add_cast(
     class_id src_t, class_id dst_t, cast_function cast, bool is_downcast)
 {
+    BOOST_PYTHON_LOCK_STATE();
+
     // adding an edge will invalidate any record of unreachability in
     // the cache.
     static std::size_t expected_cache_len = 0;
@@ -490,6 +495,7 @@ BOOST_PYTHON_DECL void add_cast(
 BOOST_PYTHON_DECL void register_dynamic_id_aux(
     class_id static_id, dynamic_id_function get_dynamic_id)
 {
+    BOOST_PYTHON_LOCK_STATE();
     tuples::get<kdynamic_id>(*demand_type(static_id)) = get_dynamic_id;
 }
 
