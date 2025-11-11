@@ -1,6 +1,10 @@
+# Test on Ubuntu with various compiler and language standard versions.
 name: Test Ubuntu
 
-on:  [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [python, python3]
+        python-version: ['3.14']
         cxx: [g++, clang++]
         std: [c++11, c++14, c++17]
         include:
@@ -27,31 +31,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-
+    - name: setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: setup prerequisites
       run: |
-        # Warning: this is not necessarily the same Python version as the one configured above !
-        python3 -m pip install -U faber --break-system-packages
+        echo "CXX=${{ matrix.cxx }}" >> "$GITHUB_ENV"
+        echo "CXX_STD=${{ matrix.std }}" >> "$GITHUB_ENV"
     - name: build
       run: |
-        ${{ matrix.python }} --version
-        ${{ matrix.cxx }} --version
-        faber -v
-        sed -e "s/\$PYTHON/${{ matrix.python }}/g" .ci/faber > ~/.faber
-        faber \
-          --with-boost-include=${BOOST_PY_DEPS} \
-          --builddir=build \
-          cxx.name=${{ matrix.cxx }} \
-          cxxflags=-std=${{ matrix.std }} \
-          cppflags=-std=${{ matrix.std }} \
-          -j`nproc`
+        .github/run-faber.sh
     - name: test
       run: |
-        faber \
-          --with-boost-include=${BOOST_PY_DEPS} \
-          --builddir=build \
-          cxx.name=${{ matrix.cxx }} \
-          cxxflags=-std=${{ matrix.std }} \
-          cppflags=-std=${{ matrix.std }} \
-          -j`nproc` \
-          test.report
+        .github/run-faber.sh test.report
