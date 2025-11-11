@@ -1,0 +1,58 @@
+name: Test Ubuntu, Python 2.x
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python: [python]
+        cxx: [g++]
+        std: [c++11]
+        include:
+          # Add the appropriate docker image for each compiler.
+          # The images from teeks99/boost-python-test already have boost::python
+          # pre-reqs installed, see:
+          # https://github.com/teeks99/boost-python-test-docker
+          - cxx: g++
+            docker-img: teeks99/boost-python-test:gcc-15_1.89.0
+
+    container:
+      image: ${{ matrix.docker-img }}
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: setup prerequisites
+      run: |
+        # Warning: this is not necessarily the same Python version as the one configured above !
+        python3 -m pip install -U faber --break-system-packages
+    - name: build
+      run: |
+        ${{ matrix.python }} --version
+        ${{ matrix.cxx }} --version
+        faber -v
+        sed -e "s/\$PYTHON/${{ matrix.python }}/g" .ci/faber > ~/.faber
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
+          -j`nproc`
+    - name: test
+      run: |
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
+          -j`nproc` \
+          test.report
