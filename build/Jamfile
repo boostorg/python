@@ -88,6 +88,7 @@ lib boost_python
     import.cpp
     exec.cpp
     object/function_doc_signature.cpp
+    eventloop.cpp
     :   # requirements
         <link>static:<define>BOOST_PYTHON_STATIC_LIB
         <define>BOOST_PYTHON_SOURCE
