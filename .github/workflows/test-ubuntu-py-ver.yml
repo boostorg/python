@@ -1,0 +1,45 @@
+# Test on Ubuntu with various Python versions
+name: Test Ubuntu, Python version compatiblity
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.14t']
+        cxx: [g++]
+        std: [c++11]
+        include:
+          # Add the appropriate docker image for each compiler.
+          # The images from teeks99/boost-python-test already have boost::python
+          # pre-reqs installed, see:
+          # https://github.com/teeks99/boost-python-test-docker
+          #- cxx: clang++
+          #  docker-img: teeks99/boost-python-test:clang-21_1.89.0
+          - cxx: g++
+            docker-img: teeks99/boost-python-test:gcc-15_1.89.0
+
+    container:
+      image: ${{ matrix.docker-img }}
+
+    steps:
+    - uses: actions/checkout@v5
+    - name: setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: setup prerequisites
+      run: |
+        echo "CXX=${{ matrix.cxx }}" >> "$GITHUB_ENV"
+        echo "CXX_STD=${{ matrix.std }}" >> "$GITHUB_ENV"
+    - name: build
+      run: |
+        .github/run-faber.sh
+    - name: test
+      run: |
+        .github/run-faber.sh test.report
