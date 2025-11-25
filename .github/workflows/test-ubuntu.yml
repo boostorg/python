@@ -9,9 +9,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: [python, python3]
+        python-version: [2.7, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14, 3.14t]
         cxx: [g++, clang++]
-        std: [c++98, c++11, c++14, c++17]
+        #cxx: [g++]
+        #std: [c++98, c++11, c++14, c++17]
+        #std: [c++17]
         include:
           # Add the appropriate docker image for each compiler.
           # The images from teeks99/boost-python-test already have boost::python
@@ -21,33 +23,28 @@ jobs:
             docker-img: teeks99/boost-python-test:clang-12_1.76.0
           - cxx: g++
             docker-img: teeks99/boost-python-test:gcc-10_1.76.0
+          # by default, all builds use -std=c++17
+          - std: c++17
+          # expand test coverage for python 2.7
+          - python-version: 2.7
+            std: c++98
+          - python-version: 2.7
+            std: c++11
+          - python-version: 2.7
+            std: c++14
 
     container:
       image: ${{ matrix.docker-img }}
 
     steps:
     - uses: actions/checkout@v5
-
+    - name: setup python
+      if: "${{ matrix.python-version  != '2.7' }}"
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
     - name: build
       run: |
-        ${{ matrix.python }} --version
+        echo ${{ matrix.python-version }} ${{ matrix.cxx }} ${{ matrix.std }}
+        python --version
         ${{ matrix.cxx }} --version
-        faber -v
-        sed -e "s/\$PYTHON/${{ matrix.python }}/g" .ci/faber > ~/.faber
-        faber \
-          --with-boost-include=${BOOST_PY_DEPS} \
-          --builddir=build \
-          cxx.name=${{ matrix.cxx }} \
-          cxxflags=-std=${{ matrix.std }} \
-          cppflags=-std=${{ matrix.std }} \
-          -j`nproc`
-    - name: test
-      run: |
-        faber \
-          --with-boost-include=${BOOST_PY_DEPS} \
-          --builddir=build \
-          cxx.name=${{ matrix.cxx }} \
-          cxxflags=-std=${{ matrix.std }} \
-          cppflags=-std=${{ matrix.std }} \
-          -j`nproc` \
-          test.report
