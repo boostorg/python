@@ -17,17 +17,19 @@ jobs:
         cxx: [g++, clang++]
         std: [c++11, c++14, c++17]
         include:
-          # Add the appropriate docker image for each compiler.
-          # The images from teeks99/boost-python-test already have boost::python
-          # pre-reqs installed, see:
-          # https://github.com/teeks99/boost-python-test-docker
-          - cxx: clang++
-            docker-img: teeks99/boost-python-test:clang-21_1.89.0
-          - cxx: g++
-            docker-img: teeks99/boost-python-test:gcc-15_1.89.0
+          # Also test with free-threaded build of Python
+          - python-version: '3.14t'
+            cxx: clang+
+            std: c++17
 
     container:
-      image: ${{ matrix.docker-img }}
+      # Add the appropriate docker image for the compiler.
+      # The images from teeks99/boost-python-test already have boost::python
+      # pre-reqs installed, see:
+      # https://github.com/teeks99/boost-python-test-docker
+      image: ${{ matrix.cxx == 'g++' &&
+        'teeks99/boost-python-test:gcc-15_1.89.0' ||
+        'teeks99/boost-python-test:clang-21_1.89.0' }}
 
     steps:
     - uses: actions/checkout@v5
