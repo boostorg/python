@@ -19,7 +19,7 @@ jobs:
         include:
           # Also test with free-threaded build of Python
           - python-version: '3.14t'
-            cxx: clang+
+            cxx: clang++
             std: c++17
 
     container:
