@@ -127,7 +127,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 
 #  endif
 
-#  ifdef HAS_CXX11
+#  if defined(HAS_CXX11) && (PY_VERSION_HEX >= 0x03000000)
 #   define BOOST_PYTHON_MODULE_INIT(name, ...)                  \
   void BOOST_PP_CAT(init_module_,name)();                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name, __VA_ARGS__)
@@ -135,7 +135,7 @@ extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name, __VA_ARGS__)
 #   define BOOST_PYTHON_MODULE_INIT(name)                       \
   void BOOST_PP_CAT(init_module_,name)();                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name)
-#  endif // HAS_CXX11
+#  endif // HAS_CXX11 && Python 3
 
 # endif
 
