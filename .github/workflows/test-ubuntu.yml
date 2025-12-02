@@ -17,6 +17,21 @@ jobs:
         cxx: [g++, clang++]
         std: [c++11, c++14, c++17]
         include:
+          - python-version: '2.7'
+            cxx: g++
+            std: c++11
+          - python-version: '3.10'
+            cxx: g++
+            std: c++17
+          - python-version: '3.11'
+            cxx: g++
+            std: c++17
+          - python-version: '3.12'
+            cxx: g++
+            std: c++17
+          - python-version: '3.13'
+            cxx: g++
+            std: c++17
           # Also test with free-threaded build of Python
           - python-version: '3.14t'
             cxx: clang++
@@ -34,16 +49,46 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: setup python
+      if: "${{ matrix.python-version  != '2.7' }}"
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: setup prerequisites
       run: |
+        # Warning: this is not necessarily the same Python version as the one configured above !
+        python3 -m pip install -U faber --break-system-packages
         echo "CXX=${{ matrix.cxx }}" >> "$GITHUB_ENV"
         echo "CXX_STD=${{ matrix.std }}" >> "$GITHUB_ENV"
-    - name: build
+    - name: build-py2
+      if: "${{ matrix.python-version  == '2.7' }}"
+      run: |
+        python --version
+        ${{ matrix.cxx }} --version
+        faber -v
+        sed -e "s/\$PYTHON/python/g" .ci/faber > ~/.faber
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
+          -j`nproc`
+    - name: build-py3
+      if: "${{ matrix.python-version  != '2.7' }}"
       run: |
         .github/run-faber.sh
-    - name: test
+    - name: test-py2
+      if: "${{ matrix.python-version  == '2.7' }}"
+      run: |
+        faber \
+          --with-boost-include=${BOOST_PY_DEPS} \
+          --builddir=build \
+          cxx.name=${{ matrix.cxx }} \
+          cxxflags=-std=${{ matrix.std }} \
+          cppflags=-std=${{ matrix.std }} \
+          -j`nproc` \
+          test.report
+    - name: test-py3
+      if: "${{ matrix.python-version  != '2.7' }}"
       run: |
         .github/run-faber.sh test.report
