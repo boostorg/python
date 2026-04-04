@@ -54,10 +54,10 @@ BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef& moduledef,
 
 # if PY_VERSION_HEX >= 0x03050000
 
-BOOST_PYTHON_DECL int exec_module(PyObject* module, void(*init_function)())
+BOOST_PYTHON_DECL int exec_module(PyObject* mod, void(*init_function)())
 {
     PyObject* retval = init_module_in_scope(
-        module,
+        mod,
         init_function);
     return retval ? 0 : -1;
 }
