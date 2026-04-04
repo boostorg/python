@@ -13,7 +13,7 @@
 
 namespace boost { namespace python {
 
-#ifdef HAS_CXX11
+#  ifdef HAS_CXX11
 // Use to activate the Py_MOD_GIL_NOT_USED flag.
 class mod_gil_not_used {
 public:
@@ -39,7 +39,7 @@ inline bool gil_not_used_option(F &&, O &&...o) {
 }
 
 }
-#endif // HAS_CXX11
+#  endif // HAS_CXX11
 
 namespace detail {
 
@@ -51,13 +51,13 @@ BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef&, void(*)(), bool gil_not_us
 
 BOOST_PYTHON_DECL int exec_module(PyObject*, void(*)());
 
-#   endif
+#   endif // PY_VERSION_HEX >= 0x03050000
 
-#else
+#  else // PY_VERSION_HEX >= 0x03000000
 
 BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 
-#endif
+#  endif // PY_VERSION_HEX >= 0x03000000
 
 }}}
 
@@ -159,9 +159,9 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
   } \
   void BOOST_PP_CAT(init_module_, name)()
 
-#   endif
+#   endif // PY_VERSION_HEX >= 0x03050000
 
-#  else
+#  else // ! PY_VERSION_HEX >= 0x03000000
 
 #   define _BOOST_PYTHON_MODULE_INIT(name)              \
   void BOOST_PP_CAT(init,name)()                        \
@@ -171,7 +171,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 }                                                       \
   void BOOST_PP_CAT(init_module_,name)()
 
-#  endif
+#  endif // PY_VERSION_HEX >= 0x03000000
 
 #  if defined(HAS_CXX11) && (PY_VERSION_HEX >= 0x03000000)
 #   define BOOST_PYTHON_MODULE_INIT(name, ...)                  \
@@ -189,8 +189,8 @@ extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name)
   void BOOST_PP_CAT(init_module_,name)();                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name)
 
-#  endif
+#  endif // PY_VERSION_HEX >= 0x03050000
 
-# endif
+# endif // BOOST_PYTHON_MODULE_INIT
 
 #endif // MODULE_INIT_DWA20020722_HPP
