@@ -184,6 +184,7 @@ namespace boost { namespace python {
                 .def("__getitem__", &base_get_item)
                 .def("__contains__", &base_contains)
                 .def("__iter__", def_iterator())
+                .def("clear", &base_clear)
             ;
 
             DerivedPolicies::extension_def(cl);
@@ -287,6 +288,12 @@ namespace boost { namespace python {
                 else
                     return false;
             }
+        }
+
+        static void
+        base_clear(Container& container)
+        {
+            return DerivedPolicies::clear(container);
         }
     };
 
