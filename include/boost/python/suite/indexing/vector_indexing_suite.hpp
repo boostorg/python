@@ -61,6 +61,7 @@ namespace boost { namespace python {
         extension_def(Class& cl)
         {
             cl
+                .def("__iadd__", &base_iadd)
                 .def("append", &base_append)
                 .def("extend", &base_extend)
             ;
@@ -234,6 +235,13 @@ namespace boost { namespace python {
             std::vector<data_type> temp;
             container_utils::extend_container(temp, v);
             DerivedPolicies::extend(container, temp.begin(), temp.end());
+        }
+
+        static object
+        base_iadd(Container& container, object v)
+        {
+            base_extend(container, v);
+            return object(container);
         }
     };
        
