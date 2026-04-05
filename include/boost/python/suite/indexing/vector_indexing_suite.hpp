@@ -65,6 +65,7 @@ namespace boost { namespace python {
                 .def("append", &base_append)
                 .def("count", &base_count)
                 .def("extend", &base_extend)
+                .def("remove", &base_remove)
             ;
         }
         
@@ -264,6 +265,42 @@ namespace boost { namespace python {
         {
             base_extend(container, v);
             return object(container);
+        }
+
+        static void
+        base_remove(Container& container, object v)
+        {
+            extract<data_type&> key(v);
+            if (key.check())
+            {
+                auto i = std::find(container.begin(), container.end(), key());
+                if (i == container.end())
+                {
+                    PyErr_SetString(PyExc_ValueError, "remove(x): x not in vector_indexing_suite");
+                    throw_error_already_set();
+                }
+                container.erase(i);
+            }
+            else
+            {
+                extract<data_type> key(v);
+                if (key.check())
+                {
+                    auto i = std::find(container.begin(), container.end(), key());
+                    if (i == container.end())
+                    {
+                        PyErr_SetString(PyExc_ValueError, "remove(x): x not in vector_indexing_suite");
+                        throw_error_already_set();
+                    }
+                    container.erase(i);
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError,
+                        "Attempting to remove an invalid type");
+                    throw_error_already_set();
+                }
+            }
         }
     };
        
