@@ -320,6 +320,9 @@ e
 >>> v.extend(['f','g','h','i','j'])
 >>> print_xvec(v)
 [ a b c d e f g h i j ]
+>>> v += ['k','l','m']
+>>> print_xvec(v)
+[ a b c d e f g h i j k l m ]
 
 #####################################################################
 # extend using a generator expression
