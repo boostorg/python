@@ -66,6 +66,7 @@ namespace boost { namespace python {
                 .def("count", &base_count)
                 .def("extend", &base_extend)
                 .def("remove", &base_remove)
+                .def("reverse", &base_reverse)
             ;
         }
         
@@ -301,6 +302,15 @@ namespace boost { namespace python {
                     throw_error_already_set();
                 }
             }
+        }
+
+        static void
+        base_reverse(Container& container)
+        {
+            using std::swap;
+            const unsigned n = size(container);
+            for (unsigned i = 0; i < n / 2; i++)
+                swap(container[i], container[n - i - 1]);
         }
     };
        
