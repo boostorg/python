@@ -63,6 +63,7 @@ namespace boost { namespace python {
             cl
                 .def("__iadd__", &base_iadd)
                 .def("append", &base_append)
+                .def("count", &base_count)
                 .def("extend", &base_extend)
             ;
         }
@@ -208,6 +209,21 @@ namespace boost { namespace python {
         }
         
     private:
+
+        static size_t
+        base_count(Container& container, object v)
+        {
+            extract<data_type&> elem(v);
+            if (elem.check()) {
+                return std::count(container.begin(), container.end(), elem());
+            } else {
+                extract<data_type> elem(v);
+                if (!elem.check()) {
+                    return 0;
+                }
+                return std::count(container.begin(), container.end(), elem());
+            }
+        }
     
         static void
         base_append(Container& container, object v)
