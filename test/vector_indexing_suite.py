@@ -78,6 +78,14 @@ a
 >>> print_xvec(v)
 [ yaba c d e ]
 
+>>> v2 = XVec()
+>>> v2[:] = [X('b'), X('a'), X('c'), X('b'), X('a')]
+>>> try: v2.remove("z")
+... except ValueError: pass
+>>> v2.remove("a")
+>>> print_xvec(v2)
+[ b c b a ]
+
 #####################################################################
 # Calling a mutating function of a container element
 #####################################################################
