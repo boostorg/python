@@ -63,7 +63,6 @@ alias base_deps : usage-requirements
     <library>/boost/function//boost_function
     <library>/boost/mpl//boost_mpl
     <library>/boost/preprocessor//boost_preprocessor
-    <library>/boost/static_assert//boost_static_assert
     <library>/boost/type_traits//boost_type_traits
     ;
 test-suite python

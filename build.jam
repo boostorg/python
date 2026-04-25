@@ -19,7 +19,6 @@ constant boost_dependencies :
     /boost/mpl//boost_mpl
     /boost/numeric_conversion//boost_numeric_conversion
     /boost/preprocessor//boost_preprocessor
-    /boost/static_assert//boost_static_assert
     /boost/tuple//boost_tuple
     /boost/type_traits//boost_type_traits
     /boost/utility//boost_utility ;

@@ -71,7 +71,6 @@ target_link_libraries(${_boost_python}
     Boost::numeric_conversion
     Boost::preprocessor
     Boost::smart_ptr
-    Boost::static_assert
     Boost::tuple
     Boost::type_traits
     Boost::utility
