@@ -10,40 +10,77 @@ jobs:
       matrix:
         python-version: [3.7]
 
+    env:
+      VCPKG_ROOT: '${{ github.workspace }}/vcpkg'
+      VCPKG_ASSET_SOURCES: "${{ github.workspace }}/vcpkgAssets"
+      X_VCPKG_ASSET_SOURCES: clear;x-azurl,file:///${{ github.workspace }}/vcpkgAssets,,readwrite
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkgBin,readwrite
+      VCPKG_BUILD_TREES: "${{ github.workspace }}/vcpkgBuild"
+      VCPKG_INSTALLED_DIR: "${{ github.workspace }}/vcpkgInstalled"
+      VCPKG_INSTALL_OPTIONS: "--x-buildtrees-root=${{ github.workspace }}/vcpkgBuild"
+      VCPKG_DEFAULT_TRIPLET: 'x64-windows'
+      VCPKG_DEFAULT_HOST_TRIPLET: 'x64-windows'
+    
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+    - name: Restore vcpkg cache
+      id: cache-vcpkg-restore
+      uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          "${{ github.workspace }}/vcpkgAssets"
+          "${{ github.workspace }}/vcpkgBCache"
+          "${{ github.workspace }}/vcpkgBin"
+          "${{ github.workspace }}/vcpkgBuild"
+        key: vcpkgCache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+
+    - name: Create directories on cache miss
+      run: |
+        mkdir -p "${{ github.workspace }}/vcpkgAssets"
+        mkdir -p "${{ github.workspace }}/vcpkgBCache"
+        mkdir -p "${{ github.workspace }}/vcpkgBin"
+        mkdir -p "${{ github.workspace }}/vcpkgBuild"
+      if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+
     - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
-    - uses: microsoft/setup-msbuild@v2
+
+    - uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+
     - name: setup boost prerequisites
-      uses: lukka/run-vcpkg@v6
+      uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
       with:
-        vcpkgGitCommitId: '88b1071e39f13b632644d9d953738d345a4ac055'
-        vcpkgDirectory: '${{ runner.workspace }}/vcpkg'
-        vcpkgTriplet: x64-windows
-        vcpkgArguments: >
-          boost-config
-          boost-core
-          boost-function
-          boost-graph
-          boost-iterator
-          boost-lexical-cast
-          boost-mpl
-          boost-preprocessor
-          boost-smart-ptr
-          boost-static-assert
-          boost-align
+        vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+        binaryCachePath: "${{ github.workspace }}/vcpkgBCache"
+        runVcpkgInstall: true
+        vcpkgJsonGlob: .github/workflows/vcpkg.json
+
     - name: setup faber
       run: |
         python -m pip install --upgrade pip
         python -m pip install setuptools faber numpy
         faber --info=tools cxx
+
     - name: build
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include=${{ runner.workspace }}\vcpkg\installed\x64-windows\include -j4
+        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4
+
     - name: test
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --with-boost-include=${{ runner.workspace }}\vcpkg\installed\x64-windows\include -j4 test.report
+        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4 test.report
+
+    - name: Save vcpkg cache
+      id: cache-vcpkg-save
+      uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          "${{ github.workspace }}/vcpkgAssets"
+          "${{ github.workspace }}/vcpkgBCache"
+          "${{ github.workspace }}/vcpkgBin"
+          "${{ github.workspace }}/vcpkgBuild"
+        key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+      if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'

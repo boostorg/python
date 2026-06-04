@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "boost-python",
+  "version-string": "1.91.0",
+  "builtin-baseline": "f3e10653cc27d62a37a3763cd84b38bca07c6075",
+  "dependencies": [
+    "boost-config",
+    "boost-core",
+    "boost-function",
+    "boost-graph",
+    "boost-iterator",
+    "boost-lexical-cast",
+    "boost-mpl",
+    "boost-preprocessor",
+    "boost-smart-ptr",
+    "boost-static-assert",
+    "boost-align",
+    "python3"
+  ]
+}
