@@ -47,7 +47,7 @@
       };
     </script>
     {%- for scriptfile in script_files %}
-    <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+    <script type="text/javascript" src="{{ pathto(scriptfile.filename if scriptfile.filename is defined else scriptfile, 1) }}"></script>
     {%- endfor %}
     <script data-url_root="{{ pathto('', 1) }}" id="documentation_options" src="{{ pathto('', 1) }}_static/documentation_options.js"></script>
     <script src="{{ pathto('', 1) }}_static/searchtools.js"></script>
