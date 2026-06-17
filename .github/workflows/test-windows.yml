@@ -25,6 +25,9 @@ jobs:
       with:
         vcpkgDirectory: '${{ github.workspace }}/vcpkg'
         runVcpkgInstall: true
+    - name: List directory contents
+      run: Get-ChildItem "${{ github.workspace }}/vcpkg" -Recurse -Force -File -Filter 'config.hpp'
+      shell: pwsh
     - name: setup faber
       run: |
         python -m pip install --upgrade pip
