@@ -11,34 +11,81 @@ jobs:
         python-version: [3.7]
 
     env:
-      VCPKG_ROOT: ${{ github.workspace }}\vcpkg
+      VCPKG_ROOT: '${{ github.workspace }}/vcpkg'
+      VCPKG_ASSET_SOURCES: "${{ github.workspace }}/vcpkgAssets"
+      X_VCPKG_ASSET_SOURCES: clear;x-azurl,file:///${{ github.workspace }}/vcpkgAssets,,readwrite
+      VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkgBin,readwrite
+      VCPKG_BUILD_TREES: "${{ github.workspace }}/vcpkgBuild"
+      VCPKG_INSTALL_OPTIONS: "--x-buildtrees-root=${{ github.workspace }}/vcpkgBuild"
       VCPKG_DEFAULT_TRIPLET: 'x64-windows'
       VCPKG_DEFAULT_HOST_TRIPLET: 'x64-windows'
     
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+    - name: Restore vcpkg cache
+      id: cache-vcpkg-restore
+      uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          "${{ github.workspace }}/vcpkgAssets"
+          "${{ github.workspace }}/vcpkgBCache"
+          "${{ github.workspace }}/vcpkgBin"
+          "${{ github.workspace }}/vcpkgBuild"
+        key: vcpkgCache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+
+    - name: Create directories on cache miss
+      run: |
+        mkdir -p "${{ github.workspace }}/vcpkgAssets"
+        mkdir -p "${{ github.workspace }}/vcpkgBCache"
+        mkdir -p "${{ github.workspace }}/vcpkgBin"
+        mkdir -p "${{ github.workspace }}/vcpkgBuild"
+      if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
+
     - uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
+
     - uses: microsoft/setup-msbuild@v2
+
+    - name: Install CMake
+      uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
+
     - name: setup boost prerequisites
       uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
       with:
         vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+        binaryCachePath: "${{ github.workspace }}/vcpkgBCache"
         runVcpkgInstall: true
+
     - name: List directory contents
       run: Get-ChildItem "${{ github.workspace }}\vcpkg" -Recurse -Force -File -Filter 'config.hpp'
       shell: pwsh
+
     - name: setup faber
       run: |
         python -m pip install --upgrade pip
         python -m pip install setuptools faber numpy
         faber --info=tools cxx
+
     - name: build
       shell: cmd
       run: |
         faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4
+
     - name: test
       shell: cmd
       run: |
         faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4 test.report
+
+    - name: Save vcpkg cache
+      id: cache-vcpkg-save
+      uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: |
+          "${{ github.workspace }}/vcpkgAssets"
+          "${{ github.workspace }}/vcpkgBCache"
+          "${{ github.workspace }}/vcpkgBin"
+          "${{ github.workspace }}/vcpkgBuild"
+        key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
+      if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
