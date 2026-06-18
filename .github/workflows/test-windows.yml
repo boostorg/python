@@ -11,6 +11,7 @@ jobs:
         python-version: [3.7]
 
     env:
+      VCPKG_ROOT: ${{ github.workspace }}\vcpkg
       VCPKG_DEFAULT_TRIPLET: 'x64-windows'
       VCPKG_DEFAULT_HOST_TRIPLET: 'x64-windows'
     
@@ -26,7 +27,7 @@ jobs:
         vcpkgDirectory: '${{ github.workspace }}/vcpkg'
         runVcpkgInstall: true
     - name: List directory contents
-      run: Get-ChildItem "${{ github.workspace }}/vcpkg" -Recurse -Force -File -Filter 'config.hpp'
+      run: Get-ChildItem "${{ github.workspace }}\vcpkg" -Recurse -Force -File -Filter 'config.hpp'
       shell: pwsh
     - name: setup faber
       run: |
@@ -36,8 +37,8 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include=${{ github.workspace }}\vcpkg\installed\x64-windows\include -j4
+        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4
     - name: test
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --with-boost-include=${{ github.workspace }}\vcpkg\installed\x64-windows\include -j4 test.report
+        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4 test.report
