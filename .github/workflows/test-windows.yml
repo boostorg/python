@@ -59,7 +59,7 @@ jobs:
         runVcpkgInstall: true
 
     - name: List directory contents
-      run: Get-ChildItem "${{ github.workspace }}\vcpkg" -Recurse -Force -File -Filter 'config.hpp'
+      run: Get-ChildItem "${{ github.workspace }}" -Recurse -Force -File -Filter 'config.hpp'
       shell: pwsh
 
     - name: setup faber
