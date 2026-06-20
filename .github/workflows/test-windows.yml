@@ -71,12 +71,12 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4
+        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}\\969f6665-88a2-4c98-938e-ca9259871fec\\vcpkg_installed\\x64-windows\\include" -j4
 
     - name: test
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}\vcpkg\installed\x64-windows\include" -j4 test.report
+        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}\\969f6665-88a2-4c98-938e-ca9259871fec\\vcpkg_installed\\x64-windows\\include" -j4 test.report
 
     - name: Save vcpkg cache
       id: cache-vcpkg-save
