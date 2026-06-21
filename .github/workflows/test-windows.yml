@@ -16,6 +16,7 @@ jobs:
       X_VCPKG_ASSET_SOURCES: clear;x-azurl,file:///${{ github.workspace }}/vcpkgAssets,,readwrite
       VCPKG_BINARY_SOURCES: clear;files,${{ github.workspace }}/vcpkgBin,readwrite
       VCPKG_BUILD_TREES: "${{ github.workspace }}/vcpkgBuild"
+      VCPKG_INSTALLED_DIR: "${{ github.workspace }}/vcpkgInstalled"
       VCPKG_INSTALL_OPTIONS: "--x-buildtrees-root=${{ github.workspace }}/vcpkgBuild"
       VCPKG_DEFAULT_TRIPLET: 'x64-windows'
       VCPKG_DEFAULT_HOST_TRIPLET: 'x64-windows'
@@ -71,12 +72,12 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}\\969f6665-88a2-4c98-938e-ca9259871fec\\vcpkg_installed\\x64-windows\\include" -j4
+        faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}/vcpkgInstalled" -j4
 
     - name: test
       shell: cmd
       run: |
-        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}\\969f6665-88a2-4c98-938e-ca9259871fec\\vcpkg_installed\\x64-windows\\include" -j4 test.report
+        faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}/vcpkgInstalled" -j4 test.report
 
     - name: Save vcpkg cache
       id: cache-vcpkg-save
