@@ -49,19 +49,13 @@ jobs:
 
     - uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
 
-    - name: Install CMake
-      uses: lukka/get-cmake@591817e96fcad43505fb4eae36172462abb3a42e # v4.3.3
-
     - name: setup boost prerequisites
       uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # v11.6
       with:
         vcpkgDirectory: '${{ github.workspace }}/vcpkg'
         binaryCachePath: "${{ github.workspace }}/vcpkgBCache"
         runVcpkgInstall: true
-
-    - name: List directory contents
-      run: Get-ChildItem "${{ github.workspace }}" -Recurse -Force -File -Filter 'config.hpp'
-      shell: pwsh
+        vcpkgJsonGlob: .github/workflows/vcpkg.json
 
     - name: setup faber
       run: |
