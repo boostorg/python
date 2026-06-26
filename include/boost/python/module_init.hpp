@@ -56,6 +56,8 @@ BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef&, void(*)(), bool gil_not_us
 
 BOOST_PYTHON_DECL int exec_module(PyObject*, void(*)());
 
+BOOST_PYTHON_DECL int exec_module_with_state(PyObject*, void(*)(void*));
+
 #   endif // PY_VERSION_HEX >= 0x03050000
 
 #  else // PY_VERSION_HEX >= 0x03000000
@@ -169,7 +171,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
   int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
   { \
     return boost::python::detail::exec_module( \
-        mod, BOOST_PP_CAT(init_module_, name) ); \
+        mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
   } \
   extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
   { \
@@ -202,7 +204,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
  \
     return PyModuleDef_Init(&moduledef); \
   } \
-  void BOOST_PP_CAT(init_module_, name)()
+  void BOOST_PP_CAT(init_module_, name)(StateType* state)
 #    else // ! HAS_CXX11 && Python 3.13+
 #     define _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name) \
   int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
@@ -243,7 +245,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
   int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
   { \
     return boost::python::detail::exec_module( \
-        mod, BOOST_PP_CAT(init_module_, name) ); \
+        mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
   } \
   extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
   { \
@@ -275,7 +277,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
  \
     return PyModuleDef_Init(&moduledef); \
   } \
-  void BOOST_PP_CAT(init_module_, name)()
+  void BOOST_PP_CAT(init_module_, name)(StateType* state)
 #    endif // HAS_CXX11 && Python 3.13+
 
 #   endif // PY_VERSION_HEX >= 0x03050000
@@ -308,15 +310,15 @@ extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_INIT(name)
   void BOOST_PP_CAT(init_module_,name)();                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name, __VA_ARGS__)
 #    define BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, ...)          \
-  void BOOST_PP_CAT(init_module_,name)();                      \
+  void BOOST_PP_CAT(init_module_,name)(StateType* state);                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, __VA_ARGS__)
 #   else
 #    define BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name)          \
   void BOOST_PP_CAT(init_module_,name)();                      \
 extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_MULTI_PHASE_INIT(name)
 #    define BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType)          \
-  void BOOST_PP_CAT(init_module_,name)();                      \
-extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name)
+  void BOOST_PP_CAT(init_module_,name)(StateType* state);                      \
+extern "C" BOOST_SYMBOL_EXPORT _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType)
 #   endif // HAS_CXX11 && Python 3.13+
 #  endif // PY_VERSION_HEX >= 0x03050000
 
