@@ -180,5 +180,7 @@ tests.append(extension_test("module_multi_phase",
                             condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
 tests.append(extension_test("module_multi_phase_nogil",
                             condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
+tests.append(extension_test("module_multi_phase_state",
+                            condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
 
 default = report('report', tests, fail_on_failures=True)
