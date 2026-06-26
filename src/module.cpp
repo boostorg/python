@@ -26,6 +26,34 @@ namespace
 
         return m;
     }
+# if PY_VERSION_HEX >= 0x03050000
+    class init_function_with_state {
+    public:
+        init_function_with_state(void(*init_function)(void*), void* state)
+            : init_function_(init_function), state_(state) {}
+
+        void operator()() const { init_function_(state_); }
+    private:
+        void(*const init_function_)(void*);
+        void* const state_;
+    };
+
+    PyObject* init_module_in_scope_with_state(PyObject* m, void(*init_function)(void*))
+    {
+        if (m != 0)
+        {
+            // Create the current module scope
+            object m_obj(((borrowed_reference_t*)m));
+            scope current_module(m_obj);
+
+            void* state = PyModule_GetState(m);
+
+            if (handle_exception(init_function_with_state(init_function, state))) return NULL;
+        }
+
+        return m;       
+    }
+# endif
 }
 
 BOOST_PYTHON_DECL void scope_setattr_doc(char const* name, object const& x, char const* doc)
@@ -57,6 +85,14 @@ BOOST_PYTHON_DECL PyObject* init_module(PyModuleDef& moduledef,
 BOOST_PYTHON_DECL int exec_module(PyObject* mod, void(*init_function)())
 {
     PyObject* retval = init_module_in_scope(
+        mod,
+        init_function);
+    return retval ? 0 : -1;
+}
+
+BOOST_PYTHON_DECL int exec_module_with_state(PyObject* mod, void(*init_function)(void*))
+{
+    PyObject* retval = init_module_in_scope_with_state(
         mod,
         init_function);
     return retval ? 0 : -1;
