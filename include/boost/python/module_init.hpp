@@ -170,7 +170,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 #     define _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType, ...) \
   int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
   { \
-    return boost::python::detail::exec_module( \
+    return boost::python::detail::exec_module_with_state( \
         mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
   } \
   extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
@@ -244,7 +244,7 @@ BOOST_PYTHON_DECL PyObject* init_module(char const* name, void(*)());
 #     define _BOOST_PYTHON_MODULE_WITH_STATE_INIT(name, StateType) \
   int BOOST_PP_CAT(exec_module_,name)(PyObject* mod) \
   { \
-    return boost::python::detail::exec_module( \
+    return boost::python::detail::exec_module_with_state( \
         mod, reinterpret_cast<void(*)(void*)>(BOOST_PP_CAT(init_module_, name)) ); \
   } \
   extern "C" BOOST_SYMBOL_EXPORT PyObject* BOOST_PP_CAT(PyInit_, name)()  \
