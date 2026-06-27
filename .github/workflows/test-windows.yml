@@ -41,6 +41,7 @@ jobs:
         New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBCache"
         New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBin"
         New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBuild"
+      shell: pwsh
       if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
 
     - uses: actions/setup-python@v6
