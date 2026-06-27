@@ -29,18 +29,18 @@ jobs:
       uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
-          "${{ github.workspace }}\\vcpkgAssets"
-          "${{ github.workspace }}\\vcpkgBCache"
-          "${{ github.workspace }}\\vcpkgBin"
-          "${{ github.workspace }}\\vcpkgBuild"
+          "${{ github.workspace }}\vcpkgAssets"
+          "${{ github.workspace }}\vcpkgBCache"
+          "${{ github.workspace }}\vcpkgBin"
+          "${{ github.workspace }}\vcpkgBuild"
         key: vcpkgCache-${{ github.repository_owner }}-windows-latest-x64-windows-${{ hashFiles('.github/workflows/vcpkg.json') }}
 
     - name: Create directories on cache miss
       run: |
-        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgAssets"
-        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBCache"
-        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBin"
-        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\\vcpkgBuild"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgAssets"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBCache"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBin"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBuild"
       shell: pwsh
       if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
 
@@ -79,9 +79,9 @@ jobs:
       uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
-          "${{ github.workspace }}\\vcpkgAssets"
-          "${{ github.workspace }}\\vcpkgBCache"
-          "${{ github.workspace }}\\vcpkgBin"
-          "${{ github.workspace }}\\vcpkgBuild"
+          "${{ github.workspace }}\vcpkgAssets"
+          "${{ github.workspace }}\vcpkgBCache"
+          "${{ github.workspace }}\vcpkgBin"
+          "${{ github.workspace }}\vcpkgBuild"
         key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
       if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
