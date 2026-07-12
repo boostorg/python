@@ -59,7 +59,15 @@ jobs:
         vcpkgJsonGlob: .github/workflows/vcpkg.json
 
     - name: setup faber
+      shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         python -m pip install --upgrade pip
         python -m pip install setuptools faber numpy
         faber --info=tools cxx
@@ -67,11 +75,25 @@ jobs:
     - name: build
       shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4
 
     - name: test
       shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4 test.report
 
     - name: Save vcpkg cache
