@@ -137,6 +137,12 @@ namespace boost { namespace python {
             container.erase(i);
         }
 
+        static void
+        clear(Container& container)
+        {
+            container.clear();
+        }
+
         static size_t
         size(Container& container)
         {

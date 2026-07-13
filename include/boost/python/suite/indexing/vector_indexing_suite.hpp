@@ -61,8 +61,12 @@ namespace boost { namespace python {
         extension_def(Class& cl)
         {
             cl
+                .def("__iadd__", &base_iadd)
                 .def("append", &base_append)
+                .def("count", &base_count)
                 .def("extend", &base_extend)
+                .def("remove", &base_remove)
+                .def("reverse", &base_reverse)
             ;
         }
         
@@ -134,6 +138,12 @@ namespace boost { namespace python {
             container.erase(container.begin()+from, container.begin()+to);
         }
         
+        static void
+        clear(Container& container)
+        {
+            container.clear();
+        }
+        
         static size_t
         size(Container& container)
         {
@@ -201,6 +211,21 @@ namespace boost { namespace python {
         }
         
     private:
+
+        static size_t
+        base_count(Container& container, object v)
+        {
+            extract<data_type&> elem(v);
+            if (elem.check()) {
+                return std::count(container.begin(), container.end(), elem());
+            } else {
+                extract<data_type> elem(v);
+                if (!elem.check()) {
+                    return 0;
+                }
+                return std::count(container.begin(), container.end(), elem());
+            }
+        }
     
         static void
         base_append(Container& container, object v)
@@ -234,6 +259,58 @@ namespace boost { namespace python {
             std::vector<data_type> temp;
             container_utils::extend_container(temp, v);
             DerivedPolicies::extend(container, temp.begin(), temp.end());
+        }
+
+        static object
+        base_iadd(Container& container, object v)
+        {
+            base_extend(container, v);
+            return object(container);
+        }
+
+        static void
+        base_remove(Container& container, object v)
+        {
+            extract<data_type&> key(v);
+            if (key.check())
+            {
+                auto i = std::find(container.begin(), container.end(), key());
+                if (i == container.end())
+                {
+                    PyErr_SetString(PyExc_ValueError, "remove(x): x not in vector_indexing_suite");
+                    throw_error_already_set();
+                }
+                container.erase(i);
+            }
+            else
+            {
+                extract<data_type> key(v);
+                if (key.check())
+                {
+                    auto i = std::find(container.begin(), container.end(), key());
+                    if (i == container.end())
+                    {
+                        PyErr_SetString(PyExc_ValueError, "remove(x): x not in vector_indexing_suite");
+                        throw_error_already_set();
+                    }
+                    container.erase(i);
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError,
+                        "Attempting to remove an invalid type");
+                    throw_error_already_set();
+                }
+            }
+        }
+
+        static void
+        base_reverse(Container& container)
+        {
+            using std::swap;
+            const unsigned n = size(container);
+            for (unsigned i = 0; i < n / 2; i++)
+                swap(container[i], container[n - i - 1]);
         }
     };
        
