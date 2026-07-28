@@ -3,6 +3,7 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 """
 >>> from test_pointer_adoption_ext import *
+>>> import sys
 
 >>> num_a_instances()
 0
@@ -10,7 +11,8 @@
 >>> a = create('dynamically allocated')
 >>> num_a_instances()
 1
-
+>>> sys.getrefcount(a)
+2
 >>> a.content()
 'dynamically allocated'
 
@@ -55,13 +57,71 @@
 Test call policies for constructors here
 
 >>> a = create('second a')
+>>> a.content()
+'second a'
 >>> num_a_instances()
 1
+>>> b = a.create_B()
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+3
+>>> b.a_content()
+'second a'
+>>> b = None
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+2
+
 >>> b = B(a)
 >>> num_a_instances()
 1
+>>> sys.getrefcount(a)
+3
 >>> a.content()
 'second a'
+>>> b.a_content()
+'second a'
+>>> b = None
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+2
+
+>>> b = B1(a)
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+3
+>>> a.content()
+'second a'
+>>> b.a_content()
+'second a'
+>>> b = None
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+2
+
+>>> b = B2(a)
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+3
+>>> a.content()
+'second a'
+>>> b.a_content()
+'second a'
+>>> b = None
+>>> num_a_instances()
+1
+>>> sys.getrefcount(a)
+2
+
+>>> b = B(a)
+>>> num_a_instances()
+1
 
 >>> del a
 >>> num_a_instances()
