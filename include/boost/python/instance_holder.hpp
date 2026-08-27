@@ -7,6 +7,7 @@
 
 # include <boost/python/detail/prefix.hpp>
 
+# include <boost/config.hpp>
 # include <boost/noncopyable.hpp>
 # include <boost/python/type_id.hpp>
 # include <cstddef>
@@ -31,7 +32,7 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
     // that always holds the Python object.
     virtual void* holds(type_info, bool null_ptr_only) = 0;
 
-    void install(PyObject* inst) throw();
+    void install(PyObject* inst) BOOST_NOEXCEPT_OR_NOTHROW;
 
     // These functions should probably be located elsewhere.
     
@@ -42,7 +43,7 @@ struct BOOST_PYTHON_DECL instance_holder : private noncopyable
 
     // Deallocate storage from the heap if it was not carved out of
     // the given Python object by allocate(), above.
-    static void deallocate(PyObject*, void* storage) throw();
+    static void deallocate(PyObject*, void* storage) BOOST_NOEXCEPT_OR_NOTHROW;
  private:
     instance_holder* m_next;
 };
