@@ -14,7 +14,7 @@ namespace
 {
   PyObject* identity(PyObject* args_, PyObject*)
   {
-      PyObject* x = PyTuple_GET_ITEM(args_,0);
+      PyObject* x = PyTuple_GetItem(args_,0);
       Py_INCREF(x);
       return x;
   }
