@@ -12,7 +12,6 @@ constant boost_dependencies :
     /boost/conversion//boost_conversion
     /boost/core//boost_core
     /boost/detail//boost_detail
-    /boost/foreach//boost_foreach
     /boost/function//boost_function
     /boost/iterator//boost_iterator
     /boost/lexical_cast//boost_lexical_cast
