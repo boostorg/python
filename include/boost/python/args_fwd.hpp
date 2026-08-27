@@ -9,6 +9,7 @@
 
 # include <boost/python/handle.hpp>
 # include <boost/config.hpp>
+# include <boost/static_assert.hpp>
 # include <cstddef>
 # include <utility>
 
@@ -39,10 +40,11 @@ namespace detail
 
   namespace error
   {
+    /// @deprecated
     template <int keywords, int function_args>
     struct more_keywords_than_function_arguments
     {
-        typedef char too_many_keywords[keywords > function_args ? -1 : 1];
+        BOOST_STATIC_ASSERT(keywords <= function_args);
     };
   }
 }
