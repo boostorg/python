@@ -101,6 +101,8 @@ struct signature_arity<N>
     };
 };
 
+# undef N
+
 #endif // BOOST_PP_IS_ITERATING 
 
 
