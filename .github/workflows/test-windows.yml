@@ -29,18 +29,19 @@ jobs:
       uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
-          "${{ github.workspace }}/vcpkgAssets"
-          "${{ github.workspace }}/vcpkgBCache"
-          "${{ github.workspace }}/vcpkgBin"
-          "${{ github.workspace }}/vcpkgBuild"
-        key: vcpkgCache-${{ github.repository_owner }}-${{ matrix.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json') }}
+          ${{ github.workspace }}\vcpkgAssets
+          ${{ github.workspace }}\vcpkgBCache
+          ${{ github.workspace }}\vcpkgBin
+          ${{ github.workspace }}\vcpkgBuild
+        key: vcpkgCache-${{ github.repository_owner }}-windows-latest-x64-windows-${{ hashFiles('.github/workflows/vcpkg.json') }}
 
     - name: Create directories on cache miss
       run: |
-        mkdir -p "${{ github.workspace }}/vcpkgAssets"
-        mkdir -p "${{ github.workspace }}/vcpkgBCache"
-        mkdir -p "${{ github.workspace }}/vcpkgBin"
-        mkdir -p "${{ github.workspace }}/vcpkgBuild"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgAssets"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBCache"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBin"
+        New-Item -Force -ItemType Directory -Path "${{ github.workspace }}\vcpkgBuild"
+      shell: pwsh
       if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
 
     - uses: actions/setup-python@v6
@@ -58,19 +59,41 @@ jobs:
         vcpkgJsonGlob: .github/workflows/vcpkg.json
 
     - name: setup faber
+      shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         python -m pip install --upgrade pip
         python -m pip install setuptools faber numpy
         faber --info=tools cxx
 
     - name: build
-      shell: cmd
+      shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         faber --builddir=build cxx.name=msvc --log=commands --log=output --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4
 
     - name: test
-      shell: cmd
+      shell: pwsh
       run: |
+        # Source - https://stackoverflow.com/a/9949105
+        # Posted by goric, modified by community. See post 'Timeline' for change history
+        # Retrieved 2026-07-12, License - CC BY-SA 4.0
+        $ErrorActionPreference = "Stop"
+        Set-StrictMode -Version Latest
+        $PSNativeCommandUseErrorActionPreference = $true # might be true by default
+
         faber --builddir=build cxx.name=msvc --with-boost-include="${{ github.workspace }}/vcpkgInstalled/x64-windows/include" -j4 test.report
 
     - name: Save vcpkg cache
@@ -78,9 +101,9 @@ jobs:
       uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: |
-          "${{ github.workspace }}/vcpkgAssets"
-          "${{ github.workspace }}/vcpkgBCache"
-          "${{ github.workspace }}/vcpkgBin"
-          "${{ github.workspace }}/vcpkgBuild"
+          ${{ github.workspace }}\vcpkgAssets
+          ${{ github.workspace }}\vcpkgBCache
+          ${{ github.workspace }}\vcpkgBin
+          ${{ github.workspace }}\vcpkgBuild
         key: ${{ steps.cache-vcpkg-restore.outputs.cache-primary-key }}
       if: steps.cache-vcpkg-restore.outputs.cache-hit != 'true'
