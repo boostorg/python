@@ -1,0 +1,95 @@
+[chapter Event Loop
+    [quickbook 1.7]
+]
+
+[section boost/python/eventloop.hpp]
+
+[section Introduction]
+Provide a Boost.Asio-based implementation for the Python [@https://docs.python.org/3/library/asyncio-eventloop.html `EventLoop`] type. Every callback is scheduled in strand. 
+[endsect]
+
+[section Function `set_default_event_loop`]
+``
+void set_default_event_loop(const boost::asio::io_context::strand& strand);
+``
+[variablelist
+[[Effect][construct an `event_loop` object using provided [@https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/overview/core/strands.html `strand`] object. Setup a new [@https://docs.python.org/3/library/asyncio-policy.html event loop policy], when user call `get_event_loop` using that policy, it returns the Boost Asio `event_loop` object]]
+[[Throws][nothing]]
+]
+[endsect]
+
+[section Function `PyInit_boost_event_loop`]
+``
+extern "C"
+{
+    PyObject* PyInit_boost_event_loop();
+}
+``
+[variablelist
+[[Effect][user must call `PyImport_AppendInittab("boost_event_loop", &PyInit_boost_event_loop);` before [@https://docs.python.org/3/c-api/init.html#c.Py_Initialize `Py_Initialize`]]]
+[[Throws][nothing]]
+]
+[endsect]
+
+[section Example]
+``
+// example.cpp
+io_context ctx;
+io_context::strand st{ctx};
+
+PyImport_AppendInittab("boost_event_loop", &PyInit_boost_event_loop);
+Py_Initialize();
+set_default_event_loop(st);
+
+object py_module = import("example.py");
+py_module.attr("hello_world")();
+st.context().run();
+
+// example.py
+import asyncio
+def hello_world():
+    print("hello world")
+
+def call_event_loop():
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+    loop.call_soon(hello_world)
+``
+Note: `set_default_event_loop` must be called before any Python module is imported. Otherwise it may result in the module-level variables registered against the default asyncio eventloop instead the boost asio eventloop. Here is an example demonstrating the issue.
+``
+// bad_import.cpp
+Py_Initialize();
+import("example_module"); // example_module is initialized
+set_default_event_loop(st); // boost_asio_eventloop is set to default, but the example_module.lock was registered against the old eventloop
+
+// example_module.py
+import asyncio
+lock = asyncio.Lock()
+``
+[endsect]
+
+[section Event Loop and Multiple Python Sub-interpreters]
+It's allowed to have multiple Python sub-interpreter instances in a same program. Each interpreter will act as a guest VM, and C++ host will schedule all the asynchronous events committed by the Python VM.[br]
+The Python interpreter must outlive the [@https://www.boost.org/doc/libs/1_76_0/doc/html/boost_asio/reference/io_service.html `asio::io_context`] objects it owns. It's not safe to destroy the interpreter midways.[br]
+[endsect]
+
+[section [@https://docs.python.org/3/c-api/init.html#thread-state-and-the-global-interpreter-lock `GIL`]]
+`boost::asio::io_context::run()` may be called from multiple threads and the completion handlers may wakeup on different threads as well. The GIL must be released after setting up the Python IO object and before the call to `boost::asio::io_context::run()`. In the completion handler, the GIL must be reacquired and release before it calls into Python to deliver the result.
+``
+// gil.cpp
+py_func(); // call func imported from gil.py
+PyEval_ReleaseLock(); // release GIL
+ctx.run();
+
+// gil.py
+import asyncio
+
+def hello():
+    print("hello_world")
+
+def func():
+    loop = asyncio.get_event_loop_policy().get_event_loop()
+    loop.call_soon(hello)
+``
+[endsect]
+
+[endsect]
