@@ -21,6 +21,9 @@
 // 01 Mar 01  define PyObject_INIT() for Python 1.x (Dave Abrahams)
 
 #ifdef _DEBUG
+#if _DEBUG
+#define _DEBUG_HAS_VALUE
+#endif
 # ifndef BOOST_DEBUG_PYTHON
 #  ifdef _MSC_VER  
     // VC8.0 will complain if system headers are #included both with
@@ -206,7 +209,11 @@ typedef int pid_t;
 
 #ifdef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
 # undef DEBUG_UNDEFINED_FROM_WRAP_PYTHON_H
+#if defined(_DEBUG_HAS_VALUE)
+# define _DEBUG 1
+#else
 # define _DEBUG
+#endif
 # ifdef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
 #  undef _CRT_NOFORCE_MANIFEST_DEFINED_FROM_WRAP_PYTHON_H
 #  undef _CRT_NOFORCE_MANIFEST
