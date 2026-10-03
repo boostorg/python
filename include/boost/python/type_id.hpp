@@ -18,7 +18,7 @@
 
 #  ifndef BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   if defined(__GNUC__)                                                \
-    && !defined(__EDG_VERSION__)
+    && (!defined(__EDG_VERSION__) || defined(__LCC__))
 #    define BOOST_PYTHON_HAVE_GCC_CP_DEMANGLE
 #   endif
 #  endif
