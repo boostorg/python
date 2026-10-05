@@ -76,6 +76,9 @@ BOOST_PYTHON_MODULE(builtin_converters_ext)
     def("long_long_size", by_value<BOOST_PYTHON_LONG_LONG>::size);
 #endif
 
+#ifndef BOOST_NO_CXX11_NULLPTR
+    def("rewrap_value_nullptr_t", by_value<std::nullptr_t>::rewrap);
+#endif
     def("rewrap_value_bool", by_value<bool>::rewrap);
     def("rewrap_value_char", by_value<char>::rewrap);
     def("rewrap_value_signed_char", by_value<signed char>::rewrap);
@@ -121,6 +124,9 @@ BOOST_PYTHON_MODULE(builtin_converters_ext)
     def("rewrap_value_mutable_cstring", rewrap_value_mutable_cstring);
 
 
+#ifndef BOOST_NO_CXX11_NULLPTR
+    def("rewrap_const_reference_nullptr_t", by_const_reference<std::nullptr_t>::rewrap);
+#endif
     def("rewrap_const_reference_bool", by_const_reference<bool>::rewrap);
     def("rewrap_const_reference_char", by_const_reference<char>::rewrap);
     def("rewrap_const_reference_signed_char", by_const_reference<signed char>::rewrap);

@@ -32,6 +32,12 @@ r"""
 ...     def rewrap_const_reference_unsigned_long_long(x): return long(x)
 >>> if not 'long_long_size' in dir():
 ...     def long_long_size(): return long_size()
+>>> if not 'rewrap_value_nullptr_t' in dir():
+...     def rewrap_value_nullptr_t(x): return x
+...     def rewrap_const_reference_nullptr_t(x): return x
+
+>>> rewrap_value_nullptr_t(None) is None
+True
 
 >>> try: bool_exists = bool
 ... except: pass
@@ -155,6 +161,9 @@ yo, wassup?
 
 >>> rewrap_value_mutable_cstring('hello, world')
 'hello, world'
+
+>>> rewrap_const_reference_nullptr_t(None) is None
+True
 
 >>> rewrap_const_reference_bool(None)
 0

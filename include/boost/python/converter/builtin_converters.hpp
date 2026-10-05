@@ -108,6 +108,10 @@ namespace detail
         : ::PyInt_FromLong(x), &PyInt_Type)
 #endif
 
+#ifndef BOOST_NO_CXX11_NULLPTR
+BOOST_PYTHON_TO_PYTHON_BY_VALUE(std::nullptr_t, boost::python::detail::none(), Py_TYPE(Py_None))
+#endif
+
 // Bool is not signed.
 #if PY_VERSION_HEX >= 0x02030000
 BOOST_PYTHON_TO_PYTHON_BY_VALUE(bool, ::PyBool_FromLong(x), &PyBool_Type)
