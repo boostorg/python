@@ -107,6 +107,16 @@ class TestNdarray(unittest.TestCase):
         except IndexError:
             pass
 
+    def testArrayFlags(self):
+        a = numpy.arange(24)
+        old_flags = a.flags
+        self.assertTrue(a.flags.writeable)
+        self.assertTrue(ndarray_ext.is_writeable(a))
+        ndarray_ext.set_writeable(a, False)
+        self.assertFalse(a.flags.writeable)
+        self.assertFalse(ndarray_ext.is_writeable(a))
+        ndarray_ext.set_writeable(a, True)
+        self.assertEqual(old_flags, a.flags)
 
 if __name__=="__main__":
     unittest.main()

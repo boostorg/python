@@ -121,6 +121,9 @@ public:
   /// @brief Return the array flags.
   bitflag get_flags() const;
   
+  /// @brief Set array flag. This can destroy the internal consistency, use with care!
+  void set_flag(bitflag flag, bool on);
+
   /// @brief Reverse the dimensions of the array.
   ndarray transpose() const;
   
