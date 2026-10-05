@@ -11,7 +11,7 @@
 #  define N BOOST_PP_ITERATION()
 
 #  define BOOST_PYTHON_MAKE_TUPLE_ARG(z, N, ignored)    \
-    PyTuple_SET_ITEM(                                   \
+    PyTuple_SetItem(                                    \
         result.ptr()                                    \
         , N                                             \
         , python::incref(python::object(a##N).ptr())    \

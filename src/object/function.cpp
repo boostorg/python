@@ -78,7 +78,7 @@ function::function(
         if (num_keywords != 0)
         {
             for (unsigned j = 0; j < keyword_offset; ++j)
-                PyTuple_SET_ITEM(m_arg_names.ptr(), j, incref(Py_None));
+                PyTuple_SetItem(m_arg_names.ptr(), j, incref(Py_None));
         }
         
         for (unsigned i = 0; i < num_keywords; ++i)
@@ -96,7 +96,7 @@ function::function(
                 kv = make_tuple(p->name);
             }
 
-            PyTuple_SET_ITEM(
+            PyTuple_SetItem(
                 m_arg_names.ptr()
                 , i + keyword_offset
                 , incref(kv.ptr())
@@ -122,7 +122,7 @@ function::~function()
 
 PyObject* function::call(PyObject* args, PyObject* keywords) const
 {
-    std::size_t n_unnamed_actual = PyTuple_GET_SIZE(args);
+    std::size_t n_unnamed_actual = PyTuple_Size(args);
     std::size_t n_keyword_actual = keywords ? PyDict_Size(keywords) : 0;
     std::size_t n_actual = n_unnamed_actual + n_keyword_actual;
     
@@ -166,7 +166,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
 
                         // Fill in the positional arguments
                         for (std::size_t i = 0; i < n_unnamed_actual; ++i)
-                            PyTuple_SET_ITEM(inner_args.get(), i, incref(PyTuple_GET_ITEM(args, i)));
+                            PyTuple_SetItem(inner_args.get(), i, incref(PyTuple_GetItem(args, i)));
 
                         // Grab remaining arguments by name from the keyword dictionary
                         std::size_t n_actual_processed = n_unnamed_actual;
@@ -174,20 +174,20 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                         for (std::size_t arg_pos = n_unnamed_actual; arg_pos < max_arity ; ++arg_pos)
                         {
                             // Get the keyword[, value pair] corresponding
-                            PyObject* kv = PyTuple_GET_ITEM(f->m_arg_names.ptr(), arg_pos);
+                            PyObject* kv = PyTuple_GetItem(f->m_arg_names.ptr(), arg_pos);
 
                             // If there were any keyword arguments,
                             // look up the one we need for this
                             // argument position
                             PyObject* value = n_keyword_actual
-                                ? PyDict_GetItem(keywords, PyTuple_GET_ITEM(kv, 0))
+                                ? PyDict_GetItem(keywords, PyTuple_GetItem(kv, 0))
                                 : 0;
 
                             if (!value)
                             {
                                 // Not found; check if there's a default value
-                                if (PyTuple_GET_SIZE(kv) > 1)
-                                    value = PyTuple_GET_ITEM(kv, 1);
+                                if (PyTuple_Size(kv) > 1)
+                                    value = PyTuple_GetItem(kv, 1);
                         
                                 if (!value)
                                 {
@@ -202,7 +202,7 @@ PyObject* function::call(PyObject* args, PyObject* keywords) const
                                 ++n_actual_processed;
                             }
 
-                            PyTuple_SET_ITEM(inner_args.get(), arg_pos, incref(value));
+                            PyTuple_SetItem(inner_args.get(), arg_pos, incref(value));
                         }
 
                         if (inner_args.get())

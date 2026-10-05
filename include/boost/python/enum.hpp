@@ -80,9 +80,9 @@ template <class T>
 void enum_<T>::construct(PyObject* obj, converter::rvalue_from_python_stage1_data* data)
 {
 #if PY_VERSION_HEX >= 0x03000000
-    T x = static_cast<T>(PyLong_AS_LONG(obj));
+    T x = static_cast<T>(PyLong_AsLong(obj));
 #else
-    T x = static_cast<T>(PyInt_AS_LONG(obj));
+    T x = static_cast<T>(PyInt_AsLong(obj));
 #endif
     void* const storage = ((converter::rvalue_from_python_storage<T>*)data)->storage.bytes;
     new (storage) T(x);
