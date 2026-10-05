@@ -124,15 +124,15 @@ tests.append(extension_test('shared_ptr',
 #tests.append(extension_test('auto_ptr',
 #                            condition=set.define.contains('HAS_CXX11')))
 
-import_ = binary('import_', ['import_.cpp', src.bpl], features=features|python_libs)
 if platform.os == 'Windows':
-    command = """set PATH=$(runpath);%PATH%
+    command2arg = """set PATH=$(runpath);%PATH%
 $(>[0]) $(>[1])"""
 else:
-    command = 'LD_LIBRARY_PATH=$(runpath) $(>[0]) $(>[1])'
+    command2arg = 'LD_LIBRARY_PATH=$(runpath) $(>[0]) $(>[1])'
 
+import_ = binary('import_', ['import_.cpp', src.bpl], features=features|python_libs)
 tests.append(test('import', [import_, 'import_.py'],
-                  run=action('run', command),
+                  run=action('run', command2arg),
                   features=features))
 
 tests.append(extension_test('calling_conventions',
@@ -182,5 +182,18 @@ tests.append(extension_test("module_multi_phase_nogil",
                             condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
 tests.append(extension_test("module_multi_phase_state",
                             condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
+
+
+if platform.os == 'Windows':
+    command1arg = """set PATH=$(runpath);%PATH%
+$(>[0])"""
+else:
+    command1arg = 'LD_LIBRARY_PATH=$(runpath) $(>[0])'
+
+multi_thread_import_ = binary('multi_thread_import_', ['multi_thread_import_.cpp', src.bpl], features=features|python_libs)
+tests.append(test('multi_thread_import', [multi_thread_import_],
+                  run=action('run', command1arg),
+                  features=features,
+                  condition=python_version_major > 3 or (python_version_major == 3 and python_version_minor >= 5)))
 
 default = report('report', tests, fail_on_failures=True)
