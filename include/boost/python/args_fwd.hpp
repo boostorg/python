@@ -44,6 +44,11 @@ namespace detail
     {
         typedef char too_many_keywords[keywords > function_args ? -1 : 1];
     };
+    template <int keywords, int function_args>
+    struct less_keywords_than_function_arguments
+    {
+        typedef char too_few_keywords[(keywords!=0 && keywords < function_args) ? -1 : 1];
+    };
   }
 }
 
