@@ -63,7 +63,6 @@ target_link_libraries(${_boost_python}
     Boost::conversion
     Boost::core
     Boost::detail
-    Boost::foreach
     Boost::function
     Boost::iterator
     Boost::lexical_cast
