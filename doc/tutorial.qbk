@@ -101,12 +101,13 @@ The tutorial example can be found in the directory:
 
 * hello.cpp
 * hello.py
-* Jamroot
+* Jamfile
 
-The [^hello.cpp] file is our C++ hello world example. The [^Jamroot] is
-a minimalist ['bjam] script that builds the DLLs for us. Finally,
-[^hello.py] is our Python program that uses the extension in
-[^hello.cpp].
+The [^hello.cpp] file is our C++ hello world example. The [^Jamfile] is
+a ['bjam] script that builds the DLLs for us. The parent directory
+[^libs/python/example] also contains a [^Jamroot] file that can be used
+as a template. Finally, [^hello.py] is our Python program that uses the
+extension in [^hello.cpp].
 
 Before anything else, you should have the bjam executable in your boost
 directory or somewhere in your path such that [^bjam] can be executed in
@@ -117,9 +118,10 @@ platforms. The complete list of Bjam executables can be found
 [h2 Let's Jam!]
 __jam__
 
-[@../example/Jamroot Here] is our minimalist Jamroot
-file. Simply copy the file and tweak [^use-project boost] to where your
-boost root directory is and you're OK.
+[@../example/Jamroot Here] is a minimalist Jamroot
+file in the [^libs/python/example] directory. Simply copy the file and tweak
+[^use-project boost] to where your boost root directory is and you're OK.
+The tutorial directory itself contains a [^Jamfile] that uses this Jamroot.
 
 The comments contained in the Jamroot file above should be sufficient
 to get you going.
