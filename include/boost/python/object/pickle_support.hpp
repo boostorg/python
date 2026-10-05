@@ -7,6 +7,8 @@
 
 # include <boost/python/detail/prefix.hpp>
 
+# include <boost/static_assert.hpp>
+
 namespace boost { namespace python {
 
 namespace api
@@ -105,9 +107,7 @@ namespace detail {
       Class_&,
       ...)
     {
-      typedef typename
-        error_messages::missing_pickle_suite_function_or_incorrect_signature<
-          Class_>::error_type error_type BOOST_ATTRIBUTE_UNUSED;
+      BOOST_STATIC_ASSERT(false);
     }
   };
 
