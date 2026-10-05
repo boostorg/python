@@ -86,10 +86,12 @@ BOOST_PYTHON_DECL PyObject* registration::to_python(void const volatile* source)
 
         throw_error_already_set();
     }
-        
-    return source == 0
-        ? incref(Py_None)
-        : this->m_to_python(const_cast<void*>(source));
+    else
+    {
+        return source == 0
+            ? incref(Py_None)
+            : this->m_to_python(const_cast<void*>(source));
+    }
 }
 
 namespace
@@ -97,7 +99,7 @@ namespace
   template< typename T >
   void delete_node( T* node )
   {
-      if( !!node && !!node->next )
+      if (node != 0)
           delete_node( node->next );
       delete node;
   }
